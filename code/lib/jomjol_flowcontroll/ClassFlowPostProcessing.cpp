@@ -5,6 +5,9 @@
 #include "ClassFlowDigit.h"
 #include "ClassFlowMakeImage.h"
 
+#include <iomanip>
+#include <sstream>
+
 #include <time.h>
 
 string ClassFlowPostProcessing::GetPreValue()
@@ -138,6 +141,20 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 PreValueUse = true;
                 PreValueOkay = LoadPreValue();
+                if (PreValueOkay)
+                {
+                    Value = PreValue;
+                    for (int i = 0; i < ListFlowControll->size(); ++i)
+                    {
+                        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
+                        {
+                            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+                            std::stringstream stream;
+                            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
+                            ReturnValue = stream.str();
+                        }
+                    }
+                }
             }
         }
         if ((zerlegt[0] == "AllowNegativeRates") && (zerlegt.size() > 1))
@@ -168,8 +185,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     string result = "";
     string digit = "";
     string analog = "";
+    string zwvalue;
     bool isdigit = false;
     bool isanalog = false;
+    int AnzahlNachkomma = 0;
     string zw;
     string error = "";
     time_t imagetime = 0;
@@ -189,6 +208,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             isanalog = true;
             analog = (*ListFlowControll)[i]->getReadout();
+            AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
         }
     }
 
@@ -234,7 +254,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (isdigit)
     {
         digit = ErsetzteN(digit);
-        zw = zw + digit;
+        zw = digit;
     }
     if (isdigit && isanalog)
         zw = zw + ".";
@@ -245,19 +265,23 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     Value = std::stof(zw);
 
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
+    zwvalue = stream.str();
+
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
-        error = "Negative Rate - Return old value - " + std::to_string(Value);
+        error = "Negative Rate - Return old value - " + zwvalue;
         Value = PreValue;
     }
 
     if (useMaxRateValue && ((Value - PreValue) > MaxRateValue))
     {
-        error = "Negative Rate - Return old value - " + std::to_string(Value);
+        error = "Negative Rate - Return old value - " + zwvalue;
         Value = PreValue;
     }
 
-    ReturnValue = std::to_string(Value);
+    ReturnValue = zwvalue;
     if (ErrorMessage && (error.length() > 0))
         ReturnValue = ReturnValue + "\t" + error;
 

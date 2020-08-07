@@ -29,7 +29,8 @@ public:
 
     bool doNeuralNetwork(string time); 
     bool doAlignAndCut(string time);
-   	std::vector<HTMLInfo*> GetHTMLInfo();    
+   	std::vector<HTMLInfo*> GetHTMLInfo();   
+    int AnzahlROIs(){return ROI.size();}; 
 
     string name(){return "ClassFlowAnalog";};
 };
