@@ -148,9 +148,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     }  
 
     zw = tfliteflow.getReadout(_rawValue);
-    zw = zw + "<br>";
-    resp_str = zw.c_str();
-    httpd_resp_sendstr_chunk(req, resp_str); 
+    if (zw.length() > 0)
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
     string query = std::string(_query);
 //    printf("Query: %s\n", query.c_str());
