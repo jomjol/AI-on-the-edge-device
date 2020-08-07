@@ -1,0 +1,99 @@
+<html><head>
+	<title>jomjol - AI on the edge</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style type="text/css" media="screen">
+		nav > ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		nav li {
+			margin: 0.5em;
+			padding: 0;
+			font-size: 1.5em;
+			flex: 1 1 0%;
+		}
+		
+		@media (min-width: 45em) {
+			nav > ul {
+				flex-direction: row;
+			}
+			nav li {
+				flex: 1;
+				font-size: 1em;
+			}
+		}
+		
+		nav a {
+			display: block;
+			padding: 0.4em;
+			text-decoration: none;
+			font-weight: bold;
+			text-align: center;
+			border: 1px solid darkblue;
+			border-radius: 10px;
+			box-shadow: 0 5px 10px white inset;
+			color: gold;
+			background-color: darkblue;
+			transition: all .25s ease-in;
+		}
+		
+		nav li[aria-current] a {
+			background-color: firebrick;
+			color: gold;
+		}
+		
+		nav a:focus,
+		nav a:hover,
+		nav li[aria-current] a:focus,
+		nav li[aria-current] a:hover {
+			color: darkblue;
+			background-color: gold;
+		}
+		
+
+		html, body {
+			height:100%;
+			width:100%;
+			margin:0;
+		}
+		.h_iframe iframe {
+			width:100%;
+			height:100%;
+		}
+		.h_iframe {
+			height: 100%;
+			width:100%;
+		}
+	</style>
+	<script type="text/javascript">
+		//<![CDATA[
+		//]]>
+
+	</script>
+</head>
+
+<body>
+<table  style="width:100%">
+  <tr>
+    <td> <img src="/img_tmp/alg_roi.jpg" alt="ROI-Image"> </td>
+    <td>
+		<table>
+			<tr>
+				Raw Value:<p>
+				<iframe name="maincontent" id ="maincontent" src="/wasserzaehler.html?rawvalue=true" title="fileserver" allowfullscreen></iframe>
+			</tr>
+			<tr>
+				Corrected Value:<p>
+				<iframe name="maincontent" id ="maincontent" src="/wasserzaehler.html" title="fileserver" allowfullscreen></iframe>
+			</tr>
+		</table>
+	</td>
+  </tr>
+</table>
+
+</body></html>
