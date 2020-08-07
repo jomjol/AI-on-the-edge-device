@@ -1,3 +1,8 @@
+# Remove if certain files are committed on purpose
+.pio/
+.vscode/
+.code-workspace
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
