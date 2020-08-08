@@ -115,6 +115,11 @@ extern "C" void app_main()
    
     initialise_wifi(ssid, password);
 
+    TickType_t xDelay;
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+    vTaskDelay( xDelay );   
+
     setup_time();
     LogFile.WriteToFile("===== Main Started =====");
 
@@ -122,7 +127,11 @@ extern "C" void app_main()
     printf("time %s\n", zw.c_str());    
 
     Camera.InitCam();
-    Camera.LightOnOff(false);      
+    Camera.LightOnOff(false); 
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+    vTaskDelay( xDelay ); 
+
     server = start_webserver();   
     register_server_camera_uri(server); 
     register_server_tflite_uri(server);
@@ -131,9 +140,4 @@ extern "C" void app_main()
     register_server_main_uri(server, "/sdcard");
 
     TFliteDoAutoStart();
-
-    zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("time %s\n", zw.c_str());
-
-    printf("Test für OTA-Update v3\n");
 }

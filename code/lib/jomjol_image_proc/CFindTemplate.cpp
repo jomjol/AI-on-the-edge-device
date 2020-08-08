@@ -1,5 +1,6 @@
 #include "CFindTemplate.h"
 #include "Helper.h"
+#include "ClassLogFile.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -452,6 +453,9 @@ void CAlignAndCutImage::Align(std::string _template0, int ref0_x, int ref0_y, st
         printf("Alignment: alignment ROI created: %s\n", imageROI.c_str());
         delete imgzw;
     }
+
+    string zw = "dx: " + to_string(dx) + "dy: " + to_string(dy) + "d_winkel: " + to_string(d_winkel);
+    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
 
     CRotate rt(this->rgb_image, this->channels, this->width, this->height, this->bpp);
     rt.Translate(dx, dy);

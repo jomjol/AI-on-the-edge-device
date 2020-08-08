@@ -1,0 +1,3 @@
+copy "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\code\.pio\build\esp32cam\firmware.bin" "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\firmware\firmware.bin"
+copy "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\code\.pio\build\esp32cam\bootloader.bin" "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\firmware\bootloader.bin"
+copy "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\code\.pio\build\esp32cam\partitions.bin" "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\firmware\partitions.bin"

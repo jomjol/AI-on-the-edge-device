@@ -11,10 +11,12 @@ Details can be found on the Wiki pages.
 
 ##### 0.1.0 (2020-08-07)
 
-* Inital Version
+* Initial Version
 
 
 
-## Know-Bugs
+## Known Issues
 
 * spontaneous reboot, especially in case of intensive web server access
+* stuck in reboot loop
+* stopping automated tflite flow

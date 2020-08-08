@@ -3,13 +3,12 @@
 
 ClassLogFile LogFile("/sdcard/log.txt");
 
-void ClassLogFile::WriteToFile(std::string info, bool _time)
+void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool _time)
 {
     FILE* pFile;
     std::string zwtime;
 
-
-    pFile = fopen(logfile.c_str(), "a+");
+    pFile = fopen(_fn.c_str(), "a+");
 
     if (_time)
     {
@@ -31,11 +30,12 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
     fclose(pFile);    
 }
 
+void ClassLogFile::WriteToFile(std::string info, bool _time)
+{
+    WriteToDedicatedFile(logfile, info, _time);
+}
+
 ClassLogFile::ClassLogFile(std::string _logfile)
 {
     logfile = _logfile;
-}
-
-ClassLogFile::~ClassLogFile()
-{
 }

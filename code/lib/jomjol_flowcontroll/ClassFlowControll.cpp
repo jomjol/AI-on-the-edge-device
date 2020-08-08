@@ -1,5 +1,6 @@
 #include "ClassFlowControll.h"
 
+#include "ClassLogFile.h"
 #include "Helper.h"
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
@@ -112,7 +113,11 @@ bool ClassFlowControll::doFlow(string time)
 {
     bool result = true;
     for (int i = 0; i < FlowControll.size(); ++i)
+    {
+        string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
+        LogFile.WriteToFile(zw);
         result = result && FlowControll[i]->doFlow(time);
+    }
     return result;
 }
 
