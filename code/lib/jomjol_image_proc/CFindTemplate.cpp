@@ -454,7 +454,7 @@ void CAlignAndCutImage::Align(std::string _template0, int ref0_x, int ref0_y, st
         delete imgzw;
     }
 
-    string zw = "dx: " + to_string(dx) + "dy: " + to_string(dy) + "d_winkel: " + to_string(d_winkel);
+    string zw = "\tdx:\t" + to_string(dx) + "\tdy:\t" + to_string(dy) + "\td_winkel:\t" + to_string(d_winkel);
     LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
 
     CRotate rt(this->rgb_image, this->channels, this->width, this->height, this->bpp);
