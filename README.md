@@ -18,5 +18,10 @@ Details can be found on the Wiki pages.
 ## Known Issues
 
 * spontaneous reboot, especially in case of intensive web server access
-* stuck in reboot loop
-* stopping automated tflite flow
+* stopping automated tflite flow - Error teared down to alignment procedure (results in restart)
+
+
+
+## Solved topics
+
+* stuck in reboot - Solved by modified startup sequence
