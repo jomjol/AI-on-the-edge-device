@@ -74,7 +74,7 @@ bool ClassFlowAlignment::doFlow(string time)
 
     CRotate *rt;
 
-    if (this->initalrotate != 0)
+    if (initalrotate != 0)
     {
         rt = new CRotate(input);
         rt->Rotate(this->initalrotate);

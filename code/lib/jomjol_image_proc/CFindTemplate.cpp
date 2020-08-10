@@ -2,6 +2,8 @@
 #include "Helper.h"
 #include "ClassLogFile.h"
 
+#include "esp_system.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
@@ -360,13 +362,13 @@ CImageBasis::CImageBasis()
 
 CImageBasis::CImageBasis(std::string _image)
 {
-    //    printf("Start CImageBasis\n");
-    this->channels = 3;
-    this->externalImage = false;
-    this->filename = _image;
-    //    printf("CImageBasis before load\n");
-    //    printf(_image.c_str()); printf("\n");
-    this->rgb_image = stbi_load(_image.c_str(), &(this->width), &(this->height), &(this->bpp), this->channels);
+    channels = 3;
+    externalImage = false;
+    filename = _image;
+
+    rgb_image = stbi_load(_image.c_str(), &width, &height, &bpp, channels);
+    if (rgb_image == NULL)
+        LogFile.WriteToFile("Image Load failed:" + _image + " FreeHeapSize: " + to_string(esp_get_free_heap_size()));
     //    printf("CImageBasis after load\n");
     //    printf("w %d, h %d, b %d, c %d", this->width, this->height, this->bpp, this->channels);
 }

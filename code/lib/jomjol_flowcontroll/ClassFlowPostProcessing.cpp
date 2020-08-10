@@ -271,13 +271,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
-        error = "Negative Rate - Return old value - " + zwvalue;
+        error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
     }
 
-    if (useMaxRateValue && ((Value - PreValue) > MaxRateValue))
+    if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
     {
-        error = "Negative Rate - Return old value - " + zwvalue;
+        error = "Rate too high - Returned old value - read value: " + zwvalue;
         Value = PreValue;
     }
 
