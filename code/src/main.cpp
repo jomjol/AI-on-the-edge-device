@@ -121,7 +121,7 @@ extern "C" void app_main()
     vTaskDelay( xDelay );   
 
     setup_time();
-    LogFile.WriteToFile("===== Main Started =====");
+    LogFile.WriteToFile("======================== Main Started ================================");
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    
