@@ -15,6 +15,7 @@ protected:
     bool useMaxRateValue;
     bool ErrorMessage;
     bool PreValueOkay;
+    bool checkDigitIncreaseConsistency;
 
     string FilePreValue;
     float PreValue;
@@ -25,7 +26,7 @@ protected:
     bool LoadPreValue(void);
 
 
-    string ErsetzteN(string);
+    string ErsetzteN(string, int lastvalueanalog);
 
 public:
     ClassFlowPostProcessing();

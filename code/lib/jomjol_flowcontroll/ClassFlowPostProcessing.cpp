@@ -101,6 +101,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing()
     ListFlowControll = NULL;
     PreValueOkay = false;
     useMaxRateValue = false;
+    checkDigitIncreaseConsistency = false;
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
 }
 
@@ -114,6 +115,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     ListFlowControll = NULL;
     PreValueOkay = false;
     useMaxRateValue = false;
+    checkDigitIncreaseConsistency = false;    
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
 }
@@ -157,14 +159,19 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
                 }
             }
         }
+        if ((zerlegt[0] == "CheckDigitIncreaseConsistency") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                checkDigitIncreaseConsistency = true;
+        }        
         if ((zerlegt[0] == "AllowNegativeRates") && (zerlegt.size() > 1))
         {
-            if ((zerlegt[1] == "True") || (zerlegt[1] == "true"))
+            if (toUpper(zerlegt[1]) == "TRUE")
                 AllowNegativeRates = true;
         }
         if ((zerlegt[0] == "ErrorMessage") && (zerlegt.size() > 1))
         {
-            if ((zerlegt[1] == "True") || (zerlegt[1] == "true"))
+            if (toUpper(zerlegt[1]) == "TRUE")
                 ErrorMessage = true;
         }
         if ((zerlegt[0] == "PreValueAgeStartup") && (zerlegt.size() > 1))
@@ -253,9 +260,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if (isdigit)
     {
-        digit = ErsetzteN(digit);
+        int lastanalog = -1;
+        if (isanalog)
+            lastanalog = analog[0] - 48;
+        digit = ErsetzteN(digit, lastanalog);
         zw = digit;
     }
+
     if (isdigit && isanalog)
         zw = zw + ".";
     if (isanalog)
@@ -304,7 +315,7 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue)
 }
 
 
-string ClassFlowPostProcessing::ErsetzteN(string input)
+string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1)
 {
     int posN, posPunkt;
     int pot, ziffer;
@@ -321,6 +332,46 @@ string ClassFlowPostProcessing::ErsetzteN(string input)
         input[posN] = ziffer + 48;
 
         posN = findDelimiterPos(input, "N");
+    }
+
+///////////////////////////// TestCode
+/*
+    input = "10";
+    posPunkt = input.length();
+    PreValue = 9.5;
+    lastvalueanalog = 7;
+*/
+    if (checkDigitIncreaseConsistency && lastvalueanalog > -1)
+    {
+        int zifferIST;
+        int substrakt = 0;
+        bool lastcorrected = false;
+        for (int i = input.length() - 1; i >= 0; --i)
+        {
+            zifferIST = input[i] - 48;  //std::stoi(std::string(input[i]));
+            if (lastcorrected)
+            {
+                zifferIST--;
+                input[i] = zifferIST + 48;
+                lastcorrected = false;
+            }
+
+            pot = posPunkt - i - 1;
+            zw = PreValue / pow(10, pot);
+            ziffer = ((int) zw) % 10;
+            if (zifferIST < ziffer)
+            {
+                if (lastvalueanalog >= 7)
+                {
+                    input[i] = ziffer + 48;
+                    lastvalueanalog = ziffer;
+                    lastcorrected = true;
+                }
+            }
+        
+            
+        }
+        
     }
     return input;
 }

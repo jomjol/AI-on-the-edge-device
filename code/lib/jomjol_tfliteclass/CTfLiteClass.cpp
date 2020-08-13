@@ -166,7 +166,7 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
                 *(input_data_ptr) = (float) blue;
                 input_data_ptr++;
 
-                printf("BMP: %f %f %f\n", (float) red, (float) green, (float) blue);
+//                printf("BMP: %f %f %f\n", (float) red, (float) green, (float) blue);
 
             }
     return true;

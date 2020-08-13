@@ -104,22 +104,26 @@ void Init_NVS_SDCard()
 
 extern "C" void app_main()
 {
+//    LogFile.WriteToFile("Startsequence 01");
     Init_NVS_SDCard();
-
+    LogFile.WriteToFile("Startsequence 02");
     CheckOTAUpdate();
-
+    LogFile.WriteToFile("Startsequence 03");
     std::string ssid = "";
     std::string password = "";
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, password); 
+    LogFile.WriteToFile("Startsequence 04");    
     printf("WLan: %s, %s\n", ssid.c_str(), password.c_str());
    
     initialise_wifi(ssid, password);
+    LogFile.WriteToFile("Startsequence 05");  
 
     TickType_t xDelay;
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+    LogFile.WriteToFile("Startsequence 06");      
     vTaskDelay( xDelay );   
-
+    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
     LogFile.WriteToFile("======================== Main Started ================================");
 
