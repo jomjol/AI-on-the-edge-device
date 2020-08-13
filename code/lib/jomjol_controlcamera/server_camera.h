@@ -11,4 +11,6 @@ static const char *TAGPARTCAMERA = "server_camera";
 
 void register_server_camera_uri(httpd_handle_t server);
 
+void PowerResetCamera();
+
 #endif

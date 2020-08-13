@@ -104,6 +104,8 @@ void Init_NVS_SDCard()
 
 extern "C" void app_main()
 {
+    printf("Do Reset Camera\n");
+    PowerResetCamera();
 //    LogFile.WriteToFile("Startsequence 01");
     Init_NVS_SDCard();
     LogFile.WriteToFile("Startsequence 02");

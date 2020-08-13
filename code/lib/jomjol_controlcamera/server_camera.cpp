@@ -12,6 +12,21 @@
 char scratch2[SCRATCH_BUFSIZE2];
 
 
+void PowerResetCamera(){
+        ESP_LOGD(TAGPARTCAMERA, "Resetting camera by power down line");
+        gpio_config_t conf = { 0 };
+        conf.pin_bit_mask = 1LL << GPIO_NUM_32;
+        conf.mode = GPIO_MODE_OUTPUT;
+        gpio_config(&conf);
+
+        // carefull, logic is inverted compared to reset pin
+        gpio_set_level(GPIO_NUM_32, 1);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_NUM_32, 0);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+}
+
+
 esp_err_t handler_lightOn(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_lightOn");
