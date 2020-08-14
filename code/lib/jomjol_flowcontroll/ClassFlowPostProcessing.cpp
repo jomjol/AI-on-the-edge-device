@@ -284,12 +284,16 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     {
         error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
+        stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
+        zwvalue = stream.str();
     }
 
     if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
     {
         error = "Rate too high - Returned old value - read value: " + zwvalue;
         Value = PreValue;
+        stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
+        zwvalue = stream.str();
     }
 
     ReturnValue = zwvalue;
