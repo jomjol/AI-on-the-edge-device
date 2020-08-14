@@ -284,6 +284,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     {
         error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
+        stream.str("");
         stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
         zwvalue = stream.str();
     }
@@ -292,6 +293,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     {
         error = "Rate too high - Returned old value - read value: " + zwvalue;
         Value = PreValue;
+        stream.str("");
         stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
         zwvalue = stream.str();
     }
