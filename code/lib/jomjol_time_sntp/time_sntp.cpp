@@ -25,6 +25,8 @@ static const char *TAG = "sntp";
 
 RTC_DATA_ATTR int boot_count = 0;
 
+bool setTimeAlwaysOnReboot = true;
+
 /* Variable holding number of times ESP32 restarted since first boot.
  * It is placed into RTC memory using RTC_DATA_ATTR and
  * maintains its value when ESP32 wakes from deep sleep.
@@ -46,8 +48,8 @@ std::string gettimestring(const char * frm)
     time(&now);
     localtime_r(&now, &timeinfo);
     // Is time set? If not, tm_year will be (1970 - 1900).
-    if (timeinfo.tm_year < (2016 - 1900)) {
-        ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
+    if (setTimeAlwaysOnReboot || (timeinfo.tm_year < (2016 - 1900))) {
+        ESP_LOGI(TAG, "Reboot - Connecting to WiFi and getting time over NTP.");
         obtain_time();
         // update 'now' variable with current time
         time(&now);
