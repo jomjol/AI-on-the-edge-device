@@ -48,7 +48,7 @@ std::string gettimestring(const char * frm)
     time(&now);
     localtime_r(&now, &timeinfo);
     // Is time set? If not, tm_year will be (1970 - 1900).
-    if (setTimeAlwaysOnReboot || (timeinfo.tm_year < (2016 - 1900))) {
+    if (timeinfo.tm_year < (2016 - 1900)) {
         ESP_LOGI(TAG, "Reboot - Connecting to WiFi and getting time over NTP.");
         obtain_time();
         // update 'now' variable with current time
@@ -77,27 +77,20 @@ void setup_time(void)
     // Is time set? If not, tm_year will be (1970 - 1900).
     if (timeinfo.tm_year < (2016 - 1900)) {
         ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
+        initialize_sntp();
         obtain_time();
         // update 'now' variable with current time
         time(&now);
     }
+    else
+    {
+        if (setTimeAlwaysOnReboot)
+        {
+            obtain_time();
+        }
+    }
     char strftime_buf[64];
 
-/*
-    // Set timezone to Eastern Standard Time and print local time
-    setenv("TZ", "EST5EDT,M3.2.0/2,M11.1.0", 1);
-    tzset();
-    localtime_r(&now, &timeinfo);
-    strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in New York is: %s", strftime_buf);
-
-    // Set timezone to China Standard Time
-    setenv("TZ", "CST-8", 1);
-    tzset();
-    localtime_r(&now, &timeinfo);
-    strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in Shanghai is: %s", strftime_buf);
-*/
     // Set timezone to Berlin Standard Time
     setenv("TZ", "UTC+9", 1);
     tzset();
@@ -112,9 +105,10 @@ void setup_time(void)
     printf("time %s\n", zw.c_str());
 }
 
+
 static void obtain_time(void)
 {
-    initialize_sntp();
+//    initialize_sntp();
 
     // wait for time to be set
     time_t now = 0;

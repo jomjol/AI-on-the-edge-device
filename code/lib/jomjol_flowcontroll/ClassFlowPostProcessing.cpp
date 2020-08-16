@@ -244,13 +244,14 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (isanalog)
             ReturnValue = ReturnValue + analog;
 
+        ReturnRawValue = ReturnValue;
+
         if ((findDelimiterPos(ReturnValue, "N") == std::string::npos) && (ReturnValue.length() > 0))
         {
             while ((ReturnValue.length() > 1) && (ReturnValue[0] == '0'))
             {
                 ReturnValue.erase(0, 1);
             }
-            ReturnRawValue = ReturnValue;
             Value = std::stof(ReturnValue);
             SavePreValue(Value, zwtime);
         }

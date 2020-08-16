@@ -124,7 +124,7 @@ bool ClassFlowControll::doFlow(string time)
 string ClassFlowControll::getReadout(bool _rawvalue = false)
 {
     if (flowpostprocessing)
-        return flowpostprocessing->getReadout();
+        return flowpostprocessing->getReadoutParam(_rawvalue);
 
     string zw = "";
     string result = "";
