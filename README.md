@@ -13,9 +13,9 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ## Change log - latest version
 
-##### Rolling (2020-08-15)
+##### Rolling (2020-08-17)
 
-* Nightly updates (bug fixing)
+* Only editor for config.ini
   
 * Implementation of Digital Consistency Check: check if Digit shows next number earlier, than previous number has gone through zero - Turn on/off - see updated config.ini `CheckDigitIncreaseConsistency = True`)
   Not fully tested!
