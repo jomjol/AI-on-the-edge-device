@@ -25,7 +25,7 @@
   </tr>	
   <tr>
     Result:<p>
-	<iframe name="maincontent" id ="maincontent" src="" title="fileserver" allowfullscreen></iframe>
+	<iframe name="result" id ="result" src="" title="fileserver" allowfullscreen></iframe>
   </tr>	 
 
 </table>
@@ -35,8 +35,8 @@ function setprevalue() {
 	var inputVal = document.getElementById("myInput").value;
 	inputVal = inputVal.replace(",", ".");
 	_value = "/setPreValue.html?value="+inputVal;
-	document.getElementById('maincontent').src = _value;
-	location.reload();	
+	document.getElementById('result').src = _value;
+//	location.reload();	
 }
 </script>
 

@@ -1,0 +1,78 @@
+<html>
+<body>
+ 
+<table>
+    <tr><td>Config.ini:</td></tr>
+    <tr>
+        <td colspan="3">
+            <textarea id="inputTextToSave" cols="80" rows="25"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td><button onclick="saveTextAsFile()">Update Config.ini</button></td>		
+    </tr>
+</table>
+
+<script type="text/javascript" src="./readconfig.js"></script>  
+ 
+<script type="text/javascript">
+
+
+function LoadConfigNeu() {
+	loadConfigJS();
+	document.getElementById("inputTextToSave").value = getConfig();
+	}
+
+function saveTextAsFile()
+{
+	if (confirm("Are you sure you want to update \"config.ini\"?")) {
+		var xhttp = new XMLHttpRequest();
+		
+		/* first delete the old firmware */	
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4) {
+				if (xhttp.status == 200) {
+					/* keine Reaktion, damit sich das Dokument nicht ändert */
+				} else if (xhttp.status == 0) {
+					alert("Server closed the connection abruptly!");
+					location.reload()
+				} else {
+					alert(xhttp.status + " Error!\n" + xhttp.responseText);
+					location.reload()
+				}
+			}
+		};
+		xhttp.open("POST", "/delete/config/config.ini", false);
+		xhttp.send();
+		/* ----------------------------- */
+
+		var textToSave = document.getElementById("inputTextToSave").value;
+		
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4) {
+				if (xhttp.status == 200) {
+					alert("Update \"config.ini\" successfull!\n\nTo make it active you need to reboot.")
+					document.reload();
+				} else if (xhttp.status == 0) {
+					alert("Server closed the connection abruptly!");
+					location.reload()
+				} else {
+					alert(xhttp.status + " Error!\n" + xhttp.responseText);
+					location.reload()
+				}
+			}
+		};
+		
+		upload_path = "/upload/config/config.ini";
+		
+		xhttp.open("POST", upload_path, true);
+		xhttp.send(textToSave);
+	}
+}
+ 
+LoadConfigNeu();
+ 
+</script>
+ 
+</body>
+</html>

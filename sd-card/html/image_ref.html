@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Make refernce</title>
+    
+    <link rel="stylesheet" type="text/css" href="/static/configurator/site.css"/>
+
+</head>
+
+<body onScroll="document.cookie='ypos=' + window.pageYOffset">
+
+<div class="body-content">
+    
+    <div id="createrefernce">
+        
+
+        <script language="JavaScript">
+            function createscroll(){
+                var zw = document.cookie
+                var n1 = zw.indexOf('ypos=')
+                var n2 = zw.indexOf(";", n1)
+                var a = zw.substr(n1+5, n2-n1-5)    
+                //window.alert(zw + " -- "+ a + " -- " + + n1 + " -- " + n2)   
+                window.scrollTo(0, a)
+            }
+        </script>
+
+        <div style="padding-left: 30px">
+            
+             <h3>Create Reference out of Raw Image</h3>
+            
+            <div style="padding-left: 30px">
+               
+                <form method="post">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="lxUFaiYFqzjTUDz63phwtZsErDkz9WjIHPsw56IM1nOYkkvljkwbA2TuKvP97GJy">
+                    <table>
+                        <tr>
+                            <td>
+        
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <h4>Pre-rotate Angle</h4>
+                                        </td>
+                                        <td>
+                                            <input type="number" id="prerotateangle" name="prerotateangle" value=179.0 min="-360" max="360">°
+                                            <input type="button" value="Rotate" onclick="drawRotated()">          
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4>Fine Alignment</h4>
+                                        </td>
+                                        <td>
+                                            <input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">°
+                                        </td>
+                                    </tr>
+                                </table> 
+                            </td>
+        
+        
+                        </tr>
+                    </table>
+        
+                <table>
+                    <tr>
+                        <td>
+                            <canvas id="canvas"></canvas>
+                        </td>
+                        <td>
+                            <input type="hidden" name="degree" id="degree" value="0">
+                            <input type="button" value="Save Reference Image" onclick="SaveReference()">
+                        </td>
+        
+                    </tr>
+                </table>
+            </form>  
+       
+            </div>
+    </div>
+
+    <script language="JavaScript">
+        var canvas = document.getElementById('canvas'),
+            ctx = canvas.getContext('2d'),
+            imageObj = new Image();
+			
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {type:mime});
+}			
+			
+		function SaveReference()
+		{
+
+		if (confirm("Are you sure you want to update \"reference2.jpg\"?")) {
+			var xhttp = new XMLHttpRequest();
+			
+			/* first delete the old firmware */	
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4) {
+					if (xhttp.status == 200) {
+						/* keine Reaktion, damit sich das Dokument nicht ändert */
+					} else if (xhttp.status == 0) {
+						alert("Server closed the connection abruptly!");
+						location.reload()
+					} else {
+						alert(xhttp.status + " Error!\n" + xhttp.responseText);
+						location.reload()
+					}
+				}
+			};
+			xhttp.open("POST", "http://192.168.178.22/delete/config/reference2.jpg", false);
+			xhttp.send();
+			/* ----------------------------- */
+
+
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4) {
+					if (xhttp.status == 200) {
+						alert("Update \"reference2.jpg\" successfull!\n\nTo make it active you need to reboot.")
+						document.reload();
+					} else if (xhttp.status == 0) {
+						alert("Server closed the connection abruptly!");
+						location.reload()
+					} else {
+						alert(xhttp.status + " Error!\n" + xhttp.responseText);
+						location.reload()
+					}
+				}
+			};
+			
+			upload_path = "http://192.168.178.22/upload/config/reference2.jpg";
+			
+			var canvas = document.getElementById("canvas");
+			
+			var JPEG_QUALITY=0.5;
+			var dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
+			var rtn = dataURLtoBlob(dataUrl);		
+			
+			xhttp.open("POST", upload_path, true);
+			xhttp.send(rtn);
+		}
+		}
+    
+        function loadCanvas(dataURL) {
+                var canvas = document.getElementById('canvas');
+                var context = canvas.getContext('2d');
+    
+                imageObj.onload = function() {
+                    canvas.width = this.width;
+                    canvas.height = this.height;
+                    drawRotated();
+                    createscroll();
+                };
+    
+                imageObj.src = dataURL;
+            }
+    
+    
+        function getCoords(elem) { // crossbrowser version
+            var box = elem.getBoundingClientRect();
+            var body = document.body;
+            var docEl = document.documentElement;
+            var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+            var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+            var clientTop = docEl.clientTop || body.clientTop || 0;
+            var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+            var top  = box.top +  scrollTop - clientTop;
+            var left = box.left + scrollLeft - clientLeft;
+            return { top: Math.round(top), left: Math.round(left) };
+        }
+   
+    
+    
+        function init() {
+//			alert("load image");
+            loadCanvas("http://192.168.178.22/fileserver/img_tmp/raw.jpg");
+            drawRotated();
+        }
+    
+        function drawRotated(){
+            finerot= parseFloat(document.getElementById("finerotate").value);
+            prerot = parseFloat(document.getElementById("prerotateangle").value);
+            if (finerot == 1) {
+                prerot+=1
+                finerot = 0
+            }
+            if (finerot == -1) {
+                prerot-=1
+                finerot = 0
+            }
+            degrees = finerot + prerot;
+            document.getElementById("finerotate").value =  finerot;
+            document.getElementById("prerotateangle").value =  prerot;
+            document.getElementById("degree").value =  degrees;
+
+
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+
+            context.clearRect(0,0,imageObj.width,imageObj.height);
+            context.save();
+            context.translate(imageObj.width/2,imageObj.height/2);
+            context.rotate(degrees*Math.PI/180);
+            context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
+            context.restore();
+            drawGrid();
+        }
+        function drawGrid(){
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            w = canvas.width;
+            h = canvas.height;
+            ctx.save();
+            ctx.strokeStyle = '#00FF00';
+
+            for (i = h/2; i < h; i += 100) 
+                {
+                ctx.moveTo(0, i);
+                ctx.lineTo(w, i);
+                ctx.stroke();
+                ctx.moveTo(0, h-i);
+                ctx.lineTo(w, h-i);
+                ctx.stroke();
+                }
+            for (i = w/2; i < w; i += 100) 
+                {
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, h);
+                ctx.stroke();
+                ctx.moveTo(w-i, 0);
+                ctx.lineTo(w-i, h);
+                ctx.stroke();                }
+            ctx.restore();
+        }
+    
+        init();
+    </script>
+
+
+    <hr/>
+</div>
+</body  onScroll="document.cookie='ypos=' + window.pageYOffset">
+</html>
