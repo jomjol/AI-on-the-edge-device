@@ -30,6 +30,8 @@
 
 #include "server_help.h"
 
+#include "Helper.h"
+
 /* Max length a file path can have on storage */
 // #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
 #define FILE_PATH_MAX (255)
@@ -154,36 +156,39 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
 
     /* Iterate over all files / folders and fetch their names and sizes */
     while ((entry = readdir(dir)) != NULL) {
-        entrytype = (entry->d_type == DT_DIR ? "directory" : "file");
+        if (strcmp("wlan.ini", entry->d_name) != 0 )        // wlan.ini soll nicht angezeigt werden!
+        {
+            entrytype = (entry->d_type == DT_DIR ? "directory" : "file");
 
-        strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
-        printf("Entrypath: %s\n", entrypath);
-        if (stat(entrypath, &entry_stat) == -1) {
-            ESP_LOGE(TAG, "Failed to stat %s : %s", entrytype, entry->d_name);
-            continue;
-        }
-        sprintf(entrysize, "%ld", entry_stat.st_size);
-        ESP_LOGI(TAG, "Found %s : %s (%s bytes)", entrytype, entry->d_name, entrysize);
+            strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
+            printf("Entrypath: %s\n", entrypath);
+            if (stat(entrypath, &entry_stat) == -1) {
+                ESP_LOGE(TAG, "Failed to stat %s : %s", entrytype, entry->d_name);
+                continue;
+            }
+            sprintf(entrysize, "%ld", entry_stat.st_size);
+            ESP_LOGI(TAG, "Found %s : %s (%s bytes)", entrytype, entry->d_name, entrysize);
 
-        /* Send chunk of HTML file containing table entries with file name and size */
-        httpd_resp_sendstr_chunk(req, "<tr><td><a href=\"");
-        httpd_resp_sendstr_chunk(req, req->uri);
-        httpd_resp_sendstr_chunk(req, entry->d_name);
-        if (entry->d_type == DT_DIR) {
-            httpd_resp_sendstr_chunk(req, "/");
+            /* Send chunk of HTML file containing table entries with file name and size */
+            httpd_resp_sendstr_chunk(req, "<tr><td><a href=\"");
+            httpd_resp_sendstr_chunk(req, req->uri);
+            httpd_resp_sendstr_chunk(req, entry->d_name);
+            if (entry->d_type == DT_DIR) {
+                httpd_resp_sendstr_chunk(req, "/");
+            }
+            httpd_resp_sendstr_chunk(req, "\">");
+            httpd_resp_sendstr_chunk(req, entry->d_name);
+            httpd_resp_sendstr_chunk(req, "</a></td><td>");
+            httpd_resp_sendstr_chunk(req, entrytype);
+            httpd_resp_sendstr_chunk(req, "</td><td>");
+            httpd_resp_sendstr_chunk(req, entrysize);
+            httpd_resp_sendstr_chunk(req, "</td><td>");
+            httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/delete");
+            httpd_resp_sendstr_chunk(req, req->uri + strlen("/fileserver"));
+            httpd_resp_sendstr_chunk(req, entry->d_name);
+            httpd_resp_sendstr_chunk(req, "\"><button type=\"submit\">Delete</button></form>");
+            httpd_resp_sendstr_chunk(req, "</td></tr>\n");
         }
-        httpd_resp_sendstr_chunk(req, "\">");
-        httpd_resp_sendstr_chunk(req, entry->d_name);
-        httpd_resp_sendstr_chunk(req, "</a></td><td>");
-        httpd_resp_sendstr_chunk(req, entrytype);
-        httpd_resp_sendstr_chunk(req, "</td><td>");
-        httpd_resp_sendstr_chunk(req, entrysize);
-        httpd_resp_sendstr_chunk(req, "</td><td>");
-        httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/delete");
-        httpd_resp_sendstr_chunk(req, req->uri + strlen("/fileserver"));
-        httpd_resp_sendstr_chunk(req, entry->d_name);
-        httpd_resp_sendstr_chunk(req, "\"><button type=\"submit\">Delete</button></form>");
-        httpd_resp_sendstr_chunk(req, "</td></tr>\n");
     }
     closedir(dir);
 
@@ -214,7 +219,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
     const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
                                              req->uri  + sizeof("/fileserver") - 1, sizeof(filepath));    
 
-    printf("1 uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+    printf("uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
 
 //    filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
 //                                             req->uri, sizeof(filepath));
@@ -231,7 +236,10 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         return http_resp_dir_html(req, filepath);
     }
 
-    if (stat(filepath, &file_stat) == -1) {
+    std::string testwlan = toUpper(std::string(filename));
+
+    if ((stat(filepath, &file_stat) == -1) || (testwlan.compare("/WLAN.INI") == 0 )) {  // wlan.ini soll nicht angezeigt werden!
+
         /* If file not present on SPIFFS check if URI
          * corresponds to one of the hardcoded paths */
         ESP_LOGE(TAG, "Failed to stat file : %s", filepath);
@@ -247,6 +255,8 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
         return ESP_FAIL;
     }
+
+    esp_err_t res = httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     ESP_LOGI(TAG, "Sending file : %s (%ld bytes)...", filename, file_stat.st_size);
     set_content_type_from_file(req, filename);

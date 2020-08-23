@@ -138,8 +138,12 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "File does not exist");
         return ESP_FAIL;
     }
+    esp_err_t res;
+    res = httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    if (res != ESP_OK)
+        return res;
 
-    esp_err_t res = send_file(req, filetosend, &file_stat);
+    res = send_file(req, filetosend, &file_stat);
     if (res != ESP_OK)
         return res;
 

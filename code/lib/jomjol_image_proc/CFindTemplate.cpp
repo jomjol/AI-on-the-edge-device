@@ -384,6 +384,22 @@ CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _he
     this->externalImage = true;
 }
 
+void CImageBasis::Contrast(float _contrast)  //input range [-100..100]
+{
+    stbi_uc* p_source;
+    
+    float contrast = (_contrast/100) + 1;  //convert to decimal & shift range: [0..2]
+    float intercept = 128 * (1 - contrast);
+
+    for (int x = 0; x < width; ++x)
+        for (int y = 0; y < height; ++y)
+        {
+            p_source = this->rgb_image + (this->channels * (y * this->width + x));
+            for (int channels = 0; channels < this->channels; ++channels)
+                p_source[channels] = (uint8_t) std::min(255, std::max(0, (int) (p_source[channels] * contrast + intercept)));
+        }
+}
+
 CImageBasis::~CImageBasis()
 {
     if (!this->externalImage)

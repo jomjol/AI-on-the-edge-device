@@ -8,6 +8,8 @@
 #include <iomanip>
 #include <sstream>
 
+#include "Helper.h"
+
 #include "esp_camera.h"
 #include "time_sntp.h"
 #include "ClassControllCamera.h"
@@ -125,6 +127,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
 
 
 
+
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_wasserzaehler");    
@@ -214,6 +217,121 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 
 
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_sendstr_chunk(req, NULL);   
+
+    return ESP_OK;
+};
+
+
+esp_err_t handler_editflow(httpd_req_t *req)
+{
+    LogFile.WriteToFile("handler_editflow");    
+    const char* resp_str;
+    string zw;
+    bool _rawValue = false;
+
+    printf("handler_editflow uri:\n"); printf(req->uri); printf("\n");
+
+    char _query[200];
+    char _valuechar[30];
+    string _task;
+
+    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
+    {
+        if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
+        {
+            printf("task is found"); printf(_valuechar); printf("\n"); 
+            _task = string(_valuechar);
+        }
+    }  
+
+    if (_task.compare("copy") == 0)
+    {
+        string in, out, zw;
+
+        httpd_query_key_value(_query, "in", _valuechar, 30);
+        in = string(_valuechar);
+        printf("in: "); printf(in.c_str()); printf("\n"); 
+
+        httpd_query_key_value(_query, "out", _valuechar, 30);         
+        out = string(_valuechar);  
+        printf("out: "); printf(out.c_str()); printf("\n"); 
+
+        in = "/sdcard" + in;
+        out = "/sdcard" + out;
+
+        CopyFile(in, out);
+        zw = "Copy Done";
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    }
+
+
+    if (_task.compare("cutref") == 0)
+    {
+        string in, out, zw;
+        int x, y, dx, dy;
+        bool enhance = false;
+
+        httpd_query_key_value(_query, "in", _valuechar, 30);
+        in = string(_valuechar);
+        printf("in: "); printf(in.c_str()); printf("\n"); 
+
+        httpd_query_key_value(_query, "out", _valuechar, 30);         
+        out = string(_valuechar);  
+        printf("out: "); printf(out.c_str()); printf("\n"); 
+
+        httpd_query_key_value(_query, "x", _valuechar, 30);
+        zw = string(_valuechar);  
+        x = stoi(zw);              
+        printf("x: "); printf(zw.c_str()); printf("\n"); 
+
+        httpd_query_key_value(_query, "y", _valuechar, 30);
+        zw = string(_valuechar);  
+        y = stoi(zw);              
+        printf("y: "); printf(zw.c_str()); printf("\n"); 
+
+        httpd_query_key_value(_query, "dx", _valuechar, 30);
+        zw = string(_valuechar);  
+        dx = stoi(zw);  
+        printf("dx: "); printf(zw.c_str()); printf("\n"); 
+
+        httpd_query_key_value(_query, "dy", _valuechar, 30);
+        zw = string(_valuechar);  
+        dy = stoi(zw);          
+        printf("dy: "); printf(zw.c_str()); printf("\n"); 
+
+        if (httpd_query_key_value(_query, "enhance", _valuechar, 10) == ESP_OK)
+        {
+            zw = string(_valuechar);
+            if (zw.compare("true") == 0)
+            {
+                enhance = true;
+            }
+        }
+
+        in = "/sdcard" + in;
+        out = "/sdcard" + out;
+
+        string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
+
+        CAlignAndCutImage *caic = new CAlignAndCutImage(in);
+        caic->CutAndSave(out2, x, y, dx, dy);
+        delete caic;    
+
+        CImageBasis *cim = new CImageBasis(out2);
+        if (enhance)
+        {
+            cim->Contrast(90);
+        }
+
+        cim->SaveToFile(out);
+        delete cim;        
+
+        zw = "CutImage Done";
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    }
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
@@ -319,7 +437,13 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/doflow";
     camuri.handler   = handler_doflow;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);    
+    httpd_register_uri_handler(server, &camuri);  
+
+    
+    camuri.uri       = "/editflow.html";
+    camuri.handler   = handler_editflow;
+    camuri.user_ctx  = (void*) "EditFlow"; 
+    httpd_register_uri_handler(server, &camuri);     
 
     camuri.uri       = "/wasserzaehler.html";
     camuri.handler   = handler_wasserzaehler;

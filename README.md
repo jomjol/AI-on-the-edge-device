@@ -13,8 +13,12 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ## Change log - latest version
 
-##### Rolling (2020-08-17)
+##### Rolling (2020-08-23)
 
+* Preparation for web configuration
+  
+* Security Issue: Remove access to "wlan.ini"
+  
 * Only editor for config.ini
   
 * Implementation of Digital Consistency Check: check if Digit shows next number earlier, than previous number has gone through zero - Turn on/off - see updated config.ini `CheckDigitIncreaseConsistency = True`)

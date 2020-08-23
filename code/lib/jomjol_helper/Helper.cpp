@@ -113,8 +113,20 @@ void CopyFile(string input, string output)
 	input = FormatFileName(input);
 	output = FormatFileName(output);
 
+	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
+	{
+		printf("wlan.ini kann nicht kopiert werden!\n");
+		return;
+	}
+
 	char cTemp;
 	FILE* fpSourceFile = fopen(input.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		printf("File %s existiert nicht!\n", input.c_str());
+		return;
+	}
+
 	FILE* fpTargetFile = fopen(output.c_str(), "wb");
 
 	// Code Section
