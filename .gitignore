@@ -3,6 +3,7 @@
 .vscode/
 .code-workspace
 .helper/
+/sd-card/htm./.vscode/
 
 CMakeLists.txt.user
 CMakeCache.txt
