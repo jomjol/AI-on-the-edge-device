@@ -1,7 +1,38 @@
 #include "ClassFlowControll.h"
 
 #include "ClassLogFile.h"
+#include "time_sntp.h"
 #include "Helper.h"
+
+std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
+    bool found = false;
+    std::string _classname = "";
+    std::string result = "";
+    if (_stepname.compare("[MakeImage]") == 0){
+        _classname = "ClassFlowMakeImage";
+    }
+    if (_stepname.compare("[Alignment]") == 0){
+        _classname = "ClassFlowAlignment";
+    }
+    if (_stepname.compare("[Digits]") == 0){
+        _classname = "ClassFlowDigit";
+    }
+    if (_stepname.compare("[Analog]") == 0){
+        _classname = "ClassFlowAnalog";
+    }
+//    std::string zw = "Classname: " + _classname + "\n";
+//    printf(zw.c_str());
+
+    for (int i = 0; i < FlowControll.size(); ++i)
+        if (FlowControll[i]->name().compare(_classname) == 0){
+ //           printf(FlowControll[i]->name().c_str()); printf("\n");
+            FlowControll[i]->doFlow("");
+            result = FlowControll[i]->getHTMLSingleStep(_host);
+            found = true;
+        }
+
+    return result;
+}
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 {
@@ -67,8 +98,6 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
 void ClassFlowControll::InitFlow(std::string config)
 {
-    int aktFlow;
-    bool handeled;
     string line;
 
     flowpostprocessing = NULL;
@@ -79,8 +108,6 @@ void ClassFlowControll::InitFlow(std::string config)
     pFile = fopen(config.c_str(), "r");
 
     line = "";
-    handeled = true;
-
 
     char zw[1024];
     if (pFile != NULL)
@@ -109,15 +136,24 @@ void ClassFlowControll::InitFlow(std::string config)
 
 }
 
+std::string ClassFlowControll::getActStatus(){
+    return aktstatus;
+}
+
 bool ClassFlowControll::doFlow(string time)
 {
     bool result = true;
+    std::string zw_time;
     for (int i = 0; i < FlowControll.size(); ++i)
     {
+        zw_time = gettimestring("%Y%m%d-%H%M%S");
+        aktstatus = zw_time + ": " + FlowControll[i]->name();
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
         LogFile.WriteToFile(zw);
         result = result && FlowControll[i]->doFlow(time);
     }
+    zw_time = gettimestring("%Y%m%d-%H%M%S");    
+    aktstatus = zw_time + ": Flow is done";
     return result;
 }
 

@@ -18,10 +18,14 @@ float CTfLiteClass::GetOutputValue(int nr)
 
 int CTfLiteClass::GetClassFromImage(std::string _fn)
 {
+//  printf("Before Load image %s\n", _fn.c_str());
     if (!LoadInputImage(_fn))
       return -1000;
+//  printf("After Load image %s\n", _fn.c_str());
 
     Invoke();
+  printf("After Invoke %s\n", _fn.c_str());
+
     return GetOutClassification();
 //    return 0;
 }
@@ -102,46 +106,6 @@ void CTfLiteClass::Invoke()
 //    printf("Invoke Done.\n");
 }
 
-/*   mit CImageBasis --> funktioniert nicht, keine Ahnung warum !!!
-
-bool CTfLiteClass::LoadInputImage(std::string _fn)
-{
-  
-    CImageBasis *cib = new CImageBasis(_fn);
-
-    GetInputDimension(true);
-
-    printf("TFlite load image size: %d x %d x %d\n", cib->getWidth(), cib->getHeight(), cib->getChannels());
-//    printf("TFlite expected image size: %d x %d x %d\n", im_width, im_height, im_channel);
-
-    if ((cib->getWidth() != im_width) || (cib->getHeight() != im_height) || (cib->getChannels() != im_channel))
-    {
-      printf("Input Imagesize Wrong.\n");
-      return false;
-    }
-
-    input_i = 0;
-    float* input_data_ptr = (interpreter->input(0))->data.f;
-    uint8_t ui8;
-    unsigned char zw;
-
-    for (int y = 0; y < cib->getHeight(); ++y)
-        for (int x = 0; x < cib->getWidth(); ++x)
-        {
-        printf("CIB: ");
-            for (int ch = 0; ch < cib->getChannels(); ++ch)
-            {
-                ui8 = cib->GetPixelColor(x, y, ch);
-                printf("%f ", (float) ui8);
-                *(input_data_ptr) = (float) ui8;
-                input_data_ptr++;
-            }
-          printf("\n");
-        }
-    delete cib;
-    return true;
-}
-*/
 
 bool CTfLiteClass::LoadInputImage(std::string _fn)
 {

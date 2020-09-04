@@ -33,6 +33,7 @@ public:
 	ClassFlow(std::vector<ClassFlow*> * lfc);
 	virtual bool ReadParameter(FILE* pfile, string &aktparamgraph);
 	virtual bool doFlow(string time);
+	virtual string getHTMLSingleStep(string host);
 	virtual string getReadout();
 	virtual string name(){return "ClassFlow";};
 

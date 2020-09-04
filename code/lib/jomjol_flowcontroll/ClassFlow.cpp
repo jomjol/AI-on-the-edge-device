@@ -72,6 +72,10 @@ bool ClassFlow::doFlow(string time)
 	return false;
 }
 
+string ClassFlow::getHTMLSingleStep(string host){
+	return "";
+}
+
 string ClassFlow::getReadout()
 {
 	return string();

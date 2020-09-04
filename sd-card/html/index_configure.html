@@ -63,10 +63,10 @@
 		}
 		.h_iframe iframe {
 			width:98%;
-			height:80%;
+			height:150%;
 		}
 		.h_iframe {
-			height: 80%;
+			height: 150%;
 			width:98%;
 		}
 	</style>
@@ -78,34 +78,35 @@
 </head>
 
 <body>
-	<h1>Watermeter - AI on the edge - an ESP32 all in neural network recognition system</h1>
+	<h1>Configure watermeter</h1>
 	<nav>
 		<ul>
-			<li aria-current="page"><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler_roi.html';">wasserzaehler</a>	
-				<ul class="submenu">
-					<li><a href="#"onclick="document.getElementById('maincontent').src = '/prevalue_set.html';">Set preValue</a> </li>
-					<li><a href="index_configure.html">Edit Configuration</a> </li>
-					<li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler.html?full';">/wasserzaehler.html?full</a> </li>
-				</ul>
-			</li>	
 
-			<li><a href="#" onclick="document.getElementById('maincontent').src = '/fileserver/';">File Server</a> </li>					
 			 
-			<li><a href="#">System</a>
+			<li><a href="#" onclick="document.getElementById('maincontent').src = 'edit_config.html';">CONFIG.INI direct</a> </li>
+			<li><a href="#">Alignment</a>
 				<ul class="submenu">
-					<li><a href="#"onclick="document.getElementById('maincontent').src = '/starttime';">Start time</a> </li>
-					<li><a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a> </li>
-					<li><a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a> </li>
+					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a> </li>
+					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a> </li>
 				</ul>
 			</li>
+			<li><a href="#">Regions of interest</a>
+				<ul class="submenu">
+					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a> </li>
+					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a> </li>
+				</ul>
+			</li>			
 
+			<li><a href="#" onclick="document.getElementById('maincontent').src = 'edit_check.html';">Check</a> </li>			
+			<li aria-current="page"><a href="index.html">Main</a>	
+			</li>	
 		</ul>
 	</nav>
 	
 	<p>
 	
 	<div class="h_iframe">
-		 <iframe name="maincontent" id ="maincontent" src="/wasserzaehler_roi.html" title="fileserver" allowfullscreen></iframe> 
+		 <iframe name="maincontent" id="maincontent" src="edit_config.html" title="fileserver"></iframe> 
 	</div>
 
 

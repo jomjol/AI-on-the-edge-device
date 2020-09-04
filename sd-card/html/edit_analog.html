@@ -9,7 +9,7 @@
     
     <div id="createrefernce">
         <div style="padding-left: 30px">
-             <h3>Define Alignment Structure in Reference Image</h3>
+             <h3>Edit Analog</h3>
             
             <div style="padding-left: 30px">
                 <table>
@@ -22,13 +22,22 @@
                         <td>
                             <table>
                                     <tr>
+                                        <td>
+                                            <input type="submit" name="newROI" onclick="newROI()" value="New ROI (after current)">
+                                            <input type="submit" name="deleteROI" onclick="deleteROI()" value="Delete ROI">
+                                        </td>
+                                    </tr>
+                                
+                                    <tr>
                                         <tr>
                                             <td>
-                                                    <select id="index" name="reference" onchange="ChangeSelection()">
-                                                      <option value="0" selected>Reference 0</option>
-                                                      <option value="1" >Reference 1</option>
+                                                    <select id="index" name="index" onchange="ChangeSelection()">
+                                                      <option value="0" selected>ROI 0</option>
+                                                      <option value="1" >ROI 1</option>
                                                     </select>
-                                                    Storage path/name: <input type="text" name="name" id="name">
+                                                    name: <input type="text" name="name" id="name" onchange="onNameChange()">
+                                                    <input type="submit" id="moveNext" onclick="moveNext()" value="move Next">
+                                                    <input type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">                                                    
                                             </td>
                                         </tr>
 
@@ -39,7 +48,11 @@
                                                         x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()">
                                                     </td>
                                                     <td>
-                                                        dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()">
+                                                        dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked>
+                                                        <label for="lockAR"> lock aspect ratio</label><br>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -50,39 +63,12 @@
                                                         dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()">
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td>
-                                                        <input type="button" value="Update Reference" onclick="CutOutReference()">
-                                                    </td>
-                                                </tr>
                                             </table>                           
                                         </td>
                                     </tr>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                Original Image
-                                            </td>
-                                            <td>
-                                                Reference Image
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <img id="img_ref_org" src = "/img_tmp/ref_zw_org.jpg">
-                                            </td>
-                                            <td>
-                                                <img id="img_ref" src = "/img_tmp/ref_zw.jpg">
-                                            </td>
-                                            <td>
-                                                <input type="button" value="Enhance Contrast" onclick="EnhanceContrast()">
-                                            </td>                                        
-                                        </tr>   
-                                    </table>
-        
                                     <tr>
                                         <td>
-                                            <input type="submit" name="saveroi" onclick="SaveToConfig()" value="Save to Config.ini">
+                                            <input type="submit" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini">
                                         </td>                                        
                                     </tr>
                             </table>
@@ -92,6 +78,7 @@
             </div>
     </div>
 
+    <script type="text/javascript" src="./gethost.js"></script> 
     <script type="text/javascript" src="./readconfig.js"></script>  
 
     <script language="JavaScript">
@@ -101,133 +88,126 @@
             rect = {},
             drag = false,
             aktindex = 0,
-            refInfo,
+            ROIInfo,
             enhanceCon = false;
+            lockAR = true;
             basepath = "http://192.168.178.26";
-            basepath = "";
+
+function onNameChange(){
+    ROIInfo[aktindex]["name"] = document.getElementById("name").value;
+    UpdateROIs();
+}
+
+function deleteROI(){
+    ROIInfo.splice(aktindex, 1);
+    if (aktindex > ROIInfo.length - 1){
+        aktindex = ROIInfo.length - 1;
+    }
+    UpdateROIs();
+}
+
+function newROI(){
+    var zw = ROIInfo[ROIInfo.length-1];
+    ROIInfo.push(zw);
+    for (var i = ROIInfo.length-2; i > aktindex + 1; --i){
+        ROIInfo[i] = ROIInfo[i-1];
+    }
+    aktindex++;
+    ROIInfo[aktindex] = new Object;
+    ROIInfo[aktindex]["pos_ref"] = -1;
+    ROIInfo[aktindex]["name"] = "ROI" + aktindex;
+    ROIInfo[aktindex]["x"] = 1;
+    ROIInfo[aktindex]["y"] = 1;
+    ROIInfo[aktindex]["dx"] = ROIInfo[aktindex-1]["dx"];
+    ROIInfo[aktindex]["dy"] = ROIInfo[aktindex-1]["dy"];
+    ROIInfo[aktindex]["ar"] = ROIInfo[aktindex-1]["ar"];
+    UpdateROIs();
+}
+
+function movePrevious(){
+    var zw = ROIInfo[aktindex];
+    ROIInfo[aktindex] = ROIInfo[aktindex-1];
+    ROIInfo[aktindex-1] = zw;
+    aktindex--;
+    UpdateROIs();      
+}
+
+function moveNext(){
+    var zw = ROIInfo[aktindex];
+    ROIInfo[aktindex] = ROIInfo[aktindex+1];
+    ROIInfo[aktindex+1] = zw;
+    aktindex++;
+    UpdateROIs();    
+}
+
+function changelockAR(){
+    lockAR = document.getElementById("lockAR").checked;
+}
 
 function ChangeSelection(){
     aktindex = parseInt(document.getElementById("index").value);
-    UpdateReference();
+//    lockAR = true;
+    UpdateROIs();
 }
 
 function SaveToConfig(){
-    refInfo["name"] = document.getElementById("name").value;
-    refInfo["x"] = document.getElementById("refx").value;
-    refInfo["y"] = document.getElementById("refy").value; 
-    refInfo["dx"] = document.getElementById("refdx").value;
-    refInfo["dy"] = document.getElementById("refdy").value;   
-    UpdateConfig(refInfo, aktindex, enhanceCon, basepath); 
-//    location.reload();
+    SaveROIToConfig(ROIInfo, "[Analog]", basepath);
+    location.reload();
 }
 
-function EnhanceContrast(){
-    refInfo["name"] = document.getElementById("name").value;
-    refInfo["x"] = document.getElementById("refx").value;
-    refInfo["y"] = document.getElementById("refy").value; 
-    refInfo["dx"] = document.getElementById("refdx").value;
-    refInfo["dy"] = document.getElementById("refdy").value;       
 
-    enhanceCon = true;
-    MakeContrastImageZW(refInfo, enhanceCon, basepath);
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
-    document.getElementById("img_ref").src = url;
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-    document.getElementById("img_ref_org").src = url;
-}
-
-function UpdateReference(){
-    refInfo = GetCoordinates(aktindex, basepath);
-    document.getElementById("img_ref").onload = function () {
-        document.getElementById("refdx").value = this.width;
-        document.getElementById("refdy").value = this.height;   
-        refInfo["dx"] = this.width;
-        refInfo["dy"] = this.height;
-        rect.w = document.getElementById("refdx").value;
-        rect.h = document.getElementById("refdy").value;
-        draw();
+function UpdateROIs(){
+    if (ROIInfo.length == 0){
+        alert("There are no ROIs defined.\nPlease first define minimum one ROI in the config.ini by hand.\n");
+        return;
     }
 
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-    document.getElementById("img_ref_org").src = url;
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
-    document.getElementById("img_ref").src = url;
+    var _index = document.getElementById("index");
+    while (_index.length){
+        _index.remove(0);
+    }
 
-    document.getElementById("name").value = refInfo["name"];
-    document.getElementById("refx").value = refInfo["x"];
-    document.getElementById("refy").value = refInfo["y"];  
-    rect.startX = document.getElementById("refx").value;
-    rect.startY = document.getElementById("refy").value; 
+    for (var i = 0; i < ROIInfo.length; ++i){
+        var option = document.createElement("option");
+        option.text = "ROI " + (i + 1);
+        option.value = i;
+        _index.add(option); 
+    }
+    _index.selectedIndex = aktindex; 
+
+
+    document.getElementById("movePrevious").disabled = false;
+    if (aktindex == 0){
+        document.getElementById("movePrevious").disabled = true;
+    }
+
+    document.getElementById("moveNext").disabled = false;
+    if (aktindex == (ROIInfo.length-1)){
+        document.getElementById("moveNext").disabled = true;
+    }  
+    
+    document.getElementById("lockAR").checked = lockAR;
+       
+    document.getElementById("name").value = ROIInfo[aktindex]["name"];
+    document.getElementById("refx").value = ROIInfo[aktindex]["x"];
+    document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
+    document.getElementById("refdx").value = ROIInfo[aktindex]["dx"];  
+    document.getElementById("refdy").value = ROIInfo[aktindex]["dy"];  
+    rect.startX = ROIInfo[aktindex]["x"];
+    rect.startY = ROIInfo[aktindex]["y"];
+    rect.w = ROIInfo[aktindex]["dx"];
+    rect.h = ROIInfo[aktindex]["dy"];
     draw();      
 }
 
 function ParseIni(_basepath) {
-    loadConfigJS(_basepath);
-    ParseReference();
-    UpdateReference();
+    loadConfig(_basepath);
+    ParseConfig();
+    ROIInfo = getROIInfo("[Analog]");
+
+    UpdateROIs();
 }
 			
-function dataURLtoBlob(dataurl) {
-    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
-        u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], {type:mime});
-}			
-			
-		function SaveReference()
-		{
-
-		if (confirm("Are you sure you want to update \"reference.jpg\"?")) {
-			var xhttp = new XMLHttpRequest();
-			
-			/* first delete the old firmware */	
-			xhttp.onreadystatechange = function() {
-				if (xhttp.readyState == 4) {
-					if (xhttp.status == 200) {
-						/* keine Reaktion, damit sich das Dokument nicht ändert */
-					} else if (xhttp.status == 0) {
-						alert("Server closed the connection abruptly!");
-						location.reload()
-					} else {
-						alert(xhttp.status + " Error!\n" + xhttp.responseText);
-						location.reload()
-					}
-				}
-			};
-			xhttp.open("POST", basepath + "/delete/config/reference.jpg", false);
-			xhttp.send();
-			/* ----------------------------- */
-
-
-			xhttp.onreadystatechange = function() {
-				if (xhttp.readyState == 4) {
-					if (xhttp.status == 200) {
-						alert("Update \"reference.jpg\" successfull!\n\nTo make it active you need to reboot.")
-						document.reload();
-					} else if (xhttp.status == 0) {
-						alert("Server closed the connection abruptly!");
-						location.reload()
-					} else {
-						alert(xhttp.status + " Error!\n" + xhttp.responseText);
-						location.reload()
-					}
-				}
-			};
-			
-			upload_path = basepath + "/upload/config/reference.jpg";
-			
-			var canvas = document.getElementById("canvas");
-			
-			var JPEG_QUALITY=0.5;
-			var dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
-			var rtn = dataURLtoBlob(dataUrl);		
-			
-			xhttp.open("POST", upload_path, true);
-			xhttp.send(rtn);
-		}
-		}
     
         function loadCanvas(dataURL) {
                 var canvas = document.getElementById('canvas');
@@ -259,6 +239,7 @@ function dataURLtoBlob(dataurl) {
     
     
         function init() {
+            basepath = getbasepath();
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
@@ -277,48 +258,6 @@ function dataURLtoBlob(dataurl) {
         }  
 
 
-        function CutOutReference(){
-            refInfo["x"] = document.getElementById("refx").value;
-            refInfo["y"] = document.getElementById("refy").value; 
-            refInfo["dx"] = document.getElementById("refdx").value;
-            refInfo["dy"] = document.getElementById("refdy").value;   
-            MakeRefZW(refInfo, basepath); 
-            var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
-            document.getElementById("img_ref_org").src = url;
-            var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-            document.getElementById("img_ref").src = url;
-            draw();
-        }
-
-        function drawGrid(){
-            var canvas = document.getElementById('canvas');
-            var ctx = canvas.getContext('2d');
-            w = canvas.width;
-            h = canvas.height;
-            ctx.save();
-            ctx.strokeStyle = '#00FF00';
-
-            for (i = h/2; i < h; i += 100) 
-                {
-                ctx.moveTo(0, i);
-                ctx.lineTo(w, i);
-                ctx.stroke();
-                ctx.moveTo(0, h-i);
-                ctx.lineTo(w, h-i);
-                ctx.stroke();
-                }
-            for (i = w/2; i < w; i += 100) 
-                {
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, h);
-                ctx.stroke();
-                ctx.moveTo(w-i, 0);
-                ctx.lineTo(w-i, h);
-                ctx.stroke();                }
-//            ctx.restore();
-        }
-
-
         function draw() {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
@@ -330,7 +269,11 @@ function dataURLtoBlob(dataurl) {
         var y0 = parseInt(rect.startY) - parseInt(lw/2);
         var dx = parseInt(rect.w) + parseInt(lw);
         var dy = parseInt(rect.h) + parseInt(lw);
-        context.strokeRect(x0, y0, dx, dy);           
+        context.strokeRect(x0, y0, dx, dy);    
+        ROIInfo[aktindex]["x"] = rect.startX;       
+        ROIInfo[aktindex]["y"] = rect.startY;       
+        ROIInfo[aktindex]["dx"] = rect.w;       
+        ROIInfo[aktindex]["dy"] = rect.h;       
     }
 
     function getCoords(elem) { // crossbrowser version
@@ -374,8 +317,15 @@ function dataURLtoBlob(dataurl) {
     function mouseMove(e) {
         if (drag) {
             zw = getCoords(this)        
-            rect.w = (e.pageX - zw.left) - rect.startX;
-            rect.h = (e.pageY - zw.top) - rect.startY ;
+
+
+            if (lockAR) {
+                rect.h = (e.pageY - zw.top) - rect.startY;
+                rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);            }
+            else {
+                rect.w = (e.pageX - zw.left) - rect.startX;
+                rect.h = (e.pageY - zw.top) - rect.startY;
+            }
             document.getElementById("refdx").value = rect.w;
             document.getElementById("refdy").value = rect.h;
             draw();
@@ -404,6 +354,26 @@ function dataURLtoBlob(dataurl) {
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
+            if (lockAR) {
+                rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);
+                document.getElementById("refdx").value = rect.w;
+            }
+
+            rect.startX = document.getElementById("refx").value;
+            rect.startY = document.getElementById("refy").value; 
+            draw();            
+        }
+    }
+
+    function valuemanualchangeddx(){
+        if (!drag) {
+            rect.w = document.getElementById("refdx").value;
+            rect.h = document.getElementById("refdy").value;
+            if (lockAR) {
+                rect.h = Math.round(rect.w / ROIInfo[aktindex]["ar"]);
+                document.getElementById("refdy").value = rect.h;
+            }
+
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
             draw();            

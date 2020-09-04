@@ -91,6 +91,32 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
 }
 
 
+string ClassFlowDigit::getHTMLSingleStep(string host)
+{
+    string result, zw;
+    std::vector<HTMLInfo*> htmlinfo;
+
+    result = "<p>Found ROIs: </p> <p><img src=\"" + host + "/img_tmp/alg_roi.jpg\"></p>\n";
+    result = result + "Digital Counter: <p> ";
+
+    htmlinfo = GetHTMLInfo();
+    for (int i = 0; i < htmlinfo.size(); ++i)
+    {
+        if (htmlinfo[i]->val == 10)
+            zw = "NaN";
+        else
+        {
+            zw = to_string((int) htmlinfo[i]->val);
+        }
+        result = result + "<img src=\"" + host + "/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+        delete htmlinfo[i];
+    }
+    htmlinfo.clear();    
+
+    return result;
+}
+
+
 bool ClassFlowDigit::doFlow(string time)
 {
     doAlignAndCut(time);

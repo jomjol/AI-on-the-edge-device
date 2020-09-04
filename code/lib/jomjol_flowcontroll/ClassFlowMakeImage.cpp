@@ -120,6 +120,12 @@ void ClassFlowMakeImage::CopyFile(string input, string output)
     printf("Copy done\n");
 }
 
+string ClassFlowMakeImage::getHTMLSingleStep(string host)
+{
+    string result;
+    result = "Raw Image: <br>\n<img src=\"" + host + "/img_tmp/raw.jpg\">\n";
+    return result;
+}
 
 bool ClassFlowMakeImage::doFlow(string zwtime)
 {

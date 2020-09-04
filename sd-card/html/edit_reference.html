@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Make refernce</title>
+</head>
+
+<body>
+    <h3>Create Reference out of Raw Image</h3>
+    <div style="padding-left: 30px">
+        <table>
+            <tr>
+                <td>
+                    <input type="button" value="Show acutual Reference" onclick="showReference()">          
+                </td>
+                <td>
+                    <input type="button" value="Create new Reference" onclick="loadRawImage()">          
+                </td>
+            </tr>
+            <tr>
+                <td>
+
+                    <table>
+                        <tr>
+                            <td>
+                                Pre-rotate Angle
+                            </td>
+                            <td>
+                                <input type="number" id="prerotateangle" name="prerotateangle" value=0 min="-360" max="360" onchange="drawRotated()">°
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Fine Alignment
+                            </td>
+                            <td>
+                                <input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">°
+                            </td>
+                        </tr>
+                    </table> 
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <canvas id="canvas"></canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="button" value="Update Reference Image" onclick="SaveReference()">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script type="text/javascript" src="./gethost.js"></script> 
+    <script type="text/javascript" src="./readconfig.js"></script>  
+
+    <script language="JavaScript">
+        var canvas = document.getElementById('canvas'),
+            ctx = canvas.getContext('2d'),
+            imageObj = new Image()
+            basepath = "http://192.168.178.26";   
+            
+        function loadRawImage(){
+            url = basepath + "/fileserver/img_tmp/raw.jpg";
+            document.getElementById("finerotate").value = 0;
+            document.getElementById("prerotateangle").value = getPreRotate();
+            document.getElementById("finerotate").disabled = false;
+            document.getElementById("prerotateangle").disabled = false;  
+//            document.getElementById("ButtonRotate").disabled = false;  
+            drawRotated();          
+        }    
+
+        function showReference(){
+            url = basepath + "/fileserver/config/reference.jpg";
+            document.getElementById("finerotate").value = 0;
+            document.getElementById("prerotateangle").value = 0;
+            document.getElementById("finerotate").disabled = true;
+            document.getElementById("prerotateangle").disabled = true;  
+//            document.getElementById("ButtonRotate").disabled = true;                                    
+            loadCanvas(url);
+            ParseConfig();
+            drawRotated();
+        }
+            
+        function dataURLtoBlob(dataurl) {
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }			
+                
+        function SaveReference(){
+            if (confirm("Are you sure you want to update the reference image?")) {
+                setPreRotate(document.getElementById("prerotateangle").value);
+                UpdateConfigFile(basepath);
+                var canvas = document.getElementById("canvas");
+                var okay = SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
+                if (okay) {
+                    alert("Update \"reference.jpg\" successfull!")
+                }
+                else {
+                    alert("Error on update \"reference.jpg\"!")
+                }
+            }
+        }
+
+        function loadCanvas(dataURL) {
+                var canvas = document.getElementById('canvas');
+                var context = canvas.getContext('2d');
+
+                imageObj.onload = function() {
+                    canvas.width = this.width;
+                    canvas.height = this.height;
+                    drawRotated();
+                };
+
+                imageObj.src = dataURL;
+            }
+
+
+        function getCoords(elem) { // crossbrowser version
+            var box = elem.getBoundingClientRect();
+            var body = document.body;
+            var docEl = document.documentElement;
+            var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+            var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+            var clientTop = docEl.clientTop || body.clientTop || 0;
+            var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+            var top  = box.top +  scrollTop - clientTop;
+            var left = box.left + scrollLeft - clientLeft;
+            return { top: Math.round(top), left: Math.round(left) };
+        }
+
+        function init() {
+            canvas.addEventListener('mousemove', mouseMove, false);    
+            basepath = getbasepath();  
+            loadConfig(basepath); 
+            showReference(); 
+        }
+
+        function drawRotated(){
+            finerot= parseFloat(document.getElementById("finerotate").value);
+            prerot = parseFloat(document.getElementById("prerotateangle").value);
+            if (finerot == 1) {
+                prerot+=1
+                finerot = 0
+            }
+            if (finerot == -1) {
+                prerot-=1
+                finerot = 0
+            }
+            degrees = finerot + prerot;
+            document.getElementById("finerotate").value =  finerot;
+            document.getElementById("prerotateangle").value =  prerot;
+
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+
+            context.clearRect(0,0,imageObj.width,imageObj.height);
+            context.save();
+            context.translate(imageObj.width/2,imageObj.height/2);
+            context.rotate(degrees*Math.PI/180);
+            context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
+            context.restore();
+            drawGrid();
+        }
+
+        function drawGrid(){
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            w = canvas.width;
+            h = canvas.height;
+            ctx.save();
+            ctx.strokeStyle = '#00FF00';
+
+            for (i = h/2; i < h; i += 100) 
+                {
+                ctx.moveTo(0, i);
+                ctx.lineTo(w, i);
+                ctx.stroke();
+                ctx.moveTo(0, h-i);
+                ctx.lineTo(w, h-i);
+                ctx.stroke();
+                }
+            for (i = w/2; i < w; i += 100) 
+                {
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, h);
+                ctx.stroke();
+                ctx.moveTo(w-i, 0);
+                ctx.lineTo(w-i, h);
+                ctx.stroke();                }
+            ctx.restore();
+        }
+
+        function mouseMove(e) {
+            drawRotated();
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+
+            zw = getCoords(this);
+            x = e.pageX - zw.left;
+            y = e.pageY - zw.top;
+            
+            context.lineWidth = 2;
+            context.strokeStyle = "#00FF00";
+            context.beginPath(); 
+            context.moveTo(0,y);
+            context.lineTo(canvas.width, y);
+            context.moveTo(x, 0);
+            context.lineTo(x, canvas.height);
+            context.stroke();            
+        }
+
+
+        init();
+    </script>
+
+</body>
+</html>

@@ -233,7 +233,7 @@ httpd_handle_t start_webserver(void)
     httpd_config_t config = { };
 
     config.task_priority      = tskIDLE_PRIORITY+5;
-    config.stack_size         = 16384;
+    config.stack_size         = 16384;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
     config.core_id            = tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;

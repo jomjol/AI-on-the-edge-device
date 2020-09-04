@@ -25,6 +25,7 @@ public:
     ClassFlowAnalog(std::vector<ClassFlow*>* lfc);
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
+    string getHTMLSingleStep(string host);
     string getReadout();    
 
     bool doNeuralNetwork(string time); 

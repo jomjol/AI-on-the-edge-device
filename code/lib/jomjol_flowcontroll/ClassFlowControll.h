@@ -21,6 +21,7 @@ protected:
 	bool AutoStart;
 	float AutoIntervall;
 	void SetInitialParameter(void);	
+	std::string aktstatus;
 
 
 public:
@@ -31,7 +32,11 @@ public:
 	string GetPrevalue();	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 
+	std::string doSingleStep(std::string _stepname, std::string _host);
+
 	bool isAutoStart(long &_intervall);
+
+	std::string getActStatus();
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	

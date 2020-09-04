@@ -113,6 +113,31 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
 }
 
 
+string ClassFlowAnalog::getHTMLSingleStep(string host)
+{
+    string result, zw;
+    std::vector<HTMLInfo*> htmlinfo;
+
+    result = "<p>Found ROIs: </p> <p><img src=\"" + host + "/img_tmp/alg_roi.jpg\"></p>\n";
+    result = result + "Analog Pointers: <p> ";
+
+    htmlinfo = GetHTMLInfo();
+    for (int i = 0; i < htmlinfo.size(); ++i)
+    {
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(1) << htmlinfo[i]->val;
+        zw = stream.str();
+
+        result = result + "<img src=\"" + host + "/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+        delete htmlinfo[i];
+    }
+    htmlinfo.clear();         
+
+    return result;
+}
+
+
+
 bool ClassFlowAnalog::doFlow(string time)
 {
     doAlignAndCut(time);

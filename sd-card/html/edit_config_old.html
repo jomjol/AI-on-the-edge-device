@@ -9,20 +9,24 @@
         </td>
     </tr>
     <tr>
-        <td><button onclick="saveTextAsFile()">Update Config.ini</button></td>		
+        <td><button onclick="saveTextAsFile()">Update Config.ini</button></td>
     </tr>
 </table>
-
-<script type="text/javascript" src="./readconfig.js"></script>  
  
 <script type="text/javascript">
 
+function loadConfig() {
+      var xhr = new XMLHttpRequest();
+           xhr.onload = function () {
+//		   alert(this.responseText);
+		   document.getElementById("inputTextToSave").value = this.responseText;
+           };
+	 url = '/fileserver/config/config.ini';
+     xhr.open('GET', url);
+     xhr.send();
+	 }
 
-function LoadConfigNeu() {
-	loadConfigJS();
-	document.getElementById("inputTextToSave").value = getConfig();
-	}
-
+ 
 function saveTextAsFile()
 {
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
@@ -70,7 +74,7 @@ function saveTextAsFile()
 	}
 }
  
-LoadConfigNeu();
+loadConfig();
  
 </script>
  

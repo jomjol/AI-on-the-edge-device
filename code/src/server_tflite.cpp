@@ -196,21 +196,6 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
         htmlinfo.clear();         
 
-     
-/*
-        for i in range(len(resultdigital)):
-            if resultdigital[i] == 'NaN':
-                zw = 'NaN'
-            else:
-                zw = str(int(resultdigital[i]))
-            txt += '<img src=/image_tmp/'+  str(resultcut[1][i][0]) + '.jpg></img>' + zw
-        txt = txt + '<p>'
-        if self.AnalogReadOutEnabled:
-            txt = txt + 'Analog Meter: <p>'
-            for i in range(len(resultanalog)):
-                txt += '<img src=/image_tmp/'+  str(resultcut[0][i][0]) + '.jpg></img>' + "{:.1f}".format(resultanalog[i])
-            txt = txt + '<p>'
-*/
     }   
 
   
@@ -232,7 +217,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
     string zw;
     bool _rawValue = false;
 
-    printf("handler_editflow uri:\n"); printf(req->uri); printf("\n");
+    printf("handler_editflow uri: "); printf(req->uri); printf("\n");
 
     char _query[200];
     char _valuechar[30];
@@ -242,7 +227,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
     {
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-            printf("task is found"); printf(_valuechar); printf("\n"); 
+            printf("task is found: %s\n", _valuechar); 
             _task = string(_valuechar);
         }
     }  
@@ -332,6 +317,56 @@ esp_err_t handler_editflow(httpd_req_t *req)
         zw = "CutImage Done";
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     }
+
+    if (_task.compare("test_take") == 0)
+    {
+        std::string _host = "";
+        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
+            _host = std::string(_valuechar);
+        }
+//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
+//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+        std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    } 
+
+
+    if (_task.compare("test_align") == 0)
+    {
+        std::string _host = "";
+        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
+            _host = std::string(_valuechar);
+        }
+//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
+
+//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+        std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    }  
+    if (_task.compare("test_analog") == 0)
+    {
+        std::string _host = "";
+        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
+            _host = std::string(_valuechar);
+        }
+//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
+//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+        std::string zw = tfliteflow.doSingleStep("[Analog]", _host);
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    }  
+    if (_task.compare("test_digits") == 0)
+    {
+        std::string _host = "";
+        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
+            _host = std::string(_valuechar);
+        }
+//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
+
+//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+        std::string zw = tfliteflow.doSingleStep("[Digits]", _host);
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    } 
+
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   

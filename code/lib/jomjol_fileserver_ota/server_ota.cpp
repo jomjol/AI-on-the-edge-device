@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 
 #include "server_tflite.h"
+#include "server_file.h"
 
 #include "ClassLogFile.h"
 
@@ -301,14 +302,23 @@ void CheckOTAUpdate(void)
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_ota_update");    
-    char _query[100];
+    char _query[200];
     char _filename[30];
+    char _valuechar[30];    
     std::string fn = "/sdcard/firmware/";
     bool _file_del = false;
+    std::string _task;
 
-    if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
+    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
         printf("Query: "); printf(_query); printf("\n");
+        
+        if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
+        {
+            printf("task is found"); printf(_valuechar); printf("\n"); 
+            _task = std::string(_valuechar);
+        }
+
         if (httpd_query_key_value(_query, "file", _filename, 30) == ESP_OK)
         {
             fn.append(_filename);
@@ -322,6 +332,20 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         }
 
     };
+
+    if (_task.compare("unziphtml") == 0)
+    {
+        std::string in, out, zw;
+
+        in = "/sdcard/firmware/html.zip";
+        out = "/sdcard/html/";
+
+        unzip(in, out);
+        zw = "Unzip html Done";
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+    }
+
+
 
     if (_file_del)
     {

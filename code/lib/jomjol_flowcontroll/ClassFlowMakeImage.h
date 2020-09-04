@@ -35,6 +35,7 @@ public:
     ClassFlowMakeImage(std::vector<ClassFlow*>* lfc);
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
+    string getHTMLSingleStep(string host);
     time_t getTimeImageTaken();
     string name(){return "ClassFlowMakeImage";};
 };

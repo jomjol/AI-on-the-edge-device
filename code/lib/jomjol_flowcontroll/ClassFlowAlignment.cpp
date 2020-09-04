@@ -60,6 +60,17 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 }
 
+string ClassFlowAlignment::getHTMLSingleStep(string host)
+{
+    string result;
+
+    result =          "<p>Rotated Image: </p> <p><img src=\"" + host + "/img_tmp/rot.jpg\"></p>\n";
+    result = result + "<p>Found Alignment: </p> <p><img src=\"" + host + "/img_tmp/rot_roi.jpg\"></p>\n";
+    result = result + "<p>Aligned Image: </p> <p><img src=\"" + host + "/img_tmp/alg.jpg\"></p>\n";
+    return result;
+}
+
+
 bool ClassFlowAlignment::doFlow(string time)
 {
     string input = namerawimage;
