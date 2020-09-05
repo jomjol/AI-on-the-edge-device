@@ -21,6 +21,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### 1.0.1 (2020-09-05)
 
+* preValue.ini Bug corrected
 * minor bug correction
 
 ##### 1.0.0 (2020-09-04)
