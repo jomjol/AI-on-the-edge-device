@@ -19,6 +19,10 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 * currently identical to 1.0.0
 * work in progress version for testing of new features
 
+##### 1.0.1 (2020-09-05)
+
+* minor bug correction
+
 ##### 1.0.0 (2020-09-04)
 
 * **First usable version** - compatible to previous project (https://github.com/jomjol/water-meter-system-complete)
