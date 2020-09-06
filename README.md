@@ -14,10 +14,10 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ## Change log
 
-##### Rolling - based on 1.0.0 (2020-09-04)
+##### 1.0.2 (2020-09-06)
 
-* currently identical to 1.0.0
-* work in progress version for testing of new features
+* Bug in configuration of analog ROIs corrected
+* minor bug correction
 
 ##### 1.0.1 (2020-09-05)
 

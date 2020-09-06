@@ -260,6 +260,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     }
 
     if (isdigit)
+        ReturnRawValue = digit;
+    if (isdigit && isanalog)
+        ReturnRawValue = ReturnRawValue + ".";
+    if (isanalog)
+        ReturnRawValue = ReturnRawValue + analog;
+
+    if (isdigit)
     {
         int lastanalog = -1;
         if (isanalog)
@@ -272,8 +279,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zw = zw + ".";
     if (isanalog)
         zw = zw + analog;
-
-    ReturnRawValue = zw;
 
     Value = std::stof(zw);
 
