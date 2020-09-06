@@ -11,8 +11,28 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/edit_reference.jpg" width="600"> 
 
-
 ## Change log
+
+
+
+------
+
+### Known Issues
+
+* Parts of the web page only works correctly in **Firefox**!
+  With **Chrome** or **Edge** not all parts (especially the configuration) is **not full functional**.
+* spontaneous reboot, especially in case of intensive web server access
+
+------
+
+
+
+##### 1.1.0 (2020-09-06)
+
+* Implementation of "delete complete directory"
+  **Attention: beside the `firmware.bin`, also the content of `/html` needs to be updated!**
+
+
 
 ##### 1.0.2 (2020-09-06)
 
@@ -37,12 +57,6 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 #### [Full Changelog](Changelog.md)
-
-
-
-## Known Issues
-
-* spontaneous reboot, especially in case of intensive web server access
 
 
 

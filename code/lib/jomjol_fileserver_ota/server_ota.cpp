@@ -338,11 +338,13 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         std::string in, out, zw;
 
         in = "/sdcard/firmware/html.zip";
-        out = "/sdcard/html/";
+        out = "/sdcard/html2/";
 
         unzip(in, out);
-        zw = "Unzip html Done";
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+        zw = "HTML Update Successfull!<br><br>No reboot necessary";
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
     }
 
 

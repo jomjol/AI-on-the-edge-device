@@ -119,32 +119,25 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
     /* Send HTML file header */
     httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>");
 
-    /* Get handle to embedded file upload script */
-    extern const unsigned char upload_script_start[] asm("_binary_upload_script_html_start");
-    extern const unsigned char upload_script_end[]   asm("_binary_upload_script_html_end");
-    const size_t upload_script_size = (upload_script_end - upload_script_start);
-
-    /* Add file upload form and script which on execution sends a POST request to /upload */
-    httpd_resp_send_chunk(req, (const char *)upload_script_start, upload_script_size);
-
-
 /////////////////////////////////////////////////
-/*
-    FILE *fd = fopen("/sdcard/html/file_server_upload_script.html", "r");
+
+    FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
     char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
     size_t chunksize;
     do {
         chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
-        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
+//        printf("Chunksize %d\n", chunksize);
+        if (chunksize > 0){
+            if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
             fclose(fd);
             ESP_LOGE(TAG, "File sending failed!");
             return ESP_FAIL;
+            }
         }
     } while (chunksize != 0);
     fclose(fd);
-    ESP_LOGI(TAG, "File sending complete");
-    httpd_resp_send_chunk(req, NULL, 0);
-*/
+//    ESP_LOGI(TAG, "File sending complete");
+
 ///////////////////////////////
 
 
@@ -152,7 +145,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
     httpd_resp_sendstr_chunk(req,
         "<table class=\"fixed\" border=\"1\">"
         "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
-        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Delete</th></tr></thead>"
+        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Delete<br><button id=\"deleteall\" type=\"button\" onclick=\"deleteall()\">DELETE ALL!</button></th></tr></thead>"
         "<tbody>");
 
     /* Iterate over all files / folders and fetch their names and sizes */
@@ -434,51 +427,100 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     struct stat file_stat;
 
 
-    /* Skip leading "/delete" from URI to get filename */
-    /* Note sizeof() counts NULL termination hence the -1 */
-    const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
-                                             req->uri  + sizeof("/delete") - 1, sizeof(filepath));
-    if (!filename) {
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
-        return ESP_FAIL;
+//////////////////////////////////////////////////////////////
+    char _query[200];
+    char _filename[30];
+    char _valuechar[30];    
+    std::string fn = "/sdcard/firmware/";
+    std::string _task;
+    std::string directory;
+    std::string zw; 
+
+    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
+    {
+        printf("Query: "); printf(_query); printf("\n");
+        
+        if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
+        {
+            printf("task is found: "); printf(_valuechar); printf("\n"); 
+            _task = std::string(_valuechar);
+        }
     }
 
-    /* Filename cannot have a trailing '/' */
-    if (filename[strlen(filename) - 1] == '/') {
-        ESP_LOGE(TAG, "Invalid filename : %s", filename);
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Invalid filename");
-        return ESP_FAIL;
+    if (_task.compare("deldircontent") == 0)
+    {
+        /* Skip leading "/delete" from URI to get filename */
+        /* Note sizeof() counts NULL termination hence the -1 */
+        const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
+                                                req->uri  + sizeof("/delete") - 1, sizeof(filepath));
+        if (!filename) {
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
+            return ESP_FAIL;
+        }
+        zw = std::string(filename);
+        zw = zw.substr(0, zw.length()-1);
+        zw = "/sdcard" + zw;
+        printf("Directory to delete: %s\n", zw.c_str());
+
+        delete_all_in_directory(zw);
+        directory = std::string(filepath);
+        printf("Location after delete directory content: %s\n", directory.c_str());
     }
+    else
+    {
+        /* Skip leading "/delete" from URI to get filename */
+        /* Note sizeof() counts NULL termination hence the -1 */
+        const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
+                                                req->uri  + sizeof("/delete") - 1, sizeof(filepath));
+        if (!filename) {
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
+            return ESP_FAIL;
+        }
 
-    if (stat(filepath, &file_stat) == -1) {
-        ESP_LOGE(TAG, "File does not exist : %s", filename);
-        /* Respond with 400 Bad Request */
-        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "File does not exist");
-        return ESP_FAIL;
+        /* Filename cannot have a trailing '/' */
+        if (filename[strlen(filename) - 1] == '/') {
+            ESP_LOGE(TAG, "Invalid filename : %s", filename);
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Invalid filename");
+            return ESP_FAIL;
+        }
+
+        if (stat(filepath, &file_stat) == -1) {
+            ESP_LOGE(TAG, "File does not exist : %s", filename);
+            /* Respond with 400 Bad Request */
+            httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "File does not exist");
+            return ESP_FAIL;
+        }
+
+        ESP_LOGI(TAG, "Deleting file : %s", filename);
+        /* Delete file */
+        unlink(filepath);
+
+        directory = std::string(filepath);
+        size_t zw = directory.find("/");
+        size_t found = zw;
+        while (zw != std::string::npos)
+        {
+            zw = directory.find("/", found+1);  
+            if (zw != std::string::npos)
+                found = zw;
+        }
+
+        int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
+        printf("Directory: %s, start_fn: %d, found: %d\n", directory.c_str(), start_fn, found);
+        directory = directory.substr(start_fn, found - start_fn + 1);
+        printf("Directory danach: %s\n", directory.c_str());    
+
+        directory = "/fileserver" + directory;
+        printf("Directory danach: %s\n", directory.c_str());   
     }
+    
 
-    ESP_LOGI(TAG, "Deleting file : %s", filename);
-    /* Delete file */
-    unlink(filepath);
 
-    std::string directory = std::string(filepath);
-	size_t zw = directory.find("/");
-	size_t found = zw;
-	while (zw != std::string::npos)
-	{
-		zw = directory.find("/", found+1);  
-		if (zw != std::string::npos)
-			found = zw;
-	}
 
-    int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-    printf("Directory: %s, start_fn: %d, found: %d\n", directory.c_str(), start_fn, found);
-	directory = directory.substr(start_fn, found - start_fn + 1);
-    printf("Directory danach: %s\n", directory.c_str());    
 
-    directory = "/fileserver" + directory;
-    printf("Directory danach: %s\n", directory.c_str());   
+//////////////////////////////////////////////////////////////
 
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
@@ -502,7 +544,7 @@ void delete_all_in_directory(std::string _directory)
     /* Iterate over all files / folders and fetch their names and sizes */
     while ((entry = readdir(dir)) != NULL) {
         if (!(entry->d_type == DT_DIR)){
-            filename = _directory + std::string(entry->d_name);
+            filename = _directory + "/" + std::string(entry->d_name);
             ESP_LOGI(TAG, "Deleting file : %s", filename.c_str());
             /* Delete file */
             unlink(filename.c_str());    
@@ -524,6 +566,8 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
 //    static const char* s_Test_archive_filename = "testhtml.zip";
 
     printf("miniz.c version: %s\n", MZ_VERSION);
+    printf("Zipfile: %s\n", _in_zip_file.c_str());
+    printf("Target Dir: %s\n", _target_directory.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
