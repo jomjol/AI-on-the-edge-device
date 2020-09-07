@@ -25,12 +25,14 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ------
 
+**General remark:** beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
-##### 1.1.1 (2020-09-07)
+
+##### 1.1.2 (2020-09-07)
 
 * Improved update page for the web server (`/html` can be updated via a zip-file, which is provided in `/firmware/html.zip`)
-  **Attention: beside the `firmware.bin`, also the content of `/html` needs to be updated!**
+* Improved Chrome support
 
 ##### 1.1.0 (2020-09-06)
 

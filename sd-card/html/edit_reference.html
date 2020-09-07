@@ -49,7 +49,7 @@
             </tr>
             <tr>
                 <td>
-                    <input type="button" value="Update Reference Image" onclick="SaveReference()">
+                    <input type="button" id="updatereferenceimage" value="Update Reference Image" onclick="SaveReference()">
                 </td>
             </tr>
         </table>
@@ -70,6 +70,7 @@
             document.getElementById("prerotateangle").value = getPreRotate();
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
+            document.getElementById("updatereferenceimage").disabled = false;
 //            document.getElementById("ButtonRotate").disabled = false;
             loadCanvas(url);  
             drawRotated();          
@@ -80,7 +81,8 @@
             document.getElementById("finerotate").value = 0;
             document.getElementById("prerotateangle").value = 0;
             document.getElementById("finerotate").disabled = true;
-            document.getElementById("prerotateangle").disabled = true;  
+            document.getElementById("prerotateangle").disabled = true; 
+            document.getElementById("updatereferenceimage").disabled = true;
 //            document.getElementById("ButtonRotate").disabled = true;                                    
             loadCanvas(url);
             ParseConfig();
@@ -101,8 +103,10 @@
                 setPreRotate(document.getElementById("prerotateangle").value);
                 UpdateConfigFile(basepath);
                 var canvas = document.getElementById("canvas");
+                drawRotated(false);
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
                 showReference();
+                UpdatePage();
             }
         }
 
@@ -140,7 +144,7 @@
             showReference(); 
         }
 
-        function drawRotated(){
+        function drawRotated(_grid = true){
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
             if (finerot == 1) {
@@ -164,7 +168,10 @@
             context.rotate(degrees*Math.PI/180);
             context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
             context.restore();
-            drawGrid();
+            if (_grid == true){
+                drawGrid();
+            }
+
         }
 
         function drawGrid(){

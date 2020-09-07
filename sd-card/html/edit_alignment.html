@@ -75,7 +75,7 @@
                                                 <img id="img_ref" src = "/img_tmp/ref_zw.jpg">
                                             </td>
                                             <td>
-                                                <input type="button" value="Enhance Contrast" onclick="EnhanceContrast()">
+                                                <input type="button" id="enhancecontrast" value="Enhance Contrast" onclick="EnhanceContrast()">
                                             </td>                                        
                                         </tr>   
                                     </table>
@@ -119,7 +119,6 @@ function SaveToConfig(){
     refInfo["dx"] = document.getElementById("refdx").value;
     refInfo["dy"] = document.getElementById("refdy").value;   
     UpdateConfig(refInfo, aktindex, enhanceCon, basepath); 
-//    location.reload();
 }
 
 function EnhanceContrast(){
@@ -159,6 +158,7 @@ function UpdateReference(){
     document.getElementById("refy").value = refInfo["y"];  
     rect.startX = document.getElementById("refx").value;
     rect.startY = document.getElementById("refy").value; 
+    document.getElementById("enhancecontrast").disabled = true;
     draw();      
 }
 
@@ -177,58 +177,6 @@ function dataURLtoBlob(dataurl) {
     return new Blob([u8arr], {type:mime});
 }			
 			
-		function SaveReference()
-		{
-
-		if (confirm("Are you sure you want to update \"reference.jpg\"?")) {
-			var xhttp = new XMLHttpRequest();
-			
-			/* first delete the old firmware */	
-			xhttp.onreadystatechange = function() {
-				if (xhttp.readyState == 4) {
-					if (xhttp.status == 200) {
-						/* keine Reaktion, damit sich das Dokument nicht ändert */
-					} else if (xhttp.status == 0) {
-						alert("Server closed the connection abruptly!");
-						location.reload()
-					} else {
-						alert(xhttp.status + " Error!\n" + xhttp.responseText);
-						location.reload()
-					}
-				}
-			};
-			xhttp.open("POST", basepath + "/delete/config/reference.jpg", false);
-			xhttp.send();
-			/* ----------------------------- */
-
-
-			xhttp.onreadystatechange = function() {
-				if (xhttp.readyState == 4) {
-					if (xhttp.status == 200) {
-						alert("Update \"reference.jpg\" successfull!\n\nTo make it active you need to reboot.")
-						document.reload();
-					} else if (xhttp.status == 0) {
-						alert("Server closed the connection abruptly!");
-						location.reload()
-					} else {
-						alert(xhttp.status + " Error!\n" + xhttp.responseText);
-						location.reload()
-					}
-				}
-			};
-			
-			upload_path = basepath + "/upload/config/reference.jpg";
-			
-			var canvas = document.getElementById("canvas");
-			
-			var JPEG_QUALITY=0.5;
-			var dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
-			var rtn = dataURLtoBlob(dataUrl);		
-			
-			xhttp.open("POST", upload_path, true);
-			xhttp.send(rtn);
-		}
-		}
     
         function loadCanvas(dataURL) {
                 var canvas = document.getElementById('canvas');
@@ -289,6 +237,7 @@ function dataURLtoBlob(dataurl) {
             document.getElementById("img_ref_org").src = url;
             var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
             document.getElementById("img_ref").src = url;
+            document.getElementById("enhancecontrast").disabled = false;
             draw();
         }
 

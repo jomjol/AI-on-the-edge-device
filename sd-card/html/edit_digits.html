@@ -152,9 +152,6 @@ function ChangeSelection(){
 
 function SaveToConfig(){
     SaveROIToConfig(ROIInfo, "[Digits]", basepath);
-//    location.reload();
-//    parent.window.location.reload(true);
-//    window.location = location.href + '?session=' + Math.floor((Math.random() * 1000000) + 1);  
     UpdatePage();  
 }
 
@@ -220,6 +217,7 @@ function ParseIni(_basepath) {
                     canvas.width = this.width;
                     canvas.height = this.height;
                     drawImage();
+                    draw();
                 };
     
                 imageObj.src = dataURL;
@@ -249,6 +247,7 @@ function ParseIni(_basepath) {
             loadCanvas(basepath + "/fileserver/config/reference.jpg");
             ParseIni(basepath);
             drawImage();
+            draw();
         }
         function drawImage(){
             var canvas = document.getElementById('canvas');

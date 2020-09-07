@@ -152,8 +152,7 @@ function ChangeSelection(){
 
 function SaveToConfig(){
     SaveROIToConfig(ROIInfo, "[Analog]", basepath);
-    
-    location.reload();
+    UpdatePage();  
 }
 
 
@@ -218,6 +217,7 @@ function ParseIni(_basepath) {
                     canvas.width = this.width;
                     canvas.height = this.height;
                     drawImage();
+                    draw();
                 };
     
                 imageObj.src = dataURL;
