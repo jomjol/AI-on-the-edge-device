@@ -13,3 +13,9 @@ function getbasepath(){
     }
     return host;
 }
+
+function UpdatePage(){
+    var zw = location.href;
+    zw = zw.substr(0, zw.indexOf("?"));
+    window.location = zw + '?session=' + Math.floor((Math.random() * 1000000) + 1);   
+}

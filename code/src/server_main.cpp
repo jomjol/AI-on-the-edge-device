@@ -105,6 +105,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     char filepath[50];
     struct stat file_stat;
     printf("uri: %s\n", req->uri);
+    int _pos;
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
@@ -120,9 +121,15 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     else
     {
         filetosend = filetosend + "/html" + std::string(req->uri);
+        _pos = filetosend.find("?");
+        if (_pos > -1){
+            filetosend = filetosend.substr(0, _pos);
+        }
     }
+
+    printf("Filename: %s\n", filename);
     
-    printf("File to upload: %s\n", filetosend.c_str());    
+    printf("File requested: %s\n", filetosend.c_str());    
 
     if (!filename) {
         ESP_LOGE(TAG, "Filename is too long");

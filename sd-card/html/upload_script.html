@@ -29,6 +29,8 @@
         </table>
     </td></tr>
 </table>
+
+<script type="text/javascript" src="./gethost.js"></script> 
 <script>
 function setpath() {
     var fileserverpraefix = "/fileserver";
@@ -68,13 +70,13 @@ function deleteall(){
 //                    document.open();
 //                    document.write(xhttp.responseText);
 //                    document.close();
-                    location.reload();
+                    UpdatePage();
                 } else if (xhttp.status == 0) {
                     alert("Server closed the connection abruptly!");
-                    location.reload();
+                    UpdatePage();
                 } else {
 //                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    location.reload();
+                    UpdatePage();
                 }
             }
         };
@@ -119,10 +121,10 @@ function upload() {
                     document.close();
                 } else if (xhttp.status == 0) {
                     alert("Server closed the connection abruptly!");
-                    location.reload()
+                    UpdatePage();
                 } else {
                     alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    location.reload()
+                    UpdatePage();
                 }
             }
         };

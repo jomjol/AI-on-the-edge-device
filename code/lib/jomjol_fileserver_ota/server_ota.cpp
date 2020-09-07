@@ -338,7 +338,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         std::string in, out, zw;
 
         in = "/sdcard/firmware/html.zip";
-        out = "/sdcard/html2/";
+        out = "/sdcard/html/";
+
+        delete_all_in_directory(out);
 
         unzip(in, out);
         zw = "HTML Update Successfull!<br><br>No reboot necessary";

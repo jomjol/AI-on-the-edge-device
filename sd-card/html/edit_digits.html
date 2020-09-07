@@ -152,7 +152,10 @@ function ChangeSelection(){
 
 function SaveToConfig(){
     SaveROIToConfig(ROIInfo, "[Digits]", basepath);
-    location.reload();
+//    location.reload();
+//    parent.window.location.reload(true);
+//    window.location = location.href + '?session=' + Math.floor((Math.random() * 1000000) + 1);  
+    UpdatePage();  
 }
 
 

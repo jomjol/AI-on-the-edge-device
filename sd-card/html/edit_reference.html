@@ -101,13 +101,8 @@
                 setPreRotate(document.getElementById("prerotateangle").value);
                 UpdateConfigFile(basepath);
                 var canvas = document.getElementById("canvas");
-                var okay = SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
-                if (okay) {
-                    alert("Update \"reference.jpg\" successfull!")
-                }
-                else {
-                    alert("Error on update \"reference.jpg\"!")
-                }
+                SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
+                showReference();
             }
         }
 
