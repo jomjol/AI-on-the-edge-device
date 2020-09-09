@@ -31,7 +31,8 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-09)
 
-* tbd
+* Update to new and modern layout (thanks to michaeljoos in iobroker-thread)
+* incorporated "Take Picture" to make new reference image
 * based on v1.1.3 (2020-09-09)
 
 

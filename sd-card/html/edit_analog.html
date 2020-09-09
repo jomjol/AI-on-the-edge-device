@@ -247,7 +247,9 @@ function ParseIni(_basepath) {
             loadCanvas(basepath + "/fileserver/config/reference.jpg");
             ParseIni(basepath);
             drawImage();
+            draw();
         }
+        
         function drawImage(){
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');

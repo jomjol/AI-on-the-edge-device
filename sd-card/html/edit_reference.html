@@ -23,6 +23,11 @@
                     <table>
                         <tr>
                             <td>
+                                <input type="submit" id="take" onclick="doTake()" value="Make new raw image (raw.jpg)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 Pre-rotate Angle
                             </td>
                             <td>
@@ -63,27 +68,43 @@
             ctx = canvas.getContext('2d'),
             imageObj = new Image()
             basepath = "http://192.168.178.26";   
+            isActReference = false;
+
+        function doTake(){
+            var xhttp = new XMLHttpRequest();
+            url = basepath + "/editflow.html?task=test_take";
+            if (basepath.length > 0){
+                url = url + "&host=" + basepath;
+            }
+            xhttp.open("GET", url, false);
+            xhttp.send();
+            loadRawImage();
+        }
             
         function loadRawImage(){
-            url = basepath + "/fileserver/img_tmp/raw.jpg";
+            url = basepath + "/fileserver/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
             document.getElementById("finerotate").value = 0;
             document.getElementById("prerotateangle").value = getPreRotate();
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
             document.getElementById("updatereferenceimage").disabled = false;
+            document.getElementById("take").disabled = false;
 //            document.getElementById("ButtonRotate").disabled = false;
+            isActReference = false;
             loadCanvas(url);  
             drawRotated();          
         }    
 
         function showReference(){
-            url = basepath + "/fileserver/config/reference.jpg";
+            url = basepath + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);;
             document.getElementById("finerotate").value = 0;
             document.getElementById("prerotateangle").value = 0;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("updatereferenceimage").disabled = true;
-//            document.getElementById("ButtonRotate").disabled = true;                                    
+            document.getElementById("take").disabled = true;
+//            document.getElementById("ButtonRotate").disabled = true;  
+            isActReference = true;                                  
             loadCanvas(url);
             ParseConfig();
             drawRotated();
@@ -168,7 +189,7 @@
             context.rotate(degrees*Math.PI/180);
             context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
             context.restore();
-            if (_grid == true){
+            if (_grid == true && !isActReference){
                 drawGrid();
             }
 
