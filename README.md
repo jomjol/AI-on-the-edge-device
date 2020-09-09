@@ -29,6 +29,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
+##### Rolling - (2020-09-09)
+
+* tbd
+* based on v1.1.3 (2020-09-09)
+
+
+
 ##### 1.1.3 (2020-09-09)
 
 * **Bug in configuration of analog ROIs corrected** - correction in v.1.0.2 did not work properly
