@@ -2,74 +2,70 @@
 	<title>jomjol - AI on the edge</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style type="text/css" media="screen">
-		nav > ul {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			display: flex;
-			flex-direction: column;
-		}
-		
-		nav li {
-			margin: 0.5em;
-			padding: 0;
-			font-size: 1.5em;
-			flex: 1 1 0%;
-		}
-		
-		@media (min-width: 45em) {
-			nav > ul {
-				flex-direction: row;
-			}
-			nav li {
-				flex: 1;
-				font-size: 1em;
-			}
-		}
-		
-		nav a {
-			display: block;
-			padding: 0.4em;
-			text-decoration: none;
-			font-weight: bold;
-			text-align: center;
-			border: 1px solid darkblue;
-			border-radius: 10px;
-			box-shadow: 0 5px 10px white inset;
-			color: gold;
-			background-color: darkblue;
-			transition: all .25s ease-in;
-		}
-		
-		nav li[aria-current] a {
-			background-color: firebrick;
-			color: gold;
-		}
-		
-		nav a:focus,
-		nav a:hover,
-		nav li[aria-current] a:focus,
-		nav li[aria-current] a:hover {
-			color: darkblue;
-			background-color: gold;
-		}
-		
+	<style>
 
-		html, body {
-			height:100%;
-			width:100%;
-			margin:0;
-		}
-		.h_iframe iframe {
-			width:98%;
-			height:150%;
-		}
-		.h_iframe {
-			height: 150%;
-			width:98%;
-		}
-	</style>
+	.h_iframe iframe {width:995px;height:760px;}
+	.h_iframe {width:995px;height:760px;}
+
+	h1 {font-size: 2em;}
+	h2 {font-size: 1.5em;}
+	p {font-size: 1em;}
+
+	ul {
+	  list-style-type: none;
+	  margin: 0;
+	  padding: 0;
+	  overflow: hidden;
+	  background-color: #333;
+	  width:1000px;
+	}
+
+	li {
+	  float: left;
+	  font-family: arial;
+	  font-size: 18px;
+	}
+
+	li a, .dropbtn {
+	  display: inline-block;
+	  color: white;
+	  text-align: center;
+	  padding: 14px 16px;
+	  text-decoration: none;
+	}
+
+	li a:hover, .dropdown:hover .dropbtn {
+	  background-color: red;
+	}
+
+	li.dropdown {
+	  display: inline-block;
+	}
+
+	.dropdown-content {
+	  display: none;
+	  position: absolute;
+	  background-color: #f9f9f9;
+	  min-width: 160px;
+	  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	  z-index: 1;
+	  font-family: arial;
+	}
+
+	.dropdown-content a {
+	  color: black;
+	  padding: 12px 16px;
+	  text-decoration: none;
+	  display: block;
+	  text-align: left;
+	}
+
+	.dropdown-content a:hover {background-color: #f1f1f1;}
+
+	.dropdown:hover .dropdown-content {
+	  display: block;
+	}
+	</style>	
 	<script type="text/javascript">
 		//<![CDATA[
 		//]]>
@@ -77,40 +73,32 @@
 	</script>
 </head>
 
-<body>
-	<h1>Configure watermeter</h1>
-	<nav>
-		<ul>
+<body style="font-family: arial">
 
-			 
-			<li><a href="#" onclick="document.getElementById('maincontent').src = 'edit_config.html';">CONFIG.INI direct</a> </li>
-			<li><a href="#">Alignment</a>
-				<ul class="submenu">
-					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a> </li>
-					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a> </li>
-				</ul>
-			</li>
-			<li><a href="#">Regions of interest</a>
-				<ul class="submenu">
-					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a> </li>
-					<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a> </li>
-				</ul>
-			</li>			
+<h1>Configure Watermeter</h1>
 
-			<li><a href="#" onclick="document.getElementById('maincontent').src = 'edit_check.html';">Check</a> </li>			
-			<li aria-current="page"><a href="index.html">Main</a>	
-			</li>	
-		</ul>
-	</nav>
-	
-	<p>
-	
-	<div class="h_iframe">
-		 <iframe name="maincontent" id="maincontent" src="edit_config.html" title="fileserver"></iframe> 
-	</div>
-
-
-
-
-
-</body></html>
+<ul>
+	<li aria-current="page"><a href="index.html">Main Page</a>	
+	<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_config.html';">CONFIG.INI direct</a></li>
+    <li class="dropdown">
+		<a href="javascript:void(0)" class="dropbtn">Alignment</a>
+		<div class="dropdown-content">
+			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a>
+			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a>
+		</div>
+	</li>
+    <li class="dropdown">
+		<a href="javascript:void(0)" class="dropbtn">Regions Of Interest (ROI)</a>
+		<div class="dropdown-content">
+			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a>
+			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a>
+		</div> 
+	</li>		
+	<li><a href="#" onclick="document.getElementById('maincontent').src = 'edit_check.html';">Check</a></li>		
+</ul>
+<p>
+<div class="h_iframe">
+	 <iframe width="1020px" height="650px" name="maincontent" id ="maincontent" src="edit_config.html" title="fileserver"></iframe> 
+</div>
+</body>
+</html>

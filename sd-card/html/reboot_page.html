@@ -9,26 +9,28 @@
 	</script>
 </head>
 
-<body>
+<body style="font-family: arial">
+
+<h2>Do you really want to reboot your system now?</h2>
+
 <table class="fixed" border="0">
 	<tr>
 		<td>
-			<button id="reboot" type="button" onclick="doReboot()">Reboot</button>
+			<button id="reboot" type="button" onclick="doReboot()">Yes, please reboot now</button>
 		</td>
 	</tr>
 </table>
 
 <script>
 function doReboot() {
-	if (confirm("Are you sure you want to reboot the ESP32?")) {
+	// if (confirm("Are you sure you want to reboot the ESP32?")) {
 		var stringota = "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
 		window.location.replace(stringota);
-	}
+	// }
 }
 </script>
-
 
 </body></html>
