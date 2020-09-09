@@ -29,8 +29,9 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### 1.1.2 (2020-09-07)
+##### 1.1.3 (2020-09-09)
 
+* **Bug in configuration of analog ROIs corrected** - correction in v.1.0.2 did not work properly
 * Improved update page for the web server (`/html` can be updated via a zip-file, which is provided in `/firmware/html.zip`)
 * Improved Chrome support
 

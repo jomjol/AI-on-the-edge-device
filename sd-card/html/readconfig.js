@@ -137,8 +137,8 @@ function SaveROIToConfig(_ROIInfo, _typeROI, _basepath){
 
      var linewrite = 0;
      for (i = 0; i < _ROIInfo.length; ++i){
-          if (i < digit.length){
-               linewrite = digit[i]["pos_ref"];
+          if (i < targetROI.length){
+               linewrite = targetROI[i]["pos_ref"];
           }
           else {
                linewrite++;
