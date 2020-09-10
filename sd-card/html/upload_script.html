@@ -30,8 +30,10 @@
     </td></tr>
 </table>
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<script>
+<script type="text/javascript" src="./html/gethost.js">
+// Achtung dieses Script wird mit /fileserver aufgerufen, daher muss hier /html/gethost.js verwendet werden!    
+</script>            
+<script language="JavaScript">
 function setpath() {
     var fileserverpraefix = "/fileserver";
     var anz_zeichen_fileserver = fileserverpraefix.length;
@@ -54,37 +56,6 @@ function dirup() {
 	window.location.href = res;	
 }
 
-function deleteall(){
-    var str = window.location.href;
-//    str = str.substring(0, str.length-1);
-//	str = str.substring(10, str.length);
-	str = str.replace("/fileserver/", "/delete/");
-	str = str + "?task=deldircontent";
-	if (confirm("This will delete ALL files in this directory!!!\n\nAre you sure?")) {
-		alert(str);
-	
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4) {
-                if (xhttp.status == 200) {
-//                    document.open();
-//                    document.write(xhttp.responseText);
-//                    document.close();
-                    UpdatePage();
-                } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
-                    UpdatePage();
-                } else {
-//                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    UpdatePage();
-                }
-            }
-        };
-        xhttp.open("POST", str, true);
-        xhttp.send();
-
-	}
-}
 
 function upload() {
     var filePath = document.getElementById("filepath").value;
@@ -121,10 +92,10 @@ function upload() {
                     document.close();
                 } else if (xhttp.status == 0) {
                     alert("Server closed the connection abruptly!");
-                    UpdatePage();
+                    UpdatePage(false);
                 } else {
                     alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    UpdatePage();
+                    UpdatePage(false);
                 }
             }
         };

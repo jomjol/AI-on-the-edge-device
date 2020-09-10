@@ -1,3 +1,7 @@
+function readconfig_Version(){
+     return "1.0.0 - 20200910";
+ }
+
 var config_gesamt;
 var config_split;
 var ref = new Array(2);

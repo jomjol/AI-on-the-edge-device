@@ -114,8 +114,6 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
     unsigned int h = image.height();
     unsigned char red, green, blue;
 
-//    printf("Image: %s size: %d x %d\n", _fn.c_str(), w, h);
-
     input_i = 0;
     float* input_data_ptr = (interpreter->input(0))->data.f;
 
@@ -141,6 +139,24 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
 
 void CTfLiteClass::MakeAllocate()
 {
+/*    
+  this->micro_op_resolver.AddBuiltin(
+                                tflite::BuiltinOperator_RESHAPE,
+                                tflite::ops::micro::Register_RESHAPE());
+  this->micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
+                               tflite::ops::micro::Register_CONV_2D());
+  this->micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
+                               tflite::ops::micro::Register_FULLY_CONNECTED());
+  this->micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
+                               tflite::ops::micro::Register_SOFTMAX());
+  this->micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
+                               tflite::ops::micro::Register_DEPTHWISE_CONV_2D());
+
+
+    this->interpreter = new tflite::MicroInterpreter(this->model, this->micro_op_resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
+*/
+
+
     static tflite::ops::micro::AllOpsResolver resolver;
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 
@@ -151,7 +167,7 @@ void CTfLiteClass::MakeAllocate()
     return;
   }
 
-//    printf("Allocate Done.\n");
+    printf("Allocate Done.\n");
 }
 
 void CTfLiteClass::GetInputTensorSize(){
@@ -200,11 +216,8 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
 void CTfLiteClass::LoadModel(std::string _fn){
 
-#ifdef SUPRESS_TFLITE_ERRORS
-    this->error_reporter = new tflite::OwnMicroErrorReporter;
-#else
+
     this->error_reporter = new tflite::MicroErrorReporter;
-#endif
 
     unsigned char *rd;
     rd = this->ReadFileToCharArray(_fn.c_str());
@@ -213,7 +226,7 @@ void CTfLiteClass::LoadModel(std::string _fn){
     this->model = tflite::GetModel(rd);
     free(rd);
     TFLITE_MINIMAL_CHECK(model != nullptr); 
-//    printf("tfile Loaded.\n");  
+    printf("tfile Loaded.\n");  
 
 }
 
@@ -221,26 +234,21 @@ void CTfLiteClass::LoadModel(std::string _fn){
 
 CTfLiteClass::CTfLiteClass()
 {
+//    this->accessSD = _accessSD;
     this->model = nullptr;
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
     this->kTensorArenaSize = 600 * 1024;
-    this->tensor_arena = new uint8_t[kTensorArenaSize]; 
+    this->tensor_arena = new uint8_t[kTensorArenaSize];    
+
+//      micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
+//                               tflite::ops::micro::Register_CONV_2D());
 }
 
 CTfLiteClass::~CTfLiteClass()
 {
   delete this->tensor_arena;
 }        
-
-
-namespace tflite {
-
-  int OwnMicroErrorReporter::Report(const char* format, va_list args) {
-    return 0;
-  }
-
-}  // namespace tflite
 
 

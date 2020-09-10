@@ -1,4 +1,8 @@
 
+function gethost_Version(){
+    return "1.0.0 - 20200910";
+}
+
 function getbasepath(){
     var host = window.location.hostname;
     if (host == "127.0.0.1")
@@ -14,8 +18,13 @@ function getbasepath(){
     return host;
 }
 
-function UpdatePage(){
+function UpdatePage(_dosession = true){
     var zw = location.href;
     zw = zw.substr(0, zw.indexOf("?"));
-    window.location = zw + '?session=' + Math.floor((Math.random() * 1000000) + 1);   
+    if (_dosession) {
+        window.location = zw + '?session=' + Math.floor((Math.random() * 1000000) + 1); 
+    }
+    else {
+        window.location = zw; 
+    }
 }

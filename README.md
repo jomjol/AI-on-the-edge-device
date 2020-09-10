@@ -31,6 +31,8 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-10)
 
+* Optimization of "DELETE ALL" - Autoreload of directory after delete, protection of wlan.ini
+* Internal Optimization (removal of unnessary error messages, restructure CTfLiteClass)
 * additional parameter in `wasserzahler.html?noerror=true`  to suppress an potential error message in case of consitency check (is equal to `ErrorMessage` = False in `config.ini`)
 * update ROI-configurator, in case of no ROIs defined
 
