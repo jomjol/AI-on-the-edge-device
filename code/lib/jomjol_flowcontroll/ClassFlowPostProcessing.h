@@ -22,6 +22,7 @@ protected:
     float Value;
     string ReturnValue;
     string ReturnRawValue;
+    string ReturnValueNoError;
 
     bool LoadPreValue(void);
 
@@ -34,7 +35,7 @@ public:
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getReadout();
-    string getReadoutParam(bool _rawValue);
+    string getReadoutParam(bool _rawValue, bool _noerror);
     void SavePreValue(float value, string time = "");
     string GetPreValue();
 

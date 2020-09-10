@@ -157,10 +157,10 @@ bool ClassFlowControll::doFlow(string time)
     return result;
 }
 
-string ClassFlowControll::getReadout(bool _rawvalue = false)
+string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false)
 {
     if (flowpostprocessing)
-        return flowpostprocessing->getReadoutParam(_rawvalue);
+        return flowpostprocessing->getReadoutParam(_rawvalue, _noerror);
 
     string zw = "";
     string result = "";

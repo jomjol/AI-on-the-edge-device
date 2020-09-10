@@ -154,6 +154,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
                             std::stringstream stream;
                             stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
                             ReturnValue = stream.str();
+                            ReturnValueNoError = ReturnValue;
                         }
                     }
                 }
@@ -304,6 +305,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zwvalue = stream.str();
     }
 
+    ReturnValueNoError = zwvalue;
     ReturnValue = zwvalue;
     if (ErrorMessage && (error.length() > 0))
         ReturnValue = ReturnValue + "\t" + error;
@@ -319,10 +321,12 @@ string ClassFlowPostProcessing::getReadout()
     return ReturnValue;
 }
 
-string ClassFlowPostProcessing::getReadoutParam(bool _rawValue)
+string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror)
 {
     if (_rawValue)
         return ReturnRawValue;
+    if (_noerror)
+        return ReturnValueNoError;
     return ReturnValue;
 }
 

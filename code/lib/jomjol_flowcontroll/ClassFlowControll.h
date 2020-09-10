@@ -27,7 +27,7 @@ protected:
 public:
 	void InitFlow(std::string config);
 	bool doFlow(string time);
-	string getReadout(bool _rawvalue);
+	string getReadout(bool _rawvalue, bool _noerror);
 	string UpdatePrevalue(std::string _newvalue);
 	string GetPrevalue();	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	

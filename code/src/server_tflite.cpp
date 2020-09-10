@@ -131,6 +131,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_wasserzaehler");    
     bool _rawValue = false;
+    bool _noerror = false;
     string zw;
 
     printf("handler_wasserzaehler uri:\n"); printf(req->uri); printf("\n");
@@ -146,9 +147,14 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             printf("rawvalue is found"); printf(_size); printf("\n"); 
             _rawValue = true;
         }
+        if (httpd_query_key_value(_query, "noerror", _size, 10) == ESP_OK)
+        {
+            printf("noerror is found"); printf(_size); printf("\n"); 
+            _noerror = true;
+        }        
     }  
 
-    zw = tfliteflow.getReadout(_rawValue);
+    zw = tfliteflow.getReadout(_rawValue, _noerror);
     if (zw.length() > 0)
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
