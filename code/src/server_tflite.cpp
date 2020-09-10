@@ -58,7 +58,6 @@ void doInit(void)
 
 bool doflow(void)
 {
-    int i;
     std::string zw_time = gettimestring("%Y%m%d-%H%M%S");
     printf("doflow - start %s\n", zw_time.c_str());
     flowisrunning = true;
@@ -131,9 +130,8 @@ esp_err_t handler_doflow(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_wasserzaehler");    
-    const char* resp_str;
-    string zw;
     bool _rawValue = false;
+    string zw;
 
     printf("handler_wasserzaehler uri:\n"); printf(req->uri); printf("\n");
 
@@ -213,9 +211,6 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 esp_err_t handler_editflow(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_editflow");    
-    const char* resp_str;
-    string zw;
-    bool _rawValue = false;
 
     printf("handler_editflow uri: "); printf(req->uri); printf("\n");
 

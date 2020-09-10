@@ -23,8 +23,8 @@
                             <table>
                                     <tr>
                                         <td>
-                                            <input type="submit" name="newROI" onclick="newROI()" value="New ROI (after current)">
-                                            <input type="submit" name="deleteROI" onclick="deleteROI()" value="Delete ROI">
+                                            <input type="submit" id= "newROI" name="newROI" onclick="newROI()" value="New ROI (after current)">
+                                            <input type="submit" id= "deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI">
                                         </td>
                                     </tr>
                                 
@@ -68,7 +68,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="submit" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini">
+                                            <input type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini">
                                         </td>                                        
                                     </tr>
                             </table>
@@ -159,6 +159,12 @@ function SaveToConfig(){
 function UpdateROIs(){
     if (ROIInfo.length == 0){
         alert("There are no ROIs defined.\nPlease first define minimum one ROI in the config.ini by hand.\n");
+        document.getElementById("newROI").disabled = true;
+        document.getElementById("deleteROI").disabled = true;
+        document.getElementById("index").disabled = true;
+        document.getElementById("saveroi").disabled = true;
+        document.getElementById("moveNext").disabled = true;
+        document.getElementById("movePrevious").disabled = true;
         return;
     }
 

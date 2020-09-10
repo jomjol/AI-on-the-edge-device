@@ -29,7 +29,11 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-09)
+##### Rolling - (2020-09-10)
+
+* update ROI-configurator, in case of no ROIs defined
+
+2020-09-10
 
 * Update to new and modern layout (thanks to michaeljoos in iobroker-thread)
 * incorporated "Take Picture" to make new reference image
