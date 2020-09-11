@@ -374,6 +374,10 @@ CImageBasis::CImageBasis(std::string _image)
     //    printf("w %d, h %d, b %d, c %d", this->width, this->height, this->bpp, this->channels);
 }
 
+bool CImageBasis::ImageOkay(){
+    return rgb_image != NULL;
+}
+
 CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
 {
     this->rgb_image = _rgb_image;

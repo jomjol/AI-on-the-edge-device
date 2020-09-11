@@ -3,6 +3,7 @@
 #include "ClassLogFile.h"
 #include "time_sntp.h"
 #include "Helper.h"
+#include "server_ota.h"
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     bool found = false;
@@ -144,13 +145,29 @@ bool ClassFlowControll::doFlow(string time)
 {
     bool result = true;
     std::string zw_time;
+    int repeat = 0;
+
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%Y%m%d-%H%M%S");
         aktstatus = zw_time + ": " + FlowControll[i]->name();
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
         LogFile.WriteToFile(zw);
-        result = result && FlowControll[i]->doFlow(time);
+        if (!FlowControll[i]->doFlow(time)){
+            repeat++;
+            LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
+            i = i-2;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            result = false;
+            if (repeat > 5) {
+                LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
+                doReboot();
+                // Schritt wurde 5x wiederholt --> reboot
+            }
+        }
+        else
+        {
+            result = true;
+        }
     }
     zw_time = gettimestring("%Y%m%d-%H%M%S");    
     aktstatus = zw_time + ": Flow is done";

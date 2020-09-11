@@ -1,5 +1,7 @@
 #include "ClassFlowAlignment.h"
 
+#include "ClassLogFile.h"
+
 ClassFlowAlignment::ClassFlowAlignment()
 {
     initalrotate = 0;
@@ -83,11 +85,22 @@ bool ClassFlowAlignment::doFlow(string time)
     output = FormatFileName(output);
     output2 = FormatFileName(output2);
 
-    CRotate *rt;
 
     if (initalrotate != 0)
     {
+        CRotate *rt;
         rt = new CRotate(input);
+        if (!rt->ImageOkay()){
+            LogFile.WriteToFile("ClassFlowAlignment::doFlow CRotate raw.jpg not okay!");
+            delete rt;
+            LogFile.WriteToFile("ClassFlowAlignment::doFlow 1x reload.");
+            rt = new CRotate(input);
+            if (!rt->ImageOkay()){
+                LogFile.WriteToFile("ClassFlowAlignment::doFlow Reload auch nicht erfolgreich!");
+                delete rt;
+                return false;
+            }
+        }
         rt->Rotate(this->initalrotate);
         rt->SaveToFile(output);
         delete rt;

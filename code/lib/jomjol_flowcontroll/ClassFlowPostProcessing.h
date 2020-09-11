@@ -18,14 +18,13 @@ protected:
     bool checkDigitIncreaseConsistency;
 
     string FilePreValue;
-    float PreValue;
-    float Value;
-    string ReturnValue;
-    string ReturnRawValue;
-    string ReturnValueNoError;
+    float PreValue;             // letzter Wert, der gut ausgelesen wurde
+    float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
+    string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
+    string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
+    string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
 
     bool LoadPreValue(void);
-
 
     string ErsetzteN(string, int lastvalueanalog);
 

@@ -31,6 +31,8 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-11)
 
+* Improved handling of PreValue
+* Improved error handling for automated processflow (reduce spontaneous reboot - see Issues)
 * Support of spaces in WLan SSID or password
 
 2020-09-10

@@ -56,6 +56,25 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     difference /= 60;
     if (difference > PreValueAgeStartup)
         return false;
+
+    Value = PreValue;
+    ReturnValue = to_string(Value);
+    ReturnValueNoError = ReturnValue; 
+
+    // falls es Analog gibt, dann die Anzahl der Nachkommastellen feststellen und entsprechend runden:   
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
+        {
+            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
+            ReturnValue = stream.str();
+            ReturnValueNoError = ReturnValue;
+        }
+    }
+
+    
     return true;
 }
 
@@ -143,21 +162,6 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 PreValueUse = true;
                 PreValueOkay = LoadPreValue();
-                if (PreValueOkay)
-                {
-                    Value = PreValue;
-                    for (int i = 0; i < ListFlowControll->size(); ++i)
-                    {
-                        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
-                        {
-                            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-                            std::stringstream stream;
-                            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-                            ReturnValue = stream.str();
-                            ReturnValueNoError = ReturnValue;
-                        }
-                    }
-                }
             }
         }
         if ((zerlegt[0] == "CheckDigitIncreaseConsistency") && (zerlegt.size() > 1))
@@ -235,17 +239,17 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     //    isdigit = true; digit = "12N";
     //    isanalog = true; analog = "456";
 
+    if (isdigit)
+        ReturnRawValue = digit;
+    if (isdigit && isanalog)
+        ReturnRawValue = ReturnRawValue + ".";
+    if (isanalog)
+        ReturnRawValue = ReturnRawValue + analog;    
 
     if (!PreValueUse || !PreValueOkay)
     {
-        if (isdigit)
-            ReturnValue = digit;
-        if (isdigit && isanalog)
-            ReturnValue = ReturnValue + ".";
-        if (isanalog)
-            ReturnValue = ReturnValue + analog;
-
-        ReturnRawValue = ReturnValue;
+        ReturnValue = ReturnRawValue;
+        ReturnValueNoError = ReturnRawValue;
 
         if ((findDelimiterPos(ReturnValue, "N") == std::string::npos) && (ReturnValue.length() > 0))
         {
@@ -254,18 +258,12 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 ReturnValue.erase(0, 1);
             }
             Value = std::stof(ReturnValue);
+            ReturnValueNoError = ReturnValue;
+            
             SavePreValue(Value, zwtime);
         }
-
         return true;
     }
-
-    if (isdigit)
-        ReturnRawValue = digit;
-    if (isdigit && isanalog)
-        ReturnRawValue = ReturnRawValue + ".";
-    if (isanalog)
-        ReturnRawValue = ReturnRawValue + analog;
 
     if (isdigit)
     {
@@ -295,14 +293,16 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
         zwvalue = stream.str();
     }
-
-    if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
+    else
     {
-        error = "Rate too high - Returned old value - read value: " + zwvalue;
-        Value = PreValue;
-        stream.str("");
-        stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-        zwvalue = stream.str();
+        if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
+        {
+            error = "Rate too high - Returned old value - read value: " + zwvalue;
+            Value = PreValue;
+            stream.str("");
+            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
+            zwvalue = stream.str();
+        }
     }
 
     ReturnValueNoError = zwvalue;

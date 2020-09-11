@@ -36,6 +36,7 @@ class CImageBasis
         void drawCircle(int x1, int y1, int rad, int r, int g, int b, int thickness = 1);
         void setPixelColor(int x, int y, int r, int g, int b);
         void Contrast(float _contrast);
+        bool ImageOkay();
 
 
         CImageBasis();

@@ -400,18 +400,21 @@ void task_reboot(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+void doReboot(){
+    LogFile.WriteToFile("Reboot - now");
+    KillTFliteTasks();
+    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
+}
+
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
-
     const char* resp_str = "!!! System will restart within 5 sec!!!";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
-    KillTFliteTasks();
-
-    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
+    doReboot();
 
     return ESP_OK;
 }
