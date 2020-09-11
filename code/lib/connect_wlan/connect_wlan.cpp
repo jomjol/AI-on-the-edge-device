@@ -28,10 +28,13 @@ static EventGroupHandle_t wifi_event_group;
 #define BLINK_GPIO GPIO_NUM_33
 
 
-std::vector<string> ZerlegeZeile(std::string input)
+std::vector<string> ZerlegeZeile(std::string input, std::string _delimiter = "")
 {
 	std::vector<string> Output;
 	std::string delimiter = " =,";
+    if (_delimiter.length() > 0){
+        delimiter = _delimiter;
+    }
 
 	input = trim(input, delimiter);
 	size_t pos = findDelimiterPos(input, delimiter);
@@ -140,11 +143,21 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
     while ((line.size() > 0) || !(feof(pFile)))
     {
 //        printf("%s", line.c_str());
-        zerlegt = ZerlegeZeile(line);
-        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID"))
+        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt[0] = trim(zerlegt[0], " ");
+        zerlegt[1] = trim(zerlegt[1], " ");        
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
             _ssid = zerlegt[1];
-        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "PASSWORD"))
+            if ((_ssid[0] == '"') && (_ssid[_ssid.length()-1] == '"')){
+                _ssid = _ssid.substr(1, _ssid.length()-2);
+            }
+        }
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "PASSWORD")){
             _passphrase = zerlegt[1];
+            if ((_passphrase[0] == '"') && (_passphrase[_passphrase.length()-1] == '"')){
+                _passphrase = _passphrase.substr(1, _passphrase.length()-2);
+            }
+        }
 
         if (fgets(zw, 1024, pFile) == NULL)
         {
