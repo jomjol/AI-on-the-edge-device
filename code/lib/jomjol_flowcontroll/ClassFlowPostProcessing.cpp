@@ -12,7 +12,21 @@
 
 string ClassFlowPostProcessing::GetPreValue()
 {
-    return to_string(PreValue);
+    std::string result;
+    result = to_string(PreValue);
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
+        {
+            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(AnzahlNachkomma) << PreValue;
+            result = stream.str();
+        }
+    }
+
+    return result;
 }
 
 bool ClassFlowPostProcessing::LoadPreValue(void)

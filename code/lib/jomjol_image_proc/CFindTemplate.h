@@ -70,6 +70,7 @@ class CRotate: public CImageBasis
         void Rotate(float _angle);
         void Rotate(float _angle, int _centerx, int _centery);
         void Translate(int _dx, int _dy);
+        void Mirror();
 };
 
 

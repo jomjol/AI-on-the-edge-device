@@ -397,7 +397,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     }           
 
     if (strlen(_size) == 0)
-        zw = "Actual PreValue: " + tfliteflow.GetPrevalue();
+        zw = tfliteflow.GetPrevalue();
     else
         zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size);
     

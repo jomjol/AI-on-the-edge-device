@@ -28,6 +28,17 @@
                         </tr>
                         <tr>
                             <td>
+                                <label for="mirror">Mirror image</label>
+                            </td>
+                            <td>
+                                <input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()">
+                            </td>
+                        </tr>
+                        
+                        
+
+                        <tr>
+                            <td>
                                 Pre-rotate Angle
                             </td>
                             <td>
@@ -85,10 +96,13 @@
             url = basepath + "/fileserver/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
             document.getElementById("finerotate").value = 0;
             document.getElementById("prerotateangle").value = getPreRotate();
+            document.getElementById("mirror").checked = getMirror();
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
             document.getElementById("updatereferenceimage").disabled = false;
             document.getElementById("take").disabled = false;
+            document.getElementById("mirror").disabled = false;
+
 //            document.getElementById("ButtonRotate").disabled = false;
             isActReference = false;
             loadCanvas(url);  
@@ -103,7 +117,8 @@
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("updatereferenceimage").disabled = true;
             document.getElementById("take").disabled = true;
-//            document.getElementById("ButtonRotate").disabled = true;  
+            document.getElementById("mirror").disabled = true;
+
             isActReference = true;                                  
             loadCanvas(url);
             ParseConfig();
@@ -122,7 +137,8 @@
         function SaveReference(){
             if (confirm("Are you sure you want to update the reference image?")) {
                 setPreRotate(document.getElementById("prerotateangle").value);
-                UpdateConfigFile(basepath);
+                setMirror(document.getElementById("mirror").checked);
+                UpdateConfigFileReferenceChange(basepath);
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
@@ -162,12 +178,15 @@
             canvas.addEventListener('mousemove', mouseMove, false);    
             basepath = getbasepath();  
             loadConfig(basepath); 
+            ParseConfig();
             showReference(); 
         }
 
         function drawRotated(_grid = true){
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
+            mirror = document.getElementById("mirror").checked;
+
             if (finerot == 1) {
                 prerot+=1
                 finerot = 0
@@ -185,9 +204,19 @@
 
             context.clearRect(0,0,imageObj.width,imageObj.height);
             context.save();
-            context.translate(imageObj.width/2,imageObj.height/2);
-            context.rotate(degrees*Math.PI/180);
-            context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
+            
+            if (mirror) {
+                context.scale(-1, 1);
+                context.translate(-imageObj.width/2,imageObj.height/2);
+                context.rotate(-degrees*Math.PI/180);
+                context.drawImage(imageObj, imageObj.width/2,-imageObj.height/2, -imageObj.width, imageObj.height);
+            }
+            else {
+                context.translate(imageObj.width/2,imageObj.height/2);
+                context.rotate(degrees*Math.PI/180);
+                context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
+            }
+            
             context.restore();
             if (_grid == true && !isActReference){
                 drawGrid();

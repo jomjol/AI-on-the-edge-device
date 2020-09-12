@@ -38,7 +38,13 @@ function ParseConfigAlignment(_aktline){
 
      while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
           var linesplit = ZerlegeZeile(config_split[_aktline]);
-          if ((linesplit[0] == "InitalRotate") && (linesplit.length > 1))
+          if ((linesplit[0].toUpperCase() == "INITIALMIRROR") && (linesplit.length > 1))
+          {
+              initalrotate["mirror"] = linesplit[1].toUpperCase().localeCompare("TRUE") == 0;
+              initalrotate["pos_config_mirror"] = _aktline;
+          }          
+
+          if (((linesplit[0].toUpperCase() == "INITALROTATE") || (linesplit[0].toUpperCase() == "INITIALROTATE"))  && (linesplit.length > 1))
           {
               initalrotate["angle"] = parseInt(linesplit[1]);
               initalrotate["pos_config"] = _aktline;
@@ -131,7 +137,7 @@ function SaveROIToConfig(_ROIInfo, _typeROI, _basepath){
           config_split.push(zw);
           for (var j = config_split.length-2; j > _pos + 1; --j){
                config_split[j] = config_split[j-1];
-           }
+          }
      }
 
      for (i = targetROI.length-1; i > _ROIInfo.length-1; --i){
@@ -159,16 +165,16 @@ function ParseConfig() {
      var aktline = 0;
 
      while (aktline < config_split.length){
-          if (config_split[aktline].trim() == "[Alignment]") {
+          if (config_split[aktline].trim().toUpperCase() == "[ALIGNMENT]") {
                aktline = ParseConfigAlignment(aktline);
                continue;
           }
-          if (config_split[aktline].trim() == "[Digits]") {
+          if (config_split[aktline].trim().toUpperCase() == "[DIGITS]") {
                aktline = ParseConfigDigit(aktline);
                continue;
           }
 
-          if (config_split[aktline].trim() == "[Analog]") {
+          if (config_split[aktline].trim().toUpperCase() == "[ANALOG]") {
                aktline = ParseConfigAnalog(aktline);
                continue;
           }
@@ -185,6 +191,17 @@ function setPreRotate(_prerotate){
      initalrotate["angle"] = _prerotate;
 }
 
+function getMirror(){
+     if (initalrotate.hasOwnProperty("mirror")) {
+          return initalrotate["mirror"];
+     }
+     return false;
+}
+
+function setMirror(_mirror){
+     initalrotate["mirror"] = _mirror;
+}
+
 function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
      var JPEG_QUALITY=0.8;
      var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
@@ -198,7 +215,11 @@ function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
 }
 
 function SaveConfigToServer(_basepath){
-     FileDeleteOnServer("/config/config.ini", _basepath);
+     // leere Zeilen am Ende löschen
+     var zw = config_split.length - 1;
+     while (config_split[zw] == "") {
+          config_split.pop();
+     }
 
      var config_gesamt = "";
      for (var i = 0; i < config_split.length; ++i)
@@ -206,19 +227,59 @@ function SaveConfigToServer(_basepath){
           config_gesamt = config_gesamt + config_split[i] + "\n";
      } 
 
+     FileDeleteOnServer("/config/config.ini", _basepath);
+
      FileSendContent(config_gesamt, "/config/config.ini", _basepath);          
 }
 
-function UpdateConfigFile(_basepath){
+function UpdateConfigFileReferenceChange(_basepath){
      for (var _index = 0; _index < ref.length; ++_index){
           var zeile = ref[_index]["name"] + " " + ref[_index]["x"] + ", " + ref[_index]["y"];
           var _pos = ref[_index]["pos_ref"];
           config_split[_pos] = zeile;          
      }
 
-     zeile = "InitalRotate=" + initalrotate["angle"];
+     zeile = "InitialRotate = " + initalrotate["angle"];
      var _pos = initalrotate["pos_config"];
      config_split[_pos] = zeile;
+
+     var mirror = false;
+     if (initalrotate.hasOwnProperty("mirror")) {
+          mirror = initalrotate["mirror"];
+     }
+     var mirror_pos = -1;
+     if (initalrotate.hasOwnProperty("pos_config_mirror")) {
+          mirror_pos = initalrotate["pos_config_mirror"];
+     }     
+     if (mirror_pos > -1) {
+          if (mirror) {
+               config_split[mirror_pos] = "InitialMirror = True";
+          }
+          else {
+               config_split[mirror_pos] = "InitialMirror = False";
+          }
+     }
+     else {
+          if (mirror) {       // neue Zeile muss an der richtigen Stelle eingefügt werden - hier direct nach [Alignment]
+               var aktline = 0;
+
+               while (aktline < config_split.length){
+                    if (config_split[aktline].trim() == "[Alignment]") {
+                         break;
+                    }
+                    aktline++
+               }
+
+               // fuege neue Zeile in config_split ein
+               var zw = config_split[config_split.length-1];
+               config_split.push(zw);
+               for (var j = config_split.length-2; j > aktline + 1; --j){
+                    config_split[j] = config_split[j-1];
+               }
+
+               config_split[aktline + 1] = "InitialMirror = True"
+          }
+     }
 
      SaveConfigToServer(_basepath);
 }

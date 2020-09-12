@@ -29,17 +29,24 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-11)
+##### Rolling - (2020-09-12)
+
+* Option for mirroring input image
+* Update index.html
+
+2020-09-11
 
 * Improved handling of PreValue
-* Improved error handling for automated processflow (reduce spontaneous reboot - see Issues)
+
+* Improved error handling for automated process flow (reduce spontaneous reboot - see Issues)
+
 * Support of spaces in WLan SSID or password
 
 2020-09-10
 
 * Optimization of "DELETE ALL" - Autoreload of directory after delete, protection of wlan.ini
 
-* Internal Optimization (removal of unnessary error messages, restructure CTfLiteClass)
+* Internal Optimization (removal of unnecessary error messages, restructure CTfLiteClass)
 
 * additional parameter in `wasserzahler.html?noerror=true`  to suppress an potential error message in case of consitency check (is equal to `ErrorMessage` = False in `config.ini`)
 

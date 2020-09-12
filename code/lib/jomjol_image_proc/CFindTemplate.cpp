@@ -44,6 +44,32 @@ void CResizeImage::Resize(int _new_dx, int _new_dy)
     stbi_image_free(odata);
 }
 
+void CRotate::Mirror(){
+    int memsize = this->width * this->height * this->channels;
+    uint8_t* odata = (unsigned char*)GET_MEMORY(memsize);
+
+    int x_source, y_source;
+    stbi_uc* p_target;
+    stbi_uc* p_source;
+
+    for (int x = 0; x < this->width; ++x)
+        for (int y = 0; y < this->height; ++y)
+        {
+            p_target = odata + (this->channels * (y * this->width + x));
+
+            x_source = this->width - x;
+            y_source = y;
+
+            p_source = this->rgb_image + (this->channels * (y_source * this->width + x_source));
+            for (int channels = 0; channels < this->channels; ++channels)
+                p_target[channels] = p_source[channels];
+        }
+
+    //    memcpy(this->rgb_image, odata, memsize);
+    this->memCopy(odata, this->rgb_image, memsize);
+    stbi_image_free(odata);
+}
+
 void CRotate::Rotate(float _angle, int _centerx, int _centery)
 {
     float m[2][3];
