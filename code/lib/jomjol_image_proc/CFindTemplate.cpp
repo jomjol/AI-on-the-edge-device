@@ -44,6 +44,32 @@ void CResizeImage::Resize(int _new_dx, int _new_dy)
     stbi_image_free(odata);
 }
 
+void CRotate::Mirror(){
+    int memsize = this->width * this->height * this->channels;
+    uint8_t* odata = (unsigned char*)GET_MEMORY(memsize);
+
+    int x_source, y_source;
+    stbi_uc* p_target;
+    stbi_uc* p_source;
+
+    for (int x = 0; x < this->width; ++x)
+        for (int y = 0; y < this->height; ++y)
+        {
+            p_target = odata + (this->channels * (y * this->width + x));
+
+            x_source = this->width - x;
+            y_source = y;
+
+            p_source = this->rgb_image + (this->channels * (y_source * this->width + x_source));
+            for (int channels = 0; channels < this->channels; ++channels)
+                p_target[channels] = p_source[channels];
+        }
+
+    //    memcpy(this->rgb_image, odata, memsize);
+    this->memCopy(odata, this->rgb_image, memsize);
+    stbi_image_free(odata);
+}
+
 void CRotate::Rotate(float _angle, int _centerx, int _centery)
 {
     float m[2][3];
@@ -372,6 +398,10 @@ CImageBasis::CImageBasis(std::string _image)
         LogFile.WriteToFile("Image Load failed:" + _image + " FreeHeapSize before: " + to_string(freebefore) + " after: " + to_string(esp_get_free_heap_size()));
     //    printf("CImageBasis after load\n");
     //    printf("w %d, h %d, b %d, c %d", this->width, this->height, this->bpp, this->channels);
+}
+
+bool CImageBasis::ImageOkay(){
+    return rgb_image != NULL;
 }
 
 CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)

@@ -1,11 +1,14 @@
 #include "ClassFlowAlignment.h"
 
+#include "ClassLogFile.h"
+
 ClassFlowAlignment::ClassFlowAlignment()
 {
     initalrotate = 0;
     anz_ref = 0;
     suchex = 40;
     suchey = 40;
+    initialmirror = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
     ListFlowControll = NULL;
 }
@@ -16,6 +19,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
     anz_ref = 0;
     suchex = 40;
     suchey = 40;
+    initialmirror = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";    
     ListFlowControll = lfc;
 }
@@ -36,7 +40,12 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((zerlegt[0] == "InitalRotate") && (zerlegt.size() > 1))
+        if ((zerlegt[0] == "InitialMirror") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                initialmirror = true;
+        }
+        if (((zerlegt[0] == "InitalRotate") || (zerlegt[0] == "InitialRotate")) && (zerlegt.size() > 1))
         {
             this->initalrotate = std::stod(zerlegt[1]);
         }
@@ -78,16 +87,39 @@ bool ClassFlowAlignment::doFlow(string time)
     string output3 = "/sdcard/img_tmp/rot_roi.jpg";
     string output2 = "/sdcard/img_tmp/alg.jpg";
     string output4 = "/sdcard/img_tmp/alg_roi.jpg";
+    string output1 = "/sdcard/img_tmp/mirror.jpg";
 
     input = FormatFileName(input);
     output = FormatFileName(output);
     output2 = FormatFileName(output2);
 
-    CRotate *rt;
+
+    if (initialmirror){
+        CRotate *rt;
+        rt = new CRotate(input);
+        if (!rt->ImageOkay()){
+            LogFile.WriteToFile("ClassFlowAlignment::doFlow CRotate Inital Mirror raw.jpg not okay!");
+            delete rt;
+            return false;
+        }
+        printf("do mirror\n");
+        rt->Mirror();
+        rt->SaveToFile(output1);
+        input = output1;
+        delete rt;
+    }
+
 
     if (initalrotate != 0)
     {
+        CRotate *rt = NULL;
+        printf("Load rotationfile: %s\n", input.c_str());
         rt = new CRotate(input);
+        if (!rt->ImageOkay()){
+            LogFile.WriteToFile("ClassFlowAlignment::doFlow CRotate raw.jpg not okay!");
+            delete rt;
+            return false;
+        }
         rt->Rotate(this->initalrotate);
         rt->SaveToFile(output);
         delete rt;

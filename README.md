@@ -11,28 +11,40 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/edit_reference.jpg" width="600"> 
 
+
+
 ## Change log
-
-
 
 ------
 
 ### Known Issues
 
-* Parts of the web page only works correctly in **Firefox**!
-  With **Chrome** or **Edge** not all parts (especially the configuration) is **not full functional**.
-* spontaneous reboot, especially in case of intensive web server access
+* Parts of the web page only works correctly in **Firefox** and Chrome!
+  With **Edge** not all parts (especially the configuration) are **not full functional**.
+* spontaneous reboot, especially in case of intensive web server access (improved since v2.0.0)
 
 ------
 
-**General remark:** beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
+**General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
 
-##### Rolling - (2020-09-09)
+##### Rolling - (2020-09-12)
 
-* tbd
-* based on v1.1.3 (2020-09-09)
+* based on v2.0.0 (2020-09-12)
+
+  
+
+##### 2.0.0 Layout update  (2020-09-12)
+
+  * Update to **new and modern layout**
+  * Support for Chrome improved
+  * Improved robustness: improved error handling in auto flow reduces spontaneous reboots
+  * File server: Option for "DELETE ALL"
+  * WLan: support of spaces in SSID and password
+  * Reference Image: Option for mirror image, option for image update on the fly
+  * additional parameter in `wasserzaehler.html?noerror=true`  to suppress an potential error message
+  * bug fixing
 
 
 

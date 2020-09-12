@@ -58,7 +58,6 @@ void doInit(void)
 
 bool doflow(void)
 {
-    int i;
     std::string zw_time = gettimestring("%Y%m%d-%H%M%S");
     printf("doflow - start %s\n", zw_time.c_str());
     flowisrunning = true;
@@ -131,9 +130,9 @@ esp_err_t handler_doflow(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_wasserzaehler");    
-    const char* resp_str;
-    string zw;
     bool _rawValue = false;
+    bool _noerror = false;
+    string zw;
 
     printf("handler_wasserzaehler uri:\n"); printf(req->uri); printf("\n");
 
@@ -148,9 +147,14 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             printf("rawvalue is found"); printf(_size); printf("\n"); 
             _rawValue = true;
         }
+        if (httpd_query_key_value(_query, "noerror", _size, 10) == ESP_OK)
+        {
+            printf("noerror is found"); printf(_size); printf("\n"); 
+            _noerror = true;
+        }        
     }  
 
-    zw = tfliteflow.getReadout(_rawValue);
+    zw = tfliteflow.getReadout(_rawValue, _noerror);
     if (zw.length() > 0)
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
@@ -213,9 +217,6 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 esp_err_t handler_editflow(httpd_req_t *req)
 {
     LogFile.WriteToFile("handler_editflow");    
-    const char* resp_str;
-    string zw;
-    bool _rawValue = false;
 
     printf("handler_editflow uri: "); printf(req->uri); printf("\n");
 
@@ -396,7 +397,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     }           
 
     if (strlen(_size) == 0)
-        zw = "Actual PreValue: " + tfliteflow.GetPrevalue();
+        zw = tfliteflow.GetPrevalue();
     else
         zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size);
     

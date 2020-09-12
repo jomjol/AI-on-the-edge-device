@@ -36,6 +36,7 @@ class CImageBasis
         void drawCircle(int x1, int y1, int rad, int r, int g, int b, int thickness = 1);
         void setPixelColor(int x, int y, int r, int g, int b);
         void Contrast(float _contrast);
+        bool ImageOkay();
 
 
         CImageBasis();
@@ -69,6 +70,7 @@ class CRotate: public CImageBasis
         void Rotate(float _angle);
         void Rotate(float _angle, int _centerx, int _centery);
         void Translate(int _dx, int _dy);
+        void Mirror();
 };
 
 

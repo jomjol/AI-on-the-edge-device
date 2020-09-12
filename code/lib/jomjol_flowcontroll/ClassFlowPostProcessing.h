@@ -18,13 +18,13 @@ protected:
     bool checkDigitIncreaseConsistency;
 
     string FilePreValue;
-    float PreValue;
-    float Value;
-    string ReturnValue;
-    string ReturnRawValue;
+    float PreValue;             // letzter Wert, der gut ausgelesen wurde
+    float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
+    string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
+    string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
+    string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
 
     bool LoadPreValue(void);
-
 
     string ErsetzteN(string, int lastvalueanalog);
 
@@ -34,7 +34,7 @@ public:
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getReadout();
-    string getReadoutParam(bool _rawValue);
+    string getReadoutParam(bool _rawValue, bool _noerror);
     void SavePreValue(float value, string time = "");
     string GetPreValue();
 

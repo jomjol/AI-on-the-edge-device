@@ -28,10 +28,13 @@ static EventGroupHandle_t wifi_event_group;
 #define BLINK_GPIO GPIO_NUM_33
 
 
-std::vector<string> ZerlegeZeile(std::string input)
+std::vector<string> ZerlegeZeile(std::string input, std::string _delimiter = "")
 {
 	std::vector<string> Output;
 	std::string delimiter = " =,";
+    if (_delimiter.length() > 0){
+        delimiter = _delimiter;
+    }
 
 	input = trim(input, delimiter);
 	size_t pos = findDelimiterPos(input, delimiter);
@@ -62,11 +65,11 @@ void wifi_connect(){
     ESP_ERROR_CHECK( esp_wifi_connect() );
 }
 
-void blinkstatus(int dauer)
+void blinkstatus(int dauer, int _anzahl)
 {
     gpio_reset_pin(BLINK_GPIO);
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < _anzahl; ++i)
     {
         gpio_set_level(BLINK_GPIO, 0);
         vTaskDelay(dauer / portTICK_PERIOD_MS);
@@ -79,15 +82,15 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     switch(event->event_id) {
     case SYSTEM_EVENT_STA_START:
-        blinkstatus(200);
+        blinkstatus(200, 5);
         wifi_connect();
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
         xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
-        blinkstatus(1000);
+        blinkstatus(1000, 3);
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
-        blinkstatus(200);
+        blinkstatus(200, 5);
         esp_wifi_connect();
         xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
         break;
@@ -140,11 +143,21 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
     while ((line.size() > 0) || !(feof(pFile)))
     {
 //        printf("%s", line.c_str());
-        zerlegt = ZerlegeZeile(line);
-        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID"))
+        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt[0] = trim(zerlegt[0], " ");
+        zerlegt[1] = trim(zerlegt[1], " ");        
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
             _ssid = zerlegt[1];
-        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "PASSWORD"))
+            if ((_ssid[0] == '"') && (_ssid[_ssid.length()-1] == '"')){
+                _ssid = _ssid.substr(1, _ssid.length()-2);
+            }
+        }
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "PASSWORD")){
             _passphrase = zerlegt[1];
+            if ((_passphrase[0] == '"') && (_passphrase[_passphrase.length()-1] == '"')){
+                _passphrase = _passphrase.substr(1, _passphrase.length()-2);
+            }
+        }
 
         if (fgets(zw, 1024, pFile) == NULL)
         {

@@ -140,13 +140,21 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
 
 ///////////////////////////////
 
+    std::string _zw = std::string(dirpath);
+    _zw = _zw.substr(8, _zw.length() - 8);
+    _zw = "/delete/" + _zw + "?task=deldircontent"; 
+
 
     /* Send file-list table definition and column labels */
     httpd_resp_sendstr_chunk(req,
         "<table class=\"fixed\" border=\"1\">"
         "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
-        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Delete<br><button id=\"deleteall\" type=\"button\" onclick=\"deleteall()\">DELETE ALL!</button></th></tr></thead>"
-        "<tbody>");
+        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Delete<br>"
+        "<form method=\"post\" action=\"");
+    httpd_resp_sendstr_chunk(req, _zw.c_str());
+    httpd_resp_sendstr_chunk(req,          
+        "\"><button type=\"submit\">DELETE ALL!</button></form>"
+        "</th></tr></thead><tbody>\n");
 
     /* Iterate over all files / folders and fetch their names and sizes */
     while ((entry = readdir(dir)) != NULL) {
@@ -460,12 +468,19 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         }
         zw = std::string(filename);
         zw = zw.substr(0, zw.length()-1);
+        directory = "/fileserver" + zw + "/";
         zw = "/sdcard" + zw;
         printf("Directory to delete: %s\n", zw.c_str());
 
         delete_all_in_directory(zw);
-        directory = std::string(filepath);
+//        directory = std::string(filepath);
+//        directory = "/fileserver" + directory;
         printf("Location after delete directory content: %s\n", directory.c_str());
+        /* Redirect onto root to see the updated file list */
+//        httpd_resp_set_status(req, "303 See Other");
+//        httpd_resp_set_hdr(req, "Location", directory.c_str());
+//        httpd_resp_sendstr(req, "File deleted successfully");
+//        return ESP_OK;        
     }
     else
     {
@@ -544,10 +559,12 @@ void delete_all_in_directory(std::string _directory)
     /* Iterate over all files / folders and fetch their names and sizes */
     while ((entry = readdir(dir)) != NULL) {
         if (!(entry->d_type == DT_DIR)){
-            filename = _directory + "/" + std::string(entry->d_name);
-            ESP_LOGI(TAG, "Deleting file : %s", filename.c_str());
-            /* Delete file */
-            unlink(filename.c_str());    
+            if (strcmp("wlan.ini", entry->d_name) != 0){                    // auf wlan.ini soll nicht zugegriffen werden !!!
+                filename = _directory + "/" + std::string(entry->d_name);
+                ESP_LOGI(TAG, "Deleting file : %s", filename.c_str());
+                /* Delete file */
+                unlink(filename.c_str());    
+            }
         };
     }
     closedir(dir);
