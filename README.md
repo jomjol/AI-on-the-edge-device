@@ -31,6 +31,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-12)
 
+* Changed WLAN-blinking: **5**-times short = no connection 3-times long = connected
 * Option for mirroring input image
 * Update index.html
 

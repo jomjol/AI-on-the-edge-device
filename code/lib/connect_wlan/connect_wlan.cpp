@@ -65,11 +65,11 @@ void wifi_connect(){
     ESP_ERROR_CHECK( esp_wifi_connect() );
 }
 
-void blinkstatus(int dauer)
+void blinkstatus(int dauer, int _anzahl)
 {
     gpio_reset_pin(BLINK_GPIO);
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < _anzahl; ++i)
     {
         gpio_set_level(BLINK_GPIO, 0);
         vTaskDelay(dauer / portTICK_PERIOD_MS);
@@ -82,15 +82,15 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     switch(event->event_id) {
     case SYSTEM_EVENT_STA_START:
-        blinkstatus(200);
+        blinkstatus(200, 5);
         wifi_connect();
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
         xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
-        blinkstatus(1000);
+        blinkstatus(1000, 3);
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
-        blinkstatus(200);
+        blinkstatus(200, 5);
         esp_wifi_connect();
         xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
         break;
