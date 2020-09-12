@@ -11,53 +11,40 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/edit_reference.jpg" width="600"> 
 
+
+
 ## Change log
-
-
 
 ------
 
 ### Known Issues
 
-* Parts of the web page only works correctly in **Firefox**!
-  With **Chrome** or **Edge** not all parts (especially the configuration) is **not full functional**.
-* spontaneous reboot, especially in case of intensive web server access
+* Parts of the web page only works correctly in **Firefox** and Chrome!
+  With **Edge** not all parts (especially the configuration) are **not full functional**.
+* spontaneous reboot, especially in case of intensive web server access (improved since v2.0.0)
 
 ------
 
-**General remark:** beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
+**General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
 
 ##### Rolling - (2020-09-12)
 
-* Changed WLAN-blinking: **5**-times short = no connection 3-times long = connected
-* Option for mirroring input image
-* Update index.html
+* based on v2.0.0 (2020-09-12)
 
-2020-09-11
+  
 
-* Improved handling of PreValue
+##### 2.0.0 Layout update  (2020-09-12)
 
-* Improved error handling for automated process flow (reduce spontaneous reboot - see Issues)
-
-* Support of spaces in WLan SSID or password
-
-2020-09-10
-
-* Optimization of "DELETE ALL" - Autoreload of directory after delete, protection of wlan.ini
-
-* Internal Optimization (removal of unnecessary error messages, restructure CTfLiteClass)
-
-* additional parameter in `wasserzahler.html?noerror=true`  to suppress an potential error message in case of consitency check (is equal to `ErrorMessage` = False in `config.ini`)
-
-* update ROI-configurator, in case of no ROIs defined
-
-2020-09-09
-
-* Update to new and modern layout (thanks to michaeljoos in iobroker-thread)
-* incorporated "Take Picture" to make new reference image
-* based on v1.1.3 (2020-09-09)
+  * Update to **new and modern layout**
+  * Support for Chrome improved
+  * Improved robustness: improved error handling in auto flow reduces spontaneous reboots
+  * File server: Option for "DELETE ALL"
+  * WLan: support of spaces in SSID and password
+  * Reference Image: Option for mirror image, option for image update on the fly
+  * additional parameter in `wasserzahler.html?noerror=true`  to suppress an potential error message
+  * bug fixing
 
 
 
