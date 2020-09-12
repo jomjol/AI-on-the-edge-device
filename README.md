@@ -43,7 +43,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
   * File server: Option for "DELETE ALL"
   * WLan: support of spaces in SSID and password
   * Reference Image: Option for mirror image, option for image update on the fly
-  * additional parameter in `wasserzahler.html?noerror=true`  to suppress an potential error message
+  * additional parameter in `wasserzaehler.html?noerror=true`  to suppress an potential error message
   * bug fixing
 
 
