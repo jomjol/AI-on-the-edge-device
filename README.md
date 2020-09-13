@@ -29,8 +29,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-12)
+##### Rolling - (2020-09-13)
 
+* Implementation of decimal shift (New Parameter "DecimalShift = 1" in [PostProcessing])
+DecimalShift = 1 --> Result: 123.456 --> 1234.56
+  DecimalShift = -1 --> Result: 12.3456
+  The shift is done at the very first step of merging digital and analog, so all following number already will work on the shifted number.
+  
 * based on v2.0.0 (2020-09-12)
 
   

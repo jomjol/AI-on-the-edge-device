@@ -16,6 +16,7 @@ protected:
     bool ErrorMessage;
     bool PreValueOkay;
     bool checkDigitIncreaseConsistency;
+    int DecimalShift;
 
     string FilePreValue;
     float PreValue;             // letzter Wert, der gut ausgelesen wurde
@@ -25,6 +26,7 @@ protected:
     string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
 
     bool LoadPreValue(void);
+    string ShiftDecimal(string in, int _decShift);
 
     string ErsetzteN(string, int lastvalueanalog);
 

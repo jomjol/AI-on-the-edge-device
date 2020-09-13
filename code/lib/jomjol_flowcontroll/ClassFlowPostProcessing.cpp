@@ -135,6 +135,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing()
     PreValueOkay = false;
     useMaxRateValue = false;
     checkDigitIncreaseConsistency = false;
+    DecimalShift = 0;
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
 }
 
@@ -148,10 +149,12 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     ListFlowControll = NULL;
     PreValueOkay = false;
     useMaxRateValue = false;
-    checkDigitIncreaseConsistency = false;    
+    checkDigitIncreaseConsistency = false;
+    DecimalShift = 0;    
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
 }
+
 
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
@@ -170,40 +173,87 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((zerlegt[0] == "PreValueUse") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
-            if ((zerlegt[1] == "True") || (zerlegt[1] == "true"))
+            DecimalShift = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
             {
                 PreValueUse = true;
                 PreValueOkay = LoadPreValue();
             }
         }
-        if ((zerlegt[0] == "CheckDigitIncreaseConsistency") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 checkDigitIncreaseConsistency = true;
         }        
-        if ((zerlegt[0] == "AllowNegativeRates") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 AllowNegativeRates = true;
         }
-        if ((zerlegt[0] == "ErrorMessage") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "ERRORMESSAGE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 ErrorMessage = true;
         }
-        if ((zerlegt[0] == "PreValueAgeStartup") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
         {
             PreValueAgeStartup = std::stoi(zerlegt[1]);
         }
-        if ((zerlegt[0] == "MaxRateValue") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "MAXRATEVALUE") && (zerlegt.size() > 1))
         {
             useMaxRateValue = true;
             MaxRateValue = std::stof(zerlegt[1]);
         }
     }
     return true;
+}
+
+string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
+
+    if (_decShift == 0){
+        return in;
+    }
+
+    int _pos_dec_org, _pos_dec_neu;
+
+    _pos_dec_org = findDelimiterPos(in, ".");
+    if (_pos_dec_org == std::string::npos) {
+        _pos_dec_org = in.length();
+    }
+    else
+    {
+        in = in.erase(_pos_dec_org, 1);
+    }
+    
+    _pos_dec_neu = _pos_dec_org + _decShift;
+
+    if (_pos_dec_neu <= 0) {        // Komma ist vor der ersten Ziffer
+        for (int i = 0; i > _pos_dec_neu; --i){
+            in = in.insert(0, "0");
+        }
+        in = "0." + in;
+        return in;
+    }
+
+    if (_pos_dec_neu > in.length()){    // Komma soll hinter String (123 --> 1230)
+        for (int i = in.length(); i < _pos_dec_neu; ++i){
+            in = in.insert(in.length(), "0");
+        }  
+        return in;      
+    }
+
+    string zw;
+    zw = in.substr(0, _pos_dec_neu);
+    zw = zw + ".";
+    zw = zw + in.substr(_pos_dec_neu, in.length() - _pos_dec_neu);
+
+    return zw;
 }
 
 bool ClassFlowPostProcessing::doFlow(string zwtime)
@@ -258,7 +308,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (isdigit && isanalog)
         ReturnRawValue = ReturnRawValue + ".";
     if (isanalog)
-        ReturnRawValue = ReturnRawValue + analog;    
+        ReturnRawValue = ReturnRawValue + analog; 
+
+    ReturnRawValue = ShiftDecimal(ReturnRawValue, DecimalShift);   
 
     if (!PreValueUse || !PreValueOkay)
     {
@@ -374,7 +426,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1
     if (checkDigitIncreaseConsistency && lastvalueanalog > -1)
     {
         int zifferIST;
-        int substrakt = 0;
+//        int substrakt = 0;
         bool lastcorrected = false;
         for (int i = input.length() - 1; i >= 0; --i)
         {
