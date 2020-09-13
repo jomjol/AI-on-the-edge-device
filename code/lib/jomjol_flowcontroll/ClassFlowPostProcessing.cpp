@@ -20,9 +20,7 @@ string ClassFlowPostProcessing::GetPreValue()
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
             int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(AnzahlNachkomma) << PreValue;
-            result = stream.str();
+            result =  RundeOutput(PreValue, AnzahlNachkomma + DecimalShift);
         }
     }
 
@@ -81,9 +79,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
             int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-            ReturnValue = stream.str();
+            ReturnValue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
             ReturnValueNoError = ReturnValue;
         }
     }
@@ -346,18 +342,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zw = zw + analog;
 
     Value = std::stof(zw);
-
-    std::stringstream stream;
-    stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-    zwvalue = stream.str();
+    zwvalue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
         error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
-        stream.str("");
-        stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-        zwvalue = stream.str();
+        zwvalue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
     }
     else
     {
@@ -365,9 +356,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             error = "Rate too high - Returned old value - read value: " + zwvalue;
             Value = PreValue;
-            stream.str("");
-            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-            zwvalue = stream.str();
+            zwvalue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
         }
     }
 
@@ -394,6 +383,12 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror)
     if (_noerror)
         return ReturnValueNoError;
     return ReturnValue;
+}
+
+string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
+    return stream.str();  
 }
 
 

@@ -29,6 +29,7 @@ protected:
     string ShiftDecimal(string in, int _decShift);
 
     string ErsetzteN(string, int lastvalueanalog);
+    string RundeOutput(float _in, int _anzNachkomma);
 
 public:
     ClassFlowPostProcessing();

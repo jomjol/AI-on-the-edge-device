@@ -31,6 +31,8 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-13)
 
+* Bug fixing DecimalShift (digits after comma)
+
 * Implementation of decimal shift (New Parameter "DecimalShift = 1" in [PostProcessing])
 DecimalShift = 2 --> Result: 123.456 --> 12345.6
   DecimalShift = -1 --> Result: 123.456 --> 12.3456
