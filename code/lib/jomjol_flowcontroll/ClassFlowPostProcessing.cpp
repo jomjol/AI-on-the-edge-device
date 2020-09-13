@@ -20,7 +20,7 @@ string ClassFlowPostProcessing::GetPreValue()
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
             int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            result =  RundeOutput(PreValue, AnzahlNachkomma + DecimalShift);
+            result =  RundeOutput(PreValue, AnzahlNachkomma - DecimalShift);
         }
     }
 
@@ -79,11 +79,10 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
             int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            ReturnValue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
+            ReturnValue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
             ReturnValueNoError = ReturnValue;
         }
     }
-
     
     return true;
 }
@@ -172,6 +171,9 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(zerlegt[0]) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
             DecimalShift = stoi(zerlegt[1]);
+            if (PreValueUse){
+                PreValueOkay = LoadPreValue();
+            }
         }
 
         if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
@@ -342,13 +344,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zw = zw + analog;
 
     Value = std::stof(zw);
-    zwvalue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
+    zwvalue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
         error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
-        zwvalue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
+        zwvalue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
     }
     else
     {
@@ -356,7 +358,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             error = "Rate too high - Returned old value - read value: " + zwvalue;
             Value = PreValue;
-            zwvalue = RundeOutput(Value, AnzahlNachkomma + DecimalShift);
+            zwvalue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
         }
     }
 
