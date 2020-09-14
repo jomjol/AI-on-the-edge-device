@@ -230,7 +230,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
     if (flowpostprocessing)
     {
         flowpostprocessing->SavePreValue(zw);
-        return _newvalue;    
+        return to_string(zw);    
     }
 
     return std::string();

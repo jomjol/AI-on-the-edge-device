@@ -100,7 +100,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-void initialise_wifi(std::string _ssid, std::string _passphrase)
+void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _hostname)
 {
     ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
     wifi_event_group = xEventGroupCreate();  
@@ -123,10 +123,11 @@ void initialise_wifi(std::string _ssid, std::string _passphrase)
 }
 
 
-void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase)
+void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname)
 {
     string line = "";
     std::vector<string> zerlegt;
+    _hostname = "iciruit";
 
     FILE* pFile;
     fn = FormatFileName(fn);
@@ -145,13 +146,22 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 //        printf("%s", line.c_str());
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
-        zerlegt[1] = trim(zerlegt[1], " ");        
+        zerlegt[1] = trim(zerlegt[1], " "); 
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
+            _hostname = zerlegt[1];
+            if ((_hostname[0] == '"') && (_hostname[_hostname.length()-1] == '"')){
+                _hostname = _hostname.substr(1, _hostname.length()-2);
+            }
+        }
+
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
             _ssid = zerlegt[1];
             if ((_ssid[0] == '"') && (_ssid[_ssid.length()-1] == '"')){
                 _ssid = _ssid.substr(1, _ssid.length()-2);
             }
         }
+
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "PASSWORD")){
             _passphrase = zerlegt[1];
             if ((_passphrase[0] == '"') && (_passphrase[_passphrase.length()-1] == '"')){

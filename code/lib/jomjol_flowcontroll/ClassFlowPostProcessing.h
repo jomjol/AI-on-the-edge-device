@@ -28,7 +28,8 @@ protected:
     bool LoadPreValue(void);
     string ShiftDecimal(string in, int _decShift);
 
-    string ErsetzteN(string, int lastvalueanalog);
+    string ErsetzteN(string);
+    string checkDigitConsistency(string, int _decilamshift, int lastvalueanalog = -1);
     string RundeOutput(float _in, int _anzNachkomma);
 
 public:
