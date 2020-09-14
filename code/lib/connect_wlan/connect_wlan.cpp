@@ -106,13 +106,16 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     wifi_event_group = xEventGroupCreate();  
     ssid = _ssid;
     passphrase = _passphrase;
+    if(_hostname.length() <= 0){
+      _hostname = "watermeter";
+    }
     esp_log_level_set("wifi", ESP_LOG_NONE); // disable wifi driver logging
     tcpip_adapter_init();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_start() );
-    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA ,"icircuit");
+    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , _hostname.c_str());
     if(ret != ESP_OK ){
       ESP_LOGE(MAIN_TAG,"failed to set hostname:%d",ret);  
     }
