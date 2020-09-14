@@ -21,6 +21,7 @@ static const char *MAIN_TAG = "connect_wlan";
 
 std::string ssid;
 std::string passphrase;
+std::string hostname;
 
 static EventGroupHandle_t wifi_event_group;
 
@@ -122,7 +123,8 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
-    printf("IP :  %s\n", ip4addr_ntoa(&ip_info.ip));    
+    printf("IPv4 :  %s\n", ip4addr_ntoa(&ip_info.ip));
+    printf("HostName :  %s\n", _hostname.c_str());
 }
 
 
