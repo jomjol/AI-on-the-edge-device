@@ -110,9 +110,6 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     ssid = _ssid;
     passphrase = _passphrase;
     hostname = _hostname;
-    if(hostname.length() <= 0){
-      hostname = std_hostname;
-    }
     esp_log_level_set("wifi", ESP_LOG_NONE); // disable wifi driver logging
     tcpip_adapter_init();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -161,6 +158,10 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
             if ((_hostname[0] == '"') && (_hostname[_hostname.length()-1] == '"')){
                 _hostname = _hostname.substr(1, _hostname.length()-2);
             }
+	    // Check if Hostname was empty in .ini if yes set to std_hostname
+	    if(_hostname.length() <= 0){
+      		_hostname = std_hostname;
+    	    }
         }
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
