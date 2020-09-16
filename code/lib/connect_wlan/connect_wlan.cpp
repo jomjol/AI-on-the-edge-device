@@ -23,6 +23,8 @@ std::string ssid;
 std::string passphrase;
 std::string hostname;
 
+std::string std_hostname = "watermeter";
+
 static EventGroupHandle_t wifi_event_group;
 
 
@@ -107,16 +109,14 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     wifi_event_group = xEventGroupCreate();  
     ssid = _ssid;
     passphrase = _passphrase;
-    if(_hostname.length() <= 0){
-      _hostname = "watermeter";
-    }
+    hostname = _hostname;
     esp_log_level_set("wifi", ESP_LOG_NONE); // disable wifi driver logging
     tcpip_adapter_init();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_start() );
-    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , _hostname.c_str());
+    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , hostname.c_str());
     if(ret != ESP_OK ){
       ESP_LOGE(MAIN_TAG,"failed to set hostname:%d",ret);  
     }
@@ -124,7 +124,7 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     printf("IPv4 :  %s\n", ip4addr_ntoa(&ip_info.ip));
-    printf("HostName :  %s\n", _hostname.c_str());
+    printf("HostName :  %s\n", hostname.c_str());
 }
 
 
@@ -132,7 +132,7 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 {
     string line = "";
     std::vector<string> zerlegt;
-    _hostname = "iciruit";
+    _hostname = std_hostname;
 
     FILE* pFile;
     fn = FormatFileName(fn);
@@ -158,6 +158,10 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
             if ((_hostname[0] == '"') && (_hostname[_hostname.length()-1] == '"')){
                 _hostname = _hostname.substr(1, _hostname.length()-2);
             }
+	    // Check if Hostname was empty in .ini if yes set to std_hostname
+	    if(_hostname.length() <= 0){
+      		_hostname = std_hostname;
+    	    }
         }
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
