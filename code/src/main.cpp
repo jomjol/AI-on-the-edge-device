@@ -117,7 +117,8 @@ extern "C" void app_main()
 
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname); 
     LogFile.WriteToFile("Startsequence 04");    
-    printf("WLan: %s, %s\n", ssid.c_str(), password.c_str());
+    printf("To use WLan: %s, %s\n", ssid.c_str(), password.c_str());
+    printf("To set Hostename: %s\n", hostname.c_str());
    
     initialise_wifi(ssid, password, hostname);
     LogFile.WriteToFile("Startsequence 05");  
