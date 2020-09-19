@@ -1,75 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <title>Make refernce</title>
+<title>Make Reference</title>
+<meta charset="utf-8"/>
+	
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+input[type=number] {
+	width: 100px;
+	margin-right: 10px;
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+.button {
+	padding: 5px 10px;
+    width: 210px;
+	font-size: 16px;
+}
+
+table {
+	padding: 5px;
+}
+</style>
+
 </head>
 
-<body style="font-family: arial">
-    <h3>Create Reference out of Raw Image</h3>
-    <div style="padding-left: 30px">
-        <table>
-            <tr>
-                <td>
-                    <input type="button" value="Show actual Reference" onclick="showReference()">          
-                </td>
-                <td>
-                    <input type="button" value="Create new Reference" onclick="loadRawImage()">          
-                </td>
-            </tr>
-            <tr>
-                <td>
+<body style="font-family: arial; padding: 0px 10px;">
+    <h2>Create Reference out of Raw Image</h2>
+	
+	<table>
+	  <tr>
+		<td><input class="button" type="button" value="Show Actual Reference" onclick="showReference()"></td>	  
+		<td><input class="button" type="button" value="Create New Reference" onclick="loadRawImage()"></td>
+		<td><input class="button" type="submit" id="take" onclick="doTake()" value="New Raw Image (raw.jpg)"></td>
+	  </tr> 
+	  <tr>
+		<td style="padding-top: 10px"><label for="mirror">Mirror Image:</label></td>
+		<td style="padding-top: 10px"><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+	  </tr>
+	  <tr>
+        <td><label for="mirror">Pre-rotate Angle:</label></td>	  
+		<td><input type="number" id="prerotateangle" name="prerotateangle" value=0 min="-360" max="360" onchange="drawRotated()">Degrees</td>
+	  </tr>
+	  <tr>
+		<td><label for="mirror">Fine Alignment:</label></td>	
+		<td><input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">Degrees</td>
+	  </tr>
+	</table>
 
-                    <table>
-                        <tr>
-                            <td>
-                                <input type="submit" id="take" onclick="doTake()" value="Make new raw image (raw.jpg)">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="mirror">Mirror image</label>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()">
-                            </td>
-                        </tr>
-                        
-                        
+	<table>
+		<tr>			
+			<td><canvas id="canvas"></canvas></td>
+		</tr>			
+		<tr>		
+			<td><input class="button" type="button" id="updatereferenceimage" value="Update Reference Image" onclick="SaveReference()"></td>
+		</tr>
+	</table>
 
-                        <tr>
-                            <td>
-                                Pre-rotate Angle
-                            </td>
-                            <td>
-                                <input type="number" id="prerotateangle" name="prerotateangle" value=0 min="-360" max="360" onchange="drawRotated()">°
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Fine Alignment
-                            </td>
-                            <td>
-                                <input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">°
-                            </td>
-                        </tr>
-                    </table> 
-                </td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>
-                    <canvas id="canvas"></canvas>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="button" id="updatereferenceimage" value="Update Reference Image" onclick="SaveReference()">
-                </td>
-            </tr>
-        </table>
-    </div>
 
     <script type="text/javascript" src="./gethost.js"></script> 
     <script type="text/javascript" src="./readconfig.js"></script>  

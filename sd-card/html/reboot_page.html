@@ -1,22 +1,32 @@
-<html><head>
-	<title>jomjol - AI on the edge</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript">
-		//<![CDATA[
-		//]]>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reboot</title>
+<meta charset="utf-8">
 
-	</script>
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+.button {
+	padding: 10px 20px;
+    width: 211px;
+	font-size: 16px;	
+}
+</style>
+
 </head>
 
-<body style="font-family: arial">
+<body style="font-family: arial; padding: 0px 10px;">
 
-<h2>Do you really want to reboot your system now?</h2>
+<h3>Do you really want to reboot your system now?</h3>
 
 <table class="fixed" border="0">
 	<tr>
 		<td>
-			<button id="reboot" type="button" onclick="doReboot()">Yes, please reboot now</button>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Yes, please reboot</button>
 		</td>
 	</tr>
 </table>
@@ -33,4 +43,5 @@ function doReboot() {
 }
 </script>
 
-</body></html>
+</body>
+</html>
