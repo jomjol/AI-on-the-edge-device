@@ -19,8 +19,8 @@ string ClassFlowPostProcessing::GetPreValue()
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
-            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            result =  RundeOutput(PreValue, AnzahlNachkomma - DecimalShift);
+            int AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            result =  RundeOutput(PreValue, AnzahlAnalog - DecimalShift);
         }
     }
 
@@ -78,8 +78,8 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
-            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            ReturnValue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
+            int AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            ReturnValue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
             ReturnValueNoError = ReturnValue;
         }
     }
@@ -262,7 +262,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     string zwvalue;
     bool isdigit = false;
     bool isanalog = false;
-    int AnzahlNachkomma = 0;
+    int AnzahlAnalog = 0;
     string zw;
     string error = "";
     time_t imagetime = 0;
@@ -282,7 +282,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             isanalog = true;
             analog = (*ListFlowControll)[i]->getReadout();
-            AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
         }
     }
 
@@ -329,6 +329,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         return true;
     }
 
+/*
     if (isdigit)
     {
         int lastanalog = -1;
@@ -342,15 +343,19 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zw = zw + ".";
     if (isanalog)
         zw = zw + analog;
+    zw = ShiftDecimal(zw, DecimalShift);
+*/    
+
+    zw = ErsetzteN(ReturnRawValue);
 
     Value = std::stof(zw);
-    zwvalue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
+    zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
         error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
-        zwvalue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
+        zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
     else
     {
@@ -358,7 +363,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             error = "Rate too high - Returned old value - read value: " + zwvalue;
             Value = PreValue;
-            zwvalue = RundeOutput(Value, AnzahlNachkomma - DecimalShift);
+            zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
         }
     }
 
@@ -394,18 +399,27 @@ string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
 }
 
 
-string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1)
+string ClassFlowPostProcessing::ErsetzteN(string input)
 {
     int posN, posPunkt;
     int pot, ziffer;
     float zw;
 
     posN = findDelimiterPos(input, "N");
-    posPunkt = input.length();
+    posPunkt = findDelimiterPos(input, ".");
+    if (posPunkt == std::string::npos){
+        posPunkt = input.length();
+    }
 
     while (posN != std::string::npos)
     {
-        pot = posPunkt - posN - 1;
+        if (posN < posPunkt) {
+            pot = posPunkt - posN - 1;
+        }
+        else {
+            pot = posPunkt - posN;
+        }
+
         zw = PreValue / pow(10, pot);
         ziffer = ((int) zw) % 10;
         input[posN] = ziffer + 48;
@@ -413,13 +427,11 @@ string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1
         posN = findDelimiterPos(input, "N");
     }
 
-///////////////////////////// TestCode
-/*
-    input = "10";
-    posPunkt = input.length();
-    PreValue = 9.5;
-    lastvalueanalog = 7;
-*/
+    return input;
+}
+
+string ClassFlowPostProcessing::checkDigitConsistency(string input, int _decilamshift, int lastvalueanalog){
+/*    
     if (checkDigitIncreaseConsistency && lastvalueanalog > -1)
     {
         int zifferIST;
@@ -450,7 +462,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1
         
             
         }
-        
     }
+*/
     return input;
 }

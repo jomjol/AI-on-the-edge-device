@@ -29,7 +29,17 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-13)
+##### Rolling - (2020-09-16)
+
+* Impovements in hostname
+
+2020-09-14
+
+* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")` - Parameter is optional
+
+* Bug correction DecimalShift
+
+2020-09-13
 
 * Bug fixing DecimalShift (digits after comma)
 

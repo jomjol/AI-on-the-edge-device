@@ -21,6 +21,9 @@ static const char *MAIN_TAG = "connect_wlan";
 
 std::string ssid;
 std::string passphrase;
+std::string hostname;
+
+std::string std_hostname = "watermeter";
 
 static EventGroupHandle_t wifi_event_group;
 
@@ -100,33 +103,36 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-void initialise_wifi(std::string _ssid, std::string _passphrase)
+void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _hostname)
 {
     ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
     wifi_event_group = xEventGroupCreate();  
     ssid = _ssid;
     passphrase = _passphrase;
+    hostname = _hostname;
     esp_log_level_set("wifi", ESP_LOG_NONE); // disable wifi driver logging
     tcpip_adapter_init();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_start() );
-    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA ,"icircuit");
+    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , hostname.c_str());
     if(ret != ESP_OK ){
       ESP_LOGE(MAIN_TAG,"failed to set hostname:%d",ret);  
     }
     xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
-    printf("IP :  %s\n", ip4addr_ntoa(&ip_info.ip));    
+    printf("IPv4 :  %s\n", ip4addr_ntoa(&ip_info.ip));
+    printf("HostName :  %s\n", hostname.c_str());
 }
 
 
-void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase)
+void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname)
 {
     string line = "";
     std::vector<string> zerlegt;
+    _hostname = std_hostname;
 
     FILE* pFile;
     fn = FormatFileName(fn);
@@ -145,13 +151,26 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 //        printf("%s", line.c_str());
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
-        zerlegt[1] = trim(zerlegt[1], " ");        
+        zerlegt[1] = trim(zerlegt[1], " "); 
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
+            _hostname = zerlegt[1];
+            if ((_hostname[0] == '"') && (_hostname[_hostname.length()-1] == '"')){
+                _hostname = _hostname.substr(1, _hostname.length()-2);
+            }
+	    // Check if Hostname was empty in .ini if yes set to std_hostname
+	    if(_hostname.length() <= 0){
+      		_hostname = std_hostname;
+    	    }
+        }
+
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
             _ssid = zerlegt[1];
             if ((_ssid[0] == '"') && (_ssid[_ssid.length()-1] == '"')){
                 _ssid = _ssid.substr(1, _ssid.length()-2);
             }
         }
+
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "PASSWORD")){
             _passphrase = zerlegt[1];
             if ((_passphrase[0] == '"') && (_passphrase[_passphrase.length()-1] == '"')){

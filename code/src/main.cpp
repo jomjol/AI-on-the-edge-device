@@ -113,11 +113,14 @@ extern "C" void app_main()
     LogFile.WriteToFile("Startsequence 03");
     std::string ssid = "";
     std::string password = "";
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password); 
+    std::string hostname = "";
+
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname); 
     LogFile.WriteToFile("Startsequence 04");    
-    printf("WLan: %s, %s\n", ssid.c_str(), password.c_str());
+    printf("To use WLan: %s, %s\n", ssid.c_str(), password.c_str());
+    printf("To set Hostename: %s\n", hostname.c_str());
    
-    initialise_wifi(ssid, password);
+    initialise_wifi(ssid, password, hostname);
     LogFile.WriteToFile("Startsequence 05");  
 
     TickType_t xDelay;
