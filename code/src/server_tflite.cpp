@@ -411,6 +411,35 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 };
 
 
+esp_err_t handler_sysinfo(httpd_req_t *req)
+{
+    LogFile.WriteToFile("handler_sysinfo"); 
+    const char* resp_str;
+    string zw;
+    string cputemp = std::to_string(temperatureRead());
+
+    zw = "[\
+            {\
+                \"firmware\" : \"2.0.0\",\
+                \"html\" : \"1.0.1\",\
+                \"cputemp\" : \"" + cputemp + "\",\
+                \"hostname\" : \"host\",\
+                \"IPv4\" : \"IP\"\
+            }\
+        ]";
+
+
+    resp_str = zw.c_str();
+
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, resp_str, strlen(resp_str));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+    return ESP_OK;
+};
+
+
 void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
@@ -436,7 +465,11 @@ void task_autodoFlow(void *pvParameter)
             doflow();
         }
         
-        LogFile.WriteToFile("task_autodoFlow - round done"); 
+        LogFile.WriteToFile("task_autodoFlow - round done");
+        //CPU Temp
+        float cputmp = temperatureRead();
+        LogFile.WriteToFile("CPU Temperature: %.2f", cputmp); 
+        printf("CPU Temperature: %.2f\n", cputmp);
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
         printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
@@ -484,5 +517,10 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/wasserzaehler.html";
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
-    httpd_register_uri_handler(server, &camuri);        
+    httpd_register_uri_handler(server, &camuri);  
+    
+    camuri.uri       = "/sysinfo";
+    camuri.handler   = handler_sysinfo;
+    camuri.user_ctx  = (void*) "Sysinfo"; 
+    httpd_register_uri_handler(server, &camuri);
 }
