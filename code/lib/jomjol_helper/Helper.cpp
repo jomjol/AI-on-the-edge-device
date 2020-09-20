@@ -167,3 +167,9 @@ string toUpper(string in)
 	return in;
 }
 
+// CPU Temp
+extern "C" uint8_t temprature_sens_read();
+float temperatureRead()
+{
+    return (temprature_sens_read() - 32) / 1.8;
+}
