@@ -5,6 +5,7 @@
 
 #include "driver/gpio.h"
 #include "sdkconfig.h"
+//#include "version.h"
 
 #include "ClassLogFile.h"
 
