@@ -1,15 +1,33 @@
-<html><head>
-	<title>jomjol - AI on the edge</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript">
-		//<![CDATA[
-		//]]>
+<!DOCTYPE html>
+<html>
+<head>
+<title>OTA Update</title>
+<meta charset="utf-8">
 
-	</script>
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+input[type=number] {
+	width: 138px;
+	padding: 10px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+.button {
+	padding: 10px 20px;
+    width: 211px;
+	font-size: 16px;
+}
+</style>
+
 </head>
 
-<body style="font-family: arial">
+<body style="font-family: arial; padding: 0px 10px;">
 <h3>It is strongly recommended to update firmware and content of /html directory on SD-card at the same time!</h3>
 <h2>1. Firmware Update</h2>
 <table class="fixed" border="0">
@@ -17,8 +35,8 @@
         <td>
             <table border="0">
                 <tr>
-                    <td>
-                        <label for="newfile">Select the firmware file</label>
+                    <td style="width: 230px">
+                        <label for="newfile">Select the firmware file:</label>
                     </td>
                     <td colspan="2">
                         <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
@@ -26,7 +44,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="filepath">Set path on server</label>
+                        <label for="filepath">Set path on server:</label>
                     </td>
                     <td>
                         <input id="filepath" type="text" style="width:100%;" readonly>
@@ -40,19 +58,28 @@
     </tr>
 	<tr>
 		<td>
-			<button id="doUpdate" type="button" onclick="doUpdate()">Flash the firmware</button> (Takes about 60s)
+            <table border="0">
+                <tr>
+                    <td style="width: 230px">
+                        <button class="button" id="doUpdate" type="button" onclick="doUpdate()">Flash the firmware</button>
+                    </td>
+					<td>
+						(Takes about 60s)
+					</td>
+                </tr>
+            </table>		
 		</td>
 	</tr>
 </table>
 
-<h2>2. Update /html directory</h2>
+<h2>2. Update "/html" directory</h2>
 <table class="fixed" border="0">
     <tr>
         <td>
             <table border="0">
                 <tr>
-                    <td>
-                        <label for="newfilehtml">Select the zipped /html content</label>
+                    <td style="width: 230px">
+                        <label for="newfilehtml">Select the zipped /html content:</label>
                     </td>
                     <td colspan="2">
                         <input id="newfilehtml" type="file" onchange="setpathhtml()" style="width:100%;">
@@ -60,7 +87,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="filepathhtml">Set path on server</label>
+                        <label for="filepathhtml">Set path on server:</label>
                     </td>
                     <td>
                         <input id="filepathhtml" type="text" style="width:100%;" readonly>
@@ -74,7 +101,7 @@
     </tr>
 	<tr>
 		<td>
-			<button id="doUpdatehtml" type="button" onclick="doUpdatehtml()">Update "/html" directory</button>
+			<button class="button" id="doUpdatehtml" type="button" onclick="doUpdatehtml()">Update "/html" directory</button>
 		</td>
 	</tr>
 </table>
@@ -82,7 +109,7 @@
 <table class="fixed" border="0">
 	<tr>
 		<td>
-			<button id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
 		</td>
 	</tr>
 </table>
@@ -317,6 +344,5 @@ function uploadhtml() {
 init();
 
 </script>
-
-
-</body></html>
+</body>
+</html>

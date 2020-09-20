@@ -1,101 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <title>Make Alignment</title>
+<title>Make Alignment</title>
+<meta charset="utf-8"/>
+	
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+input[type=number] {
+	width: 100px;
+	margin-right: 10px;
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+input[type=text] {
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+select {
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+	margin-right: 10px;
+}
+
+.button {
+	padding: 5px 10px;
+    width: 210px;
+	font-size: 16px;
+}
+</style>	
+	
 </head>
 
-<div class="body-content" style="font-family: arial">
-    
-    <div id="createrefernce">
-        <div style="padding-left: 30px">
-             <h3>Define Alignment Structure in Reference Image</h3>
-            
-            <div style="padding-left: 30px">
-                <table>
-                    <tr>
-                        <td>
-                            <canvas id="canvas" crossorigin></canvas>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                    <tr>
-                                        <tr>
-                                            <td>
-                                                    <select id="index" name="reference" onchange="ChangeSelection()">
-                                                      <option value="0" selected>Reference 0</option>
-                                                      <option value="1" >Reference 1</option>
-                                                    </select>
-                                                    Storage path/name: <input type="text" name="name" id="name">
-                                            </td>
-                                        </tr>
+<body style="font-family: arial; padding: 0px 10px;">
+	
+	<h2>Define Alignment Structure in Reference Image</h2>
 
-                                        <td>
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                    <td>
-                                                        dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                    <td>
-                                                        dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <input type="button" value="Update Reference" onclick="CutOutReference()">
-                                                    </td>
-                                                </tr>
-                                            </table>                           
-                                        </td>
-                                    </tr>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                Original Image
-                                            </td>
-                                            <td>
-                                                Reference Image
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <img id="img_ref_org" src = "/img_tmp/ref_zw_org.jpg">
-                                            </td>
-                                            <td>
-                                                <img id="img_ref" src = "/img_tmp/ref_zw.jpg">
-                                            </td>
-                                            <td>
-                                                <input type="button" id="enhancecontrast" value="Enhance Contrast" onclick="EnhanceContrast()">
-                                            </td>                                        
-                                        </tr>   
-                                    </table>
-        
-                                    <tr>
-                                        <td>
-                                            <input type="submit" name="saveroi" onclick="SaveToConfig()" value="Save to Config.ini">
-                                        </td>                                        
-                                    </tr>
-                            </table>
-                        </td>
-                    </tr>                    
-                </table>
-            </div>
-    </div>
+	<table>
+	  <tr>
+		<td><canvas id="canvas" crossorigin></canvas></td>
+	  </tr>
+	</table>
 
-    <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfig.js"></script>  
+	<table>
+	  <tr>
+		<td>Select Reference: 
+			<select id="index" name="reference" onchange="ChangeSelection()">
+			  <option value="0" selected>Reference 0</option>
+			  <option value="1" >Reference 1</option>
+			</select>
+		</td>
+		<td colspan="2">Storage Path/Name: <input type="text" name="name" id="name"></td>
+	  </tr>
+	  <tr>
+		<td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
+		<td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
+		<td rowspan="2" style="padding-top: 10px"><input class="button" type="button" value="Update Reference" onclick="CutOutReference()"></td>	
+	  </tr>
+	  <tr>
+		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>
+		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
+	  </tr>
+	  <tr>
+		<td style="padding-top: 10px">Original Image:</td>
+		<td style="padding-top: 10px">Reference Image:</td>
+		<td rowspan="2"><input class="button" type="button" id="enhancecontrast" value="Enhance Contrast" onclick="EnhanceContrast()"></td>	
+	  </tr> 
+	  <tr>
+		<td><img id="img_ref_org" src = "/img_tmp/ref_zw_org.jpg"></td>
+		<td><img id="img_ref" src = "/img_tmp/ref_zw.jpg"></td>
+	  </tr>   
+	</table>
 
-    <script language="JavaScript">
+	<table>
+	  <tr>
+		<td colspan="2"><input class="button" type="submit" name="saveroi" onclick="SaveToConfig()" value="Save to Config.ini"></td>
+	  </tr>  
+	</table>
+
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfig.js"></script>  
+
+<script language="JavaScript">
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
             imageObj = new Image(),
@@ -364,7 +361,5 @@ function dataURLtoBlob(dataurl) {
     
     init();
     </script>
-
-</div>
 </body>
 </html>
