@@ -5,7 +5,7 @@
 
 #include "driver/gpio.h"
 #include "sdkconfig.h"
-//#include "version.h"
+#include "version.h"
 
 #include "ClassLogFile.h"
 
@@ -135,6 +135,9 @@ extern "C" void app_main()
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    
+    printf("libfive_git_version: %s\n", libfive_git_version());
+    printf("libfive_git_revision: %s\n", libfive_git_revision());
+    printf("libfive_git_branch: %s\n", libfive_git_branch());
 
     Camera.InitCam();
     Camera.LightOnOff(false); 
