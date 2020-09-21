@@ -19,4 +19,4 @@ string getFileType(string filename);
 
 string toUpper(string in);
 
-
+float temperatureRead();
