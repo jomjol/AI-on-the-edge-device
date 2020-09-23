@@ -29,7 +29,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-21)
+##### Rolling - (2020-09-23)
+
+* Error Correction for Chrome and Firefox Support
+
+* Update CNN for digits to v6.4.0
+
+2020-09-21
 
 * Temperature Logging, Code Corrections
 
