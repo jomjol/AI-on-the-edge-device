@@ -171,9 +171,6 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(zerlegt[0]) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
             DecimalShift = stoi(zerlegt[1]);
-            if (PreValueUse){
-                PreValueOkay = LoadPreValue();
-            }
         }
 
         if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
@@ -181,7 +178,6 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
             {
                 PreValueUse = true;
-                PreValueOkay = LoadPreValue();
             }
         }
         if ((toUpper(zerlegt[0]) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
@@ -208,6 +204,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             useMaxRateValue = true;
             MaxRateValue = std::stof(zerlegt[1]);
         }
+    }
+
+    if (PreValueUse) {
+        PreValueOkay = LoadPreValue();
     }
     return true;
 }
@@ -328,23 +328,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         }
         return true;
     }
-
-/*
-    if (isdigit)
-    {
-        int lastanalog = -1;
-        if (isanalog)
-            lastanalog = analog[0] - 48;
-        digit = ErsetzteN(digit, lastanalog);
-        zw = digit;
-    }
-
-    if (isdigit && isanalog)
-        zw = zw + ".";
-    if (isanalog)
-        zw = zw + analog;
-    zw = ShiftDecimal(zw, DecimalShift);
-*/    
 
     zw = ErsetzteN(ReturnRawValue);
 
