@@ -19,7 +19,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ### Known Issues
 
-* spontaneous reboot, especially in case of intensive web server access (improved since v2.0.0)
+* spontaneous reboot, especially in case of intensive web server access (improved since v2.1.0)
 
 ------
 
@@ -29,45 +29,25 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-25)
 
-* Reduce logging to minimum to reduce `log.txt`. Extended logging can be enabled via `config.ini`: `Logfile = True`
-* Update default CNN for digits to v6.4.0
-* Improvement HTML
-* Bug fixing: Parameter `PreValueAgeStartup` not correctly used
-* Mechanism for reducing spontaneous reboots further
+* based on v2.1.0 (2020-09-25)
 
-2020-09-23
-
-* Error Correction for Chrome and Firefox Support
-* Update CNN for digits to v6.4.0 (**Update of `config.ini` and upload of `dig0640s3.tflite` necessary)
-
-2020-09-21
-
-* Temperature Logging, Code Corrections
-
-2020-09-20
-
-* Update HTML-Backround (thanks to michaeljoos72)
-
-2020-09-16
-
-* Impovements in hostname
-
-2020-09-14
-
-* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")` - Parameter is optional
-
-* Bug correction DecimalShift
-
-2020-09-13
-
-* Bug fixing DecimalShift (digits after comma)
-
-* Implementation of decimal shift (New Parameter "DecimalShift = 1" in [PostProcessing])
-DecimalShift = 2 --> Result: 123.456 --> 12345.6
-  DecimalShift = -1 --> Result: 123.456 --> 12.3456
-  The shift is done at the very first step of merging digital and analog, so all following number already will work on the shifted number.
   
-* based on v2.0.0 (2020-09-12)
+
+##### 2.1.0 Layout update  (2020-09-25)
+
+* Implementation of Decimal Shift
+
+* Update default CNN for digits to v6.4.0
+
+* Improvement HTML
+
+* Support for Chrome and Firefox
+
+* Reduce logging to minimum - extended logging on demand
+
+* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")`
+
+* Bug fixing, code corrections
 
   
 
