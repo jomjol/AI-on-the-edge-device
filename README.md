@@ -27,10 +27,17 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-23)
+##### Rolling - (2020-09-25)
+
+* Reduce logging to minimum to reduce `log.txt`. Extended logging can be enabled via `config.ini`: `Logfile = True`
+* Update default CNN for digits to v6.4.0
+* Improvement HTML
+* Bug fixing: Parameter `PreValueAgeStartup` not correctly used
+* Mechanism for reducing spontaneous reboots further
+
+2020-09-23
 
 * Error Correction for Chrome and Firefox Support
-
 * Update CNN for digits to v6.4.0 (**Update of `config.ini` and upload of `dig0640s3.tflite` necessary)
 
 2020-09-21

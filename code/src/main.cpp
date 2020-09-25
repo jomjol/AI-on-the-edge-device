@@ -107,31 +107,31 @@ extern "C" void app_main()
 {
     printf("Do Reset Camera\n");
     PowerResetCamera();
-//    LogFile.WriteToFile("Startsequence 01");
     Init_NVS_SDCard();
-    LogFile.WriteToFile("Startsequence 02");
+//    LogFile.WriteToFile("Startsequence 02");
     CheckOTAUpdate();
-    LogFile.WriteToFile("Startsequence 03");
+//    LogFile.WriteToFile("Startsequence 03");
     std::string ssid = "";
     std::string password = "";
     std::string hostname = "";
 
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname); 
-    LogFile.WriteToFile("Startsequence 04");    
+//    LogFile.WriteToFile("Startsequence 04");    
     printf("To use WLan: %s, %s\n", ssid.c_str(), password.c_str());
     printf("To set Hostename: %s\n", hostname.c_str());
    
     initialise_wifi(ssid, password, hostname);
-    LogFile.WriteToFile("Startsequence 05");  
+//    LogFile.WriteToFile("Startsequence 05");  
 
     TickType_t xDelay;
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
-    LogFile.WriteToFile("Startsequence 06");      
+//    LogFile.WriteToFile("Startsequence 06");      
     vTaskDelay( xDelay );   
-    LogFile.WriteToFile("Startsequence 07");  
+//    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
     LogFile.WriteToFile("======================== Main Started ================================");
+    LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    

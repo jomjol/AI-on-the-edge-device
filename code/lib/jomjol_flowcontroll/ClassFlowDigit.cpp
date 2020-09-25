@@ -11,6 +11,8 @@
 
 // #include "bitmap_image.hpp"
 
+#include "ClassLogFile.h"
+
 ClassFlowDigit::ClassFlowDigit()
 {
     isLogImage = false;
@@ -119,7 +121,10 @@ string ClassFlowDigit::getHTMLSingleStep(string host)
 
 bool ClassFlowDigit::doFlow(string time)
 {
-    doAlignAndCut(time);
+    if (!doAlignAndCut(time)){
+        return false;
+    };
+
     doNeuralNetwork(time);
 
     return true;
@@ -138,6 +143,11 @@ bool ClassFlowDigit::doAlignAndCut(string time)
     CResizeImage *rs;
     CImageBasis *img_roi = NULL;
     CAlignAndCutImage *caic = new CAlignAndCutImage(input);
+    if (!caic->ImageOkay()){
+        LogFile.WriteToFile("ClassFlowDigit::doAlignAndCut not okay!");
+        delete caic;
+        return false;
+    }
 
     if (input_roi.length() > 0)
         img_roi = new CImageBasis(input_roi);

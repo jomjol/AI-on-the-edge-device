@@ -74,15 +74,15 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     _type = trim(_type);
 
-    if (toUpper(_type).compare("[MAKEIMAGE]") == 0)
+    if (_type.compare("[MakeImage]") == 0)
         cfc = new ClassFlowMakeImage(&FlowControll);
-    if (toUpper(_type).compare("[ALIGNMENT]") == 0)
+    if (_type.compare("[Alignment]") == 0)
         cfc = new ClassFlowAlignment(&FlowControll);
-    if (toUpper(_type).compare("[ANALOG]") == 0)
+    if (_type.compare("[Analog]") == 0)
         cfc = new ClassFlowAnalog(&FlowControll);
-    if (toUpper(_type).compare("[DIGITS]") == 0)
+    if (_type.compare("[Digits]") == 0)
         cfc = new ClassFlowDigit(&FlowControll);
-    if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
+    if (_type.compare("[PostProcessing]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
@@ -91,11 +91,11 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     if (cfc)                            // Wird nur angehangen, falls es nicht [AutoTimer] ist, denn dieses ist für FlowControll
         FlowControll.push_back(cfc);
 
-    if (toUpper(_type).compare("[AUTOTIMER]") == 0)
-        cfc = this;    
+    if (_type.compare("[AutoTimer]") == 0)
+        cfc = this;   
 
-    if (toUpper(_type).compare("[DEBUG]") == 0)
-        cfc = this;  
+    if (_type.compare("[Debug]") == 0)
+        cfc = this;           
 
     return cfc;
 }
@@ -159,7 +159,7 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            i = i-2;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            i = -1;    // Soll wieder bei i = 0 anfangen ==> komplett von vorne !!!
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
@@ -233,7 +233,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
     if (flowpostprocessing)
     {
         flowpostprocessing->SavePreValue(zw);
-        return _newvalue;    
+        return to_string(zw);    
     }
 
     return std::string();
@@ -246,12 +246,16 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0)
-        if (!this->GetNextParagraph(pfile, aktparamgraph))
+        if (!this->GetNextParagraph(pfile, aktparamgraph)){
             return false;
+        }
 
-
-    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0))      // Paragraph passt nicht zu MakeImage
+//    if ((aktparamgraph.compare("[Autotimer]") != 0) && (aktparamgraph.compare("[Debug]") != 0))      // Paragraph passt nich zu MakeImage
+    if (aktparamgraph.compare("[Autotimer]") != 0)      // Paragraph passt nich zu MakeImage
         return false;
+
+//    if ((toUpper(aktparamgraph) != "[AUTOTIMER]") && (toUpper(aktparamgraph) != ("[DEBUG]")))      // Paragraph passt nich zu MakeImage
+//        return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
@@ -263,21 +267,27 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
                 AutoStart = true;
             }
         }
+
         if ((toUpper(zerlegt[0]) == "INTERVALL") && (zerlegt.size() > 1))
         {
             AutoIntervall = std::stof(zerlegt[1]);
         }
+
+/*
         if ((toUpper(zerlegt[0]) == "LOGFILE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
             {
                 LogFile.SwitchOnOff(true);
+                printf("TurnLogFile On\n");
             }
             if (toUpper(zerlegt[1]) == "FALSE")
             {
                 LogFile.SwitchOnOff(false);
-            }
-        }      
+                printf("TurnLogFile Off\n");
+            }            
+        }
+*/
     }
     return true;
 }
