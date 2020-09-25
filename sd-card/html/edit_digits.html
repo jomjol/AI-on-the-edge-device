@@ -1,87 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <title>Make Alignment</title>
+<meta charset="utf-8"/>
+<title>Make Digital Alignment</title>
+
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+input[type=number] {
+	width: 100px;
+	margin-right: 10px;
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+input[type=text] {
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+select {
+	padding: 3px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+	margin-right: 10px;
+}
+
+.button {
+	padding: 5px 10px;
+    width: 210px;
+	font-size: 16px;
+}
+
+.move {
+	padding: 4px 4px;
+    width: 100px;
+	font-size: 12px;
+}
+
+th, td {
+  padding: 5px 5px 5px 0px;
+}
+</style>
+
 </head>
 
-<div class="body-content" style="font-family: arial">
-    
-    <div id="createrefernce">
-        <div style="padding-left: 30px">
-             <h3>Edit Digits</h3>
-            
-            <div style="padding-left: 30px">
-                <table>
-                    <tr>
-                        <td>
-                            <canvas id="canvas" crossorigin></canvas>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                    <tr>
-                                        <td>
-                                            <input type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI (after current)">
-                                            <input type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI">
-                                        </td>
-                                    </tr>
-                                
-                                    <tr>
-                                        <tr>
-                                            <td>
-                                                    <select id="index" name="index" onchange="ChangeSelection()">
-                                                      <option value="0" selected>ROI 0</option>
-                                                      <option value="1" >ROI 1</option>
-                                                    </select>
-                                                    name: <input type="text" name="name" id="name" onchange="onNameChange()">
-                                                    <input type="submit" id="moveNext" onclick="moveNext()" value="move Next">
-                                                    <input type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">                                                    
-                                            </td>
-                                        </tr>
+<body style="font-family: arial; padding: 0px 10px;">
 
-                                        <td>
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                    <td>
-                                                        dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked>
-                                                        <label for="lockAR"> lock aspect ratio</label><br>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                    <td>
-                                                        dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()">
-                                                    </td>
-                                                </tr>
-                                            </table>                           
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <input type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini">
-                                        </td>                                        
-                                    </tr>
-                            </table>
-                        </td>
-                    </tr>                    
-                </table>
-            </div>
-    </div>
+	<h2>Edit Digits</h2>
 
-    <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfig.js"></script>  
+	<table>
+	  <tr>
+		<canvas id="canvas" crossorigin></canvas>
+	  </tr>
+	</table>	
+			 
+	<table>
+	  <tr>
+		<td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI (after current)"></td>	  
+		<td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
+		<td></td>
+	  </tr>
+	  <tr>
+		<td>
+			<select id="index" name="index" onchange="ChangeSelection()">
+			  <option value="0" selected>ROI 0</option>
+			  <option value="1" >ROI 1</option>
+			</select>
+		</td>
+		<td>Name: <input type="text" name="name" id="name" onchange="onNameChange()" size="13"></td>
+		<td>
+		<input class="move" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
+		<input class="move" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
+		</td>	
+	  </tr>
+	  <tr>
+        <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>	  
+		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()"></td>
+		<td rowspan="2"><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked></td>
+	  </tr>
+	  <tr>
+		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>	
+		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
+	  </tr>
+	</table>			 
+			 
+	<table>
+	  <tr>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini"></td>
+	  </tr>  
+	</table>
 
-    <script language="JavaScript">
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfig.js"></script>  
+
+<script language="JavaScript">
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
             imageObj = new Image(),
@@ -390,8 +411,7 @@ function ParseIni(_basepath) {
 
     
     init();
-    </script>
+</script>
 
-</div>
 </body>
 </html>

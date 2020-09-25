@@ -8,6 +8,10 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
     FILE* pFile;
     std::string zwtime;
 
+    if (!doLogFile){
+        return;
+    }
+
     pFile = fopen(_fn.c_str(), "a+");
 
     if (_time)
@@ -30,6 +34,11 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
     fclose(pFile);    
 }
 
+void ClassLogFile::SwitchOnOff(bool _doLogFile){
+    doLogFile = _doLogFile;
+};
+
+
 void ClassLogFile::WriteToFile(std::string info, bool _time)
 {
     WriteToDedicatedFile(logfile, info, _time);
@@ -37,5 +46,6 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
 
 ClassLogFile::ClassLogFile(std::string _logfile)
 {
-    logfile = _logfile;
+    logfile = _logfile; 
+    doLogFile = true;
 }

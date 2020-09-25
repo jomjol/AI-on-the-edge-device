@@ -1,71 +1,47 @@
-<html><head>
-	<title>jomjol - AI on the edge</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript">
-		//<![CDATA[
-		//]]>
-
-	</script>
-</head>
-
+<!DOCTYPE html>
+<html>
+<head>
+<title>Set PreValue</title>
+<meta charset="utf-8">
+	
 <style>
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em;}
+h3 {font-size: 1.2em;}
 p {font-size: 1em;}
-</style>
 
-<script>
-function includeHTML() {
-  var z, i, elmnt, file, xhttp;
-  /* Loop through a collection of all HTML elements: */
-  z = document.getElementsByTagName("*");
-  for (i = 0; i < z.length; i++) {
-    elmnt = z[i];
-    /*search for elements with a certain atrribute:*/
-    file = elmnt.getAttribute("w3-include-html");
-    if (file) {
-      /* Make an HTTP request using the attribute value as the file name: */
-      xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4) {
-          if (this.status == 200) {elmnt.innerHTML = this.responseText;}
-          if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
-          /* Remove the attribute, and call this function once more: */
-          elmnt.removeAttribute("w3-include-html");
-          includeHTML();
-        }
-      }
-      xhttp.open("GET", file, true);
-      xhttp.send();
-      /* Exit the function: */
-      return;
-    }
-  }
+div {
+	width: 200px;
+    padding: 10px 5px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    font-size: 16px;
+	max-height: 35px;	
 }
+
+input[type=number] {
+	width: 125px;
+	padding: 10px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+.button {
+	padding: 10px 20px;
+    width: 211px;
+	font-size: 16px;	
+}
+</style>	
+	
+</head>
+
+<script src="/jquery-3.5.1.min.js"></script>
+<script>
+  $ (document).ready(function() {
+	$("#prevalue").load("/setPreValue.html");
+  });
 </script>
-
-<body style="font-family: arial">
-<table style="width:100%">
-  <tr>
-    <h2>Current Value:</h2><p>
-	<div w3-include-html="/setPreValue.html"></div>	
-  </tr>	 
-  <tr>
-  <h2>Set Value:</h2><p>
-    Input (Format = 123.456):<p>
-	PreValue: 
-	 <input type="number" id="myInput" name="myInput"
-           pattern="[0-9]+([\.,][0-9]+)?" step="0.001"
-            title="This should be a number with up to 4 decimal places.">
-	<button type="button" onclick="setprevalue()">Set PreValue</button>
-  </tr>	
-  <tr>
-    <h2>Result:</h2><p>
-	<div id="result"> </div>
-  </tr>	 
-
-</table>
 
 <script>
 function setprevalue() {
@@ -77,8 +53,29 @@ function setprevalue() {
 }
 </script>
 
-<script>
-includeHTML();
-</script>
+<body style="font-family: arial; padding: 0px 10px;">
+<h3>Set the previous value for consistency check and substitution for NaN</h3>
+
+<table style="width:100%">
+  <tr>
+    <h2>Current Value:</h2><p>
+	<div id="prevalue"></div>
+  </tr>	 
+  <tr>
+  <h2>Set Value:</h2><p>
+    Input (Format = 123.456):<p>
+	PreValue: 
+	 <input type="number" id="myInput" name="myInput"
+           pattern="[0-9]+([\.,][0-9]+)?" step="0.001"
+            title="This should be a number with up to 4 decimal places.">
+	<p></p>
+	<button class="button" type="button" onclick="setprevalue()">Set PreValue</button>
+  </tr>	
+  <tr>
+    <h2>Result:</h2><p>
+	<div id="result" readonly></div>
+  </tr>	 
+
+</table>
 
 </body></html>

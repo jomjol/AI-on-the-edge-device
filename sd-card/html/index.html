@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html style="width: fit-content">
 <head>
-<style>
-.h_iframe iframe {width:995px;height:700px;}
-.h_iframe {width:995px;height:700px;}
+<title>jomjol - AI on the edge</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em;}
+<style>
+.h_iframe iframe {width:995px;height:605px;}
+.h_iframe {width:995px;height:605px;}
+
+h1 {font-size: 2em; margin-block-end: 0.3em;}
+h2 {font-size: 1.5em;margin-block-start: 0.3em;}
+h3 {font-size: 1.2em;}
 p {font-size: 1em;}
 
 ul {
@@ -80,18 +85,19 @@ li.dropdown {
       <a href="index_configure.html">Edit Configuration</a>
     </div>
   </li>
-  <li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler.html?full';">Watermeter</a></li>  
+  <li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler.html?full';">Recognition</a></li>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/';">File Server</a></li>
     <li class="dropdown">
     <a href="javascript:void(0)" class="dropbtn">System</a>
     <div class="dropdown-content">
       <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
+      <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log.txt';">Log Viewer</a>      
       <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
     </div> 
 </ul>
 <p>
 <div class="h_iframe">
-	 <iframe width="1020px" height="650px" name="maincontent" id ="maincontent" src="/wasserzaehler_roi.html" title="fileserver" allowfullscreen></iframe> 
+	 <iframe name="maincontent" id ="maincontent" src="/wasserzaehler_roi.html" title="fileserver" allowfullscreen></iframe> 
 </div>
 
 </body>

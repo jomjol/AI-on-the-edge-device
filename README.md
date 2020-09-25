@@ -19,9 +19,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ### Known Issues
 
-* Parts of the web page only works correctly in **Firefox** and Chrome!
-  With **Edge** not all parts (especially the configuration) are **not full functional**.
-* spontaneous reboot, especially in case of intensive web server access (improved since v2.0.0)
+* spontaneous reboot, especially in case of intensive web server access (improved since v2.1.0)
 
 ------
 
@@ -29,9 +27,27 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-12)
+##### Rolling - (2020-09-25)
 
-* based on v2.0.0 (2020-09-12)
+* based on v2.1.0 (2020-09-25)
+
+  
+
+##### 2.1.0 Layout update  (2020-09-25)
+
+* Implementation of Decimal Shift
+
+* Update default CNN for digits to v6.4.0
+
+* Improvement HTML
+
+* Support for Chrome and Firefox
+
+* Reduce logging to minimum - extended logging on demand
+
+* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")`
+
+* Bug fixing, code corrections
 
   
 

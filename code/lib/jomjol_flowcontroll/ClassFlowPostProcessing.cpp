@@ -19,10 +19,8 @@ string ClassFlowPostProcessing::GetPreValue()
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
-            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(AnzahlNachkomma) << PreValue;
-            result = stream.str();
+            int AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            result =  RundeOutput(PreValue, AnzahlAnalog - DecimalShift);
         }
     }
 
@@ -80,14 +78,11 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
-            int AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-            ReturnValue = stream.str();
+            int AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            ReturnValue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
             ReturnValueNoError = ReturnValue;
         }
     }
-
     
     return true;
 }
@@ -135,6 +130,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing()
     PreValueOkay = false;
     useMaxRateValue = false;
     checkDigitIncreaseConsistency = false;
+    DecimalShift = 0;
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
 }
 
@@ -148,10 +144,12 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     ListFlowControll = NULL;
     PreValueOkay = false;
     useMaxRateValue = false;
-    checkDigitIncreaseConsistency = false;    
+    checkDigitIncreaseConsistency = false;
+    DecimalShift = 0;    
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
 }
+
 
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
@@ -170,40 +168,90 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((zerlegt[0] == "PreValueUse") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
-            if ((zerlegt[1] == "True") || (zerlegt[1] == "true"))
+            DecimalShift = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
             {
                 PreValueUse = true;
-                PreValueOkay = LoadPreValue();
             }
         }
-        if ((zerlegt[0] == "CheckDigitIncreaseConsistency") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 checkDigitIncreaseConsistency = true;
         }        
-        if ((zerlegt[0] == "AllowNegativeRates") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 AllowNegativeRates = true;
         }
-        if ((zerlegt[0] == "ErrorMessage") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "ERRORMESSAGE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 ErrorMessage = true;
         }
-        if ((zerlegt[0] == "PreValueAgeStartup") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
         {
             PreValueAgeStartup = std::stoi(zerlegt[1]);
         }
-        if ((zerlegt[0] == "MaxRateValue") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "MAXRATEVALUE") && (zerlegt.size() > 1))
         {
             useMaxRateValue = true;
             MaxRateValue = std::stof(zerlegt[1]);
         }
     }
+
+    if (PreValueUse) {
+        PreValueOkay = LoadPreValue();
+    }
     return true;
+}
+
+string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
+
+    if (_decShift == 0){
+        return in;
+    }
+
+    int _pos_dec_org, _pos_dec_neu;
+
+    _pos_dec_org = findDelimiterPos(in, ".");
+    if (_pos_dec_org == std::string::npos) {
+        _pos_dec_org = in.length();
+    }
+    else
+    {
+        in = in.erase(_pos_dec_org, 1);
+    }
+    
+    _pos_dec_neu = _pos_dec_org + _decShift;
+
+    if (_pos_dec_neu <= 0) {        // Komma ist vor der ersten Ziffer
+        for (int i = 0; i > _pos_dec_neu; --i){
+            in = in.insert(0, "0");
+        }
+        in = "0." + in;
+        return in;
+    }
+
+    if (_pos_dec_neu > in.length()){    // Komma soll hinter String (123 --> 1230)
+        for (int i = in.length(); i < _pos_dec_neu; ++i){
+            in = in.insert(in.length(), "0");
+        }  
+        return in;      
+    }
+
+    string zw;
+    zw = in.substr(0, _pos_dec_neu);
+    zw = zw + ".";
+    zw = zw + in.substr(_pos_dec_neu, in.length() - _pos_dec_neu);
+
+    return zw;
 }
 
 bool ClassFlowPostProcessing::doFlow(string zwtime)
@@ -214,7 +262,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     string zwvalue;
     bool isdigit = false;
     bool isanalog = false;
-    int AnzahlNachkomma = 0;
+    int AnzahlAnalog = 0;
     string zw;
     string error = "";
     time_t imagetime = 0;
@@ -234,7 +282,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             isanalog = true;
             analog = (*ListFlowControll)[i]->getReadout();
-            AnzahlNachkomma = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+            AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
         }
     }
 
@@ -258,7 +306,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (isdigit && isanalog)
         ReturnRawValue = ReturnRawValue + ".";
     if (isanalog)
-        ReturnRawValue = ReturnRawValue + analog;    
+        ReturnRawValue = ReturnRawValue + analog; 
+
+    ReturnRawValue = ShiftDecimal(ReturnRawValue, DecimalShift);   
 
     if (!PreValueUse || !PreValueOkay)
     {
@@ -279,33 +329,16 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         return true;
     }
 
-    if (isdigit)
-    {
-        int lastanalog = -1;
-        if (isanalog)
-            lastanalog = analog[0] - 48;
-        digit = ErsetzteN(digit, lastanalog);
-        zw = digit;
-    }
-
-    if (isdigit && isanalog)
-        zw = zw + ".";
-    if (isanalog)
-        zw = zw + analog;
+    zw = ErsetzteN(ReturnRawValue);
 
     Value = std::stof(zw);
-
-    std::stringstream stream;
-    stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-    zwvalue = stream.str();
+    zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
         error = "Negative Rate - Returned old value - read value: " + zwvalue;
         Value = PreValue;
-        stream.str("");
-        stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-        zwvalue = stream.str();
+        zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
     else
     {
@@ -313,9 +346,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             error = "Rate too high - Returned old value - read value: " + zwvalue;
             Value = PreValue;
-            stream.str("");
-            stream << std::fixed << std::setprecision(AnzahlNachkomma) << Value;
-            zwvalue = stream.str();
+            zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
         }
     }
 
@@ -344,19 +375,34 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror)
     return ReturnValue;
 }
 
+string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
+    return stream.str();  
+}
 
-string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1)
+
+string ClassFlowPostProcessing::ErsetzteN(string input)
 {
     int posN, posPunkt;
     int pot, ziffer;
     float zw;
 
     posN = findDelimiterPos(input, "N");
-    posPunkt = input.length();
+    posPunkt = findDelimiterPos(input, ".");
+    if (posPunkt == std::string::npos){
+        posPunkt = input.length();
+    }
 
     while (posN != std::string::npos)
     {
-        pot = posPunkt - posN - 1;
+        if (posN < posPunkt) {
+            pot = posPunkt - posN - 1;
+        }
+        else {
+            pot = posPunkt - posN;
+        }
+
         zw = PreValue / pow(10, pot);
         ziffer = ((int) zw) % 10;
         input[posN] = ziffer + 48;
@@ -364,17 +410,15 @@ string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1
         posN = findDelimiterPos(input, "N");
     }
 
-///////////////////////////// TestCode
-/*
-    input = "10";
-    posPunkt = input.length();
-    PreValue = 9.5;
-    lastvalueanalog = 7;
-*/
+    return input;
+}
+
+string ClassFlowPostProcessing::checkDigitConsistency(string input, int _decilamshift, int lastvalueanalog){
+/*    
     if (checkDigitIncreaseConsistency && lastvalueanalog > -1)
     {
         int zifferIST;
-        int substrakt = 0;
+//        int substrakt = 0;
         bool lastcorrected = false;
         for (int i = input.length() - 1; i >= 0; --i)
         {
@@ -401,7 +445,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input, int lastvalueanalog = -1
         
             
         }
-        
     }
+*/
     return input;
 }
