@@ -171,8 +171,14 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
         return false;
     }
 
-    if (input_roi.length() > 0)
-        img_roi = new CImageBasis(input_roi);    
+    if (input_roi.length() > 0){
+        img_roi = new CImageBasis(input_roi);
+        if (!img_roi->ImageOkay()){
+            LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut ImageRoi not okay!");
+            delete img_roi;
+            return false;
+        }
+    }
 
     for (int i = 0; i < ROI.size(); ++i)
     {

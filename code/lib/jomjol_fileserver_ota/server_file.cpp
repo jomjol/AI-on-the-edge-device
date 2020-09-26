@@ -258,7 +258,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    esp_err_t res = httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     ESP_LOGI(TAG, "Sending file : %s (%ld bytes)...", filename, file_stat.st_size);
     set_content_type_from_file(req, filename);
@@ -437,7 +437,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
 
 //////////////////////////////////////////////////////////////
     char _query[200];
-    char _filename[30];
     char _valuechar[30];    
     std::string fn = "/sdcard/firmware/";
     std::string _task;
@@ -576,8 +575,6 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
     size_t uncomp_size;
     mz_zip_archive zip_archive;
     void* p;
-    const int N = 50;
-    char data[2048];
     char archive_filename[64];
     std::string zw;
 //    static const char* s_Test_archive_filename = "testhtml.zip";

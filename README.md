@@ -27,7 +27,9 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-25)
+##### Rolling - (2020-09-26)
+
+* Integration of version info (menu: SYSTEM --> INFO)
 
 * based on v2.1.0 (2020-09-25)
 
