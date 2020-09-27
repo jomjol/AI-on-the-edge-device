@@ -27,13 +27,22 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-25)
+##### Rolling - (2020-09-27)
 
-* based on v2.1.0 (2020-09-25)
+* based on v2.2.0 (2020-09-27)
 
   
 
-##### 2.1.0 Layout update  (2020-09-25)
+
+##### 2.2.0 Version Controll  (2020-09-27)
+
+* Integrated automated versioning system (menu: SYSTEM --> INFO)
+* Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
+
+
+
+
+##### 2.1.0 Decimal Shift, Chrome & Edge  (2020-09-25)
 
 * Implementation of Decimal Shift
 
@@ -41,7 +50,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 * Improvement HTML
 
-* Support for Chrome and Firefox
+* Support for Chrome and Edge
 
 * Reduce logging to minimum - extended logging on demand
 

@@ -6,7 +6,6 @@
 #include "server_ota.h"
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
-    bool found = false;
     std::string _classname = "";
     std::string result = "";
     if (_stepname.compare("[MakeImage]") == 0){
@@ -29,7 +28,6 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
  //           printf(FlowControll[i]->name().c_str()); printf("\n");
             FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
-            found = true;
         }
 
     return result;

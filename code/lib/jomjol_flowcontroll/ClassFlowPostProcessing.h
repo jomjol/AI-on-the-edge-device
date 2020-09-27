@@ -9,7 +9,7 @@ class ClassFlowPostProcessing :
 {
 protected:
     bool PreValueUse;
-    int PreValueAgeStartup;
+    int PreValueAgeStartup; 
     bool AllowNegativeRates;
     float MaxRateValue;
     bool useMaxRateValue;
@@ -29,7 +29,7 @@ protected:
     string ShiftDecimal(string in, int _decShift);
 
     string ErsetzteN(string);
-    string checkDigitConsistency(string, int _decilamshift, int lastvalueanalog = -1);
+    float checkDigitConsistency(float input, int _decilamshift, bool _isanalog);
     string RundeOutput(float _in, int _anzNachkomma);
 
 public:

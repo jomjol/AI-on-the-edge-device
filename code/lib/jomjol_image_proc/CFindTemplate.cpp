@@ -528,8 +528,6 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
     int memsize = dx * dy * this->channels;
     uint8_t* odata = (unsigned char*)GET_MEMORY(memsize);
 
-
-    int x_source, y_source;
     stbi_uc* p_target;
     stbi_uc* p_source;
 

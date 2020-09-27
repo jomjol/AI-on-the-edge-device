@@ -3,8 +3,11 @@
 #include <string>
 
 #include "server_help.h"
+#include "ClassLogFile.h"
 
 #include "time_sntp.h"
+
+#include "version.h"
 
 
 httpd_handle_t server = NULL;   
@@ -14,80 +17,73 @@ std::string starttime = "";
 
 
 /* An HTTP GET handler */
-esp_err_t hello_get_handler(httpd_req_t *req)
+esp_err_t info_get_handler(httpd_req_t *req)
 {
-    char*  buf;
-    size_t buf_len;
-    printf("req uri:\n");
-    printf(req->uri);
-    printf("\n");
+    LogFile.WriteToFile("info_get_handler");    
+    char _query[200];
+    char _valuechar[30];    
+    std::string _task;
 
-    /* Get header value string length and allocate memory for length + 1,
-     * extra byte for null termination */
-    buf_len = httpd_req_get_hdr_value_len(req, "Host") + 1;
-    if (buf_len > 1) {
-        buf = (char*) malloc(buf_len);
-        /* Copy null terminated value string into buffer */
-        if (httpd_req_get_hdr_value_str(req, "Host", buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "Found header => Host: %s", buf);
+    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
+    {
+        printf("Query: "); printf(_query); printf("\n");
+        
+        if (httpd_query_key_value(_query, "type", _valuechar, 30) == ESP_OK)
+        {
+            printf("type is found"); printf(_valuechar); printf("\n"); 
+            _task = std::string(_valuechar);
         }
-        free(buf);
+    };
+
+    if (_task.compare("GitBranch") == 0)
+    {
+        std::string zw;
+        zw = std::string(libfive_git_branch());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
     }
 
-    buf_len = httpd_req_get_hdr_value_len(req, "Test-Header-2") + 1;
-    if (buf_len > 1) {
-        buf = (char*) malloc(buf_len);
-        if (httpd_req_get_hdr_value_str(req, "Test-Header-2", buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "Found header => Test-Header-2: %s", buf);
-        }
-        free(buf);
+
+    if (_task.compare("GitTag") == 0)
+    {
+        std::string zw;
+        zw = std::string(libfive_git_version());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
     }
 
-    buf_len = httpd_req_get_hdr_value_len(req, "Test-Header-1") + 1;
-    if (buf_len > 1) {
-        buf = (char*) malloc(buf_len);
-        if (httpd_req_get_hdr_value_str(req, "Test-Header-1", buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "Found header => Test-Header-1: %s", buf);
-        }
-        free(buf);
+
+
+    if (_task.compare("GitRevision") == 0)
+    {
+        std::string zw;
+        zw = std::string(libfive_git_revision());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
     }
 
-    /* Read URL query string length and allocate memory for length + 1,
-     * extra byte for null termination */
-    buf_len = httpd_req_get_url_query_len(req) + 1;
-    if (buf_len > 1) {
-        buf = (char*) malloc(buf_len);
-        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "Found URL query => %s", buf);
-            char param[32];
-            /* Get value of expected key from query string */
-            if (httpd_query_key_value(buf, "query1", param, sizeof(param)) == ESP_OK) {
-                ESP_LOGI(TAG, "Found URL query parameter => query1=%s", param);
-            }
-            if (httpd_query_key_value(buf, "query3", param, sizeof(param)) == ESP_OK) {
-                ESP_LOGI(TAG, "Found URL query parameter => query3=%s", param);
-            }
-            if (httpd_query_key_value(buf, "query2", param, sizeof(param)) == ESP_OK) {
-                ESP_LOGI(TAG, "Found URL query parameter => query2=%s", param);
-            }
-        }
-        free(buf);
+    if (_task.compare("BuildTime") == 0)
+    {
+        std::string zw;
+        zw = std::string(build_time());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
     }
 
-    /* Set some custom headers */
-    httpd_resp_set_hdr(req, "Custom-Header-1", "Custom-Value-1");
-    httpd_resp_set_hdr(req, "Custom-Header-2", "Custom-Value-2");
-
-    /* Send response with custom headers and body set as the
-     * string passed in user context*/
-    const char* resp_str = (const char*) req->user_ctx;
-    httpd_resp_send(req, resp_str, strlen(resp_str));
-
-    /* After sending the HTTP response the old HTTP request
-     * headers are lost. Check if HTTP request headers can be read now. */
-    if (httpd_req_get_hdr_value_len(req, "Host") == 0) {
-        ESP_LOGI(TAG, "Request headers lost");
+    if (_task.compare("GitBaseBranch") == 0)
+    {
+        std::string zw;
+        zw = std::string(git_base_branch());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
     }
+
+
     return ESP_OK;
 }
 
@@ -205,6 +201,15 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
+    httpd_uri_t info_get_handle = {
+        .uri       = "/version",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = info_get_handler,
+        .user_ctx  = (void*) base_path    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &info_get_handle);
+
+
     httpd_uri_t starttime_tmp_handle = {
         .uri       = "/starttime",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
@@ -260,14 +265,6 @@ httpd_handle_t start_webserver(void)
 //    config.uri_match_fn = NULL;                            
     config.uri_match_fn = httpd_uri_match_wildcard;
 
-
-    httpd_uri_t hll = {};
-    hll.uri       = "/hello";
-    hll.method    = HTTP_GET;
-    hll.handler   = hello_get_handler;
-    hll.user_ctx  = (void*) "Hello World!";
-
-
     starttime = gettimestring("%Y%m%d-%H%M%S");
 
     // Start the httpd server
@@ -275,7 +272,6 @@ httpd_handle_t start_webserver(void)
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
-        httpd_register_uri_handler(server, &hll);
         return server;
     }
 
