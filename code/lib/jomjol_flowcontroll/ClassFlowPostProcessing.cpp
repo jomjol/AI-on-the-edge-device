@@ -445,7 +445,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
         olddigit = ((int) zw) % 10;
 
         if (aktdigit != olddigit) {
-            if (olddigit_before >= aktdigit_before)         // stelle vorher hat noch keinen Nulldurchgang --> nachfolgestelle sollte sich nicht verändern
+            if (olddigit_before <= aktdigit_before)         // stelle vorher hat noch keinen Nulldurchgang --> nachfolgestelle sollte sich nicht verändern
             {
                 input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // Neue Digit wird durch alte Digit ersetzt;
             }
