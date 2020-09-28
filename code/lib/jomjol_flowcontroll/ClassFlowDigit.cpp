@@ -86,6 +86,7 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
+            neuroi->resultklasse = -1;
             ROI.push_back(neuroi);
         }
     }
@@ -152,7 +153,8 @@ bool ClassFlowDigit::doAlignAndCut(string time)
     if (input_roi.length() > 0){
         img_roi = new CImageBasis(input_roi);
         if (!img_roi->ImageOkay()){
-            LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut ImageRoi not okay!");
+            LogFile.WriteToFile("ClassFlowDigit::doAlignAndCut ImageRoi not okay!");
+            delete caic;
             delete img_roi;
             return false;
         }

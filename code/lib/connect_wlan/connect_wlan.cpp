@@ -143,7 +143,6 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 
     char zw[1024];
     fgets(zw, 1024, pFile);
-//    printf("%s", zw);
     line = std::string(zw);
 
     while ((line.size() > 0) || !(feof(pFile)))
@@ -151,21 +150,16 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 //        printf("%s", line.c_str());
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
-        zerlegt[1] = trim(zerlegt[1], " "); 
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
-            _hostname = zerlegt[1];
+            _hostname = trim(zerlegt[1]);
             if ((_hostname[0] == '"') && (_hostname[_hostname.length()-1] == '"')){
                 _hostname = _hostname.substr(1, _hostname.length()-2);
             }
-	    // Check if Hostname was empty in .ini if yes set to std_hostname
-	    if(_hostname.length() <= 0){
-      		_hostname = std_hostname;
-    	    }
         }
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "SSID")){
-            _ssid = zerlegt[1];
+            _ssid = trim(zerlegt[1]);
             if ((_ssid[0] == '"') && (_ssid[_ssid.length()-1] == '"')){
                 _ssid = _ssid.substr(1, _ssid.length()-2);
             }
@@ -189,6 +183,11 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
     }
 
     fclose(pFile);
+
+    // Check if Hostname was empty in .ini if yes set to std_hostname
+    if(_hostname.length() <= 0){
+        _hostname = std_hostname;
+        }
 }
 
 

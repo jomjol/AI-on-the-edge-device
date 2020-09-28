@@ -157,7 +157,7 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            i = i-2;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            i = -1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
