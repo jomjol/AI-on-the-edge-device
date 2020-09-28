@@ -29,12 +29,10 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-09-28)
 
-* Error Correction
-
 * based on v2.2.1 (2020-09-28)
 
   
-  
+
 ##### 2.2.1 Version Control  (2020-09-27)
 
 * Bug-Fixing (hostname in wlan.ini and error handling inside flow)
