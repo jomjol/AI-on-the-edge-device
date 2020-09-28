@@ -18,6 +18,8 @@
 
 #include "ClassLogFile.h"
 
+#include "version.h"
+
 ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandleblink_task_doFlow = NULL;
@@ -417,11 +419,19 @@ esp_err_t handler_sysinfo(httpd_req_t *req)
     const char* resp_str;
     string zw;
     string cputemp = std::to_string(temperatureRead());
+    string gitversion = libfive_git_version();
+    string buildtime = build_time();
+    string gitbranch = libfive_git_branch();
+    string gitbasebranch = git_base_branch();
+    string htmlversion = getHTMLversion();
 
     zw = "[\
             {\
-                \"firmware\" : \"2.0.0\",\
-                \"html\" : \"1.0.1\",\
+                \"firmware\" : \"" + gitversion + "\",\
+                \"buildtime\" : \"" + buildtime + "\",\
+                \"gitbranch\" : \"" + gitbranch + "\",\
+                \"gitbasebranch\" : \"" + gitbasebranch + "\",\
+                \"html\" : \"" + htmlversion + "\",\
                 \"cputemp\" : \"" + cputemp + "\",\
                 \"hostname\" : \"host\",\
                 \"IPv4\" : \"IP\"\

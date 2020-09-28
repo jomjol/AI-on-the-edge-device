@@ -83,6 +83,14 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
+    if (_task.compare("HTMLVersion") == 0)
+    {
+        std::string zw;
+        zw = std::string(getHTMLversion());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
 
     return ESP_OK;
 }
