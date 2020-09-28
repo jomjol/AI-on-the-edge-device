@@ -171,9 +171,6 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(zerlegt[0]) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
             DecimalShift = stoi(zerlegt[1]);
-            if (PreValueUse){
-                PreValueOkay = LoadPreValue();
-            }
         }
 
         if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
@@ -181,7 +178,6 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
             {
                 PreValueUse = true;
-                PreValueOkay = LoadPreValue();
             }
         }
         if ((toUpper(zerlegt[0]) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
@@ -208,6 +204,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             useMaxRateValue = true;
             MaxRateValue = std::stof(zerlegt[1]);
         }
+    }
+
+    if (PreValueUse) {
+        PreValueOkay = LoadPreValue();
     }
     return true;
 }
@@ -329,26 +329,15 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         return true;
     }
 
-/*
-    if (isdigit)
-    {
-        int lastanalog = -1;
-        if (isanalog)
-            lastanalog = analog[0] - 48;
-        digit = ErsetzteN(digit, lastanalog);
-        zw = digit;
-    }
+    zw = ErsetzteN(ReturnRawValue); 
 
-    if (isdigit && isanalog)
-        zw = zw + ".";
-    if (isanalog)
-        zw = zw + analog;
-    zw = ShiftDecimal(zw, DecimalShift);
-*/    
-
-    zw = ErsetzteN(ReturnRawValue);
 
     Value = std::stof(zw);
+    if (checkDigitIncreaseConsistency)
+    {
+//        Value = checkDigitConsistency(Value, DecimalShift, isanalog);
+    }
+
     zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
 
     if ((!AllowNegativeRates) && (Value < PreValue))
@@ -430,39 +419,40 @@ string ClassFlowPostProcessing::ErsetzteN(string input)
     return input;
 }
 
-string ClassFlowPostProcessing::checkDigitConsistency(string input, int _decilamshift, int lastvalueanalog){
-/*    
-    if (checkDigitIncreaseConsistency && lastvalueanalog > -1)
-    {
-        int zifferIST;
-//        int substrakt = 0;
-        bool lastcorrected = false;
-        for (int i = input.length() - 1; i >= 0; --i)
-        {
-            zifferIST = input[i] - 48;  //std::stoi(std::string(input[i]));
-            if (lastcorrected)
-            {
-                zifferIST--;
-                input[i] = zifferIST + 48;
-                lastcorrected = false;
-            }
+float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamshift, bool _isanalog){
+    int aktdigit, olddigit;
+    int aktdigit_before, olddigit_before;
+    int pot, pot_max;
+    float zw;
 
-            pot = posPunkt - i - 1;
-            zw = PreValue / pow(10, pot);
-            ziffer = ((int) zw) % 10;
-            if (zifferIST < ziffer)
-            {
-                if (lastvalueanalog >= 7)
-                {
-                    input[i] = ziffer + 48;
-                    lastvalueanalog = ziffer;
-                    lastcorrected = true;
-                }
-            }
-        
-            
-        }
+    pot = _decilamshift;
+    if (!_isanalog)             // falls es keine analogwerte gibt, kann die letzte nicht bewerte werden
+    {
+        pot++;
     }
-*/
+    pot_max = ((int) log10(input)) + 1;
+
+    while (pot <= pot_max)
+    {
+        zw = input / pow(10, pot-1);
+        aktdigit_before = ((int) zw) % 10;
+        zw = PreValue / pow(10, pot-1);
+        olddigit_before = ((int) zw) % 10;
+
+        zw = input / pow(10, pot);
+        aktdigit = ((int) zw) % 10;
+        zw = PreValue / pow(10, pot);
+        olddigit = ((int) zw) % 10;
+
+        if (aktdigit != olddigit) {
+            if (olddigit_before <= aktdigit_before)         // stelle vorher hat noch keinen Nulldurchgang --> nachfolgestelle sollte sich nicht verändern
+            {
+                input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // Neue Digit wird durch alte Digit ersetzt;
+            }
+        }
+
+        pot++;
+    }
+
     return input;
 }

@@ -6,7 +6,6 @@
 #include "server_ota.h"
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
-    bool found = false;
     std::string _classname = "";
     std::string result = "";
     if (_stepname.compare("[MakeImage]") == 0){
@@ -29,7 +28,6 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
  //           printf(FlowControll[i]->name().c_str()); printf("\n");
             FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
-            found = true;
         }
 
     return result;
@@ -74,15 +72,15 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     _type = trim(_type);
 
-    if (_type.compare("[MakeImage]") == 0)
+    if (toUpper(_type).compare("[MAKEIMAGE]") == 0)
         cfc = new ClassFlowMakeImage(&FlowControll);
-    if (_type.compare("[Alignment]") == 0)
+    if (toUpper(_type).compare("[ALIGNMENT]") == 0)
         cfc = new ClassFlowAlignment(&FlowControll);
-    if (_type.compare("[Analog]") == 0)
+    if (toUpper(_type).compare("[ANALOG]") == 0)
         cfc = new ClassFlowAnalog(&FlowControll);
-    if (_type.compare("[Digits]") == 0)
+    if (toUpper(_type).compare("[DIGITS]") == 0)
         cfc = new ClassFlowDigit(&FlowControll);
-    if (_type.compare("[PostProcessing]") == 0)
+    if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
@@ -91,8 +89,11 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     if (cfc)                            // Wird nur angehangen, falls es nicht [AutoTimer] ist, denn dieses ist für FlowControll
         FlowControll.push_back(cfc);
 
-    if (_type.compare("[AutoTimer]") == 0)
+    if (toUpper(_type).compare("[AUTOTIMER]") == 0)
         cfc = this;    
+
+    if (toUpper(_type).compare("[DEBUG]") == 0)
+        cfc = this;  
 
     return cfc;
 }
@@ -156,7 +157,7 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            i = i-2;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            i = -1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
@@ -230,7 +231,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
     if (flowpostprocessing)
     {
         flowpostprocessing->SavePreValue(zw);
-        return to_string(zw);    
+        return _newvalue;    
     }
 
     return std::string();
@@ -247,23 +248,34 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[AutoTimer]") != 0)       // Paragraph passt nich zu MakeImage
+    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0))      // Paragraph passt nicht zu MakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((zerlegt[0] == "AutoStart") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "AUTOSTART") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
             {
                 AutoStart = true;
             }
         }
-        if ((zerlegt[0] == "Intervall") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "INTERVALL") && (zerlegt.size() > 1))
         {
             AutoIntervall = std::stof(zerlegt[1]);
         }
+        if ((toUpper(zerlegt[0]) == "LOGFILE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+            {
+                LogFile.SwitchOnOff(true);
+            }
+            if (toUpper(zerlegt[1]) == "FALSE")
+            {
+                LogFile.SwitchOnOff(false);
+            }
+        }      
     }
     return true;
 }

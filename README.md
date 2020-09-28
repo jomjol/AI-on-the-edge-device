@@ -19,9 +19,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ### Known Issues
 
-* Parts of the web page only works correctly in **Firefox** and Chrome!
-  With **Edge** not all parts (especially the configuration) are **not full functional**.
-* spontaneous reboot, especially in case of intensive web server access (improved since v2.0.0)
+* spontaneous reboot, especially in case of intensive web server access (improved since v2.1.0)
 
 ------
 
@@ -29,30 +27,42 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-20)
+##### Rolling - (2020-09-28)
 
-* Update HTML-Backround (thanks to michaeljoos72)
+* based on v2.2.1 (2020-09-28)
 
-2020-09-16
-
-* Impovements in hostname
-
-2020-09-14
-
-* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")` - Parameter is optional
-
-* Bug correction DecimalShift
-
-2020-09-13
-
-* Bug fixing DecimalShift (digits after comma)
-
-* Implementation of decimal shift (New Parameter "DecimalShift = 1" in [PostProcessing])
-DecimalShift = 2 --> Result: 123.456 --> 12345.6
-  DecimalShift = -1 --> Result: 123.456 --> 12.3456
-  The shift is done at the very first step of merging digital and analog, so all following number already will work on the shifted number.
   
-* based on v2.0.0 (2020-09-12)
+
+##### 2.2.1 Version Control  (2020-09-27)
+
+* Bug-Fixing (hostname in wlan.ini and error handling inside flow)
+  
+  
+
+
+##### 2.2.0 Version Control  (2020-09-27)
+
+* Integrated automated versioning system (menu: SYSTEM --> INFO)
+* Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
+
+
+
+
+##### 2.1.0 Decimal Shift, Chrome & Edge  (2020-09-25)
+
+* Implementation of Decimal Shift
+
+* Update default CNN for digits to v6.4.0
+
+* Improvement HTML
+
+* Support for Chrome and Edge
+
+* Reduce logging to minimum - extended logging on demand
+
+* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")`
+
+* Bug fixing, code corrections
 
   
 

@@ -10,6 +10,8 @@
 #include "CTfLiteClass.h"
 #endif
 
+#include "ClassLogFile.h"
+
 ClassFlowAnalog::ClassFlowAnalog()
 {
     isLogImage = false;
@@ -106,6 +108,7 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
+            neuroi->result = -1;
             ROI.push_back(neuroi);
         }
     }
@@ -140,7 +143,10 @@ string ClassFlowAnalog::getHTMLSingleStep(string host)
 
 bool ClassFlowAnalog::doFlow(string time)
 {
-    doAlignAndCut(time);
+    if (!doAlignAndCut(time)){
+        return false;
+    };
+
     doNeuralNetwork(time);
 
     return true;
@@ -160,8 +166,21 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
     CImageBasis *img_roi = NULL;
     CAlignAndCutImage *caic = new CAlignAndCutImage(input);
 
-    if (input_roi.length() > 0)
-        img_roi = new CImageBasis(input_roi);    
+    if (!caic->ImageOkay()){
+        LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut not okay!");
+        delete caic;
+        return false;
+    }
+
+    if (input_roi.length() > 0){
+        img_roi = new CImageBasis(input_roi);
+        if (!img_roi->ImageOkay()){
+            LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut ImageRoi not okay!");
+            delete caic;
+            delete img_roi;
+            return false;
+        }
+    }
 
     for (int i = 0; i < ROI.size(); ++i)
     {

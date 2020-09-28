@@ -11,6 +11,8 @@
 
 // #include "bitmap_image.hpp"
 
+#include "ClassLogFile.h"
+
 ClassFlowDigit::ClassFlowDigit()
 {
     isLogImage = false;
@@ -84,6 +86,7 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
+            neuroi->resultklasse = -1;
             ROI.push_back(neuroi);
         }
     }
@@ -119,7 +122,10 @@ string ClassFlowDigit::getHTMLSingleStep(string host)
 
 bool ClassFlowDigit::doFlow(string time)
 {
-    doAlignAndCut(time);
+    if (!doAlignAndCut(time)){
+        return false;
+    };
+
     doNeuralNetwork(time);
 
     return true;
@@ -138,9 +144,22 @@ bool ClassFlowDigit::doAlignAndCut(string time)
     CResizeImage *rs;
     CImageBasis *img_roi = NULL;
     CAlignAndCutImage *caic = new CAlignAndCutImage(input);
+    if (!caic->ImageOkay()){
+        LogFile.WriteToFile("ClassFlowDigit::doAlignAndCut not okay!");
+        delete caic;
+        return false;
+    }
 
-    if (input_roi.length() > 0)
+    if (input_roi.length() > 0){
         img_roi = new CImageBasis(input_roi);
+        if (!img_roi->ImageOkay()){
+            LogFile.WriteToFile("ClassFlowDigit::doAlignAndCut ImageRoi not okay!");
+            delete caic;
+            delete img_roi;
+            return false;
+        }
+    }
+
 
 
     for (int i = 0; i < ROI.size(); ++i)
