@@ -8,7 +8,7 @@ extern "C"
     extern const char* BUILD_TIME;
 }
 
-const char* GIT_BASE_BRANCH = "master - v2.1.0 - 2020-09-25";
+const char* GIT_BASE_BRANCH = "master - v2.1.1 - 2020-09-28";
 
 
 const char* git_base_branch(void)

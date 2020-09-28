@@ -27,14 +27,22 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-27)
+##### Rolling - (2020-09-28)
 
-* based on v2.2.0 (2020-09-27)
+* Error Correction
 
+* based on v2.2.1 (2020-09-28)
+
+  
+  
+##### 2.2.1 Version Control  (2020-09-27)
+
+* Bug-Fixing (hostname in wlan.ini and error handling inside flow)
+  
   
 
 
-##### 2.2.0 Version Controll  (2020-09-27)
+##### 2.2.0 Version Control  (2020-09-27)
 
 * Integrated automated versioning system (menu: SYSTEM --> INFO)
 * Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
