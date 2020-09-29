@@ -9,6 +9,9 @@ extern "C"
 }
 
 #include <string>
+#include <string.h>
+#include "Helper.h"
+#include <fstream>
 
 const char* GIT_BASE_BRANCH = "master - v2.1.1 - 2020-09-28";
 

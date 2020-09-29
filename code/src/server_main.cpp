@@ -9,6 +9,8 @@
 
 #include "version.h"
 
+#include "esp_wifi.h"
+
 
 httpd_handle_t server = NULL;   
 
@@ -163,8 +165,6 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-
-
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
     char filepath[50];
@@ -205,7 +205,47 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+esp_err_t sysinfo_handler(httpd_req_t *req)
+{
+    const char* resp_str; 
+    std::string zw;
+    std::string cputemp = std::to_string(temperatureRead());
+    std::string gitversion = libfive_git_version();
+    std::string buildtime = build_time();
+    std::string gitbranch = libfive_git_branch();
+    std::string gitbasebranch = git_base_branch();
+    std::string htmlversion = getHTMLversion();
 
+    tcpip_adapter_ip_info_t ip_info;
+    ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+    ip6_addr_t if_ip6;
+    ESP_ERROR_CHECK(tcpip_adapter_get_ip6_global(TCPIP_ADAPTER_IF_STA, &if_ip6));
+    const char *hostname;
+    ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
+        
+    zw = "[\
+            {\
+                \"firmware\" : \"" + gitversion + "\",\
+                \"buildtime\" : \"" + buildtime + "\",\
+                \"gitbranch\" : \"" + gitbranch + "\",\
+                \"gitbasebranch\" : \"" + gitbasebranch + "\",\
+                \"html\" : \"" + htmlversion + "\",\
+                \"cputemp\" : \"" + cputemp + "\",\
+                \"hostname\" : \"" + hostname + "\",\
+                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\"\
+            }\
+        ]";
+
+
+    resp_str = zw.c_str();
+
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, resp_str, strlen(resp_str));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+    return ESP_OK;
+}
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
@@ -217,6 +257,13 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     };
     httpd_register_uri_handler(server, &info_get_handle);
 
+    httpd_uri_t sysinfo_handle = {
+        .uri       = "/sysinfo",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = sysinfo_handler,
+        .user_ctx  = (void*) base_path    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &sysinfo_handle);
 
     httpd_uri_t starttime_tmp_handle = {
         .uri       = "/starttime",  // Match all URIs of type /path/to/file
@@ -243,6 +290,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &main_rest_handle);
+
 }
 
 

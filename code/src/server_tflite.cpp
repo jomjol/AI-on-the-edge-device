@@ -18,8 +18,6 @@
 
 #include "ClassLogFile.h"
 
-#include "version.h"
-
 ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandleblink_task_doFlow = NULL;
@@ -412,44 +410,6 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     return ESP_OK;
 };
 
-
-esp_err_t handler_sysinfo(httpd_req_t *req)
-{
-    LogFile.WriteToFile("handler_sysinfo"); 
-    const char* resp_str;
-    string zw;
-    string cputemp = std::to_string(temperatureRead());
-    string gitversion = libfive_git_version();
-    string buildtime = build_time();
-    string gitbranch = libfive_git_branch();
-    string gitbasebranch = git_base_branch();
-    string htmlversion = getHTMLversion();
-
-    zw = "[\
-            {\
-                \"firmware\" : \"" + gitversion + "\",\
-                \"buildtime\" : \"" + buildtime + "\",\
-                \"gitbranch\" : \"" + gitbranch + "\",\
-                \"gitbasebranch\" : \"" + gitbasebranch + "\",\
-                \"html\" : \"" + htmlversion + "\",\
-                \"cputemp\" : \"" + cputemp + "\",\
-                \"hostname\" : \"host\",\
-                \"IPv4\" : \"IP\"\
-            }\
-        ]";
-
-
-    resp_str = zw.c_str();
-
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, resp_str, strlen(resp_str));   
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);      
-
-    return ESP_OK;
-};
-
-
 void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
@@ -528,9 +488,5 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
     httpd_register_uri_handler(server, &camuri);  
-    
-    camuri.uri       = "/sysinfo";
-    camuri.handler   = handler_sysinfo;
-    camuri.user_ctx  = (void*) "Sysinfo"; 
-    httpd_register_uri_handler(server, &camuri);
+
 }
