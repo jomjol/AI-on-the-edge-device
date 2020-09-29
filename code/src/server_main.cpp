@@ -220,7 +220,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     const char *hostname;
     ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
-        
+    
     zw = "[\
             {\
                 \"firmware\" : \"" + gitversion + "\",\

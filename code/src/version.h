@@ -56,6 +56,7 @@ std::string getHTMLversion(void){
     char zw[1024];
     fgets(zw, 1024, pFile);
     line = std::string(trim(zw));
+    fclose(pFile);
 
     return line;
 }
