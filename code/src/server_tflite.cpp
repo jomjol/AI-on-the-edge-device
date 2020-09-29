@@ -438,7 +438,10 @@ void task_autodoFlow(void *pvParameter)
         LogFile.WriteToFile("task_autodoFlow - round done");
         //CPU Temp
         float cputmp = temperatureRead();
-//        LogFile.WriteToFile("CPU Temperature: %.2f", cputmp); 
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(1) << cputmp;
+        string zwtemp = "CPU Temperature: " + stream.str();
+        LogFile.WriteToFile(zwtemp); 
         printf("CPU Temperature: %.2f\n", cputmp);
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;

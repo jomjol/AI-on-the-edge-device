@@ -27,7 +27,11 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-28)
+##### Rolling - (2020-09-29)
+
+* Implementation of HTML-Version (thanks to phlupp)
+
+* ESP32 Temperature is now written correctly to log file
 
 * based on v2.2.1 (2020-09-28)
 
