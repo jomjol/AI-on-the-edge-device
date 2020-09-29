@@ -218,8 +218,6 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
-    ip6_addr_t if_ip6;
-    ESP_ERROR_CHECK(tcpip_adapter_get_ip6_global(TCPIP_ADAPTER_IF_STA, &if_ip6));
     const char *hostname;
     ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
         
