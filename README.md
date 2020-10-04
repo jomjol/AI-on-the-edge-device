@@ -27,7 +27,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-09-29)
+##### Rolling - (2020-10-04)
+
+* First simple MQTT Client - to be configured in `config.ini` (see example)
+
+
+
+2020-09-29
 
 * Implementation of HTML-Version (thanks to phlupp)
 
