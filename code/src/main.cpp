@@ -5,63 +5,26 @@
 
 #include "driver/gpio.h"
 #include "sdkconfig.h"
-//#include "version.h"
+
+// SD-Card ////////////////////
+#include "nvs_flash.h"
+#include "esp_vfs_fat.h"
+#include "sdmmc_cmd.h"
+#include "driver/sdmmc_host.h"
+#include "driver/sdmmc_defs.h"
+///////////////////////////////
 
 #include "ClassLogFile.h"
 
-
-//#include "esp_wifi.h"
-//#include "protocol_examples_common.h"
-
 #include "connect_wlan.h"
 
-#include <esp_http_server.h>
-
-#include "lwip/err.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-#include "lwip/netdb.h"
-#include "lwip/dns.h"
-
-
-#include <sys/unistd.h>
-#include <sys/stat.h>
-#include "esp_log.h"
-#include "esp_system.h"
-#include "esp_event.h"
-#include "esp_event_loop.h"
-#include "nvs_flash.h"
-#include "esp_err.h"
-#include "esp_vfs_fat.h"
-#include "driver/sdmmc_host.h"
-#include "driver/sdmmc_defs.h"
-#include "sdmmc_cmd.h"
-
-#include "server_main.h"
-#include "server_camera.h"
 #include "server_tflite.h"
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
 #include "ClassControllCamera.h"
-
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
-
-#include "freertos/FreeRTOS.h"
-
-// SD-Card
-#include "nvs_flash.h"
-#include "esp_vfs_fat.h"
-#include "sdmmc_cmd.h"
-
 #include "server_main.h"
 #include "server_camera.h"
-#include "ClassControllCamera.h"
-#include "connect_wlan.h"
-#include "time_sntp.h"
 
 static const char *TAGMAIN = "connect_wlan_main";
 
@@ -130,7 +93,7 @@ extern "C" void app_main()
     vTaskDelay( xDelay );   
 //    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
-    LogFile.WriteToFile("======================== Main Started ================================");
+    LogFile.WriteToFile("============================== Main Started =======================================");
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");

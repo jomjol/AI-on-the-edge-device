@@ -8,6 +8,7 @@
 #include "ClassFlowDigit.h"
 #include "ClassFlowAnalog.h"
 #include "ClassFlowPostProcessing.h"
+#include "ClassFlowMQTT.h"
 
 
 class ClassFlowControll :

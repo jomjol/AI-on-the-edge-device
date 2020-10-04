@@ -20,6 +20,9 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if (_stepname.compare("[Analog]") == 0){
         _classname = "ClassFlowAnalog";
     }
+    if (_stepname.compare("[MQTT]") == 0){
+        _classname = "ClassFlowMQTT";
+    }
 //    std::string zw = "Classname: " + _classname + "\n";
 //    printf(zw.c_str());
 
@@ -80,6 +83,8 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         cfc = new ClassFlowAnalog(&FlowControll);
     if (toUpper(_type).compare("[DIGITS]") == 0)
         cfc = new ClassFlowDigit(&FlowControll);
+    if (toUpper(_type).compare("[MQTT]") == 0)
+        cfc = new ClassFlowMQTT(&FlowControll);
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 

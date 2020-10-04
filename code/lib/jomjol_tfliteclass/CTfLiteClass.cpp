@@ -2,7 +2,11 @@
 
 #include "bitmap_image.hpp"
 
+#include "ClassLogFile.h"
+
 #include <sys/stat.h>
+
+bool debugdetailtflite = false;
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -109,7 +113,11 @@ void CTfLiteClass::Invoke()
 
 bool CTfLiteClass::LoadInputImage(std::string _fn)
 {
+    std::string zw = "ClassFlowAnalog::doNeuralNetwork nach Load Image: " + _fn;
+//    LogFile.WriteToFile(zw);
     bitmap_image image(_fn);
+    if (debugdetailtflite) LogFile.WriteToFile(zw);
+
     unsigned int w = image.width();
     unsigned int h = image.height();
     unsigned char red, green, blue;
@@ -135,6 +143,9 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
 //                printf("BMP: %f %f %f\n", (float) red, (float) green, (float) blue);
 
             }
+    
+    if (debugdetailtflite) LogFile.WriteToFile("Nach dem Laden in input");
+
     return true;
 }
 

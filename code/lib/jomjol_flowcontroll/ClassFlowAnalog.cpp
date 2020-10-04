@@ -12,6 +12,8 @@
 
 #include "ClassLogFile.h"
 
+bool debugdetailanalog = false;
+
 ClassFlowAnalog::ClassFlowAnalog()
 {
     isLogImage = false;
@@ -147,6 +149,8 @@ bool ClassFlowAnalog::doFlow(string time)
         return false;
     };
 
+    if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doFlow nach Alignment");
+
     doNeuralNetwork(time);
 
     return true;
@@ -167,7 +171,7 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
     CAlignAndCutImage *caic = new CAlignAndCutImage(input);
 
     if (!caic->ImageOkay()){
-        LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut not okay!");
+        if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut not okay!");
         delete caic;
         return false;
     }
@@ -175,7 +179,7 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
     if (input_roi.length() > 0){
         img_roi = new CImageBasis(input_roi);
         if (!img_roi->ImageOkay()){
-            LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut ImageRoi not okay!");
+            if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut ImageRoi not okay!");
             delete caic;
             delete img_roi;
             return false;
@@ -190,6 +194,13 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
         caic->CutAndSave(output, ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay);
 
         rs = new CResizeImage(output);
+        if (!rs->ImageOkay()){
+            if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut CResizeImage(output);!");
+            delete caic;
+            delete rs;
+            return false;
+        }
+
         rs->Resize(modelxsize, modelysize);
         ioresize = "/sdcard/img_tmp/ra" + std::to_string(i) + ".bmp";
         ioresize = FormatFileName(ioresize);
@@ -248,8 +259,11 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
         f1 = 0; f2 = 0;
 
 #ifndef OHNETFLITE
+//        LogFile.WriteToFile("ClassFlowAnalog::doNeuralNetwork vor CNN tflite->LoadInputImage(ioresize)");
         tflite->LoadInputImage(ioresize);
         tflite->Invoke();
+        if (debugdetailanalog) LogFile.WriteToFile("Nach Invoke");
+
 
         f1 = tflite->GetOutputValue(0);
         f2 = tflite->GetOutputValue(1);
