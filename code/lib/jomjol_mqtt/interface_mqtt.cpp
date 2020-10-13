@@ -64,10 +64,16 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
-void MQTTInit(std::string _mqttURI, std::string _clientid){
+void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password){
     esp_mqtt_client_config_t mqtt_cfg = {
         .uri = _mqttURI.c_str(),
         .client_id = _clientid.c_str(),
+    };
+
+    if (_user.length() && _password.length()){
+        mqtt_cfg.username = _user.c_str();
+        mqtt_cfg.password = _password.c_str();
+        printf("Connect to MQTT: %s, %s", mqtt_cfg.username, mqtt_cfg.password);
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);

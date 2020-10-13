@@ -14,7 +14,9 @@ ClassFlowMQTT::ClassFlowMQTT()
     topic = "";
     clientname = "watermeter";
     OldValue = "";
-    flowpostprocessing = NULL;    
+    flowpostprocessing = NULL;  
+    user = "";
+    password = "";    
 }
 
 ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
@@ -24,6 +26,8 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;
+    user = "";
+    password = "";        
 
     ListFlowControll = lfc;
 
@@ -53,6 +57,14 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
+        if ((toUpper(zerlegt[0]) == "USER") && (zerlegt.size() > 1))
+        {
+            this->user = zerlegt[1];
+        }  
+        if ((toUpper(zerlegt[0]) == "PASSWORD") && (zerlegt.size() > 1))
+        {
+            this->password = zerlegt[1];
+        }               
         if ((toUpper(zerlegt[0]) == "URI") && (zerlegt.size() > 1))
         {
             this->uri = zerlegt[1];
@@ -70,7 +82,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     if ((uri.length() > 0) && (topic.length() > 0)) 
     {
-        MQTTInit(uri, clientname);
+        MQTTInit(uri, clientname, user, password);
     }
    
     return true;
