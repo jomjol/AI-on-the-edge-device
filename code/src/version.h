@@ -8,6 +8,11 @@ extern "C"
     extern const char* BUILD_TIME;
 }
 
+#include <string>
+#include <string.h>
+#include "Helper.h"
+#include <fstream>
+
 const char* GIT_BASE_BRANCH = "master - v2.1.1 - 2020-09-28";
 
 
@@ -35,4 +40,23 @@ const char* libfive_git_revision(void)
 const char* libfive_git_branch(void)
 {
     return GIT_BRANCH;
+}
+
+std::string getHTMLversion(void){
+    
+    string line = "";
+    
+    FILE* pFile;
+    string fn = FormatFileName("/sdcard/html/version.txt");
+    pFile = fopen(fn.c_str(), "r");
+
+    if (pFile == NULL)
+        return std::string("NAN");
+
+    char zw[1024];
+    fgets(zw, 1024, pFile);
+    line = std::string(trim(zw));
+    fclose(pFile);
+
+    return line;
 }
