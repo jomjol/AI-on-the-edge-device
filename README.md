@@ -27,7 +27,11 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-10-14)
+##### Rolling - (2020-10-18)
+
+* New implementation of "checkDigitConsistency" now also for digits
+
+* Bug fixing in Postprocessing: MaxRating and NegativeValue did not work properly in some cases.
 
 * based on v3.0.0 (2020-10-14)
 
