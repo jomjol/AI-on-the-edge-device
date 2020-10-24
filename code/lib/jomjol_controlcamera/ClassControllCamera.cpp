@@ -10,6 +10,8 @@
 
 #include "camera_define.h"
 
+#include "driver/ledc.h"
+
 CCamera Camera;
 
 
@@ -19,6 +21,42 @@ typedef struct {
         httpd_req_t *req;
         size_t len;
 } jpg_chunking_t;
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+#define LEDC_LS_CH2_GPIO       (4)
+#define LEDC_LS_CH2_CHANNEL    LEDC_CHANNEL_2
+#define LEDC_LS_TIMER          LEDC_TIMER_1
+#define LEDC_LS_MODE           LEDC_LOW_SPEED_MODE
+#define LEDC_TEST_DUTY         (4000)
+
+void test(){
+    ledc_channel_config_t ledc_channel = { };
+
+    ledc_channel.channel = LEDC_LS_CH2_CHANNEL;
+    ledc_channel.duty       = 0;
+    ledc_channel.gpio_num   = FLASH_GPIO;
+    ledc_channel.speed_mode = LEDC_LS_MODE;
+    ledc_channel.hpoint     = 0;
+    ledc_channel.timer_sel  = LEDC_LS_TIMER;
+
+    ledc_channel_config(&ledc_channel);
+
+    ledc_set_duty(ledc_channel.speed_mode, ledc_channel.channel, LEDC_TEST_DUTY);
+    ledc_update_duty(ledc_channel.speed_mode, ledc_channel.channel);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+};
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
     jpg_chunking_t *j = (jpg_chunking_t *)arg;

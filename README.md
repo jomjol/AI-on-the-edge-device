@@ -27,7 +27,11 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-10-18)
+##### Rolling - (2020-10-24)
+
+* Bug-Fixing in case of automated restart
+
+2020-10-18
 
 * New implementation of "checkDigitConsistency" now also for digits
 
