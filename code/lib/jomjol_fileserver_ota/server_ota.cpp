@@ -402,8 +402,11 @@ void task_reboot(void *pvParameter)
 
 void doReboot(){
     LogFile.WriteToFile("Reboot - now");
-    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     KillTFliteTasks();
+    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    esp_restart();
+    hard_restart();    
 }
 
 

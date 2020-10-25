@@ -10,4 +10,8 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
 
 void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname);
 
+std::string getHostname();
+std::string getIPAddress();
+std::string getSSID();
+
 #endif
