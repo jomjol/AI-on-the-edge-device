@@ -7,6 +7,8 @@
 
 #include "time_sntp.h"
 
+#include "connect_wlan.h"
+
 #include "version.h"
 
 #include "esp_wifi.h"
@@ -93,6 +95,34 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
+
+    if (_task.compare("Hostname") == 0)
+    {
+        std::string zw;
+        zw = std::string(getHostname());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("IP") == 0)
+    {
+        std::string zw;
+        zw = std::string(getIPAddress());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SSID") == 0)
+    {
+        std::string zw;
+        zw = std::string(getSSID());
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
 
     return ESP_OK;
 }

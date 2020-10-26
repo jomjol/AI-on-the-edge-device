@@ -404,6 +404,9 @@ void doReboot(){
     LogFile.WriteToFile("Reboot - now");
     KillTFliteTasks();
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    esp_restart();
+    hard_restart();    
 }
 
 
