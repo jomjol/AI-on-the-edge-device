@@ -22,6 +22,7 @@ static const char *MAIN_TAG = "connect_wlan";
 std::string ssid;
 std::string passphrase;
 std::string hostname;
+std::string ipaddress;
 
 std::string std_hostname = "watermeter";
 
@@ -123,6 +124,7 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+    ipaddress = std::string(ip4addr_ntoa(&ip_info.ip));
     printf("IPv4 :  %s\n", ip4addr_ntoa(&ip_info.ip));
     printf("HostName :  %s\n", hostname.c_str());
 }
@@ -191,3 +193,14 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 }
 
 
+std::string getHostname(){
+    return hostname;
+}
+
+std::string getIPAddress(){
+    return ipaddress;
+}
+
+std::string getSSID(){
+    return ssid;
+}

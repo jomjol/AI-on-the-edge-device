@@ -335,25 +335,23 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     Value = std::stof(zw);
     if (checkDigitIncreaseConsistency)
     {
-//        Value = checkDigitConsistency(Value, DecimalShift, isanalog);
+        Value = checkDigitConsistency(Value, DecimalShift, isanalog);
     }
 
     zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
-        error = "Negative Rate - Returned old value - read value: " + zwvalue;
+        error = error + "Negative Rate - Returned old value - read value: " + zwvalue + " ";
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
-    else
+
+    if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
     {
-        if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
-        {
-            error = "Rate too high - Returned old value - read value: " + zwvalue;
-            Value = PreValue;
-            zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
-        }
+        error = error + "Rate too high - Returned old value - read value: " + zwvalue + " ";
+        Value = PreValue;
+        zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
 
     ReturnValueNoError = zwvalue;
@@ -426,7 +424,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     float zw;
 
     pot = _decilamshift;
-    if (!_isanalog)             // falls es keine analogwerte gibt, kann die letzte nicht bewerte werden
+    if (!_isanalog)             // falls es keine analogwerte gibt, kann die letzte nicht bewertet werden
     {
         pot++;
     }
