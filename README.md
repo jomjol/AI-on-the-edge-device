@@ -25,26 +25,18 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-
-
 ##### Rolling - (2020-10-25)
 
-* Update digital CNN to v6.5.0 (additional type of numbers trained)
-* Update HTML to v1.1.0 - additional host information displayed (hostname, IP, ssid)
-
-2020-10-24
-
-* Bug-Fixing in case of automated restart
-
-2020-10-18
-
-* New implementation of "checkDigitConsistency" now also for digits
-
-* Bug fixing in Postprocessing: MaxRating and NegativeValue did not work properly in some cases.
-
-* based on v3.0.0 (2020-10-14)
+* based on v3.1.0 (2020-10-26)
 
   
+
+##### 3.1.0 MQTT-Client - (2020-10-26)
+
+* Update digital CNN to v6.5.0 and HTML (Info to hostname, IP, ssid)
+
+* New implementation of "checkDigitConsistency" also for digits
+* MQTT-Adapter: user and password for sign in MQTT-Broker
 
 ##### 3.0.0 MQTT-Client  (2020-10-14)
 
