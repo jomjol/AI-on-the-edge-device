@@ -5,7 +5,7 @@
     exit(1);                                                 \
   }
 
-#include "tensorflow/lite/micro/kernels/all_ops_resolver.h"
+#include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -39,7 +39,8 @@ class CTfLiteClass
         const tflite::Model* model;
         tflite::MicroInterpreter* interpreter;
         TfLiteTensor* output = nullptr;     
-        static tflite::ops::micro::AllOpsResolver *resolver; 
+//        static tflite::ops::micro::AllOpsResolver *resolver; 
+        static tflite::AllOpsResolver resolver;
 
         int kTensorArenaSize;
         uint8_t *tensor_arena;
