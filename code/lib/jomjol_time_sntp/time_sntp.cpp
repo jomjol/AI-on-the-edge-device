@@ -75,24 +75,18 @@ void setup_time(void)
     time(&now);
     localtime_r(&now, &timeinfo);
     // Is time set? If not, tm_year will be (1970 - 1900).
-    if (timeinfo.tm_year < (2016 - 1900)) {
+    if ((timeinfo.tm_year < (2016 - 1900)) || setTimeAlwaysOnReboot) {
         ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
         initialize_sntp();
         obtain_time();
         // update 'now' variable with current time
         time(&now);
     }
-    else
-    {
-        if (setTimeAlwaysOnReboot)
-        {
-            obtain_time();
-        }
-    }
     char strftime_buf[64];
 
     // Set timezone to Berlin Standard Time
     setenv("TZ", "UTC+9", 1);
+//    setenv("TZ", "Europe/Berlin", 1);
     tzset();
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);

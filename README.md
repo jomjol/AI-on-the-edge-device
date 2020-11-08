@@ -25,7 +25,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-10-25)
+##### Rolling - (2020-11-08)
+
+* Updated Tensorflow tflite Kernel to master@20201108 (R2.4?)
+
+2020-11-03
+
+* Bug-Fix in time sync on warm reboot
 
 * based on v3.1.0 (2020-10-26)
 
