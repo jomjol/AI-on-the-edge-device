@@ -4,8 +4,6 @@
 
 #include <string>
 
-static const char* TAG2 = "example";
-
 #define BLINK_GPIO GPIO_NUM_4
 
 #define CAMERA_MODEL_AI_THINKER

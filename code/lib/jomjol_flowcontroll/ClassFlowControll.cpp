@@ -280,6 +280,10 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 LogFile.SwitchOnOff(false);
             }
+        }
+        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            LogFile.SetRetention(std::stoi(zerlegt[1]));
         }      
     }
     return true;

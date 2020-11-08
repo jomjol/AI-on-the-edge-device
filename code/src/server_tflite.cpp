@@ -433,6 +433,8 @@ void task_autodoFlow(void *pvParameter)
             printf("Autoflow: doFLow wird gestartet\n");
             flowisrunning = true;
             doflow();
+            printf("Remove older log files\n");
+            LogFile.RemoveOld();
         }
         
         LogFile.WriteToFile("task_autodoFlow - round done");

@@ -17,6 +17,10 @@ bool ctype_space(const char c, string adddelimiter);
 
 string getFileType(string filename);
 
+int mkdir_r(const char *dir, const mode_t mode);
+
 string toUpper(string in);
 
 float temperatureRead();
+
+time_t addDays(time_t startTime, int days);
