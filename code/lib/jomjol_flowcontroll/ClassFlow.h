@@ -9,6 +9,10 @@
 
 using namespace std;
 
+#define LOGFILE_TIME_FORMAT "%Y%m%d-%H%M%S"
+#define LOGFILE_TIME_FORMAT_DATE_EXTR substr(0, 8)
+#define LOGFILE_TIME_FORMAT_HOUR_EXTR substr(9, 2)
+
 struct HTMLInfo
 {
 	float val;

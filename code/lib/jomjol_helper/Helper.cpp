@@ -3,7 +3,9 @@
 #include "Helper.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <string.h>
+#include <esp_log.h>
 
 //#define ISWINDOWS_TRUE
 #define PATH_MAX_STRING_SIZE 256
@@ -239,4 +241,37 @@ time_t addDays(time_t startTime, int days) {
 	struct tm* tm = localtime(&startTime);
 	tm->tm_mday += days;
 	return mktime(tm);
+}
+
+int removeFolder(const char* folderPath, const char* logTag) {
+	ESP_LOGI(logTag, "Delete folder %s", folderPath);
+
+	DIR *dir = opendir(folderPath);
+    if (!dir) {
+        ESP_LOGI(logTag, "Failed to stat dir : %s", folderPath);
+        return -1;
+    }
+
+    struct dirent *entry;
+    int deleted = 0;
+    while ((entry = readdir(dir)) != NULL) {
+        std::string path = string(folderPath) + "/" + entry->d_name;
+		if (entry->d_type == DT_REG) {
+			if (unlink(path.c_str()) == 0) {
+				deleted ++;
+			} else {
+				ESP_LOGE(logTag, "can't delete file : %s", path.c_str());
+			}
+        } else if (entry->d_type == DT_DIR) {
+			deleted += removeFolder(path.c_str(), logTag);
+		}
+    }
+    
+    closedir(dir);
+	if (rmdir(folderPath) != 0) {
+		ESP_LOGE(logTag, "can't delete file : %s", folderPath);
+	}
+	ESP_LOGI(logTag, "%d older log files in folder %s deleted.", deleted, folderPath);
+
+	return deleted;
 }

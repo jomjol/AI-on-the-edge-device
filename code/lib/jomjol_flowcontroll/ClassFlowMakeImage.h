@@ -1,5 +1,5 @@
 #pragma once
-#include "ClassFlow.h"
+#include "ClassFlowImage.h"
 #include "ClassControllCamera.h"
 
 #include <string>
@@ -11,11 +11,9 @@
 
 
 class ClassFlowMakeImage :
-    public ClassFlow
+    public ClassFlowImage
 {
 protected:
-    string LogImageLocation;
-    bool isLogImage;
     float waitbeforepicture;
     framesize_t ImageSize;
     bool isImageSize;

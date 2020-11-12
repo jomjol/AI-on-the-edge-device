@@ -6,8 +6,6 @@
 
 #include <time.h>
 
-static const char* TAG2 = "example";
-
 ClassFlowMQTT::ClassFlowMQTT()
 {
     uri = "";

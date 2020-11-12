@@ -14,6 +14,8 @@
 
 #include <esp_http_server.h>
 
+static const char *TAG = "server-main";
+
 extern httpd_handle_t server;
 
 httpd_handle_t start_webserver(void);

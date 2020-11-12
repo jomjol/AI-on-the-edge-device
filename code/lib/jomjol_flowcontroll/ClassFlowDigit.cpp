@@ -13,23 +13,21 @@
 
 #include "ClassLogFile.h"
 
-ClassFlowDigit::ClassFlowDigit()
+static const char* TAG = "flow_digital";
+
+ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
 {
-    isLogImage = false;
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
     ListFlowControll = NULL;
 }
 
-ClassFlowDigit::ClassFlowDigit(std::vector<ClassFlow*>* lfc)
+ClassFlowDigit::ClassFlowDigit(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    isLogImage = false;
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
-    ListFlowControll = NULL;
-    ListFlowControll = lfc;
 }
 
 string ClassFlowDigit::getReadout()
@@ -66,8 +64,8 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
         zerlegt = this->ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] == "LogImageLocation") && (zerlegt.size() > 1))
         {
-            isLogImage = true;
-            LogImageLocation = zerlegt[1];
+            LogImageLocation = "/sdcard" + zerlegt[1];
+            isLogImage = true;            
         }
         if ((zerlegt[0] == "Model") && (zerlegt.size() > 1))
         {
@@ -127,6 +125,8 @@ bool ClassFlowDigit::doFlow(string time)
     };
 
     doNeuralNetwork(time);
+
+    RemoveOldLogs();
 
     return true;
 }
@@ -194,6 +194,8 @@ bool ClassFlowDigit::doAlignAndCut(string time)
 
 bool ClassFlowDigit::doNeuralNetwork(string time)
 {
+    string logPath = CreateLogFolder(time);
+
     string input = "/sdcard/img_tmp/alg.jpg";
     string ioresize = "/sdcard/img_tmp/resize.bmp";
     string output;
@@ -221,16 +223,9 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
 #ifndef OHNETFLITE
         ROI[i]->resultklasse = tflite->GetClassFromImage(ioresize);
 #endif
-        printf("Result Digit%i: %d\n", i, ROI[i]->resultklasse);           
+        printf("Result Digit%i: %d\n", i, ROI[i]->resultklasse);
 
-        if (isLogImage)
-        {
-            nm = "/sdcard" + LogImageLocation + "/" + std::to_string(ROI[i]->resultklasse) + "/" + time + "_" + ROI[i]->name + ".jpg";
-            output = "/sdcard/img_tmp/" + ROI[i]->name + ".jpg";
-            output = FormatFileName(output);            
-            nm = FormatFileName(nm);
-            CopyFile(output, nm);
-        }        
+        LogImage(logPath, ROI[i]->name, NULL, &ROI[i]->resultklasse, time);
     }
 #ifndef OHNETFLITE
         delete tflite;

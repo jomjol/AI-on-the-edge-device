@@ -94,7 +94,7 @@ void ClassLogFile::RemoveOld()
 
     DIR *dir = opendir(logroot.c_str());
     if (!dir) {
-        ESP_LOGE(TAG, "Failed to stat dir : %s", logroot.c_str());
+        ESP_LOGI(TAG, "Failed to stat dir : %s", logroot.c_str());
         return;
     }
 
@@ -103,9 +103,9 @@ void ClassLogFile::RemoveOld()
     int notDeleted = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
-            //ESP_LOGE(TAG, "list log file : %s", entry->d_name);
+            //ESP_LOGI(TAG, "list log file : %s %s", entry->d_name, cmpfilename);
             if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
-                ESP_LOGE(TAG, "delete log file : %s", entry->d_name);
+                ESP_LOGI(TAG, "delete log file : %s", entry->d_name);
                 std::string filepath = logroot + "/" + entry->d_name; 
                 if (unlink(filepath.c_str()) == 0) {
                     deleted ++;
@@ -117,7 +117,7 @@ void ClassLogFile::RemoveOld()
             }
         }
     }
-    ESP_LOGE(TAG, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
+    ESP_LOGI(TAG, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
     closedir(dir);
 }
 

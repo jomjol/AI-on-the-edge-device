@@ -58,7 +58,8 @@ void doInit(void)
 
 bool doflow(void)
 {
-    std::string zw_time = gettimestring("%Y%m%d-%H%M%S");
+    
+    std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
     printf("doflow - start %s\n", zw_time.c_str());
     flowisrunning = true;
     tfliteflow.doFlow(zw_time);

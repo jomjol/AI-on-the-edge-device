@@ -1,5 +1,5 @@
 #pragma once
-#include "ClassFlow.h"
+#include "ClassFlowImage.h"
 #include "Helper.h"
 
 #include <string>
@@ -12,11 +12,9 @@ struct roi {
 };
 
 class ClassFlowDigit :
-    public ClassFlow
+    public ClassFlowImage
 {
 protected:
-    string LogImageLocation;
-    bool isLogImage;
     std::vector<roi*> ROI;
     string cnnmodelfile;
     int modelxsize, modelysize;
