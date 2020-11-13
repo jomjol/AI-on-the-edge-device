@@ -1,8 +1,14 @@
 //#pragma warning(disable : 4996)
 
 #include "Helper.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <string.h>
+#include <esp_log.h>
 
 //#define ISWINDOWS_TRUE
+#define PATH_MAX_STRING_SIZE 256
 
 using namespace std;
 
@@ -159,6 +165,63 @@ string getFileType(string filename)
 	return zw;
 }
 
+/* recursive mkdir */
+int mkdir_r(const char *dir, const mode_t mode) {
+    char tmp[PATH_MAX_STRING_SIZE];
+    char *p = NULL;
+    struct stat sb;
+    size_t len;
+    
+    /* copy path */
+    len = strnlen (dir, PATH_MAX_STRING_SIZE);
+    if (len == 0 || len == PATH_MAX_STRING_SIZE) {
+        return -1;
+    }
+    memcpy (tmp, dir, len);
+    tmp[len] = '\0';
+
+    /* remove trailing slash */
+    if(tmp[len - 1] == '/') {
+        tmp[len - 1] = '\0';
+    }
+
+    /* check if path exists and is a directory */
+    if (stat (tmp, &sb) == 0) {
+        if (S_ISDIR (sb.st_mode)) {
+            return 0;
+        }
+    }
+    
+    /* recursive mkdir */
+    for(p = tmp + 1; *p; p++) {
+        if(*p == '/') {
+            *p = 0;
+            /* test path */
+            if (stat(tmp, &sb) != 0) {
+                /* path does not exist - create directory */
+                if (mkdir(tmp, mode) < 0) {
+                    return -1;
+                }
+            } else if (!S_ISDIR(sb.st_mode)) {
+                /* not a directory */
+                return -1;
+            }
+            *p = '/';
+        }
+    }
+    /* test path */
+    if (stat(tmp, &sb) != 0) {
+        /* path does not exist - create directory */
+        if (mkdir(tmp, mode) < 0) {
+            return -1;
+        }
+    } else if (!S_ISDIR(sb.st_mode)) {
+        /* not a directory */
+        return -1;
+    }
+    return 0;
+}
+
 string toUpper(string in)
 {
 	for (int i = 0; i < in.length(); ++i)
@@ -172,4 +235,43 @@ extern "C" uint8_t temprature_sens_read();
 float temperatureRead()
 {
     return (temprature_sens_read() - 32) / 1.8;
+}
+
+time_t addDays(time_t startTime, int days) {
+	struct tm* tm = localtime(&startTime);
+	tm->tm_mday += days;
+	return mktime(tm);
+}
+
+int removeFolder(const char* folderPath, const char* logTag) {
+	ESP_LOGI(logTag, "Delete folder %s", folderPath);
+
+	DIR *dir = opendir(folderPath);
+    if (!dir) {
+        ESP_LOGI(logTag, "Failed to stat dir : %s", folderPath);
+        return -1;
+    }
+
+    struct dirent *entry;
+    int deleted = 0;
+    while ((entry = readdir(dir)) != NULL) {
+        std::string path = string(folderPath) + "/" + entry->d_name;
+		if (entry->d_type == DT_REG) {
+			if (unlink(path.c_str()) == 0) {
+				deleted ++;
+			} else {
+				ESP_LOGE(logTag, "can't delete file : %s", path.c_str());
+			}
+        } else if (entry->d_type == DT_DIR) {
+			deleted += removeFolder(path.c_str(), logTag);
+		}
+    }
+    
+    closedir(dir);
+	if (rmdir(folderPath) != 0) {
+		ESP_LOGE(logTag, "can't delete file : %s", folderPath);
+	}
+	ESP_LOGI(logTag, "%d older log files in folder %s deleted.", deleted, folderPath);
+
+	return deleted;
 }

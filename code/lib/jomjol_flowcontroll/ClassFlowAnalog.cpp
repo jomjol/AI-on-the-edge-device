@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <iomanip>
-#include <sstream>
+#include <sys/types.h>
 
 // #define OHNETFLITE
 
@@ -12,25 +12,23 @@
 
 #include "ClassLogFile.h"
 
+static const char* TAG = "flow_analog";
+
 bool debugdetailanalog = false;
 
-ClassFlowAnalog::ClassFlowAnalog()
+ClassFlowAnalog::ClassFlowAnalog() : ClassFlowImage(TAG)
 {
-    isLogImage = false;
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
     ListFlowControll = NULL;
 }
 
-ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc)
+ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    isLogImage = false;
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
-    ListFlowControll = NULL;
-    ListFlowControll = lfc;
 }
 
 
@@ -90,8 +88,12 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
         zerlegt = this->ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] == "LogImageLocation") && (zerlegt.size() > 1))
         {
+            this->LogImageLocation = "/sdcard" + zerlegt[1];
             this->isLogImage = true;
-            this->LogImageLocation = zerlegt[1];
+        }
+        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            this->logfileRetentionInDays = std::stoi(zerlegt[1]);
         }
         if ((zerlegt[0] == "Model") && (zerlegt.size() > 1))
         {
@@ -152,6 +154,8 @@ bool ClassFlowAnalog::doFlow(string time)
     if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doFlow nach Alignment");
 
     doNeuralNetwork(time);
+
+    RemoveOldLogs();
 
     return true;
 }
@@ -233,10 +237,11 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
 
 bool ClassFlowAnalog::doNeuralNetwork(string time)
 {
+    string logPath = CreateLogFolder(time);
+    
     string input = "/sdcard/img_tmp/alg.jpg";
     string ioresize = "/sdcard/img_tmp/resize.bmp";
     string output;
-    string nm;
     input = FormatFileName(input);
 
 #ifndef OHNETFLITE
@@ -275,19 +280,7 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
 
         printf("Result Analog%i: %f\n", i, ROI[i]->result);           
 
-        if (isLogImage)
-        {
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(1) << ROI[i]->result;
-            std::string s = stream.str();
-//            std::snprintf(&s[0], s.size(), "%.2f", pi);
-            nm = "/sdcard" + LogImageLocation + "/" + s + "_" + ROI[i]->name + "_" + time + ".jpg";
-            nm = FormatFileName(nm);
-            output = "/sdcard/img_tmp/" + ROI[i]->name + ".jpg";
-            output = FormatFileName(output);
-            printf("Analog - save to file: %s\n", nm.c_str());
-            CopyFile(output, nm);
-        }        
+        LogImage(logPath, ROI[i]->name, &ROI[i]->result, NULL, time); 
     }
 #ifndef OHNETFLITE
         delete tflite;

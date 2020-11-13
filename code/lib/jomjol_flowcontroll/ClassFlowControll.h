@@ -42,6 +42,8 @@ public:
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	
 
+	int CleanTempFolder();
+
 	string name(){return "ClassFlowControll";};
 };
 

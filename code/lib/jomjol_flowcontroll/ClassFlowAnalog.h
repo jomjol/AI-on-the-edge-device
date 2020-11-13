@@ -1,5 +1,5 @@
 #pragma once
-#include "ClassFlow.h"
+#include "ClassFlowImage.h"
 // #include "CTfLiteClass.h"
 
 struct roianalog {
@@ -10,11 +10,9 @@ struct roianalog {
 
 
 class ClassFlowAnalog :
-    public ClassFlow
+    public ClassFlowImage
 {
 protected:
-    string LogImageLocation;
-    bool isLogImage;
     std::vector<roianalog*> ROI;
     string cnnmodelfile;
     int modelxsize, modelysize;

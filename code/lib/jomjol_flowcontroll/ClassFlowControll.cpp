@@ -1,9 +1,13 @@
 #include "ClassFlowControll.h"
 
+#include <sys/stat.h>
+#include <dirent.h>
 #include "ClassLogFile.h"
 #include "time_sntp.h"
 #include "Helper.h"
 #include "server_ota.h"
+
+static const char* TAG = "flow_controll";
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
@@ -149,6 +153,8 @@ std::string ClassFlowControll::getActStatus(){
 
 bool ClassFlowControll::doFlow(string time)
 {
+    CleanTempFolder();
+
     bool result = true;
     std::string zw_time;
     int repeat = 0;
@@ -280,8 +286,41 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 LogFile.SwitchOnOff(false);
             }
+        }
+        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            LogFile.SetRetention(std::stoi(zerlegt[1]));
         }      
     }
     return true;
 }
 
+int ClassFlowControll::CleanTempFolder() {
+    const char* folderPath = "/sdcard/img_tmp";
+    
+    ESP_LOGI(TAG, "Clean up temporary folder to avoid damage of sdcard sectors : %s", folderPath);
+    DIR *dir = opendir(folderPath);
+    if (!dir) {
+        ESP_LOGE(TAG, "Failed to stat dir : %s", folderPath);
+        return -1;
+    }
+
+    struct dirent *entry;
+    int deleted = 0;
+    while ((entry = readdir(dir)) != NULL) {
+        std::string path = string(folderPath) + "/" + entry->d_name;
+		if (entry->d_type == DT_REG) {
+			if (unlink(path.c_str()) == 0) {
+				deleted ++;
+			} else {
+				ESP_LOGE(TAG, "can't delete file : %s", path.c_str());
+			}
+        } else if (entry->d_type == DT_DIR) {
+			deleted += removeFolder(path.c_str(), TAG);
+		}
+    }
+    closedir(dir);
+    ESP_LOGI(TAG, "%d files deleted", deleted);
+    
+    return 0;
+}
