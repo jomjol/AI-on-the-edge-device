@@ -27,6 +27,14 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-11-08)
 
+* Implementation of rolling log-files - can be controlled by parameter: `LogfileRetentionInDays = 2` - that means log files will be deleted after 2 days
+  Many thanks to **[zwer2k](https://forum.iobroker.net/user/zwer2k)**
+* Bug-fixing for reducing reboots - internal memory removed - 
+  Many thanks to **[hike6688](https://github.com/hike6688)**
+  
+
+2020-11-08
+
 * Updated Tensorflow tflite Kernel to master@20201108 (R2.4?)
 
 2020-11-03

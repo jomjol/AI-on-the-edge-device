@@ -244,6 +244,8 @@ CTfLiteClass::CTfLiteClass()
 CTfLiteClass::~CTfLiteClass()
 {
   delete this->tensor_arena;
+  delete this->interpreter;
+  delete this->error_reporter;
 }        
 
 

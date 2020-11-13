@@ -153,7 +153,7 @@ std::string ClassFlowControll::getActStatus(){
 
 bool ClassFlowControll::doFlow(string time)
 {
-    CleanTempFolder();
+//    CleanTempFolder();            // dazu muss man noch eine Rolling einführen
 
     bool result = true;
     std::string zw_time;
