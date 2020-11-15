@@ -19,30 +19,27 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ### Known Issues
 
-* spontaneous reboot, especially in case of intensive web server access (improved since v2.1.0)
+* reboot on extensive web access due to the limits of the internal web server
 
 ------
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-11-08)
 
-* Implementation of rolling log-files - can be controlled by parameter: `LogfileRetentionInDays = 2` - that means log files will be deleted after 2 days
-  Many thanks to **[zwer2k](https://forum.iobroker.net/user/zwer2k)**
-* Bug-fixing for reducing reboots - internal memory removed - 
-  Many thanks to **[hike6688](https://github.com/hike6688)**
+
+##### Rolling - (2020-11-15)
+
+* based on v4.0.0 (2020-11-15)
+
   
 
-2020-11-08
+##### 4.0.0 Tflite Core - (2020-11-15)
+* Implementation of rolling log-files
 
-* Updated Tensorflow tflite Kernel to master@20201108 (R2.4?)
+* Update Tflite-Core to master@20201108 (v2.4)
 
-2020-11-03
-
-* Bug-Fix in time sync on warm reboot
-
-* based on v3.1.0 (2020-10-26)
-
+* Bug-fixing for reducing reboots
+  
   
 
 ##### 3.1.0 MQTT-Client - (2020-10-26)
@@ -64,15 +61,12 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 * Bug-Fixing (hostname in wlan.ini and error handling inside flow)
   
-  
 
 
 ##### 2.2.0 Version Control  (2020-09-27)
 
 * Integrated automated versioning system (menu: SYSTEM --> INFO)
 * Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
-
-
 
 
 ##### 2.1.0 Decimal Shift, Chrome & Edge  (2020-09-25)
@@ -91,7 +85,6 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 * Bug fixing, code corrections
 
-  
 
 ##### 2.0.0 Layout update  (2020-09-12)
 
