@@ -19,7 +19,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ### Known Issues
 
-* reboot on extensive web access due to the limits of the internal web server
+* Reboot on extensive web access due to the limits of the internal web server
 
 ------
 
