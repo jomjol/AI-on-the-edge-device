@@ -84,7 +84,7 @@ static esp_err_t favicon_get_handler(httpd_req_t *req)
  * a list of all files and folders under the requested path.
  * In case of SPIFFS this returns empty list when path is any
  * string other than '/', since SPIFFS doesn't support directories */
-static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
+static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const char* uripath, bool readonly)
 {
     char entrypath[FILE_PATH_MAX];
     char entrysize[16];
@@ -120,24 +120,24 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
     httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>");
 
 /////////////////////////////////////////////////
-
-    FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
-    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
-    size_t chunksize;
-    do {
-        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
-//        printf("Chunksize %d\n", chunksize);
-        if (chunksize > 0){
-            if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
-            fclose(fd);
-            ESP_LOGE(TAG, "File sending failed!");
-            return ESP_FAIL;
+    if (!readonly) {
+        FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
+        char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
+        size_t chunksize;
+        do {
+            chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+            //        printf("Chunksize %d\n", chunksize);
+            if (chunksize > 0){
+                if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
+                fclose(fd);
+                ESP_LOGE(TAG, "File sending failed!");
+                return ESP_FAIL;
+                }
             }
-        }
-    } while (chunksize != 0);
-    fclose(fd);
-//    ESP_LOGI(TAG, "File sending complete");
-
+        } while (chunksize != 0);
+        fclose(fd);
+        //    ESP_LOGI(TAG, "File sending complete");
+    }
 ///////////////////////////////
 
     std::string _zw = std::string(dirpath);
@@ -149,12 +149,16 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
     httpd_resp_sendstr_chunk(req,
         "<table class=\"fixed\" border=\"1\">"
         "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
-        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Delete<br>"
-        "<form method=\"post\" action=\"");
-    httpd_resp_sendstr_chunk(req, _zw.c_str());
-    httpd_resp_sendstr_chunk(req,          
-        "\"><button type=\"submit\">DELETE ALL!</button></form>"
-        "</th></tr></thead><tbody>\n");
+        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th>");
+    if (!readonly) {
+        httpd_resp_sendstr_chunk(req, "<th>Delete<br>"
+            "<form method=\"post\" action=\"");
+        httpd_resp_sendstr_chunk(req, _zw.c_str());
+        httpd_resp_sendstr_chunk(req,
+            "\"><button type=\"submit\">DELETE ALL!</button></form>"
+            "</th></tr>");
+    }
+    httpd_resp_sendstr_chunk(req, "</thead><tbody>\n");
 
     /* Iterate over all files / folders and fetch their names and sizes */
     while ((entry = readdir(dir)) != NULL) {
@@ -173,7 +177,8 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
 
             /* Send chunk of HTML file containing table entries with file name and size */
             httpd_resp_sendstr_chunk(req, "<tr><td><a href=\"");
-            httpd_resp_sendstr_chunk(req, req->uri);
+            httpd_resp_sendstr_chunk(req, "/fileserver");
+            httpd_resp_sendstr_chunk(req, uripath);
             httpd_resp_sendstr_chunk(req, entry->d_name);
             if (entry->d_type == DT_DIR) {
                 httpd_resp_sendstr_chunk(req, "/");
@@ -184,11 +189,13 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
             httpd_resp_sendstr_chunk(req, entrytype);
             httpd_resp_sendstr_chunk(req, "</td><td>");
             httpd_resp_sendstr_chunk(req, entrysize);
-            httpd_resp_sendstr_chunk(req, "</td><td>");
-            httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/delete");
-            httpd_resp_sendstr_chunk(req, req->uri + strlen("/fileserver"));
-            httpd_resp_sendstr_chunk(req, entry->d_name);
-            httpd_resp_sendstr_chunk(req, "\"><button type=\"submit\">Delete</button></form>");
+            if (!readonly) {
+                httpd_resp_sendstr_chunk(req, "</td><td>");
+                httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/delete");
+                httpd_resp_sendstr_chunk(req, uripath);
+                httpd_resp_sendstr_chunk(req, entry->d_name);
+                httpd_resp_sendstr_chunk(req, "\"><button type=\"submit\">Delete</button></form>");
+            }
             httpd_resp_sendstr_chunk(req, "</td></tr>\n");
         }
     }
@@ -226,6 +233,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 //    filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
 //                                             req->uri, sizeof(filepath));
 
+
     if (!filename) {
         ESP_LOGE(TAG, "Filename is too long");
         /* Respond with 500 Internal Server Error */
@@ -235,7 +243,22 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     /* If name has trailing '/', respond with directory contents */
     if (filename[strlen(filename) - 1] == '/') {
-        return http_resp_dir_html(req, filepath);
+        bool readonly = false;
+        size_t buf_len = httpd_req_get_url_query_len(req) + 1;
+        if (buf_len > 1) {
+            char buf[buf_len];
+            if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+                ESP_LOGI(TAG, "Found URL query => %s", buf);
+                char param[32];
+                /* Get value of expected key from query string */
+                if (httpd_query_key_value(buf, "readonly", param, sizeof(param)) == ESP_OK) {
+                    ESP_LOGI(TAG, "Found URL query parameter => readonly=%s", param);
+                    readonly = param && strcmp(param,"true")==0;
+                }
+            }
+        }
+
+        return http_resp_dir_html(req, filepath, filename, readonly);
     }
 
     std::string testwlan = toUpper(std::string(filename));

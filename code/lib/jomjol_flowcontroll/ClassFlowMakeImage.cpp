@@ -1,12 +1,12 @@
 #include "ClassFlowMakeImage.h"
 #include "Helper.h"
 
-
 #include "CFindTemplate.h"
 #include "ClassControllCamera.h"
 
 #include <time.h>
 
+static const char* TAG = "flow_make_image";
 
 esp_err_t ClassFlowMakeImage::camera_capture(){
     string nm =  namerawimage;
@@ -24,11 +24,8 @@ void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
 }
 
 
-
-
-ClassFlowMakeImage::ClassFlowMakeImage()
+ClassFlowMakeImage::ClassFlowMakeImage() : ClassFlowImage(TAG)
 {
-    isLogImage = false;
     waitbeforepicture = 5;
     isImageSize = false;
     ImageQuality = -1;    
@@ -36,16 +33,13 @@ ClassFlowMakeImage::ClassFlowMakeImage()
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
 }
 
-ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc)
+ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    isLogImage = false;
     waitbeforepicture = 5;
     isImageSize = false;
     ImageQuality = -1;
     TimeImageTaken = 0;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
-
-    ListFlowControll = lfc;
 }
 
 bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
@@ -66,8 +60,8 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         zerlegt = this->ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] ==  "LogImageLocation") && (zerlegt.size() > 1))
         {
-            this->isLogImage = true;
-            this->LogImageLocation = zerlegt[1];
+            LogImageLocation = "/sdcard" + zerlegt[1];
+            isLogImage = true;
         }
         if ((zerlegt[0] == "ImageQuality") && (zerlegt.size() > 1))
             this->ImageQuality = std::stod(zerlegt[1]);
@@ -79,45 +73,6 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
    
     return true;
-}
-
-
-void ClassFlowMakeImage::CopyFile(string input, string output)
-{
-    input = FormatFileName(input);
-    output = FormatFileName(output);
-    input = namerawimage;
-
-
-    printf("Copy Input : %s\n", input.c_str());
-    printf("Copy Output: %s\n", output.c_str());
-
-    char cTemp;
-    FILE* fpSourceFile = fopen(input.c_str(), "rb");
-    FILE* fpTargetFile = fopen(output.c_str(), "wb");
-
-    if (fpSourceFile == NULL)
-    {
-        printf("fpSourceFile == NULL\n");
-        perror("Error");
-    }
-
-    if (fpTargetFile == NULL)
-    {
-        printf("fpTargetFile == NULL\n");
-        perror("Error");
-    }
-
-
-    while (fread(&cTemp, 1, 1, fpSourceFile) == 1)
-    {
-        fwrite(&cTemp, 1, 1, fpTargetFile);
-    }
-
-    // Close The Files
-    fclose(fpSourceFile);
-    fclose(fpTargetFile);
-    printf("Copy done\n");
 }
 
 string ClassFlowMakeImage::getHTMLSingleStep(string host)
@@ -133,6 +88,8 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
     // TakeImage and Store into /image_tmp/raw.jpg  TO BE DONE
     ////////////////////////////////////////////////////////////////////
 
+    string logPath = CreateLogFolder(zwtime);
+
     int flashdauer = (int) waitbeforepicture * 1000;
     
 
@@ -140,16 +97,9 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
+    LogImage(logPath, "raw", NULL, NULL, zwtime);
 
-    if (this->isLogImage)
-    {
-        string nm = "/sdcard" + this->LogImageLocation + "/" + zwtime + ".jpg";
-        string input = "/sdcard/image_tmp/raw.jgp";
-        printf("loginput from: %s to: %s\n", input.c_str(), nm.c_str());
-        nm = FormatFileName(nm);
-        input = FormatFileName(input);
-        CopyFile(input, nm);
-    }
+    RemoveOldLogs();
 
     return true;
 }

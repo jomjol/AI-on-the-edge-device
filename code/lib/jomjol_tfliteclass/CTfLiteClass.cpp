@@ -152,7 +152,8 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
 
 void CTfLiteClass::MakeAllocate()
 {
-    static tflite::ops::micro::AllOpsResolver resolver;
+//    static tflite::ops::micro::AllOpsResolver resolver;
+    static tflite::AllOpsResolver resolver;
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 
     TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
@@ -243,6 +244,8 @@ CTfLiteClass::CTfLiteClass()
 CTfLiteClass::~CTfLiteClass()
 {
   delete this->tensor_arena;
+  delete this->interpreter;
+  delete this->error_reporter;
 }        
 
 
