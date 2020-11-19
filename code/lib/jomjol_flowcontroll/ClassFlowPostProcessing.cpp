@@ -90,7 +90,6 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
 void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
 {
     FILE* pFile;
-    PreValue = value;
 
     pFile = fopen(FilePreValue.c_str(), "w");
 
@@ -323,6 +322,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
             Value = std::stof(ReturnValue);
             ReturnValueNoError = ReturnValue;
+
+            PreValueOkay = true;
+            PreValue = Value;
             
             SavePreValue(Value, zwtime);
         }
@@ -360,7 +362,11 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         ReturnValue = ReturnValue + "\t" + error;
 
     if (error.length() == 0)
+    {
+        PreValue = Value;
         SavePreValue(Value, zwtime);
+    }
+
 
     return true;
 }
