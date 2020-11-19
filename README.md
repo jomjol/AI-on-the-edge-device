@@ -9,7 +9,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
-<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/edit_reference.jpg" width="600"> 
+
 
 
 
@@ -27,7 +27,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-15)
+##### Rolling - (2020-11-19)
+
+* Update digital CNN to v7.1.0
+
+* Bug fixing: UsePrevalue was partially not correct implemented
+
+2020-11-15
 
 * based on v4.0.0 (2020-11-15)
 
