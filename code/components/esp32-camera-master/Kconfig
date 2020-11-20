@@ -1,0 +1,71 @@
+menu "Camera configuration"
+
+    config OV7670_SUPPORT
+        bool "Support OV7670 VGA"
+        default y
+        help
+            Enable this option if you want to use the OV7670.
+            Disable this option to safe memory.
+
+    config OV7725_SUPPORT
+        bool "Support OV7725 SVGA"
+        default n
+        help
+            Enable this option if you want to use the OV7725.
+            Disable this option to save memory.
+
+    config NT99141_SUPPORT
+        bool "Support NT99141 HD"
+        default y
+        help
+            Enable this option if you want to use the NT99141.
+            Disable this option to save memory.
+
+    config OV2640_SUPPORT
+        bool "Support OV2640 2MP"
+        default y
+        help
+            Enable this option if you want to use the OV2640.
+            Disable this option to save memory.
+
+    config OV3660_SUPPORT
+        bool "Support OV3660 3MP"
+        default y
+        help
+            Enable this option if you want to use the OV3360.
+            Disable this option to save memory.
+
+    config OV5640_SUPPORT
+        bool "Support OV5640 5MP"
+        default y
+        help
+            Enable this option if you want to use the OV5640.
+            Disable this option to save memory.
+
+    choice SCCB_HARDWARE_I2C_PORT
+        bool "I2C peripheral to use for SCCB"
+        default SCCB_HARDWARE_I2C_PORT1
+
+        config SCCB_HARDWARE_I2C_PORT0
+            bool "I2C0"
+        config SCCB_HARDWARE_I2C_PORT1
+            bool "I2C1"
+
+    endchoice
+
+    choice CAMERA_TASK_PINNED_TO_CORE
+        bool "Camera task pinned to core"
+        default CAMERA_CORE0
+        help
+            Pin the camera handle task to a certain core(0/1). It can also be done automatically choosing NO_AFFINITY.
+
+        config CAMERA_CORE0
+            bool "CORE0"
+        config CAMERA_CORE1
+            bool "CORE1"
+        config CAMERA_NO_AFFINITY
+            bool "NO_AFFINITY"
+
+    endchoice
+
+endmenu

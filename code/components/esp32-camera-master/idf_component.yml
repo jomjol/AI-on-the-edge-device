@@ -1,0 +1,5 @@
+name: "esp32-camera"
+
+version: "1.0.0"
+
+description: This package hosts ESP32 compatible driver for OV2640 image sensors. Additionally it provides a few tools, which allow converting the captured frame data to the more common BMP and JPEG formats.
