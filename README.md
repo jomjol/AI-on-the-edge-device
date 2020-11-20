@@ -27,10 +27,13 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-19)
+##### Rolling - (2020-11-20)
+
+* Restructuring of code to be compatible with pure ESP-IDF development environment
+
+2020-11-19
 
 * Update digital CNN to v7.1.0
-
 * Bug fixing: UsePrevalue was partially not correct implemented
 
 2020-11-15
