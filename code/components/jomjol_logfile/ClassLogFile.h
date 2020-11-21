@@ -18,6 +18,8 @@ public:
     void WriteToFile(std::string info, bool _time = true);
     void WriteToDedicatedFile(std::string _fn, std::string info, bool _time = true);
     void RemoveOld();
+
+    std::string GetCurrentFileName();
 };
 
 extern ClassLogFile LogFile;

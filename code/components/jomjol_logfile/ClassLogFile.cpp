@@ -75,6 +75,21 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
     WriteToDedicatedFile(logpath, info, _time);
 }
 
+std::string ClassLogFile::GetCurrentFileName()
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[30];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, 30, logfile.c_str(), timeinfo);
+    std::string logpath = logroot + "/" + buffer; 
+
+    return logpath;
+}
+
 void ClassLogFile::RemoveOld()
 {
     if (retentionInDays == 0) {

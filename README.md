@@ -27,7 +27,11 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-20)
+##### Rolling - (2020-11-21)
+
+* Implementation of standardized access to current logfile via `http://IP-ADRESS/logfileact` - implemented via internal redirect
+
+2020-11-20
 
 * Restructuring of code to be compatible with pure ESP-IDF development environment
 

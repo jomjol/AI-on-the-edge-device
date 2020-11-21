@@ -216,6 +216,70 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
 
 
+static esp_err_t logfileact_get_handler(httpd_req_t *req)
+{
+    LogFile.WriteToFile("logfileact_get_handler");
+    char filepath[FILE_PATH_MAX];
+    FILE *fd = NULL;
+    struct stat file_stat;
+    printf("uri: %s\n", req->uri);
+
+    const char filename = 'log_current.txt'; 
+
+    printf("uri: %s, filename: %s, filepath: %s\n", req->uri, &filename, filepath);
+
+    std::string currentfilename = LogFile.GetCurrentFileName();
+
+
+    fd = fopen(currentfilename.c_str(), "r");
+    if (!fd) {
+        ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
+        /* Respond with 500 Internal Server Error */
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+        return ESP_FAIL;
+    }
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+//    ESP_LOGI(TAG, "Sending file : %s (%ld bytes)...", &filename, file_stat.st_size);
+    set_content_type_from_file(req, &filename);
+
+    /* Retrieve the pointer to scratch buffer for temporary storage */
+    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
+    size_t chunksize;
+    do {
+        /* Read file in chunks into the scratch buffer */
+        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+
+        /* Send the buffer contents as HTTP response chunk */
+        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
+            fclose(fd);
+            ESP_LOGE(TAG, "File sending failed!");
+            /* Abort sending file */
+            httpd_resp_sendstr_chunk(req, NULL);
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to send file");
+            return ESP_FAIL;
+        }
+
+        /* Keep looping till the whole file is sent */
+    } while (chunksize != 0);
+
+    /* Close file after sending complete */
+    fclose(fd);
+    ESP_LOGI(TAG, "File sending complete");
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);
+    return ESP_OK;
+}
+
+
+
+
+
+
+
 /* Handler to download a file kept on the server */
 static esp_err_t download_get_handler(httpd_req_t *req)
 {
@@ -706,6 +770,17 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_download);
+
+
+
+    httpd_uri_t file_logfileact = {
+        .uri       = "/logfileact",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = logfileact_get_handler,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &file_logfileact);
+
 
     /* URI handler for uploading files to server */
     httpd_uri_t file_upload = {
