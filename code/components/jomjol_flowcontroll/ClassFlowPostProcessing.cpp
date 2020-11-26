@@ -428,6 +428,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     int aktdigit_before, olddigit_before;
     int pot, pot_max;
     float zw;
+    bool no_nulldurchgang = false;
 
     pot = _decilamshift;
     if (!_isanalog)             // falls es keine analogwerte gibt, kann die letzte nicht bewertet werden
@@ -448,10 +449,20 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
         zw = PreValue / pow(10, pot);
         olddigit = ((int) zw) % 10;
 
-        if (aktdigit != olddigit) {
-            if (olddigit_before <= aktdigit_before)         // stelle vorher hat noch keinen Nulldurchgang --> nachfolgestelle sollte sich nicht verändern
+        no_nulldurchgang = (olddigit_before <= aktdigit_before);
+
+        if (no_nulldurchgang)
+        {
+            if (aktdigit != olddigit) 
             {
                 input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // Neue Digit wird durch alte Digit ersetzt;
+            }
+        }
+        else
+        {
+            if (aktdigit == olddigit)                   // trotz Nulldurchgang wurde Stelle nicht hochgezählt --> addiere 1
+            {
+                input = input + ((float) (1)) * pow(10, pot);   // addiere 1 an der Stelle
             }
         }
 
