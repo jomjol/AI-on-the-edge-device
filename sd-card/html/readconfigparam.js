@@ -4,215 +4,381 @@ function readconfig_Version(){
 
 var config_gesamt;
 var config_split;
+var param;
 var ref = new Array(2);
-var digit = new Array(0);
-var analog = new Array(0);
-var initalrotate = new Object();
-
-function MakeRefZW(zw, _basepath){
-     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=/img_tmp/ref_zw_org.jpg&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
-     var xhttp = new XMLHttpRequest();  
-     try {
-          xhttp.open("GET", url, false);
-          xhttp.send();     }
-     catch (error)
-     {
-//          alert("Deleting Config.ini failed");
-     }  
-     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", "/img_tmp/ref_zw.jpg", _basepath);
-}
-
-function GetCoordinates(index, _basepath){
-     FileCopyOnServer(ref[index]["name"], "/img_tmp/ref_zw.jpg", _basepath);
-
-     FileDeleteOnServer("/img_tmp/ref_zw_org.jpg", _basepath);
-     var namezw = ref[index]["name"].replace(".jpg", "_org.jpg");
-     FileCopyOnServer(namezw, "/img_tmp/ref_zw_org.jpg", _basepath);
-
-     return ref[index];
-}
-
-function ParseConfigAlignment(_aktline){
-     var akt_ref = 0;
-     ++_aktline;
-
-     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
-          var linesplit = ZerlegeZeile(config_split[_aktline]);
-          if ((linesplit[0].toUpperCase() == "INITIALMIRROR") && (linesplit.length > 1))
-          {
-              initalrotate["mirror"] = linesplit[1].toUpperCase().localeCompare("TRUE") == 0;
-              initalrotate["pos_config_mirror"] = _aktline;
-          }          
-
-          if (((linesplit[0].toUpperCase() == "INITALROTATE") || (linesplit[0].toUpperCase() == "INITIALROTATE"))  && (linesplit.length > 1))
-          {
-              initalrotate["angle"] = parseInt(linesplit[1]);
-              initalrotate["pos_config"] = _aktline;
-          }          
-          if (linesplit.length == 3)
-          {
-               ref[akt_ref] = new Object();
-               ref[akt_ref]["pos_ref"] = _aktline;
-               ref[akt_ref]["name"] = linesplit[0];
-               ref[akt_ref]["x"] = linesplit[1];
-               ref[akt_ref]["y"] = linesplit[2];
-               akt_ref++;
-          }
-          ++_aktline;
-     }    
-     return _aktline; 
-}
-
-function ParseConfigDigit(_aktline){
-     ++_aktline;
-     digit.length = 0;
-
-     while ((_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
-          var linesplit = ZerlegeZeile(config_split[_aktline]);
-          if (linesplit.length >= 5)
-          {
-               zw = new Object();
-               zw["pos_ref"] = _aktline;
-               zw["name"] = linesplit[0];
-               zw["x"] = linesplit[1];
-               zw["y"] = linesplit[2];
-               zw["dx"] = linesplit[3];
-               zw["dy"] = linesplit[4];
-               zw["ar"] = parseFloat(linesplit[3]) / parseFloat(linesplit[4]);
-               digit.push(zw);
-          }
-          ++_aktline;
-     }    
-     return _aktline; 
-}
-
-
-function ParseConfigAnalog(_aktline){
-     ++_aktline;
-     analog.length = 0;
-
-     while ((_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
-          var linesplit = ZerlegeZeile(config_split[_aktline]);
-          if (linesplit.length >= 5)
-          {
-               zw = new Object();
-               zw["pos_ref"] = _aktline;
-               zw["name"] = linesplit[0];
-               zw["x"] = linesplit[1];
-               zw["y"] = linesplit[2];
-               zw["dx"] = linesplit[3];
-               zw["dy"] = linesplit[4];
-               zw["ar"] = parseFloat(linesplit[3]) / parseFloat(linesplit[4]);
-               analog.push(zw);
-          }
-          ++_aktline;
-     }    
-     return _aktline; 
-}
-
-
-function getROIInfo(_typeROI){
-     if (_typeROI == "[Digits]"){
-          targetROI = digit;
-     }
-     if (_typeROI == "[Analog]"){
-          targetROI = analog;
-     }
-     return targetROI.slice();         // Kopie senden, nicht orginal!!!
-}
-
-function SaveROIToConfig(_ROIInfo, _typeROI, _basepath){
-     if (_typeROI == "[Digits]"){
-          targetROI = digit;
-     }
-     if (_typeROI == "[Analog]"){
-          targetROI = analog;
-     }
-
-     // Abstimmen Anzahl ROIs:
-     var _pos = targetROI[targetROI.length-1]["pos_ref"];
-
-     for (var i = targetROI.length; i < _ROIInfo.length; ++i){
-          var zw = config_split[config_split.length-1];
-          config_split.push(zw);
-          for (var j = config_split.length-2; j > _pos + 1; --j){
-               config_split[j] = config_split[j-1];
-          }
-     }
-
-     for (i = targetROI.length-1; i > _ROIInfo.length-1; --i){
-          var _zwpos = targetROI[i]["pos_ref"];
-          config_split.splice(_zwpos, 1);
-     }
-
-     var linewrite = 0;
-     for (i = 0; i < _ROIInfo.length; ++i){
-          if (i < targetROI.length){
-               linewrite = targetROI[i]["pos_ref"];
-          }
-          else {
-               linewrite++;
-          }
-          config_split[linewrite] = _ROIInfo[i]["name"] + ", " + _ROIInfo[i]["x"] + ", " + _ROIInfo[i]["y"] + ", " + _ROIInfo[i]["dx"] + ", " + _ROIInfo[i]["dy"];
-     }
-
-     SaveConfigToServer(_basepath);
-}
-
 
 function ParseConfig() {
      config_split = config_gesamt.split("\n");
      var aktline = 0;
 
+     param = new Object();
+
+     var catname = "MakeImage";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "LogImageLocation");
+     ParamAddValue(param, catname, "WaitBeforeTakingPicture");
+     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "ImageQuality");
+     ParamAddValue(param, catname, "ImageSize");     
+
+     var catname = "Alignment";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "SearchFieldX");
+     ParamAddValue(param, catname, "SearchFieldY");     
+
+     var catname = "Digits";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "Model");
+     ParamAddValue(param, catname, "LogImageLocation");
+     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "ModelInputSize");     
+
+     var catname = "Analog";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "Model");
+     ParamAddValue(param, catname, "LogImageLocation");
+     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "ModelInputSize");
+
+     var catname = "PostProcessing";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "DecimalShift");
+     ParamAddValue(param, catname, "PreValueUse");
+     ParamAddValue(param, catname, "PreValueAgeStartup");
+     ParamAddValue(param, catname, "AllowNegativeRates");
+     ParamAddValue(param, catname, "MaxRateValue");
+     ParamAddValue(param, catname, "ErrorMessage");
+     ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
+
+     var catname = "MQTT";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "Uri");
+     ParamAddValue(param, catname, "Topic");
+     ParamAddValue(param, catname, "TopicError");
+     ParamAddValue(param, catname, "ClientID");
+     ParamAddValue(param, catname, "user");
+     ParamAddValue(param, catname, "password");     
+
+     var catname = "AutoTimer";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "AutoStart");
+     ParamAddValue(param, catname, "Intervall");     
+
+     var catname = "Debug";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "Logfile");
+     ParamAddValue(param, catname, "LogfileRetentionInDays");
+
+     var catname = "System";
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "TimeZone");
+     ParamAddValue(param, catname, "AutoAdjustSummertime");
+     ParamAddValue(param, catname, "TimeUpdateIntervall");     
+
      while (aktline < config_split.length){
-          if (config_split[aktline].trim().toUpperCase() == "[ALIGNMENT]") {
-               aktline = ParseConfigAlignment(aktline);
+          if (config_split[aktline].trim().toUpperCase() == "[MAKEIMAGE]") {
+               aktline = ParseConfigParamMakeImage(aktline);
                continue;
           }
+
+          if (config_split[aktline].trim().toUpperCase() == "[ALIGNMENT]") {
+               aktline = ParseConfigParamAlignment(aktline);
+               continue;
+          }
+
           if (config_split[aktline].trim().toUpperCase() == "[DIGITS]") {
-               aktline = ParseConfigDigit(aktline);
+               aktline = ParseConfigParamDigit(aktline);
                continue;
           }
 
           if (config_split[aktline].trim().toUpperCase() == "[ANALOG]") {
-               aktline = ParseConfigAnalog(aktline);
+               aktline = ParseConfigParamAnalog(aktline);
                continue;
           }
+
+          if (config_split[aktline].trim().toUpperCase() == "[POSTPROCESSING]") {
+               aktline = ParseConfigParamPostProcessing(aktline);
+               continue;
+          }          
+
+          if (config_split[aktline].trim().toUpperCase() == "[MQTT]") {
+               aktline = ParseConfigParamMQTT(aktline);
+               continue;
+          }  
+
+          if (config_split[aktline].trim().toUpperCase() == "[AUTOTIMER]") {
+               aktline = ParseConfigParamAutoTimer(aktline);
+               continue;
+          }  
+
+          if (config_split[aktline].trim().toUpperCase() == "[DEBUG]") {
+               aktline = ParseConfigParamDebug(aktline);
+               continue;
+          }          
+
+          if (config_split[aktline].trim().toUpperCase() == "[SYSTEM]") {
+               aktline = ParseConfigParamSystem(aktline);
+               continue;
+          }              
+          
+          
+
+
 
           aktline++;
      }
 }
 
-function getPreRotate(){
-     return initalrotate["angle"];
+function ParamAddValue(param, _cat, _param){
+     param[_cat][_param] = new Object(); 
+     param[_cat][_param]["found"] = false;
+     param[_cat][_param]["enabled"] = false;
+     param[_cat][_param]["line"] = -1;     
+};
+
+
+function ParseConfigParamSystem(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "System";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "TimeZone", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "AutoAdjustSummertime", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "TimeUpdateIntervall", _aktline, isCom);
+
+          ++_aktline;
+     }    
+     return _aktline; 
 }
 
-function setPreRotate(_prerotate){
-     initalrotate["angle"] = _prerotate;
+function ParseConfigParamDebug(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "Debug";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "Logfile", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "LogfileRetentionInDays", _aktline, isCom);
+
+          ++_aktline;
+     }    
+     return _aktline; 
 }
 
-function getMirror(){
-     if (initalrotate.hasOwnProperty("mirror")) {
-          return initalrotate["mirror"];
+function ParseConfigParamAutoTimer(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "AutoTimer";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "AutoStart", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "Intervall", _aktline, isCom);
+
+          ++_aktline;
+     }    
+     return _aktline; 
+}
+
+function ParseConfigParamMQTT(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "MQTT";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "Uri", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "Topic", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "TopicError", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "ClientID", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "user", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "password", _aktline, isCom);
+
+          ++_aktline;
+     }    
+     return _aktline; 
+}
+
+function ParseConfigParamPostProcessing(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "PostProcessing";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "DecimalShift", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "PreValueUse", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "PreValueAgeStartup", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "AllowNegativeRates", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "MaxRateValue", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "ErrorMessage", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "CheckDigitIncreaseConsistency", _aktline, isCom);
+
+          ++_aktline;
+     }    
+     return _aktline; 
+}
+
+function ParseConfigParamAnalog(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "Analog";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "Model", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "LogImageLocation", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "LogfileRetentionInDays", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "ModelInputSize", _aktline, isCom, 2);
+
+          ++_aktline;
+     }    
+     return _aktline; 
+}
+
+function ParseConfigParamDigit(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "Digits";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "Model", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "LogImageLocation", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "LogfileRetentionInDays", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "ModelInputSize", _aktline, isCom, 2);
+
+          ++_aktline;
+     }    
+     return _aktline; 
+}
+
+
+function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _iscom, _anzvalue = 1){
+     if ((_linesplit[0].toUpperCase() == _paramname.toUpperCase()) && (_linesplit.length > _anzvalue))
+     {
+          _param[_catname][_paramname]["found"] = true;
+          _param[_catname][_paramname]["enabled"] = !_iscom;
+          _param[_catname][_paramname]["line"] = _aktline;
+          _param[_catname][_paramname]["anzpara"] = _anzvalue;
+          for (var j = 1; j <= _anzvalue; ++j) {
+               _param[_catname][_paramname]["value"+j] = _linesplit[j];
+               }
      }
-     return false;
 }
 
-function setMirror(_mirror){
-     initalrotate["mirror"] = _mirror;
+
+function ParseConfigParamAlignment(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
+
+     var catname = "Alignment";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "SearchFieldX", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "SearchFieldY", _aktline, isCom);
+
+          ++_aktline;
+     }    
+     return _aktline; 
 }
 
-function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
-     var JPEG_QUALITY=0.8;
-     var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
-     var rtn = dataURLtoBlob(dataUrl);
+function ParseConfigParamMakeImage(_aktline){
+     var akt_ref = 0;
+     ++_aktline;
 
-     if (_delete) {
-          FileDeleteOnServer(_filename, _basepath);
+     var catname = "MakeImage";
+     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+          var _input = config_split[_aktline];
+          let [isCom, input] = isCommented(_input);
+          var linesplit = ZerlegeZeile(input);
+
+          ParamExtractValue(param, linesplit, catname, "LogImageLocation", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "WaitBeforeTakingPicture", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "LogfileRetentionInDays", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "ImageQuality", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "ImageSize", _aktline, isCom);          
+
+          ++_aktline;
+     }    
+     return _aktline; 
+}
+
+function getConfigParameters() {
+     return param;
+}
+
+function setConfigParameters(_param) {
+     for (var cat in _param) {
+          for (var name in _param[cat]) {
+               param[cat][name]["found"] = _param[cat][name]["found"];
+               param[cat][name]["enabled"] = _param[cat][name]["enabled"];
+               param[cat][name]["line"] = _param[cat][name]["line"];
+
+               param[cat][name]["anzpara"] = _param[cat][name]["anzpara"];
+               for (var j = 1; j <= _param[cat][name]["anzpara"]; ++j) {
+                    param[cat][name]["value"+j] =  _param[cat][name]["value"+j];
+                    }
+
+               if (param[cat][name]["found"]) {
+                    var text = name + " =" 
+                    
+                    for (var j = 1; j <= _param[cat][name]["anzpara"]; ++j) {
+                         text = text + " " + param[cat][name]["value"+j];
+                         }
+                    if (!param[cat][name]["enabled"]) {
+                         text = ";" + text;
+                    }
+                    config_split[param[cat][name]["line"]] = text;
+               }
+          }
      }
-	
-     FileSendContent(rtn, _filename, _basepath);
+
+     config_gesamt = config_split[0];
+     for (var i = 1; i < config_split.length; ++i){
+          config_gesamt = config_gesamt + "\n" + config_split[i]; 
+     }
+
+     return config_gesamt;
 }
+
+
+function isCommented(input)
+     {
+          let isComment = false;
+          if (input.charAt(0) == ';') {
+               isComment = true;
+               input = input.substr(1, input.length-1);
+          };
+          return [isComment, input];
+     }    
 
 function SaveConfigToServer(_basepath){
      // leere Zeilen am Ende löschen
@@ -232,87 +398,6 @@ function SaveConfigToServer(_basepath){
      FileSendContent(config_gesamt, "/config/config.ini", _basepath);          
 }
 
-function UpdateConfigFileReferenceChange(_basepath){
-     for (var _index = 0; _index < ref.length; ++_index){
-          var zeile = ref[_index]["name"] + " " + ref[_index]["x"] + ", " + ref[_index]["y"];
-          var _pos = ref[_index]["pos_ref"];
-          config_split[_pos] = zeile;          
-     }
-
-     zeile = "InitialRotate = " + initalrotate["angle"];
-     var _pos = initalrotate["pos_config"];
-     config_split[_pos] = zeile;
-
-     var mirror = false;
-     if (initalrotate.hasOwnProperty("mirror")) {
-          mirror = initalrotate["mirror"];
-     }
-     var mirror_pos = -1;
-     if (initalrotate.hasOwnProperty("pos_config_mirror")) {
-          mirror_pos = initalrotate["pos_config_mirror"];
-     }     
-     if (mirror_pos > -1) {
-          if (mirror) {
-               config_split[mirror_pos] = "InitialMirror = True";
-          }
-          else {
-               config_split[mirror_pos] = "InitialMirror = False";
-          }
-     }
-     else {
-          if (mirror) {       // neue Zeile muss an der richtigen Stelle eingefügt werden - hier direct nach [Alignment]
-               var aktline = 0;
-
-               while (aktline < config_split.length){
-                    if (config_split[aktline].trim() == "[Alignment]") {
-                         break;
-                    }
-                    aktline++
-               }
-
-               // fuege neue Zeile in config_split ein
-               var zw = config_split[config_split.length-1];
-               config_split.push(zw);
-               for (var j = config_split.length-2; j > aktline + 1; --j){
-                    config_split[j] = config_split[j-1];
-               }
-
-               config_split[aktline + 1] = "InitialMirror = True"
-          }
-     }
-
-     SaveConfigToServer(_basepath);
-}
-
-function UpdateConfig(zw, _index, _enhance, _basepath){
-     var zeile = zw["name"] + " " + zw["x"] + ", " + zw["y"];
-     var _pos = ref[_index]["pos_ref"];
-     config_split[_pos] = zeile;
-
-     SaveConfigToServer(_basepath);
-
-     var namezw = zw["name"];
-     FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _basepath);
-     var namezw = zw["name"].replace(".jpg", "_org.jpg");
-     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", namezw, _basepath);     
-}
-
-function MakeContrastImageZW(zw, _enhance, _basepath){
-     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=/img_tmp/ref_zw.jpg" + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
-     if (_enhance == true){
-          url = url + "&enhance=true";
-     }
-
-     var xhttp = new XMLHttpRequest();  
-     try {
-          xhttp.open("GET", url, false);
-          xhttp.send();     }
-     catch (error)
-     {
-//          alert("Deleting Config.ini failed");
-     }
-}
-
 function createReader(file) {
      var image = new Image();
      reader.onload = function(evt) {
@@ -326,26 +411,6 @@ function createReader(file) {
      };
      reader.readAsDataURL(file);
  }
-
-function GetReferenceSize(name){
-     img = new Image();
-     var xhttp = new XMLHttpRequest();
-			
-     url = "http://192.168.178.22/fileserver" + name;
-     xhttp.open("GET", url, false);
-     xhttp.send();
-
-     var response = xhttp.responseText;
-     var binary = ""
-     
-     for (var responseText = xhttp.responseText, responseTextLen = responseText.length, binary = "", i = 0; i < responseTextLen; ++i) {
-          binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
-        }
-     img.src = 'data:image/jpeg;base64,'+ window.btoa(binary);     
-
-     return [img.width, img.height];
-}
-
 
 function ZerlegeZeile(input)
      {
@@ -392,9 +457,7 @@ function findDelimiterPos(input, delimiter)
           }
           return pos;
      }
-     
-     
-
+ 
 function trim(istring, adddelimiter)
      {
           while ((istring.length > 0) && (adddelimiter.indexOf(istring[0]) >= 0)){
@@ -407,8 +470,6 @@ function trim(istring, adddelimiter)
 
           return istring;
      }
-     
-
      
 function loadConfig(_basepath) {
      var xhttp = new XMLHttpRequest();
@@ -428,16 +489,6 @@ function getConfig() {
 	return config_gesamt;
      }
      
-
-
-function dataURLtoBlob(dataurl) {
-     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-     while(n--){
-          u8arr[n] = bstr.charCodeAt(n);
-     }
-     return new Blob([u8arr], {type:mime});
-     }	
      
 function FileCopyOnServer(_source, _target, _basepath = ""){
      url = _basepath + "/editflow.html?task=copy&in=" + _source + "&out=" + _target;
@@ -507,19 +558,4 @@ function FileSendContent(_content, _filename, _basepath = ""){
 //          alert("Deleting Config.ini failed");
      }     
     return okay;        
-}
-                    
-function SaveReferenceImage(_id_canvas, _filename, _doDelete, _basepath = ""){
-     if (_doDelete){
-          FileDeleteOnServer(_filename, _basepath);
-     }
-
-     var canvas = document.getElementById(_id_canvas);
-     var JPEG_QUALITY=0.8;
-     var dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
-     var rtn = dataURLtoBlob(dataUrl);	
-     if (!FileSendContent(rtn, _filename, _basepath)){
-          alert("Error on saving reference image (" + _filename + ")!\nPlease retry.");
-          location.reload();  
-     };  
 }

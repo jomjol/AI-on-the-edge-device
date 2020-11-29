@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edit Config</title>
+<meta charset="utf-8">
+
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+.button {
+	padding: 5px 20px;
+    width: 211px;
+	font-size: 16px;	
+}
+
+textarea {
+	font-size: 14px;
+}
+</style>
+
+</head>
+
+<body style="font-family: arial; padding: 0px 10px;">
+
+	<table style="width:100%">
+		<tr>
+			<td>
+				<h2>Config.ini:</h2>
+			</td>
+			<td>
+				<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>
+				<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expertenmodus </label> 
+			</td>
+		</tr>
+	</table>
+
+	<br>
+
+	<table>
+		<tr>
+			<th width="20px"  style="text-align: left;">
+				Enable
+			</th>
+			<th  width="200px"  style="text-align: left;">
+				Parameter
+			</th>
+			<th style="text-align: left;">
+				Value
+			</th>
+			<th style="text-align: left;">
+				Information
+			</th>
+		</tr>
+
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4>MakeImage</h4></td>
+		</tr> 
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MakeImage_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("MakeImage_LogImageLocation_value").disabled = !document.getElementById("MakeImage_LogImageLocation_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class>
+			</td>
+			<td>
+				<input type="text" name="name" id="MakeImage_LogImageLocation_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Location to store raw images for logging
+			</td>
+		</tr>
+		<tr>
+			<td width="20px" style="padding-left: 40px;">
+				<td"><input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("MakeImage_LogfileRetentionInDays_value").disabled = !document.getElementById("MakeImage_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+			</td>
+			<td>
+				<class id="MakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Time to keep the raw image (in days -"0" = forever)
+			</td>
+		</tr>
+		<tr class="expert" id="ex1">
+			
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
+			</td>
+			<td style="font-size: 80%;">
+				Wait time between illumination switch on and take the picture (in seconds)
+			</td>
+		</tr>
+		<tr class="expert" id="ex2">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_ImageQuality_value1" size="13"   min="0" max="63">
+			</td>
+			<td style="font-size: 80%;">
+				Quality index for picture (default = "5" - "0" high ... "63" low)
+			</td>
+		</tr>
+		<tr class="expert"  id="ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_ImageSize_text" style="color:black;">ImageSize</class>
+			</td>
+			<td>
+				<select id="MakeImage_ImageSize_value1">
+					<option value="0" selected>VGA</option>
+					<option value="1" >SVGA</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Picture size camera (default = "VGA")
+			</td>
+		</tr>
+
+		<tr class="expert"  id="ex4">
+			<td colspan="4" style="padding-left: 20px;"><h4>Alignment</h4></td>
+		</tr> 
+		<tr class="expert"  id="ex6">
+			<td  width="20px"  style="padding-left: 40px;">
+			</td>
+			<td width="200px">
+				<class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
+			</td>
+			<td>
+				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
+			</td>
+			<td style="font-size: 80%;">
+				x size (width) in which the reference is searched (default = "20") 
+			</td>
+		</tr>
+		<tr class="expert"  id="ex8">
+			<td  width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="Alignment_SearchFieldY_text" style="color:black;">SearchFieldY</class>
+			</td>
+			<td>
+				<input type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1">
+			</td>
+			<td style="font-size: 80%;">
+				y size (height) in which the reference is searched (default = "20") 
+			</td>
+		</tr>
+
+		<tr class="expert"  id="ex4">
+			<td colspan="4" style="padding-left: 20px;"><h4>Digits</h4></td>
+		</tr> 
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
+				<class id="Digits_Model_text" style="color:black;">Model</class>
+			</td>
+			<td>
+				<input type="text" id="Digits_Model_value1">
+			</td>
+			<td style="font-size: 80%;">
+				path to CNN model file for image recognition (in seconds)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Digits_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("Digits_LogImageLocation_value1").disabled = !document.getElementById("Digits_LogImageLocation_value1").disabled' unchecked >
+			</td>
+			<td>
+				<class id="Digits_LogImageLocation_text" style="color:black;">LogImageLocation</class>
+			</td>
+			<td>
+				<input type="text" name="name" id="Digits_LogImageLocation_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Location to store separated digits for logging
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="Digits_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Digits_LogfileRetentionInDays_value1").disabled = !document.getElementById("Digits_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+			</td>
+			<td>
+				<class id="Digits_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="Digits_LogfileRetentionInDays_value1" min="0"  step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Time to keep the separated digit images (in days -"0" = forever)
+			</td>
+		</tr>
+		<tr class="expert"  id="ex9">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="Digits_ModelInputSize_text" style="color:black;">ModelInputSize</class>
+			</td>
+			<td>
+				x: <input type="number" id="Digits_ModelInputSize_value1" style="width: 30px;" min="1" step="1">
+				y: <input type="number" id="Digits_ModelInputSize_value2" style="width: 30px;" min="1" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Size of the input image for the CNN model
+			</td>
+		</tr>
+
+		<tr class="expert"  id="ex4">
+			<td colspan="4" style="padding-left: 20px;"><h4>Analog</h4></td>
+		</tr> 
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
+				<class id="Analog_Model_text" style="color:black;">Model</class>
+			</td>
+			<td>
+				<input type="text" id="Analog_Model_value1">
+			</td>
+			<td style="font-size: 80%;">
+				path to CNN model file for image recognition (in seconds)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Analog_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("Analog_LogImageLocation_value1").disabled = !document.getElementById("Analog_LogImageLocation_value1").disabled' unchecked >
+			</td>
+			<td>
+				<class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class>
+			</td>
+			<td>
+				<input type="text" name="name" id="Analog_LogImageLocation_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Location to store separated digits for logging
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Analog_LogfileRetentionInDays_value1").disabled = !document.getElementById("Analog_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+			</td>
+			<td>
+				<class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Time to keep the separated digit images (in days -"0" = forever)
+			</td>
+		</tr>
+		<tr class="expert"  id="ex10">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class>
+			</td>
+			<td>
+				x: <input type="number" id="Analog_ModelInputSize_value1" style="width: 30px;" min="1" step="1">
+				y: <input type="number" id="Analog_ModelInputSize_value2" style="width: 30px;" min="1" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Size of the input image for the CNN model
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4>PostProcessing</h4></td>
+		</tr> 		
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_DecimalShift_value1").disabled = !document.getElementById("PostProcessing_DecimalShift_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class>
+			</td>
+			<td>
+				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				shift the digit separator within the digital digits (positiv and negativ)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_PreValueUse_value1").disabled = !document.getElementById("PostProcessing_PreValueUse_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class>
+			</td>
+			<td>
+				<select id="PostProcessing_PreValueUse_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable to use the previous read value for consistency checks - also on reboots
+			</td>
+		</tr>
+		<tr class="expert"  id="ex11">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_PreValueAgeStartup_value1").disabled = !document.getElementById("PostProcessing_PreValueAgeStartup_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">PreValueAgeStartup</class>
+			</td>
+			<td>
+				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13"  min="0">
+			</td>
+			<td style="font-size: 80%;">
+				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_AllowNegativeRates_value1").disabled = !document.getElementById("PostProcessing_AllowNegativeRates_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class>
+			</td>
+			<td>
+				<select id="PostProcessing_AllowNegativeRates_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Set on "False" to ensure, that only positive changes are accepted (typically for counter)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_MaxRateValue_value1").disabled = !document.getElementById("PostProcessing_MaxRateValue_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class>
+			</td>
+			<td>
+				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
+			</td>
+			<td style="font-size: 80%;">
+				Maximum change of reading from one to the next readout
+			</td>
+		</tr>
+		<tr class="expert"  id="ex12">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_ErrorMessage_value1").disabled = !document.getElementById("PostProcessing_ErrorMessage_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class>
+			</td>
+			<td>
+				<select id="PostProcessing_ErrorMessage_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Do not show error message in return value - in error case, the last valid number will be send out
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_CheckDigitIncreaseConsistency_value1").disabled = !document.getElementById("PostProcessing_CheckDigitIncreaseConsistency_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class>
+			</td>
+			<td>
+				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Activate to enalbe additional consistency check - especially zero crossing check between digits
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4>MQTT</h4></td>
+		</tr> 		
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'document.getElementById("MQTT_Uri_value1").disabled = !document.getElementById("MQTT_Uri_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_Uri_text" style="color:black;">Uri</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_Uri_value1">
+			</td>
+			<td style="font-size: 80%;">
+				URI to the MQTT broker including port: http:\\IP-ADRESS:port
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_Topic_enabled" value="1"  onclick = 'document.getElementById("MQTT_Topic_value1").disabled = !document.getElementById("MQTT_Topic_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_Topic_text" style="color:black;">Topic</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_Topic_value1">
+			</td>
+			<td style="font-size: 80%;">
+				MQTT topic, in which the value is registered
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_TopicError_enabled" value="1"  onclick = 'document.getElementById("MQTT_TopicError_value1").disabled = !document.getElementById("MQTT_TopicError_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_TopicError_text" style="color:black;">TopicError</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_TopicError_value1">
+			</td>
+			<td style="font-size: 80%;">
+				MQTT topic, in which the error status is reported (empty = no error)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'document.getElementById("MQTT_ClientID_value1").disabled = !document.getElementById("MQTT_ClientID_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_ClientID_text" style="color:black;">ClientID</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_ClientID_value1">
+			</td>
+			<td style="font-size: 80%;">
+				ClientID to connect to the MQTT broker
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'document.getElementById("MQTT_user_value1").disabled = !document.getElementById("MQTT_user_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_user_text" style="color:black;">user</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_user_value1">
+			</td>
+			<td style="font-size: 80%;">
+				user for MQTT authenficiation
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'document.getElementById("MQTT_password_value1").disabled = !document.getElementById("MQTT_password_value1").disabled' checked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_password_text" style="color:black;">password</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_password_value1">
+			</td>
+			<td style="font-size: 80%;">
+				password for MQTT authenficiation
+			</td>
+		</tr>
+	
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
+		</tr> 			
+		<tr class="expert"  id="ex13">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="AutoTimer_AutoStart_enabled" value="1"  onclick = 'document.getElementById("AutoTimer_AutoStart_value1").disabled = !document.getElementById("AutoTimer_AutoStart_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
+			</td>
+			<td>
+				<select id="AutoTimer_AutoStart_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Start the image recognition immediatly after power up. False is basically for debugging.
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="AutoTimer_Intervall_enabled" value="1"  onclick = 'document.getElementById("AutoTimer_Intervall_value1").disabled = !document.getElementById("AutoTimerg_Intervall_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
+			</td>
+			<td>
+				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
+			</td>
+			<td style="font-size: 80%;">
+				Intervall in which the counter is read (in minutes). Number must be greater than 3 minutes.
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4>Debug</h4></td>
+		</tr> 		
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'document.getElementById("Debug_Logfile_value1").disabled = !document.getElementById("Debug_Logfile_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="Debug_Logfile_text" style="color:black;">Logfile</class>
+			</td>
+			<td>
+				<select id="Debug_Logfile_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Turn on/off the extended logging
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Debug_LogfileRetentionInDays_value").disabled = !document.getElementById("Debug_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+			</td>
+			<td>
+				<class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Time to keep the log files (in days - "0" = forever)
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4>System</h4></td>
+		</tr> 	
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'document.getElementById("System_TimeZone_value").disabled = !document.getElementById("System_TimeZone_value1").disabled' unchecked ></td>
+			</td>
+			<td>
+				<class id="System_TimeZone_text" style="color:black;">TimeZone</class>
+			</td>
+			<td>
+				<input type="number" id="System_TimeZone_value1" size="13"  min="-12" max="12" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Adjustment of time zone relative to UTC (in hours)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="System_AutoAdjustSummertime_enabled" value="1"  onclick = 'document.getElementById("System_AutoAdjustSummertime_value1").disabled = !document.getElementById("System_AutoAdjustSummertime_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="System_AutoAdjustSummertime_text" style="color:black;">AutoAdjustSummertime</class>
+			</td>
+			<td>
+				<select id="System_AutoAdjustSummertime_value1">
+					<option value="0" selected>True</option>
+					<option value="1" >False</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Autoadjust the summertime
+			</td>
+		</tr>
+		<tr class="expert"  id="ex16">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="System_TimeUpdateIntervall_enabled" value="1"  onclick = 'document.getElementById("System_TimeUpdateIntervall_value1").disabled = !document.getElementById("System_TimeUpdateIntervall_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="System_TimeUpdateIntervall_text" style="color:black;">TimeUpdateIntervall</class>
+			</td>
+			<td>
+				<input type="number" id="System_TimeUpdateIntervall_value1" size="13"  min="0" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				Intervall for synchronizing the time with the time server (in hours)
+			</td>
+		</tr>
+	</table>
+
+	<p>
+		<button class="button" onclick="saveTextAsFile()">Update Config.ini</button>
+	</p>
+	<p>
+		
+	</p>
+	<p>
+		<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
+	</p>
+
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigparam.js"></script>  
+ 
+<script type="text/javascript">
+	var canvas = document.getElementById('canvas'),
+		basepath = "http://192.168.178.22"; 
+		param;
+
+
+function LoadConfigNeu() {
+	basepath = getbasepath();  
+	loadConfig(basepath); 
+	ParseConfig();	
+	UpdateInput();
+	UpdateExpertModus();
+	}
+
+function WriteParameter(_param, _cat, _name, _optional, _select = false, _anzpara = 1){
+	if (_param[_cat][_name]["found"]){
+		if (_optional) {
+			document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
+			for (var j = 1; j <= _anzpara; ++j) {
+				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
+			}		
+		}
+		document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
+		if (_select) {
+			var textToFind = _param[_cat][_name]["value1"];
+			var dd = document.getElementById(_cat+"_"+_name+"_value1");
+			for (var i = 0; i < dd.options.length; i++) {
+				if (dd.options[i].text === textToFind) {
+					dd.selectedIndex = i;
+					break;
+				}
+			}
+		}
+		else {
+			for (var j = 1; j <= _anzpara; ++j) {
+				document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
+			}
+		}
+
+	}
+	else {
+		if (_optional) {
+			document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
+			for (var j = 1; j <= _anzpara; ++j) {
+				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
+			}	
+		}
+		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
+	}
+
+}
+
+
+function ReadParameter(_param, _cat, _name, _optional, _select = false){
+	if (_param[_cat][_name]["found"]){
+		if (_optional) {
+			_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+		}
+		if (_select) {
+			var sel = document.getElementById(_cat+"_"+_name+"_value1");
+			_param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
+		}
+		else {
+			for (var j = 1; j <= _param[_cat][_name]["anzpara"]; ++j) {
+				_param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+			}
+		}
+	}
+}
+
+function UpdateInput() {
+	param = getConfigParameters();
+	WriteParameter(param, "MakeImage", "LogImageLocation", true);
+	WriteParameter(param, "MakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
+	WriteParameter(param, "MakeImage", "ImageQuality", false);		
+	WriteParameter(param, "MakeImage", "ImageSize", false, true, true);		
+
+	WriteParameter(param, "Alignment", "SearchFieldX", false);		
+	WriteParameter(param, "Alignment", "SearchFieldY", false);		
+
+	WriteParameter(param, "Digits", "Model", false);		
+	WriteParameter(param, "Digits", "LogImageLocation", false);		
+	WriteParameter(param, "Digits", "LogfileRetentionInDays", false);		
+	WriteParameter(param, "Digits", "ModelInputSize", false, false, 2);	
+	
+	WriteParameter(param, "Analog", "Model", false);		
+	WriteParameter(param, "Analog", "LogImageLocation", false);		
+	WriteParameter(param, "Analog", "LogfileRetentionInDays", false);		
+	WriteParameter(param, "Analog", "ModelInputSize", false, false, 2);		
+	
+	WriteParameter(param, "PostProcessing", "DecimalShift", true);		
+	WriteParameter(param, "PostProcessing", "PreValueUse", true, true);		
+	WriteParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
+	WriteParameter(param, "PostProcessing", "AllowNegativeRates", true, true);
+	WriteParameter(param, "PostProcessing", "MaxRateValue", true);		
+	WriteParameter(param, "PostProcessing", "ErrorMessage", true, true);
+	WriteParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
+
+	WriteParameter(param, "MQTT", "Uri", true);	
+	WriteParameter(param, "MQTT", "Topic", true);	
+	WriteParameter(param, "MQTT", "TopicError", true);	
+	WriteParameter(param, "MQTT", "ClientID", true);	
+	WriteParameter(param, "MQTT", "user", true);	
+	WriteParameter(param, "MQTT", "password", true);	
+
+	WriteParameter(param, "AutoTimer", "AutoStart", true, true);	
+	WriteParameter(param, "AutoTimer", "Intervall", true);	
+
+	WriteParameter(param, "Debug", "Logfile", true, true);	
+	WriteParameter(param, "Debug", "LogfileRetentionInDays", true);	
+
+	WriteParameter(param, "System", "TimeZone", true);	
+	WriteParameter(param, "System", "AutoAdjustSummertime", true, true);	
+	WriteParameter(param, "System", "TimeUpdateIntervall", true);	
+
+
+}
+
+function WriteConfig(){
+	ReadParameter(param, "MakeImage", "LogImageLocation", true);
+	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
+	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
+	ReadParameter(param, "MakeImage", "ImageQuality", false);		
+	ReadParameter(param, "MakeImage", "ImageSize", false, true);	
+
+	ReadParameter(param, "Alignment", "SearchFieldX", false);		
+	ReadParameter(param, "Alignment", "SearchFieldY", false);	
+
+	ReadParameter(param, "Digits", "Model", false);		
+	ReadParameter(param, "Digits", "LogImageLocation", false);		
+	ReadParameter(param, "Digits", "LogfileRetentionInDays", false);		
+	ReadParameter(param, "Digits", "ModelInputSize", false, false, 2);
+
+	ReadParameter(param, "Analog", "Model", false);		
+	ReadParameter(param, "Analog", "LogImageLocation", false);		
+	ReadParameter(param, "Analog", "LogfileRetentionInDays", false);		
+	ReadParameter(param, "Analog", "ModelInputSize", false, false, 2);
+
+	ReadParameter(param, "PostProcessing", "DecimalShift", true);		
+	ReadParameter(param, "PostProcessing", "PreValueUse", true, true);		
+	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
+	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, true);
+	ReadParameter(param, "PostProcessing", "MaxRateValue", true);		
+	ReadParameter(param, "PostProcessing", "ErrorMessage", true, true);
+	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
+
+	ReadParameter(param, "MQTT", "Uri", true);	
+	ReadParameter(param, "MQTT", "Topic", true);	
+	ReadParameter(param, "MQTT", "TopicError", true);	
+	ReadParameter(param, "MQTT", "ClientID", true);	
+	ReadParameter(param, "MQTT", "user", true);	
+	ReadParameter(param, "MQTT", "password", true);	
+
+	ReadParameter(param, "AutoTimer", "AutoStart", true, true);	
+	ReadParameter(param, "AutoTimer", "Intervall", true);	
+
+	ReadParameter(param, "Debug", "Logfile", true, true);	
+	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	
+
+	ReadParameter(param, "System", "TimeZone", true);	
+	ReadParameter(param, "System", "AutoAdjustSummertime", true, true);	
+	ReadParameter(param, "System", "TimeUpdateIntervall", true);	
+
+
+	
+	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
+
+	return setConfigParameters(param);
+}
+
+function FormatDecimalValue(_param, _cat, _name) {
+	for (var j = 1; j <= _param[_cat][_name]["anzpara"]; ++j) {
+		var _val = _param[_cat][_name]["value"+j];
+		_val = _val.replace(",", ".");
+		_param[_cat][_name]["value"+j] = _val;
+	}
+}
+
+function UpdateExpertModus()
+{
+	var _style = 'display:none;';
+	if (document.getElementById("ExpertModus_enabled").checked) {
+		_style = '';
+		document.getElementById("Edit_Config_Direct").style.display = ""; 
+	}
+	else
+	{
+		document.getElementById("Edit_Config_Direct").style.display = "none"; 
+	}
+
+	const expert = document.querySelectorAll(".expert");
+	for (var i = 0; i < expert.length; i++) {
+		document.getElementById(expert[i].id).style = _style;
+	}
+
+}
+
+function saveTextAsFile()
+{
+	if (confirm("Are you sure you want to update \"config.ini\"?")) {
+		var textToSave = WriteConfig();
+		FileDeleteOnServer("/config/config.ini", basepath);
+		FileSendContent(textToSave, "/config/config.ini", basepath);
+	}
+}
+
+function doReboot() {
+	if (confirm("Are you sure you want to reboot the ESP32?")) {
+		var stringota = "/reboot";
+		window.location = stringota;
+		window.location.href = stringota;
+		window.location.assign(stringota);
+		window.location.replace(stringota);
+	}
+}
+
+function editConfigDirect() {
+	if (confirm("Did you save your changes?")) {
+		var stringota = "/edit_config.html";
+		window.location = stringota;
+		window.location.href = stringota;
+		window.location.assign(stringota);
+		window.location.replace(stringota);
+	}	
+}
+ 
+LoadConfigNeu();
+ 
+</script>
+ 
+</body>
+</html>

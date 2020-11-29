@@ -27,7 +27,12 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-26)
+##### Rolling - (2020-11-29)
+
+* New html interface for modification of configuration parameters (access to direct edit of `config.ini` moved to new expert mode)
+* Preparation for feature implementation
+
+2020-11-26
 
 * Bug fixing: CheckDigitConsistency not always working (case zero crossing & no increase)
 
