@@ -473,16 +473,19 @@ function trim(istring, adddelimiter)
      
 function loadConfig(_basepath) {
      var xhttp = new XMLHttpRequest();
+     config_gesamt = "";
      try {
           url = _basepath + '/fileserver/config/config.ini';     
           xhttp.open("GET", url, false);
           xhttp.send();
           config_gesamt = xhttp.responseText;
+          return true;
      }
      catch (error)
      {
      //          alert("Deleting Config.ini failed");
      }
+     return false;
 }
 	 
 function getConfig() {

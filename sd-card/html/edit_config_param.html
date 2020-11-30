@@ -24,7 +24,6 @@ textarea {
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-
 	<table style="width:100%">
 		<tr>
 			<td>
@@ -38,6 +37,8 @@ textarea {
 	</table>
 
 	<br>
+
+	<div id = "divall" style="display:none">
 
 	<table>
 		<tr>
@@ -304,8 +305,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_PreValueUse_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -335,12 +336,12 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Set on "False" to ensure, that only positive changes are accepted (typically for counter)
+				Set on "false" to ensure, that only positive changes are accepted (typically for counter)
 			</td>
 		</tr>
 		<tr>
@@ -366,8 +367,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -383,8 +384,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -492,12 +493,12 @@ textarea {
 			</td>
 			<td>
 				<select id="AutoTimer_AutoStart_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Start the image recognition immediatly after power up. False is basically for debugging.
+				Start the image recognition immediatly after power up. false is basically for debugging.
 			</td>
 		</tr>
 		<tr>
@@ -527,8 +528,8 @@ textarea {
 			</td>
 			<td>
 				<select id="Debug_Logfile_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -593,6 +594,8 @@ textarea {
 		<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
 	</p>
 
+</div>
+
 <script type="text/javascript" src="./gethost.js"></script> 
 <script type="text/javascript" src="./readconfigparam.js"></script>  
  
@@ -603,11 +606,16 @@ textarea {
 
 
 function LoadConfigNeu() {
-	basepath = getbasepath();  
+	basepath = getbasepath(); 
+	if (!loadConfig(basepath)) {
+		alert("Config.ini could not be loaded!\nPlease reload the page.");
+		return;
+	} 
 	loadConfig(basepath); 
 	ParseConfig();	
 	UpdateInput();
 	UpdateExpertModus();
+	document.getElementById("divall").style.display = ''; 
 	}
 
 function WriteParameter(_param, _cat, _name, _optional, _select = false, _anzpara = 1){
@@ -623,7 +631,7 @@ function WriteParameter(_param, _cat, _name, _optional, _select = false, _anzpar
 			var textToFind = _param[_cat][_name]["value1"];
 			var dd = document.getElementById(_cat+"_"+_name+"_value1");
 			for (var i = 0; i < dd.options.length; i++) {
-				if (dd.options[i].text === textToFind) {
+				if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
 					dd.selectedIndex = i;
 					break;
 				}

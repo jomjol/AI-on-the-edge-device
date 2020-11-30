@@ -29,6 +29,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-11-30)
 
+* Modification `config.ini`: true/false only in small letters, removal of comma as separator (up/downwards compatibility is still given)
 * New feature: time zone can be specified, regular time synchronization possible (see new section `[System]` in configuration)
 
 2020-11-29

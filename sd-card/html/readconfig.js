@@ -153,7 +153,7 @@ function SaveROIToConfig(_ROIInfo, _typeROI, _basepath){
           else {
                linewrite++;
           }
-          config_split[linewrite] = _ROIInfo[i]["name"] + ", " + _ROIInfo[i]["x"] + ", " + _ROIInfo[i]["y"] + ", " + _ROIInfo[i]["dx"] + ", " + _ROIInfo[i]["dy"];
+          config_split[linewrite] = _ROIInfo[i]["name"] + " " + _ROIInfo[i]["x"] + " " + _ROIInfo[i]["y"] + " " + _ROIInfo[i]["dx"] + " " + _ROIInfo[i]["dy"];
      }
 
      SaveConfigToServer(_basepath);
@@ -234,7 +234,7 @@ function SaveConfigToServer(_basepath){
 
 function UpdateConfigFileReferenceChange(_basepath){
      for (var _index = 0; _index < ref.length; ++_index){
-          var zeile = ref[_index]["name"] + " " + ref[_index]["x"] + ", " + ref[_index]["y"];
+          var zeile = ref[_index]["name"] + " " + ref[_index]["x"] + " " + ref[_index]["y"];
           var _pos = ref[_index]["pos_ref"];
           config_split[_pos] = zeile;          
      }
@@ -253,10 +253,10 @@ function UpdateConfigFileReferenceChange(_basepath){
      }     
      if (mirror_pos > -1) {
           if (mirror) {
-               config_split[mirror_pos] = "InitialMirror = True";
+               config_split[mirror_pos] = "InitialMirror = true";
           }
           else {
-               config_split[mirror_pos] = "InitialMirror = False";
+               config_split[mirror_pos] = "InitialMirror = false";
           }
      }
      else {
@@ -285,7 +285,7 @@ function UpdateConfigFileReferenceChange(_basepath){
 }
 
 function UpdateConfig(zw, _index, _enhance, _basepath){
-     var zeile = zw["name"] + " " + zw["x"] + ", " + zw["y"];
+     var zeile = zw["name"] + " " + zw["x"] + " " + zw["y"];
      var _pos = ref[_index]["pos_ref"];
      config_split[_pos] = zeile;
 
