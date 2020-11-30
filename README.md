@@ -27,40 +27,22 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-30)
+##### 4.1.0 Configuration editor- (2020-11-30)
 
-* Modification `config.ini`: true/false only in small letters, removal of comma as separator (up/downwards compatibility is still given)
-* New feature: time zone can be specified, regular time synchronization possible (see new section `[System]` in configuration)
+* Implementation of configuration editor (including basic and expert mode)
 
-2020-11-29
+* Adjustable time zone to adjust to local time setting (incl. daylight saving time)
 
-* New feature: errors message can be reported in a separate tag in the MQTT Adapter (parameter: `TopicError`)
-* New html interface for modification of configuration parameters (access to direct edit of `config.ini` moved to new expert mode)
-* Bug fixing: wrong truncation of checked value, in case no analog counter present
-* Preparation for feature implementation
+* MQTT: additional topic for error reporting
 
-2020-11-26
+* standardized access to current logfile via `http://IP-ADRESS/logfileact`
 
-* Bug fixing: CheckDigitConsistency not always working (case zero crossing & no increase)
+* Update digital CNN to v7.2.0, analog CNN to 6.3.0
 
-2020-11-21
-
-* Implementation of standardized access to current logfile via `http://IP-ADRESS/logfileact` - implemented via internal redirect
-
-2020-11-20
-
-* Restructuring of code to be compatible with pure ESP-IDF development environment
-
-2020-11-19
-
-* Update digital CNN to v7.1.0
-* Bug fixing: UsePrevalue was partially not correct implemented
-
-2020-11-15
-
-* based on v4.0.0 (2020-11-15)
+* Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
 
   
+
 
 ##### 4.0.0 Tflite Core - (2020-11-15)
 * Implementation of rolling log-files
