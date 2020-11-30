@@ -40,7 +40,9 @@ void Init_NVS_SDCard()
 
     ESP_LOGI(TAGMAIN, "Initializing SD card");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
-    host.flags = SDMMC_HOST_FLAG_1BIT;
+    host.flags = SDMMC_HOST_FLAG_1BIT;    
+//    sdmmc_host_t host = SDMMC_HOST_SLOT_1();
+//    host.flags = SDMMC_HOST_FLAG_1BIT;
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
     esp_vfs_fat_sdmmc_mount_config_t mount_config = { };
     mount_config.format_if_mount_failed = false;
@@ -65,11 +67,13 @@ void Init_NVS_SDCard()
     gpio_set_level(FLASH_GPIO, 0);   
 }
 
-
-extern "C" void app_main()
+extern "C" void app_main(void)
 {
     printf("Do Reset Camera\n");
     PowerResetCamera();
+    Camera.InitCam();
+    Camera.LightOnOff(false); 
+
     Init_NVS_SDCard();
 //    LogFile.WriteToFile("Startsequence 02");
     CheckOTAUpdate();
@@ -99,8 +103,8 @@ extern "C" void app_main()
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    
 
-    Camera.InitCam();
-    Camera.LightOnOff(false); 
+//    Camera.InitCam();
+//    Camera.LightOnOff(false); 
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
     vTaskDelay( xDelay ); 

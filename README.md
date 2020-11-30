@@ -9,7 +9,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
-<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/edit_reference.jpg" width="600"> 
+
 
 
 
@@ -27,11 +27,22 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-15)
+##### 4.1.0 Configuration editor- (2020-11-30)
 
-* based on v4.0.0 (2020-11-15)
+* Implementation of configuration editor (including basic and expert mode)
+
+* Adjustable time zone to adjust to local time setting (incl. daylight saving time)
+
+* MQTT: additional topic for error reporting
+
+* standardized access to current logfile via `http://IP-ADRESS/logfileact`
+
+* Update digital CNN to v7.2.0, analog CNN to 6.3.0
+
+* Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
 
   
+
 
 ##### 4.0.0 Tflite Core - (2020-11-15)
 * Implementation of rolling log-files
