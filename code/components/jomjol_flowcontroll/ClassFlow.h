@@ -23,7 +23,8 @@ struct HTMLInfo
 class ClassFlow
 {
 protected:
-	std::vector<string> ZerlegeZeile(string input);
+//	std::vector<string> ZerlegeZeile(string input);
+	std::vector<string> ZerlegeZeile(string input, string delimiter = " =, ");
 	bool isNewParagraph(string input);
 	bool GetNextParagraph(FILE* pfile, string& aktparamgraph);
 	bool getNextLine(FILE* pfile, string* rt);

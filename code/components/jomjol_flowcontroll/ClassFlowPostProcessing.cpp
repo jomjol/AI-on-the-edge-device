@@ -13,7 +13,7 @@
 string ClassFlowPostProcessing::GetPreValue()
 {
     std::string result;
-    result = to_string(PreValue);
+    result = RundeOutput(PreValue, -DecimalShift);
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
@@ -130,6 +130,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing()
     useMaxRateValue = false;
     checkDigitIncreaseConsistency = false;
     DecimalShift = 0;
+    ErrorMessageText = "";
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
 }
 
@@ -145,6 +146,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     useMaxRateValue = false;
     checkDigitIncreaseConsistency = false;
     DecimalShift = 0;    
+    ErrorMessageText = "";
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
 }
@@ -263,8 +265,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     bool isanalog = false;
     int AnzahlAnalog = 0;
     string zw;
-    string error = "";
     time_t imagetime = 0;
+
+    ErrorMessageText = "";
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
@@ -344,24 +347,24 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
-        error = error + "Negative Rate - Returned old value - read value: " + zwvalue + " ";
+        ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " ";
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
 
     if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
     {
-        error = error + "Rate too high - Returned old value - read value: " + zwvalue + " ";
+        ErrorMessageText = ErrorMessageText + "Rate too high - Returned old value - read value: " + zwvalue + " ";
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
 
     ReturnValueNoError = zwvalue;
     ReturnValue = zwvalue;
-    if (ErrorMessage && (error.length() > 0))
-        ReturnValue = ReturnValue + "\t" + error;
+    if (ErrorMessage && (ErrorMessageText.length() > 0))
+        ReturnValue = ReturnValue + "\t" + ErrorMessageText;
 
-    if (error.length() == 0)
+    if (ErrorMessageText.length() == 0)
     {
         PreValue = Value;
         SavePreValue(Value, zwtime);
@@ -470,4 +473,10 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     }
 
     return input;
+}
+
+
+string ClassFlowPostProcessing::getReadoutError() 
+{
+    return ErrorMessageText;
 }

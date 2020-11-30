@@ -27,9 +27,15 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-##### Rolling - (2020-11-29)
+##### Rolling - (2020-11-30)
 
+* New feature: time zone can be specified, regular time synchronization possible (see new section `[System]` in configuration)
+
+2020-11-29
+
+* New feature: errors message can be reported in a separate tag in the MQTT Adapter (parameter: `TopicError`)
 * New html interface for modification of configuration parameters (access to direct edit of `config.ini` moved to new expert mode)
+* Bug fixing: wrong truncation of checked value, in case no analog counter present
 * Preparation for feature implementation
 
 2020-11-26

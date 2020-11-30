@@ -1,5 +1,7 @@
 #include "ClassFlowControll.h"
 
+#include "freertos/task.h"
+
 #include <sys/stat.h>
 #include <dirent.h>
 #include "ClassLogFile.h"
@@ -103,6 +105,9 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     if (toUpper(_type).compare("[DEBUG]") == 0)
         cfc = this;  
+
+    if (toUpper(_type).compare("[SYSTEM]") == 0)
+        cfc = this;          
 
     return cfc;
 }
@@ -259,12 +264,12 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0))      // Paragraph passt nicht zu MakeImage
+    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) && (toUpper(aktparamgraph).compare("[SYSTEM]") != 0))      // Paragraph passt nicht zu MakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = this->ZerlegeZeile(aktparamgraph, " =");
         if ((toUpper(zerlegt[0]) == "AUTOSTART") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
@@ -291,6 +296,19 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             LogFile.SetRetention(std::stoi(zerlegt[1]));
         }      
+
+        if ((toUpper(zerlegt[0]) == "TIMEZONE") && (zerlegt.size() > 1))
+        {
+            string zw = "Set TimeZone: " + zerlegt[1];
+            setTimeZone(zerlegt[1]);
+        }      
+
+        if ((toUpper(zerlegt[0]) == "TIMEUPDATEINTERVALL") && (zerlegt.size() > 1))
+        {
+            TimeUpdateIntervall = stof(zerlegt[1]);
+            xTaskCreate(&task_doTimeSync, "update_time", configMINIMAL_STACK_SIZE * 16, &TimeUpdateIntervall, tskIDLE_PRIORITY, NULL);
+        }      
+
     }
     return true;
 }

@@ -24,6 +24,7 @@ protected:
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
     string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
+    string ErrorMessageText;        // Fehlermeldung bei Consistency Check
 
     bool LoadPreValue(void);
     string ShiftDecimal(string in, int _decShift);
@@ -39,6 +40,7 @@ public:
     bool doFlow(string time);
     string getReadout();
     string getReadoutParam(bool _rawValue, bool _noerror);
+    string getReadoutError();
     void SavePreValue(float value, string time = "");
     string GetPreValue();
 

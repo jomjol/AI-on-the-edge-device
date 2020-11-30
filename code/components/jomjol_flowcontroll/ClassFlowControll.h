@@ -23,6 +23,7 @@ protected:
 	float AutoIntervall;
 	void SetInitialParameter(void);	
 	std::string aktstatus;
+	int TimeUpdateIntervall;
 
 
 public:

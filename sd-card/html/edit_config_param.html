@@ -561,27 +561,10 @@ textarea {
 				<class id="System_TimeZone_text" style="color:black;">TimeZone</class>
 			</td>
 			<td>
-				<input type="number" id="System_TimeZone_value1" size="13"  min="-12" max="12" step="1">
+				<input type="text" id="System_TimeZone_value1">
 			</td>
 			<td style="font-size: 80%;">
-				Adjustment of time zone relative to UTC (in hours)
-			</td>
-		</tr>
-		<tr>
-			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="System_AutoAdjustSummertime_enabled" value="1"  onclick = 'document.getElementById("System_AutoAdjustSummertime_value1").disabled = !document.getElementById("System_AutoAdjustSummertime_value1").disabled' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="System_AutoAdjustSummertime_text" style="color:black;">AutoAdjustSummertime</class>
-			</td>
-			<td>
-				<select id="System_AutoAdjustSummertime_value1">
-					<option value="0" selected>True</option>
-					<option value="1" >False</option>
-				</select>
-			</td>
-			<td style="font-size: 80%;">
-				Autoadjust the summertime
+				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -726,10 +709,7 @@ function UpdateInput() {
 	WriteParameter(param, "Debug", "LogfileRetentionInDays", true);	
 
 	WriteParameter(param, "System", "TimeZone", true);	
-	WriteParameter(param, "System", "AutoAdjustSummertime", true, true);	
 	WriteParameter(param, "System", "TimeUpdateIntervall", true);	
-
-
 }
 
 function WriteConfig(){
@@ -774,10 +754,7 @@ function WriteConfig(){
 	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	
 
 	ReadParameter(param, "System", "TimeZone", true);	
-	ReadParameter(param, "System", "AutoAdjustSummertime", true, true);	
 	ReadParameter(param, "System", "TimeUpdateIntervall", true);	
-
-
 	
 	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 

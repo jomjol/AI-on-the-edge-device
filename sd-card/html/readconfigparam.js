@@ -145,7 +145,7 @@ function ParseConfigParamSystem(_aktline){
      while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
           var _input = config_split[_aktline];
           let [isCom, input] = isCommented(_input);
-          var linesplit = ZerlegeZeile(input);
+          var linesplit = ZerlegeZeile(input, " =");
 
           ParamExtractValue(param, linesplit, catname, "TimeZone", _aktline, isCom);
           ParamExtractValue(param, linesplit, catname, "AutoAdjustSummertime", _aktline, isCom);
@@ -412,10 +412,10 @@ function createReader(file) {
      reader.readAsDataURL(file);
  }
 
-function ZerlegeZeile(input)
+function ZerlegeZeile(input, delimiter = " =,")
      {
           var Output = Array(0);
-          delimiter = " =,";
+//          delimiter = " =,";
      
           input = trim(input, delimiter);
           var pos = findDelimiterPos(input, delimiter);

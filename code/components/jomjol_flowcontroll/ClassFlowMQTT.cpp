@@ -10,6 +10,7 @@ ClassFlowMQTT::ClassFlowMQTT()
 {
     uri = "";
     topic = "";
+    topicError = "";
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -21,6 +22,7 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
 {
     uri = "";
     topic = "";
+    topicError = "";
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;
@@ -71,6 +73,10 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->topic = zerlegt[1];
         }
+        if ((toUpper(zerlegt[0]) == "TOPICERROR") && (zerlegt.size() > 1))
+        {
+            this->topicError = zerlegt[1];
+        }
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
             this->clientname = zerlegt[1];
@@ -90,11 +96,13 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
     std::string result;
+    std::string resulterror = "";
     string zw = "";
     
     if (flowpostprocessing)
     {
         result =  flowpostprocessing->getReadoutParam(false, true);
+        resulterror = flowpostprocessing->getReadoutError();
     }
     else
     {
@@ -110,8 +118,12 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             }
         }
     }
-
+    
     MQTTPublish(topic, result);
+
+    if (topicError.length() > 0) {
+        MQTTPublish(topicError, resulterror);
+    }
 
     OldValue = result;
 

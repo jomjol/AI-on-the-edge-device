@@ -21,6 +21,8 @@
 // #include "protocol_examples_common.h"
 #include "esp_sntp.h"
 
+#include "ClassLogFile.h"
+
 static const char *TAG = "sntp";
 
 RTC_DATA_ATTR int boot_count = 0;
@@ -56,8 +58,8 @@ std::string gettimestring(const char * frm)
     }
     char strftime_buf[64];
 
-    setenv("TZ", "UTC-2", 1);
-    tzset();
+//    setenv("TZ", "UTC-2", 1);
+//    tzset();
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), frm, &timeinfo);
 
@@ -65,7 +67,7 @@ std::string gettimestring(const char * frm)
     return result;
 }
 
-void setup_time(void)
+void setup_time()
 {
     ++boot_count;
     ESP_LOGI(TAG, "Boot count: %d", boot_count);
@@ -84,10 +86,10 @@ void setup_time(void)
     }
     char strftime_buf[64];
 
-    // Set timezone to Berlin Standard Time
-    setenv("TZ", "UTC+9", 1);
-//    setenv("TZ", "Europe/Berlin", 1);
-    tzset();
+    setTimeZone("CET-1CEST,M3.5.0,M10.5.0/3");
+//    setTimeZone("Europe/Berlin");
+//    setTimeZone("Asia/Tokyo");
+
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
     ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
@@ -96,14 +98,22 @@ void setup_time(void)
     ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("time %s\n", zw.c_str());
+    printf("timeist %s\n", zw.c_str());
 }
 
+void setTimeZone(std::string _tzstring)
+{
+    setenv("TZ", _tzstring.c_str(), 1);
+    tzset();    
+    printf("TimeZone set to %s\n", _tzstring.c_str());
+    _tzstring = "Time zone set to " + _tzstring;
+    LogFile.WriteToFile(_tzstring);
+}
 
 static void obtain_time(void)
 {
 //    initialize_sntp();
-
+ 
     // wait for time to be set
     time_t now = 0;
     struct tm timeinfo = {};
@@ -113,6 +123,14 @@ static void obtain_time(void)
         ESP_LOGI(TAG, "Waiting for system time to be set... (%d/%d)", retry, retry_count);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
+    if (retry == retry_count) {
+        LogFile.WriteToFile("Time Synchzronisation nicht erfolgreich ...");
+    }
+    else
+    {
+        LogFile.WriteToFile("Time erfolgreich ...");
+    }
+    
     time(&now);
     localtime_r(&now, &timeinfo);
 }
@@ -124,4 +142,33 @@ static void initialize_sntp(void)
     sntp_setservername(0, "pool.ntp.org");
     sntp_set_time_sync_notification_cb(time_sync_notification_cb);
     sntp_init();
+}
+
+
+void task_doTimeSync(void *pvParameter)
+{
+    time_t now;
+    struct tm timeinfo;
+    char strftime_buf[64];    
+    int *zw_int = (int*) pvParameter;
+
+    printf("Start Autoupdate Time every: %d Stunden\n", *zw_int );
+    TickType_t xDelay = ((*zw_int) * 60 * 60 * 1000)  / portTICK_PERIOD_MS;
+
+    while (1)
+    {
+        obtain_time();
+        localtime_r(&now, &timeinfo);
+        strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+        ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
+
+        strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M", &timeinfo);
+        ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
+
+        std::string zw = gettimestring("%Y%m%d-%H%M%S");
+        printf("time %s\n", zw.c_str());        
+
+        vTaskDelay( xDelay );  
+    }
+    vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
