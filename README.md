@@ -152,3 +152,22 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 ## Solved topics
 
 * n.a.
+
+## Build the project yourself
+
+- download and install VS Code
+- install the VS Code platform io plugin
+- git clone this project
+- in VS code, open the `AI-on-the-edge-device/code` 
+	- from terminal: `cd AI-on-the-edge-device/code && code .`
+- open a pio terminal (click on the terminal sign in the bottom menu bar)
+- make sure you are in the `code` directory
+- To build, type  `pio build`	 
+	- the build artifacts are stored in `code/.pio/build/esp32cam/`
+- Connect the device and type `pio device monitor`. There you will see your device and can copy the name to the next instruction
+- Add `upload_port = you_device_port` to the `platformio.ini` file
+- make sure an sd card with the contents of the `sd_card` folder is inserted and you have changed the wifi details
+- `pio run --target erase` to erase the flash
+- `pio run --target upload` this will upload the `bootloader.bin, partitions.bin,firmware.bin` from the `code/.pio/build/esp32cam/` folder. 
+- `pio device monitor` to observe the logs via uart
+
