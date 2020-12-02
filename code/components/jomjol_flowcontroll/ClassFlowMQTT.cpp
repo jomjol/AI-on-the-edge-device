@@ -126,7 +126,6 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     }
 
     OldValue = result;
-
-
+    
     return true;
 }
