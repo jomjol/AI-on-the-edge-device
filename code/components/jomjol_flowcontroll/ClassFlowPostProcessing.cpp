@@ -4,6 +4,7 @@
 #include "ClassFlowAnalog.h"
 #include "ClassFlowDigit.h"
 #include "ClassFlowMakeImage.h"
+#include "ClassLogFile.h"
 
 #include <iomanip>
 #include <sstream>
@@ -42,6 +43,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     zwtime = trim(std::string(zw));
 
     fgets(zw, 1024, pFile);
+    fclose(pFile);
     printf("%s", zw);
     zwvalue = trim(std::string(zw));
     PreValue = stof(zwvalue.c_str());
@@ -103,17 +105,15 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
         timeinfo = localtime(&rawtime);
 
         strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
-
         zwtime = std::string(buffer);
     }
 
-fputs(zwtime.c_str(), pFile);
-fputs("\n", pFile);
+    fputs(zwtime.c_str(), pFile);
+    fputs("\n", pFile);
+    fputs(to_string(value).c_str(), pFile);
+    fputs("\n", pFile);
 
-fputs(to_string(value).c_str(), pFile);
-fputs("\n", pFile);
-
-fclose(pFile);
+    fclose(pFile);
 }
 
 
@@ -269,6 +269,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     ErrorMessageText = "";
 
+
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowMakeImage") == 0)
@@ -312,6 +313,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     ReturnRawValue = ShiftDecimal(ReturnRawValue, DecimalShift);   
 
+
     if (!PreValueUse || !PreValueOkay)
     {
         ReturnValue = ReturnRawValue;
@@ -335,7 +337,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     }
 
     zw = ErsetzteN(ReturnRawValue); 
-
 
     Value = std::stof(zw);
     if (checkDigitIncreaseConsistency)
@@ -367,10 +368,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (ErrorMessageText.length() == 0)
     {
         PreValue = Value;
+        
         SavePreValue(Value, zwtime);
+       
     }
-
-
     return true;
 }
 
