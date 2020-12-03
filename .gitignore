@@ -4,6 +4,7 @@
 .code-workspace
 .helper/
 /sd-card/htm./.vscode/
+/code/build
 
 CMakeLists.txt.user
 CMakeCache.txt

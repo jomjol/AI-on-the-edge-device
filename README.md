@@ -25,6 +25,14 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling - (2020-12-03)
+
+* Move source code to `/main` to full compatibility between pure ESP-IDF and Platformio w/ espressif
+
+* based on Main v4.1.1 (2020-12-02)
+
+  
+
 ##### 4.1.1 Configuration editor - (2020-12-02)
 
 * Bug fixing: internal improvement of file handling (reduce not responding)
