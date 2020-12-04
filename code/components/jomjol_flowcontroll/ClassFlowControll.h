@@ -21,6 +21,7 @@ protected:
 
 	bool AutoStart;
 	float AutoIntervall;
+	bool SetupModeActive;
 	void SetInitialParameter(void);	
 	std::string aktstatus;
 	int TimeUpdateIntervall;
@@ -29,6 +30,7 @@ protected:
 public:
 	void InitFlow(std::string config);
 	bool doFlow(string time);
+	bool getStatusSetupModus(){return SetupModeActive;};
 	string getReadout(bool _rawvalue, bool _noerror);
 	string UpdatePrevalue(std::string _newvalue);
 	string GetPrevalue();	

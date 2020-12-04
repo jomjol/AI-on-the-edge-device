@@ -73,7 +73,8 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "TimeZone");
      ParamAddValue(param, catname, "AutoAdjustSummertime");
-     ParamAddValue(param, catname, "TimeUpdateIntervall");     
+     ParamAddValue(param, catname, "TimeUpdateIntervall");   
+     ParamAddValue(param, catname, "SetupMode");         
 
      while (aktline < config_split.length){
           if (config_split[aktline].trim().toUpperCase() == "[MAKEIMAGE]") {
@@ -150,6 +151,7 @@ function ParseConfigParamSystem(_aktline){
           ParamExtractValue(param, linesplit, catname, "TimeZone", _aktline, isCom);
           ParamExtractValue(param, linesplit, catname, "AutoAdjustSummertime", _aktline, isCom);
           ParamExtractValue(param, linesplit, catname, "TimeUpdateIntervall", _aktline, isCom);
+          ParamExtractValue(param, linesplit, catname, "SetupMode", _aktline, isCom);
 
           ++_aktline;
      }    

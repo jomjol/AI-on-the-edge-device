@@ -313,7 +313,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     ReturnRawValue = ShiftDecimal(ReturnRawValue, DecimalShift);   
 
-
     if (!PreValueUse || !PreValueOkay)
     {
         ReturnValue = ReturnRawValue;
@@ -391,6 +390,9 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror)
 
 string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
     std::stringstream stream;
+    if (_anzNachkomma < 0) {
+        _anzNachkomma = 0;
+    }
     stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
     return stream.str();  
 }

@@ -66,6 +66,7 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 void ClassFlowControll::SetInitialParameter(void)
 {
     AutoStart = false;
+    SetupModeActive = false;
     AutoIntervall = 10;
 }
 
@@ -308,6 +309,16 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             TimeUpdateIntervall = stof(zerlegt[1]);
             xTaskCreate(&task_doTimeSync, "update_time", configMINIMAL_STACK_SIZE * 16, &TimeUpdateIntervall, tskIDLE_PRIORITY, NULL);
         }      
+
+        if ((toUpper(zerlegt[0]) == "SETUPMODE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+            {
+                SetupModeActive = true;
+            }        
+        }      
+
+
 
     }
     return true;

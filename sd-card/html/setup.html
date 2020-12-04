@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html style="width: fit-content">
+<head>
+<title>jomjol - AI on the edge</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+.h_iframe iframe {width:995px;height:760px;}
+.h_iframe {width:995px;height:605px;}
+
+.h_iframe_explain iframe {width:995px;height:200px;}
+.h_iframe_explain {width:995px;height:200px;}
+
+h1 {font-size: 2em; margin-block-end: 0.3em;}
+h2 {font-size: 1.5em;margin-block-start: 0.3em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+.button {
+	padding: 5px 20px;
+    width: 211px;
+	font-size: 16px;	
+}
+</style>
+</head>
+
+<body style="font-family: arial">
+
+<h1>Digitizer - Initial Setup</h1>
+<table>
+   <tr>
+      <td>
+         <button class="button" id="previous" name="previous" onclick="clickPrevious()">Previous</button>
+         <button class="button" id="next" name="next" onclick="clickNext()">Next</button>
+      </td>
+   </tr>
+</table>
+
+
+<div class="h_iframe_explain" id="h_iframe_explain">
+   <iframe name="explaincontent" id ="explaincontent" src="" allowfullscreen></iframe> 
+</div>
+
+<div class="h_iframe">
+	 <iframe name="maincontent" id ="maincontent" src="" allowfullscreen></iframe> 
+</div>
+
+
+
+ 
+
+<script type="text/javascript">
+	var canvas = document.getElementById('canvas'),
+		basepath = "http://192.168.178.22"; 
+		aktstatu = 0;
+
+function clickNext() {
+   aktstatu++;
+   if (aktstatu > 6) {
+      aktstatu = 6;
+   }
+   LoadStep();
+}
+
+function clickPrevious() {
+   aktstatu--;
+   if (aktstatu < 0) {
+      aktstatu = 0;
+   }
+   LoadStep();
+}
+
+function LoadStep(){
+   switch (aktstatu) {
+      case 0:
+         document.getElementById('maincontent').src = '/edit_explain_0.html';
+         document.getElementById('h_iframe_explain').style.display = "none";  
+         document.getElementById("previous").disabled = true;
+         document.getElementById("next").disabled = false;
+         break;
+      case 1:
+         document.getElementById('maincontent').src = '/edit_reference.html';
+         document.getElementById('explaincontent').src = '/explain_1.html';
+         document.getElementById('h_iframe_explain').style.display = "";  
+         document.getElementById("previous").disabled = false;
+         document.getElementById("next").disabled = false;
+         break;
+      case 2:
+         document.getElementById('maincontent').src = '/edit_alignment.html';
+         document.getElementById('explaincontent').src = '/explain_2.html';
+         document.getElementById('h_iframe_explain').style.display = "";           
+         document.getElementById("previous").disabled = false;
+         document.getElementById("next").disabled = false;
+
+         break;
+      case 3:
+         document.getElementById('maincontent').src = '/edit_digits.html';
+         document.getElementById('explaincontent').src = '/explain_3.html';         
+         document.getElementById('h_iframe_explain').style.display = "";           
+         document.getElementById("previous").disabled = false;
+         document.getElementById("next").disabled = false;
+
+         break;
+      case 4:
+         document.getElementById('maincontent').src = '/edit_analog.html';
+         document.getElementById('explaincontent').src = '/explain_4.html';   
+         document.getElementById('h_iframe_explain').style.display = "";           
+         document.getElementById("previous").disabled = false;
+         document.getElementById("next").disabled = false;
+
+         break;
+      case 5:
+         document.getElementById('maincontent').src = '/edit_config_param.html';
+         document.getElementById('explaincontent').src = '/explain_5.html';            
+         document.getElementById('h_iframe_explain').style.display = "";           
+         document.getElementById("previous").disabled = false;
+         document.getElementById("next").disabled = false;
+
+         break; 
+      case 6:
+         document.getElementById('maincontent').src = '/edit_explain_6.html';
+         document.getElementById('explaincontent').src = '/explain_6.html';            
+         document.getElementById('h_iframe_explain').style.display = "none";  
+         document.getElementById("previous").disabled = false;
+         document.getElementById("next").disabled = true;
+
+         break;   
+      }
+
+
+}
+
+LoadStep();
+
+
+</script>
+ 
+
+</body>
+</html>
