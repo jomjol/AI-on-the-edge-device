@@ -88,11 +88,12 @@ extern "C" void app_main(void)
 
 //    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname, ip, gw, netmask, dns); 
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname); 
+    LoadNetConfigFromFile("/sdcard/wlan.ini", ip, gw, netmask, dns);
 
 //    LogFile.WriteToFile("Startsequence 04");    
     printf("To use WLan: %s, %s\n", ssid.c_str(), password.c_str());
     printf("To set Hostename: %s\n", hostname.c_str());
-    printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip.c_str(), gw.c_str(), netmask.c_str());
+    printf("Fixed IP: %s, Gateway %s, Netmask %s, DNS %s\n", ip.c_str(), gw.c_str(), netmask.c_str(), dns.c_str());
    
     if (ip.length() == 0 || gw.length() == 0 || netmask.length() == 0)
     {

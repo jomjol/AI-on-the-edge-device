@@ -319,6 +319,71 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
     }
 }
 
+void LoadNetConfigFromFile(std::string fn, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns)
+{
+    string line = "";
+    std::vector<string> zerlegt;
+
+    FILE* pFile;
+    fn = FormatFileName(fn);
+    pFile = fopen(fn.c_str(), "r");
+
+    printf("file loaded\n");
+
+    if (pFile == NULL)
+        return;
+
+    char zw[1024];
+    fgets(zw, 1024, pFile);
+    line = std::string(zw);
+
+    while ((line.size() > 0) || !(feof(pFile)))
+    {
+        printf("%s", line.c_str());
+        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt[0] = trim(zerlegt[0], " ");
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "IP")){
+            _ip = zerlegt[1];
+            if ((_ip[0] == '"') && (_ip[_ip.length()-1] == '"')){
+                _ip = _ip.substr(1, _ip.length()-2);
+            }
+        }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "GATEWAY")){
+            _gw = zerlegt[1];
+            if ((_gw[0] == '"') && (_gw[_gw.length()-1] == '"')){
+                _gw = _gw.substr(1, _gw.length()-2);
+            }
+        }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "NETMASK")){
+            _netmask = zerlegt[1];
+            if ((_netmask[0] == '"') && (_netmask[_netmask.length()-1] == '"')){
+                _netmask = _netmask.substr(1, _netmask.length()-2);
+            }
+        }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "DNS")){
+            _dns = zerlegt[1];
+            if ((_dns[0] == '"') && (_dns[_dns.length()-1] == '"')){
+                _dns = _dns.substr(1, _dns.length()-2);
+            }
+        }
+
+        if (fgets(zw, 1024, pFile) == NULL)
+        {
+            line = "";
+        }
+        else
+        {
+            line = std::string(zw);
+        }
+    }
+
+    fclose(pFile);
+}
+
 
 std::string getHostname(){
     return hostname;

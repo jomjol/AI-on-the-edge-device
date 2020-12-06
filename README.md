@@ -25,18 +25,26 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling - (2020-12-06)
+
+* Option for fixed IP settings in `wlan.ini` - description see inside file
+
+* based on v5.0.05 (2020-12-06)
+
+  
+
 ##### 5.0.0 Setup Modus - (2020-12-06)
 
 * Implementation of intial setup modus for fresh installation
 
 * Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
   
+  
 
 ##### 4.1.1 Configuration editor - (2020-12-02)
 
 * Bug fixing: internal improvement of file handling (reduce not responding)
 
-  
 
 ##### 4.1.0 Configuration editor - (2020-11-30)
 
@@ -52,7 +60,6 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 * Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
 
-  
 
 
 ##### 4.0.0 Tflite Core - (2020-11-15)
