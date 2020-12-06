@@ -157,6 +157,22 @@ std::string ClassFlowControll::getActStatus(){
     return aktstatus;
 }
 
+void ClassFlowControll::doFlowMakeImageOnly(string time){
+    bool result = true;
+    std::string zw_time;
+    int repeat = 0;
+
+    for (int i = 0; i < FlowControll.size(); ++i)
+    {
+        if (FlowControll[i]->name() == "ClassFlowMakeImage") {
+            zw_time = gettimestring("%Y%m%d-%H%M%S");
+            aktstatus = zw_time + ": " + FlowControll[i]->name();
+            string zw = "FlowControll.doFlowMakeImageOnly - " + FlowControll[i]->name();
+            FlowControll[i]->doFlow(time);
+        }
+    }
+}
+
 bool ClassFlowControll::doFlow(string time)
 {
 //    CleanTempFolder();            // dazu muss man noch eine Rolling einführen
@@ -302,12 +318,6 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             string zw = "Set TimeZone: " + zerlegt[1];
             setTimeZone(zerlegt[1]);
-        }      
-
-        if ((toUpper(zerlegt[0]) == "TIMEUPDATEINTERVALL") && (zerlegt.size() > 1))
-        {
-            TimeUpdateIntervall = stof(zerlegt[1]);
-            xTaskCreate(&task_doTimeSync, "update_time", configMINIMAL_STACK_SIZE * 16, &TimeUpdateIntervall, tskIDLE_PRIORITY, NULL);
         }      
 
         if ((toUpper(zerlegt[0]) == "SETUPMODE") && (zerlegt.size() > 1))

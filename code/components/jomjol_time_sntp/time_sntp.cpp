@@ -29,17 +29,13 @@ RTC_DATA_ATTR int boot_count = 0;
 
 bool setTimeAlwaysOnReboot = true;
 
-/* Variable holding number of times ESP32 restarted since first boot.
- * It is placed into RTC memory using RTC_DATA_ATTR and
- * maintains its value when ESP32 wakes from deep sleep.
- */
-
 static void obtain_time(void);
 static void initialize_sntp(void);
 
 
 void time_sync_notification_cb(struct timeval *tv)
 {
+//    LogFile.WriteToFile("Notification of a time synchronization event");
     ESP_LOGI(TAG, "Notification of a time synchronization event");
 }
 
@@ -115,11 +111,11 @@ static void obtain_time(void)
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
     if (retry == retry_count) {
-        LogFile.WriteToFile("Time Synchzronisation nicht erfolgreich ...");
+//        LogFile.WriteToFile("Time Synchzronisation nicht erfolgreich ...");
     }
     else
     {
-        LogFile.WriteToFile("Time erfolgreich ...");
+//        LogFile.WriteToFile("Time erfolgreich ...");
     }
     
     time(&now);
@@ -131,35 +127,6 @@ static void initialize_sntp(void)
     ESP_LOGI(TAG, "Initializing SNTP");
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, "pool.ntp.org");
-    sntp_set_time_sync_notification_cb(time_sync_notification_cb);
+//    sntp_set_time_sync_notification_cb(time_sync_notification_cb);
     sntp_init();
-}
-
-
-void task_doTimeSync(void *pvParameter)
-{
-    time_t now;
-    struct tm timeinfo;
-    char strftime_buf[64];    
-    int *zw_int = (int*) pvParameter;
-
-    printf("Start Autoupdate Time every: %d Stunden\n", *zw_int );
-    TickType_t xDelay = ((*zw_int) * 60 * 60 * 1000)  / portTICK_PERIOD_MS;
-
-    while (1)
-    {
-        obtain_time();
-        localtime_r(&now, &timeinfo);
-        strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-        ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
-
-        strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M", &timeinfo);
-        ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
-
-        std::string zw = gettimestring("%Y%m%d-%H%M%S");
-        printf("time %s\n", zw.c_str());        
-
-        vTaskDelay( xDelay );  
-    }
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }

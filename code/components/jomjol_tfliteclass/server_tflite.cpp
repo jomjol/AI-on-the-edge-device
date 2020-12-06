@@ -424,7 +424,13 @@ void task_autodoFlow(void *pvParameter)
     doInit();
     
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
-    auto_isrunning = auto_isrunning && (!isSetupModusActive());
+
+    if (isSetupModusActive()) {
+        auto_isrunning = false;
+        std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
+        tfliteflow.doFlowMakeImageOnly(zw_time);
+
+    }
 
     while (auto_isrunning)
     {

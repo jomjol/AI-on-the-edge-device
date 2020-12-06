@@ -12,11 +12,7 @@
 // #include "nvs_flash.h"
 #include "esp_sntp.h"
 
-
-extern int boot_count;
-
 void setup_time(void);
 
 std::string gettimestring(const char * frm);
-void task_doTimeSync(void *pvParameter);
 void setTimeZone(std::string _tzstring);

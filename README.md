@@ -25,7 +25,12 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-12-04)
+##### Rolling - (2020-12-06)
+
+* Update of the initial setup routine
+* frequent time synchronization
+
+2020-12-04
 
 * Implementation of a setup modus at the beginning of a new installation. It guides the user through a check of the parameters and setting and disables at the end automatically.
   Special modus is entered if `SetupMode=true` in section `[System]`

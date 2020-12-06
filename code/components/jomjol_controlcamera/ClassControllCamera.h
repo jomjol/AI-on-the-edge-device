@@ -28,6 +28,7 @@ class CCamera {
         esp_err_t InitCam();
 
         void LightOnOff(bool status);
+        void LEDOnOff(bool status);
         esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
         void SetQualitySize(int qual, framesize_t resol);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);

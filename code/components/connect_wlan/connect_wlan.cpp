@@ -11,6 +11,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iostream>
+
+#include <arpa/inet.h>
 
 #include "Helper.h"
 
@@ -23,6 +27,8 @@ std::string ssid;
 std::string passphrase;
 std::string hostname;
 std::string ipaddress;
+std::string gw;
+std::string netmask;
 
 std::string std_hostname = "watermeter";
 
@@ -86,7 +92,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     switch(event->event_id) {
     case SYSTEM_EVENT_STA_START:
-        blinkstatus(200, 5);
+        blinkstatus(200, 1);
         wifi_connect();
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
@@ -125,12 +131,96 @@ void initialise_wifi(std::string _ssid, std::string _passphrase, std::string _ho
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     ipaddress = std::string(ip4addr_ntoa(&ip_info.ip));
+    netmask = std::string(ip4addr_ntoa(&ip_info.netmask));
+    gw = std::string(ip4addr_ntoa(&ip_info.gw));
     printf("IPv4 :  %s\n", ip4addr_ntoa(&ip_info.ip));
     printf("HostName :  %s\n", hostname.c_str());
 }
 
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
-void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname)
+void strinttoip4(std::string ip, int &a, int &b, int &c, int &d) {
+    std::stringstream s(ip);
+    char ch; //to temporarily store the '.'
+    s >> a >> ch >> b >> ch >> c >> ch >> d;
+}
+
+void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _netmask, std::string _ssid, std::string _passphrase, std::string _hostname)
+{
+
+    ssid = _ssid;
+    passphrase = _passphrase;
+    hostname = _hostname;
+
+    wifi_event_group = xEventGroupCreate();
+
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    esp_netif_t *my_sta = esp_netif_create_default_wifi_sta();
+
+    esp_netif_dhcpc_stop(my_sta);
+
+    esp_netif_ip_info_t ip_info;
+
+    int a, b, c, d;
+
+    strinttoip4(_ip, a, b, c, d);
+    IP4_ADDR(&ip_info.ip, a, b, c, d);
+
+    strinttoip4(_gw, a, b, c, d);
+   	IP4_ADDR(&ip_info.gw, a, b, c, d);
+
+    strinttoip4(_netmask, a, b, c, d);
+   	IP4_ADDR(&ip_info.netmask, a, b, c, d);
+
+    esp_netif_set_ip_info(my_sta, &ip_info);
+
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
+
+
+//    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
+//    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
+
+    wifi_config_t wifi_config = { };
+    strcpy((char*)wifi_config.sta.ssid, (const char*)ssid.c_str());
+    strcpy((char*)wifi_config.sta.password, (const char*)passphrase.c_str());
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+    ESP_ERROR_CHECK(esp_wifi_start() );
+
+    ESP_LOGI(MAIN_TAG, "wifi_init_sta finished.");
+
+    EventBits_t bits = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
+
+//    EventBits_t bits = xEventGroupWaitBits(wifi_event_group,
+//            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+//            pdFALSE,
+//            pdFALSE,
+//            portMAX_DELAY);
+
+    if (bits & CONNECTED_BIT) {
+        ESP_LOGI(MAIN_TAG, "connected to ap SSID:%s password:%s",
+                 ssid.c_str(), passphrase.c_str());
+    } else  {
+        ESP_LOGI(MAIN_TAG, "Failed to connect to SSID:%s, password:%s",
+                 ssid.c_str(), passphrase.c_str());
+    }
+
+//    ESP_ERROR_CHECK(esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler));
+//    ESP_ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler));
+    vEventGroupDelete(wifi_event_group);
+
+}
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname, std::string &_ip, std::string &_gw, std::string &_netmask)
 {
     string line = "";
     std::vector<string> zerlegt;
@@ -174,6 +264,28 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
             }
         }
 
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "IP")){
+            _ip = zerlegt[1];
+            if ((_ip[0] == '"') && (_ip[_ip.length()-1] == '"')){
+                _ip = _ip.substr(1, _ip.length()-2);
+            }
+        }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "GATEWAY")){
+            _gw = zerlegt[1];
+            if ((_gw[0] == '"') && (_gw[_gw.length()-1] == '"')){
+                _gw = _gw.substr(1, _gw.length()-2);
+            }
+        }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "NETMASK")){
+            _netmask = zerlegt[1];
+            if ((_netmask[0] == '"') && (_netmask[_netmask.length()-1] == '"')){
+                _netmask = _netmask.substr(1, _netmask.length()-2);
+            }
+        }
+
+
         if (fgets(zw, 1024, pFile) == NULL)
         {
             line = "";
@@ -204,3 +316,12 @@ std::string getIPAddress(){
 std::string getSSID(){
     return ssid;
 }
+
+std::string getNetMask(){
+    return netmask;
+}
+
+std::string getGW(){
+    return gw;
+}
+
