@@ -29,6 +29,7 @@ std::string hostname;
 std::string ipaddress;
 std::string gw;
 std::string netmask;
+std::string dns;
 
 std::string std_hostname = "watermeter";
 
@@ -146,12 +147,13 @@ void strinttoip4(std::string ip, int &a, int &b, int &c, int &d) {
     s >> a >> ch >> b >> ch >> c >> ch >> d;
 }
 
-void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _netmask, std::string _ssid, std::string _passphrase, std::string _hostname)
+void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _netmask, std::string _ssid, std::string _passphrase, std::string _hostname, std::string _dns)
 {
 
     ssid = _ssid;
     passphrase = _passphrase;
     hostname = _hostname;
+    dns = _dns;
 
     wifi_event_group = xEventGroupCreate();
 
@@ -180,11 +182,15 @@ void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _net
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
+    if (dns.length() > 0) {
+        esp_netif_dns_info_t dns_info;
+        ip4_addr_t ip;
+        ip.addr = esp_ip4addr_aton(dns.c_str());
+        ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
+        ESP_ERROR_CHECK(esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info));
+    }
+
     ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
-
-
-//    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
-//    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
 
     wifi_config_t wifi_config = { };
     strcpy((char*)wifi_config.sta.ssid, (const char*)ssid.c_str());
@@ -198,12 +204,6 @@ void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _net
 
     EventBits_t bits = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
 
-//    EventBits_t bits = xEventGroupWaitBits(wifi_event_group,
-//            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-//            pdFALSE,
-//            pdFALSE,
-//            portMAX_DELAY);
-
     if (bits & CONNECTED_BIT) {
         ESP_LOGI(MAIN_TAG, "connected to ap SSID:%s password:%s",
                  ssid.c_str(), passphrase.c_str());
@@ -211,16 +211,20 @@ void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _net
         ESP_LOGI(MAIN_TAG, "Failed to connect to SSID:%s, password:%s",
                  ssid.c_str(), passphrase.c_str());
     }
+    tcpip_adapter_ip_info_t ip_info2;
+    ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info2));
+    ipaddress = std::string(ip4addr_ntoa(&ip_info2.ip));
+    netmask = std::string(ip4addr_ntoa(&ip_info2.netmask));
+    gw = std::string(ip4addr_ntoa(&ip_info2.gw));
 
-//    ESP_ERROR_CHECK(esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler));
-//    ESP_ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler));
     vEventGroupDelete(wifi_event_group);
-
 }
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
-void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname, std::string &_ip, std::string &_gw, std::string &_netmask)
+//void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns)
+
+void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname)
 {
     string line = "";
     std::vector<string> zerlegt;
@@ -229,6 +233,8 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
     FILE* pFile;
     fn = FormatFileName(fn);
     pFile = fopen(fn.c_str(), "r");
+
+    printf("file loaded\n");
 
     if (pFile == NULL)
         return;
@@ -239,7 +245,7 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 
     while ((line.size() > 0) || !(feof(pFile)))
     {
-//        printf("%s", line.c_str());
+        printf("%s", line.c_str());
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
 
@@ -264,6 +270,7 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
             }
         }
 
+/*
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "IP")){
             _ip = zerlegt[1];
             if ((_ip[0] == '"') && (_ip[_ip.length()-1] == '"')){
@@ -284,6 +291,14 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
                 _netmask = _netmask.substr(1, _netmask.length()-2);
             }
         }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "DNS")){
+            _dns = zerlegt[1];
+            if ((_dns[0] == '"') && (_dns[_dns.length()-1] == '"')){
+                _dns = _dns.substr(1, _dns.length()-2);
+            }
+        }
+*/
 
 
         if (fgets(zw, 1024, pFile) == NULL)

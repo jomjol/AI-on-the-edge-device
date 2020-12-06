@@ -84,9 +84,10 @@ extern "C" void app_main(void)
     std::string ip = "";
     std::string gw = "";
     std::string netmask = "";
+    std::string dns = "";
 
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname, ip, gw, netmask); 
-
+//    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname, ip, gw, netmask, dns); 
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname); 
 
 //    LogFile.WriteToFile("Startsequence 04");    
     printf("To use WLan: %s, %s\n", ssid.c_str(), password.c_str());
@@ -99,7 +100,7 @@ extern "C" void app_main(void)
     }
     else
     {
-        initialise_wifi_fixed_ip(ip, gw, netmask, ssid, password, hostname);
+        initialise_wifi_fixed_ip(ip, gw, netmask, ssid, password, hostname, dns);
     }
 
     printf("Netparameter: IP: %s - GW: %s - NetMask %s\n", getIPAddress().c_str(), getGW().c_str(), getNetMask().c_str());

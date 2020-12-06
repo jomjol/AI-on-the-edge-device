@@ -25,25 +25,11 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-12-06)
+##### 5.0.0 Setup Modus - (2020-12-06)
 
-* Update of the initial setup routine
-* frequent time synchronization
+* Implementation of intial setup modus for fresh installation
 
-2020-12-04
-
-* Implementation of a setup modus at the beginning of a new installation. It guides the user through a check of the parameters and setting and disables at the end automatically.
-  Special modus is entered if `SetupMode=true` in section `[System]`
-* Bug fix: wrong rounding in case of no analog counters and decimal shift
-
-
-2020-12-03
-
-
-* Move source code to `/main` to full compatibility between pure ESP-IDF and Platformio w/ espressif
-
-* based on Main v4.1.1 (2020-12-02)
-
+* Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
   
 
 ##### 4.1.1 Configuration editor - (2020-12-02)
