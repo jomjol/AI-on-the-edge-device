@@ -11,3 +11,5 @@ void register_server_tflite_uri(httpd_handle_t server);
 void KillTFliteTasks();
 
 void TFliteDoAutoStart();
+
+bool isSetupModusActive();

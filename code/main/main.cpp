@@ -81,13 +81,31 @@ extern "C" void app_main(void)
     std::string ssid = "";
     std::string password = "";
     std::string hostname = "";
+    std::string ip = "";
+    std::string gw = "";
+    std::string netmask = "";
+    std::string dns = "";
 
+//    LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname, ip, gw, netmask, dns); 
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, password, hostname); 
+
 //    LogFile.WriteToFile("Startsequence 04");    
     printf("To use WLan: %s, %s\n", ssid.c_str(), password.c_str());
     printf("To set Hostename: %s\n", hostname.c_str());
+    printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip.c_str(), gw.c_str(), netmask.c_str());
    
-    initialise_wifi(ssid, password, hostname);
+    if (ip.length() == 0 || gw.length() == 0 || netmask.length() == 0)
+    {
+        initialise_wifi(ssid, password, hostname);    
+    }
+    else
+    {
+        initialise_wifi_fixed_ip(ip, gw, netmask, ssid, password, hostname, dns);
+    }
+
+    printf("Netparameter: IP: %s - GW: %s - NetMask %s\n", getIPAddress().c_str(), getGW().c_str(), getNetMask().c_str());
+    
+
 //    LogFile.WriteToFile("Startsequence 05");  
 
     TickType_t xDelay;

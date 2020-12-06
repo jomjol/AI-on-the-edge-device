@@ -137,6 +137,7 @@ CCamera Camera;
 
 
 #define FLASH_GPIO GPIO_NUM_4
+#define BLINK_GPIO GPIO_NUM_33
 
 typedef struct {
         httpd_req_t *req;
@@ -207,6 +208,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 //    nm =  "/sdcard/josef_zw.bmp";
     string ftype;
 
+    LEDOnOff(true);
+
     if (delay > 0) 
     {
         LightOnOff(true);
@@ -217,8 +220,11 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+        LEDOnOff(false);
         return ESP_FAIL;
     }
+    LEDOnOff(false);    
+    
     printf("w %d, h %d, size %d\n", fb->width, fb->height, fb->len);
 
     nm = FormatFileName(nm);
@@ -321,6 +327,20 @@ void CCamera::LightOnOff(bool status)
     else
         gpio_set_level(FLASH_GPIO, 0);      
 }
+
+void CCamera::LEDOnOff(bool status)
+{
+	// Init the GPIO
+    gpio_pad_select_gpio(BLINK_GPIO);
+    /* Set the GPIO as a push/pull output */
+    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
+
+    if (!status)  
+        gpio_set_level(BLINK_GPIO, 1);
+    else
+        gpio_set_level(BLINK_GPIO, 0);      
+}
+
 
 void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol)
 {

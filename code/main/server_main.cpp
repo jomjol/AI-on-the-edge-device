@@ -13,6 +13,8 @@
 
 #include "esp_wifi.h"
 
+#include "server_tflite.h"
+
 
 httpd_handle_t server = NULL;   
 
@@ -152,7 +154,9 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 
     if ((strcmp(req->uri, "/") == 0))
     {
-        filetosend = filetosend + "/html/index.html";
+        {
+            filetosend = filetosend + "/html/index.html";
+        }
     }
     else
     {
@@ -161,6 +165,11 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         if (_pos > -1){
             filetosend = filetosend.substr(0, _pos);
         }
+    }
+
+    if (filetosend == "/sdcard/html/index.html" && isSetupModusActive()) {
+        printf("System ist im Setupmodus --> index.html --> setup.html");
+        filetosend = "/sdcard/html/setup.html";
     }
 
     printf("Filename: %s\n", filename);

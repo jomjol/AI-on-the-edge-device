@@ -29,6 +29,12 @@ bool flowisrunning = false;
 long auto_intervall = 0;
 bool auto_isrunning = false;
 
+bool isSetupModusActive() {
+    return tfliteflow.getStatusSetupModus();
+    return false;
+}
+
+
 void KillTFliteTasks()
 {
     printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);    
@@ -418,6 +424,13 @@ void task_autodoFlow(void *pvParameter)
     doInit();
     
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
+
+    if (isSetupModusActive()) {
+        auto_isrunning = false;
+        std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
+        tfliteflow.doFlowMakeImageOnly(zw_time);
+
+    }
 
     while (auto_isrunning)
     {
