@@ -10,6 +10,8 @@
 #include "esp_err.h"
 #include "esp_log.h"
 
+#include "Helper.h"
+
 #include "esp_http_server.h"
 
 
@@ -25,7 +27,7 @@ char scratch[SCRATCH_BUFSIZE];
 
 esp_err_t send_file(httpd_req_t *req, std::string filename,  struct stat * file_stat)
 {
-    FILE *fd = fopen(filename.c_str(), "r");
+    FILE *fd = OpenFileAndWait(filename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filename.c_str());
         /* Respond with 500 Internal Server Error */

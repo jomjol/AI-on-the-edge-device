@@ -232,7 +232,7 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 
     FILE* pFile;
     fn = FormatFileName(fn);
-    pFile = fopen(fn.c_str(), "r");
+    pFile = OpenFileAndWait(fn.c_str(), "r");
 
     printf("file loaded\n");
 
@@ -326,7 +326,7 @@ void LoadNetConfigFromFile(std::string fn, std::string &_ip, std::string &_gw, s
 
     FILE* pFile;
     fn = FormatFileName(fn);
-    pFile = fopen(fn.c_str(), "r");
+    pFile = OpenFileAndWait(fn.c_str(), "r");
 
     printf("file loaded\n");
 

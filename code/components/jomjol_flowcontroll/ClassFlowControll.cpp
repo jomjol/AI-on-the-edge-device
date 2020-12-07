@@ -122,7 +122,7 @@ void ClassFlowControll::InitFlow(std::string config)
     ClassFlow* cfc;
     FILE* pFile;
     config = FormatFileName(config);
-    pFile = fopen(config.c_str(), "r");
+    pFile = OpenFileAndWait(config.c_str(), "r");
 
     line = "";
 

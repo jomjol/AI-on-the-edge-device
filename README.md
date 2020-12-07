@@ -25,11 +25,16 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-12-06)
+##### Rolling - (2020-12-07)
+
+* Improvement: internal file handling
+
+
+2020-12-06
 
 * Option for fixed IP settings in `wlan.ini` - description see inside file
 
-* based on v5.0.05 (2020-12-06)
+* based on v5.0.0 (2020-12-06)
 
   
 

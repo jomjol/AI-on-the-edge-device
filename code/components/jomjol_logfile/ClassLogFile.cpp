@@ -19,7 +19,8 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
         return;
     }
 
-    pFile = fopen(_fn.c_str(), "a+");
+    pFile = OpenFileAndWait(_fn.c_str(), "a+");
+
     if (pFile!=NULL) {
         if (_time)
         {

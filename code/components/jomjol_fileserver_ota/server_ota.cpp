@@ -31,6 +31,8 @@
 
 #include "ClassLogFile.h"
 
+#include "Helper.h"
+
 
 
 #define BUFFSIZE 1024
@@ -89,7 +91,7 @@ static bool ota_example_task(std::string fn)
 
     int data_read;     
 
-    FILE* f = fopen(fn.c_str(), "rb");     // vorher  nur "r"
+    FILE* f = OpenFileAndWait(fn.c_str(), "rb");     // vorher  nur "r"
     data_read = fread(ota_write_data, 1, BUFFSIZE, f);
 
     while (data_read > 0) {

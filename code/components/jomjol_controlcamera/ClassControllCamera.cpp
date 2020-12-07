@@ -255,7 +255,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         }
     }
 
-    FILE * fp = fopen(nm.c_str(), "wb");
+    FILE * fp = OpenFileAndWait(nm.c_str(), "wb");
     if (fp == NULL)  /* If an error occurs during the file creation */
     {
         fprintf(stderr, "fopen() failed for '%s'\n", nm.c_str());

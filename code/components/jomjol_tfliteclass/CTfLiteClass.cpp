@@ -4,6 +4,8 @@
 
 #include "ClassLogFile.h"
 
+#include "Helper.h"
+
 #include <sys/stat.h>
 
 bool debugdetailtflite = false;
@@ -199,7 +201,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
   
 	if(result != NULL) {
 //		printf("\nSpeicher ist reserviert\n");
-        FILE* f = fopen(_fn.c_str(), "rb");     // vorher  nur "r"
+        FILE* f = OpenFileAndWait(_fn.c_str(), "rb");     // vorher  nur "r"
         fread(result, 1, size, f);
         fclose(f);        
 	}else {

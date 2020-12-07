@@ -121,7 +121,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
 
 /////////////////////////////////////////////////
     if (!readonly) {
-        FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
+        FILE *fd = OpenFileAndWait("/sdcard/html/upload_script.html", "r");
         char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
         size_t chunksize;
         do {
@@ -231,7 +231,7 @@ static esp_err_t logfileact_get_handler(httpd_req_t *req)
     std::string currentfilename = LogFile.GetCurrentFileName();
 
 
-    fd = fopen(currentfilename.c_str(), "r");
+    fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -337,7 +337,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = fopen(filepath, "r");
+    fd = OpenFileAndWait(filepath, "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -424,7 +424,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = fopen(filepath, "w");
+    fd = OpenFileAndWait(filepath, "w");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to create file : %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -710,7 +710,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
             zw = std::string(archive_filename);
             zw = _target_directory + zw;
             printf("Filename to extract: %s", zw.c_str());
-            FILE* fpTargetFile = fopen(zw.c_str(), "wb");
+            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
 

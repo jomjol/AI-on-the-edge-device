@@ -1,5 +1,8 @@
 //#pragma warning(disable : 4996)
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "Helper.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -7,10 +10,32 @@
 #include <string.h>
 #include <esp_log.h>
 
+#include "ClassLogFile.h"
+//#include "ClassLogFile.h"
+
 //#define ISWINDOWS_TRUE
 #define PATH_MAX_STRING_SIZE 256
 
 using namespace std;
+
+
+FILE* OpenFileAndWait(const char* nm, char* _mode, int _waitsec)
+{
+	FILE *pfile = fopen(nm, _mode);
+
+	if (pfile == NULL)
+	{
+		TickType_t xDelay;
+		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
+		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec);
+	    printf(zw.c_str());
+		printf("\n");
+		LogFile.WriteToFile(zw);      
+		vTaskDelay( xDelay );
+		pfile = fopen(nm, _mode);
+	}
+	return pfile;
+}
 
 std::string FormatFileName(std::string input)
 {
@@ -126,14 +151,14 @@ void CopyFile(string input, string output)
 	}
 
 	char cTemp;
-	FILE* fpSourceFile = fopen(input.c_str(), "rb");
+	FILE* fpSourceFile = OpenFileAndWait(input.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		printf("File %s existiert nicht!\n", input.c_str());
 		return;
 	}
 
-	FILE* fpTargetFile = fopen(output.c_str(), "wb");
+	FILE* fpTargetFile = OpenFileAndWait(output.c_str(), "wb");
 
 	// Code Section
 
