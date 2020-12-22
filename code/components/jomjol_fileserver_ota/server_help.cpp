@@ -25,7 +25,7 @@ char scratch[SCRATCH_BUFSIZE];
     (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
 
 
-esp_err_t send_file(httpd_req_t *req, std::string filename,  struct stat * file_stat)
+esp_err_t send_file(httpd_req_t *req, std::string filename)
 {
     FILE *fd = OpenFileAndWait(filename.c_str(), "r");
     if (!fd) {
@@ -35,7 +35,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename,  struct stat * file_
         return ESP_FAIL;
     }
 
-    ESP_LOGI(TAG, "Sending file : %s (%ld bytes)...", filename.c_str(), file_stat->st_size);
+    ESP_LOGI(TAG, "Sending file : %s ...", filename.c_str());
     set_content_type_from_file(req, filename.c_str());
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
@@ -64,6 +64,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename,  struct stat * file_
     ESP_LOGI(TAG, "File sending complete");    
     return ESP_OK;    
 }
+
 
 
 

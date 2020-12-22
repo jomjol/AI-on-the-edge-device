@@ -16,7 +16,10 @@ using namespace std;
 struct HTMLInfo
 {
 	float val;
+	CImageBasis *image = NULL;
+	CImageBasis *image_org = NULL;
 	std::string filename;
+	std::string filename_org;	
 };
 
 
@@ -30,12 +33,15 @@ protected:
 	bool getNextLine(FILE* pfile, string* rt);
 
 	std::vector<ClassFlow*>* ListFlowControll;
+	ClassFlow *previousElement;
 
 	virtual void SetInitialParameter(void);
 
 public:
 	ClassFlow(void);
 	ClassFlow(std::vector<ClassFlow*> * lfc);
+	ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev);	
+	
 	virtual bool ReadParameter(FILE* pfile, string &aktparamgraph);
 	virtual bool doFlow(string time);
 	virtual string getHTMLSingleStep(string host);

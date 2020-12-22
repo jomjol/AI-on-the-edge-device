@@ -16,30 +16,27 @@ esp_err_t ClassFlowMakeImage::camera_capture(){
 
 void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
 {
-    string nm = namerawimage;
-    if (isImageSize && (ImageQuality > 0))
-        Camera.SetQualitySize(ImageQuality, ImageSize);
-    printf("Start CaptureFile\n");
-    Camera.CaptureToFile(nm, flashdauer);
+    Camera.CaptureToBasisImage(rawImage, flashdauer);
+    if (SaveAllFiles) rawImage->SaveToFile(namerawimage);
 }
 
-
-ClassFlowMakeImage::ClassFlowMakeImage() : ClassFlowImage(TAG)
+void ClassFlowMakeImage::SetInitialParameter(void)
 {
     waitbeforepicture = 5;
     isImageSize = false;
     ImageQuality = -1;    
     TimeImageTaken = 0;
+    ImageQuality = 5;
+    rawImage = NULL;
+    ImageSize = FRAMESIZE_VGA;
+    SaveAllFiles = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
-}
+}     
+
 
 ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    waitbeforepicture = 5;
-    isImageSize = false;
-    ImageQuality = -1;
-    TimeImageTaken = 0;
-    namerawimage =  "/sdcard/img_tmp/raw.jpg";
+    SetInitialParameter();
 }
 
 bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
@@ -64,14 +61,28 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             isLogImage = true;
         }
         if ((zerlegt[0] == "ImageQuality") && (zerlegt.size() > 1))
-            this->ImageQuality = std::stod(zerlegt[1]);
+            ImageQuality = std::stod(zerlegt[1]);
+
         if ((zerlegt[0] == "ImageSize") && (zerlegt.size() > 1))
         {
             ImageSize = Camera.TextToFramesize(zerlegt[1].c_str());
             isImageSize = true;
         }
+
+        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                SaveAllFiles = true;
+        }
+
     }
-   
+
+    Camera.SetQualitySize(ImageQuality, ImageSize);
+    image_width = Camera.image_width;
+    image_height = Camera.image_height;
+    rawImage = new CImageBasis();
+    rawImage->CreateEmptyImage(image_width, image_height, 3);
+
     return true;
 }
 
@@ -84,27 +95,46 @@ string ClassFlowMakeImage::getHTMLSingleStep(string host)
 
 bool ClassFlowMakeImage::doFlow(string zwtime)
 {
-    ////////////////////////////////////////////////////////////////////
-    // TakeImage and Store into /image_tmp/raw.jpg  TO BE DONE
-    ////////////////////////////////////////////////////////////////////
-
     string logPath = CreateLogFolder(zwtime);
 
     int flashdauer = (int) waitbeforepicture * 1000;
-    
-
+ 
     takePictureWithFlash(flashdauer);
-    time(&TimeImageTaken);
-    localtime(&TimeImageTaken);
 
-    LogImage(logPath, "raw", NULL, NULL, zwtime);
+//    time(&TimeImageTaken);
+//    localtime(&TimeImageTaken);
 
+    LogImage(logPath, "raw", NULL, NULL, zwtime, rawImage);
     RemoveOldLogs();
 
     return true;
+}
+
+esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
+{
+    int flashdauer = (int) waitbeforepicture * 1000;
+    return Camera.CaptureToHTTP(req, flashdauer);
+}
+
+
+ImageData* ClassFlowMakeImage::SendRawImage()
+{
+    CImageBasis *zw = new CImageBasis(rawImage);
+    ImageData *id;
+    int flashdauer = (int) waitbeforepicture * 1000;
+    Camera.CaptureToBasisImage(zw, flashdauer);
+    id = zw->writeToMemoryAsJPG();    
+    delete zw;
+    return id;  
 }
 
 time_t ClassFlowMakeImage::getTimeImageTaken()
 {
     return TimeImageTaken;
 }
+
+ClassFlowMakeImage::~ClassFlowMakeImage(void)
+{
+    delete rawImage;
+}
+

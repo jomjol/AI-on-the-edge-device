@@ -11,6 +11,9 @@
 
 static const char* TAG = "flow_controll";
 
+bool flowcontrolldebugdetail = true;
+
+
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
@@ -68,6 +71,9 @@ void ClassFlowControll::SetInitialParameter(void)
     AutoStart = false;
     SetupModeActive = false;
     AutoIntervall = 10;
+    flowdigit = NULL;
+    flowanalog = NULL;
+    flowpostprocessing = NULL;
 }
 
 bool ClassFlowControll::isAutoStart(long &_intervall)
@@ -83,13 +89,25 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     _type = trim(_type);
 
     if (toUpper(_type).compare("[MAKEIMAGE]") == 0)
+    {
         cfc = new ClassFlowMakeImage(&FlowControll);
+        flowmakeimage = (ClassFlowMakeImage*) cfc;
+    }
     if (toUpper(_type).compare("[ALIGNMENT]") == 0)
+    {
         cfc = new ClassFlowAlignment(&FlowControll);
+        flowalignment = (ClassFlowAlignment*) cfc;
+    }
     if (toUpper(_type).compare("[ANALOG]") == 0)
+    {
         cfc = new ClassFlowAnalog(&FlowControll);
+        flowanalog = (ClassFlowAnalog*) cfc;
+    }
     if (toUpper(_type).compare("[DIGITS]") == 0)
+    {
         cfc = new ClassFlowDigit(&FlowControll);
+        flowdigit = (ClassFlowDigit*) cfc;
+    }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
@@ -139,6 +157,7 @@ void ClassFlowControll::InitFlow(std::string config)
         cfc = CreateClassFlow(line);
         if (cfc)
         {
+            printf("Start ReadParameter\n");
             cfc->ReadParameter(pFile, line);
         }
         else
@@ -158,9 +177,7 @@ std::string ClassFlowControll::getActStatus(){
 }
 
 void ClassFlowControll::doFlowMakeImageOnly(string time){
-    bool result = true;
     std::string zw_time;
-    int repeat = 0;
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
@@ -180,6 +197,25 @@ bool ClassFlowControll::doFlow(string time)
     bool result = true;
     std::string zw_time;
     int repeat = 0;
+
+
+/////////////////////////////////////////////////////
+    int aInternalFreeHeapSizeAtEnd, aInternalFreeHeapSizeAtStart;
+    aInternalFreeHeapSizeAtStart = getInternalESPHeapSize(); 
+
+    if (flowcontrolldebugdetail){
+        std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Start: " + getESPHeapInfo();
+        LogFile.WriteToFile(aStartEspInfoStr);
+    }    
+
+    aInternalFreeHeapSizeAtEnd = getInternalESPHeapSize(); 
+    if (flowcontrolldebugdetail){
+        std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Now : " + getESPHeapInfo();
+        LogFile.WriteToFile(aStartEspInfoStr);
+
+    }
+
+/////////////////////////////////////////////////////////
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
@@ -202,6 +238,14 @@ bool ClassFlowControll::doFlow(string time)
         {
             result = true;
         }
+
+        aInternalFreeHeapSizeAtEnd = getInternalESPHeapSize(); 
+        if (flowcontrolldebugdetail){
+            std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Now : " + getESPHeapInfo();
+            LogFile.WriteToFile(aStartEspInfoStr);
+
+        }
+
     }
     zw_time = gettimestring("%Y%m%d-%H%M%S");    
     aktstatus = zw_time + ": Flow is done";
@@ -362,4 +406,68 @@ int ClassFlowControll::CleanTempFolder() {
     ESP_LOGI(TAG, "%d files deleted", deleted);
     
     return 0;
+}
+
+
+esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
+{
+    return flowmakeimage->SendRawJPG(req);
+}
+
+
+ImageData* ClassFlowControll::GetJPGStream(std::string _fn)
+{
+    printf("ClassFlowControll::GetJPGStream %s\n", _fn.c_str());
+    ImageData* ret = NULL;
+
+    if (_fn == "alg.jpg")
+    {
+        return flowalignment->ImageBasis->writeToMemoryAsJPG();  
+    }
+
+    if (_fn == "alg_roi.jpg")
+    {
+        CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
+        flowalignment->DrawRef(_imgzw);
+        if (flowdigit) flowdigit->DrawROI(_imgzw);
+        if (flowanalog) flowanalog->DrawROI(_imgzw);
+        ret = _imgzw->writeToMemoryAsJPG();
+        delete _imgzw;
+        return ret;
+    }
+
+
+    std::vector<HTMLInfo*> htmlinfo;
+    htmlinfo = GetAllDigital();
+    for (int i = 0; i < htmlinfo.size(); ++i)
+    {
+        if (_fn == htmlinfo[i]->filename)
+        {
+            if (htmlinfo[i]->image)
+                return htmlinfo[i]->image->writeToMemoryAsJPG();
+        }
+        if (_fn == htmlinfo[i]->filename_org)
+        {
+            if (htmlinfo[i]->image_org)
+                return htmlinfo[i]->image_org->writeToMemoryAsJPG();        
+        }
+    }
+
+    htmlinfo = GetAllAnalog();
+    for (int i = 0; i < htmlinfo.size(); ++i)
+    {
+        if (_fn == htmlinfo[i]->filename)
+        {
+            if (htmlinfo[i]->image)
+                return htmlinfo[i]->image->writeToMemoryAsJPG();
+        }
+        if (_fn == htmlinfo[i]->filename_org)
+        {
+            if (htmlinfo[i]->image_org)
+                return htmlinfo[i]->image_org->writeToMemoryAsJPG();        
+        }
+    }
+
+    printf("Kein internes Bild gefunden - suche auf SD-Karte\n");
+    return NULL;
 }

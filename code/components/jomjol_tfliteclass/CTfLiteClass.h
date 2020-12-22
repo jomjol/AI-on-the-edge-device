@@ -14,6 +14,8 @@
 #include "esp_err.h"
 #include "esp_log.h"
 
+#include "CFindTemplate.h"
+
 
 
 #define SUPRESS_TFLITE_ERRORS           // use, to avoid error messages from TFLITE
@@ -59,10 +61,12 @@ class CTfLiteClass
         void MakeAllocate();
         void GetInputTensorSize();
         bool LoadInputImage(std::string _fn);
+        bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
         void GetOutPut();
         int GetOutClassification();
         int GetClassFromImage(std::string _fn);
+        int GetClassFromImageBasis(CImageBasis *rs);
 
         float GetOutputValue(int nr);
         void GetInputDimension(bool silent);

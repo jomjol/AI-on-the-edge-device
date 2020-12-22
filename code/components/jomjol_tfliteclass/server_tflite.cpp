@@ -29,6 +29,16 @@ bool flowisrunning = false;
 long auto_intervall = 0;
 bool auto_isrunning = false;
 
+ImageData* GetJPG(std::string _filename)
+{
+    return tfliteflow.GetJPGStream(_filename);
+}
+
+esp_err_t GetRawJPG(httpd_req_t *req)
+{
+    return tfliteflow.SendRawJPG(req);
+}
+
 bool isSetupModusActive() {
     return tfliteflow.getStatusSetupModus();
     return false;
@@ -171,7 +181,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     {
         string txt, zw;
         
-        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg.jpg\"> <p>\n";
+        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
         txt = txt + "Digital Counter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         

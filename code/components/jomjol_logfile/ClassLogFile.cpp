@@ -19,7 +19,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
         return;
     }
 
-    pFile = OpenFileAndWait(_fn.c_str(), "a+");
+    pFile = OpenFileAndWait(_fn.c_str(), "a");
 
     if (pFile!=NULL) {
         if (_time)
@@ -80,12 +80,12 @@ std::string ClassLogFile::GetCurrentFileName()
 {
     time_t rawtime;
     struct tm* timeinfo;
-    char buffer[30];
+    char buffer[60];
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer, 30, logfile.c_str(), timeinfo);
+    strftime(buffer, 60, logfile.c_str(), timeinfo);
     std::string logpath = logroot + "/" + buffer; 
 
     return logpath;

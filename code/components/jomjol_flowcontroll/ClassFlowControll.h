@@ -17,6 +17,10 @@ class ClassFlowControll :
 protected:
 	std::vector<ClassFlow*> FlowControll;
 	ClassFlowPostProcessing* flowpostprocessing;
+	ClassFlowAlignment* flowalignment;	
+	ClassFlowAnalog* flowanalog;
+	ClassFlowDigit* flowdigit;
+	ClassFlowMakeImage* flowmakeimage;
 	ClassFlow* CreateClassFlow(std::string _type);
 
 	bool AutoStart;
@@ -34,6 +38,9 @@ public:
 	string UpdatePrevalue(std::string _newvalue);
 	string GetPrevalue();	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
+
+	ImageData* GetJPGStream(std::string _fn);
+	esp_err_t SendRawJPG(httpd_req_t *req);
 
 	std::string doSingleStep(std::string _stepname, std::string _host);
 

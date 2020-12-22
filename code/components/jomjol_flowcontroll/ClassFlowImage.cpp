@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include "time_sntp.h"
 #include "ClassLogFile.h"
+#include "CFindTemplate.h"
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {
@@ -12,11 +13,18 @@ ClassFlowImage::ClassFlowImage(const char* logTag)
 	isLogImage = false;
 }
 
-ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, const char* logTag) : ClassFlow((std::vector<ClassFlow*>*)lfc)
+ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, const char* logTag) : ClassFlow(lfc)
 {
 	this->logTag = logTag;
 	isLogImage = false;
 }
+
+ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, ClassFlow *_prev, const char* logTag) :  ClassFlow(lfc, _prev)
+{
+	this->logTag = logTag;
+	isLogImage = false;
+}
+
 
 string ClassFlowImage::CreateLogFolder(string time) {
 	if (!isLogImage)
@@ -32,7 +40,7 @@ string ClassFlowImage::CreateLogFolder(string time) {
 	return logPath;
 }
 
-void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, int *resultInt, string time) {
+void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, int *resultInt, string time, CImageBasis *_img) {
 	if (!isLogImage)
 		return;
 	
@@ -50,7 +58,8 @@ void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, i
 	string output = "/sdcard/img_tmp/" + name + ".jpg";
 	output = FormatFileName(output);
 	printf("save to file: %s\n", nm.c_str());
-	CopyFile(output, nm);
+	_img->SaveToFile(nm);
+//	CopyFile(output, nm);
 }
 
 void ClassFlowImage::RemoveOldLogs()

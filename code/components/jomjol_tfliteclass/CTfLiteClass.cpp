@@ -21,6 +21,18 @@ float CTfLiteClass::GetOutputValue(int nr)
     return output2->data.f[nr];
 }
 
+int CTfLiteClass::GetClassFromImageBasis(CImageBasis *rs)
+{
+//  printf("Before Load image %s\n", _fn.c_str());
+    if (!LoadInputImageBasis(rs))
+      return -1000;
+
+    Invoke();
+    printf("After Invoke \n");
+
+    return GetOutClassification();
+}
+
 
 int CTfLiteClass::GetClassFromImage(std::string _fn)
 {
@@ -33,7 +45,6 @@ int CTfLiteClass::GetClassFromImage(std::string _fn)
   printf("After Invoke %s\n", _fn.c_str());
 
     return GetOutClassification();
-//    return 0;
 }
 
 int CTfLiteClass::GetOutClassification()
@@ -111,6 +122,46 @@ void CTfLiteClass::Invoke()
     interpreter->Invoke();
 //    printf("Invoke Done.\n");
 }
+
+
+
+bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
+{
+    std::string zw = "ClassFlowAnalog::doNeuralNetwork nach LoadInputResizeImage: ";
+//    LogFile.WriteToFile(zw);
+
+
+    unsigned int w = rs->width;
+    unsigned int h = rs->height;
+    unsigned char red, green, blue;
+
+//    printf("Image: %s size: %d x %d\n", _fn.c_str(), w, h);
+
+    input_i = 0;
+    float* input_data_ptr = (interpreter->input(0))->data.f;
+
+    for (int y = 0; y < h; ++y)
+        for (int x = 0; x < w; ++x)
+            {
+                red = rs->GetPixelColor(x, y, 0);
+                green = rs->GetPixelColor(x, y, 1);
+                blue = rs->GetPixelColor(x, y, 2);
+                *(input_data_ptr) = (float) red;
+                input_data_ptr++;
+                *(input_data_ptr) = (float) green;
+                input_data_ptr++;
+                *(input_data_ptr) = (float) blue;
+                input_data_ptr++;
+
+//                printf("BMP: %f %f %f\n", (float) red, (float) green, (float) blue);
+
+            }
+    
+    if (debugdetailtflite) LogFile.WriteToFile("Nach dem Laden in input");
+
+    return true;
+}
+
 
 
 bool CTfLiteClass::LoadInputImage(std::string _fn)
@@ -239,7 +290,7 @@ CTfLiteClass::CTfLiteClass()
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
-    this->kTensorArenaSize = 600 * 1024;
+    this->kTensorArenaSize = 150 * 1024;   /// laut testfile: 108000 - bisher 600
     this->tensor_arena = new uint8_t[kTensorArenaSize]; 
 }
 

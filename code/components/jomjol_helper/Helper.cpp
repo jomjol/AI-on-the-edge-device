@@ -18,6 +18,64 @@
 
 using namespace std;
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+string getESPHeapInfo(){
+	string espInfoResultStr = "";
+	char aMsgBuf[80];
+    
+	multi_heap_info_t aMultiHead_info ;
+	heap_caps_get_info (&aMultiHead_info,MALLOC_CAP_8BIT);
+	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+	size_t aMinFreeHeadSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
+	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
+	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+	sprintf(aMsgBuf," Free Heap Size: %ld", (long) aFreeHeapSize);
+	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_SPIRAM);
+ 	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
+	 size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
+
+	sprintf(aMsgBuf," Heap: %ld", (long) aFreeHeapSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf," Min Free: %ld", (long) aMinFreeHeapSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf," larg. Block:  %ld", (long) aHeapLargestFreeBlockSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf," SPI Heap: %ld", (long) aFreeSPIHeapSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf," Min Free Heap Size: %ld", (long) aMinFreeHeadSize);
+	sprintf(aMsgBuf," NOT_SPI Heap: %ld", (long) (aFreeHeapSize - aFreeSPIHeapSize));
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf," largest Block Size:  %ld", (long) aHeapLargestFreeBlockSize);
+	sprintf(aMsgBuf," Internal Heap: %ld", (long) (aFreeInternalHeapSize));
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf," Internal Min Heap free: %ld", (long) (aMinFreeInternalHeapSize));
+	espInfoResultStr += string(aMsgBuf);
+	return 	espInfoResultStr;
+}
+
+
+size_t getESPHeapSize(){
+   size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+   return aFreeHeapSize;
+}
+
+size_t getInternalESPHeapSize() {
+	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
+	return aFreeInternalHeapSize;
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
+{
+    for (int i = 0; i < _size; ++i)
+        *(_target + i) = *(_source + i);
+}
+
+
 
 FILE* OpenFileAndWait(const char* nm, char* _mode, int _waitsec)
 {

@@ -10,6 +10,7 @@
 #include "esp_camera.h"
 #include <string>
 #include <esp_http_server.h>
+#include "CFindTemplate.h"
 
 
 #define CAMERA_MODEL_AI_THINKER
@@ -24,6 +25,8 @@ class CCamera {
         framesize_t ActualResolution;
 
     public:
+        int image_height, image_width;
+        
         CCamera();
         esp_err_t InitCam();
 
@@ -35,9 +38,8 @@ class CCamera {
 
         framesize_t TextToFramesize(const char * text);
 
-
         esp_err_t CaptureToFile(std::string nm, int delay = 0);
-        
+        esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);
 };
 
 
