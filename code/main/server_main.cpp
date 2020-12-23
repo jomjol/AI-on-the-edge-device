@@ -239,30 +239,12 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
         return GetRawJPG(req);
     } 
 
-    ImageData *zw = GetJPG(filetosend);
+    esp_err_t zw = GetJPG(filetosend, req);
 
-    if (zw)
-    {
-        ESP_LOGI(TAG, "Sending file : %s (%d bytes)...", filetosend.c_str(), zw->size);
-        set_content_type_from_file(req, filetosend.c_str());
-
-        if (httpd_resp_send_chunk(req, (char*) &(zw->data), zw->size) != ESP_OK) {
-                    ESP_LOGE(TAG, "File sending failed!");
-                    httpd_resp_sendstr_chunk(req, NULL);
-                    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to send file");
-                    delete zw;
-                    return ESP_FAIL;
-        }    
-        ESP_LOGI(TAG, "File sending complete");    
-        /* Respond with an empty chunk to signal HTTP response completion */
-        httpd_resp_send_chunk(req, NULL, 0);
-
-        delete zw;
+    if (zw == ESP_OK)
         return ESP_OK;
-    }
 
     // File wird nicht intern bereit gestellt --> klassischer weg:
-
     return img_tmp_handler(req);
 }
 

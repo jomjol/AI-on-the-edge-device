@@ -29,9 +29,9 @@ bool flowisrunning = false;
 long auto_intervall = 0;
 bool auto_isrunning = false;
 
-ImageData* GetJPG(std::string _filename)
+esp_err_t GetJPG(std::string _filename, httpd_req_t *req)
 {
-    return tfliteflow.GetJPGStream(_filename);
+    return tfliteflow.GetJPGStream(_filename, req);
 }
 
 esp_err_t GetRawJPG(httpd_req_t *req)

@@ -2,7 +2,11 @@
 #include "ClassFlowMakeImage.h"
 #include "ClassFlow.h"
 
+#include "CRotateImage.h"
+
 #include "ClassLogFile.h"
+
+
 
 bool AlignmentExtendedDebugging = true;
 
@@ -118,7 +122,7 @@ bool ClassFlowAlignment::doFlow(string time)
         delete AlignAndCutImage;
     AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);   
 
-    CRotate rt(AlignAndCutImage, ImageTMP);
+    CRotateImage rt(AlignAndCutImage, ImageTMP);
 
     if (initialmirror){
         printf("do mirror\n");

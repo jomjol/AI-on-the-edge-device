@@ -1,7 +1,7 @@
 #include "ClassFlowMakeImage.h"
 #include "Helper.h"
 
-#include "CFindTemplate.h"
+#include "CImageBasis.h"
 #include "ClassControllCamera.h"
 
 #include <time.h>

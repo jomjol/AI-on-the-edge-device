@@ -2,6 +2,7 @@
 
 #include "ClassFlow.h"
 #include "Helper.h"
+#include "CAlignAndCutImage.h"
 
 #include <string>
 

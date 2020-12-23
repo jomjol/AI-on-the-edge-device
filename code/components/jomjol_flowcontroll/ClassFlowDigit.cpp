@@ -24,7 +24,7 @@ void ClassFlowDigit::SetInitialParameter(void)
     modelysize = 1;
     ListFlowControll = NULL;
     previousElement = NULL;    
-    SaveAllFiles = false;
+    SaveAllFiles = true;
 }    
 
 ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
@@ -128,6 +128,13 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
 
     }
+
+    for (int i = 0; i < ROI.size(); ++i)
+    {
+        ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+        ROI[i]->image_org = new CImageBasis(ROI[i]->deltax, ROI[i]->deltay, 3);
+    }
+
     return true;
 }
 
@@ -178,19 +185,12 @@ bool ClassFlowDigit::doAlignAndCut(string time)
     for (int i = 0; i < ROI.size(); ++i)
     {
         printf("DigitalDigit %d - Align&Cut\n", i);
-        CResizeImage *rs = caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay);
+        
+        caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, ROI[i]->image_org);
+        if (SaveAllFiles) ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
 
-        if (ROI[i]->image_org)
-            free(ROI[i]->image_org);
-        ROI[i]->image_org = new CImageBasis((CImageBasis*) rs);    
-        if (SaveAllFiles) rs->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
-
-        rs->Resize(modelxsize, modelysize);
-        if (SaveAllFiles) rs->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
-
-        if (ROI[i]->image)
-            free(ROI[i]->image);
-        ROI[i]->image = rs;
+        ROI[i]->image_org->Resize(modelxsize, modelysize, ROI[i]->image);
+        if (SaveAllFiles) ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
     }
 
     return true;

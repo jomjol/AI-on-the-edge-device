@@ -6,7 +6,7 @@
 #include "esp_log.h"
 
 #include "Helper.h"
-#include "CFindTemplate.h"
+#include "CImageBasis.h"
 
 
 #define BOARD_ESP32CAM_AITHINKER

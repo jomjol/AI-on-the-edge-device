@@ -23,7 +23,7 @@ void ClassFlowAnalog::SetInitialParameter(void)
     modelysize = 1;
     ListFlowControll = NULL;
     previousElement = NULL;   
-    SaveAllFiles = false; 
+    SaveAllFiles = true; 
 }   
 
 ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
@@ -132,9 +132,14 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 SaveAllFiles = true;
         }
-
-
     }
+
+    for (int i = 0; i < ROI.size(); ++i)
+    {
+        ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+        ROI[i]->image_org = new CImageBasis(ROI[i]->deltax, ROI[i]->deltay, 3);
+    }
+
     return true;
 }
 
@@ -186,19 +191,12 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
     for (int i = 0; i < ROI.size(); ++i)
     {
         printf("Analog %d - Align&Cut\n", i);
+        
+        caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, ROI[i]->image_org);
+        if (SaveAllFiles) ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
 
-        CResizeImage *rs = caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay);
-        if (ROI[i]->image_org)
-            delete ROI[i]->image_org;
-        ROI[i]->image_org = new CImageBasis((CImageBasis*) rs);
-
-        if (SaveAllFiles) rs->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
-
-        rs->Resize(modelxsize, modelysize);
-        if (SaveAllFiles) rs->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
-        if (ROI[i]->image)
-            delete ROI[i]->image;
-        ROI[i]->image = rs;
+        ROI[i]->image_org->Resize(modelxsize, modelysize, ROI[i]->image);
+        if (SaveAllFiles) ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
     }
 
     return true;

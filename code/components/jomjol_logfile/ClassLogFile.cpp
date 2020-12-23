@@ -19,7 +19,9 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
         return;
     }
 
-    pFile = OpenFileAndWait(_fn.c_str(), "a");
+//    pFile = OpenFileAndWait(_fn.c_str(), "a"); 
+    pFile = fopen(_fn.c_str(), "a+");
+    printf("Logfile opened: %s\n", _fn.c_str());
 
     if (pFile!=NULL) {
         if (_time)
@@ -55,6 +57,7 @@ void ClassLogFile::SetRetention(unsigned short _retentionInDays){
 
 void ClassLogFile::WriteToFile(std::string info, bool _time)
 {
+/*
     struct stat path_stat;
     if (stat(logroot.c_str(), &path_stat) != 0) {
         ESP_LOGI(TAG, "Create log folder: %s", logroot.c_str());
@@ -62,7 +65,7 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
             ESP_LOGI(TAG, "Can't create log foolder");
         }
     }
-
+*/
     time_t rawtime;
     struct tm* timeinfo;
     char buffer[30];

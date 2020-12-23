@@ -44,9 +44,14 @@ void Init_NVS_SDCard()
 //    sdmmc_host_t host = SDMMC_HOST_SLOT_1();
 //    host.flags = SDMMC_HOST_FLAG_1BIT;
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
+    slot_config.width = 1;  // 1 line SD mode
+    
     esp_vfs_fat_sdmmc_mount_config_t mount_config = { };
     mount_config.format_if_mount_failed = false;
     mount_config.max_files = 5;
+
+    gpio_set_pull_mode((gpio_num_t) 15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
+    gpio_set_pull_mode((gpio_num_t) 2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
 
     sdmmc_card_t* card;
     ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);

@@ -9,6 +9,8 @@
 #include "Helper.h"
 #include "server_ota.h"
 
+#include "server_help.h"
+
 static const char* TAG = "flow_controll";
 
 bool flowcontrolldebugdetail = true;
@@ -415,15 +417,20 @@ esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 }
 
 
-ImageData* ClassFlowControll::GetJPGStream(std::string _fn)
+esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 {
     printf("ClassFlowControll::GetJPGStream %s\n", _fn.c_str());
-    ImageData* ret = NULL;
+
+    CImageBasis *_send = NULL;
+    esp_err_t result = ESP_FAIL;
+    bool Dodelete = false;    
 
     if (_fn == "alg.jpg")
     {
-        return flowalignment->ImageBasis->writeToMemoryAsJPG();  
+        _send = flowalignment->ImageBasis;  
     }
+
+
 
     if (_fn == "alg_roi.jpg")
     {
@@ -431,11 +438,9 @@ ImageData* ClassFlowControll::GetJPGStream(std::string _fn)
         flowalignment->DrawRef(_imgzw);
         if (flowdigit) flowdigit->DrawROI(_imgzw);
         if (flowanalog) flowanalog->DrawROI(_imgzw);
-        ret = _imgzw->writeToMemoryAsJPG();
-        delete _imgzw;
-        return ret;
+        _send = _imgzw;
+        Dodelete = true;
     }
-
 
     std::vector<HTMLInfo*> htmlinfo;
     htmlinfo = GetAllDigital();
@@ -444,12 +449,12 @@ ImageData* ClassFlowControll::GetJPGStream(std::string _fn)
         if (_fn == htmlinfo[i]->filename)
         {
             if (htmlinfo[i]->image)
-                return htmlinfo[i]->image->writeToMemoryAsJPG();
+                _send = htmlinfo[i]->image;
         }
         if (_fn == htmlinfo[i]->filename_org)
         {
             if (htmlinfo[i]->image_org)
-                return htmlinfo[i]->image_org->writeToMemoryAsJPG();        
+                _send = htmlinfo[i]->image_org;        
         }
     }
 
@@ -459,15 +464,29 @@ ImageData* ClassFlowControll::GetJPGStream(std::string _fn)
         if (_fn == htmlinfo[i]->filename)
         {
             if (htmlinfo[i]->image)
-                return htmlinfo[i]->image->writeToMemoryAsJPG();
+                _send = htmlinfo[i]->image;
         }
         if (_fn == htmlinfo[i]->filename_org)
         {
             if (htmlinfo[i]->image_org)
-                return htmlinfo[i]->image_org->writeToMemoryAsJPG();        
+                _send = htmlinfo[i]->image_org;        
         }
     }
 
-    printf("Kein internes Bild gefunden - suche auf SD-Karte\n");
-    return NULL;
+    if (_send)
+    {
+        ESP_LOGI(TAG, "Sending file : %s ...", _fn.c_str());
+        set_content_type_from_file(req, _fn.c_str());
+        result = _send->SendJPGtoHTTP(req);
+        ESP_LOGI(TAG, "File sending complete");    
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_send_chunk(req, NULL, 0);
+    }
+
+    if (Dodelete) 
+    {
+        delete _send;
+    }
+
+    return result;
 }

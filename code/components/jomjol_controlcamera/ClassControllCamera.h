@@ -10,7 +10,7 @@
 #include "esp_camera.h"
 #include <string>
 #include <esp_http_server.h>
-#include "CFindTemplate.h"
+#include "CImageBasis.h"
 
 
 #define CAMERA_MODEL_AI_THINKER

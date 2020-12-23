@@ -5,7 +5,7 @@
 #include <dirent.h>
 #include "time_sntp.h"
 #include "ClassLogFile.h"
-#include "CFindTemplate.h"
+#include "CImageBasis.h"
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {

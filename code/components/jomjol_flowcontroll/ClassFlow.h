@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Helper.h"
-#include "CFindTemplate.h"
+#include "CImageBasis.h"
 
 using namespace std;
 
