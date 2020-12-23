@@ -163,3 +163,8 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 ## Solved topics
 
 * n.a.
+
+
+## Donate
+
+https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL
