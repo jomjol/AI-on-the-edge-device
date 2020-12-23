@@ -116,7 +116,7 @@ string ClassFlowAlignment::getHTMLSingleStep(string host)
 bool ClassFlowAlignment::doFlow(string time) 
 {
     if (!ImageTMP) 
-        ImageTMP = new CImageBasis(ImageBasis);
+        ImageTMP = new CImageBasis(ImageBasis, 5);
 
     if (AlignAndCutImage)
         delete AlignAndCutImage;

@@ -141,7 +141,6 @@ esp_err_t starttime_get_handler(httpd_req_t *req)
 esp_err_t hello_main_handler(httpd_req_t *req)
 {
     char filepath[50];
-    struct stat file_stat;
     printf("uri: %s\n", req->uri);
     int _pos;
     esp_err_t res;
@@ -196,7 +195,6 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
     char filepath[50];
-    struct stat file_stat;
     printf("uri: %s\n", req->uri);
 
     char *base_path = (char*) req->user_ctx;
@@ -236,7 +234,7 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
     if (filetosend == "raw.jpg")
     {
-        return GetRawJPG(req);
+        return GetRawJPG(req); 
     } 
 
     esp_err_t zw = GetJPG(filetosend, req);

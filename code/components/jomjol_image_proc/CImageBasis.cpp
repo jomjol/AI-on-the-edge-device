@@ -283,7 +283,7 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 
 }
 
-CImageBasis::CImageBasis(CImageBasis *_copyfrom)
+CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat) 
 {
     externalImage = false;
     channels = _copyfrom->channels;
@@ -293,6 +293,18 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom)
 
     int memsize = width * height * channels;
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
+
+    int anz = 1;
+    TickType_t xDelay;
+    while (!rgb_image && (anz < _anzrepeat))    
+    {
+		    printf("Create Image from Copy - Speicher ist voll - Versuche es erneut: %d.\n", anz);
+        xDelay = 1000 / portTICK_PERIOD_MS;
+        rgb_image = (unsigned char*) malloc(memsize);
+        anz++;
+    }
+
+    
     if (!rgb_image)
     {
         printf(getESPHeapInfo().c_str());

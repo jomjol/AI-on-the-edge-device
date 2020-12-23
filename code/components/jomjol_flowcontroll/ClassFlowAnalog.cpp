@@ -23,7 +23,7 @@ void ClassFlowAnalog::SetInitialParameter(void)
     modelysize = 1;
     ListFlowControll = NULL;
     previousElement = NULL;   
-    SaveAllFiles = true; 
+    SaveAllFiles = false; 
 }   
 
 ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)

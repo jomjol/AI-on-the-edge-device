@@ -24,7 +24,7 @@ void ClassFlowDigit::SetInitialParameter(void)
     modelysize = 1;
     ListFlowControll = NULL;
     previousElement = NULL;    
-    SaveAllFiles = true;
+    SaveAllFiles = false;
 }    
 
 ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)

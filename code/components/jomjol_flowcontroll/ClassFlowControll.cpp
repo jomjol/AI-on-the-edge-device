@@ -202,15 +202,11 @@ bool ClassFlowControll::doFlow(string time)
 
 
 /////////////////////////////////////////////////////
-    int aInternalFreeHeapSizeAtEnd, aInternalFreeHeapSizeAtStart;
-    aInternalFreeHeapSizeAtStart = getInternalESPHeapSize(); 
-
     if (flowcontrolldebugdetail){
         std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Start: " + getESPHeapInfo();
         LogFile.WriteToFile(aStartEspInfoStr);
     }    
 
-    aInternalFreeHeapSizeAtEnd = getInternalESPHeapSize(); 
     if (flowcontrolldebugdetail){
         std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Now : " + getESPHeapInfo();
         LogFile.WriteToFile(aStartEspInfoStr);
@@ -241,7 +237,6 @@ bool ClassFlowControll::doFlow(string time)
             result = true;
         }
 
-        aInternalFreeHeapSizeAtEnd = getInternalESPHeapSize(); 
         if (flowcontrolldebugdetail){
             std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Now : " + getESPHeapInfo();
             LogFile.WriteToFile(aStartEspInfoStr);
