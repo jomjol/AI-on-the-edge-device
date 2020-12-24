@@ -361,6 +361,14 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             setTimeZone(zerlegt[1]);
         }      
 
+        if ((toUpper(zerlegt[0]) == "TIMESERVER") && (zerlegt.size() > 1))
+        {
+            string zw = "Set TimeZone: " + zerlegt[1];
+            reset_servername(zerlegt[1]);
+        }      
+
+
+
         if ((toUpper(zerlegt[0]) == "SETUPMODE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
