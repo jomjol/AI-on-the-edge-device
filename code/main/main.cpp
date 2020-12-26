@@ -28,6 +28,9 @@
 
 static const char *TAGMAIN = "connect_wlan_main";
 
+
+bool debug_detail_heap = true;
+
 #define FLASH_GPIO GPIO_NUM_4
 
 void Init_NVS_SDCard()
@@ -121,7 +124,9 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );   
 //    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
-    LogFile.WriteToFile("============================== Main Started =======================================");
+    LogFile.WriteToFile("=============================================================================================");
+    LogFile.WriteToFile("=================================== Main Started ============================================");
+    LogFile.WriteToFile("=============================================================================================");
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");

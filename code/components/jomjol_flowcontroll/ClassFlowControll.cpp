@@ -13,8 +13,6 @@
 
 static const char* TAG = "flow_controll";
 
-bool flowcontrolldebugdetail = true;
-
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
@@ -202,17 +200,7 @@ bool ClassFlowControll::doFlow(string time)
 
 
 /////////////////////////////////////////////////////
-    if (flowcontrolldebugdetail){
-        std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Start: " + getESPHeapInfo();
-        LogFile.WriteToFile(aStartEspInfoStr);
-    }    
-
-    if (flowcontrolldebugdetail){
-        std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Now : " + getESPHeapInfo();
-        LogFile.WriteToFile(aStartEspInfoStr);
-
-    }
-
+    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
 /////////////////////////////////////////////////////////
 
     for (int i = 0; i < FlowControll.size(); ++i)
@@ -220,7 +208,8 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = gettimestring("%Y%m%d-%H%M%S");
         aktstatus = zw_time + ": " + FlowControll[i]->name();
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
-        LogFile.WriteToFile(zw);
+        if (debug_detail_heap) LogFile.WriteHeapInfo(zw);
+//        LogFile.WriteToFile(zw);
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
@@ -237,12 +226,7 @@ bool ClassFlowControll::doFlow(string time)
             result = true;
         }
 
-        if (flowcontrolldebugdetail){
-            std::string aStartEspInfoStr = "ClassFlowAnalog::doFlow - Now : " + getESPHeapInfo();
-            LogFile.WriteToFile(aStartEspInfoStr);
-
-        }
-
+        if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
     }
     zw_time = gettimestring("%Y%m%d-%H%M%S");    
     aktstatus = zw_time + ": Flow is done";
