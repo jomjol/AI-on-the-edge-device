@@ -72,7 +72,8 @@ static camera_config_t camera_config = {
     .ledc_channel = LEDC_CHANNEL_0,
 
     .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .frame_size = FRAMESIZE_VGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+//    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
 
     
 
@@ -150,6 +151,8 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
         image_height = 480;
         image_width = 640;             
     }
+    // No higher Mode than VGA, damit der Kameraspeicher ausreicht.
+/*
     if (resol == FRAMESIZE_SVGA)
     {
         image_height = 600;
@@ -170,7 +173,7 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
         image_height = 1200;
         image_width = 1600;             
     }
-
+*/
 }
 
 
