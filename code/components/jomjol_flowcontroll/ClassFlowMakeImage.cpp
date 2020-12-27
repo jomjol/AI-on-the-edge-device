@@ -1,5 +1,6 @@
 #include "ClassFlowMakeImage.h"
 #include "Helper.h"
+#include "ClassLogFile.h"
 
 #include "CImageBasis.h"
 #include "ClassControllCamera.h"
@@ -99,13 +100,16 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 
     int flashdauer = (int) waitbeforepicture * 1000;
  
+    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
+
     takePictureWithFlash(flashdauer);
 
-//    time(&TimeImageTaken);
-//    localtime(&TimeImageTaken);
+    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After takePictureWithFlash");
 
     LogImage(logPath, "raw", NULL, NULL, zwtime, rawImage);
+
     RemoveOldLogs();
+    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After RemoveOldLogs");
 
     return true;
 }

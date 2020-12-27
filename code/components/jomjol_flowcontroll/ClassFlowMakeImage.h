@@ -48,3 +48,6 @@ public:
     ~ClassFlowMakeImage(void);
 };
 
+
+extern bool debug_detail_heap;
+

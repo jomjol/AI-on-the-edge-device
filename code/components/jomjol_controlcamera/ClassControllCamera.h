@@ -16,7 +16,7 @@
 #define CAMERA_MODEL_AI_THINKER
 
 
-static const char *TAGCAMERACLASS = "server_part_camera";
+static const char *TAGCAMERACLASS = "server_part_camera"; 
 
 
 class CCamera {
@@ -45,5 +45,6 @@ class CCamera {
 
 extern CCamera Camera;
 
+extern bool debug_detail_heap;
 
 #endif
