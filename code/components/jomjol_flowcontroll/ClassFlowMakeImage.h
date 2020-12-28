@@ -20,19 +20,34 @@ protected:
     int ImageQuality;
     time_t TimeImageTaken;
     string namerawimage;
+    int image_height, image_width;
+    bool SaveAllFiles;
+
 
     void CopyFile(string input, string output);
 
     esp_err_t camera_capture();
-    void takePictureWithFlash(int flashdauer);   
+    void takePictureWithFlash(int flashdauer);
+
+    void SetInitialParameter(void);       
 
 public:
-    ClassFlowMakeImage();
+    CImageBasis *rawImage;
+
     ClassFlowMakeImage(std::vector<ClassFlow*>* lfc);
+
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getHTMLSingleStep(string host);
     time_t getTimeImageTaken();
     string name(){return "ClassFlowMakeImage";};
+
+    ImageData* SendRawImage();
+    esp_err_t SendRawJPG(httpd_req_t *req);
+
+    ~ClassFlowMakeImage(void);
 };
+
+
+extern bool debug_detail_heap;
 

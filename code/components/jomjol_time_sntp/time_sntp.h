@@ -16,3 +16,4 @@ void setup_time(void);
 
 std::string gettimestring(const char * frm);
 void setTimeZone(std::string _tzstring);
+void reset_servername(std::string _servername);

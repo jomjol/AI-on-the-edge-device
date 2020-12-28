@@ -24,10 +24,31 @@ TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
 
+
+
 bool flowisrunning = false;
 
 long auto_intervall = 0;
 bool auto_isrunning = false;
+
+
+int countRounds = 0;
+
+int getCountFlowRounds() {
+    return countRounds;
+}
+
+
+
+esp_err_t GetJPG(std::string _filename, httpd_req_t *req)
+{
+    return tfliteflow.GetJPGStream(_filename, req);
+}
+
+esp_err_t GetRawJPG(httpd_req_t *req)
+{
+    return tfliteflow.SendRawJPG(req);
+}
 
 bool isSetupModusActive() {
     return tfliteflow.getStatusSetupModus();
@@ -91,6 +112,8 @@ void blink_task_doFlow(void *pvParameter)
 
 esp_err_t handler_init(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_init - Start");       
+
     LogFile.WriteToFile("handler_init"); 
     printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
 
@@ -104,11 +127,15 @@ esp_err_t handler_init(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);    
 
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_init - Done");       
+
     return ESP_OK;
 };
 
 esp_err_t handler_doflow(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_doflow - Start");       
+
     LogFile.WriteToFile("handler_doflow");   
     char* resp_str;
 
@@ -127,7 +154,9 @@ esp_err_t handler_doflow(httpd_req_t *req)
     resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
     httpd_resp_send(req, resp_str, strlen(resp_str));  
     /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);        
+    httpd_resp_send_chunk(req, NULL, 0);       
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_doflow - Done");       
+
     return ESP_OK;
 };
 
@@ -136,6 +165,8 @@ esp_err_t handler_doflow(httpd_req_t *req)
 
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
+
     LogFile.WriteToFile("handler_wasserzaehler");    
     bool _rawValue = false;
     bool _noerror = false;
@@ -171,7 +202,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     {
         string txt, zw;
         
-        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg.jpg\"> <p>\n";
+        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
         txt = txt + "Digital Counter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
@@ -205,7 +236,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
             delete htmlinfo[i];
         }
-        htmlinfo.clear();         
+        htmlinfo.clear();   
 
     }   
 
@@ -217,12 +248,15 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
+
     return ESP_OK;
 };
 
 
 esp_err_t handler_editflow(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_editflow - Start");       
     LogFile.WriteToFile("handler_editflow");    
 
     printf("handler_editflow uri: "); printf(req->uri); printf("\n");
@@ -324,6 +358,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         zw = "CutImage Done";
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
+        
     }
 
     if (_task.compare("test_take") == 0)
@@ -378,6 +413,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_editflow - Done");       
 
     return ESP_OK;
 };
@@ -385,6 +421,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_prevalue - Start");       
+
     LogFile.WriteToFile("handler_prevalue"); 
     const char* resp_str;
     string zw;
@@ -414,6 +452,8 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);      
 
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_prevalue - Start");       
+
     return ESP_OK;
 };
 
@@ -434,7 +474,8 @@ void task_autodoFlow(void *pvParameter)
 
     while (auto_isrunning)
     {
-        LogFile.WriteToFile("task_autodoFlow - next round"); 
+        std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
+        LogFile.WriteToFile(_zw); 
         printf("Autoflow: start\n");
         fr_start = esp_timer_get_time();
 

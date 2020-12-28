@@ -1,28 +1,54 @@
 #include "ClassFlowAlignment.h"
+#include "ClassFlowMakeImage.h"
+#include "ClassFlow.h"
+
+#include "CRotateImage.h"
 
 #include "ClassLogFile.h"
 
-ClassFlowAlignment::ClassFlowAlignment()
+
+
+bool AlignmentExtendedDebugging = true;
+
+
+void ClassFlowAlignment::SetInitialParameter(void)
 {
     initalrotate = 0;
     anz_ref = 0;
     suchex = 40;
     suchey = 40;
     initialmirror = false;
+    SaveAllFiles = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
     ListFlowControll = NULL;
+    AlignAndCutImage = NULL;
+    ImageBasis = NULL;
+    ImageTMP = NULL;
+    previousElement = NULL;
+    ref_dx[0] = 0; ref_dx[1] = 0;
+    ref_dy[0] = 0; ref_dy[1] = 0;
 }
 
 ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 {
-    initalrotate = 0;
-    anz_ref = 0;
-    suchex = 40;
-    suchey = 40;
-    initialmirror = false;
-    namerawimage =  "/sdcard/img_tmp/raw.jpg";    
+    SetInitialParameter();
     ListFlowControll = lfc;
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowMakeImage") == 0)
+        {
+            ImageBasis = ((ClassFlowMakeImage*) (*ListFlowControll)[i])->rawImage;
+        }
+    }
+
+    if (!ImageBasis)            // die Funktion Bilder aufnehmen existiert nicht --> muss erst erzeugt werden NUR ZU TESTZWECKEN
+    {
+        if (AlignmentExtendedDebugging) printf("CImageBasis musste erzeugt werden\n");
+        ImageBasis = new CImageBasis(namerawimage);
+    }
 }
+
 
 bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
@@ -59,11 +85,18 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         }               
         if ((zerlegt.size() == 3) && (anz_ref < 2))
         {
-            this->reffilename[anz_ref] = FormatFileName("/sdcard" + zerlegt[0]);
-            this->ref_x[anz_ref] = std::stod(zerlegt[1]);
-            this->ref_y[anz_ref] = std::stod(zerlegt[2]);
+            reffilename[anz_ref] = FormatFileName("/sdcard" + zerlegt[0]);
+            ref_x[anz_ref] = std::stod(zerlegt[1]);
+            ref_y[anz_ref] = std::stod(zerlegt[2]);
             anz_ref++;
         }
+
+        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                SaveAllFiles = true;
+        }
+
     }
     return true;
 
@@ -80,72 +113,52 @@ string ClassFlowAlignment::getHTMLSingleStep(string host)
 }
 
 
-bool ClassFlowAlignment::doFlow(string time)
+bool ClassFlowAlignment::doFlow(string time) 
 {
-    string input = namerawimage;
-    string output = "/sdcard/img_tmp/rot.jpg";
-    string output3 = "/sdcard/img_tmp/rot_roi.jpg";
-    string output2 = "/sdcard/img_tmp/alg.jpg";
-    string output4 = "/sdcard/img_tmp/alg_roi.jpg";
-    string output1 = "/sdcard/img_tmp/mirror.jpg";
+    if (!ImageTMP) 
+        ImageTMP = new CImageBasis(ImageBasis, 5);
 
-    input = FormatFileName(input);
-    output = FormatFileName(output);
-    output2 = FormatFileName(output2);
+    if (AlignAndCutImage)
+        delete AlignAndCutImage;
+    AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);   
 
+    CRotateImage rt(AlignAndCutImage, ImageTMP);
 
     if (initialmirror){
-        CRotate *rt;
-        rt = new CRotate(input);
-        if (!rt->ImageOkay()){
-            LogFile.WriteToFile("ClassFlowAlignment::doFlow CRotate Inital Mirror raw.jpg not okay!");
-            delete rt;
-            return false;
-        }
         printf("do mirror\n");
-        rt->Mirror();
-        rt->SaveToFile(output1);
-        input = output1;
-        delete rt;
+        rt.Mirror();
+        if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/mirror.jpg"));
     }
-
-
+ 
     if (initalrotate != 0)
     {
-        CRotate *rt = NULL;
-        printf("Load rotationfile: %s\n", input.c_str());
-        rt = new CRotate(input);
-        if (!rt->ImageOkay()){
-            LogFile.WriteToFile("ClassFlowAlignment::doFlow CRotate raw.jpg not okay!");
-            delete rt;
-            return false;
-        }
-        rt->Rotate(this->initalrotate);
-        rt->SaveToFile(output);
-        delete rt;
+        rt.Rotate(initalrotate);
+        if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
     }
-    else
+
+    AlignAndCutImage->Align(reffilename[0], ref_x[0], ref_y[0], reffilename[1], ref_x[1], ref_y[1], suchex, suchey, "");
+    AlignAndCutImage->GetRefSize(ref_dx, ref_dy);
+    if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/alg.jpg"));
+
+    if (SaveAllFiles)
     {
-        CopyFile(input, output);
+        DrawRef(ImageTMP);
+        ImageTMP->SaveToFile(FormatFileName("/sdcard/img_tmp/alg_roi.jpg"));
     }
 
-    CAlignAndCutImage *caic;
-    caic = new CAlignAndCutImage(output);
-    caic->Align(this->reffilename[0], this->ref_x[0], this->ref_y[0], this->reffilename[1], this->ref_x[1], this->ref_y[1], suchex, suchey, output3);
-    caic->SaveToFile(output2);
-
-    printf("Startwriting Output4:%s\n", output4.c_str());
-    if (output4.length() > 0)
+    if (ImageTMP)       // nuss gelöscht werden, um Speicherplatz für das Laden von tflite zu haben
     {
-        caic->drawRect(ref_x[0], ref_y[0], caic->t0_dx, caic->t0_dy, 255, 0, 0, 2);
-        caic->drawRect(ref_x[1], ref_y[1], caic->t1_dx, caic->t1_dy, 255, 0, 0, 2);
-        caic->SaveToFile(output4);
-        printf("Write output4: %s\n", output4.c_str());
-    }
+        delete ImageTMP;
+        ImageTMP = NULL;
+    }  
 
-    delete caic;
-
-    // Align mit Templates
     return true;
+}
+
+
+void ClassFlowAlignment::DrawRef(CImageBasis *_zw)
+{
+    _zw->drawRect(ref_x[0], ref_y[0], ref_dx[0], ref_dy[0], 255, 0, 0, 2);
+    _zw->drawRect(ref_x[1], ref_y[1], ref_dx[1], ref_dy[1], 255, 0, 0, 2);
 }
 

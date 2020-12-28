@@ -6,7 +6,7 @@
 
 #include <time.h>
 
-ClassFlowMQTT::ClassFlowMQTT()
+void ClassFlowMQTT::SetInitialParameter(void)
 {
     uri = "";
     topic = "";
@@ -15,20 +15,35 @@ ClassFlowMQTT::ClassFlowMQTT()
     OldValue = "";
     flowpostprocessing = NULL;  
     user = "";
-    password = "";    
+    password = "";   
+    previousElement = NULL;
+    ListFlowControll = NULL;     
+}       
+
+ClassFlowMQTT::ClassFlowMQTT()
+{
+    SetInitialParameter();
 }
 
 ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
 {
-    uri = "";
-    topic = "";
-    topicError = "";
-    clientname = "watermeter";
-    OldValue = "";
-    flowpostprocessing = NULL;
-    user = "";
-    password = "";        
+    SetInitialParameter();
 
+    ListFlowControll = lfc;
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
+        {
+            flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+        }
+    }
+}
+
+ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
+{
+    SetInitialParameter();
+
+    previousElement = _prev;
     ListFlowControll = lfc;
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
@@ -38,8 +53,8 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
         }
     }
-
 }
+
 
 bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 {

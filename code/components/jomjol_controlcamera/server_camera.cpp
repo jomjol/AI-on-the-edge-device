@@ -29,26 +29,38 @@ void PowerResetCamera(){
 
 esp_err_t handler_lightOn(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOn - Start");
+
     LogFile.WriteToFile("handler_lightOn");
     printf("handler_lightOn uri:\n"); printf(req->uri); printf("\n");
     Camera.LightOnOff(true);
     const char* resp_str = (const char*) req->user_ctx;
-    httpd_resp_send(req, resp_str, strlen(resp_str));      
+    httpd_resp_send(req, resp_str, strlen(resp_str));  
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOn - Done");
+
     return ESP_OK;
 };
 
 esp_err_t handler_lightOff(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOff - Start");
+
     LogFile.WriteToFile("handler_lightOff");
     printf("handler_lightOff uri:\n"); printf(req->uri); printf("\n");
     Camera.LightOnOff(false);
     const char* resp_str = (const char*) req->user_ctx;
     httpd_resp_send(req, resp_str, strlen(resp_str));       
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOff - Done");
+
     return ESP_OK;
 };
 
 esp_err_t handler_capture(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture - Start");
+
     LogFile.WriteToFile("handler_capture");
     int quality;
     framesize_t res;
@@ -59,12 +71,17 @@ esp_err_t handler_capture(httpd_req_t *req)
 
     esp_err_t ressult;
     ressult = Camera.CaptureToHTTP(req);
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture - Done");
+
     return ressult;
 };
 
 
 esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
+
     LogFile.WriteToFile("handler_capture_with_ligth");
     char _query[100];
     char _delay[10];
@@ -98,6 +115,8 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
     ressult = Camera.CaptureToHTTP(req);  
 
     Camera.LightOnOff(false);
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
    
     return ressult;
 };
@@ -106,6 +125,8 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 
 esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
+
     LogFile.WriteToFile("handler_capture_save_to_file");
     char _query[100];
     char _delay[10];
@@ -151,6 +172,8 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
     const char* resp_str = (const char*) fn.c_str();
     httpd_resp_send(req, resp_str, strlen(resp_str));  
   
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
+
     return ressult;
 };
 

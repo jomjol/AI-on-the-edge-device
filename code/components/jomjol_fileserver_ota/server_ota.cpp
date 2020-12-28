@@ -303,6 +303,8 @@ void CheckOTAUpdate(void)
 
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_ota_update - Start");    
+
     LogFile.WriteToFile("handler_ota_update");    
     char _query[200];
     char _filename[30];
@@ -378,7 +380,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
-    
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_ota_update - Done");    
+
     return ESP_OK;
 };
 
@@ -414,6 +418,8 @@ void doReboot(){
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_reboot - Start");    
+
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
     const char* resp_str = "!!! System will restart within 5 sec!!!";
@@ -421,6 +427,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
     
     doReboot();
 
+    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_reboot - Done");    
     return ESP_OK;
 }
 

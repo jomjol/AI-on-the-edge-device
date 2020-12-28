@@ -18,13 +18,14 @@
 
 httpd_handle_t server = NULL;   
 
-
 std::string starttime = "";
 
 
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("info_get_handler - Start");    
+
     LogFile.WriteToFile("info_get_handler");    
     char _query[200];
     char _valuechar[30];    
@@ -125,25 +126,31 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
+    if (debug_detail_heap) LogFile.WriteHeapInfo("info_get_handler - Done");    
 
     return ESP_OK;
 }
 
 esp_err_t starttime_get_handler(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("starttime_get_handler - Start");       
     httpd_resp_send(req, starttime.c_str(), strlen(starttime.c_str())); 
     /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);     
+    httpd_resp_send_chunk(req, NULL, 0);  
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("starttime_get_handler - Done");          
 
     return ESP_OK;
 }
 
 esp_err_t hello_main_handler(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("hello_main_handler - Start");
+
     char filepath[50];
-    struct stat file_stat;
     printf("uri: %s\n", req->uri);
     int _pos;
+    esp_err_t res;
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
@@ -182,60 +189,35 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
         return ESP_FAIL;
     }
-    if (stat(filetosend.c_str(), &file_stat) == -1) {
-        /* If file not present on SPIFFS check if URI
-         * corresponds to one of the hardcoded paths */
-        ESP_LOGE(TAG, "Failed to stat file : %s", filetosend.c_str());
-        /* Respond with 404 Not Found */
-        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "File does not exist");
-        return ESP_FAIL;
-    }
-    esp_err_t res;
-    res = httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    if (res != ESP_OK)
-        return res;
 
-    res = send_file(req, filetosend, &file_stat);
+    res = send_file(req, filetosend);
     if (res != ESP_OK)
         return res;
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("hello_main_handler - Stop");   
+
     return ESP_OK;
 }
 
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
     char filepath[50];
-    struct stat file_stat;
     printf("uri: %s\n", req->uri);
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
     const char *filename = get_path_from_uri(filepath, base_path,
-                                             req->uri  + sizeof("/img_tmp") - 1, sizeof(filepath));    
+                                             req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
     printf("1 uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
 
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
     printf("File to upload: %s\n", filetosend.c_str());    
 
-    if (!filename) {
-        ESP_LOGE(TAG, "Filename is too long");
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
-        return ESP_FAIL;
-    }
-    if (stat(filetosend.c_str(), &file_stat) == -1) {
-        /* If file not present on SPIFFS check if URI
-         * corresponds to one of the hardcoded paths */
-        ESP_LOGE(TAG, "Failed to stat file : %s", filetosend.c_str());
-        /* Respond with 404 Not Found */
-        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "File does not exist");
-        return ESP_FAIL;
-    }
-
-    esp_err_t res = send_file(req, filetosend, &file_stat);
+    esp_err_t res = send_file(req, filetosend);
     if (res != ESP_OK)
         return res;
 
@@ -244,8 +226,47 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
+{
+    if (debug_detail_heap) LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");    
+    char filepath[50];
+
+    printf("uri: %s\n", req->uri);
+
+    char *base_path = (char*) req->user_ctx;
+    std::string filetosend(base_path);
+
+    const char *filename = get_path_from_uri(filepath, base_path,
+                                             req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
+    printf("1 uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+
+    filetosend = std::string(filename);
+    printf("File to upload: %s\n", filetosend.c_str()); 
+
+    if (filetosend == "raw.jpg")
+    {
+        return GetRawJPG(req); 
+    } 
+
+    esp_err_t zw = GetJPG(filetosend, req);
+
+    if (zw == ESP_OK)
+        return ESP_OK;
+
+    // File wird nicht intern bereit gestellt --> klassischer weg:
+    if (debug_detail_heap) LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
+
+    return img_tmp_handler(req);
+}
+
+
+
+
+
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
+    if (debug_detail_heap) LogFile.WriteHeapInfo("sysinfo_handler - Start");  
+
     const char* resp_str; 
     std::string zw;
     std::string cputemp = std::to_string(temperatureRead());
@@ -279,7 +300,9 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, resp_str, strlen(resp_str));   
     /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);      
+    httpd_resp_send_chunk(req, NULL, 0);  
+
+    if (debug_detail_heap) LogFile.WriteHeapInfo("sysinfo_handler - Done");          
 
     return ESP_OK;
 }
@@ -314,7 +337,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t img_tmp_handle = {
         .uri       = "/img_tmp/*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = img_tmp_handler,
+        .handler   = img_tmp_virtual_handler,
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &img_tmp_handle);

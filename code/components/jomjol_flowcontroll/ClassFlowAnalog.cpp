@@ -16,21 +16,30 @@ static const char* TAG = "flow_analog";
 
 bool debugdetailanalog = false;
 
-ClassFlowAnalog::ClassFlowAnalog() : ClassFlowImage(TAG)
+void ClassFlowAnalog::SetInitialParameter(void)
 {
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
     ListFlowControll = NULL;
-}
+    previousElement = NULL;   
+    SaveAllFiles = false; 
+}   
 
 ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    string cnnmodelfile = "";
-    modelxsize = 1;
-    modelysize = 1;
-}
+    SetInitialParameter();
+    ListFlowControll = lfc;
 
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
+        {
+            flowpostalignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
+        }
+    }
+
+}
 
 
 string ClassFlowAnalog::getReadout()
@@ -113,9 +122,24 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
             neuroi->result = -1;
+            neuroi->image = NULL;
+            neuroi->image_org = NULL;
             ROI.push_back(neuroi);
         }
+
+        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                SaveAllFiles = true;
+        }
     }
+
+    for (int i = 0; i < ROI.size(); ++i)
+    {
+        ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+        ROI[i]->image_org = new CImageBasis(ROI[i]->deltax, ROI[i]->deltay, 3);
+    }
+
     return true;
 }
 
@@ -162,77 +186,35 @@ bool ClassFlowAnalog::doFlow(string time)
 
 bool ClassFlowAnalog::doAlignAndCut(string time)
 {
-    string input = "/sdcard/img_tmp/alg.jpg";
-    string input_roi = "/sdcard/img_tmp/alg_roi.jpg";
-    string ioresize = "/sdcard/img_tmp/resize.bmp";
-    string output;
-    string nm;
-    input = FormatFileName(input);
-    input_roi = FormatFileName(input_roi);   
-
-    CResizeImage *rs;
-    CImageBasis *img_roi = NULL;
-    CAlignAndCutImage *caic = new CAlignAndCutImage(input);
-
-    if (!caic->ImageOkay()){
-        if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut not okay!");
-        delete caic;
-        return false;
-    }
-
-    if (input_roi.length() > 0){
-        img_roi = new CImageBasis(input_roi);
-        if (!img_roi->ImageOkay()){
-            if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut ImageRoi not okay!");
-            delete caic;
-            delete img_roi;
-            return false;
-        }
-    }
+    CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();    
 
     for (int i = 0; i < ROI.size(); ++i)
     {
         printf("Analog %d - Align&Cut\n", i);
-        output = "/sdcard/img_tmp/" + ROI[i]->name + ".jpg";
-        output = FormatFileName(output);
-        caic->CutAndSave(output, ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay);
+        
+        caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, ROI[i]->image_org);
+        if (SaveAllFiles) ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
 
-        rs = new CResizeImage(output);
-        if (!rs->ImageOkay()){
-            if (debugdetailanalog) LogFile.WriteToFile("ClassFlowAnalog::doAlignAndCut CResizeImage(output);!");
-            delete caic;
-            delete rs;
-            return false;
-        }
-
-        rs->Resize(modelxsize, modelysize);
-        ioresize = "/sdcard/img_tmp/ra" + std::to_string(i) + ".bmp";
-        ioresize = FormatFileName(ioresize);
-        rs->SaveToFile(ioresize);
-        delete rs;
-
-        if (img_roi)
-        {
-            int r = 0;
-            int g = 255;
-            int b = 0;
-            img_roi->drawRect(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, r, g, b, 1);
-            img_roi->drawCircle((int) (ROI[i]->posx + ROI[i]->deltax/2), (int)  (ROI[i]->posy + ROI[i]->deltay/2), (int) (ROI[i]->deltax/2), r, g, b, 2);
-            img_roi->drawLine((int) (ROI[i]->posx + ROI[i]->deltax/2), (int) ROI[i]->posy, (int) (ROI[i]->posx + ROI[i]->deltax/2), (int) (ROI[i]->posy + ROI[i]->deltay), r, g, b, 2);
-            img_roi->drawLine((int) ROI[i]->posx, (int) (ROI[i]->posy + ROI[i]->deltay/2), (int) ROI[i]->posx + ROI[i]->deltax, (int) (ROI[i]->posy + ROI[i]->deltay/2), r, g, b, 2);
-        }
+        ROI[i]->image_org->Resize(modelxsize, modelysize, ROI[i]->image);
+        if (SaveAllFiles) ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
     }
-    delete caic;
-
-
-    if (img_roi)
-    {
-        img_roi->SaveToFile(input_roi);
-        delete img_roi;
-    }
-
 
     return true;
+} 
+
+void ClassFlowAnalog::DrawROI(CImageBasis *_zw)
+{
+    int r = 0;
+    int g = 255;
+    int b = 0;
+
+    for (int i = 0; i < ROI.size(); ++i)
+    {
+        _zw->drawRect(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, r, g, b, 1);
+        _zw->drawCircle((int) (ROI[i]->posx + ROI[i]->deltax/2), (int)  (ROI[i]->posy + ROI[i]->deltay/2), (int) (ROI[i]->deltax/2), r, g, b, 2);
+        _zw->drawLine((int) (ROI[i]->posx + ROI[i]->deltax/2), (int) ROI[i]->posy, (int) (ROI[i]->posx + ROI[i]->deltax/2), (int) (ROI[i]->posy + ROI[i]->deltay), r, g, b, 2);
+        _zw->drawLine((int) ROI[i]->posx, (int) (ROI[i]->posy + ROI[i]->deltay/2), (int) ROI[i]->posx + ROI[i]->deltax, (int) (ROI[i]->posy + ROI[i]->deltay/2), r, g, b, 2);
+    }
 } 
 
 bool ClassFlowAnalog::doNeuralNetwork(string time)
@@ -265,7 +247,8 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
 
 #ifndef OHNETFLITE
 //        LogFile.WriteToFile("ClassFlowAnalog::doNeuralNetwork vor CNN tflite->LoadInputImage(ioresize)");
-        tflite->LoadInputImage(ioresize);
+//        tflite->LoadInputImage(ioresize);
+        tflite->LoadInputImageBasis(ROI[i]->image);        
         tflite->Invoke();
         if (debugdetailanalog) LogFile.WriteToFile("Nach Invoke");
 
@@ -278,9 +261,12 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
 //        printf("Result sin, cos, ziffer: %f, %f, %f\n", f1, f2, result);  
         ROI[i]->result = result * 10;
 
-        printf("Result Analog%i: %f\n", i, ROI[i]->result);           
+        printf("Result Analog%i: %f\n", i, ROI[i]->result); 
 
-        LogImage(logPath, ROI[i]->name, &ROI[i]->result, NULL, time); 
+        if (isLogImage)
+        {
+            LogImage(logPath, ROI[i]->name, &ROI[i]->result, NULL, time, ROI[i]->image_org);
+        }
     }
 #ifndef OHNETFLITE
         delete tflite;

@@ -14,6 +14,8 @@
 #include "esp_err.h"
 #include "esp_log.h"
 
+#include "CImageBasis.h"
+
 
 
 #define SUPRESS_TFLITE_ERRORS           // use, to avoid error messages from TFLITE
@@ -39,7 +41,6 @@ class CTfLiteClass
         const tflite::Model* model;
         tflite::MicroInterpreter* interpreter;
         TfLiteTensor* output = nullptr;     
-//        static tflite::ops::micro::AllOpsResolver *resolver; 
         static tflite::AllOpsResolver resolver;
 
         int kTensorArenaSize;
@@ -58,11 +59,11 @@ class CTfLiteClass
         void LoadModel(std::string _fn);
         void MakeAllocate();
         void GetInputTensorSize();
-        bool LoadInputImage(std::string _fn);
+        bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
         void GetOutPut();
         int GetOutClassification();
-        int GetClassFromImage(std::string _fn);
+        int GetClassFromImageBasis(CImageBasis *rs);
 
         float GetOutputValue(int nr);
         void GetInputDimension(bool silent);
