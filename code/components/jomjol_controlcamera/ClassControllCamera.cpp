@@ -206,21 +206,49 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 //    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
 
     LEDOnOff(false);    
+
+
+    if (delay > 0) 
+    {
+        LightOnOff(false);
+    }
+
+ 
+    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;     
+    vTaskDelay( xDelay );  // wait for power to recover
     
     uint8_t * buf = NULL;
     size_t buf_len = 0; 
 
     int _anz = 0;  
-    TickType_t xDelay = 3000 / portTICK_PERIOD_MS;    
+    xDelay = 3000 / portTICK_PERIOD_MS;    
 
     while (!frame2bmp(fb, &buf, &buf_len) && _anz < 5)
     {
-        esp_camera_fb_return(fb);
         std::string _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(++_anz);
         LogFile.WriteToFile(_zw1);
+
+        esp_camera_fb_return(fb);
+        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after esp_camera_fb_return";
+        LogFile.WriteToFile(_zw1);
+        free(buf);
+
+        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after free";
+        LogFile.WriteToFile(_zw1);
+
+        InitCam();
+
+        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after InitCam";
+        LogFile.WriteToFile(_zw1);
+
         vTaskDelay( xDelay );  
-        fb = esp_camera_fb_get();        
+        fb = esp_camera_fb_get(); 
+
+        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after esp_camera_fb_get";
+        LogFile.WriteToFile(_zw1);
+
     }
+    
 
     esp_camera_fb_return(fb);
 
@@ -255,11 +283,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 //    _Image->CopyFromMemory(_buf_zeiger, _len_zw); 
 
     free(buf);
-
-    if (delay > 0) 
-    {
-        LightOnOff(false);
-    }
 
     if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Done");
 

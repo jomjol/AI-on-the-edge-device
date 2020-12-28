@@ -108,7 +108,7 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 	}
 	*rt = zw;
 	*rt = trim(*rt);
-	while (zw[0] == '#' || (rt->size() == 0))			// Kommentarzeilen und Leerzeilen überspringen
+	while (zw[0] == ';' || zw[0] == '#' || (rt->size() == 0))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen
 	{
 		fgets(zw, 1024, pfile);
 		printf("%s", zw);		

@@ -29,7 +29,7 @@
 static const char *TAGMAIN = "connect_wlan_main";
 
 
-bool debug_detail_heap = true;
+bool debug_detail_heap = false;
 
 #define FLASH_GPIO GPIO_NUM_4
 

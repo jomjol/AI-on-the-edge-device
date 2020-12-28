@@ -570,16 +570,16 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex16">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="System_TimeUpdateIntervall_enabled" value="1"  onclick = 'document.getElementById("System_TimeUpdateIntervall_value1").disabled = !document.getElementById("System_TimeUpdateIntervall_value1").disabled' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="System_TimeUpdateIntervall_text" style="color:black;">TimeUpdateIntervall</class>
+				<td"><input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'document.getElementById("System_TimeServer_value1").disabled = !document.getElementById("System_TimeServer_value1").disabled' unchecked ></td>
 			</td>
 			<td>
-				<input type="number" id="System_TimeUpdateIntervall_value1" size="13"  min="0" step="1">
+				<class id="System_TimeServer_text" style="color:black;">TimeServer</class>
+			</td>
+			<td>
+				<input type="text" id="System_TimeServer_value1">
 			</td>
 			<td style="font-size: 80%;">
-				Intervall for synchronizing the time with the time server (in hours)
+				Time server to synchronize system time (default: "pool.ntp.org" - used if nothing is specified)
 			</td>
 		</tr>
 	</table>
@@ -717,7 +717,7 @@ function UpdateInput() {
 	WriteParameter(param, "Debug", "LogfileRetentionInDays", true);	
 
 	WriteParameter(param, "System", "TimeZone", true);	
-	WriteParameter(param, "System", "TimeUpdateIntervall", true);	
+	WriteParameter(param, "System", "TimeServer", true);	
 }
 
 function WriteConfig(){
@@ -762,7 +762,7 @@ function WriteConfig(){
 	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	
 
 	ReadParameter(param, "System", "TimeZone", true);	
-	ReadParameter(param, "System", "TimeUpdateIntervall", true);	
+	ReadParameter(param, "System", "TimeServer", true);	
 	
 	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 
