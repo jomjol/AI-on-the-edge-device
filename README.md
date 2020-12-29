@@ -25,12 +25,21 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-12-27)
+##### Rolling - (2020-12-29)
+
+* Parameter `TimerServer` added to `config.ini`
+  
+* Bug fixing: edit digits: log images could not be enabled (html-page update)
+  
+
+2020-12-27
 
 * Major change: no need of SD card for image processing anymore (all in memory)
+  
   * 95% less SD card writing
   * SD use: mainly reading of data (config, html, tflite parameters), only log files and prevalue write on SD card anymore
   * Need to limit camera resolution to VGA (due to memory limits)
+  
 * New Feature: setting of time server in `config.ini`
 
   ```

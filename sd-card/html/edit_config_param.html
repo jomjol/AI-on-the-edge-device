@@ -731,13 +731,13 @@ function WriteConfig(){
 	ReadParameter(param, "Alignment", "SearchFieldY", false);	
 
 	ReadParameter(param, "Digits", "Model", false);		
-	ReadParameter(param, "Digits", "LogImageLocation", false);		
-	ReadParameter(param, "Digits", "LogfileRetentionInDays", false);		
+	ReadParameter(param, "Digits", "LogImageLocation", true);		
+	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
 	ReadParameter(param, "Digits", "ModelInputSize", false, false, 2);
 
 	ReadParameter(param, "Analog", "Model", false);		
-	ReadParameter(param, "Analog", "LogImageLocation", false);		
-	ReadParameter(param, "Analog", "LogfileRetentionInDays", false);		
+	ReadParameter(param, "Analog", "LogImageLocation", true);		
+	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
 	ReadParameter(param, "Analog", "ModelInputSize", false, false, 2);
 
 	ReadParameter(param, "PostProcessing", "DecimalShift", true);		
