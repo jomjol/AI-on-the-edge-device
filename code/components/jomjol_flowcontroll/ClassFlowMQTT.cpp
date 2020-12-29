@@ -101,7 +101,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     if ((uri.length() > 0) && (topic.length() > 0)) 
     {
-        MQTTInit(uri, clientname, user, password);
+        MQTTInit(uri, clientname, user, password, topicError, 60);
     }
    
     return true;

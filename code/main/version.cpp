@@ -1,4 +1,4 @@
-const char* GIT_REV="6e521f0";
+const char* GIT_REV="3502ac9";
 const char* GIT_TAG="";
-const char* GIT_BRANCH="rolling-reduce-sd-use";
-const char* BUILD_TIME="2020-12-28 15:38";
+const char* GIT_BRANCH="rolling";
+const char* BUILD_TIME="2020-12-29 21:49";

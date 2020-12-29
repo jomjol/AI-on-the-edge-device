@@ -108,6 +108,8 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
         zwtime = std::string(buffer);
     }
 
+    PreValue = value;
+
     fputs(zwtime.c_str(), pFile);
     fputs("\n", pFile);
     fputs(to_string(value).c_str(), pFile);

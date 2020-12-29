@@ -28,9 +28,10 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 ##### Rolling - (2020-12-29)
 
 * Parameter `TimerServer` added to `config.ini`
-  
-* Bug fixing: edit digits: log images could not be enabled (html-page update)
-  
+* Update digital CNN to v7.2.1 (additional digital images trained)
+* Bug fixing: 
+  * edit digits: log images could not be enabled (html-page update)
+  * PreValue: no reboot necessary to use / take newly set pre-values
 
 2020-12-27
 
