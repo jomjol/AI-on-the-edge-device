@@ -27,6 +27,10 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ##### Rolling - (2020-12-29)
 
+* MQTT: LWT (Last Will Testament) implemented: "connection lost" is written to the error topic in case of connection lost (`TopicError`)
+
+2020-12-29
+
 * Parameter `TimerServer` added to `config.ini`
 * Update digital CNN to v7.2.1 (additional digital images trained)
 * Bug fixing: 
