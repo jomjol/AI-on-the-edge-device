@@ -283,8 +283,11 @@ std::vector<HTMLInfo*> ClassFlowAnalog::GetHTMLInfo()
     for (int i = 0; i < ROI.size(); ++i)
     {
         HTMLInfo *zw = new HTMLInfo;
-        zw->filename = ROI[i]->name + ".jpg";
+        zw->filename = ROI[i]->name + ".bmp";
+        zw->filename_org = ROI[i]->name + ".jpg";
         zw->val = ROI[i]->result;
+        zw->image = ROI[i]->image;
+        zw->image_org = ROI[i]->image_org;
         result.push_back(zw);
     }
 

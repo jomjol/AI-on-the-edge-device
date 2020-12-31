@@ -25,6 +25,8 @@
 
 #include "esp_camera.h"
 
+// #define DEBUG_DETAIL_ON
+
 
 // ESP32Cam (AiThinker) PIN Map
 
@@ -68,7 +70,8 @@ static camera_config_t camera_config = {
     .pin_pclk = CAM_PIN_PCLK,
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,
+//    .xclk_freq_hz = 20000000,             // Orginalwert
+    .xclk_freq_hz = 5000000,               // Test, um die Bildfehler los zu werden !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
@@ -178,14 +181,19 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 }
 
 
+
 esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 {
     string ftype;
-    static const int BMP_HEADER_LEN = 54;           // von to_bmp.c !!!!!!!!!!!!!!! 
+
+    uint8_t *zwischenspeicher = NULL;
+
 
     LEDOnOff(true);
 
-//    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Start");
+#ifdef DEBUG_DETAIL_ON
+    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Start");
+#endif
 
     if (delay > 0) 
     {
@@ -194,7 +202,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         vTaskDelay( xDelay );
     }
 
-//    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LightOn");
+#ifdef DEBUG_DETAIL_ON
+    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LightOn");
+#endif
 
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
@@ -203,59 +213,31 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         return ESP_FAIL;
     }
 
-//    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
+    int _size = fb->len;
+    zwischenspeicher = (uint8_t*) malloc(_size);
+    for (int i = 0; i < _size; ++i)
+        *(zwischenspeicher + i) = *(fb->buf + i);
+    esp_camera_fb_return(fb);        
+
+#ifdef DEBUG_DETAIL_ON
+    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
+#endif
 
     LEDOnOff(false);    
 
-
     if (delay > 0) 
-    {
         LightOnOff(false);
-    }
-
  
-    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;     
-    vTaskDelay( xDelay );  // wait for power to recover
+//    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;     
+//    vTaskDelay( xDelay );  // wait for power to recover
     
     uint8_t * buf = NULL;
-    size_t buf_len = 0; 
 
-    int _anz = 0;  
-    xDelay = 3000 / portTICK_PERIOD_MS;    
+    CImageBasis _zwImage;
+    _zwImage.LoadFromMemory(zwischenspeicher, _size);
+    free(zwischenspeicher);
 
-    while (!frame2bmp(fb, &buf, &buf_len) && _anz < 5)
-    {
-        std::string _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(++_anz);
-        LogFile.WriteToFile(_zw1);
-
-        esp_camera_fb_return(fb);
-        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after esp_camera_fb_return";
-        LogFile.WriteToFile(_zw1);
-        free(buf);
-
-        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after free";
-        LogFile.WriteToFile(_zw1);
-
-        InitCam();
-
-        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after InitCam";
-        LogFile.WriteToFile(_zw1);
-
-        vTaskDelay( xDelay );  
-        fb = esp_camera_fb_get(); 
-
-        _zw1 = "CCamera::CaptureToBasisImage failed #" + std::to_string(_anz) + " - after esp_camera_fb_get";
-        LogFile.WriteToFile(_zw1);
-
-    }
-    
-
-    esp_camera_fb_return(fb);
-
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After frame2bmp");
-
-    int _len_zw = buf_len - BMP_HEADER_LEN;
-    uint8_t  *_buf_zeiger = buf + BMP_HEADER_LEN;
+    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LoadFromMemory");
 
     stbi_uc* p_target;
     stbi_uc* p_source;    
@@ -263,28 +245,31 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     int width = image_width;
     int height = image_height;
 
+#ifdef DEBUG_DETAIL_ON
     std::string _zw = "Targetimage: " + std::to_string((int) _Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
-    _zw = _zw + " Buf: " + std::to_string((int) buf);
-
+    _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage.rgb_image)  + " Size: " + std::to_string(_zwImage.width) + ", " + std::to_string(_zwImage.height);
     if (debug_detail_heap) LogFile.WriteToFile(_zw);
+#endif
 
     for (int x = 0; x < width; ++x)
         for (int y = 0; y < height; ++y)
         {
             p_target = _Image->rgb_image + (channels * (y * width + x));
-            p_source = _buf_zeiger + (channels * (y * width + x));
-            p_target[0] = p_source[2];
+            p_source = _zwImage.rgb_image + (channels * (y * width + x));
+            p_target[0] = p_source[0];
             p_target[1] = p_source[1];
-            p_target[2] = p_source[0];
+            p_target[2] = p_source[2];
         }
 
+#ifdef DEBUG_DETAIL_ON
     if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After Copy To Target");
-
-//    _Image->CopyFromMemory(_buf_zeiger, _len_zw); 
+#endif
 
     free(buf);
 
+#ifdef DEBUG_DETAIL_ON
     if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Done");
+#endif
 
     return ESP_OK;    
 }
@@ -294,7 +279,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
     string ftype;
 
-    LEDOnOff(true);
+     LEDOnOff(true);              // Abgeschaltet, um Strom zu sparen !!!!!!
 
     if (delay > 0) 
     {
@@ -310,13 +295,22 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         return ESP_FAIL;
     }
     LEDOnOff(false);    
-    
+
+#ifdef DEBUG_DETAIL_ON    
     printf("w %d, h %d, size %d\n", fb->width, fb->height, fb->len);
+#endif
 
     nm = FormatFileName(nm);
+
+#ifdef DEBUG_DETAIL_ON
     printf("Save Camera to : %s\n", nm.c_str());
+#endif
+
     ftype = toUpper(getFileType(nm));
+
+#ifdef DEBUG_DETAIL_ON
     printf("Filetype: %s\n", ftype.c_str());
+#endif
 
     uint8_t * buf = NULL;
     size_t buf_len = 0;   
@@ -344,7 +338,9 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     FILE * fp = OpenFileAndWait(nm.c_str(), "wb");
     if (fp == NULL)  /* If an error occurs during the file creation */
     {
+#ifdef DEBUG_DETAIL_ON   
         fprintf(stderr, "fopen() failed for '%s'\n", nm.c_str());
+#endif
     }
     else
     {
@@ -463,7 +459,9 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
         printf("Query: "); printf(_query); printf("\n");
         if (httpd_query_key_value(_query, "size", _size, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON   
             printf("Size: "); printf(_size); printf("\n");            
+#endif
             if (strcmp(_size, "QVGA") == 0)
                 resol = FRAMESIZE_QVGA;       // 320x240
             if (strcmp(_size, "VGA") == 0)
@@ -479,7 +477,9 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
         }
         if (httpd_query_key_value(_query, "quality", _qual, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON   
             printf("Quality: "); printf(_qual); printf("\n");
+#endif
             qual = atoi(_qual);
                 
             if (qual > 63)
@@ -510,7 +510,9 @@ framesize_t CCamera::TextToFramesize(const char * _size)
 
 CCamera::CCamera()
 {
+#ifdef DEBUG_DETAIL_ON    
     printf("CreateClassCamera\n");
+#endif
 }
 
 esp_err_t CCamera::InitCam()

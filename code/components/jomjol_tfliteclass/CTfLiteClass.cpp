@@ -1,13 +1,10 @@
 #include "CTfLiteClass.h"
-
-// #include "bitmap_image.hpp"
-
 #include "ClassLogFile.h"
 #include "Helper.h"
 
 #include <sys/stat.h>
 
-bool debugdetailtflite = false;
+//#define DEBUG_DETAIL_ON
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -22,12 +19,10 @@ float CTfLiteClass::GetOutputValue(int nr)
 
 int CTfLiteClass::GetClassFromImageBasis(CImageBasis *rs)
 {
-//  printf("Before Load image %s\n", _fn.c_str());
     if (!LoadInputImageBasis(rs))
       return -1000;
 
     Invoke();
-    printf("After Invoke \n");
 
     return GetOutClassification();
 }
@@ -53,7 +48,6 @@ int CTfLiteClass::GetOutClassification()
         zw_class = i;
     }
   }
-//  printf("Result Ziffer: %d\n", zw_class);       
   return zw_class;
 }
 
@@ -105,7 +99,6 @@ void CTfLiteClass::GetOutPut()
 void CTfLiteClass::Invoke()
 {
     interpreter->Invoke();
-//    printf("Invoke Done.\n");
 }
 
 
@@ -135,8 +128,10 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
                 *(input_data_ptr) = (float) blue;
                 input_data_ptr++;
             }
-    
-    if (debugdetailtflite) LogFile.WriteToFile("Nach dem Laden in input");
+
+#ifdef DEBUG_DETAIL_ON          
+    LogFile.WriteToFile("Nach dem Laden in input");
+#endif
 
     return true;
 }
@@ -159,7 +154,9 @@ void CTfLiteClass::MakeAllocate()
 void CTfLiteClass::GetInputTensorSize(){
     float *zw = this->input;
     int test = sizeof(zw);
+#ifdef DEBUG_DETAIL_ON    
     printf("Input Tensor Dimension: %d\n", test);       
+#endif
 }
 
 long CTfLiteClass::GetFileSize(std::string filename)
@@ -178,7 +175,9 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
     if (size == -1)
     {
+#ifdef DEBUG_DETAIL_ON      
 		printf("\nFile existiert nicht.\n");
+#endif
         return NULL;
     }
 
@@ -187,7 +186,9 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
     TickType_t xDelay;
     while (!result && (anz < 6))    // maximal 5x versuchen (= 5s)
     {
+#ifdef DEBUG_DETAIL_ON      
 		    printf("Speicher ist voll - Versuche es erneut: %d.\n", anz);
+#endif
         xDelay = 1000 / portTICK_PERIOD_MS;
         result = (unsigned char*) malloc(size);
         anz++;
@@ -195,7 +196,6 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
   
 	  if(result != NULL) {
-//		printf("\nSpeicher ist reserviert\n");
         FILE* f = OpenFileAndWait(_fn.c_str(), "rb");     // vorher  nur "r"
         fread(result, 1, size, f);
         fclose(f);        

@@ -247,6 +247,10 @@ void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int t
 CImageBasis::CImageBasis()
 {
     externalImage = false;
+    rgb_image = NULL;
+    width = 0;
+    height = 0;
+    channels = 0;    
 }
 
 void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
@@ -275,12 +279,11 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
 
 void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 {
-//    if (rgb_image)
-//        free(rgb_image);
+    if (rgb_image)
+        stbi_image_free(rgb_image);
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
-//        STBIDEF stbi_uc *stbi_load_from_memory   (stbi_uc           const *buffer, int len   , int *x, int *y, int *channels_in_file, int desired_channels);
-
+    printf("Image loaded from memory: %d, %d, %d\n", width, height, channels);
 }
 
 CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat) 

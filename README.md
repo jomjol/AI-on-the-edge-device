@@ -13,19 +13,36 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
+
+## Donate
+
+
+If you would like to support the developer with a cup of coffee you can do that via [Paypal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
+
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" />
+<input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
+
 ## Change log
 
 ------
 
 ### Known Issues
 
-* Spontaneous reboots, most probably due to weak power supply during power intensive operations (taking / calculating pictures)
+* slow response of web server during picture analysis
 
 ------
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-12-29)
+##### Rolling - (2020-12-31)
+
+* Bug-Fixing: internal change of camera handling to avoid reboots
+
+2020-12-29
 
 * MQTT: LWT (Last Will Testament) implemented: "connection lost" is written to the error topic in case of connection lost (`TopicError`)
 
