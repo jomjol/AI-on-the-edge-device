@@ -350,7 +350,7 @@ function GetReferenceSize(name){
 function ZerlegeZeile(input)
      {
           var Output = Array(0);
-          delimiter = " =,";
+          delimiter = " =,\r";
      
           input = trim(input, delimiter);
           var pos = findDelimiterPos(input, delimiter);

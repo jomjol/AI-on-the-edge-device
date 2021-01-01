@@ -42,6 +42,8 @@ If you would like to support the developer with a cup of coffee you can do that 
 ##### Rolling - (2021-01-01)
 
 * Increased stability (internal image handling)
+* Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
+* Bug fixing: `message`-directory was missing on SD card, html: minor bug in edit digital/analog
 
 2020-12-31
 
