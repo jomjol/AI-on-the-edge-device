@@ -192,7 +192,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LEDOnOff(true);
 
 #ifdef DEBUG_DETAIL_ON
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Start");
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Start");
 #endif
 
     if (delay > 0) 
@@ -203,7 +203,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     }
 
 #ifdef DEBUG_DETAIL_ON
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LightOn");
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LightOn");
 #endif
 
     camera_fb_t * fb = esp_camera_fb_get();
@@ -220,7 +220,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     esp_camera_fb_return(fb);        
 
 #ifdef DEBUG_DETAIL_ON
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
 #endif
 
     LEDOnOff(false);    
@@ -237,7 +237,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     _zwImage.LoadFromMemory(zwischenspeicher, _size);
     free(zwischenspeicher);
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LoadFromMemory");
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LoadFromMemory");
+#endif
 
     stbi_uc* p_target;
     stbi_uc* p_source;    
@@ -248,7 +250,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 #ifdef DEBUG_DETAIL_ON
     std::string _zw = "Targetimage: " + std::to_string((int) _Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
     _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage.rgb_image)  + " Size: " + std::to_string(_zwImage.width) + ", " + std::to_string(_zwImage.height);
-    if (debug_detail_heap) LogFile.WriteToFile(_zw);
+    LogFile.WriteToFile(_zw);
 #endif
 
     for (int x = 0; x < width; ++x)
@@ -262,13 +264,13 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         }
 
 #ifdef DEBUG_DETAIL_ON
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After Copy To Target");
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After Copy To Target");
 #endif
 
     free(buf);
 
 #ifdef DEBUG_DETAIL_ON
-    if (debug_detail_heap) LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Done");
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Done");
 #endif
 
     return ESP_OK;    
@@ -338,9 +340,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     FILE * fp = OpenFileAndWait(nm.c_str(), "wb");
     if (fp == NULL)  /* If an error occurs during the file creation */
     {
-#ifdef DEBUG_DETAIL_ON   
         fprintf(stderr, "fopen() failed for '%s'\n", nm.c_str());
-#endif
     }
     else
     {

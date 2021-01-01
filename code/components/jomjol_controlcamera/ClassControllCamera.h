@@ -45,6 +45,4 @@ class CCamera {
 
 extern CCamera Camera;
 
-extern bool debug_detail_heap;
-
 #endif

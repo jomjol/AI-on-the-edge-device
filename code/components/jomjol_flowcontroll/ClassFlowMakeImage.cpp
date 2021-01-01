@@ -7,6 +7,8 @@
 
 #include <time.h>
 
+// #define DEBUG_DETAIL_ON 
+
 static const char* TAG = "flow_make_image";
 
 esp_err_t ClassFlowMakeImage::camera_capture(){
@@ -100,16 +102,23 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 
     int flashdauer = (int) waitbeforepicture * 1000;
  
-    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
+ #ifdef DEBUG_DETAIL_ON  
+    LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
+#endif
 
     takePictureWithFlash(flashdauer);
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After takePictureWithFlash");
+#ifdef DEBUG_DETAIL_ON  
+    LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After takePictureWithFlash");
+#endif
 
     LogImage(logPath, "raw", NULL, NULL, zwtime, rawImage);
 
     RemoveOldLogs();
-    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After RemoveOldLogs");
+
+#ifdef DEBUG_DETAIL_ON  
+    LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After RemoveOldLogs");
+#endif
 
     return true;
 }

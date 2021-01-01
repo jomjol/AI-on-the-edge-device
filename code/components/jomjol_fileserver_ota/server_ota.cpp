@@ -34,6 +34,8 @@
 #include "Helper.h"
 
 
+// #define DEBUG_DETAIL_ON 
+
 
 #define BUFFSIZE 1024
 #define HASH_LEN 32 /* SHA-256 digest length */
@@ -303,7 +305,9 @@ void CheckOTAUpdate(void)
 
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_ota_update - Start");    
+#ifdef DEBUG_DETAIL_ON     
+    LogFile.WriteHeapInfo("handler_ota_update - Start");    
+#endif
 
     LogFile.WriteToFile("handler_ota_update");    
     char _query[200];
@@ -381,7 +385,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_ota_update - Done");    
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("handler_ota_update - Done");    
+#endif
 
     return ESP_OK;
 };
@@ -418,7 +424,9 @@ void doReboot(){
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_reboot - Start");    
+#ifdef DEBUG_DETAIL_ON     
+    LogFile.WriteHeapInfo("handler_reboot - Start");
+#endif    
 
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
@@ -427,7 +435,10 @@ esp_err_t handler_reboot(httpd_req_t *req)
     
     doReboot();
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_reboot - Done");    
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("handler_reboot - Done");    
+#endif
+
     return ESP_OK;
 }
 

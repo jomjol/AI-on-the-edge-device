@@ -26,11 +26,7 @@
 #include "server_main.h"
 #include "server_camera.h"
 #include "server_GPIO.h"
-
 static const char *TAGMAIN = "connect_wlan_main";
-
-
-bool debug_detail_heap = false;
 
 #define FLASH_GPIO GPIO_NUM_4
 
@@ -144,7 +140,6 @@ extern "C" void app_main(void)
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
-    register_server_GPIO_uri(server);
     register_server_main_uri(server, "/sdcard");
 
     TFliteDoAutoStart();

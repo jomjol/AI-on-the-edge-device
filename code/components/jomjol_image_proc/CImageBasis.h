@@ -40,10 +40,16 @@ class CImageBasis
         void memCopy(uint8_t* _source, uint8_t* _target, int _size);
         bool isInImage(int x, int y);
 
+        bool islocked;
+
     public:
         uint8_t* rgb_image;
         int channels;
         int width, height, bpp; 
+
+        uint8_t * RGBImageLock(int _waitmaxsec = 60);
+        void RGBImageRelease();
+        uint8_t * RGBImageGet();
 
         int getWidth(){return this->width;};   
         int getHeight(){return this->height;};   

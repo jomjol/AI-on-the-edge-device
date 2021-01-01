@@ -131,10 +131,8 @@ void blink_task_doFlow(void *pvParameter)
 
 esp_err_t handler_init(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_init - Start");       
-
 #ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteToFile("handler_init"); 
+    LogFile.WriteHeapInfo("handler_init - Start");       
     printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
 #endif
 
@@ -149,7 +147,7 @@ esp_err_t handler_init(httpd_req_t *req)
     httpd_resp_send_chunk(req, NULL, 0);    
 
 #ifdef DEBUG_DETAIL_ON      
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_init - Done");       
+    LogFile.WriteHeapInfo("handler_init - Done");       
 #endif
 
     return ESP_OK;
@@ -158,8 +156,7 @@ esp_err_t handler_init(httpd_req_t *req)
 esp_err_t handler_doflow(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON          
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_doflow - Start");       
-    LogFile.WriteToFile("handler_doflow");   
+    LogFile.WriteHeapInfo("handler_doflow - Start");       
 #endif
 
     char* resp_str;
@@ -182,7 +179,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
     httpd_resp_send_chunk(req, NULL, 0);       
 
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_doflow - Done");       
+    LogFile.WriteHeapInfo("handler_doflow - Done");       
 #endif
 
     return ESP_OK;
@@ -194,8 +191,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON       
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
-    LogFile.WriteToFile("handler_wasserzaehler");    
+    LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
 #endif
 
     bool _rawValue = false;
@@ -283,7 +279,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     httpd_resp_sendstr_chunk(req, NULL);   
 
 #ifdef DEBUG_DETAIL_ON       
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
+    LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
 #endif
     return ESP_OK;
 };
@@ -292,8 +288,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 esp_err_t handler_editflow(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON       
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_editflow - Start");       
-    LogFile.WriteToFile("handler_editflow");    
+    LogFile.WriteHeapInfo("handler_editflow - Start");       
 #endif
 
     printf("handler_editflow uri: "); printf(req->uri); printf("\n");
@@ -459,7 +454,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
     httpd_resp_sendstr_chunk(req, NULL);   
 
 #ifdef DEBUG_DETAIL_ON       
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_editflow - Done");       
+    LogFile.WriteHeapInfo("handler_editflow - Done");       
 #endif
 
     return ESP_OK;
@@ -469,8 +464,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON       
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_prevalue - Start");       
-    LogFile.WriteToFile("handler_prevalue"); 
+    LogFile.WriteHeapInfo("handler_prevalue - Start");       
 #endif
 
     const char* resp_str;
@@ -504,7 +498,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     httpd_resp_send_chunk(req, NULL, 0);      
 
 #ifdef DEBUG_DETAIL_ON       
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_prevalue - Start");       
+    LogFile.WriteHeapInfo("handler_prevalue - Start");       
 #endif
 
     return ESP_OK;

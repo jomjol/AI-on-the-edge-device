@@ -16,6 +16,7 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 ## Donate
 
+------
 
 If you would like to support the developer with a cup of coffee you can do that via [Paypal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
 
@@ -38,7 +39,11 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2020-12-31)
+##### Rolling - (2021-01-01)
+
+* Increased stability (internal image handling)
+
+2020-12-31
 
 * Bug-Fixing: internal change of camera handling to avoid reboots
 
