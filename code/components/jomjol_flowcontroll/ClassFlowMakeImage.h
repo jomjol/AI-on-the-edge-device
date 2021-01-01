@@ -49,5 +49,3 @@ public:
 };
 
 
-extern bool debug_detail_heap;
-

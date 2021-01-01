@@ -4,7 +4,7 @@
 
 #include <sys/stat.h>
 
-//#define DEBUG_DETAIL_ON
+// #define DEBUG_DETAIL_ON
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -175,10 +175,8 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
     if (size == -1)
     {
-#ifdef DEBUG_DETAIL_ON      
-		printf("\nFile existiert nicht.\n");
-#endif
-        return NULL;
+  		printf("\nFile existiert nicht.\n");
+      return NULL;
     }
 
     unsigned char *result = (unsigned char*) malloc(size);

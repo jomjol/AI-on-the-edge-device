@@ -10,6 +10,7 @@ CRotateImage::CRotateImage(CImageBasis *_org, CImageBasis *_temp)
     bpp = _org->bpp;
     externalImage = true;   
     ImageTMP = _temp;    
+    islocked = false;
 }
 
 void CRotateImage::Mirror(){
@@ -17,7 +18,7 @@ void CRotateImage::Mirror(){
     uint8_t* odata;
     if (ImageTMP)
     {
-        odata = ImageTMP->rgb_image;
+        odata = ImageTMP->RGBImageLock();
     }
     else
     {
@@ -28,6 +29,8 @@ void CRotateImage::Mirror(){
     int x_source, y_source;
     stbi_uc* p_target;
     stbi_uc* p_source;
+
+    RGBImageLock();
 
     for (int x = 0; x < width; ++x)
         for (int y = 0; y < height; ++y)
@@ -45,9 +48,12 @@ void CRotateImage::Mirror(){
     //    memcpy(rgb_image, odata, memsize);
     memCopy(odata, rgb_image, memsize);
     if (!ImageTMP)
-    {
         stbi_image_free(odata);
-    }
+
+    if (ImageTMP)
+        ImageTMP->RGBImageRelease();
+
+    RGBImageRelease();
 }
 
 void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
@@ -70,7 +76,7 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
     uint8_t* odata;
     if (ImageTMP)
     {
-        odata = ImageTMP->rgb_image;
+        odata = ImageTMP->RGBImageLock();
     }
     else
     {
@@ -81,6 +87,8 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
     int x_source, y_source;
     stbi_uc* p_target;
     stbi_uc* p_source;
+
+    RGBImageLock();
 
     for (int x = 0; x < width; ++x)
         for (int y = 0; y < height; ++y)
@@ -113,6 +121,10 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
     {
         stbi_image_free(odata);
     }
+    if (ImageTMP)
+        ImageTMP->RGBImageRelease();
+
+    RGBImageRelease();
 }
 
 void CRotateImage::Rotate(float _angle)
@@ -127,7 +139,7 @@ void CRotateImage::Translate(int _dx, int _dy)
     uint8_t* odata;
     if (ImageTMP)
     {
-        odata = ImageTMP->rgb_image;
+        odata = ImageTMP->RGBImageLock();
     }
     else
     {
@@ -139,6 +151,8 @@ void CRotateImage::Translate(int _dx, int _dy)
     int x_source, y_source;
     stbi_uc* p_target;
     stbi_uc* p_source;
+
+    RGBImageLock();
 
     for (int x = 0; x < width; ++x)
         for (int y = 0; y < height; ++y)
@@ -167,5 +181,12 @@ void CRotateImage::Translate(int _dx, int _dy)
     {
         stbi_image_free(odata);
     }
+
+    if (ImageTMP)
+    {
+        ImageTMP->RGBImageRelease();
+    }
+    RGBImageRelease();
+
 }
 

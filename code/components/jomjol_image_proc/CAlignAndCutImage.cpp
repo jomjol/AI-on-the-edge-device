@@ -18,7 +18,9 @@ CAlignAndCutImage::CAlignAndCutImage(CImageBasis *_org, CImageBasis *_temp)
     width = _org->width;
     height = _org->height;
     bpp = _org->bpp;
-    externalImage = true;    
+    externalImage = true;   
+
+    islocked = false; 
 
     ImageTMP = _temp;
 }
@@ -110,6 +112,8 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
     stbi_uc* p_target;
     stbi_uc* p_source;
 
+    RGBImageLock();
+
     for (int x = x1; x < x2; ++x)
         for (int y = y1; y < y2; ++y)
         {
@@ -121,6 +125,8 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
 
     //    stbi_write_jpg(_template1.c_str(), dx, dy, channels, odata, 0);
     stbi_write_bmp(_template1.c_str(), dx, dy, channels, odata);
+
+    RGBImageRelease();
 
     stbi_image_free(odata);
 }
@@ -143,7 +149,8 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
         return;
     }
 
-    uint8_t* odata = _target->rgb_image;
+    uint8_t* odata = _target->RGBImageLock();
+    RGBImageLock();
 
     stbi_uc* p_target;
     stbi_uc* p_source;
@@ -156,6 +163,9 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
             for (int _channels = 0; _channels < channels; ++_channels)
                 p_target[_channels] = p_source[_channels];
         }
+
+    RGBImageRelease();
+    _target->RGBImageRelease();
 }
 
 
@@ -177,6 +187,8 @@ CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
     stbi_uc* p_target;
     stbi_uc* p_source;
 
+    RGBImageLock();
+
     for (int x = x1; x < x2; ++x)
         for (int y = y1; y < y2; ++y)
         {
@@ -187,6 +199,7 @@ CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
         }
 
     CImageBasis* rs = new CImageBasis(odata, channels, dx, dy, bpp);
+    RGBImageRelease();
     rs->SetIndepended();
     return rs;
 }

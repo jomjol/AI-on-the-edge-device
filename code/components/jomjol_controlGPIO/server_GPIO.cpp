@@ -18,9 +18,13 @@
 
 #include "Helper.h"
 
+#define DEBUG_DETAIL_ON 
+
 esp_err_t handler_switch_GPIO(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_switch_GPIO - Start");    
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("handler_switch_GPIO - Start");    
+#endif
 
     LogFile.WriteToFile("handler_switch_GPIO");    
     char _query[200];

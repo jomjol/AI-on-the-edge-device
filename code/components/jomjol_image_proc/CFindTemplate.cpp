@@ -44,6 +44,8 @@ void CFindTemplate::FindTemplate(std::string _template, int* found_x, int* found
     double aktSAD;
     double minSAD = pow(tpl_width * tpl_height * 255, 2);
 
+    RGBImageLock();
+
     for (int xouter = ow_start; xouter <= ow_stop; xouter++)
         for (int youter = oh_start; youter <= oh_stop; ++youter)
         {
@@ -65,6 +67,8 @@ void CFindTemplate::FindTemplate(std::string _template, int* found_x, int* found
                 *found_y = youter;
             }
         }
+
+    RGBImageRelease();
 
     stbi_write_bmp("sdcard\\find.bmp", ow, oh, channels, odata);
 

@@ -11,6 +11,8 @@
 
 #include "server_help.h"
 
+//#define DEBUG_DETAIL_ON  
+
 static const char* TAG = "flow_controll";
 
 
@@ -198,18 +200,20 @@ bool ClassFlowControll::doFlow(string time)
     std::string zw_time;
     int repeat = 0;
 
-
-/////////////////////////////////////////////////////
-    if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
-/////////////////////////////////////////////////////////
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
+#endif
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%Y%m%d-%H%M%S");
         aktstatus = zw_time + ": " + FlowControll[i]->name();
+        
+#ifdef DEBUG_DETAIL_ON         
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
-        if (debug_detail_heap) LogFile.WriteHeapInfo(zw);
-//        LogFile.WriteToFile(zw);
+        LogFile.WriteHeapInfo(zw);
+#endif
+
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
@@ -225,8 +229,11 @@ bool ClassFlowControll::doFlow(string time)
         {
             result = true;
         }
+        
+#ifdef DEBUG_DETAIL_ON  
+        LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
+#endif
 
-        if (debug_detail_heap) LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
     }
     zw_time = gettimestring("%Y%m%d-%H%M%S");    
     aktstatus = zw_time + ": Flow is done";

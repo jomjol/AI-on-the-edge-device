@@ -11,7 +11,7 @@
 #define SCRATCH_BUFSIZE2  8192 
 char scratch2[SCRATCH_BUFSIZE2];
 
-// #define DEBUG_DETAIL_ON   
+//#define DEBUG_DETAIL_ON   
 
 
 
@@ -33,8 +33,7 @@ void PowerResetCamera(){
 esp_err_t handler_lightOn(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOn - Start");
-    LogFile.WriteToFile("handler_lightOn");
+    LogFile.WriteHeapInfo("handler_lightOn - Start");
     printf("handler_lightOn uri:\n"); printf(req->uri); printf("\n");
 #endif
 
@@ -43,7 +42,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
     httpd_resp_send(req, resp_str, strlen(resp_str));  
 
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOn - Done");
+    LogFile.WriteHeapInfo("handler_lightOn - Done");
 #endif
 
     return ESP_OK;
@@ -52,8 +51,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
 esp_err_t handler_lightOff(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOff - Start");
-    LogFile.WriteToFile("handler_lightOff");
+    LogFile.WriteHeapInfo("handler_lightOff - Start");
     printf("handler_lightOff uri:\n"); printf(req->uri); printf("\n");
 #endif
     Camera.LightOnOff(false);
@@ -61,7 +59,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
     httpd_resp_send(req, resp_str, strlen(resp_str));       
 
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_lightOff - Done");
+    LogFile.WriteHeapInfo("handler_lightOff - Done");
 #endif
 
     return ESP_OK;
@@ -70,8 +68,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
 esp_err_t handler_capture(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture - Start");
-    LogFile.WriteToFile("handler_capture");
+    LogFile.WriteHeapInfo("handler_capture - Start");
 #endif
 
     int quality;
@@ -89,7 +86,7 @@ esp_err_t handler_capture(httpd_req_t *req)
     ressult = Camera.CaptureToHTTP(req);
 
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture - Done");
+    LogFile.WriteHeapInfo("handler_capture - Done");
 #endif
 
     return ressult;
@@ -98,7 +95,8 @@ esp_err_t handler_capture(httpd_req_t *req)
 
 esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
+
+    LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
 
     LogFile.WriteToFile("handler_capture_with_ligth");
     char _query[100];
@@ -140,7 +138,7 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
     Camera.LightOnOff(false);
 
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
+    LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
 #endif
 
     return ressult;
@@ -151,8 +149,7 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
-    LogFile.WriteToFile("handler_capture_save_to_file");
+    LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
 #endif
 
     char _query[100];
@@ -206,7 +203,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
     httpd_resp_send(req, resp_str, strlen(resp_str));  
   
 #ifdef DEBUG_DETAIL_ON   
-    if (debug_detail_heap) LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
+    LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
 #endif
 
     return ressult;

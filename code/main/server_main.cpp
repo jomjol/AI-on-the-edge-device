@@ -15,6 +15,9 @@
 
 #include "server_tflite.h"
 
+//#define DEBUG_DETAIL_ON      
+
+
 
 httpd_handle_t server = NULL;   
 
@@ -24,7 +27,9 @@ std::string starttime = "";
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("info_get_handler - Start");    
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("info_get_handler - Start");    
+#endif
 
     LogFile.WriteToFile("info_get_handler");    
     char _query[200];
@@ -126,26 +131,35 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("info_get_handler - Done");    
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("info_get_handler - Done"); 
+#endif   
 
     return ESP_OK;
 }
 
 esp_err_t starttime_get_handler(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("starttime_get_handler - Start");       
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("starttime_get_handler - Start");       
+#endif
+
     httpd_resp_send(req, starttime.c_str(), strlen(starttime.c_str())); 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);  
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("starttime_get_handler - Done");          
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("starttime_get_handler - Done"); 
+#endif         
 
     return ESP_OK;
 }
 
 esp_err_t hello_main_handler(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("hello_main_handler - Start");
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("hello_main_handler - Start");
+#endif
 
     char filepath[50];
     printf("uri: %s\n", req->uri);
@@ -197,7 +211,9 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("hello_main_handler - Stop");   
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("hello_main_handler - Stop");   
+#endif
 
     return ESP_OK;
 }
@@ -228,7 +244,10 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
 
 esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");    
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");  
+#endif
+
     char filepath[50];
 
     printf("uri: %s\n", req->uri);
@@ -254,7 +273,9 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
         return ESP_OK;
 
     // File wird nicht intern bereit gestellt --> klassischer weg:
-    if (debug_detail_heap) LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
+#endif
 
     return img_tmp_handler(req);
 }
@@ -265,7 +286,9 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
-    if (debug_detail_heap) LogFile.WriteHeapInfo("sysinfo_handler - Start");  
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("sysinfo_handler - Start");  
+#endif
 
     const char* resp_str; 
     std::string zw;
@@ -302,7 +325,9 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);  
 
-    if (debug_detail_heap) LogFile.WriteHeapInfo("sysinfo_handler - Done");          
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("sysinfo_handler - Done");
+#endif          
 
     return ESP_OK;
 }

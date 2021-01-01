@@ -19,6 +19,43 @@ using namespace std;
 
 static const char *TAG = "CImageBasis";
 
+//#define DEBUG_DETAIL_ON   
+
+
+
+uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
+{
+    if (islocked)
+    {
+#ifdef DEBUG_DETAIL_ON   
+        printf("Image is locked: sleep for : %ds\n", _waitmaxsec);
+#endif
+        TickType_t xDelay;
+        xDelay = 1000 / portTICK_PERIOD_MS;
+        for (int i = 0; i <= _waitmaxsec; ++i)
+        {
+            vTaskDelay( xDelay ); 
+            if (!islocked)
+                break;
+        }
+    }
+
+    if (islocked)
+        return NULL;
+
+    return rgb_image;
+}
+
+void CImageBasis::RGBImageRelease()
+{
+    islocked = false;
+}
+
+uint8_t * CImageBasis::RGBImageGet()
+{
+    return rgb_image;
+}
+
 
 
 void writejpghelp(void *context, void *data, int size)
@@ -42,7 +79,9 @@ ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
 {
     ImageData* ii = new ImageData;
 
+    RGBImageLock();
     stbi_write_jpg_to_func(writejpghelp, ii, width, height, channels, rgb_image, quality);
+    RGBImageRelease();
 
     return ii;
 }
@@ -83,7 +122,9 @@ esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t *_req, const int quality)
     ii.res = ESP_OK;
     ii.size = 0;
 
+    RGBImageLock();
     stbi_write_jpg_to_func(writejpgtohttphelp, &ii, width, height, channels, rgb_image, quality);
+    RGBImageRelease();
 
     if (ii.size > 0)
     {
@@ -107,7 +148,10 @@ bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
         printf("Kann Bild nicht von Speicher kopierte - Größen passen nicht zusammen: soll %d, ist %d\n", _size, gr);
         return false;
     }
+
+    RGBImageLock();
     memCopy(_source, rgb_image, _size);
+    RGBImageRelease();
 
     return true;
 }
@@ -145,6 +189,7 @@ void CImageBasis::setPixelColor(int x, int y, int r, int g, int b)
 {
     stbi_uc* p_source;
 
+    RGBImageLock();
     p_source = rgb_image + (channels * (y * width + x));
     p_source[0] = r;
     if ( channels > 2)
@@ -152,6 +197,7 @@ void CImageBasis::setPixelColor(int x, int y, int r, int g, int b)
         p_source[1] = g;
         p_source[2] = b;
     }
+    RGBImageRelease();
 }
 
 void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, int thickness)
@@ -251,6 +297,7 @@ CImageBasis::CImageBasis()
     width = 0;
     height = 0;
     channels = 0;    
+    islocked = false;
 }
 
 void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
@@ -259,6 +306,9 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
     width = _width;
     height = _height;
     channels = _channels;
+
+    RGBImageLock();
+
 
     int memsize = width * height * channels;
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
@@ -274,31 +324,38 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
                 p_source[_channels] = (uint8_t) 0;
         }
 
+    RGBImageRelease();
+
 
 }
 
 void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 {
+    RGBImageLock();
     if (rgb_image)
         stbi_image_free(rgb_image);
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
     printf("Image loaded from memory: %d, %d, %d\n", width, height, channels);
+    RGBImageRelease();
 }
 
 CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat) 
 {
+    islocked = false;
     externalImage = false;
     channels = _copyfrom->channels;
     width = _copyfrom->width;
     height = _copyfrom->height;
     bpp = _copyfrom->bpp;
 
+    RGBImageLock();
+
     int memsize = width * height * channels;
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
 
-    int anz = 1;
     TickType_t xDelay;
+    int anz = 1;
     while (!rgb_image && (anz < _anzrepeat))    
     {
 		    printf("Create Image from Copy - Speicher ist voll - Versuche es erneut: %d.\n", anz);
@@ -312,14 +369,17 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     {
         printf(getESPHeapInfo().c_str());
         printf("\nKein freier Speicher mehr!!!! Benötigt: %d %d %d %d\n", width, height, channels, memsize);
+        RGBImageRelease();
         return;
     }
 
     memCopy(_copyfrom->rgb_image, rgb_image, memsize);
+    RGBImageRelease();
 }
 
 CImageBasis::CImageBasis(int _width, int _height, int _channels)
 {
+    islocked = false;
     externalImage = false;
     channels = _channels;
     width = _width;
@@ -327,6 +387,7 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
     bpp = _channels;
 
     int memsize = width * height * channels;
+
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
     if (!rgb_image)
     {
@@ -339,13 +400,17 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
 
 CImageBasis::CImageBasis(std::string _image)
 {
+    islocked = false;
     channels = 3;
     externalImage = false;
     filename = _image;
     long zwld = esp_get_free_heap_size();
     printf("freeheapsize before: %ld\n", zwld);
 
+    RGBImageLock();
     rgb_image = stbi_load(_image.c_str(), &width, &height, &bpp, channels);
+    RGBImageRelease();
+
     zwld = esp_get_free_heap_size();
     printf("freeheapsize after : %ld\n", zwld);
 
@@ -355,6 +420,7 @@ CImageBasis::CImageBasis(std::string _image)
     zw = "CImageBasis after load " + _image + "\n";
     printf(zw.c_str());
     printf("w %d, h %d, b %d, c %d\n", width, height, bpp, channels);
+
 }
 
 bool CImageBasis::ImageOkay(){
@@ -363,6 +429,7 @@ bool CImageBasis::ImageOkay(){
 
 CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
 {
+    islocked = false;
     rgb_image = _rgb_image;
     channels = _channels;
     width = _width;
@@ -378,6 +445,9 @@ void CImageBasis::Contrast(float _contrast)  //input range [-100..100]
     float contrast = (_contrast/100) + 1;  //convert to decimal & shift range: [0..2]
     float intercept = 128 * (1 - contrast);
 
+    RGBImageLock();
+
+
     for (int x = 0; x < width; ++x)
         for (int y = 0; y < height; ++y)
         {
@@ -385,10 +455,13 @@ void CImageBasis::Contrast(float _contrast)  //input range [-100..100]
             for (int _channels = 0; _channels < channels; ++_channels)
                 p_source[_channels] = (uint8_t) std::min(255, std::max(0, (int) (p_source[_channels] * contrast + intercept)));
         }
+
+    RGBImageRelease();
 }
 
 CImageBasis::~CImageBasis()
 {
+    RGBImageLock();
     if (!externalImage)
         stbi_image_free(rgb_image);
 }
@@ -396,6 +469,8 @@ CImageBasis::~CImageBasis()
 void CImageBasis::SaveToFile(std::string _imageout)
 {
     string typ = getFileType(_imageout);
+
+    RGBImageLock();
 
     if ((typ == "jpg") || (typ == "JPG"))       // ACHTUNG PROBLEMATISCH IM ESP32
     {
@@ -406,6 +481,7 @@ void CImageBasis::SaveToFile(std::string _imageout)
     {
         stbi_write_bmp(_imageout.c_str(), width, height, channels, rgb_image);
     }
+    RGBImageRelease();
 }
 
 
@@ -414,12 +490,17 @@ void CImageBasis::Resize(int _new_dx, int _new_dy)
     int memsize = _new_dx * _new_dy * channels;
     uint8_t* odata = (unsigned char*)GET_MEMORY(memsize);
 
+    RGBImageLock();
+
+
     stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
 
     stbi_image_free(rgb_image);
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
 
     memCopy(odata, rgb_image, memsize);
+    RGBImageRelease();
+
     width = _new_dx;
     height = _new_dy;
     stbi_image_free(odata);
@@ -433,7 +514,10 @@ void CImageBasis::Resize(int _new_dx, int _new_dy, CImageBasis *_target)
         return;
     }
 
+    RGBImageLock();
+
     uint8_t* odata = _target->rgb_image;
     stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
+    RGBImageRelease();
 }
 

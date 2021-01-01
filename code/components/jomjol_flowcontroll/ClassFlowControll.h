@@ -56,5 +56,4 @@ public:
 	string name(){return "ClassFlowControll";};
 };
 
-extern bool debug_detail_heap;
 
