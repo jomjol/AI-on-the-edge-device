@@ -209,10 +209,10 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = gettimestring("%Y%m%d-%H%M%S");
         aktstatus = zw_time + ": " + FlowControll[i]->name();
         
-#ifdef DEBUG_DETAIL_ON         
+// #ifdef DEBUG_DETAIL_ON         
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
         LogFile.WriteHeapInfo(zw);
-#endif
+// #endif
 
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
