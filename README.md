@@ -12,17 +12,6 @@ A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571
 
 
 
-## Donate
-
-If you would like to support the developer with a cup of coffee you can do that via [[Paypal]](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
-
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" />
-<input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
-</form>
-
-
 
 ## Donate
 
@@ -75,7 +64,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 ##### 5.0.0 Setup Modus - (2020-12-06)
 
-* Implementation of intial setup modus for fresh installation
+* Implementation of initial setup modus for fresh installation
 
 * Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
   
