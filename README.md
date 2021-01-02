@@ -39,57 +39,27 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2021-01-01)
 
-* Increased stability (internal image handling)
-* Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
-* Bug fixing: `message`-directory was missing on SD card, html: minor bug in edit digital/analog
 
-2020-12-31
+##### 6.0.0 Image Processing in Memory - (2021-01-02)
 
-* Bug-Fixing: internal change of camera handling to avoid reboots
-
-2020-12-29
-
-* MQTT: LWT (Last Will Testament) implemented: "connection lost" is written to the error topic in case of connection lost (`TopicError`)
-
-2020-12-29
-
-* Parameter `TimerServer` added to `config.ini`
-* Update digital CNN to v7.2.1 (additional digital images trained)
-* Bug fixing: 
-  * edit digits: log images could not be enabled (html-page update)
-  * PreValue: no reboot necessary to use / take newly set pre-values
-
-2020-12-27
-
-* Major change: no need of SD card for image processing anymore (all in memory)
+* **Major change**: image processing fully in memory - no need of SD card buffer anymore
   
-  * 95% less SD card writing
-  * SD use: mainly reading of data (config, html, tflite parameters), only log files and prevalue write on SD card anymore
   * Need to limit camera resolution to VGA (due to memory limits)
   
-* New Feature: setting of time server in `config.ini`
+* MQTT: Last Will Testament (LWT) implemented: "connection lost" in case of connection lost to `TopicError`
 
-  ```
-  [System]
-  TimeServer = fritz.box
-  ```
-  
-* Bug fix: corrected handling of out commented analog pointer ROIs
+* Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
 
+* Update digital CNN to v7.2.1 (additional digital images trained) 
 
-2020-12-07
+* Setting of arbitrary time server in `config.ini`
 
+* Option for fixed IP-, DNS-Settings in `wlan.ini`
 
-* Improvement: internal file handling
+* Increased stability (internal image and camera handling)
 
-
-2020-12-06
-
-* Option for fixed IP settings in `wlan.ini` - description see inside file
-
-* based on v5.0.0 (2020-12-06)
+* Bug fixing: edit digits, handling PreValue, html-bugs
 
   
 
