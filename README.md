@@ -23,17 +23,55 @@ If you would like to support the developer with a cup of coffee you can do that 
 </form>
 
 
+
+## Donate
+
+------
+
+If you would like to support the developer with a cup of coffee you can do that via [Paypal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
+
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" />
+<input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
+
 ## Change log
 
 ------
 
 ### Known Issues
 
-* Reboot on extensive web access due to the limits of the internal web server
+* slow response of web server during picture analysis
 
 ------
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
+
+
+
+##### 6.0.0 Image Processing in Memory - (2021-01-02)
+
+* **Major change**: image processing fully in memory - no need of SD card buffer anymore
+  
+  * Need to limit camera resolution to VGA (due to memory limits)
+  
+* MQTT: Last Will Testament (LWT) implemented: "connection lost" in case of connection lost to `TopicError`
+
+* Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
+
+* Update digital CNN to v7.2.1 (additional digital images trained) 
+
+* Setting of arbitrary time server in `config.ini`
+
+* Option for fixed IP-, DNS-Settings in `wlan.ini`
+
+* Increased stability (internal image and camera handling)
+
+* Bug fixing: edit digits, handling PreValue, html-bugs
+
+  
 
 ##### 5.0.0 Setup Modus - (2020-12-06)
 
@@ -41,12 +79,12 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 * Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
   
+  
 
 ##### 4.1.1 Configuration editor - (2020-12-02)
 
 * Bug fixing: internal improvement of file handling (reduce not responding)
 
-  
 
 ##### 4.1.0 Configuration editor - (2020-11-30)
 
@@ -62,7 +100,6 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 * Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
 
-  
 
 
 ##### 4.0.0 Tflite Core - (2020-11-15)

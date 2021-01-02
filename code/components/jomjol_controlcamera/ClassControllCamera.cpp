@@ -1,4 +1,5 @@
 #include "ClassControllCamera.h"
+#include "ClassLogFile.h"
 
 #include <stdio.h>
 #include "driver/gpio.h"
@@ -6,34 +7,11 @@
 #include "esp_log.h"
 
 #include "Helper.h"
-#include "CFindTemplate.h"
+#include "CImageBasis.h"
 
-// #include "camera_define.h"
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
 #define BOARD_ESP32CAM_AITHINKER
 
-/**
- * 2. Kconfig setup
- * 
- * If you have a Kconfig file, copy the content from
- *  https://github.com/espressif/esp32-camera/blob/master/Kconfig into it.
- * In case you haven't, copy and paste this Kconfig file inside the src directory.
- * This Kconfig file has definitions that allows more control over the camera and
- * how it will be initialized.
- */
-
-/**
- * 3. Enable PSRAM on sdkconfig:
- * 
- * CONFIG_ESP32_SPIRAM_SUPPORT=y
- * 
- * More info on
- * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#config-esp32-spiram-support
- */
-
-// ================================ CODE ======================================
 
 #include <esp_event_loop.h>
 #include <esp_log.h>
@@ -47,31 +25,10 @@
 
 #include "esp_camera.h"
 
-// WROVER-KIT PIN Map
-#ifdef BOARD_WROVER_KIT
+// #define DEBUG_DETAIL_ON
 
-#define CAM_PIN_PWDN -1  //power down is not used
-#define CAM_PIN_RESET -1 //software reset will be performed
-#define CAM_PIN_XCLK 21
-#define CAM_PIN_SIOD 26
-#define CAM_PIN_SIOC 27
-
-#define CAM_PIN_D7 35
-#define CAM_PIN_D6 34
-#define CAM_PIN_D5 39
-#define CAM_PIN_D4 36
-#define CAM_PIN_D3 19
-#define CAM_PIN_D2 18
-#define CAM_PIN_D1 5
-#define CAM_PIN_D0 4
-#define CAM_PIN_VSYNC 25
-#define CAM_PIN_HREF 23
-#define CAM_PIN_PCLK 22
-
-#endif
 
 // ESP32Cam (AiThinker) PIN Map
-#ifdef BOARD_ESP32CAM_AITHINKER
 
 #define CAM_PIN_PWDN (gpio_num_t) 32
 #define CAM_PIN_RESET -1 //software reset will be performed
@@ -90,8 +47,6 @@
 #define CAM_PIN_VSYNC 25
 #define CAM_PIN_HREF 23
 #define CAM_PIN_PCLK 22
-
-#endif
 
 static const char *TAG = "example:take_picture";
 
@@ -115,12 +70,14 @@ static camera_config_t camera_config = {
     .pin_pclk = CAM_PIN_PCLK,
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,
+//    .xclk_freq_hz = 20000000,             // Orginalwert
+    .xclk_freq_hz = 5000000,               // Test, um die Bildfehler los zu werden !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
     .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .frame_size = FRAMESIZE_VGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+//    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
 
     
 
@@ -128,13 +85,10 @@ static camera_config_t camera_config = {
     .fb_count = 1       //if more than one, i2s runs in continuous mode. Use only with JPEG
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "driver/ledc.h"
 
 CCamera Camera;
-
 
 #define FLASH_GPIO GPIO_NUM_4
 #define BLINK_GPIO GPIO_NUM_33
@@ -145,8 +99,6 @@ typedef struct {
 } jpg_chunking_t;
 
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 #define LEDC_LS_CH2_GPIO       (4)
 #define LEDC_LS_CH2_CHANNEL    LEDC_CHANNEL_2
 #define LEDC_LS_TIMER          LEDC_TIMER_1
@@ -172,14 +124,6 @@ void test(){
 
 
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
     jpg_chunking_t *j = (jpg_chunking_t *)arg;
     if(!index){
@@ -200,15 +144,144 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
     s->set_framesize(s, resol); 
     ActualResolution = resol;
     ActualQuality = qual;
+
+    if (resol == FRAMESIZE_QVGA)
+    {
+        image_height = 240;
+        image_width = 320;             
+    }
+    if (resol == FRAMESIZE_VGA)
+    {
+        image_height = 480;
+        image_width = 640;             
+    }
+    // No higher Mode than VGA, damit der Kameraspeicher ausreicht.
+/*
+    if (resol == FRAMESIZE_SVGA)
+    {
+        image_height = 600;
+        image_width = 800;             
+    }
+    if (resol == FRAMESIZE_XGA)
+    {
+        image_height = 768;
+        image_width = 1024;             
+    }
+    if (resol == FRAMESIZE_SXGA)
+    {
+        image_height = 1024;
+        image_width = 1280;             
+    }
+    if (resol == FRAMESIZE_UXGA)
+    {
+        image_height = 1200;
+        image_width = 1600;             
+    }
+*/
+}
+
+
+
+esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
+{
+    string ftype;
+
+    uint8_t *zwischenspeicher = NULL;
+
+
+    LEDOnOff(true);
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Start");
+#endif
+
+    if (delay > 0) 
+    {
+        LightOnOff(true);
+        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
+        vTaskDelay( xDelay );
+    }
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LightOn");
+#endif
+
+    camera_fb_t * fb = esp_camera_fb_get();
+    if (!fb) {
+        ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+        LEDOnOff(false);
+        return ESP_FAIL;
+    }
+
+    int _size = fb->len;
+    zwischenspeicher = (uint8_t*) malloc(_size);
+    for (int i = 0; i < _size; ++i)
+        *(zwischenspeicher + i) = *(fb->buf + i);
+    esp_camera_fb_return(fb);        
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
+#endif
+
+    LEDOnOff(false);    
+
+    if (delay > 0) 
+        LightOnOff(false);
+ 
+//    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;     
+//    vTaskDelay( xDelay );  // wait for power to recover
+    
+    uint8_t * buf = NULL;
+
+    CImageBasis _zwImage;
+    _zwImage.LoadFromMemory(zwischenspeicher, _size);
+    free(zwischenspeicher);
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LoadFromMemory");
+#endif
+
+    stbi_uc* p_target;
+    stbi_uc* p_source;    
+    int channels = 3;
+    int width = image_width;
+    int height = image_height;
+
+#ifdef DEBUG_DETAIL_ON
+    std::string _zw = "Targetimage: " + std::to_string((int) _Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
+    _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage.rgb_image)  + " Size: " + std::to_string(_zwImage.width) + ", " + std::to_string(_zwImage.height);
+    LogFile.WriteToFile(_zw);
+#endif
+
+    for (int x = 0; x < width; ++x)
+        for (int y = 0; y < height; ++y)
+        {
+            p_target = _Image->rgb_image + (channels * (y * width + x));
+            p_source = _zwImage.rgb_image + (channels * (y * width + x));
+            p_target[0] = p_source[0];
+            p_target[1] = p_source[1];
+            p_target[2] = p_source[2];
+        }
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After Copy To Target");
+#endif
+
+    free(buf);
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Done");
+#endif
+
+    return ESP_OK;    
 }
 
 
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
-//    nm =  "/sdcard/josef_zw.bmp";
     string ftype;
 
-    LEDOnOff(true);
+     LEDOnOff(true);              // Abgeschaltet, um Strom zu sparen !!!!!!
 
     if (delay > 0) 
     {
@@ -224,13 +297,22 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         return ESP_FAIL;
     }
     LEDOnOff(false);    
-    
+
+#ifdef DEBUG_DETAIL_ON    
     printf("w %d, h %d, size %d\n", fb->width, fb->height, fb->len);
+#endif
 
     nm = FormatFileName(nm);
+
+#ifdef DEBUG_DETAIL_ON
     printf("Save Camera to : %s\n", nm.c_str());
+#endif
+
     ftype = toUpper(getFileType(nm));
+
+#ifdef DEBUG_DETAIL_ON
     printf("Filetype: %s\n", ftype.c_str());
+#endif
 
     uint8_t * buf = NULL;
     size_t buf_len = 0;   
@@ -255,7 +337,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         }
     }
 
-    FILE * fp = fopen(nm.c_str(), "wb");
+    FILE * fp = OpenFileAndWait(nm.c_str(), "wb");
     if (fp == NULL)  /* If an error occurs during the file creation */
     {
         fprintf(stderr, "fopen() failed for '%s'\n", nm.c_str());
@@ -286,15 +368,29 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
 
+
+    LEDOnOff(true);
+
+    if (delay > 0) 
+    {
+        LightOnOff(true);
+        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
+        vTaskDelay( xDelay );
+    }
+
+
     fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera capture failed");
         httpd_resp_send_500(req);
         return ESP_FAIL;
     }
+
+    LEDOnOff(false); 
+    
     res = httpd_resp_set_type(req, "image/jpeg");
     if(res == ESP_OK){
-        res = httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
+        res = httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=raw.jpg");
     }
 
     if(res == ESP_OK){
@@ -312,6 +408,12 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     int64_t fr_end = esp_timer_get_time();
     
     ESP_LOGI(TAGCAMERACLASS, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
+
+    if (delay > 0) 
+    {
+        LightOnOff(false);
+    }
+
     return res;
 }
 
@@ -357,7 +459,9 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
         printf("Query: "); printf(_query); printf("\n");
         if (httpd_query_key_value(_query, "size", _size, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON   
             printf("Size: "); printf(_size); printf("\n");            
+#endif
             if (strcmp(_size, "QVGA") == 0)
                 resol = FRAMESIZE_QVGA;       // 320x240
             if (strcmp(_size, "VGA") == 0)
@@ -369,11 +473,13 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
             if (strcmp(_size, "SXGA") == 0)
                 resol = FRAMESIZE_SXGA;     // 1280x1024
             if (strcmp(_size, "UXGA") == 0)
-                resol = FRAMESIZE_UXGA;     // 1600x1200                
+                 resol = FRAMESIZE_UXGA;     // 1600x1200   
         }
         if (httpd_query_key_value(_query, "quality", _qual, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON   
             printf("Quality: "); printf(_qual); printf("\n");
+#endif
             qual = atoi(_qual);
                 
             if (qual > 63)
@@ -404,13 +510,13 @@ framesize_t CCamera::TextToFramesize(const char * _size)
 
 CCamera::CCamera()
 {
+#ifdef DEBUG_DETAIL_ON    
     printf("CreateClassCamera\n");
+#endif
 }
 
 esp_err_t CCamera::InitCam()
 {
-    printf("Init Flash\n");
-    //power up the camera if PWDN pin is defined
     if(CAM_PIN_PWDN != -1){
         // Init the GPIO
         gpio_pad_select_gpio(CAM_PIN_PWDN);

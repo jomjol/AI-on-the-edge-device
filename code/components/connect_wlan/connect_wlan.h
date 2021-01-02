@@ -11,7 +11,7 @@ void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _net
 
 
 void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname);
-void LoadNetConfigFromFile(std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns);
+void LoadNetConfigFromFile(std::string fn, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns);
 
 std::string getHostname();
 std::string getIPAddress();

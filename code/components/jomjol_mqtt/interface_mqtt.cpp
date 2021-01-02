@@ -64,10 +64,18 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
-void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password){
+void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _LWTContext, int _keepalive){
+    std::string _zwmessage = "connection lost";
+
+    int _lzw = _zwmessage.length();
+
     esp_mqtt_client_config_t mqtt_cfg = {
         .uri = _mqttURI.c_str(),
         .client_id = _clientid.c_str(),
+        .lwt_topic = _LWTContext.c_str(),
+        .lwt_msg = _zwmessage.c_str(),
+        .lwt_msg_len = _lzw,
+        .keepalive = _keepalive
     };
 
     if (_user.length() && _password.length()){
@@ -79,4 +87,6 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
     client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, esp_mmqtt_ID, mqtt_event_handler, client);
     esp_mqtt_client_start(client);
+
+    MQTTPublish(_LWTContext, "");
 }

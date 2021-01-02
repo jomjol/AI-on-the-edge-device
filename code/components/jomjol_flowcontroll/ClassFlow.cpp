@@ -9,9 +9,11 @@
 void ClassFlow::SetInitialParameter(void)
 {
 	ListFlowControll = NULL;
+	previousElement = NULL;	
 }
 
-//std::vector<string> ClassFlow::ZerlegeZeile(std::string input, std::string delimiter);
+
+
 
 std::vector<string> ClassFlow::ZerlegeZeile(std::string input, std::string delimiter)
 {
@@ -55,7 +57,6 @@ bool ClassFlow::GetNextParagraph(FILE* pfile, string& aktparamgraph)
 ClassFlow::ClassFlow(void)
 {
 	SetInitialParameter();
-	ListFlowControll = NULL;
 }
 
 ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc)
@@ -63,6 +64,13 @@ ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc)
 	SetInitialParameter();	
 	ListFlowControll = lfc;
 }
+
+ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev)
+{
+	SetInitialParameter();	
+	ListFlowControll = lfc;
+	previousElement = _prev;
+}	
 
 bool ClassFlow::ReadParameter(FILE* pfile, string &aktparamgraph)
 {
@@ -100,7 +108,7 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 	}
 	*rt = zw;
 	*rt = trim(*rt);
-	while (zw[0] == '#' || (rt->size() == 0))			// Kommentarzeilen und Leerzeilen überspringen
+	while (zw[0] == ';' || zw[0] == '#' || (rt->size() == 0))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen
 	{
 		fgets(zw, 1024, pfile);
 		printf("%s", zw);		

@@ -68,6 +68,8 @@ static esp_err_t index_html_get_handler(httpd_req_t *req)
 /* Handler to respond with an icon file embedded in flash.
  * Browsers expect to GET website icon at URI /favicon.ico.
  * This can be overridden by uploading file with same name */
+
+/*
 static esp_err_t favicon_get_handler(httpd_req_t *req)
 {
     extern const unsigned char favicon_ico_start[] asm("_binary_favicon_ico_start");
@@ -75,10 +77,10 @@ static esp_err_t favicon_get_handler(httpd_req_t *req)
     const size_t favicon_ico_size = (favicon_ico_end - favicon_ico_start);
     httpd_resp_set_type(req, "image/x-icon");
     httpd_resp_send(req, (const char *)favicon_ico_start, favicon_ico_size);
-    /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);       
     return ESP_OK;
 }
+*/
 
 /* Send HTTP response with a run-time generated html consisting of
  * a list of all files and folders under the requested path.
@@ -121,7 +123,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
 
 /////////////////////////////////////////////////
     if (!readonly) {
-        FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
+        FILE *fd = OpenFileAndWait("/sdcard/html/upload_script.html", "r");
         char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
         size_t chunksize;
         do {
@@ -231,7 +233,7 @@ static esp_err_t logfileact_get_handler(httpd_req_t *req)
     std::string currentfilename = LogFile.GetCurrentFileName();
 
 
-    fd = fopen(currentfilename.c_str(), "r");
+    fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -337,7 +339,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = fopen(filepath, "r");
+    fd = OpenFileAndWait(filepath, "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -424,7 +426,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = fopen(filepath, "w");
+    fd = OpenFileAndWait(filepath, "w");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to create file : %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -710,7 +712,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
             zw = std::string(archive_filename);
             zw = _target_directory + zw;
             printf("Filename to extract: %s", zw.c_str());
-            FILE* fpTargetFile = fopen(zw.c_str(), "wb");
+            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
 

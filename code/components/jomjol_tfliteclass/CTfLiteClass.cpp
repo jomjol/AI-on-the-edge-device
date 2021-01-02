@@ -1,12 +1,10 @@
 #include "CTfLiteClass.h"
-
-#include "bitmap_image.hpp"
-
 #include "ClassLogFile.h"
+#include "Helper.h"
 
 #include <sys/stat.h>
 
-bool debugdetailtflite = false;
+// #define DEBUG_DETAIL_ON
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -19,19 +17,14 @@ float CTfLiteClass::GetOutputValue(int nr)
     return output2->data.f[nr];
 }
 
-
-int CTfLiteClass::GetClassFromImage(std::string _fn)
+int CTfLiteClass::GetClassFromImageBasis(CImageBasis *rs)
 {
-//  printf("Before Load image %s\n", _fn.c_str());
-    if (!LoadInputImage(_fn))
+    if (!LoadInputImageBasis(rs))
       return -1000;
-//  printf("After Load image %s\n", _fn.c_str());
 
     Invoke();
-  printf("After Invoke %s\n", _fn.c_str());
 
     return GetOutClassification();
-//    return 0;
 }
 
 int CTfLiteClass::GetOutClassification()
@@ -55,7 +48,6 @@ int CTfLiteClass::GetOutClassification()
         zw_class = i;
     }
   }
-//  printf("Result Ziffer: %d\n", zw_class);       
   return zw_class;
 }
 
@@ -107,21 +99,17 @@ void CTfLiteClass::GetOutPut()
 void CTfLiteClass::Invoke()
 {
     interpreter->Invoke();
-//    printf("Invoke Done.\n");
 }
 
 
-bool CTfLiteClass::LoadInputImage(std::string _fn)
+
+bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
 {
-    std::string zw = "ClassFlowAnalog::doNeuralNetwork nach Load Image: " + _fn;
-//    LogFile.WriteToFile(zw);
-    bitmap_image image(_fn);
-    if (debugdetailtflite) LogFile.WriteToFile(zw);
+    std::string zw = "ClassFlowAnalog::doNeuralNetwork nach LoadInputResizeImage: ";
 
-    unsigned int w = image.width();
-    unsigned int h = image.height();
+    unsigned int w = rs->width;
+    unsigned int h = rs->height;
     unsigned char red, green, blue;
-
 //    printf("Image: %s size: %d x %d\n", _fn.c_str(), w, h);
 
     input_i = 0;
@@ -130,21 +118,20 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
     for (int y = 0; y < h; ++y)
         for (int x = 0; x < w; ++x)
             {
-                red = image.red_channel(x, y);
-                green = image.green_channel(x, y);
-                blue = image.blue_channel(x, y);
+                red = rs->GetPixelColor(x, y, 0);
+                green = rs->GetPixelColor(x, y, 1);
+                blue = rs->GetPixelColor(x, y, 2);
                 *(input_data_ptr) = (float) red;
                 input_data_ptr++;
                 *(input_data_ptr) = (float) green;
                 input_data_ptr++;
                 *(input_data_ptr) = (float) blue;
                 input_data_ptr++;
-
-//                printf("BMP: %f %f %f\n", (float) red, (float) green, (float) blue);
-
             }
-    
-    if (debugdetailtflite) LogFile.WriteToFile("Nach dem Laden in input");
+
+#ifdef DEBUG_DETAIL_ON          
+    LogFile.WriteToFile("Nach dem Laden in input");
+#endif
 
     return true;
 }
@@ -152,7 +139,6 @@ bool CTfLiteClass::LoadInputImage(std::string _fn)
 
 void CTfLiteClass::MakeAllocate()
 {
-//    static tflite::ops::micro::AllOpsResolver resolver;
     static tflite::AllOpsResolver resolver;
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 
@@ -162,16 +148,15 @@ void CTfLiteClass::MakeAllocate()
     this->GetInputDimension();   
     return;
   }
-
 //    printf("Allocate Done.\n");
 }
 
 void CTfLiteClass::GetInputTensorSize(){
     float *zw = this->input;
     int test = sizeof(zw);
+#ifdef DEBUG_DETAIL_ON    
     printf("Input Tensor Dimension: %d\n", test);       
-
-    printf("Input Tensor Dimension: %d\n", test);   
+#endif
 }
 
 long CTfLiteClass::GetFileSize(std::string filename)
@@ -186,24 +171,34 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 {
     long size;
     
-    size = this->GetFileSize(_fn);
+    size = GetFileSize(_fn);
 
     if (size == -1)
     {
-		printf("\nFile existiert nicht.\n");
-        return NULL;
+  		printf("\nFile existiert nicht.\n");
+      return NULL;
     }
 
-
     unsigned char *result = (unsigned char*) malloc(size);
+    int anz = 1;
+    TickType_t xDelay;
+    while (!result && (anz < 6))    // maximal 5x versuchen (= 5s)
+    {
+#ifdef DEBUG_DETAIL_ON      
+		    printf("Speicher ist voll - Versuche es erneut: %d.\n", anz);
+#endif
+        xDelay = 1000 / portTICK_PERIOD_MS;
+        result = (unsigned char*) malloc(size);
+        anz++;
+    }
+
   
-	if(result != NULL) {
-//		printf("\nSpeicher ist reserviert\n");
-        FILE* f = fopen(_fn.c_str(), "rb");     // vorher  nur "r"
+	  if(result != NULL) {
+        FILE* f = OpenFileAndWait(_fn.c_str(), "rb");     // vorher  nur "r"
         fread(result, 1, size, f);
         fclose(f);        
-	}else {
-		printf("\nKein freier Speicher vorhanden.\n");
+	  }else {
+		  printf("\nKein freier Speicher vorhanden.\n");
 	}    
 
 
@@ -219,14 +214,11 @@ void CTfLiteClass::LoadModel(std::string _fn){
 #endif
 
     unsigned char *rd;
-    rd = this->ReadFileToCharArray(_fn.c_str());
-//    printf("loadedfile: %d", (int) rd);
+    rd = ReadFileToCharArray(_fn.c_str());
 
     this->model = tflite::GetModel(rd);
     free(rd);
     TFLITE_MINIMAL_CHECK(model != nullptr); 
-//    printf("tfile Loaded.\n");  
-
 }
 
 
@@ -237,7 +229,7 @@ CTfLiteClass::CTfLiteClass()
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
-    this->kTensorArenaSize = 600 * 1024;
+    this->kTensorArenaSize = 150 * 1024;   /// laut testfile: 108000 - bisher 600
     this->tensor_arena = new uint8_t[kTensorArenaSize]; 
 }
 
@@ -255,6 +247,6 @@ namespace tflite {
     return 0;
   }
 
-}  // namespace tflite
+}  
 
 

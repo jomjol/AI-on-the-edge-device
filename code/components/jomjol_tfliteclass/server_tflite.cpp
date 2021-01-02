@@ -18,16 +18,40 @@
 
 #include "ClassLogFile.h"
 
+//#define DEBUG_DETAIL_ON       
+
+
 ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
 
+
+
 bool flowisrunning = false;
 
 long auto_intervall = 0;
 bool auto_isrunning = false;
+
+
+int countRounds = 0;
+
+int getCountFlowRounds() {
+    return countRounds;
+}
+
+
+
+esp_err_t GetJPG(std::string _filename, httpd_req_t *req)
+{
+    return tfliteflow.GetJPGStream(_filename, req);
+}
+
+esp_err_t GetRawJPG(httpd_req_t *req)
+{
+    return tfliteflow.SendRawJPG(req);
+}
 
 bool isSetupModusActive() {
     return tfliteflow.getStatusSetupModus();
@@ -37,28 +61,40 @@ bool isSetupModusActive() {
 
 void KillTFliteTasks()
 {
-    printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);    
+#ifdef DEBUG_DETAIL_ON          
+    printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);  
+#endif  
     if (xHandleblink_task_doFlow)
     {
         vTaskDelete(xHandleblink_task_doFlow);
+#ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandleblink_task_doFlow\n");
+#endif
     }
 
+#ifdef DEBUG_DETAIL_ON      
     printf("Handle: xHandletask_autodoFlow: %ld\n", (long) xHandletask_autodoFlow);  
+#endif
     if (xHandletask_autodoFlow)
     {
         vTaskDelete(xHandletask_autodoFlow);
+#ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandletask_autodoFlow\n");
+#endif
     }
 
 }
 
 void doInit(void)
 {
-    string config = "/sdcard/config/config.ini";   
+    string config = "/sdcard/config/config.ini";
+#ifdef DEBUG_DETAIL_ON             
     printf("Start tfliteflow.InitFlow(config);\n");
+#endif
     tfliteflow.InitFlow(config);
+#ifdef DEBUG_DETAIL_ON      
     printf("Finished tfliteflow.InitFlow(config);\n");
+#endif
 }
 
 
@@ -71,13 +107,17 @@ bool doflow(void)
     tfliteflow.doFlow(zw_time);
     flowisrunning = false;
 
+#ifdef DEBUG_DETAIL_ON      
     printf("doflow - end %s\n", zw_time.c_str());
+#endif    
     return true;
 }
 
 void blink_task_doFlow(void *pvParameter)
 {
+#ifdef DEBUG_DETAIL_ON          
     printf("blink_task_doFlow\n");
+#endif
     if (!flowisrunning)
     {
         flowisrunning = true;
@@ -91,8 +131,10 @@ void blink_task_doFlow(void *pvParameter)
 
 esp_err_t handler_init(httpd_req_t *req)
 {
-    LogFile.WriteToFile("handler_init"); 
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("handler_init - Start");       
     printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
+#endif
 
     char* resp_str = "Init started<br>";
     httpd_resp_send(req, resp_str, strlen(resp_str));     
@@ -104,12 +146,19 @@ esp_err_t handler_init(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);    
 
+#ifdef DEBUG_DETAIL_ON      
+    LogFile.WriteHeapInfo("handler_init - Done");       
+#endif
+
     return ESP_OK;
 };
 
 esp_err_t handler_doflow(httpd_req_t *req)
 {
-    LogFile.WriteToFile("handler_doflow");   
+#ifdef DEBUG_DETAIL_ON          
+    LogFile.WriteHeapInfo("handler_doflow - Start");       
+#endif
+
     char* resp_str;
 
     printf("handler_doFlow uri: "); printf(req->uri); printf("\n");
@@ -127,7 +176,12 @@ esp_err_t handler_doflow(httpd_req_t *req)
     resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
     httpd_resp_send(req, resp_str, strlen(resp_str));  
     /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);        
+    httpd_resp_send_chunk(req, NULL, 0);       
+
+#ifdef DEBUG_DETAIL_ON   
+    LogFile.WriteHeapInfo("handler_doflow - Done");       
+#endif
+
     return ESP_OK;
 };
 
@@ -136,7 +190,10 @@ esp_err_t handler_doflow(httpd_req_t *req)
 
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
-    LogFile.WriteToFile("handler_wasserzaehler");    
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
+#endif
+
     bool _rawValue = false;
     bool _noerror = false;
     string zw;
@@ -151,12 +208,16 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 //        printf("Query: "); printf(_query); printf("\n");
         if (httpd_query_key_value(_query, "rawvalue", _size, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON       
             printf("rawvalue is found"); printf(_size); printf("\n"); 
+#endif
             _rawValue = true;
         }
         if (httpd_query_key_value(_query, "noerror", _size, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON       
             printf("noerror is found"); printf(_size); printf("\n"); 
+#endif
             _noerror = true;
         }        
     }  
@@ -171,7 +232,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     {
         string txt, zw;
         
-        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg.jpg\"> <p>\n";
+        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
         txt = txt + "Digital Counter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
@@ -205,7 +266,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
             delete htmlinfo[i];
         }
-        htmlinfo.clear();         
+        htmlinfo.clear();   
 
     }   
 
@@ -217,13 +278,18 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
+#endif
     return ESP_OK;
 };
 
 
 esp_err_t handler_editflow(httpd_req_t *req)
 {
-    LogFile.WriteToFile("handler_editflow");    
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_editflow - Start");       
+#endif
 
     printf("handler_editflow uri: "); printf(req->uri); printf("\n");
 
@@ -235,7 +301,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
     {
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON       
             printf("task is found: %s\n", _valuechar); 
+#endif
             _task = string(_valuechar);
         }
     }  
@@ -246,11 +314,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         httpd_query_key_value(_query, "in", _valuechar, 30);
         in = string(_valuechar);
-        printf("in: "); printf(in.c_str()); printf("\n"); 
-
         httpd_query_key_value(_query, "out", _valuechar, 30);         
         out = string(_valuechar);  
+
+#ifdef DEBUG_DETAIL_ON       
+        printf("in: "); printf(in.c_str()); printf("\n"); 
         printf("out: "); printf(out.c_str()); printf("\n"); 
+#endif
 
         in = "/sdcard" + in;
         out = "/sdcard" + out;
@@ -269,31 +339,34 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         httpd_query_key_value(_query, "in", _valuechar, 30);
         in = string(_valuechar);
-        printf("in: "); printf(in.c_str()); printf("\n"); 
 
         httpd_query_key_value(_query, "out", _valuechar, 30);         
         out = string(_valuechar);  
-        printf("out: "); printf(out.c_str()); printf("\n"); 
 
         httpd_query_key_value(_query, "x", _valuechar, 30);
         zw = string(_valuechar);  
         x = stoi(zw);              
-        printf("x: "); printf(zw.c_str()); printf("\n"); 
 
         httpd_query_key_value(_query, "y", _valuechar, 30);
         zw = string(_valuechar);  
         y = stoi(zw);              
-        printf("y: "); printf(zw.c_str()); printf("\n"); 
 
         httpd_query_key_value(_query, "dx", _valuechar, 30);
         zw = string(_valuechar);  
         dx = stoi(zw);  
-        printf("dx: "); printf(zw.c_str()); printf("\n"); 
 
         httpd_query_key_value(_query, "dy", _valuechar, 30);
         zw = string(_valuechar);  
         dy = stoi(zw);          
+
+#ifdef DEBUG_DETAIL_ON       
+        printf("in: "); printf(in.c_str()); printf("\n"); 
+        printf("out: "); printf(out.c_str()); printf("\n"); 
+        printf("x: "); printf(zw.c_str()); printf("\n"); 
+        printf("y: "); printf(zw.c_str()); printf("\n"); 
+        printf("dx: "); printf(zw.c_str()); printf("\n"); 
         printf("dy: "); printf(zw.c_str()); printf("\n"); 
+#endif
 
         if (httpd_query_key_value(_query, "enhance", _valuechar, 10) == ESP_OK)
         {
@@ -324,6 +397,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         zw = "CutImage Done";
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
+        
     }
 
     if (_task.compare("test_take") == 0)
@@ -379,13 +453,20 @@ esp_err_t handler_editflow(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_editflow - Done");       
+#endif
+
     return ESP_OK;
 };
 
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
-    LogFile.WriteToFile("handler_prevalue"); 
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_prevalue - Start");       
+#endif
+
     const char* resp_str;
     string zw;
 
@@ -399,7 +480,9 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 //        printf("Query: "); printf(_query); printf("\n");
         if (httpd_query_key_value(_query, "value", _size, 10) == ESP_OK)
         {
+#ifdef DEBUG_DETAIL_ON       
             printf("Value: "); printf(_size); printf("\n"); 
+#endif
         }
     }           
 
@@ -413,6 +496,10 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     httpd_resp_send(req, resp_str, strlen(resp_str));   
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);      
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_prevalue - Start");       
+#endif
 
     return ESP_OK;
 };
@@ -434,20 +521,27 @@ void task_autodoFlow(void *pvParameter)
 
     while (auto_isrunning)
     {
-        LogFile.WriteToFile("task_autodoFlow - next round"); 
+        std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
+        LogFile.WriteToFile(_zw); 
         printf("Autoflow: start\n");
         fr_start = esp_timer_get_time();
 
         if (flowisrunning)
         {
+#ifdef DEBUG_DETAIL_ON       
             printf("Autoflow: doFLow laeuft bereits!\n");
+#endif
         }
         else
         {
+#ifdef DEBUG_DETAIL_ON       
             printf("Autoflow: doFLow wird gestartet\n");
+#endif
             flowisrunning = true;
             doflow();
+#ifdef DEBUG_DETAIL_ON       
             printf("Remove older log files\n");
+#endif
             LogFile.RemoveOld();
         }
         
@@ -507,5 +601,4 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
     httpd_register_uri_handler(server, &camuri);  
-
 }

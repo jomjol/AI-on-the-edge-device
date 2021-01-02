@@ -22,9 +22,4 @@ httpd_handle_t start_webserver(void);
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path);
 
-
-//void disconnect_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
-//void connect_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
-
-
 #endif

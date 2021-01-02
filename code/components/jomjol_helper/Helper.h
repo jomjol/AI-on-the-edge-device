@@ -10,6 +10,8 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
 
 void CopyFile(string input, string output);
 
+FILE* OpenFileAndWait(const char* nm, char* _mode, int _waitsec = 1);
+
 size_t findDelimiterPos(string input, string delimiter);
 //string trim(string istring);
 string trim(string istring, string adddelimiter = "");
@@ -25,3 +27,12 @@ string toUpper(string in);
 float temperatureRead();
 
 time_t addDays(time_t startTime, int days);
+
+void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);
+
+///////////////////////////
+size_t getInternalESPHeapSize();
+size_t getESPHeapSize();
+string getESPHeapInfo();
+
+/////////////////////////////

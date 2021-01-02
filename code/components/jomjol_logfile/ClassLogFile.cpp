@@ -10,6 +10,48 @@ static const char *TAG = "log";
 
 ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt");
 
+void ClassLogFile::WriteHeapInfo(std::string _id)
+{
+    std::string _zw;
+    _zw = "\t" + _id + "\t" + getESPHeapInfo();
+    WriteToFile(_zw);
+}
+
+
+std::string ClassLogFile::getESPHeapInfo(){
+	string espInfoResultStr = "";
+	char aMsgBuf[80];
+    
+	multi_heap_info_t aMultiHead_info ;
+	heap_caps_get_info (&aMultiHead_info,MALLOC_CAP_8BIT);
+	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+	size_t aMinFreeHeadSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
+	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
+	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+	sprintf(aMsgBuf,"Free Heap Size: \t%ld", (long) aFreeHeapSize);
+	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_SPIRAM);
+ 	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
+	size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
+
+	sprintf(aMsgBuf,"\tHeap:\t%ld", (long) aFreeHeapSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf,"\tMin Free:\t%ld", (long) aMinFreeHeapSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf,"\tlarg. Block: \t%ld", (long) aHeapLargestFreeBlockSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf,"\tSPI Heap:\t%ld", (long) aFreeSPIHeapSize);
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf,"\tMin Free Heap Size:\t%ld", (long) aMinFreeHeadSize);
+	sprintf(aMsgBuf,"\tNOT_SPI Heap:\t%ld", (long) (aFreeHeapSize - aFreeSPIHeapSize));
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf,"\tlargest Block Size: \t%ld", (long) aHeapLargestFreeBlockSize);
+	sprintf(aMsgBuf,"\tInternal Heap:\t%ld", (long) (aFreeInternalHeapSize));
+	espInfoResultStr += string(aMsgBuf);
+	sprintf(aMsgBuf,"\tInternal Min Heap free:\t%ld", (long) (aMinFreeInternalHeapSize));
+	espInfoResultStr += string(aMsgBuf);
+	return 	espInfoResultStr;
+}
+
 void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool _time)
 {
     FILE* pFile;
@@ -19,7 +61,10 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
         return;
     }
 
+//    pFile = OpenFileAndWait(_fn.c_str(), "a"); 
     pFile = fopen(_fn.c_str(), "a+");
+    printf("Logfile opened: %s\n", _fn.c_str());
+
     if (pFile!=NULL) {
         if (_time)
         {
@@ -54,6 +99,7 @@ void ClassLogFile::SetRetention(unsigned short _retentionInDays){
 
 void ClassLogFile::WriteToFile(std::string info, bool _time)
 {
+/*
     struct stat path_stat;
     if (stat(logroot.c_str(), &path_stat) != 0) {
         ESP_LOGI(TAG, "Create log folder: %s", logroot.c_str());
@@ -61,7 +107,7 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
             ESP_LOGI(TAG, "Can't create log foolder");
         }
     }
-
+*/
     time_t rawtime;
     struct tm* timeinfo;
     char buffer[30];
@@ -79,12 +125,12 @@ std::string ClassLogFile::GetCurrentFileName()
 {
     time_t rawtime;
     struct tm* timeinfo;
-    char buffer[30];
+    char buffer[60];
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer, 30, logfile.c_str(), timeinfo);
+    strftime(buffer, 60, logfile.c_str(), timeinfo);
     std::string logpath = logroot + "/" + buffer; 
 
     return logpath;

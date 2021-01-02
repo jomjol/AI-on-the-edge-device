@@ -1,5 +1,6 @@
 #include "ClassFlowDigit.h"
 
+
 //#include "CFindTemplate.h"
 //#include "CTfLiteClass.h"
 
@@ -15,19 +16,49 @@
 
 static const char* TAG = "flow_digital";
 
-ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
+
+void ClassFlowDigit::SetInitialParameter(void)
 {
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
     ListFlowControll = NULL;
+    previousElement = NULL;    
+    SaveAllFiles = false;
+}    
+
+ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
+{
+    SetInitialParameter();
 }
 
 ClassFlowDigit::ClassFlowDigit(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    string cnnmodelfile = "";
-    modelxsize = 1;
-    modelysize = 1;
+    SetInitialParameter();
+    ListFlowControll = lfc;
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
+        {
+            flowpostalignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
+        }
+    }
+}
+
+ClassFlowDigit::ClassFlowDigit(std::vector<ClassFlow*>* lfc, ClassFlow *_prev) : ClassFlowImage(lfc, _prev, TAG)
+{
+    SetInitialParameter();
+    ListFlowControll = lfc;
+    previousElement = _prev;
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
+        {
+            flowpostalignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
+        }
+    }    
 }
 
 string ClassFlowDigit::getReadout()
@@ -85,9 +116,25 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
             neuroi->resultklasse = -1;
+            neuroi->image = NULL;
+            neuroi->image_org = NULL;            
             ROI.push_back(neuroi);
         }
+
+        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                SaveAllFiles = true;
+        }
+
     }
+
+    for (int i = 0; i < ROI.size(); ++i)
+    {
+        ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+        ROI[i]->image_org = new CImageBasis(ROI[i]->deltax, ROI[i]->deltay, 3);
+    }
+
     return true;
 }
 
@@ -133,60 +180,17 @@ bool ClassFlowDigit::doFlow(string time)
 
 bool ClassFlowDigit::doAlignAndCut(string time)
 {
-    string input = "/sdcard/img_tmp/alg.jpg";
-    string input_roi = "/sdcard/img_tmp/alg_roi.jpg";
-    string ioresize = "/sdcard/img_tmp/resize.bmp";
-    string output;
-    string nm;
-    input = FormatFileName(input);
-    input_roi = FormatFileName(input_roi);   
-     
-    CResizeImage *rs;
-    CImageBasis *img_roi = NULL;
-    CAlignAndCutImage *caic = new CAlignAndCutImage(input);
-    if (!caic->ImageOkay()){
-        LogFile.WriteToFile("ClassFlowDigit::doAlignAndCut not okay!");
-        delete caic;
-        return false;
-    }
-
-    if (input_roi.length() > 0){
-        img_roi = new CImageBasis(input_roi);
-        if (!img_roi->ImageOkay()){
-            LogFile.WriteToFile("ClassFlowDigit::doAlignAndCut ImageRoi not okay!");
-            delete caic;
-            delete img_roi;
-            return false;
-        }
-    }
-
-
+    CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();
 
     for (int i = 0; i < ROI.size(); ++i)
     {
         printf("DigitalDigit %d - Align&Cut\n", i);
-        output = "/sdcard/img_tmp/" + ROI[i]->name + ".jpg";
-        output = FormatFileName(output);
-        caic->CutAndSave(output, ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay);
+        
+        caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, ROI[i]->image_org);
+        if (SaveAllFiles) ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
 
-        rs = new CResizeImage(output);
-        rs->Resize(modelxsize, modelysize);
-        ioresize = "/sdcard/img_tmp/rd" + std::to_string(i) + ".bmp";
-        ioresize = FormatFileName(ioresize);
-        rs->SaveToFile(ioresize);
-        delete rs;
-
-        if (img_roi)
-        {
-            img_roi->drawRect(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, 0, 0, 255, 2);
-        }
-    }
-    delete caic;
-
-    if (img_roi)
-    {
-        img_roi->SaveToFile(input_roi);
-        delete img_roi;
+        ROI[i]->image_org->Resize(modelxsize, modelysize, ROI[i]->image);
+        if (SaveAllFiles) ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
     }
 
     return true;
@@ -196,17 +200,9 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
 {
     string logPath = CreateLogFolder(time);
 
-    string input = "/sdcard/img_tmp/alg.jpg";
-    string ioresize = "/sdcard/img_tmp/resize.bmp";
-    string output;
-    string nm;
-    input = FormatFileName(input);
-
-
 #ifndef OHNETFLITE
     CTfLiteClass *tflite = new CTfLiteClass;  
-    string zwcnn = "/sdcard" + cnnmodelfile;
-    zwcnn = FormatFileName(zwcnn);
+    string zwcnn =  FormatFileName("/sdcard" + cnnmodelfile);
     printf(zwcnn.c_str());printf("\n");
     tflite->LoadModel(zwcnn); 
     tflite->MakeAllocate();
@@ -215,17 +211,18 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
     for (int i = 0; i < ROI.size(); ++i)
     {
         printf("DigitalDigit %d - TfLite\n", i);
-        ioresize = "/sdcard/img_tmp/rd" + std::to_string(i) + ".bmp";
-        ioresize = FormatFileName(ioresize);
-//        printf("output: %s, ioresize: %s\n", output.c_str(), ioresize.c_str());
 
         ROI[i]->resultklasse = 0;
 #ifndef OHNETFLITE
-        ROI[i]->resultklasse = tflite->GetClassFromImage(ioresize);
+        ROI[i]->resultklasse = tflite->GetClassFromImageBasis(ROI[i]->image);
+
 #endif
         printf("Result Digit%i: %d\n", i, ROI[i]->resultklasse);
 
-        LogImage(logPath, ROI[i]->name, NULL, &ROI[i]->resultklasse, time);
+        if (isLogImage)
+        {
+            LogImage(logPath, ROI[i]->name, NULL, &ROI[i]->resultklasse, time, ROI[i]->image_org);
+        }
     }
 #ifndef OHNETFLITE
         delete tflite;
@@ -233,6 +230,11 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
     return true;
 }
 
+void ClassFlowDigit::DrawROI(CImageBasis *_zw)
+{
+    for (int i = 0; i < ROI.size(); ++i)
+        _zw->drawRect(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, 0, 0, 255, 2);
+}     
 
 std::vector<HTMLInfo*> ClassFlowDigit::GetHTMLInfo()
 {
@@ -241,10 +243,14 @@ std::vector<HTMLInfo*> ClassFlowDigit::GetHTMLInfo()
     for (int i = 0; i < ROI.size(); ++i)
     {
         HTMLInfo *zw = new HTMLInfo;
-        zw->filename = ROI[i]->name + ".jpg";
+        zw->filename = ROI[i]->name + ".bmp";
+        zw->filename_org = ROI[i]->name + ".jpg";
         zw->val = ROI[i]->resultklasse;
+        zw->image = ROI[i]->image;
+        zw->image_org = ROI[i]->image_org;
         result.push_back(zw);
     }
 
     return result;
 }
+

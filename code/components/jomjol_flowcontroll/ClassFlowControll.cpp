@@ -9,7 +9,12 @@
 #include "Helper.h"
 #include "server_ota.h"
 
+#include "server_help.h"
+
+//#define DEBUG_DETAIL_ON  
+
 static const char* TAG = "flow_controll";
+
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
@@ -68,6 +73,9 @@ void ClassFlowControll::SetInitialParameter(void)
     AutoStart = false;
     SetupModeActive = false;
     AutoIntervall = 10;
+    flowdigit = NULL;
+    flowanalog = NULL;
+    flowpostprocessing = NULL;
 }
 
 bool ClassFlowControll::isAutoStart(long &_intervall)
@@ -83,13 +91,25 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     _type = trim(_type);
 
     if (toUpper(_type).compare("[MAKEIMAGE]") == 0)
+    {
         cfc = new ClassFlowMakeImage(&FlowControll);
+        flowmakeimage = (ClassFlowMakeImage*) cfc;
+    }
     if (toUpper(_type).compare("[ALIGNMENT]") == 0)
+    {
         cfc = new ClassFlowAlignment(&FlowControll);
+        flowalignment = (ClassFlowAlignment*) cfc;
+    }
     if (toUpper(_type).compare("[ANALOG]") == 0)
+    {
         cfc = new ClassFlowAnalog(&FlowControll);
+        flowanalog = (ClassFlowAnalog*) cfc;
+    }
     if (toUpper(_type).compare("[DIGITS]") == 0)
+    {
         cfc = new ClassFlowDigit(&FlowControll);
+        flowdigit = (ClassFlowDigit*) cfc;
+    }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
@@ -122,7 +142,7 @@ void ClassFlowControll::InitFlow(std::string config)
     ClassFlow* cfc;
     FILE* pFile;
     config = FormatFileName(config);
-    pFile = fopen(config.c_str(), "r");
+    pFile = OpenFileAndWait(config.c_str(), "r");
 
     line = "";
 
@@ -139,6 +159,7 @@ void ClassFlowControll::InitFlow(std::string config)
         cfc = CreateClassFlow(line);
         if (cfc)
         {
+            printf("Start ReadParameter\n");
             cfc->ReadParameter(pFile, line);
         }
         else
@@ -158,9 +179,7 @@ std::string ClassFlowControll::getActStatus(){
 }
 
 void ClassFlowControll::doFlowMakeImageOnly(string time){
-    bool result = true;
     std::string zw_time;
-    int repeat = 0;
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
@@ -181,12 +200,20 @@ bool ClassFlowControll::doFlow(string time)
     std::string zw_time;
     int repeat = 0;
 
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
+#endif
+
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%Y%m%d-%H%M%S");
         aktstatus = zw_time + ": " + FlowControll[i]->name();
+        
+// #ifdef DEBUG_DETAIL_ON         
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
-        LogFile.WriteToFile(zw);
+        LogFile.WriteHeapInfo(zw);
+// #endif
+
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
@@ -202,6 +229,11 @@ bool ClassFlowControll::doFlow(string time)
         {
             result = true;
         }
+        
+#ifdef DEBUG_DETAIL_ON  
+        LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
+#endif
+
     }
     zw_time = gettimestring("%Y%m%d-%H%M%S");    
     aktstatus = zw_time + ": Flow is done";
@@ -320,6 +352,14 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             setTimeZone(zerlegt[1]);
         }      
 
+        if ((toUpper(zerlegt[0]) == "TIMESERVER") && (zerlegt.size() > 1))
+        {
+            string zw = "Set TimeZone: " + zerlegt[1];
+            reset_servername(zerlegt[1]);
+        }      
+
+
+
         if ((toUpper(zerlegt[0]) == "SETUPMODE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
@@ -362,4 +402,85 @@ int ClassFlowControll::CleanTempFolder() {
     ESP_LOGI(TAG, "%d files deleted", deleted);
     
     return 0;
+}
+
+
+esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
+{
+    return flowmakeimage->SendRawJPG(req);
+}
+
+
+esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
+{
+    printf("ClassFlowControll::GetJPGStream %s\n", _fn.c_str());
+
+    CImageBasis *_send = NULL;
+    esp_err_t result = ESP_FAIL;
+    bool Dodelete = false;    
+
+    if (_fn == "alg.jpg")
+    {
+        _send = flowalignment->ImageBasis;  
+    }
+
+
+
+    if (_fn == "alg_roi.jpg")
+    {
+        CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
+        flowalignment->DrawRef(_imgzw);
+        if (flowdigit) flowdigit->DrawROI(_imgzw);
+        if (flowanalog) flowanalog->DrawROI(_imgzw);
+        _send = _imgzw;
+        Dodelete = true;
+    }
+
+    std::vector<HTMLInfo*> htmlinfo;
+    htmlinfo = GetAllDigital();
+    for (int i = 0; i < htmlinfo.size(); ++i)
+    {
+        if (_fn == htmlinfo[i]->filename)
+        {
+            if (htmlinfo[i]->image)
+                _send = htmlinfo[i]->image;
+        }
+        if (_fn == htmlinfo[i]->filename_org)
+        {
+            if (htmlinfo[i]->image_org)
+                _send = htmlinfo[i]->image_org;        
+        }
+    }
+
+    htmlinfo = GetAllAnalog();
+    for (int i = 0; i < htmlinfo.size(); ++i)
+    {
+        if (_fn == htmlinfo[i]->filename)
+        {
+            if (htmlinfo[i]->image)
+                _send = htmlinfo[i]->image;
+        }
+        if (_fn == htmlinfo[i]->filename_org)
+        {
+            if (htmlinfo[i]->image_org)
+                _send = htmlinfo[i]->image_org;        
+        }
+    }
+
+    if (_send)
+    {
+        ESP_LOGI(TAG, "Sending file : %s ...", _fn.c_str());
+        set_content_type_from_file(req, _fn.c_str());
+        result = _send->SendJPGtoHTTP(req);
+        ESP_LOGI(TAG, "File sending complete");    
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_send_chunk(req, NULL, 0);
+    }
+
+    if (Dodelete) 
+    {
+        delete _send;
+    }
+
+    return result;
 }

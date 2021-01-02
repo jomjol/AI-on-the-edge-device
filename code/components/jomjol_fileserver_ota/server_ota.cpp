@@ -31,6 +31,10 @@
 
 #include "ClassLogFile.h"
 
+#include "Helper.h"
+
+
+// #define DEBUG_DETAIL_ON 
 
 
 #define BUFFSIZE 1024
@@ -89,7 +93,7 @@ static bool ota_example_task(std::string fn)
 
     int data_read;     
 
-    FILE* f = fopen(fn.c_str(), "rb");     // vorher  nur "r"
+    FILE* f = OpenFileAndWait(fn.c_str(), "rb");     // vorher  nur "r"
     data_read = fread(ota_write_data, 1, BUFFSIZE, f);
 
     while (data_read > 0) {
@@ -301,6 +305,10 @@ void CheckOTAUpdate(void)
 
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
+#ifdef DEBUG_DETAIL_ON     
+    LogFile.WriteHeapInfo("handler_ota_update - Start");    
+#endif
+
     LogFile.WriteToFile("handler_ota_update");    
     char _query[200];
     char _filename[30];
@@ -376,7 +384,11 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
-    
+
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("handler_ota_update - Done");    
+#endif
+
     return ESP_OK;
 };
 
@@ -412,12 +424,20 @@ void doReboot(){
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
+#ifdef DEBUG_DETAIL_ON     
+    LogFile.WriteHeapInfo("handler_reboot - Start");
+#endif    
+
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
     const char* resp_str = "!!! System will restart within 5 sec!!!";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();
+
+#ifdef DEBUG_DETAIL_ON 
+    LogFile.WriteHeapInfo("handler_reboot - Done");    
+#endif
 
     return ESP_OK;
 }

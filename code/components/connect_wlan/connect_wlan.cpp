@@ -232,7 +232,7 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
 
     FILE* pFile;
     fn = FormatFileName(fn);
-    pFile = fopen(fn.c_str(), "r");
+    pFile = OpenFileAndWait(fn.c_str(), "r");
 
     printf("file loaded\n");
 
@@ -270,7 +270,48 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
             }
         }
 
-/*
+        if (fgets(zw, 1024, pFile) == NULL)
+        {
+            line = "";
+        }
+        else
+        {
+            line = std::string(zw);
+        }
+    }
+
+    fclose(pFile);
+
+    // Check if Hostname was empty in .ini if yes set to std_hostname
+    if(_hostname.length() <= 0){
+        _hostname = std_hostname;
+    }
+}
+
+void LoadNetConfigFromFile(std::string fn, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns)
+{
+    string line = "";
+    std::vector<string> zerlegt;
+
+    FILE* pFile;
+    fn = FormatFileName(fn);
+    pFile = OpenFileAndWait(fn.c_str(), "r");
+
+    printf("file loaded\n");
+
+    if (pFile == NULL)
+        return;
+
+    char zw[1024];
+    fgets(zw, 1024, pFile);
+    line = std::string(zw);
+
+    while ((line.size() > 0) || !(feof(pFile)))
+    {
+        printf("%s", line.c_str());
+        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt[0] = trim(zerlegt[0], " ");
+
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "IP")){
             _ip = zerlegt[1];
             if ((_ip[0] == '"') && (_ip[_ip.length()-1] == '"')){
@@ -298,8 +339,6 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
                 _dns = _dns.substr(1, _dns.length()-2);
             }
         }
-*/
-
 
         if (fgets(zw, 1024, pFile) == NULL)
         {
@@ -312,11 +351,6 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
     }
 
     fclose(pFile);
-
-    // Check if Hostname was empty in .ini if yes set to std_hostname
-    if(_hostname.length() <= 0){
-        _hostname = std_hostname;
-    }
 }
 
 
