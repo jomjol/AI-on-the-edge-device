@@ -1,5 +1,7 @@
 #include "ClassFlowControll.h"
 
+#include "connect_wlan.h"
+
 #include "freertos/task.h"
 
 #include <sys/stat.h>
@@ -19,28 +21,25 @@ static const char* TAG = "flow_controll";
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
-    if (_stepname.compare("[MakeImage]") == 0){
+    if ((_stepname.compare("[MakeImage]") == 0) || (_stepname.compare(";[MakeImage]") == 0)){
         _classname = "ClassFlowMakeImage";
     }
-    if (_stepname.compare("[Alignment]") == 0){
+    if ((_stepname.compare("[Alignment]") == 0) || (_stepname.compare(";[Alignment]") == 0)){
         _classname = "ClassFlowAlignment";
     }
-    if (_stepname.compare("[Digits]") == 0){
+    if ((_stepname.compare("[Digits]") == 0) || (_stepname.compare(";[Digits]") == 0)){
         _classname = "ClassFlowDigit";
     }
-    if (_stepname.compare("[Analog]") == 0){
+    if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
         _classname = "ClassFlowAnalog";
     }
-    if (_stepname.compare("[MQTT]") == 0){
+    if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
         _classname = "ClassFlowMQTT";
     }
-//    std::string zw = "Classname: " + _classname + "\n";
-//    printf(zw.c_str());
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
- //           printf(FlowControll[i]->name().c_str()); printf("\n");
-            FlowControll[i]->doFlow("");
+             FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
 
@@ -76,6 +75,8 @@ void ClassFlowControll::SetInitialParameter(void)
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
+    disabled = false;
+
 }
 
 bool ClassFlowControll::isAutoStart(long &_intervall)
@@ -356,9 +357,17 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             string zw = "Set TimeZone: " + zerlegt[1];
             reset_servername(zerlegt[1]);
-        }      
+        }  
 
-
+        if ((toUpper(zerlegt[0]) == "HOSTNAME") && (zerlegt.size() > 1))
+        {
+            if (ChangeHostName("/sdcard/wlan.ini", zerlegt[1]))
+            {
+                // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
+                fclose(pfile);
+                doReboot();
+            }
+        }
 
         if ((toUpper(zerlegt[0]) == "SETUPMODE") && (zerlegt.size() > 1))
         {
@@ -367,9 +376,6 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
                 SetupModeActive = true;
             }        
         }      
-
-
-
     }
     return true;
 }

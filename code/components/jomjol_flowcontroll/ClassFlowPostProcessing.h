@@ -34,7 +34,7 @@ protected:
     string RundeOutput(float _in, int _anzNachkomma);
 
 public:
-    ClassFlowPostProcessing();
+//    ClassFlowPostProcessing();
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc);
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);

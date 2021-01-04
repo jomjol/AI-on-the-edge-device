@@ -24,6 +24,8 @@ void ClassFlowAnalog::SetInitialParameter(void)
     ListFlowControll = NULL;
     previousElement = NULL;   
     SaveAllFiles = false; 
+    disabled = false;
+
 }   
 
 ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
@@ -89,8 +91,17 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[Analog]") != 0)       // Paragraph passt nich zu MakeImage
+    if ((aktparamgraph.compare("[Analog]") != 0) && (aktparamgraph.compare(";[Analog]") != 0))       // Paragraph passt nich zu MakeImage
         return false;
+
+    if (aktparamgraph[0] == ';')
+    {
+        disabled = true;
+        while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph));
+        printf("[Analog] is disabled !!!\n");
+        return true;
+    }
+
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
@@ -171,6 +182,9 @@ string ClassFlowAnalog::getHTMLSingleStep(string host)
 
 bool ClassFlowAnalog::doFlow(string time)
 {
+    if (disabled)
+      return true;
+
     if (!doAlignAndCut(time)){
         return false;
     };
@@ -186,6 +200,9 @@ bool ClassFlowAnalog::doFlow(string time)
 
 bool ClassFlowAnalog::doAlignAndCut(string time)
 {
+    if (disabled)
+        return true;
+
     CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();    
 
     for (int i = 0; i < ROI.size(); ++i)
@@ -219,6 +236,9 @@ void ClassFlowAnalog::DrawROI(CImageBasis *_zw)
 
 bool ClassFlowAnalog::doNeuralNetwork(string time)
 {
+    if (disabled)
+        return true;
+
     string logPath = CreateLogFolder(time);
     
     string input = "/sdcard/img_tmp/alg.jpg";

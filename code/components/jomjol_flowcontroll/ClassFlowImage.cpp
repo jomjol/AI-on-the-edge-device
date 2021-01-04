@@ -11,18 +11,22 @@ ClassFlowImage::ClassFlowImage(const char* logTag)
 {
 	this->logTag = logTag;
 	isLogImage = false;
+    disabled = false;
+
 }
 
 ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, const char* logTag) : ClassFlow(lfc)
 {
 	this->logTag = logTag;
 	isLogImage = false;
+    disabled = false;
 }
 
 ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, ClassFlow *_prev, const char* logTag) :  ClassFlow(lfc, _prev)
 {
 	this->logTag = logTag;
 	isLogImage = false;
+    disabled = false;
 }
 
 

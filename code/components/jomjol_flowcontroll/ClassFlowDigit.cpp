@@ -25,6 +25,8 @@ void ClassFlowDigit::SetInitialParameter(void)
     ListFlowControll = NULL;
     previousElement = NULL;    
     SaveAllFiles = false;
+    disabled = false;
+
 }    
 
 ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
@@ -87,10 +89,10 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[Digits]") != 0)       // Paragraph passt nich zu MakeImage
+    if (aktparamgraph.compare("[Digits]") != 0)       // Paragraph passt nicht
         return false;
 
-    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
+    while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] == "LogImageLocation") && (zerlegt.size() > 1))
