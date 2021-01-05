@@ -11,7 +11,7 @@
 
 bool AlignmentExtendedDebugging = true;
 
-#define DEBUG_DETAIL_ON  
+// #define DEBUG_DETAIL_ON  
 
 
 void ClassFlowAlignment::SetInitialParameter(void)

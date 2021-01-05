@@ -2,7 +2,7 @@
 
 #include "ClassLogFile.h"
 
-#define DEBUG_DETAIL_ON  
+// #define DEBUG_DETAIL_ON  
 
 
 bool CFindTemplate::FindTemplate(RefInfo *_ref)

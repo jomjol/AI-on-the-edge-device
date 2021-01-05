@@ -18,7 +18,7 @@
 
 #include "Helper.h"
 
-#define DEBUG_DETAIL_ON 
+// #define DEBUG_DETAIL_ON 
 
 esp_err_t handler_switch_GPIO(httpd_req_t *req)
 {
