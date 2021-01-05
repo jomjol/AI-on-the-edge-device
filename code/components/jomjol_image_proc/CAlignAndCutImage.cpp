@@ -1,6 +1,6 @@
 #include "CAlignAndCutImage.h"
 #include "CRotateImage.h"
-#include "CFindTemplate.h"
+#include "ClassLogFile.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -33,31 +33,33 @@ void CAlignAndCutImage::GetRefSize(int *ref_dx, int *ref_dy)
     ref_dy[1] = t1_dy;
 }
 
-void CAlignAndCutImage::Align(std::string _template0, int ref0_x, int ref0_y, std::string _template1, int ref1_x, int ref1_y, int deltax, int deltay, std::string imageROI)
+bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 {
     int dx, dy;
     int r0_x, r0_y, r1_x, r1_y;
+    bool isSimilar1, isSimilar2;
 
-//    CFindTemplate* ft = new CFindTemplate(filename);
     CFindTemplate* ft = new CFindTemplate(rgb_image, channels, width, height, bpp);
 
-    r0_x = ref0_x;
-    r0_y = ref0_y;
-    ft->FindTemplate(_template0, &r0_x, &r0_y, deltax, deltay);
-    t0_dx = ft->tpl_width;
-    t0_dy = ft->tpl_height;    
+    r0_x = _temp1->target_x;
+    r0_y = _temp1->target_y;
+    printf("Vor ft->FindTemplate(_temp1);  %s\n", _temp1->image_file.c_str());
+    isSimilar1 = ft->FindTemplate(_temp1);
+    _temp1->width = ft->tpl_width;
+    _temp1->height = ft->tpl_height; 
 
-    r1_x = ref1_x;
-    r1_y = ref1_y;
-    ft->FindTemplate(_template1, &r1_x, &r1_y, deltax, deltay);
-    t1_dx = ft->tpl_width;
-    t1_dy = ft->tpl_height;
+    r1_x = _temp2->target_x;
+    r1_y = _temp2->target_y;
+    printf("Vor ft->FindTemplate(_temp2);  %s\n", _temp2->image_file.c_str());
+    isSimilar2 = ft->FindTemplate(_temp2);
+    _temp2->width = ft->tpl_width;
+    _temp2->height = ft->tpl_height; 
 
     delete ft;
 
 
-    dx = ref0_x - r0_x;
-    dy = ref0_y - r0_y;
+    dx = _temp1->target_x - _temp1->found_x;
+    dy = _temp1->target_y - _temp1->found_y;
 
     r0_x += dx;
     r0_y += dy;
@@ -67,29 +69,29 @@ void CAlignAndCutImage::Align(std::string _template0, int ref0_x, int ref0_y, st
 
     float w_org, w_ist, d_winkel;
 
-    w_org = atan2(ref1_y - ref0_y, ref1_x - ref0_x);
+    w_org = atan2(_temp2->found_y - _temp1->found_y, _temp2->found_x - _temp1->found_x);
     w_ist = atan2(r1_y - r0_y, r1_x - r0_x);
 
-    d_winkel = (w_org - w_ist) * 180 / M_PI;
+    d_winkel = (w_ist - w_org) * 180 / M_PI;
 
-    if (imageROI.length() > 0)
-    {
-        CImageBasis* imgzw = new CImageBasis(this);
-        imgzw->drawRect(r0_x, r0_y, t0_dx, t0_dy, 255, 0, 0, 2);
-        imgzw->drawRect(r1_x, r1_y, t1_dx, t1_dy, 255, 0, 0, 2);
-        imgzw->SaveToFile(imageROI);
-        printf("Alignment: alignment ROI created: %s\n", imageROI.c_str());
-        delete imgzw;
-    }
-
+#ifdef DEBUG_DETAIL_ON
     std::string zw = "\tdx:\t" + std::to_string(dx) + "\tdy:\t" + std::to_string(dy) + "\td_winkel:\t" + std::to_string(d_winkel);
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
+    zw = zw + "\tt1_x_y:\t" + std::to_string(_temp1->found_x) + "\t" + std::to_string(_temp1->found_y);
+    zw = zw + "\tpara1_found_min_avg_max_SAD:\t" + std::to_string(_temp1->fastalg_min) + "\t" + std::to_string(_temp1->fastalg_avg) + "\t" + std::to_string(_temp1->fastalg_max) + "\t"+ std::to_string(_temp1->fastalg_SAD);
+    zw = zw + "\tt2_x_y:\t" + std::to_string(_temp2->found_x) + "\t" + std::to_string(_temp2->found_y);
+    zw = zw + "\tpara2_found_min_avg_max:\t" + std::to_string(_temp2->fastalg_min) + "\t" + std::to_string(_temp2->fastalg_avg) + "\t" + std::to_string(_temp2->fastalg_max) + "\t"+ std::to_string(_temp2->fastalg_SAD);
+    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
+#endif
 
     CRotateImage rt(this, ImageTMP);
     rt.Translate(dx, dy);
-    rt.Rotate(d_winkel, ref0_x, ref0_y);
+    rt.Rotate(d_winkel, _temp1->target_x, _temp1->target_y);
     printf("Alignment: dx %d - dy %d - rot %f\n", dx, dy, d_winkel);
+
+    return (isSimilar1 && isSimilar2);
 }
+
+
 
 
 

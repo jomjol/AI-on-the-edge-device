@@ -4,29 +4,31 @@
 
 #include "CRotateImage.h"
 
+
 #include "ClassLogFile.h"
 
 
 
 bool AlignmentExtendedDebugging = true;
 
+// #define DEBUG_DETAIL_ON  
+
 
 void ClassFlowAlignment::SetInitialParameter(void)
 {
     initalrotate = 0;
     anz_ref = 0;
-    suchex = 40;
-    suchey = 40;
     initialmirror = false;
     SaveAllFiles = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
+    FileStoreRefAlignment = "/sdcard/config/align.txt";
     ListFlowControll = NULL;
     AlignAndCutImage = NULL;
     ImageBasis = NULL;
     ImageTMP = NULL;
     previousElement = NULL;
-    ref_dx[0] = 0; ref_dx[1] = 0;
-    ref_dy[0] = 0; ref_dy[1] = 0;
+    disabled = false;
+    SAD_criteria = 0.05;
 }
 
 ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
@@ -53,6 +55,10 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> zerlegt;
+    int suchex = 40;
+    int suchey = 40;
+    int alg_algo = 0;
+
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -65,29 +71,29 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((zerlegt[0] == "InitialMirror") && (zerlegt.size() > 1))
+        zerlegt = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(zerlegt[0]) == "INITIALMIRROR") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 initialmirror = true;
         }
-        if (((zerlegt[0] == "InitalRotate") || (zerlegt[0] == "InitialRotate")) && (zerlegt.size() > 1))
+        if (((toUpper(zerlegt[0]) == "INITALROTATE") || (toUpper(zerlegt[0]) == "INITIALROTATE")) && (zerlegt.size() > 1))
         {
             this->initalrotate = std::stod(zerlegt[1]);
         }
-        if ((zerlegt[0] == "SearchFieldX") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "SEARCHFIELDX") && (zerlegt.size() > 1))
         {
-            this->suchex = std::stod(zerlegt[1]);
+            suchex = std::stod(zerlegt[1]);
         }   
-        if ((zerlegt[0] == "SearchFieldY") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "SEARCHFIELDY") && (zerlegt.size() > 1))
         {
-            this->suchey = std::stod(zerlegt[1]);
+            suchey = std::stod(zerlegt[1]);
         }               
         if ((zerlegt.size() == 3) && (anz_ref < 2))
         {
-            reffilename[anz_ref] = FormatFileName("/sdcard" + zerlegt[0]);
-            ref_x[anz_ref] = std::stod(zerlegt[1]);
-            ref_y[anz_ref] = std::stod(zerlegt[2]);
+            References[anz_ref].image_file = FormatFileName("/sdcard" + zerlegt[0]);
+            References[anz_ref].target_x = std::stod(zerlegt[1]);
+            References[anz_ref].target_y = std::stod(zerlegt[2]);
             anz_ref++;
         }
 
@@ -96,8 +102,33 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 SaveAllFiles = true;
         }
-
+        if ((toUpper(zerlegt[0]) == "ALIGNMENTALGO") && (zerlegt.size() > 1))
+        {
+#ifdef DEBUG_DETAIL_ON
+            std::string zw2 = "Alignmentmodus gewählt: " + zerlegt[1];
+            LogFile.WriteToFile(zw2);
+#endif
+            if (toUpper(zerlegt[1]) == "HIGHACCURACY")
+                alg_algo = 1;
+            if (toUpper(zerlegt[1]) == "FAST")
+                alg_algo = 2;
+        }
     }
+
+    for (int i = 0; i < anz_ref; ++i)
+    {
+        References[i].search_x = suchex;
+        References[i].search_y = suchey;
+        References[i].fastalg_SAD_criteria = SAD_criteria;
+        References[i].alignment_algo = alg_algo;
+#ifdef DEBUG_DETAIL_ON
+        std::string zw2 = "Alignmentmodus geschrieben: " + std::to_string(alg_algo);
+        LogFile.WriteToFile(zw2);
+#endif
+    }
+
+    LoadReferenceAlignmentValues();
+    
     return true;
 
 }
@@ -136,8 +167,11 @@ bool ClassFlowAlignment::doFlow(string time)
         if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
     }
 
-    AlignAndCutImage->Align(reffilename[0], ref_x[0], ref_y[0], reffilename[1], ref_x[1], ref_y[1], suchex, suchey, "");
-    AlignAndCutImage->GetRefSize(ref_dx, ref_dy);
+    if (!AlignAndCutImage->Align(&References[0], &References[1])) 
+    {
+        SaveReferenceAlignmentValues();
+    }
+
     if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/alg.jpg"));
 
     if (SaveAllFiles)
@@ -152,13 +186,138 @@ bool ClassFlowAlignment::doFlow(string time)
         ImageTMP = NULL;
     }  
 
+    LoadReferenceAlignmentValues();
+
     return true;
 }
 
 
+
+void ClassFlowAlignment::SaveReferenceAlignmentValues()
+{
+    FILE* pFile;
+    std::string zwtime, zwvalue;
+
+    pFile = fopen(FileStoreRefAlignment.c_str(), "w");
+
+    if (strlen(zwtime.c_str()) == 0)
+    {
+        time_t rawtime;
+        struct tm* timeinfo;
+        char buffer[80];
+
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+
+        strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
+        zwtime = std::string(buffer);
+    }
+
+    fputs(zwtime.c_str(), pFile);
+    fputs("\n", pFile);
+
+    zwvalue = std::to_string(References[0].fastalg_x) + "\t" + std::to_string(References[0].fastalg_y);
+    zwvalue = zwvalue + "\t" +std::to_string(References[0].fastalg_SAD)+ "\t" +std::to_string(References[0].fastalg_min); 
+    zwvalue = zwvalue + "\t" +std::to_string(References[0].fastalg_max)+ "\t" +std::to_string(References[0].fastalg_avg); 
+    fputs(zwvalue.c_str(), pFile);
+    fputs("\n", pFile);
+
+    zwvalue = std::to_string(References[1].fastalg_x) + "\t" + std::to_string(References[1].fastalg_y);
+    zwvalue = zwvalue + "\t" +std::to_string(References[1].fastalg_SAD)+ "\t" +std::to_string(References[1].fastalg_min); 
+    zwvalue = zwvalue + "\t" +std::to_string(References[1].fastalg_max)+ "\t" +std::to_string(References[1].fastalg_avg); 
+    fputs(zwvalue.c_str(), pFile);
+    fputs("\n", pFile);
+
+    fclose(pFile);
+}
+
+
+
+
+
+bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
+{
+    FILE* pFile;
+    char zw[1024];
+    string zwvalue;
+    std::vector<string> zerlegt;  
+
+
+//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues01");      
+
+    pFile = fopen(FileStoreRefAlignment.c_str(), "r");
+    if (pFile == NULL)
+        return false;
+
+//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues01");      
+
+    fgets(zw, 1024, pFile);
+    printf("%s", zw);
+
+//    zwvalue = "LoadReferenceAlignmentValues Time: " + std::string(zw);
+
+//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zwvalue);      
+
+//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues02");      
+
+    fgets(zw, 1024, pFile);
+    zerlegt = ZerlegeZeile(std::string(zw), " \t");
+    if (zerlegt.size() < 6)
+    {
+//        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "Exit 01");      
+        fclose(pFile);
+        return false;
+    }
+
+//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues03");      
+
+    References[0].fastalg_x = stoi(zerlegt[0]);
+    References[0].fastalg_y = stoi(zerlegt[1]);
+    References[0].fastalg_SAD = stof(zerlegt[2]);
+    References[0].fastalg_min = stoi(zerlegt[3]);
+    References[0].fastalg_max = stoi(zerlegt[4]);
+    References[0].fastalg_avg = stof(zerlegt[5]);
+
+    fgets(zw, 1024, pFile);
+    zerlegt = ZerlegeZeile(std::string(zw));
+    if (zerlegt.size() < 6)
+    {
+//        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "Exit 02");      
+        fclose(pFile);
+        return false;
+    }
+
+//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues03");      
+
+    References[1].fastalg_x = stoi(zerlegt[0]);
+    References[1].fastalg_y = stoi(zerlegt[1]);
+    References[1].fastalg_SAD = stof(zerlegt[2]);
+    References[1].fastalg_min = stoi(zerlegt[3]);
+    References[1].fastalg_max = stoi(zerlegt[4]);
+    References[1].fastalg_avg = stof(zerlegt[5]);
+
+    fclose(pFile);
+
+
+#ifdef DEBUG_DETAIL_ON  
+    std::string _zw = "\tLoadReferences[0]\tx,y:\t" + std::to_string(References[0].fastalg_x) + "\t" + std::to_string(References[0].fastalg_x);
+    _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[0].fastalg_SAD) + "\t" + std::to_string(References[0].fastalg_min);
+    _zw = _zw + "\t" + std::to_string(References[0].fastalg_max) + "\t" + std::to_string(References[0].fastalg_avg);
+    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
+    _zw = "\tLoadReferences[1]\tx,y:\t" + std::to_string(References[1].fastalg_x) + "\t" + std::to_string(References[1].fastalg_x);
+    _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[1].fastalg_SAD) + "\t" + std::to_string(References[1].fastalg_min);
+    _zw = _zw + "\t" + std::to_string(References[1].fastalg_max) + "\t" + std::to_string(References[1].fastalg_avg);
+    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
+#endif
+
+    return true;
+}
+
+
+
 void ClassFlowAlignment::DrawRef(CImageBasis *_zw)
 {
-    _zw->drawRect(ref_x[0], ref_y[0], ref_dx[0], ref_dy[0], 255, 0, 0, 2);
-    _zw->drawRect(ref_x[1], ref_y[1], ref_dx[1], ref_dy[1], 255, 0, 0, 2);
+    _zw->drawRect(References[0].target_x, References[0].target_y, References[0].width, References[0].height, 255, 0, 0, 2);
+    _zw->drawRect(References[1].target_x, References[1].target_y, References[1].width, References[1].height, 255, 0, 0, 2);
 }
 

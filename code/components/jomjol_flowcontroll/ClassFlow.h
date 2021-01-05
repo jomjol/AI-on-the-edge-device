@@ -27,7 +27,7 @@ class ClassFlow
 {
 protected:
 //	std::vector<string> ZerlegeZeile(string input);
-	std::vector<string> ZerlegeZeile(string input, string delimiter = " =, ");
+	std::vector<string> ZerlegeZeile(string input, string delimiter = " =, \t");
 	bool isNewParagraph(string input);
 	bool GetNextParagraph(FILE* pfile, string& aktparamgraph);
 	bool getNextLine(FILE* pfile, string* rt);
@@ -36,6 +36,8 @@ protected:
 	ClassFlow *previousElement;
 
 	virtual void SetInitialParameter(void);
+
+	bool disabled;
 
 public:
 	ClassFlow(void);

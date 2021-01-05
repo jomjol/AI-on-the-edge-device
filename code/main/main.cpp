@@ -140,6 +140,7 @@ extern "C" void app_main(void)
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
+    register_server_GPIO_uri(server);
     register_server_main_uri(server, "/sdcard");
 
     TFliteDoAutoStart();

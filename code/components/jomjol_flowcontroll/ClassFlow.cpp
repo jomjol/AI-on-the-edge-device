@@ -10,6 +10,7 @@ void ClassFlow::SetInitialParameter(void)
 {
 	ListFlowControll = NULL;
 	previousElement = NULL;	
+	disabled = false;
 }
 
 
@@ -39,16 +40,18 @@ std::vector<string> ClassFlow::ZerlegeZeile(std::string input, std::string delim
 
 bool ClassFlow::isNewParagraph(string input)
 {
-	if (input[0] == '[')
+	if ((input[0] == '[') || ((input[0] == ';') && (input[1] == '[')))
+	{
 		return true;
+	}
 	return false;
 }
 
 bool ClassFlow::GetNextParagraph(FILE* pfile, string& aktparamgraph)
 {
-	while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph));
+	while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
 
-	if (this->isNewParagraph(aktparamgraph))
+	if (isNewParagraph(aktparamgraph))
 		return true;
 	return false;
 }
@@ -108,7 +111,7 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 	}
 	*rt = zw;
 	*rt = trim(*rt);
-	while (zw[0] == ';' || zw[0] == '#' || (rt->size() == 0))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen
+	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph
 	{
 		fgets(zw, 1024, pfile);
 		printf("%s", zw);		

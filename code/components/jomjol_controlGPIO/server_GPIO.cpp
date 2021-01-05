@@ -18,7 +18,7 @@
 
 #include "Helper.h"
 
-#define DEBUG_DETAIL_ON 
+// #define DEBUG_DETAIL_ON 
 
 esp_err_t handler_switch_GPIO(httpd_req_t *req)
 {
@@ -61,46 +61,27 @@ esp_err_t handler_switch_GPIO(httpd_req_t *req)
 
     gpionum = stoi(gpio);
     
-    // frei: 16; 12-15; 2; 4
+    // frei: 16; 12-15; 2; 4  // nur 12 und 13 funktionieren 2: reboot, 4: BlitzLED, 14/15: DMA für SDKarte ???
 
     switch (gpionum) {
-        case 2:
-            gpio_num = GPIO_NUM_2;
-            break;
-        case 4:
-            gpio_num = GPIO_NUM_4;
-            break;
         case 12:
             gpio_num = GPIO_NUM_12;
             break;
         case 13:
             gpio_num = GPIO_NUM_13;
             break;
-        case 14:
-            gpio_num = GPIO_NUM_14;
-            break;
-        case 15:
-            gpio_num = GPIO_NUM_15;
-            break;
-        case 16:
-            gpio_num = (gpio_num_t) 16;
-            break;
         default:
-            zw = "GPIO" + std::to_string(gpionum) + " not support - only 2, 4, 12-16 free";
+            zw = "GPIO" + std::to_string(gpionum) + " not support - only 12 & 13 free";
             httpd_resp_sendstr_chunk(req, zw.c_str());
             httpd_resp_sendstr_chunk(req, NULL);          
             return ESP_OK;    
     }
 
-	// Init the GPIO
-    gpio_pad_select_gpio(gpio_num);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(gpio_num, GPIO_MODE_OUTPUT);  
-
     if (status == "HIGH")  
         gpio_set_level(gpio_num, 1);
     else
         gpio_set_level(gpio_num, 0); 
+
 
     zw = "GPIO" + std::to_string(gpionum) + " switched to " + status;
     httpd_resp_sendstr_chunk(req, zw.c_str());
@@ -108,6 +89,24 @@ esp_err_t handler_switch_GPIO(httpd_req_t *req)
     return ESP_OK;    
 };
 
+void initGPIO()
+{
+    gpio_config_t io_conf;
+    //disable interrupt
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    //set as output mode
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO18/19
+//    io_conf.pin_bit_mask = ((1ULL<<GPIO_OUTPUT_IO_0) | (1ULL<<GPIO_OUTPUT_IO_1));
+//    io_conf.pin_bit_mask = ((1ULL << GPIO_NUM_12) | (1ULL << GPIO_NUM_2) | (1ULL << GPIO_NUM_4) | (1ULL << GPIO_NUM_12) | (1ULL << GPIO_NUM_13) | (1ULL << GPIO_NUM_14) | (1ULL << GPIO_NUM_15));
+    io_conf.pin_bit_mask = ((1ULL << GPIO_NUM_12) | (1ULL << GPIO_NUM_13));
+    //disable pull-down mode
+    io_conf.pull_down_en = (gpio_pulldown_t) 0;
+    //disable pull-up mode
+    io_conf.pull_up_en = (gpio_pullup_t) 0;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+}
 
 
 void register_server_GPIO_uri(httpd_handle_t server)
@@ -120,4 +119,6 @@ void register_server_GPIO_uri(httpd_handle_t server)
     camuri.handler   = handler_switch_GPIO;
     camuri.user_ctx  = (void*) "switch GPIO";    
     httpd_register_uri_handler(server, &camuri);
+
+    initGPIO();
 }

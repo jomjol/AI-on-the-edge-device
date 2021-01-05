@@ -17,7 +17,9 @@ void ClassFlowMQTT::SetInitialParameter(void)
     user = "";
     password = "";   
     previousElement = NULL;
-    ListFlowControll = NULL;     
+    ListFlowControll = NULL; 
+    disabled = false;
+
 }       
 
 ClassFlowMQTT::ClassFlowMQTT()

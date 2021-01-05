@@ -119,7 +119,7 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
 }
 
 
-
+/*
 ClassFlowPostProcessing::ClassFlowPostProcessing()
 {
     PreValueUse = false;
@@ -133,8 +133,13 @@ ClassFlowPostProcessing::ClassFlowPostProcessing()
     checkDigitIncreaseConsistency = false;
     DecimalShift = 0;
     ErrorMessageText = "";
+    disabled = false;
+    disabled = false;
+
+
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
 }
+*/
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
 {

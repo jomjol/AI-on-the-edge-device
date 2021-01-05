@@ -33,6 +33,7 @@ void ClassFlowMakeImage::SetInitialParameter(void)
     rawImage = NULL;
     ImageSize = FRAMESIZE_VGA;
     SaveAllFiles = false;
+    disabled = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
 }     
 
