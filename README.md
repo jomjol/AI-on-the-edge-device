@@ -33,6 +33,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 ### Known Issues
 
 * slow response of web server during picture analysis
+* spontaneous reboots (mostly due to html access during image processing) - self recovery implemented
 
 ------
 
@@ -40,7 +41,15 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### Rolling - (2021-01-05)
+##### Rolling - (2021-01-17)
+
+* Disabling of digital counters implemented
+* Attention: do not disable digital and analog!
+* Bug fixing:
+
+  * Configuration of analog counters on html-page failed (enable/disable, undefined ROIs)
+
+2021-01-05
 
 * Configuration: simple enabling / disabling of analog counters 
 

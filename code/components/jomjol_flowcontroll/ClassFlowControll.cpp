@@ -76,6 +76,8 @@ void ClassFlowControll::SetInitialParameter(void)
     flowanalog = NULL;
     flowpostprocessing = NULL;
     disabled = false;
+    aktRunNr = 0;
+    aktstatus = "Startup";
 
 }
 
@@ -240,6 +242,21 @@ bool ClassFlowControll::doFlow(string time)
     aktstatus = zw_time + ": Flow is done";
     return result;
 }
+
+void ClassFlowControll::UpdateAktStatus(std::string _flow)
+{
+    aktstatus = gettimestring("%Y%m%d-%H%M%S");
+    aktstatus = aktstatus + "\t" + std::to_string(aktRunNr) + "\t";
+    
+    if (_flow == "ClassFlowMakeImage")
+        aktstatus = aktstatus + "Taking Raw Image";
+    else
+        if (_flow == "ClassFlowAlignment")
+            aktstatus = aktstatus + "Aligning Image";
+
+
+}
+
 
 string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false)
 {

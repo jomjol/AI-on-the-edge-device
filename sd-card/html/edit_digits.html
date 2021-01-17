@@ -55,7 +55,10 @@ th, td {
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-	<h2>Edit Digits</h2>
+    <h2><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'EnDisableDigits()' checked >
+        Edit Digits</h2>
+
+<div id="div1">
 
 	<table>
 	  <tr>
@@ -91,7 +94,9 @@ th, td {
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>	
 		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
 	  </tr>
-	</table>			 
+    </table>	
+    
+</div>
 			 
 	<table>
 	  <tr>
@@ -102,6 +107,7 @@ th, td {
 <script type="text/javascript" src="./gethost.js"></script> 
 <script type="text/javascript" src="./readconfig.js"></script>  
 <script type="text/javascript" src="./readconfigcommon.js"></script>  
+<script type="text/javascript" src="./jquery-3.5.1.min.js"></script>  
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -114,6 +120,41 @@ th, td {
             enhanceCon = false;
             lockAR = true;
             basepath = "http://192.168.178.26";
+
+
+function EnDisableDigits() {
+        isEnabled = document.getElementById("Category_Digits_enabled").checked;
+
+		$("#div2").attr("disabled", "disabled").off('click');
+        var x1=$("#div2").hasClass("disabledDiv");
+        
+        if (isEnabled)
+        {
+            $("#div2").removeClass("disabledDiv");
+        }
+        else
+        {
+            $("#div2").addClass("disabledDiv");
+        }
+		
+        sah1(document.getElementById("div1"), !isEnabled);
+        if (isEnabled)
+        {
+            UpdateROIs();
+        }
+}
+
+    function sah1(el, _target) {
+        try {
+            el.disabled = _target;
+        } catch (E) {}
+        if (el.childNodes && el.childNodes.length > 0) {
+            for (var x = 0; x < el.childNodes.length; x++) {
+                sah1(el.childNodes[x], _target);
+            }
+        }
+    }
+
 
 function onNameChange(){
     ROIInfo[aktindex]["name"] = document.getElementById("name").value;
@@ -173,7 +214,8 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    SaveROIToConfig(ROIInfo, "[Digits]", basepath);
+    _enabled = document.getElementById("Category_Digits_enabled").checked;
+    SaveROIToConfig(ROIInfo, "[Digits]", basepath, _enabled);
     UpdatePage();  
 }
 
@@ -231,7 +273,18 @@ function UpdateROIs(){
 function ParseIni(_basepath) {
     loadConfig(_basepath);
     ParseConfig();
+
+    document.getElementById("Category_Digits_enabled").checked = true;
     ROIInfo = getROIInfo("[Digits]");
+
+    if (!GetDigitsEnabled()) 
+    {
+        document.getElementById("Category_Digits_enabled").checked = false;
+        EnDisableDigits();
+        alert("Digital ROIs are disabled - please enable (Check box top left).\n");
+        return;
+    }
+
 
     UpdateROIs();
 }
@@ -288,22 +341,25 @@ function ParseIni(_basepath) {
         }  
 
 
-        function draw() {
+function draw() {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
-        lw = 4
-        context.lineWidth = lw;
-        context.strokeStyle = "#FF0000";
-        var x0 = parseInt(rect.startX) - parseInt(lw/2);
-        var y0 = parseInt(rect.startY) - parseInt(lw/2);
-        var dx = parseInt(rect.w) + parseInt(lw);
-        var dy = parseInt(rect.h) + parseInt(lw);
-        context.strokeRect(x0, y0, dx, dy);    
-        ROIInfo[aktindex]["x"] = rect.startX;       
-        ROIInfo[aktindex]["y"] = rect.startY;       
-        ROIInfo[aktindex]["dx"] = rect.w;       
-        ROIInfo[aktindex]["dy"] = rect.h;       
+        if (document.getElementById("Category_Digits_enabled").checked)
+        {
+            lw = 4
+            context.lineWidth = lw;
+            context.strokeStyle = "#FF0000";
+            var x0 = parseInt(rect.startX) - parseInt(lw/2);
+            var y0 = parseInt(rect.startY) - parseInt(lw/2);
+            var dx = parseInt(rect.w) + parseInt(lw);
+            var dy = parseInt(rect.h) + parseInt(lw);
+            context.strokeRect(x0, y0, dx, dy);    
+            ROIInfo[aktindex]["x"] = rect.startX;       
+            ROIInfo[aktindex]["y"] = rect.startY;       
+            ROIInfo[aktindex]["dx"] = rect.w;       
+            ROIInfo[aktindex]["dy"] = rect.h;       
+        }
     }
 
     function getCoords(elem) { // crossbrowser version

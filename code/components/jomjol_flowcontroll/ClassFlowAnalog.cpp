@@ -3,7 +3,7 @@
 #include <math.h>
 #include <iomanip>
 #include <sys/types.h>
-
+  
 // #define OHNETFLITE
 
 #ifndef OHNETFLITE
@@ -97,7 +97,7 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
     if (aktparamgraph[0] == ';')
     {
         disabled = true;
-        while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph));
+        while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
         printf("[Analog] is disabled !!!\n");
         return true;
     }

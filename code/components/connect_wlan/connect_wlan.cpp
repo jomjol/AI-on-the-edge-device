@@ -217,7 +217,7 @@ void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _net
     netmask = std::string(ip4addr_ntoa(&ip_info2.netmask));
     gw = std::string(ip4addr_ntoa(&ip_info2.gw));
 
-    vEventGroupDelete(wifi_event_group);
+//    vEventGroupDelete(wifi_event_group);
 }
 
 

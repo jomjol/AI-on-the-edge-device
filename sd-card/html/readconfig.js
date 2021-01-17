@@ -10,6 +10,8 @@ var analog = new Array(0);
 var initalrotate = new Object();
 var analogEnabled = false;
 var posAnalogHeader;
+var digitsEnabled = false;
+var posDigitsHeader;
 
 function MakeRefZW(zw, _basepath){
      url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=/img_tmp/ref_zw_org.jpg&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
@@ -96,6 +98,12 @@ function GetAnalogEnabled() {
      return analogEnabled;
 }
 
+
+function GetDigitsEnabled() {
+     return digitsEnabled;
+}
+
+
 function ParseConfigAnalog(_aktline){
      ++_aktline;
      analog.length = 0;
@@ -133,16 +141,19 @@ function getROIInfo(_typeROI){
 }
 
 function SaveROIToConfig(_ROIInfo, _typeROI, _basepath, _enabled){
+     if (_enabled) {
+          text = _typeROI;
+     }
+     else {
+          text = ";" + _typeROI;
+     }
+
      if (_typeROI == "[Digits]"){
+          config_split[posDigitsHeader] = text;
           targetROI = digit;
      }
+
      if (_typeROI == "[Analog]"){
-          if (_enabled) {
-               text = _typeROI;
-          }
-          else {
-               text = ";" + _typeROI;
-          }
           config_split[posAnalogHeader] = text;
           targetROI = analog;
      }
@@ -188,14 +199,18 @@ function ParseConfig() {
                continue;
           }
           if ((config_split[aktline].trim().toUpperCase() == "[DIGITS]") || (config_split[aktline].trim().toUpperCase() == ";[DIGITS]")){
+               posDigitsHeader = aktline;
+               if (config_split[aktline][0] == "[") {
+                    digitsEnabled = true;
+               }
                aktline = ParseConfigDigit(aktline);
                continue;
           }
 
           if ((config_split[aktline].trim().toUpperCase() == "[ANALOG]") || (config_split[aktline].trim().toUpperCase() == ";[ANALOG]")) {
+               posAnalogHeader = aktline;
                if (config_split[aktline][0] == "[") {
                     analogEnabled = true;
-                    posAnalogHeader = aktline;
                }
                aktline = ParseConfigAnalog(aktline);
                continue;

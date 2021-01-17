@@ -147,16 +147,20 @@ function EnDisableAnalog() {
             $("#div2").addClass("disabledDiv");
         }
 		
-        sah1(document.getElementById("div1"));
+        sah1(document.getElementById("div1"), !isEnabled);
+        if (isEnabled)
+        {
+            UpdateROIs();
+        }
 }
 
-    function sah1(el) {
+function sah1(el, _target) {
         try {
-            el.disabled = el.disabled ? false : true;
+            el.disabled = _target;
         } catch (E) {}
         if (el.childNodes && el.childNodes.length > 0) {
             for (var x = 0; x < el.childNodes.length; x++) {
-                sah1(el.childNodes[x]);
+                sah1(el.childNodes[x], _target);
             }
         }
     }
@@ -219,7 +223,7 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    _enabled = document.getElementById("index").checked;
+    _enabled = document.getElementById("Category_Analog_enabled").checked;
     SaveROIToConfig(ROIInfo, "[Analog]", basepath, _enabled);
     UpdatePage();  
 }
@@ -346,22 +350,25 @@ function ParseIni(_basepath) {
         }  
 
 
-        function draw() {
+    function draw() {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
-        lw = 4
-        context.lineWidth = lw;
-        context.strokeStyle = "#FF0000";
-        var x0 = parseInt(rect.startX) - parseInt(lw/2);
-        var y0 = parseInt(rect.startY) - parseInt(lw/2);
-        var dx = parseInt(rect.w) + parseInt(lw);
-        var dy = parseInt(rect.h) + parseInt(lw);
-        context.strokeRect(x0, y0, dx, dy);    
-        ROIInfo[aktindex]["x"] = rect.startX;       
-        ROIInfo[aktindex]["y"] = rect.startY;       
-        ROIInfo[aktindex]["dx"] = rect.w;       
-        ROIInfo[aktindex]["dy"] = rect.h;       
+        if (document.getElementById("Category_Analog_enabled").checked)
+        {
+            lw = 4
+            context.lineWidth = lw;
+            context.strokeStyle = "#FF0000";
+            var x0 = parseInt(rect.startX) - parseInt(lw/2);
+            var y0 = parseInt(rect.startY) - parseInt(lw/2);
+            var dx = parseInt(rect.w) + parseInt(lw);
+            var dy = parseInt(rect.h) + parseInt(lw);
+            context.strokeRect(x0, y0, dx, dy);    
+            ROIInfo[aktindex]["x"] = rect.startX;       
+            ROIInfo[aktindex]["y"] = rect.startY;       
+            ROIInfo[aktindex]["dx"] = rect.w;       
+            ROIInfo[aktindex]["dy"] = rect.h;       
+        }
     }
 
     function getCoords(elem) { // crossbrowser version

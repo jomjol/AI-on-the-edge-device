@@ -179,8 +179,10 @@ textarea {
 			</td>
 		</tr>
 
-		<tr class="expert"  id="ex4">
-			<td colspan="4" style="padding-left: 20px;"><h4>Digits</h4></td>
+
+		<tr id="Category_Digits_ex4">
+			<td colspan="4" style="padding-left: 20px;">
+				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >Digits</h4></td>
 		</tr> 
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
@@ -736,6 +738,7 @@ function ReadParameter(_param, _cat, _name, _optional, _select = false){
 
 function UpdateInput() {
 	document.getElementById("Category_Analog_enabled").checked = category["Analog"]["enabled"];
+	document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
@@ -787,6 +790,7 @@ function UpdateInput() {
 function ReadParameterAll()
 {
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
 
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
@@ -853,6 +857,7 @@ function FormatDecimalValue(_param, _cat, _name) {
 function UpdateAfterCategoryCheck() {
 	ReadParameterAll();
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	UpdateInput();
 }
 

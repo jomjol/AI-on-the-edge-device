@@ -40,6 +40,6 @@ public:
    	std::vector<HTMLInfo*> GetHTMLInfo();   
     int AnzahlROIs(){return ROI.size();}; 
 
-    string name(){return "ClassFlowAnalog";};
+    string name(){return "ClassFlowAnalog";}; 
 };
 

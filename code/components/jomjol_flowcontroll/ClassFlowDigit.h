@@ -23,7 +23,7 @@ protected:
     bool SaveAllFiles;
 
     ClassFlowAlignment* flowpostalignment;
-
+ 
     bool doNeuralNetwork(string time); 
     bool doAlignAndCut(string time); 
 
