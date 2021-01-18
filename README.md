@@ -41,7 +41,12 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### Rolling - (2021-01-17)
+##### Rolling - (2021-01-18)
+
+* New Feature `ExtendedResolution` uses the after comma digit of the last analog counter to increase precision by one digit. 
+  This can only be activated in expert mode.
+
+2021-01-17
 
 * Disabling of digital counters implemented
 * Attention: do not disable digital and analog!

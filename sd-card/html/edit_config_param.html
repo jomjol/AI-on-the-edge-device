@@ -194,7 +194,7 @@ textarea {
 				<input type="text" id="Digits_Model_value1">
 			</td>
 			<td style="font-size: 80%;">
-				path to CNN model file for image recognition (in seconds)
+				path to CNN model file for image recognition
 			</td>
 		</tr>
 		<tr>
@@ -248,7 +248,7 @@ textarea {
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td width="200px"> <class id="Analog_Model_text" style="color:black;">Model</class> </td>
 			<td> <input type="text" id="Analog_Model_value1"> </td>
-			<td style="font-size: 80%;"> path to CNN model file for image recognition (in seconds) </td>
+			<td style="font-size: 80%;"> path to CNN model file for image recognition</td>
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
@@ -266,6 +266,28 @@ textarea {
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
 			<td style="font-size: 80%;"> Time to keep the separated digit images (in days -"0" = forever) </td>
 		</tr>
+
+		<tr class="expert"  id="Analog_ExtendedResolution_ex10">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Analog_ExtendedResolution_enabled" value="1"  onclick = 'document.getElementById("Analog_ExtendedResolution_value1").disabled = !document.getElementById("Analog_ExtendedResolution_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="Analog_ExtendedResolution_text" style="color:black;">ExtendedResolution</class>
+			</td>
+			<td>
+				<select id="Analog_ExtendedResolution_value1">
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable to use the after point resolution for the last analog counter
+			</td>
+		</tr>
+
+
+		ExtendedResolution
+
 		<tr class="expert"  id="ex10">
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
@@ -759,6 +781,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "Analog", "Model", false);		
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
+	WriteParameter(param, category, "Analog", "ExtendedResolution", true, true);		
 	WriteParameter(param, category, "Analog", "ModelInputSize", false, false, 2);		
 	
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true);		
@@ -811,6 +834,7 @@ function ReadParameterAll()
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
+	ReadParameter(param, "Analog", "ExtendedResolution", true, true);		
 	ReadParameter(param, "Analog", "ModelInputSize", false, false, 2);
 
 	ReadParameter(param, "PostProcessing", "DecimalShift", true);		

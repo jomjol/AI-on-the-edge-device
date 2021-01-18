@@ -54,6 +54,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);
+     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 

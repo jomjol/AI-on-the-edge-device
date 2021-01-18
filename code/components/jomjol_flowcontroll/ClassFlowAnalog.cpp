@@ -25,7 +25,7 @@ void ClassFlowAnalog::SetInitialParameter(void)
     previousElement = NULL;   
     SaveAllFiles = false; 
     disabled = false;
-
+    extendedResolution = false;
 }   
 
 ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
@@ -44,15 +44,40 @@ ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(
 }
 
 
+int ClassFlowAnalog::AnzahlROIs()
+{
+    int zw = ROI.size();
+    if (extendedResolution)
+        zw++;
+    
+    return zw;
+} 
+
+
 string ClassFlowAnalog::getReadout()
 {
+    string result = "";    
+    if (ROI.size() == 0)
+        return result;
+
+
+    float zahl = ROI[ROI.size() - 1]->result;
+    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+
     int prev = -1;
-    string result = "";
-    for (int i = ROI.size() - 1; i >= 0; --i)
+
+    prev = ZeigerEval(ROI[ROI.size() - 1]->result, prev);
+    result = std::to_string(prev);
+
+    if (extendedResolution)
+        result = result + std::to_string(ergebnis_nachkomma);
+
+    for (int i = ROI.size() - 2; i >= 0; --i)
     {
         prev = ZeigerEval(ROI[i]->result, prev);
         result = std::to_string(prev) + result;
     }
+
     return result;
 }
 
@@ -142,6 +167,12 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 SaveAllFiles = true;
+        }
+
+        if ((toUpper(zerlegt[0]) == "EXTENDEDRESOLUTION") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                extendedResolution = true;
         }
     }
 
