@@ -9,10 +9,13 @@ private:
     std::string logfile;
     bool doLogFile;
     unsigned short retentionInDays;
+    int loglevel;
 public:
     ClassLogFile(std::string _logpath, std::string _logfile);
 
     std::string getESPHeapInfo();
+
+    void setLogLevel(int i){loglevel = i;};
 
     void WriteHeapInfo(std::string _id);
 

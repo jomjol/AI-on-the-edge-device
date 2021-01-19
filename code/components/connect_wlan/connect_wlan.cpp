@@ -314,6 +314,8 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
         printf("%s", line.c_str());
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
+        for (int i = 2; i < zerlegt.size(); ++i)
+            zerlegt[i] = zerlegt[i-1] + zerlegt[i];
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
             _hostname = trim(zerlegt[1]);

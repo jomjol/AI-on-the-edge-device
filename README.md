@@ -41,7 +41,13 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### Rolling - (2021-01-18)
+##### Rolling - (2021-01-19)
+
+* Improvement for wlan password: additionally now "`=`" is possible in the password or wlan-name
+  
+* Reduction of log file info (removal of memory information)
+
+2021-01-18
 
 * New Feature `ExtendedResolution` uses the after comma digit of the last analog counter to increase precision by one digit. 
   This can only be activated in expert mode.
