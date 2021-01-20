@@ -160,9 +160,29 @@ textarea {
 				y size (height) in which the reference is searched (default = "20") 
 			</td>
 		</tr>
+		<tr class="expert"  id="AlignmentAlgo_ex8">
+			<td  width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'document.getElementById("Alignment_AlignmentAlgo_value1").disabled = !document.getElementById("Alignment_AlignmentAlgo_value1").disabled' unchecked >
+			</td>
+			<td>
+				<class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class>
+			</td>
+			<td>
+				<select id="Alignment_AlignmentAlgo_value1">
+					<option value="0" selected>Default</option>
+					<option value="1" >HighAccurity</option>
+					<option value="2" >Fast</option>
+				</select>
+				</td>
+			<td style="font-size: 80%;">
+				"Default" = use only R-Channel, "HighAccurity" = use all Channels (RGB, 3x slower), <br> "Fast" (First time RGB, then only check if image is shifted) 
+			</td>
+		</tr>
 
-		<tr class="expert"  id="ex4">
-			<td colspan="4" style="padding-left: 20px;"><h4>Digits</h4></td>
+
+		<tr id="Category_Digits_ex4">
+			<td colspan="4" style="padding-left: 20px;">
+				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >Digits</h4></td>
 		</tr> 
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
@@ -174,7 +194,7 @@ textarea {
 				<input type="text" id="Digits_Model_value1">
 			</td>
 			<td style="font-size: 80%;">
-				path to CNN model file for image recognition (in seconds)
+				path to CNN model file for image recognition
 			</td>
 		</tr>
 		<tr>
@@ -221,62 +241,61 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="ex4">
-			<td colspan="4" style="padding-left: 20px;"><h4>Analog</h4></td>
+			<td colspan="4" style="padding-left: 20px;">
+				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > Analog</h4></td>
 		</tr> 
 		<tr>
-			<td width="20px"  style="padding-left: 40px;">
-			</td>
-			<td  width="200px">
-				<class id="Analog_Model_text" style="color:black;">Model</class>
-			</td>
-			<td>
-				<input type="text" id="Analog_Model_value1">
-			</td>
-			<td style="font-size: 80%;">
-				path to CNN model file for image recognition (in seconds)
-			</td>
+			<td width="20px"  style="padding-left: 40px;"> </td>
+			<td width="200px"> <class id="Analog_Model_text" style="color:black;">Model</class> </td>
+			<td> <input type="text" id="Analog_Model_value1"> </td>
+			<td style="font-size: 80%;"> path to CNN model file for image recognition</td>
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Analog_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("Analog_LogImageLocation_value1").disabled = !document.getElementById("Analog_LogImageLocation_value1").disabled' unchecked >
 			</td>
-			<td>
-				<class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class>
-			</td>
-			<td>
-				<input type="text" name="name" id="Analog_LogImageLocation_value1">
-			</td>
-			<td style="font-size: 80%;">
-				Location to store separated digits for logging
-			</td>
+			<td> <class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class> </td>
+			<td> <input type="text" name="name" id="Analog_LogImageLocation_value1"> </td>
+			<td style="font-size: 80%;"> Location to store separated digits for logging </td>
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
 				<td"><input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Analog_LogfileRetentionInDays_value1").disabled = !document.getElementById("Analog_LogfileRetentionInDays_value1").disabled' unchecked ></td>
 			</td>
-			<td>
-				<class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			<td> <class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class> </td>
+			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
+			<td style="font-size: 80%;"> Time to keep the separated digit images (in days -"0" = forever) </td>
+		</tr>
+
+		<tr class="expert"  id="Analog_ExtendedResolution_ex10">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Analog_ExtendedResolution_enabled" value="1"  onclick = 'document.getElementById("Analog_ExtendedResolution_value1").disabled = !document.getElementById("Analog_ExtendedResolution_value1").disabled' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="Analog_ExtendedResolution_text" style="color:black;">ExtendedResolution</class>
 			</td>
 			<td>
-				<input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1">
+				<select id="Analog_ExtendedResolution_value1">
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
+				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Time to keep the separated digit images (in days -"0" = forever)
+				Enable to use the after point resolution for the last analog counter
 			</td>
 		</tr>
+
+
+		ExtendedResolution
+
 		<tr class="expert"  id="ex10">
-			<td width="20px"  style="padding-left: 40px;">
-			</td>
-			<td>
-				<class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class>
-			</td>
+			<td width="20px"  style="padding-left: 40px;"> </td>
+			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
 			<td>
 				x: <input type="number" id="Analog_ModelInputSize_value1" style="width: 30px;" min="1" step="1">
 				y: <input type="number" id="Analog_ModelInputSize_value2" style="width: 30px;" min="1" step="1">
 			</td>
-			<td style="font-size: 80%;">
-				Size of the input image for the CNN model
-			</td>
+			<td style="font-size: 80%;"> Size of the input image for the CNN model </td>
 		</tr>
 
 		<tr>
@@ -394,7 +413,7 @@ textarea {
 		</tr>
 
 		<tr>
-			<td colspan="4" style="padding-left: 20px;"><h4>MQTT</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > MQTT</h4></td>
 		</tr> 		
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
@@ -468,7 +487,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'document.getElementById("MQTT_password_value1").disabled = !document.getElementById("MQTT_password_value1").disabled' checked >
+				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'document.getElementById("MQTT_password_value1").disabled = !document.getElementById("MQTT_password_value1").disabled' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_password_text" style="color:black;">password</class>
@@ -582,6 +601,21 @@ textarea {
 				Time server to synchronize system time (default: "pool.ntp.org" - used if nothing is specified)
 			</td>
 		</tr>
+		<tr class="expert"  id="System_Hostname">
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'document.getElementById("System_Hostname_value1").disabled = !document.getElementById("System_Hostname_value1").disabled' unchecked ></td>
+			</td>
+			<td>
+				<class id="System_Hostname_text" style="color:black;">Hostname</class>
+			</td>
+			<td>
+				<input type="text" id="System_Hostname_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Hostname for server - will be transfered to wlan.ini at next startup)
+			</td>
+		</tr>
+
 	</table>
 
 	<p>
@@ -597,12 +631,14 @@ textarea {
 </div>
 
 <script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>  
 <script type="text/javascript" src="./readconfigparam.js"></script>  
  
 <script type="text/javascript">
 	var canvas = document.getElementById('canvas'),
 		basepath = "http://192.168.178.22"; 
 		param;
+		category;
 
 
 function LoadConfigNeu() {
@@ -613,12 +649,14 @@ function LoadConfigNeu() {
 	} 
 	loadConfig(basepath); 
 	ParseConfig();	
+	param = getConfigParameters();
+	category = getConfigCategory();	
 	UpdateInput();
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
 	}
 
-function WriteParameter(_param, _cat, _name, _optional, _select = false, _anzpara = 1){
+function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
 	if (_param[_cat][_name]["found"]){
 		if (_optional) {
 			document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
@@ -654,6 +692,52 @@ function WriteParameter(_param, _cat, _name, _optional, _select = false, _anzpar
 		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
 	}
 
+
+	///////////////// am Ende, falls Kategorie als gesamtes nicht ausgewählt --> deaktivieren
+	if (_category[_cat]["enabled"] == false) 
+	{
+		if (_optional) {
+			document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
+			for (var j = 1; j <= _anzpara; ++j) {
+				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
+			}	
+		}
+		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
+	}
+	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional);
+}
+
+function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
+{
+	_status = _param[_cat][_name]["found"] && _category[_cat]["enabled"];
+
+	_color = "color:lightgrey;";
+	if (_status) {
+		_color = "color:black;";
+	}
+
+	if (_optional) {
+		document.getElementById(_cat+"_"+_name+"_enabled").disabled = !_status;
+		document.getElementById(_cat+"_"+_name+"_enabled").style=_color;	
+	}
+
+	if (!_param[_cat][_name]["enabled"]) {
+		_status = false;
+		_color = "color:lightgrey;";
+	}
+
+	document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
+	document.getElementById(_cat+"_"+_name+"_text").style = _color;
+
+	if (_param[_cat][_name]["anzParam"] == 2) {
+		_color = "width: 30px;" + _color;
+	}
+
+	for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+			document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
+			document.getElementById(_cat+"_"+_name+"_value"+j).style=_color;	
+	}
+
 }
 
 
@@ -667,7 +751,7 @@ function ReadParameter(_param, _cat, _name, _optional, _select = false){
 			_param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
 		}
 		else {
-			for (var j = 1; j <= _param[_cat][_name]["anzpara"]; ++j) {
+			for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
 				_param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
 			}
 		}
@@ -675,52 +759,63 @@ function ReadParameter(_param, _cat, _name, _optional, _select = false){
 }
 
 function UpdateInput() {
-	param = getConfigParameters();
-	WriteParameter(param, "MakeImage", "LogImageLocation", true);
-	WriteParameter(param, "MakeImage", "LogfileRetentionInDays", true);
-	WriteParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
-	WriteParameter(param, "MakeImage", "ImageQuality", false);		
-	WriteParameter(param, "MakeImage", "ImageSize", false, true, true);		
+	document.getElementById("Category_Analog_enabled").checked = category["Analog"]["enabled"];
+	document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
+	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
 
-	WriteParameter(param, "Alignment", "SearchFieldX", false);		
-	WriteParameter(param, "Alignment", "SearchFieldY", false);		
+	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
+	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
+	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
+	WriteParameter(param, category, "MakeImage", "ImageSize", false, true, true);		
 
-	WriteParameter(param, "Digits", "Model", false);		
-	WriteParameter(param, "Digits", "LogImageLocation", false);		
-	WriteParameter(param, "Digits", "LogfileRetentionInDays", false);		
-	WriteParameter(param, "Digits", "ModelInputSize", false, false, 2);	
+	WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
+	WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
+	WriteParameter(param, category, "Alignment", "AlignmentAlgo", true, true, true);		
+
+	WriteParameter(param, category, "Digits", "Model", false);		
+	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
+	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
+	WriteParameter(param, category, "Digits", "ModelInputSize", false, false, 2);	
 	
-	WriteParameter(param, "Analog", "Model", false);		
-	WriteParameter(param, "Analog", "LogImageLocation", false);		
-	WriteParameter(param, "Analog", "LogfileRetentionInDays", false);		
-	WriteParameter(param, "Analog", "ModelInputSize", false, false, 2);		
+	WriteParameter(param, category, "Analog", "Model", false);		
+	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
+	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
+	WriteParameter(param, category, "Analog", "ExtendedResolution", true, true);		
+	WriteParameter(param, category, "Analog", "ModelInputSize", false, false, 2);		
 	
-	WriteParameter(param, "PostProcessing", "DecimalShift", true);		
-	WriteParameter(param, "PostProcessing", "PreValueUse", true, true);		
-	WriteParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-	WriteParameter(param, "PostProcessing", "AllowNegativeRates", true, true);
-	WriteParameter(param, "PostProcessing", "MaxRateValue", true);		
-	WriteParameter(param, "PostProcessing", "ErrorMessage", true, true);
-	WriteParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
+	WriteParameter(param, category, "PostProcessing", "DecimalShift", true);		
+	WriteParameter(param, category, "PostProcessing", "PreValueUse", true, true);		
+	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, true);
+	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true);		
+	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true, true);
+	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
 
-	WriteParameter(param, "MQTT", "Uri", true);	
-	WriteParameter(param, "MQTT", "Topic", true);	
-	WriteParameter(param, "MQTT", "TopicError", true);	
-	WriteParameter(param, "MQTT", "ClientID", true);	
-	WriteParameter(param, "MQTT", "user", true);	
-	WriteParameter(param, "MQTT", "password", true);	
+	WriteParameter(param, category, "MQTT", "Uri", true);	
+	WriteParameter(param, category, "MQTT", "Topic", true);	
+	WriteParameter(param, category, "MQTT", "TopicError", true);	
+	WriteParameter(param, category, "MQTT", "ClientID", true);	
+	WriteParameter(param, category, "MQTT", "user", true);	
+	WriteParameter(param, category, "MQTT", "password", true);	
 
-	WriteParameter(param, "AutoTimer", "AutoStart", true, true);	
-	WriteParameter(param, "AutoTimer", "Intervall", true);	
+	WriteParameter(param, category, "AutoTimer", "AutoStart", true, true);	
+	WriteParameter(param, category, "AutoTimer", "Intervall", true);	
 
-	WriteParameter(param, "Debug", "Logfile", true, true);	
-	WriteParameter(param, "Debug", "LogfileRetentionInDays", true);	
+	WriteParameter(param, category, "Debug", "Logfile", true, true);	
+	WriteParameter(param, category, "Debug", "LogfileRetentionInDays", true);	
 
-	WriteParameter(param, "System", "TimeZone", true);	
-	WriteParameter(param, "System", "TimeServer", true);	
+	WriteParameter(param, category, "System", "TimeZone", true);	
+	WriteParameter(param, category, "System", "Hostname", true);	
+	WriteParameter(param, category, "System", "TimeServer", true);	
 }
 
-function WriteConfig(){
+function ReadParameterAll()
+{
+	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
+	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
+
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
 	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
@@ -728,7 +823,8 @@ function WriteConfig(){
 	ReadParameter(param, "MakeImage", "ImageSize", false, true);	
 
 	ReadParameter(param, "Alignment", "SearchFieldX", false);		
-	ReadParameter(param, "Alignment", "SearchFieldY", false);	
+	ReadParameter(param, "Alignment", "SearchFieldY", false);
+	ReadParameter(param, "Alignment", "AlignmentAlgo", true, true);
 
 	ReadParameter(param, "Digits", "Model", false);		
 	ReadParameter(param, "Digits", "LogImageLocation", true);		
@@ -738,6 +834,7 @@ function WriteConfig(){
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
+	ReadParameter(param, "Analog", "ExtendedResolution", true, true);		
 	ReadParameter(param, "Analog", "ModelInputSize", false, false, 2);
 
 	ReadParameter(param, "PostProcessing", "DecimalShift", true);		
@@ -762,19 +859,30 @@ function WriteConfig(){
 	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	
 
 	ReadParameter(param, "System", "TimeZone", true);	
+	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true);	
 	
 	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
+}
 
-	return setConfigParameters(param);
+function WriteConfig(){
+	ReadParameterAll();
+	return setConfigParameters(param, category);
 }
 
 function FormatDecimalValue(_param, _cat, _name) {
-	for (var j = 1; j <= _param[_cat][_name]["anzpara"]; ++j) {
+	for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
 		var _val = _param[_cat][_name]["value"+j];
 		_val = _val.replace(",", ".");
 		_param[_cat][_name]["value"+j] = _val;
 	}
+}
+
+function UpdateAfterCategoryCheck() {
+	ReadParameterAll();
+	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
+	UpdateInput();
 }
 
 function UpdateExpertModus()

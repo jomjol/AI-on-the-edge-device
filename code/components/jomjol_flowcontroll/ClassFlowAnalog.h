@@ -21,11 +21,14 @@ protected:
     int ZeigerEval(float zahl, int ziffer_vorgaenger);
     bool SaveAllFiles;    
 
+
     ClassFlowAlignment* flowpostalignment;
 
 	void SetInitialParameter(void);        
 
 public:
+    bool extendedResolution;
+
     ClassFlowAnalog(std::vector<ClassFlow*>* lfc);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
@@ -38,8 +41,8 @@ public:
     bool doNeuralNetwork(string time); 
     bool doAlignAndCut(string time);
    	std::vector<HTMLInfo*> GetHTMLInfo();   
-    int AnzahlROIs(){return ROI.size();}; 
+    int AnzahlROIs(); 
 
-    string name(){return "ClassFlowAnalog";};
+    string name(){return "ClassFlowAnalog";}; 
 };
 

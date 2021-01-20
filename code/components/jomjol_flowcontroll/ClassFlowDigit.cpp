@@ -25,6 +25,8 @@ void ClassFlowDigit::SetInitialParameter(void)
     ListFlowControll = NULL;
     previousElement = NULL;    
     SaveAllFiles = false;
+    disabled = false;
+
 }    
 
 ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
@@ -83,14 +85,22 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0)
-        if (!this->GetNextParagraph(pfile, aktparamgraph))
+        if (!this->GetNextParagraph(pfile, aktparamgraph)) 
             return false;
 
-
-    if (aktparamgraph.compare("[Digits]") != 0)       // Paragraph passt nich zu MakeImage
+    if ((aktparamgraph.compare("[Digits]") != 0) && (aktparamgraph.compare(";[Digits]") != 0))       // Paragraph passt nich zu MakeImage
         return false;
 
-    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
+    if (aktparamgraph[0] == ';')
+    {
+        disabled = true;
+        while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
+        printf("[Digits] is disabled !!!\n");
+        return true;
+    }
+
+
+    while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] == "LogImageLocation") && (zerlegt.size() > 1))
@@ -167,6 +177,9 @@ string ClassFlowDigit::getHTMLSingleStep(string host)
 
 bool ClassFlowDigit::doFlow(string time)
 {
+    if (disabled)
+        return true;
+        
     if (!doAlignAndCut(time)){
         return false;
     };
@@ -180,6 +193,9 @@ bool ClassFlowDigit::doFlow(string time)
 
 bool ClassFlowDigit::doAlignAndCut(string time)
 {
+    if (disabled)
+        return true;
+
     CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();
 
     for (int i = 0; i < ROI.size(); ++i)
@@ -198,6 +214,9 @@ bool ClassFlowDigit::doAlignAndCut(string time)
 
 bool ClassFlowDigit::doNeuralNetwork(string time)
 {
+    if (disabled)
+        return true;
+            
     string logPath = CreateLogFolder(time);
 
 #ifndef OHNETFLITE

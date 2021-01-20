@@ -28,6 +28,9 @@ protected:
 	bool SetupModeActive;
 	void SetInitialParameter(void);	
 	std::string aktstatus;
+	int aktRunNr;
+
+	void UpdateAktStatus(std::string _flow);
 
 public:
 	void InitFlow(std::string config);

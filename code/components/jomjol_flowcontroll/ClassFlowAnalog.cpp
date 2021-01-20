@@ -3,7 +3,7 @@
 #include <math.h>
 #include <iomanip>
 #include <sys/types.h>
-
+  
 // #define OHNETFLITE
 
 #ifndef OHNETFLITE
@@ -24,6 +24,8 @@ void ClassFlowAnalog::SetInitialParameter(void)
     ListFlowControll = NULL;
     previousElement = NULL;   
     SaveAllFiles = false; 
+    disabled = false;
+    extendedResolution = false;
 }   
 
 ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
@@ -42,15 +44,40 @@ ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(
 }
 
 
+int ClassFlowAnalog::AnzahlROIs()
+{
+    int zw = ROI.size();
+    if (extendedResolution)
+        zw++;
+    
+    return zw;
+} 
+
+
 string ClassFlowAnalog::getReadout()
 {
+    string result = "";    
+    if (ROI.size() == 0)
+        return result;
+
+
+    float zahl = ROI[ROI.size() - 1]->result;
+    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+
     int prev = -1;
-    string result = "";
-    for (int i = ROI.size() - 1; i >= 0; --i)
+
+    prev = ZeigerEval(ROI[ROI.size() - 1]->result, prev);
+    result = std::to_string(prev);
+
+    if (extendedResolution)
+        result = result + std::to_string(ergebnis_nachkomma);
+
+    for (int i = ROI.size() - 2; i >= 0; --i)
     {
         prev = ZeigerEval(ROI[i]->result, prev);
         result = std::to_string(prev) + result;
     }
+
     return result;
 }
 
@@ -89,8 +116,17 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[Analog]") != 0)       // Paragraph passt nich zu MakeImage
+    if ((aktparamgraph.compare("[Analog]") != 0) && (aktparamgraph.compare(";[Analog]") != 0))       // Paragraph passt nich zu MakeImage
         return false;
+
+    if (aktparamgraph[0] == ';')
+    {
+        disabled = true;
+        while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
+        printf("[Analog] is disabled !!!\n");
+        return true;
+    }
+
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
@@ -132,6 +168,12 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 SaveAllFiles = true;
         }
+
+        if ((toUpper(zerlegt[0]) == "EXTENDEDRESOLUTION") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                extendedResolution = true;
+        }
     }
 
     for (int i = 0; i < ROI.size(); ++i)
@@ -171,6 +213,9 @@ string ClassFlowAnalog::getHTMLSingleStep(string host)
 
 bool ClassFlowAnalog::doFlow(string time)
 {
+    if (disabled)
+      return true;
+
     if (!doAlignAndCut(time)){
         return false;
     };
@@ -186,6 +231,9 @@ bool ClassFlowAnalog::doFlow(string time)
 
 bool ClassFlowAnalog::doAlignAndCut(string time)
 {
+    if (disabled)
+        return true;
+
     CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();    
 
     for (int i = 0; i < ROI.size(); ++i)
@@ -219,6 +267,9 @@ void ClassFlowAnalog::DrawROI(CImageBasis *_zw)
 
 bool ClassFlowAnalog::doNeuralNetwork(string time)
 {
+    if (disabled)
+        return true;
+
     string logPath = CreateLogFolder(time);
     
     string input = "/sdcard/img_tmp/alg.jpg";

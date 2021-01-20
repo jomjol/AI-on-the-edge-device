@@ -3,6 +3,7 @@
 #include "ClassFlow.h"
 #include "Helper.h"
 #include "CAlignAndCutImage.h"
+#include "CFindTemplate.h"
 
 #include <string>
 
@@ -14,16 +15,17 @@ class ClassFlowAlignment :
 protected:
     float initalrotate;
     bool initialmirror;
-    string reffilename[2];
-    int ref_x[2], ref_y[2];
-    int ref_dx[2], ref_dy[2];
+    RefInfo References[2];
     int anz_ref;
-    int suchex, suchey;
     string namerawimage;
     bool SaveAllFiles;
     CAlignAndCutImage *AlignAndCutImage;
+    std::string FileStoreRefAlignment;
+    float SAD_criteria;
 
     void SetInitialParameter(void);
+    bool LoadReferenceAlignmentValues(void);
+    void SaveReferenceAlignmentValues();
 
 public:
     CImageBasis *ImageBasis, *ImageTMP;

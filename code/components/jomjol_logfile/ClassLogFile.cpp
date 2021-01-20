@@ -12,8 +12,10 @@ ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt");
 
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
-    std::string _zw;
-    _zw = "\t" + _id + "\t" + getESPHeapInfo();
+std::string _zw = "\t" + _id;
+    if (loglevel > 0)
+        _zw =  _zw + "\t" + getESPHeapInfo();
+
     WriteToFile(_zw);
 }
 
@@ -188,4 +190,5 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile)
     logfile =  _logfile;
     doLogFile = true;
     retentionInDays = 10;
+    loglevel = 0;
 }

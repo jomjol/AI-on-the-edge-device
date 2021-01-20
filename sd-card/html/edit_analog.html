@@ -49,13 +49,26 @@ select {
 th, td {
   padding: 5px 5px 5px 0px;
 }
+
+#div2{
+  background-color:#777;
+  margin-bottom:20px;
+}
+.disabledDiv {
+    pointer-events: none;
+    opacity: 0.4;
+}
 </style>
 
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-	<h2>Edit Analog</h2>
+    <h2><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'EnDisableAnalog()' checked >
+        Edit Analog</h2>
+   
+
+<div id="div1">
 
 	<table>
 	  <tr>
@@ -78,8 +91,8 @@ th, td {
 		</td>
 		<td>Name: <input type="text" name="name" id="name" onchange="onNameChange()" size="13"></td>
 		<td>
-		<input class="move" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
-		<input class="move" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
+		<input class="button" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
+		<input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
 		</td>	
 	  </tr>
 	  <tr>
@@ -92,15 +105,19 @@ th, td {
 		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
 	  </tr>
 	</table>			 
-			 
+</div>	 
+
 	<table>
 	  <tr>
 		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini"></td>
 	  </tr>  
-	</table>		 
+    </table>	
+
 
 <script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>  
 <script type="text/javascript" src="./readconfig.js"></script>  
+<script type="text/javascript" src="./jquery-3.5.1.min.js"></script>  
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -113,6 +130,40 @@ th, td {
             enhanceCon = false;
             lockAR = true;
             basepath = "http://192.168.178.26";
+
+
+function EnDisableAnalog() {
+        isEnabled = document.getElementById("Category_Analog_enabled").checked;
+
+		$("#div2").attr("disabled", "disabled").off('click');
+        var x1=$("#div2").hasClass("disabledDiv");
+        
+        if (isEnabled)
+        {
+            $("#div2").removeClass("disabledDiv");
+        }
+        else
+        {
+            $("#div2").addClass("disabledDiv");
+        }
+		
+        sah1(document.getElementById("div1"), !isEnabled);
+        if (isEnabled)
+        {
+            UpdateROIs();
+        }
+}
+
+function sah1(el, _target) {
+        try {
+            el.disabled = _target;
+        } catch (E) {}
+        if (el.childNodes && el.childNodes.length > 0) {
+            for (var x = 0; x < el.childNodes.length; x++) {
+                sah1(el.childNodes[x], _target);
+            }
+        }
+    }
 
 function onNameChange(){
     ROIInfo[aktindex]["name"] = document.getElementById("name").value;
@@ -172,7 +223,8 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    SaveROIToConfig(ROIInfo, "[Analog]", basepath);
+    _enabled = document.getElementById("Category_Analog_enabled").checked;
+    SaveROIToConfig(ROIInfo, "[Analog]", basepath, _enabled);
     UpdatePage();  
 }
 
@@ -230,7 +282,17 @@ function UpdateROIs(){
 function ParseIni(_basepath) {
     loadConfig(_basepath);
     ParseConfig();
+
+    document.getElementById("Category_Analog_enabled").checked = true;
     ROIInfo = getROIInfo("[Analog]");
+
+    if (!GetAnalogEnabled()) 
+    {
+        document.getElementById("Category_Analog_enabled").checked = false;
+        EnDisableAnalog();
+        alert("Analog ROIs are disabled - please enable (Check box top left).\n");
+        return;
+    }
 
     UpdateROIs();
 }
@@ -288,22 +350,25 @@ function ParseIni(_basepath) {
         }  
 
 
-        function draw() {
+    function draw() {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
-        lw = 4
-        context.lineWidth = lw;
-        context.strokeStyle = "#FF0000";
-        var x0 = parseInt(rect.startX) - parseInt(lw/2);
-        var y0 = parseInt(rect.startY) - parseInt(lw/2);
-        var dx = parseInt(rect.w) + parseInt(lw);
-        var dy = parseInt(rect.h) + parseInt(lw);
-        context.strokeRect(x0, y0, dx, dy);    
-        ROIInfo[aktindex]["x"] = rect.startX;       
-        ROIInfo[aktindex]["y"] = rect.startY;       
-        ROIInfo[aktindex]["dx"] = rect.w;       
-        ROIInfo[aktindex]["dy"] = rect.h;       
+        if (document.getElementById("Category_Analog_enabled").checked)
+        {
+            lw = 4
+            context.lineWidth = lw;
+            context.strokeStyle = "#FF0000";
+            var x0 = parseInt(rect.startX) - parseInt(lw/2);
+            var y0 = parseInt(rect.startY) - parseInt(lw/2);
+            var dx = parseInt(rect.w) + parseInt(lw);
+            var dy = parseInt(rect.h) + parseInt(lw);
+            context.strokeRect(x0, y0, dx, dy);    
+            ROIInfo[aktindex]["x"] = rect.startX;       
+            ROIInfo[aktindex]["y"] = rect.startY;       
+            ROIInfo[aktindex]["dx"] = rect.w;       
+            ROIInfo[aktindex]["dy"] = rect.h;       
+        }
     }
 
     function getCoords(elem) { // crossbrowser version

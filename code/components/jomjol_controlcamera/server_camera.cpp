@@ -95,10 +95,9 @@ esp_err_t handler_capture(httpd_req_t *req)
 
 esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 {
-
+#ifdef DEBUG_DETAIL_ON  
     LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
-
-    LogFile.WriteToFile("handler_capture_with_ligth");
+#endif
     char _query[100];
     char _delay[10];
 

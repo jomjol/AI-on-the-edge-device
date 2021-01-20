@@ -8,6 +8,10 @@ var ref = new Array(2);
 var digit = new Array(0);
 var analog = new Array(0);
 var initalrotate = new Object();
+var analogEnabled = false;
+var posAnalogHeader;
+var digitsEnabled = false;
+var posDigitsHeader;
 
 function MakeRefZW(zw, _basepath){
      url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=/img_tmp/ref_zw_org.jpg&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
@@ -36,7 +40,9 @@ function ParseConfigAlignment(_aktline){
      var akt_ref = 0;
      ++_aktline;
 
-     while ((akt_ref < 2) && (_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+     while ((_aktline < config_split.length) 
+            && !(config_split[_aktline][0] == "[") 
+            && !((config_split[_aktline][0] == ";") && (config_split[_aktline][1] == "["))) {
           var linesplit = ZerlegeZeile(config_split[_aktline]);
           if ((linesplit[0].toUpperCase() == "INITIALMIRROR") && (linesplit.length > 1))
           {
@@ -67,7 +73,9 @@ function ParseConfigDigit(_aktline){
      ++_aktline;
      digit.length = 0;
 
-     while ((_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+     while ((_aktline < config_split.length) 
+            && !(config_split[_aktline][0] == "[") 
+            && !((config_split[_aktline][0] == ";") && (config_split[_aktline][1] == "["))) {
           var linesplit = ZerlegeZeile(config_split[_aktline]);
           if (linesplit.length >= 5)
           {
@@ -86,12 +94,23 @@ function ParseConfigDigit(_aktline){
      return _aktline; 
 }
 
+function GetAnalogEnabled() {
+     return analogEnabled;
+}
+
+
+function GetDigitsEnabled() {
+     return digitsEnabled;
+}
+
 
 function ParseConfigAnalog(_aktline){
      ++_aktline;
      analog.length = 0;
 
-     while ((_aktline < config_split.length) && (config_split[_aktline][0] != "[")) {
+     while ((_aktline < config_split.length) 
+            && !(config_split[_aktline][0] == "[") 
+            && !((config_split[_aktline][0] == ";") && (config_split[_aktline][1] == "["))) {
           var linesplit = ZerlegeZeile(config_split[_aktline]);
           if (linesplit.length >= 5)
           {
@@ -121,11 +140,21 @@ function getROIInfo(_typeROI){
      return targetROI.slice();         // Kopie senden, nicht orginal!!!
 }
 
-function SaveROIToConfig(_ROIInfo, _typeROI, _basepath){
+function SaveROIToConfig(_ROIInfo, _typeROI, _basepath, _enabled){
+     if (_enabled) {
+          text = _typeROI;
+     }
+     else {
+          text = ";" + _typeROI;
+     }
+
      if (_typeROI == "[Digits]"){
+          config_split[posDigitsHeader] = text;
           targetROI = digit;
      }
+
      if (_typeROI == "[Analog]"){
+          config_split[posAnalogHeader] = text;
           targetROI = analog;
      }
 
@@ -165,16 +194,24 @@ function ParseConfig() {
      var aktline = 0;
 
      while (aktline < config_split.length){
-          if (config_split[aktline].trim().toUpperCase() == "[ALIGNMENT]") {
+          if ((config_split[aktline].trim().toUpperCase() == "[ALIGNMENT]") || (config_split[aktline].trim().toUpperCase() == ";[ALIGNMENT]")){
                aktline = ParseConfigAlignment(aktline);
                continue;
           }
-          if (config_split[aktline].trim().toUpperCase() == "[DIGITS]") {
+          if ((config_split[aktline].trim().toUpperCase() == "[DIGITS]") || (config_split[aktline].trim().toUpperCase() == ";[DIGITS]")){
+               posDigitsHeader = aktline;
+               if (config_split[aktline][0] == "[") {
+                    digitsEnabled = true;
+               }
                aktline = ParseConfigDigit(aktline);
                continue;
           }
 
-          if (config_split[aktline].trim().toUpperCase() == "[ANALOG]") {
+          if ((config_split[aktline].trim().toUpperCase() == "[ANALOG]") || (config_split[aktline].trim().toUpperCase() == ";[ANALOG]")) {
+               posAnalogHeader = aktline;
+               if (config_split[aktline][0] == "[") {
+                    analogEnabled = true;
+               }
                aktline = ParseConfigAnalog(aktline);
                continue;
           }
@@ -313,19 +350,6 @@ function MakeContrastImageZW(zw, _enhance, _basepath){
      }
 }
 
-function createReader(file) {
-     var image = new Image();
-     reader.onload = function(evt) {
-         var image = new Image();
-         image.onload = function(evt) {
-             var width = this.width;
-             var height = this.height;
-             alert (width); // will produce something like 198
-         };
-         image.src = evt.target.result; 
-     };
-     reader.readAsDataURL(file);
- }
 
 function GetReferenceSize(name){
      img = new Image();
@@ -346,83 +370,6 @@ function GetReferenceSize(name){
      return [img.width, img.height];
 }
 
-
-function ZerlegeZeile(input)
-     {
-          var Output = Array(0);
-          delimiter = " =,\r";
-     
-          input = trim(input, delimiter);
-          var pos = findDelimiterPos(input, delimiter);
-          var token;
-          while (pos > -1) {
-               token = input.substr(0, pos);
-               token = trim(token, delimiter);
-               Output.push(token);
-               input = input.substr(pos+1, input.length);
-               input = trim(input, delimiter);
-               pos = findDelimiterPos(input, delimiter);
-          }
-          Output.push(input);
-     
-          return Output;
-     
-     }    
-
-function findDelimiterPos(input, delimiter)
-     {
-          var pos = -1;
-          var zw;
-          var akt_del;
-     
-          for (var anz = 0; anz < delimiter.length; ++anz)
-          {
-               akt_del = delimiter[anz];
-               zw = input.indexOf(akt_del);
-               if (zw > -1)
-               {
-                    if (pos > -1)
-                    {
-                         if (zw < pos)
-                              pos = zw;
-                    }
-                    else
-                         pos = zw;
-               }
-          }
-          return pos;
-     }
-     
-     
-
-function trim(istring, adddelimiter)
-     {
-          while ((istring.length > 0) && (adddelimiter.indexOf(istring[0]) >= 0)){
-               istring = istring.substr(1, istring.length-1);
-          }
-          
-          while ((istring.length > 0) && (adddelimiter.indexOf(istring[istring.length-1]) >= 0)){
-               istring = istring.substr(0, istring.length-1);
-          }
-
-          return istring;
-     }
-     
-
-     
-function loadConfig(_basepath) {
-     var xhttp = new XMLHttpRequest();
-     try {
-          url = _basepath + '/fileserver/config/config.ini';     
-          xhttp.open("GET", url, false);
-          xhttp.send();
-          config_gesamt = xhttp.responseText;
-     }
-     catch (error)
-     {
-     //          alert("Deleting Config.ini failed");
-     }
-}
 	 
 function getConfig() {
 	return config_gesamt;
@@ -438,76 +385,7 @@ function dataURLtoBlob(dataurl) {
      }
      return new Blob([u8arr], {type:mime});
      }	
-     
-function FileCopyOnServer(_source, _target, _basepath = ""){
-     url = _basepath + "/editflow.html?task=copy&in=" + _source + "&out=" + _target;
-     var xhttp = new XMLHttpRequest();  
-     try {
-          xhttp.open("GET", url, false);
-          xhttp.send();     }
-     catch (error)
-     {
-//          alert("Deleting Config.ini failed");
-     }
-}
 
-function FileDeleteOnServer(_filename, _basepath = ""){
-     var xhttp = new XMLHttpRequest();
-     var okay = false;
-
-     xhttp.onreadystatechange = function() {
-          if (xhttp.readyState == 4) {
-               if (xhttp.status == 200) {
-                    okay = true;
-               } else if (xhttp.status == 0) {
-//                    alert("Server closed the connection on delete abruptly!");
-//                    location.reload()
-               } else {
-//                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-//                    location.reload()
-               }
-          }
-     };
-     try {
-          var url = _basepath + "/delete" + _filename;
-          xhttp.open("POST", url, false);
-          xhttp.send();
-     }
-     catch (error)
-     {
-//          alert("Deleting Config.ini failed");
-     }
-
-     return okay;
-}
-
-function FileSendContent(_content, _filename, _basepath = ""){
-     var xhttp = new XMLHttpRequest();  
-     var okay = false;
-
-     xhttp.onreadystatechange = function() {
-          if (xhttp.readyState == 4) {
-               if (xhttp.status == 200) {
-                    okay = true;
-               } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
-               } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-               }
-          }
-     };
-
-     try {
-          upload_path = _basepath + "/upload" + _filename;
-          xhttp.open("POST", upload_path, false);
-          xhttp.send(_content);
-     }
-     catch (error)
-     {
-//          alert("Deleting Config.ini failed");
-     }     
-    return okay;        
-}
                     
 function SaveReferenceImage(_id_canvas, _filename, _doDelete, _basepath = ""){
      if (_doDelete){

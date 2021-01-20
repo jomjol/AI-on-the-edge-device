@@ -217,12 +217,78 @@ void initialise_wifi_fixed_ip(std::string _ip, std::string _gw, std::string _net
     netmask = std::string(ip4addr_ntoa(&ip_info2.netmask));
     gw = std::string(ip4addr_ntoa(&ip_info2.gw));
 
-    vEventGroupDelete(wifi_event_group);
+//    vEventGroupDelete(wifi_event_group);
 }
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
 
-//void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns)
+
+bool ChangeHostName(std::string fn, std::string _newhostname)
+{
+    if (_newhostname == hostname)
+        return false;
+
+    string line = "";
+    std::vector<string> zerlegt;
+
+    bool found = false;
+
+    std::vector<string> neuesfile;
+
+    FILE* pFile;
+    fn = FormatFileName(fn);
+    pFile = OpenFileAndWait(fn.c_str(), "r");
+
+    printf("file loaded\n");
+
+    if (pFile == NULL)
+        return false;
+
+    char zw[1024];
+    fgets(zw, 1024, pFile);
+    line = std::string(zw);
+
+    while ((line.size() > 0) || !(feof(pFile)))
+    {
+        printf("%s", line.c_str());
+        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt[0] = trim(zerlegt[0], " ");
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
+            line = "hostname = \"" + _newhostname + "\"\n";
+            found = true;
+        }
+
+        neuesfile.push_back(line);
+
+        if (fgets(zw, 1024, pFile) == NULL)
+        {
+            line = "";
+        }
+        else
+        {
+            line = std::string(zw);
+        }
+    }
+
+    if (!found)
+    {
+        line = "hostname = \"" + _newhostname + "\"\n";
+        neuesfile.push_back(line);        
+    }
+
+    fclose(pFile);
+
+    pFile = OpenFileAndWait(fn.c_str(), "w+");
+
+    for (int i = 0; i < neuesfile.size(); ++i)
+    {
+        fputs(neuesfile[i].c_str(), pFile);
+    }
+
+    fclose(pFile);
+
+    return true;
+}
+
 
 void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphrase, std::string &_hostname)
 {
@@ -248,6 +314,8 @@ void LoadWlanFromFile(std::string fn, std::string &_ssid, std::string &_passphra
         printf("%s", line.c_str());
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
+        for (int i = 2; i < zerlegt.size(); ++i)
+            zerlegt[i] = zerlegt[i-1] + zerlegt[i];
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
             _hostname = trim(zerlegt[1]);

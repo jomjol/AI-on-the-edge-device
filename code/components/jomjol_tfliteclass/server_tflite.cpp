@@ -470,21 +470,26 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     const char* resp_str;
     string zw;
 
-//    printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
+#ifdef DEBUG_DETAIL_ON       
+    printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
+#endif
 
     char _query[100];
     char _size[10] = "";
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-//        printf("Query: "); printf(_query); printf("\n");
+#ifdef DEBUG_DETAIL_ON       
+        printf("Query: "); printf(_query); printf("\n");
+#endif
+
         if (httpd_query_key_value(_query, "value", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
             printf("Value: "); printf(_size); printf("\n"); 
 #endif
         }
-    }           
+    }      
 
     if (strlen(_size) == 0)
         zw = tfliteflow.GetPrevalue();

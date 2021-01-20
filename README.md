@@ -33,12 +33,22 @@ If you would like to support the developer with a cup of coffee you can do that 
 ### Known Issues
 
 * slow response of web server during picture analysis
+* spontaneous reboots (mostly due to html access during image processing) - self recovery implemented
 
 ------
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
+
+##### 6.1.0 Image Processing in Memory - (2021-01-20)
+
+* Disabling of analog / digital counters in configuration 
+* Improved Alignment Algorithm (`AlignmentAlgo`  = `Default`,  `Accurate` , `Fast`)
+* Analog counters: `ExtendedResolution` (last digit is extended by sub comma value of CNN)
+* `config.ini`: additional parameter `hostname`  (additional to wlan.ini)
+* Switching of GPIO12/13 via http-interface: `/GPIO?GPIO=12&Status=high/low`
+* Bug fixing: html configuration page, wlan password ("=" now possible)
 
 ##### 6.0.0 Image Processing in Memory - (2021-01-02)
 

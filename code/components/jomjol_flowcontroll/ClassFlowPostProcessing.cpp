@@ -14,16 +14,27 @@
 string ClassFlowPostProcessing::GetPreValue()
 {
     std::string result;
+    bool isAnalog = false;
+    bool isDigit = false;
+
+    int AnzahlAnalog = 0;
     result = RundeOutput(PreValue, -DecimalShift);
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
         {
-            int AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            result =  RundeOutput(PreValue, AnzahlAnalog - DecimalShift);
+            isAnalog = true;
+            AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
+        }
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
+        {
+            isDigit = true;
         }
     }
+
+    if (isDigit && isAnalog)
+        result = RundeOutput(PreValue, AnzahlAnalog - DecimalShift);
 
     return result;
 }
@@ -75,17 +86,24 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     ReturnValue = to_string(Value);
     ReturnValueNoError = ReturnValue; 
 
-    // falls es Analog gibt, dann die Anzahl der Nachkommastellen feststellen und entsprechend runden:   
+    bool isAnalog = false;
+    bool isDigit = false;
+    int AnzahlAnalog = 0;
+
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
-        {
-            int AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-            ReturnValue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
-            ReturnValueNoError = ReturnValue;
-        }
+            isAnalog = true;
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
+            isDigit = true;
     }
-    
+
+    if (isDigit || isAnalog)
+    {
+        ReturnValue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
+        ReturnValueNoError = ReturnValue;
+    }
+   
     return true;
 }
 
@@ -118,23 +136,6 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
     fclose(pFile);
 }
 
-
-
-ClassFlowPostProcessing::ClassFlowPostProcessing()
-{
-    PreValueUse = false;
-    PreValueAgeStartup = 30;
-    AllowNegativeRates = false;
-    MaxRateValue = 0.1;
-    ErrorMessage = false;
-    ListFlowControll = NULL;
-    PreValueOkay = false;
-    useMaxRateValue = false;
-    checkDigitIncreaseConsistency = false;
-    DecimalShift = 0;
-    ErrorMessageText = "";
-    FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
-}
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
 {
@@ -268,6 +269,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     int AnzahlAnalog = 0;
     string zw;
     time_t imagetime = 0;
+    string rohwert;
 
     ErrorMessageText = "";
 
@@ -306,6 +308,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     //    isdigit = true; digit = "12N";
     //    isanalog = true; analog = "456";
 
+    ReturnRawValue = "";
+
     if (isdigit)
         ReturnRawValue = digit;
     if (isdigit && isanalog)
@@ -313,7 +317,15 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (isanalog)
         ReturnRawValue = ReturnRawValue + analog; 
 
+
+    if (!isdigit)
+    {
+        AnzahlAnalog = 0;
+    }
+
     ReturnRawValue = ShiftDecimal(ReturnRawValue, DecimalShift);   
+
+    rohwert = ReturnRawValue;
 
     if (!PreValueUse || !PreValueOkay)
     {
@@ -349,7 +361,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
-        ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " ";
+        ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " - raw value: " + ReturnRawValue;
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
@@ -392,10 +404,24 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror)
 
 string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
     std::stringstream stream;
+    int _zw = _in;    
+//    printf("AnzNachkomma: %d\n", _anzNachkomma);
+
     if (_anzNachkomma < 0) {
         _anzNachkomma = 0;
     }
-    stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
+
+    if (_anzNachkomma > 0)
+    {
+        stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
+        return stream.str();          
+    }
+    else
+    {
+        stream << _zw;
+    }
+
+
     return stream.str();  
 }
 
