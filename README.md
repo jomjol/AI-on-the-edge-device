@@ -41,52 +41,14 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### Rolling - (2021-01-19)
+##### 6.1.0 Image Processing in Memory - (2021-01-20)
 
-* Improvement for wlan password: additionally now "`=`" is possible in the password or wlan-name
-  
-* Reduction of log file info (removal of memory information)
-
-2021-01-18
-
-* New Feature `ExtendedResolution` uses the after comma digit of the last analog counter to increase precision by one digit. 
-  This can only be activated in expert mode.
-
-2021-01-17
-
-* Disabling of digital counters implemented
-* Attention: do not disable digital and analog!
-* Bug fixing:
-
-  * Configuration of analog counters on html-page failed (enable/disable, undefined ROIs)
-
-2021-01-05
-
-* Configuration: simple enabling / disabling of analog counters 
-
-* Alignment Algorithm: implementation of 3 alignment options (`AlignmentAlgo`)
-
-  * `Default` = know algo based on 1 channel SAD (square average difference) - using only the red channel
-  * `Accurate` = using all 3 color channels (3x slower)
-  * `Fast` = alignment only on first run, afterward only detection of shift of image by comparing SAD-values
-  * Time comparison for reference images with 2 times ~2000 pixel²: 
-    * Default ~40 s/run, Accurate: 1:40 min/run, **Fast: 7 s/run**
-    * `Fast` Option allows must faster value updates (up to 2 per Minute) 
-
-* Configuration of hostname in config.ini: new parameter `hostname` in section `System`
-
-* Switching of GPIO12/13 via http-interface:
-
-  * ```
-    /GPIO?GPIO=12&Status=high
-    /GPIO?GPIO=12&Status=low
-    ```
-
-* Bug fixing: html configuration page
-
-* based on Master v6.0.0 (2021-01-02)
-
-  
+* Disabling of analog / digital counters in configuration 
+* Improved Alignment Algorithm (`AlignmentAlgo`  = `Default`,  `Accurate` , `Fast`)
+* Analog counters: `ExtendedResolution` (last digit is extended by sub comma value of CNN)
+* `config.ini`: additional parameter `hostname`  (additional to wlan.ini)
+* Switching of GPIO12/13 via http-interface: `/GPIO?GPIO=12&Status=high/low`
+* Bug fixing: html configuration page, wlan password ("=" now possible)
 
 ##### 6.0.0 Image Processing in Memory - (2021-01-02)
 
