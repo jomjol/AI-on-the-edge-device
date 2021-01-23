@@ -559,9 +559,12 @@ void task_autodoFlow(void *pvParameter)
         LogFile.WriteToFile(zwtemp); 
         printf("CPU Temperature: %.2f\n", cputmp);
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-        const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
-        printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
-        vTaskDelay( xDelay );        
+        if (auto_intervall > fr_delta_ms)
+        {
+            const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
+            printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+            vTaskDelay( xDelay );        
+        }
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
