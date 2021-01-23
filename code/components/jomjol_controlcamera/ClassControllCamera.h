@@ -34,6 +34,7 @@ class CCamera {
         void LEDOnOff(bool status);
         esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
         void SetQualitySize(int qual, framesize_t resol);
+        void SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
 
         framesize_t TextToFramesize(const char * text);

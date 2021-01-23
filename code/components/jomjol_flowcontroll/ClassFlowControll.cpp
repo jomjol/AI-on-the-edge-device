@@ -39,7 +39,8 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
-             FlowControll[i]->doFlow("");
+            if (!(FlowControll[i]->name().compare("ClassFlowMakeImage") == 0))      // falls es ein MakeImage ist, braucht das Bild nicht extra aufgenommen zu werden, dass passiert bei html-Abfrage automatisch
+                FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
 

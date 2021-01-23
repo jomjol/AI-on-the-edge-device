@@ -48,6 +48,9 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     std::vector<string> zerlegt;
 
     aktparamgraph = trim(aktparamgraph);
+    int _brightness = 0;
+    int _contrast = 0;
+    int _saturation = 0;
 
     if (aktparamgraph.size() == 0)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
@@ -79,9 +82,26 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
                 SaveAllFiles = true;
         }
 
+        if ((toUpper(zerlegt[0]) == "BRIGHTNESS") && (zerlegt.size() > 1))
+        {
+            _brightness = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "CONTRAST") && (zerlegt.size() > 1))
+        {
+            _contrast = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "SATURATION") && (zerlegt.size() > 1))
+        {
+            _saturation = stoi(zerlegt[1]);
+        }
+
     }
 
+    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation);
     Camera.SetQualitySize(ImageQuality, ImageSize);
+
     image_width = Camera.image_width;
     image_height = Camera.image_height;
     rawImage = new CImageBasis();

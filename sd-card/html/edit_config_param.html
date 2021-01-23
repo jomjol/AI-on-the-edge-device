@@ -130,6 +130,49 @@ textarea {
 				Picture size camera (default = "VGA")
 			</td>
 		</tr>
+		<tr class="expert"  id="Brightness_ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_Brightness_value1" size="13"   min="-2" max="2">
+			</td>
+			<td style="font-size: 80%;">
+				Image Brightness (-2 .. 2 - default = "0")
+			</td>
+		</tr>
+<!--
+		<tr class="expert"  id="Contrast_ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_Contrast_value1" size="13"   min="-2" max="2">
+			</td>
+			<td style="font-size: 80%;">
+				Image Contrast (-2 .. 2 - default = "0")
+			</td>
+		</tr>
+
+		<tr class="expert"  id="Saturation_ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_Saturation_value1" size="13"   min="-2" max="2">
+			</td>
+			<td style="font-size: 80%;">
+				Image Saturation (-2 .. 2 - default = "0")
+			</td>
+		</tr>
+-->		
+
 
 		<tr class="expert"  id="ex4">
 			<td colspan="4" style="padding-left: 20px;"><h4>Alignment</h4></td>
@@ -767,6 +810,9 @@ function UpdateInput() {
 	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
 	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
 	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
+	WriteParameter(param, category, "MakeImage", "Brightness", false);		
+//	WriteParameter(param, category, "MakeImage", "Contrast", false);		
+//	WriteParameter(param, category, "MakeImage", "Saturation", false);		
 	WriteParameter(param, category, "MakeImage", "ImageSize", false, true, true);		
 
 	WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
@@ -820,6 +866,9 @@ function ReadParameterAll()
 	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
 	ReadParameter(param, "MakeImage", "ImageQuality", false);		
+	ReadParameter(param, "MakeImage", "Brightness", false);		
+//	ReadParameter(param, "MakeImage", "Contrast", false);		
+//	ReadParameter(param, "MakeImage", "Saturation", false);		
 	ReadParameter(param, "MakeImage", "ImageSize", false, true);	
 
 	ReadParameter(param, "Alignment", "SearchFieldX", false);		

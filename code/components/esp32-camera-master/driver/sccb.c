@@ -7,6 +7,7 @@
  *
  */
 #include <stdbool.h>
+#include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "sccb.h"
@@ -42,6 +43,7 @@ int SCCB_Init(int pin_sda, int pin_scl)
     ESP_LOGI(TAG, "pin_sda %d pin_scl %d\n", pin_sda, pin_scl);
     //log_i("SCCB_Init start");
     i2c_config_t conf;
+    memset(&conf, 0, sizeof(i2c_config_t));
     conf.mode = I2C_MODE_MASTER;
     conf.sda_io_num = pin_sda;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;

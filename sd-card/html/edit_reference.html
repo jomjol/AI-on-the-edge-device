@@ -34,7 +34,7 @@ table {
 
 <body style="font-family: arial; padding: 0px 10px;">
     <h2>Create Reference out of Raw Image</h2>
-	
+
 	<table>
 	  <tr>
 		<td><input class="button" type="button" value="Show Actual Reference" onclick="showReference()"></td>	  
@@ -42,17 +42,32 @@ table {
 		<td><input class="button" type="submit" id="take" onclick="doTake()" value="Take Image"></td>
 	  </tr> 
 	  <tr>
-		<td style="padding-top: 10px"><label for="mirror">Mirror Image:</label></td>
-		<td style="padding-top: 10px"><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+		<td style="padding-top: 10px"><label for="mirror" id="labelmirror">Mirror Image:</label></td>
+        <td style="padding-top: 10px"><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+        
 	  </tr>
 	  <tr>
         <td><label for="mirror">Pre-rotate Angle:</label></td>	  
 		<td><input type="number" id="prerotateangle" name="prerotateangle" value=0 min="-360" max="360" onchange="drawRotated()">Degrees</td>
+        <td>
+            <class id="MakeImage_Brightness_text" style="color:black;">Brightness: </class>
+            <input type="number" id="MakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
+        </td>
 	  </tr>
 	  <tr>
 		<td><label for="mirror">Fine Alignment:</label></td>	
 		<td><input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">Degrees</td>
-	  </tr>
+<!-- 
+        <td>
+            <class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
+            <input type="number" id="MakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
+        </td>
+        <td>
+            <class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
+            <input type="number" id="MakeImage_Saturation_value1" size="13" value=0   min="-2" max="2" style="float: right; clear: both;">
+        </td>
+-->
+    </tr>
 	</table>
 
 	<table>
@@ -68,6 +83,9 @@ table {
     <script type="text/javascript" src="./gethost.js"></script> 
     <script type="text/javascript" src="./readconfig.js"></script>  
     <script type="text/javascript" src="./readconfigcommon.js"></script>  
+    <script type="text/javascript" src="./readconfigparam.js"></script>  
+    
+    
 
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -75,10 +93,14 @@ table {
             imageObj = new Image()
             basepath = "http://192.168.178.26";   
             isActReference = false;
+            param;
 
-        function doTake(){
+        function doTake(){ 
+            _brightness = document.getElementById("MakeImage_Brightness_value1").value;
+//            _contrast = document.getElementById("MakeImage_Contrast_value1").value;
+//            _saturation = document.getElementById("MakeImage_Saturation_value1").value;
             var xhttp = new XMLHttpRequest();
-            url = basepath + "/editflow.html?task=test_take";
+            url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
             if (basepath.length > 0){
                 url = url + "&host=" + basepath;
             }
@@ -89,35 +111,50 @@ table {
             
         function loadRawImage(){
             url = basepath + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
-            document.getElementById("finerotate").value = 0;
-            document.getElementById("prerotateangle").value = getPreRotate();
-            document.getElementById("mirror").checked = getMirror();
+//            document.getElementById("finerotate").value = 0;
+//            document.getElementById("prerotateangle").value = getPreRotate();
+//            document.getElementById("mirror").checked = getMirror();
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
             document.getElementById("updatereferenceimage").disabled = false;
             document.getElementById("take").disabled = false;
-            document.getElementById("mirror").disabled = false;
+            if (param["Alignment"]["InitialMirror"].found)
+                document.getElementById("mirror").disabled = false;
+            else
+                document.getElementById("labelmirror").style = "color:lightgrey;";
 
-//            document.getElementById("ButtonRotate").disabled = false;
+            if (param["MakeImage"]["Brightness"].found)
+                document.getElementById("MakeImage_Brightness_value1").disabled = false;
+//            if (param["MakeImage"]["Saturation"].found)
+//                document.getElementById("MakeImage_Saturation_value1").disabled = false;
+//            if (param["MakeImage"]["Contrast"].found)
+//                document.getElementById("MakeImage_Contrast_value1").disabled = false;
+
             isActReference = false;
             loadCanvas(url);  
             drawRotated();          
         }    
 
-        function showReference(){
+        function showReference(_param){
             url = basepath + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);;
             document.getElementById("finerotate").value = 0;
-            document.getElementById("prerotateangle").value = 0;
+            document.getElementById("prerotateangle").value = _param["Alignment"]["InitialRotate"].value1;
+
+            if (_param["Alignment"]["InitialMirror"].found && (_param["Alignment"]["InitialMirror"].value1 == "true"))
+                document.getElementById("mirror").checked = true;
+
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("updatereferenceimage").disabled = true;
             document.getElementById("take").disabled = true;
+            document.getElementById("MakeImage_Brightness_value1").disabled = true;
+//            document.getElementById("MakeImage_Saturation_value1").disabled = true;
+//            document.getElementById("MakeImage_Contrast_value1").disabled = true;
             document.getElementById("mirror").disabled = true;
 
             isActReference = true;                                  
             loadCanvas(url);
-            ParseConfig();
-            drawRotated();
+            drawRotated(false, true);
         }
             
         function dataURLtoBlob(dataurl) {
@@ -131,9 +168,21 @@ table {
                 
         function SaveReference(){
             if (confirm("Are you sure you want to update the reference image?")) {
-                setPreRotate(document.getElementById("prerotateangle").value);
-                setMirror(document.getElementById("mirror").checked);
-                UpdateConfigFileReferenceChange(basepath);
+                param["Alignment"]["InitialRotate"].value1 = document.getElementById("prerotateangle").value;
+                if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
+                    param["Alignment"]["InitialMirror"].value1 = "true";
+                else
+                    param["Alignment"]["InitialMirror"].value1 = "false";
+
+                ReadParameter(param, "MakeImage", "Brightness", false);		
+//            	ReadParameter(param, "MakeImage", "Contrast", false);
+//                ReadParameter(param, "MakeImage", "Saturation", false);
+                
+
+                var textToSave = setConfigParameters(param);
+		        FileDeleteOnServer("/config/config.ini", basepath);
+		        FileSendContent(textToSave, "/config/config.ini", basepath);
+
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
@@ -174,10 +223,75 @@ table {
             basepath = getbasepath();  
             loadConfig(basepath); 
             ParseConfig();
-            showReference(); 
+            param = getConfigParameters();
+            UpdateInput();
+            showReference(param); 
         }
 
-        function drawRotated(_grid = true){
+        function UpdateInput() {
+            WriteParameter(param, category, "MakeImage", "Brightness", false);		
+//            WriteParameter(param, category, "MakeImage", "Contrast", false);		
+//            WriteParameter(param, category, "MakeImage", "Saturation", false);		
+        }
+
+
+        function ReadParameter(_param, _cat, _name, _optional, _select = false){
+            if (_param[_cat][_name]["found"]){
+                if (_optional) {
+                    _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+                }
+                if (_select) {
+                    var sel = document.getElementById(_cat+"_"+_name+"_value1");
+                    _param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
+                }
+                else {
+                    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+                        _param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+                    }
+                }
+            }
+        }
+        
+
+        function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
+            if (_param[_cat][_name]["found"]){
+                if (_optional) {
+                    document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
+                    for (var j = 1; j <= _anzpara; ++j) {
+                        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
+                    }		
+                }
+                document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
+                if (_select) {
+                    var textToFind = _param[_cat][_name]["value1"];
+                    var dd = document.getElementById(_cat+"_"+_name+"_value1");
+                    for (var i = 0; i < dd.options.length; i++) {
+                        if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
+                            dd.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    for (var j = 1; j <= _anzpara; ++j) {
+                        document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
+                    }
+                }
+
+            }
+            else {
+                if (_optional) {
+                    document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
+                    for (var j = 1; j <= _anzpara; ++j) {
+                        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
+                    }	
+                }
+                document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
+            }
+        }
+
+
+        function drawRotated(_grid = true, _isreference = false){
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
             mirror = document.getElementById("mirror").checked;
@@ -199,18 +313,26 @@ table {
 
             context.clearRect(0,0,imageObj.width,imageObj.height);
             context.save();
+
+            if (isActReference)
+            {
+                context.drawImage(imageObj,0,0);
+            }
+            else
+            {
+                if (mirror) {
+                    context.scale(-1, 1);
+                    context.translate(-imageObj.width/2,imageObj.height/2);
+                    context.rotate(-degrees*Math.PI/180);
+                    context.drawImage(imageObj, imageObj.width/2,-imageObj.height/2, -imageObj.width, imageObj.height);
+                }
+                else {
+                    context.translate(imageObj.width/2,imageObj.height/2);
+                    context.rotate(degrees*Math.PI/180);
+                    context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
+                }
+            }
             
-            if (mirror) {
-                context.scale(-1, 1);
-                context.translate(-imageObj.width/2,imageObj.height/2);
-                context.rotate(-degrees*Math.PI/180);
-                context.drawImage(imageObj, imageObj.width/2,-imageObj.height/2, -imageObj.width, imageObj.height);
-            }
-            else {
-                context.translate(imageObj.width/2,imageObj.height/2);
-                context.rotate(degrees*Math.PI/180);
-                context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
-            }
             
             context.restore();
             if (_grid == true && !isActReference){

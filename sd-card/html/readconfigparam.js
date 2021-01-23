@@ -23,6 +23,9 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "WaitBeforeTakingPicture");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "Brightness");
+     ParamAddValue(param, catname, "Contrast");
+     ParamAddValue(param, catname, "Saturation");
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
 
@@ -31,6 +34,8 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
+     ParamAddValue(param, catname, "InitialRotate");
+     ParamAddValue(param, catname, "InitialMirror");
      ParamAddValue(param, catname, "SearchFieldX");
      ParamAddValue(param, catname, "SearchFieldY");     
      ParamAddValue(param, catname, "AlignmentAlgo");     
@@ -184,7 +189,7 @@ function getConfigParameters() {
      return param;
 }
 
-function setConfigParameters(_param, _category) {
+function setConfigParameters(_param, _category = "") {
      for (var cat in _param) {
           for (var name in _param[cat]) {
                param[cat][name]["found"] = _param[cat][name]["found"];
