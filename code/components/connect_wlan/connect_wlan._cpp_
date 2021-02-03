@@ -1,27 +1,19 @@
 #include "connect_wlan.h"
 
-
-
 #include <string.h>
-#include "esp_wifi.h"
-#include "esp_event_loop.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "freertos/event_groups.h"
+#include "esp_wifi.h"
 #include "esp_log.h"
 
 #include <fstream>
-#include <string>
 #include <vector>
 #include <sstream>
-#include <iostream>
-
-#include <arpa/inet.h>
 
 #include "Helper.h"
 
-
-
-
-static const char *MAIN_TAG = "connect_wlan";
+static const char *TAG = "connect_wlan";
 
 std::string ssid = "";
 std::string passphrase = "";
@@ -30,12 +22,16 @@ std::string ipaddress = "";
 std::string gw = "";
 std::string netmask = "";
 std::string dns = "";
+
 std::string std_hostname = "watermeter";
 
-static EventGroupHandle_t wifi_event_group;
-
-
 #define BLINK_GPIO GPIO_NUM_33
+
+static EventGroupHandle_t s_wifi_event_group;
+
+#define WIFI_CONNECTED_BIT BIT0
+#define WIFI_FAIL_BIT      BIT1
+static int s_retry_num = 0;
 
 
 std::vector<string> ZerlegeZeile(std::string input, std::string _delimiter = "")
@@ -63,20 +59,6 @@ std::vector<string> ZerlegeZeile(std::string input, std::string _delimiter = "")
 }
 
 
-
-
-void wifi_connect(){
-    wifi_config_t cfg = { };
-    strcpy((char*)cfg.sta.ssid, (const char*)ssid.c_str());
-    strcpy((char*)cfg.sta.password, (const char*)passphrase.c_str());
-    
-    ESP_ERROR_CHECK( esp_wifi_disconnect() );
-    ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &cfg) );
-    ESP_ERROR_CHECK( esp_wifi_connect() );
-}
-
-
-
 void blinkstatus(int dauer, int _anzahl)
 {
     gpio_reset_pin(BLINK_GPIO);
@@ -90,44 +72,98 @@ void blinkstatus(int dauer, int _anzahl)
     }
 }
 
-static esp_err_t event_handler(void *ctx, system_event_t *event)
+
+
+
+void strinttoip4(std::string ip, int &a, int &b, int &c, int &d) {
+    std::stringstream s(ip);
+    char ch; //to temporarily store the '.'
+    s >> a >> ch >> b >> ch >> c >> ch >> d;
+}
+
+
+
+
+static void event_handler_neu(void* arg, esp_event_base_t event_base,
+                                int32_t event_id, void* event_data)
 {
-    switch(event->event_id) {
-    case SYSTEM_EVENT_STA_START:
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         blinkstatus(200, 1);
-        wifi_connect();
-        break;
-    case SYSTEM_EVENT_STA_GOT_IP:
-        xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
-        blinkstatus(1000, 3);
-        break;
-    case SYSTEM_EVENT_STA_DISCONNECTED:
+        esp_wifi_connect();
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
         blinkstatus(200, 5);
         esp_wifi_connect();
-        xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
-        break;
-    default:
-        break;
+        s_retry_num++;
+        ESP_LOGI(TAG, "retry to connect to the AP");
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        blinkstatus(1000, 3);
+        ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
+        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+        s_retry_num = 0;
+        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
-    return ESP_OK;
 }
+
 
 void initialise_wifi()
 {
-    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
-    wifi_event_group = xEventGroupCreate();  
+    s_wifi_event_group = xEventGroupCreate();
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
 
-    esp_log_level_set("wifi", ESP_LOG_NONE); // disable wifi driver logging
-    tcpip_adapter_init();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
-    esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , hostname.c_str());
-    if(ret != ESP_OK ){
-      ESP_LOGE(MAIN_TAG,"failed to set hostname:%d",ret);  
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &event_handler_neu,
+                                                        NULL,
+                                                        &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                        IP_EVENT_STA_GOT_IP,
+                                                        &event_handler_neu,
+                                                        NULL,
+                                                        &instance_got_ip));
+
+
+    wifi_config_t wifi_config = { };
+    strcpy((char*)wifi_config.sta.ssid, (const char*)ssid.c_str());
+    strcpy((char*)wifi_config.sta.password, (const char*)passphrase.c_str());
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+    ESP_ERROR_CHECK(esp_wifi_start() );
+
+    ESP_LOGI(TAG, "wifi_init_sta finished.");
+
+    // Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
+    // number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) 
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+            pdFALSE,
+            pdFALSE,
+            portMAX_DELAY);
+
+    // xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
+    // happened. 
+    if (bits & WIFI_CONNECTED_BIT) {
+        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
+                 ssid.c_str(), passphrase.c_str());
+    } else if (bits & WIFI_FAIL_BIT) {
+        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
+                 ssid.c_str(), passphrase.c_str());
+    } else {
+        ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
-    xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
+
+    // The event will not be processed after unregister 
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, instance_any_id));
+    vEventGroupDelete(s_wifi_event_group);
+
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     ipaddress = std::string(ip4addr_ntoa(&ip_info.ip));
@@ -137,23 +173,12 @@ void initialise_wifi()
     printf("HostName :  %s\n", hostname.c_str());
 }
 
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
 
-void strinttoip4(std::string ip, int &a, int &b, int &c, int &d) {
-    std::stringstream s(ip);
-    char ch; //to temporarily store the '.'
-    s >> a >> ch >> b >> ch >> c >> ch >> d;
-}
-
-void initialise_wifi_fixed_ip()
+void initialise_wifi_fixed_ip2()
 {
-
-    wifi_event_group = xEventGroupCreate();
-
+    s_wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-
     esp_netif_t *my_sta = esp_netif_create_default_wifi_sta();
 
     esp_netif_dhcpc_stop(my_sta);
@@ -173,6 +198,7 @@ void initialise_wifi_fixed_ip()
 
     esp_netif_set_ip_info(my_sta, &ip_info);
 
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
@@ -184,7 +210,20 @@ void initialise_wifi_fixed_ip()
         ESP_ERROR_CHECK(esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info));
     }
 
-    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
+
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &event_handler_neu,
+                                                        NULL,
+                                                        &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                        IP_EVENT_STA_GOT_IP,
+                                                        &event_handler_neu,
+                                                        NULL,
+                                                        &instance_got_ip));
+
 
     wifi_config_t wifi_config = { };
     strcpy((char*)wifi_config.sta.ssid, (const char*)ssid.c_str());
@@ -194,27 +233,39 @@ void initialise_wifi_fixed_ip()
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK(esp_wifi_start() );
 
-    ESP_LOGI(MAIN_TAG, "wifi_init_sta finished.");
+    ESP_LOGI(TAG, "wifi_init_sta finished.");
 
-    EventBits_t bits = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,true,true,portMAX_DELAY);
+    // Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
+    // number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) 
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+            pdFALSE,
+            pdFALSE,
+            portMAX_DELAY);
 
-    if (bits & CONNECTED_BIT) {
-        ESP_LOGI(MAIN_TAG, "connected to ap SSID:%s password:%s",
+    // xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
+    // happened. 
+    if (bits & WIFI_CONNECTED_BIT) {
+        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
                  ssid.c_str(), passphrase.c_str());
-    } else  {
-        ESP_LOGI(MAIN_TAG, "Failed to connect to SSID:%s, password:%s",
+    } else if (bits & WIFI_FAIL_BIT) {
+        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
                  ssid.c_str(), passphrase.c_str());
+    } else {
+        ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
+
+    // The event will not be processed after unregister 
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, instance_any_id));
+    vEventGroupDelete(s_wifi_event_group);
+
     tcpip_adapter_ip_info_t ip_info2;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info2));
     ipaddress = std::string(ip4addr_ntoa(&ip_info2.ip));
     netmask = std::string(ip4addr_ntoa(&ip_info2.netmask));
     gw = std::string(ip4addr_ntoa(&ip_info2.gw));
-
-//    vEventGroupDelete(wifi_event_group);
 }
-
-
 
 void ConnectToWLAN()
 {
@@ -226,10 +277,9 @@ void ConnectToWLAN()
     else
     {
         printf("Connect to WLAN with fixed IP\n");
-        initialise_wifi_fixed_ip();
+        initialise_wifi_fixed_ip2();
     }
 }
-
 
 
 bool ChangeHostName(std::string fn, std::string _newhostname)
@@ -401,16 +451,16 @@ void LoadWlanFromFile(std::string fn)
 
 }
 
-void LoadNetConfigFromFile(std::string fn, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns)
+void LoadNetConfigFromFile(std::string _fn, std::string &_ip, std::string &_gw, std::string &_netmask, std::string &_dns)
 {
     string line = "";
     std::vector<string> zerlegt;
 
-    FILE* pFile;
-    fn = FormatFileName(fn);
-    pFile = OpenFileAndWait(fn.c_str(), "r");
 
-    printf("file loaded\n");
+
+    FILE* pFile;
+    _fn = FormatFileName(_fn);
+    pFile = OpenFileAndWait(_fn.c_str(), "r");
 
     if (pFile == NULL)
         return;
