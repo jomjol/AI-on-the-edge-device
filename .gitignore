@@ -2,7 +2,6 @@
 .pio/
 .vscode/
 .code-workspace
-.helper/
 /sd-card/htm./.vscode/
 /code/build
 
