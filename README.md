@@ -39,13 +39,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-02-28)
-
-* Updated to newest espressif32 (3.1.0) - compilation is running
-* update tflite for digits to version 8.1.0 (new numbers teached)
-* internal preparation for fixed illumination (target: additional speedup)
-
-2021-02-03
+##### Rolling (2021-02-03)
 
 * Pinned espressif32 to version 2.1.0
   With the update to v3.0.0 code can be compiled, but is not functional - major checks (and chances?) needed
