@@ -140,7 +140,10 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
 void CTfLiteClass::MakeAllocate()
 {
     static tflite::AllOpsResolver resolver;
+
+//    printf(LogFile.getESPHeapInfo().c_str()); printf("\n");
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
+//    printf(LogFile.getESPHeapInfo().c_str()); printf("\n");
 
     TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
@@ -229,7 +232,7 @@ CTfLiteClass::CTfLiteClass()
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
-    this->kTensorArenaSize = 150 * 1024;   /// laut testfile: 108000 - bisher 600
+    this->kTensorArenaSize = 200 * 1024;   /// laut testfile: 108000 - bisher 600
     this->tensor_arena = new uint8_t[kTensorArenaSize]; 
 }
 
