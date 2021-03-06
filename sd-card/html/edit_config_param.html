@@ -143,6 +143,24 @@ textarea {
 				Image Brightness (-2 .. 2 - default = "0")
 			</td>
 		</tr>
+		<tr class="expert"  id="MakeImage_FixedExposure_ex10">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
+				<class id="MakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
+			</td>
+			<td>
+				<select id="MakeImage_FixedExposure_value1">
+					<option value="0" selected>true</option>
+					<option value="1" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Fixes the illumination setting of camera at the startup and uses this later --> individual round is faster
+			</td>
+		</tr>
+
+
 <!--
 		<tr class="expert"  id="Contrast_ex3">
 			<td width="20px" style="padding-left: 40px;">
@@ -814,6 +832,7 @@ function UpdateInput() {
 //	WriteParameter(param, category, "MakeImage", "Contrast", false);		
 //	WriteParameter(param, category, "MakeImage", "Saturation", false);		
 	WriteParameter(param, category, "MakeImage", "ImageSize", false, true, true);		
+	WriteParameter(param, category, "MakeImage", "FixedExposure", false, true, true);		
 
 	WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
 	WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
@@ -870,6 +889,7 @@ function ReadParameterAll()
 //	ReadParameter(param, "MakeImage", "Contrast", false);		
 //	ReadParameter(param, "MakeImage", "Saturation", false);		
 	ReadParameter(param, "MakeImage", "ImageSize", false, true);	
+	ReadParameter(param, "MakeImage", "FixedExposure", false, true);	
 
 	ReadParameter(param, "Alignment", "SearchFieldX", false);		
 	ReadParameter(param, "Alignment", "SearchFieldY", false);

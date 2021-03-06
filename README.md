@@ -41,6 +41,10 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 ##### Rolling (2021-02-06)
 
+* New Feature `FixedExposure`: fixes the illumination settings at the ini phase. Therefore later on the waiting time after switching on the illumination can be reduced to a minimum and the flow is 5 seconds faster
+  * parameter needs to be added manually in an existing `config.ini`
+  * together with fast alignment now every 40s or faster a value can be readout (instead of 2-3 minutes before)
+* updated tflite of digits to v8.1.1
 * added checked value information to MQTT error message
 
 

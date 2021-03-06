@@ -28,6 +28,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Saturation");
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
+     ParamAddValue(param, catname, "FixedExposure");     
 
      var catname = "Alignment";
      category[catname] = new Object(); 
