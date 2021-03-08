@@ -403,11 +403,33 @@ esp_err_t handler_editflow(httpd_req_t *req)
     if (_task.compare("test_take") == 0)
     {
         std::string _host = "";
+        std::string _bri = "";
+        std::string _con = "";
+        std::string _sat = "";
+        int bri = 0;
+        int sat = 0;
+        int con = 0;
+
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
         }
+        if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK) {
+            _bri = std::string(_valuechar);
+            bri = stoi(_bri);
+        }
+        if (httpd_query_key_value(_query, "con", _valuechar, 30) == ESP_OK) {
+            _con = std::string(_valuechar);
+            con = stoi(_con);
+        }
+        if (httpd_query_key_value(_query, "sat", _valuechar, 30) == ESP_OK) {
+            _sat = std::string(_valuechar);
+            sat = stoi(_sat);
+        }
+
+
 //        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+        bool changed = Camera.SetBrightnessContrastSaturation(bri, con, sat);
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
@@ -559,9 +581,12 @@ void task_autodoFlow(void *pvParameter)
         LogFile.WriteToFile(zwtemp); 
         printf("CPU Temperature: %.2f\n", cputmp);
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-        const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
-        printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
-        vTaskDelay( xDelay );        
+        if (auto_intervall > fr_delta_ms)
+        {
+            const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
+            printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+            vTaskDelay( xDelay );        
+        }
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;

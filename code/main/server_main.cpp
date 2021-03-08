@@ -209,6 +209,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         return res;
 
     /* Respond with an empty chunk to signal HTTP response completion */
+//    httpd_resp_sendstr(req, "");
     httpd_resp_send_chunk(req, NULL, 0);
 
 #ifdef DEBUG_DETAIL_ON      

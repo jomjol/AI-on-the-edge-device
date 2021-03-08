@@ -136,6 +136,35 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation)
+{
+    bool result = false;
+    sensor_t * s = esp_camera_sensor_get(); 
+    _brightness = min(2, max(-2, _brightness));
+    _contrast = min(2, max(-2, _contrast));
+//    _saturation = min(2, max(-2, _saturation));
+
+//    s->set_saturation(s, _saturation);
+    s->set_contrast(s, _contrast);
+    s->set_brightness(s, _brightness);
+
+    if (_brightness != brightness)
+        result = true;
+    if (_contrast != contrast)
+        result = true;
+    if (_saturation != saturation)
+        result = true;
+    
+    brightness = _brightness;
+    contrast = _contrast;
+    saturation = _saturation;
+
+    if (result && isFixedExposure)
+        EnableAutoExposure(waitbeforepicture_org);
+
+    return result;
+}
+
 
 void CCamera::SetQualitySize(int qual, framesize_t resol)
 {
@@ -181,6 +210,31 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 }
 
 
+void CCamera::EnableAutoExposure(int flashdauer)
+{
+    LEDOnOff(true);
+    LightOnOff(true);
+    const TickType_t xDelay = flashdauer / portTICK_PERIOD_MS;
+    vTaskDelay( xDelay );
+
+    camera_fb_t * fb = esp_camera_fb_get();
+    if (!fb) {
+        ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+    }
+    esp_camera_fb_return(fb);        
+
+    sensor_t * s = esp_camera_sensor_get(); 
+    s->set_gain_ctrl(s, 0);
+    s->set_exposure_ctrl(s, 0);
+
+
+    LEDOnOff(false);  
+    LightOnOff(false);
+    isFixedExposure = true;
+    waitbeforepicture_org = flashdauer;
+}
+
+
 
 esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 {
@@ -223,7 +277,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
 #endif
 
-    LEDOnOff(false);    
+    LEDOnOff(false);  
 
     if (delay > 0) 
         LightOnOff(false);
@@ -513,6 +567,10 @@ CCamera::CCamera()
 #ifdef DEBUG_DETAIL_ON    
     printf("CreateClassCamera\n");
 #endif
+    brightness = -5;
+    contrast = -5;
+    saturation = -5;
+    isFixedExposure = false;
 }
 
 esp_err_t CCamera::InitCam()

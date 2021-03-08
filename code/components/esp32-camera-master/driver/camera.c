@@ -750,7 +750,7 @@ static void IRAM_ATTR dma_filter_buffer(size_t buf_idx)
         if(s_state->sensor.pixformat == PIXFORMAT_JPEG) {
             uint32_t sig = *((uint32_t *)s_state->fb->buf) & 0xFFFFFF;
             if(sig != 0xffd8ff) {
-                ets_printf("bh 0x%08x\n", sig);
+                ESP_LOGD(TAG,"unexpected JPEG signature 0x%08x\n", sig);
                 s_state->fb->bad = 1;
                 return;
             }

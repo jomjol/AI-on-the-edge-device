@@ -15,6 +15,7 @@ class ClassFlowMakeImage :
 {
 protected:
     float waitbeforepicture;
+    float waitbeforepicture_store;
     framesize_t ImageSize;
     bool isImageSize;
     int ImageQuality;
@@ -22,12 +23,15 @@ protected:
     string namerawimage;
     int image_height, image_width;
     bool SaveAllFiles;
+    bool FixedExposure;
+
 
 
     void CopyFile(string input, string output);
 
     esp_err_t camera_capture();
     void takePictureWithFlash(int flashdauer);
+
 
     void SetInitialParameter(void);       
 

@@ -361,14 +361,14 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
-        ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " - raw value: " + ReturnRawValue;
+        ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " - raw value: " + ReturnRawValue + " - checked value: " + std::to_string(Value) + " "; 
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
 
     if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
     {
-        ErrorMessageText = ErrorMessageText + "Rate too high - Returned old value - read value: " + zwvalue + " ";
+        ErrorMessageText = ErrorMessageText + "Rate too high - Returned old value - read value: " + zwvalue + " - checked value: " + std::to_string(Value) + " ";
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }

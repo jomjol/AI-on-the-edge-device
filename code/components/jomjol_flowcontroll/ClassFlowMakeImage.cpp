@@ -34,6 +34,7 @@ void ClassFlowMakeImage::SetInitialParameter(void)
     ImageSize = FRAMESIZE_VGA;
     SaveAllFiles = false;
     disabled = false;
+    FixedExposure = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
 }     
 
@@ -48,6 +49,9 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     std::vector<string> zerlegt;
 
     aktparamgraph = trim(aktparamgraph);
+    int _brightness = 0;
+    int _contrast = 0;
+    int _saturation = 0;
 
     if (aktparamgraph.size() == 0)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
@@ -79,13 +83,47 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
                 SaveAllFiles = true;
         }
 
+        if ((toUpper(zerlegt[0]) == "BRIGHTNESS") && (zerlegt.size() > 1))
+        {
+            _brightness = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "CONTRAST") && (zerlegt.size() > 1))
+        {
+            _contrast = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "SATURATION") && (zerlegt.size() > 1))
+        {
+            _saturation = stoi(zerlegt[1]);
+        }
+
+        if ((toUpper(zerlegt[0]) == "FIXEDEXPOSURE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                FixedExposure = true;
+        }
     }
 
+    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation);
     Camera.SetQualitySize(ImageQuality, ImageSize);
+
     image_width = Camera.image_width;
     image_height = Camera.image_height;
     rawImage = new CImageBasis();
     rawImage->CreateEmptyImage(image_width, image_height, 3);
+
+    waitbeforepicture_store = waitbeforepicture;
+    if (FixedExposure)
+    {
+        printf("Fixed Exposure enabled!\n");
+        int flashdauer = (int) (waitbeforepicture * 1000);
+        Camera.EnableAutoExposure(flashdauer);
+        waitbeforepicture = 0.2;
+//        flashdauer = (int) (waitbeforepicture * 1000);
+//        takePictureWithFlash(flashdauer);
+//        rawImage->SaveToFile("/sdcard/init2.jpg");
+    }
 
     return true;
 }
@@ -101,7 +139,7 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 {
     string logPath = CreateLogFolder(zwtime);
 
-    int flashdauer = (int) waitbeforepicture * 1000;
+    int flashdauer = (int) (waitbeforepicture * 1000);
  
  #ifdef DEBUG_DETAIL_ON  
     LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
@@ -126,7 +164,7 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 
 esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
 {
-    int flashdauer = (int) waitbeforepicture * 1000;
+    int flashdauer = (int) (waitbeforepicture * 1000);
     return Camera.CaptureToHTTP(req, flashdauer);
 }
 
@@ -135,7 +173,7 @@ ImageData* ClassFlowMakeImage::SendRawImage()
 {
     CImageBasis *zw = new CImageBasis(rawImage);
     ImageData *id;
-    int flashdauer = (int) waitbeforepicture * 1000;
+    int flashdauer = (int) (waitbeforepicture * 1000);
     Camera.CaptureToBasisImage(zw, flashdauer);
     id = zw->writeToMemoryAsJPG();    
     delete zw;

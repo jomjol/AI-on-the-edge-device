@@ -23,6 +23,9 @@ class CCamera {
     protected:
         int ActualQuality;
         framesize_t ActualResolution;
+        int brightness, contrast, saturation;
+        bool isFixedExposure;
+        int waitbeforepicture_org;
 
     public:
         int image_height, image_width;
@@ -34,7 +37,11 @@ class CCamera {
         void LEDOnOff(bool status);
         esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
         void SetQualitySize(int qual, framesize_t resol);
+        bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
+
+        void EnableAutoExposure(int flashdauer);
+        
 
         framesize_t TextToFramesize(const char * text);
 

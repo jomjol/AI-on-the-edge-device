@@ -41,6 +41,19 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
+##### 6.2.0 Image Processing in Memory - (2021-03-08)
+
+* Determination of fixed illumination settings during startup - speed up of 5s in each run
+* Update digital CNN to v8.1.1 (additional digital images trained)
+* Extended error message in MQTT error message
+
+
+* Image brightness is now adjustable 
+
+
+* Bug fixing: minor topics 
+
+
 ##### 6.1.0 Image Processing in Memory - (2021-01-20)
 
 * Disabling of analog / digital counters in configuration 
