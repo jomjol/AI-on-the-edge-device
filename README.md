@@ -39,32 +39,20 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-02-06)
-
-* New Feature `FixedExposure`: fixes the illumination settings at the ini phase. Therefore later on the waiting time after switching on the illumination can be reduced to a minimum and the flow is 5 seconds faster
-  * parameter needs to be added manually in an existing `config.ini`
-  * together with fast alignment now every 40s or faster a value can be readout (instead of 2-3 minutes before)
-* updated tflite of digits to v8.1.1
-* added checked value information to MQTT error message
 
 
-2021-02-03
+##### 6.2.0 Image Processing in Memory - (2021-03-08)
+
+* Determination of fixed illumination settings during startup - speed up of 5s in each run
+* Update digital CNN to v8.1.1 (additional digital images trained)
+* Extended error message in MQTT error message
 
 
-* Pinned espressif32 to version 2.1.0
-  With the update to v3.0.0 code can be compiled, but is not functional - major checks (and chances?) needed
+* Image brightness is now adjustable 
 
 
-2021-01-23
+* Bug fixing: minor topics 
 
-
-* Implementation of image brightness setting 
-
-* Bug fixing: minor topics in html, waiting time in doFlow
-
-* based on Master v6.1.0 (2021-01-20)
-
-  
 
 ##### 6.1.0 Image Processing in Memory - (2021-01-20)
 
