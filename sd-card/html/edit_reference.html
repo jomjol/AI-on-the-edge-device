@@ -96,11 +96,18 @@ table {
             param;
 
         function doTake(){ 
-            _brightness = document.getElementById("MakeImage_Brightness_value1").value;
+            var xhttp = new XMLHttpRequest();
+            if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
+            {
+                _brightness = document.getElementById("MakeImage_Brightness_value1").value;
 //            _contrast = document.getElementById("MakeImage_Contrast_value1").value;
 //            _saturation = document.getElementById("MakeImage_Saturation_value1").value;
-            var xhttp = new XMLHttpRequest();
-            url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
+url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
+            }
+            else
+            {
+                url = basepath + "/editflow.html?task=test_take";
+            }
             if (basepath.length > 0){
                 url = url + "&host=" + basepath;
             }
@@ -123,8 +130,15 @@ table {
             else
                 document.getElementById("labelmirror").style = "color:lightgrey;";
 
-            if (param["MakeImage"]["Brightness"].found)
+            if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
                 document.getElementById("MakeImage_Brightness_value1").disabled = false;
+            else
+            {
+                document.getElementById("MakeImage_Brightness_value1").type = "hidden";
+                document.getElementById("MakeImage_Brightness_text").style.visibility = "hidden";
+                
+            }
+
 //            if (param["MakeImage"]["Saturation"].found)
 //                document.getElementById("MakeImage_Saturation_value1").disabled = false;
 //            if (param["MakeImage"]["Contrast"].found)
@@ -174,14 +188,15 @@ table {
                 else
                     param["Alignment"]["InitialMirror"].value1 = "false";
 
-                ReadParameter(param, "MakeImage", "Brightness", false);		
-//            	ReadParameter(param, "MakeImage", "Contrast", false);
-//                ReadParameter(param, "MakeImage", "Saturation", false);
-                
-
-                var textToSave = setConfigParameters(param);
-		        FileDeleteOnServer("/config/config.ini", basepath);
-		        FileSendContent(textToSave, "/config/config.ini", basepath);
+                if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
+                {
+                    ReadParameter(param, "MakeImage", "Brightness", false);		
+    //            	ReadParameter(param, "MakeImage", "Contrast", false);
+    //                ReadParameter(param, "MakeImage", "Saturation", false);
+                    var textToSave = setConfigParameters(param);
+                    FileDeleteOnServer("/config/config.ini", basepath);
+                    FileSendContent(textToSave, "/config/config.ini", basepath);
+                }
 
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);

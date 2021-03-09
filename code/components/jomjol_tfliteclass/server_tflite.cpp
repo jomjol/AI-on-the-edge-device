@@ -406,9 +406,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
         std::string _bri = "";
         std::string _con = "";
         std::string _sat = "";
-        int bri = 0;
-        int sat = 0;
-        int con = 0;
+        int bri = -100;
+        int sat = -100;
+        int con = -100;
 
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
