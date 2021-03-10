@@ -41,8 +41,9 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### 6.2.1 Image Processing in Memory - (2021-03-08)
+##### 6.2.2 Image Processing in Memory - (2021-03-10)
 
+* NEW 6.2.2: bug fixing
 * NEW 6.2.1: Changed brightness and contrast to default if not enabled (resolves to bright images)
 * Determination of fixed illumination settings during startup - speed up of 5s in each run
 * Update digital CNN to v8.1.1 (additional digital images trained)

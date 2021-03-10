@@ -368,7 +368,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
     {
-        ErrorMessageText = ErrorMessageText + "Rate too high - Returned old value - read value: " + zwvalue + " - checked value: " + std::to_string(Value) + " ";
+        ErrorMessageText = ErrorMessageText + "Rate too high - Returned old value - read value: " + zwvalue + " - checked value: " + RundeOutput(Value, AnzahlAnalog - DecimalShift) + " ";
         Value = PreValue;
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
