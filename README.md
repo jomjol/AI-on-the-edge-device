@@ -41,6 +41,11 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
+##### 6.3.0 Image Processing in Memory - (2021-03-14)
+
+* Initial setup mode: bug fixing, error correction
+* Bug-fixing
+
 ##### 6.2.2 Image Processing in Memory - (2021-03-10)
 
 * NEW 6.2.2: bug fixing

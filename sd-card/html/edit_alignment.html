@@ -85,13 +85,14 @@ select {
 
 	<table>
 	  <tr>
-		<td colspan="2"><input class="button" type="submit" name="saveroi" onclick="SaveToConfig()" value="Save to Config.ini"></td>
+		<td colspan="2"><input class="button" type="submit" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini"></td>
 	  </tr>  
 	</table>
 
 <script type="text/javascript" src="./gethost.js"></script> 
 <script type="text/javascript" src="./readconfig.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script>   
+<script type="text/javascript" src="./readconfigcommon.js"></script>
+
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -101,7 +102,8 @@ select {
             drag = false,
             aktindex = 0,
             refInfo,
-            enhanceCon = false;
+            enhanceCon = false,
+            param;
             basepath = "http://192.168.178.26";
             basepath = "";
 
@@ -111,59 +113,59 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    refInfo["name"] = document.getElementById("name").value;
-    refInfo["x"] = document.getElementById("refx").value;
-    refInfo["y"] = document.getElementById("refy").value; 
-    refInfo["dx"] = document.getElementById("refdx").value;
-    refInfo["dy"] = document.getElementById("refdy").value;   
-    UpdateConfig(refInfo, aktindex, enhanceCon, basepath); 
+/*
+    refInfo[aktindex]["name"] = document.getElementById("name").value;
+    refInfo[aktindex]["x"] = document.getElementById("refx").value;
+    refInfo[aktindex]["y"] = document.getElementById("refy").value; 
+    refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
+    refInfo[aktindex]["dy"] = document.getElementById("refdy").value;
+*/   
+    UpdateConfigReference(refInfo, basepath); 
 }
 
 function EnhanceContrast(){
-    refInfo["name"] = document.getElementById("name").value;
-    refInfo["x"] = document.getElementById("refx").value;
-    refInfo["y"] = document.getElementById("refy").value; 
-    refInfo["dx"] = document.getElementById("refdx").value;
-    refInfo["dy"] = document.getElementById("refdy").value;       
+    refInfo[aktindex]["name"] = document.getElementById("name").value;
+    refInfo[aktindex]["x"] = document.getElementById("refx").value;
+    refInfo[aktindex]["y"] = document.getElementById("refy").value; 
+    refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
+    refInfo[aktindex]["dy"] = document.getElementById("refdy").value;       
 
     enhanceCon = true;
-    MakeContrastImageZW(refInfo, enhanceCon, basepath);
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
-    document.getElementById("img_ref").src = url;
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-    document.getElementById("img_ref_org").src = url;
+    MakeContrastImageZW(refInfo[aktindex], enhanceCon, basepath);
+    UpdateReference();
+//    var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
+//    document.getElementById("img_ref").src = url;
+//    var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
+//    document.getElementById("img_ref_org").src = url;
 }
 
 function UpdateReference(){
-    refInfo = GetCoordinates(aktindex, basepath);
     document.getElementById("img_ref").onload = function () {
         document.getElementById("refdx").value = this.width;
         document.getElementById("refdy").value = this.height;   
-        refInfo["dx"] = this.width;
-        refInfo["dy"] = this.height;
+        refInfo[aktindex]["dx"] = this.width;
+        refInfo[aktindex]["dy"] = this.height;
         rect.w = document.getElementById("refdx").value;
         rect.h = document.getElementById("refdy").value;
         draw();
     }
 
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-    document.getElementById("img_ref_org").src = url;
-    var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
+    _filenameurl = refInfo[aktindex]["name"].replace("/config/", "/img_tmp/");
+
+    var url = basepath + "/fileserver" + _filenameurl + "?"  + Date.now();
     document.getElementById("img_ref").src = url;
 
-    document.getElementById("name").value = refInfo["name"];
-    document.getElementById("refx").value = refInfo["x"];
-    document.getElementById("refy").value = refInfo["y"];  
+    _filenameurl = _filenameurl.replace(".jpg", "_org.jpg");
+    var url = basepath + "/fileserver" + _filenameurl +  "?" + Date.now();
+    document.getElementById("img_ref_org").src = url;
+
+    document.getElementById("name").value = refInfo[aktindex]["name"];
+    document.getElementById("refx").value = refInfo[aktindex]["x"];
+    document.getElementById("refy").value = refInfo[aktindex]["y"];  
     rect.startX = document.getElementById("refx").value;
     rect.startY = document.getElementById("refy").value; 
     document.getElementById("enhancecontrast").disabled = true;
     draw();      
-}
-
-function ParseIni(_basepath) {
-    loadConfig(_basepath);
-    ParseConfig();
-    UpdateReference();
 }
 			
 function dataURLtoBlob(dataurl) {
@@ -205,13 +207,21 @@ function dataURLtoBlob(dataurl) {
    
     
     
-        function init() {
+        function init() { 
             basepath = getbasepath();
+            loadConfig(basepath); 
+            ParseConfig();
+
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
             loadCanvas(basepath + "/fileserver/config/reference.jpg");
-            ParseIni(basepath);
+
+            CopyReferenceToImgTmp(basepath);
+            refInfo = GetReferencesInfo();
+
+            UpdateReference();
+
             drawImage();
         }
         function drawImage(){
@@ -226,17 +236,13 @@ function dataURLtoBlob(dataurl) {
 
 
         function CutOutReference(){
-            refInfo["x"] = document.getElementById("refx").value;
-            refInfo["y"] = document.getElementById("refy").value; 
-            refInfo["dx"] = document.getElementById("refdx").value;
-            refInfo["dy"] = document.getElementById("refdy").value;   
-            MakeRefZW(refInfo, basepath); 
-            var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
-            document.getElementById("img_ref_org").src = url;
-            var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-            document.getElementById("img_ref").src = url;
+            refInfo[aktindex]["x"] = document.getElementById("refx").value;
+            refInfo[aktindex]["y"] = document.getElementById("refy").value; 
+            refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
+            refInfo[aktindex]["dy"] = document.getElementById("refdy").value;   
+            MakeRefZW(refInfo[aktindex], basepath); 
+            UpdateReference();
             document.getElementById("enhancecontrast").disabled = false;
-            draw();
         }
 
         function drawGrid(){

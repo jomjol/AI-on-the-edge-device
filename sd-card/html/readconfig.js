@@ -14,7 +14,9 @@ var digitsEnabled = false;
 var posDigitsHeader;
 
 function MakeRefZW(zw, _basepath){
-     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=/img_tmp/ref_zw_org.jpg&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     _filetarget = zw["name"].replace("/config/", "/img_tmp/");
+     _filetarget = _filetarget.replace(".jpg", "_org.jpg");
+     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
@@ -22,18 +24,30 @@ function MakeRefZW(zw, _basepath){
      catch (error)
      {
 //          alert("Deleting Config.ini failed");
-     }  
-     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", "/img_tmp/ref_zw.jpg", _basepath);
+     }
+     _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
+//     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
+     FileCopyOnServer(_filetarget, _filetarget2, _basepath);
 }
 
-function GetCoordinates(index, _basepath){
-     FileCopyOnServer(ref[index]["name"], "/img_tmp/ref_zw.jpg", _basepath);
+function CopyReferenceToImgTmp(_basepath)
+{
+     for (index = 0; index < 2; ++index)
+     {
+          _filenamevon = ref[index]["name"];
+          _filenamenach = _filenamevon.replace("/config/", "/img_tmp/");
+          FileDeleteOnServer(_filenamenach, _basepath);
+          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+     
+          _filenamevon = _filenamevon.replace(".jpg", "_org.jpg");
+          _filenamenach = _filenamenach.replace(".jpg", "_org.jpg");
+          FileDeleteOnServer(_filenamenach, _basepath);
+          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+     }
+}
 
-     FileDeleteOnServer("/img_tmp/ref_zw_org.jpg", _basepath);
-     var namezw = ref[index]["name"].replace(".jpg", "_org.jpg");
-     FileCopyOnServer(namezw, "/img_tmp/ref_zw_org.jpg", _basepath);
-
-     return ref[index];
+function GetReferencesInfo(){
+     return ref;
 }
 
 function ParseConfigAlignment(_aktline){
@@ -321,21 +335,31 @@ function UpdateConfigFileReferenceChange(_basepath){
      SaveConfigToServer(_basepath);
 }
 
-function UpdateConfig(zw, _index, _enhance, _basepath){
-     var zeile = zw["name"] + " " + zw["x"] + " " + zw["y"];
-     var _pos = ref[_index]["pos_ref"];
-     config_split[_pos] = zeile;
+function UpdateConfigReference(zw, _basepath){
+     for (var index = 0; index < 2; ++index)
+     {
+          var zeile = zw[index]["name"] + " " + zw[index]["x"] + " " + zw[index]["y"];
+          var _pos = zw[index]["pos_ref"];
+          config_split[_pos] = zeile;
+
+          _filenamenach = ref[index]["name"];
+          _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
+          FileDeleteOnServer(_filenamenach, _basepath);
+          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+     
+          _filenamenach = _filenamenach.replace(".jpg", "_org.jpg");
+          _filenamevon = _filenamevon.replace(".jpg", "_org.jpg");
+          FileDeleteOnServer(_filenamenach, _basepath);
+          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+
+     }
 
      SaveConfigToServer(_basepath);
-
-     var namezw = zw["name"];
-     FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _basepath);
-     var namezw = zw["name"].replace(".jpg", "_org.jpg");
-     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", namezw, _basepath);     
 }
 
 function MakeContrastImageZW(zw, _enhance, _basepath){
-     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=/img_tmp/ref_zw.jpg" + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     _filename = zw["name"].replace("/config/", "/img_tmp/");
+     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      if (_enhance == true){
           url = url + "&enhance=true";
      }

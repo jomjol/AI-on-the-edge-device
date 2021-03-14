@@ -102,7 +102,7 @@ table {
                 _brightness = document.getElementById("MakeImage_Brightness_value1").value;
 //            _contrast = document.getElementById("MakeImage_Contrast_value1").value;
 //            _saturation = document.getElementById("MakeImage_Saturation_value1").value;
-url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
+            url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
             }
             else
             {
@@ -118,9 +118,6 @@ url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
             
         function loadRawImage(){
             url = basepath + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
-//            document.getElementById("finerotate").value = 0;
-//            document.getElementById("prerotateangle").value = getPreRotate();
-//            document.getElementById("mirror").checked = getMirror();
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
             document.getElementById("updatereferenceimage").disabled = false;
@@ -128,7 +125,9 @@ url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
             if (param["Alignment"]["InitialMirror"].found)
                 document.getElementById("mirror").disabled = false;
             else
+            {
                 document.getElementById("labelmirror").style = "color:lightgrey;";
+            }
 
             if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
                 document.getElementById("MakeImage_Brightness_value1").disabled = false;
@@ -164,6 +163,14 @@ url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
             document.getElementById("MakeImage_Brightness_value1").disabled = true;
 //            document.getElementById("MakeImage_Saturation_value1").disabled = true;
 //            document.getElementById("MakeImage_Contrast_value1").disabled = true;
+            document.getElementById("mirror").disabled = false;
+            if (!(param["Alignment"]["InitialMirror"].found))
+            {
+                document.getElementById("MakeImage_Brightness_value1").type = "hidden";
+                document.getElementById("MakeImage_Brightness_text").style.visibility = "hidden";
+            }
+
+
             document.getElementById("mirror").disabled = true;
 
             isActReference = true;                                  
