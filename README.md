@@ -39,10 +39,12 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-03-13)
 
-* Bug-fixing for html code
-* based on v6.2.2
+
+##### 6.3.0 Image Processing in Memory - (2021-03-14)
+
+* Initial setup mode: bug fixing, error correction
+* Bug-fixing
 
 ##### 6.2.2 Image Processing in Memory - (2021-03-10)
 
