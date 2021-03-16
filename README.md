@@ -41,8 +41,9 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### 6.3.0 Image Processing in Memory - (2021-03-14)
+##### 6.3.1 Image Processing in Memory - (2021-03-16)
 
+* NEW: 6.3.1: bug fixing in initial edit reference image and `config.ini` (Spelling error in `InitialRotate`)
 * Initial setup mode: bug fixing, error correction
 * Bug-fixing
 

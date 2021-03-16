@@ -164,7 +164,7 @@ table {
 //            document.getElementById("MakeImage_Saturation_value1").disabled = true;
 //            document.getElementById("MakeImage_Contrast_value1").disabled = true;
             document.getElementById("mirror").disabled = false;
-            if (!(param["Alignment"]["InitialMirror"].found))
+            if (!(param["MakeImage"]["Brightness"].found))
             {
                 document.getElementById("MakeImage_Brightness_value1").type = "hidden";
                 document.getElementById("MakeImage_Brightness_text").style.visibility = "hidden";
@@ -200,13 +200,15 @@ table {
                     ReadParameter(param, "MakeImage", "Brightness", false);		
     //            	ReadParameter(param, "MakeImage", "Contrast", false);
     //                ReadParameter(param, "MakeImage", "Saturation", false);
-                    var textToSave = setConfigParameters(param);
-                    FileDeleteOnServer("/config/config.ini", basepath);
-                    FileSendContent(textToSave, "/config/config.ini", basepath);
                 }
 
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
+
+                var textToSave = setConfigParameters(param);
+                FileDeleteOnServer("/config/config.ini", basepath);
+                FileSendContent(textToSave, "/config/config.ini", basepath);
+
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
                 showReference();
                 UpdatePage();
