@@ -363,7 +363,15 @@ function ParseIni(_basepath) {
             var y0 = parseInt(rect.startY) - parseInt(lw/2);
             var dx = parseInt(rect.w) + parseInt(lw);
             var dy = parseInt(rect.h) + parseInt(lw);
-            context.strokeRect(x0, y0, dx, dy);    
+            context.strokeRect(x0, y0, dx, dy); 
+            context.lineWidth = 1;
+            context.beginPath();
+            context.arc(x0+dx/2, y0+dy/2, dx/2, 0, 2 * Math.PI);
+            context.moveTo(x0+dx/2, y0);
+            context.lineTo(x0+dx/2, y0+dy);
+            context.moveTo(x0, y0+dy/2);
+            context.lineTo(x0+dx, y0+dy/2);
+            context.stroke();   
             ROIInfo[aktindex]["x"] = rect.startX;       
             ROIInfo[aktindex]["y"] = rect.startY;       
             ROIInfo[aktindex]["dx"] = rect.w;       
