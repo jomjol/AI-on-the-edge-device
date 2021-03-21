@@ -3,10 +3,13 @@
 **There are a lot of ideas for further improvements, but only limited capacity on side of the developer. **Therefore I have created this page as a collection of ideas. 
 
 1. Who ever has a new idea can put it here, so it that it is not forgotten. 
+
 2. Who ever has time, capacity and passion to support, can take any of the ideas and implement them. 
    I will support and help where ever I can!
+   
+   
 
-
+____
 
 #### #3 Allow grouping of digits to multiple reading values
 
@@ -25,6 +28,8 @@ https://github.com/jomjol/AI-on-the-edge-device/issues/123
 
 
 
+____
+
 #### #2 MQTT-controll with callback 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/105
 
@@ -38,9 +43,9 @@ To do:
 
 * think about the startup, as there the default config is loaded 
 
+  
 
-
-
+____
 
 #### #1 Optional GPIO for external flash/lighting
 
