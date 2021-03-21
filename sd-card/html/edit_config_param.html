@@ -61,7 +61,7 @@ textarea {
 		</tr> 
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MakeImage_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("MakeImage_LogImageLocation_value1").disabled = !document.getElementById("MakeImage_LogImageLocation_value1").disabled' unchecked >
+				<input type="checkbox" id="MakeImage_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogImageLocation")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class>
@@ -75,7 +75,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px" style="padding-left: 40px;">
-				<td"><input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("MakeImage_LogfileRetentionInDays_value1").disabled = !document.getElementById("MakeImage_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogfileRetentionInDays")' unchecked ></td>
 			</td>
 			<td>
 				<class id="MakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
@@ -223,7 +223,7 @@ textarea {
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
 			<td  width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'document.getElementById("Alignment_AlignmentAlgo_value1").disabled = !document.getElementById("Alignment_AlignmentAlgo_value1").disabled' unchecked >
+				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
 			</td>
 			<td>
 				<class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class>
@@ -260,7 +260,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="Digits_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("Digits_LogImageLocation_value1").disabled = !document.getElementById("Digits_LogImageLocation_value1").disabled' unchecked >
+				<input type="checkbox" id="Digits_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogImageLocation")' unchecked >
 			</td>
 			<td>
 				<class id="Digits_LogImageLocation_text" style="color:black;">LogImageLocation</class>
@@ -274,7 +274,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<td"><input type="checkbox" id="Digits_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Digits_LogfileRetentionInDays_value1").disabled = !document.getElementById("Digits_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="Digits_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogfileRetentionInDays")' unchecked ></td>
 			</td>
 			<td>
 				<class id="Digits_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
@@ -313,7 +313,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="Analog_LogImageLocation_enabled" value="1"  onclick = 'document.getElementById("Analog_LogImageLocation_value1").disabled = !document.getElementById("Analog_LogImageLocation_value1").disabled' unchecked >
+				<input type="checkbox" id="Analog_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogImageLocation")' unchecked >
 			</td>
 			<td> <class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class> </td>
 			<td> <input type="text" name="name" id="Analog_LogImageLocation_value1"> </td>
@@ -321,7 +321,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<td"><input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Analog_LogfileRetentionInDays_value1").disabled = !document.getElementById("Analog_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogfileRetentionInDays")' unchecked ></td>
 			</td>
 			<td> <class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class> </td>
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
@@ -330,7 +330,7 @@ textarea {
 
 		<tr class="expert"  id="Analog_ExtendedResolution_ex10">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="Analog_ExtendedResolution_enabled" value="1"  onclick = 'document.getElementById("Analog_ExtendedResolution_value1").disabled = !document.getElementById("Analog_ExtendedResolution_value1").disabled' unchecked >
+				<input type="checkbox" id="Analog_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ExtendedResolution")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="Analog_ExtendedResolution_text" style="color:black;">ExtendedResolution</class>
@@ -364,7 +364,7 @@ textarea {
 		</tr> 		
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_DecimalShift_value1").disabled = !document.getElementById("PostProcessing_DecimalShift_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class>
@@ -378,7 +378,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_PreValueUse_value1").disabled = !document.getElementById("PostProcessing_PreValueUse_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueUse")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class>
@@ -395,7 +395,7 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex11">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_PreValueAgeStartup_value1").disabled = !document.getElementById("PostProcessing_PreValueAgeStartup_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">PreValueAgeStartup</class>
@@ -409,7 +409,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_AllowNegativeRates_value1").disabled = !document.getElementById("PostProcessing_AllowNegativeRates_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class>
@@ -426,7 +426,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_MaxRateValue_value1").disabled = !document.getElementById("PostProcessing_MaxRateValue_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class>
@@ -440,7 +440,7 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_ErrorMessage_value1").disabled = !document.getElementById("PostProcessing_ErrorMessage_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class>
@@ -457,7 +457,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'document.getElementById("PostProcessing_CheckDigitIncreaseConsistency_value1").disabled = !document.getElementById("PostProcessing_CheckDigitIncreaseConsistency_value1").disabled' unchecked >
+				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "CheckDigitIncreaseConsistency")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class>
@@ -478,7 +478,7 @@ textarea {
 		</tr> 		
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'document.getElementById("MQTT_Uri_value1").disabled = !document.getElementById("MQTT_Uri_value1").disabled' unchecked >
+				<input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "Uri")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_Uri_text" style="color:black;">Uri</class>
@@ -492,7 +492,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_Topic_enabled" value="1"  onclick = 'document.getElementById("MQTT_Topic_value1").disabled = !document.getElementById("MQTT_Topic_value1").disabled' unchecked >
+				<input type="checkbox" id="MQTT_Topic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "Topic")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_Topic_text" style="color:black;">Topic</class>
@@ -506,7 +506,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_TopicError_enabled" value="1"  onclick = 'document.getElementById("MQTT_TopicError_value1").disabled = !document.getElementById("MQTT_TopicError_value1").disabled' unchecked >
+				<input type="checkbox" id="MQTT_TopicError_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "TopicError")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_TopicError_text" style="color:black;">TopicError</class>
@@ -520,7 +520,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'document.getElementById("MQTT_ClientID_value1").disabled = !document.getElementById("MQTT_ClientID_value1").disabled' unchecked >
+				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_ClientID_text" style="color:black;">ClientID</class>
@@ -534,7 +534,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'document.getElementById("MQTT_user_value1").disabled = !document.getElementById("MQTT_user_value1").disabled' unchecked >
+				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "user")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_user_text" style="color:black;">user</class>
@@ -548,7 +548,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'document.getElementById("MQTT_password_value1").disabled = !document.getElementById("MQTT_password_value1").disabled' unchecked >
+				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "password")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="MQTT_password_text" style="color:black;">password</class>
@@ -566,7 +566,6 @@ textarea {
 		</tr> 			
 		<tr class="expert"  id="ex13">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="AutoTimer_AutoStart_enabled" value="1"  onclick = 'document.getElementById("AutoTimer_AutoStart_value1").disabled = !document.getElementById("AutoTimer_AutoStart_value1").disabled' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
@@ -583,7 +582,6 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="AutoTimer_Intervall_enabled" value="1"  onclick = 'document.getElementById("AutoTimer_Intervall_value1").disabled = !document.getElementById("AutoTimerg_Intervall_value1").disabled' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
@@ -601,7 +599,7 @@ textarea {
 		</tr> 		
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'document.getElementById("Debug_Logfile_value1").disabled = !document.getElementById("Debug_Logfile_value1").disabled' unchecked >
+				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "Logfile")' unchecked >
 			</td>
 			<td  width="200px">
 				<class id="Debug_Logfile_text" style="color:black;">Logfile</class>
@@ -618,7 +616,7 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<td"><input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'document.getElementById("Debug_LogfileRetentionInDays_value1").disabled = !document.getElementById("Debug_LogfileRetentionInDays_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked ></td>
 			</td>
 			<td>
 				<class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
@@ -636,7 +634,7 @@ textarea {
 		</tr> 	
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<td"><input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'document.getElementById("System_TimeZone_value1").disabled = !document.getElementById("System_TimeZone_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked ></td>
 			</td>
 			<td>
 				<class id="System_TimeZone_text" style="color:black;">TimeZone</class>
@@ -650,7 +648,7 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex16">
 			<td width="20px"  style="padding-left: 40px;">
-				<td"><input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'document.getElementById("System_TimeServer_value1").disabled = !document.getElementById("System_TimeServer_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked ></td>
 			</td>
 			<td>
 				<class id="System_TimeServer_text" style="color:black;">TimeServer</class>
@@ -664,7 +662,7 @@ textarea {
 		</tr>
 		<tr class="expert"  id="System_Hostname">
 			<td width="20px"  style="padding-left: 40px;">
-				<td"><input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'document.getElementById("System_Hostname_value1").disabled = !document.getElementById("System_Hostname_value1").disabled' unchecked ></td>
+				<td"><input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked ></td>
 			</td>
 			<td>
 				<class id="System_Hostname_text" style="color:black;">Hostname</class>
@@ -768,6 +766,33 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _select = fal
 	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional);
 }
 
+function InvertEnableItem(_cat, _param)
+{
+	_zw = _cat + "_" + _param + "_enabled";
+	_isOn = document.getElementById(_zw).checked;
+
+	_color = "color:lightgrey;";
+	if (_isOn) {
+		_color = "color:black;";
+	}
+
+	_zw = _cat + "_" + _param + "_text";
+	document.getElementById(_zw).disabled = !_isOn;
+	document.getElementById(_zw).style = _color;
+
+	if (param[_cat][_param]["anzParam"] == 2) {
+		_color = "width: 30px;" + _color;
+	}
+
+	for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
+			document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
+			document.getElementById(_cat+"_"+_param+"_value"+j).style=_color;	
+	}
+
+	
+
+}
+
 function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 {
 	_status = _param[_cat][_name]["found"] && _category[_cat]["enabled"];
@@ -864,8 +889,8 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);	
 
-	WriteParameter(param, category, "AutoTimer", "AutoStart", true, true);	
-	WriteParameter(param, category, "AutoTimer", "Intervall", true);	
+	WriteParameter(param, category, "AutoTimer", "AutoStart", false, true);	
+	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
 
 	WriteParameter(param, category, "Debug", "Logfile", true, true);	
 	WriteParameter(param, category, "Debug", "LogfileRetentionInDays", true);	
@@ -921,8 +946,8 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 
-	ReadParameter(param, "AutoTimer", "AutoStart", true, true);	
-	ReadParameter(param, "AutoTimer", "Intervall", true);	
+	ReadParameter(param, "AutoTimer", "AutoStart", false, true);	
+	ReadParameter(param, "AutoTimer", "Intervall", false);	
 
 	ReadParameter(param, "Debug", "Logfile", true, true);	
 	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	

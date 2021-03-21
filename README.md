@@ -41,6 +41,11 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
+##### Rolling - (2021-03-21)
+
+* Bug fixing in `html.zip`
+* based on v6.4.0
+
 ##### 6.4.0 Image Processing in Memory - (2021-03-20)
 
 * Additional alignment marks for settings the ROIs (analog and digit)
