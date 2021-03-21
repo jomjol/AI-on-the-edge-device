@@ -292,10 +292,13 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     for (int i = 0; i < neuesfile.size(); ++i)
     {
+        printf(neuesfile[i].c_str());
         fputs(neuesfile[i].c_str(), pFile);
     }
 
     fclose(pFile);
+
+    printf("*** Update hostname done ***\n");
 
     return true;
 }

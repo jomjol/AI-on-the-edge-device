@@ -382,6 +382,9 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
+                printf("do reboot\n");
+                esp_restart();
+                hard_restart();                   
                 doReboot();
             }
         }
