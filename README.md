@@ -81,23 +81,24 @@ If you would like to support the developer with a cup of coffee you can do that 
 * **Major change**: image processing fully in memory - no need of SD card buffer anymore
   
   * Need to limit camera resolution to VGA (due to memory limits)
-  
 * MQTT: Last Will Testament (LWT) implemented: "connection lost" in case of connection lost to `TopicError`
-
 * Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
-
 * Update digital CNN to v7.2.1 (additional digital images trained) 
-
 * Setting of arbitrary time server in `config.ini`
-
 * Option for fixed IP-, DNS-Settings in `wlan.ini`
-
 * Increased stability (internal image and camera handling)
-
 * Bug fixing: edit digits, handling PreValue, html-bugs
 
 
 
+
+## Additional ideas
+
+There are some ideas and feature request, which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequests.md](FeatureRequests.md)
+
+
+
+------
 
 ## History
 
