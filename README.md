@@ -44,6 +44,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 ##### 6.4.0 Image Processing in Memory - (2021-03-20)
 
 * Additional alignment marks for settings the ROIs (analog and digit)
+* Upgrade analog CNN to v7.0.0 (added new type of pointer)
 
 ##### 6.3.1 Image Processing in Memory - (2021-03-16)
 
