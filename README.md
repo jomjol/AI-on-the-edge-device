@@ -94,7 +94,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 ## Additional ideas
 
-There are some ideas and feature request, which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequests.md](FeatureRequests.md)
+There are some ideas and feature request, which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)
 
 
 
