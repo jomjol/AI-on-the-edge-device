@@ -41,6 +41,12 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
+##### 6.5.0 Image Processing in Memory - (2021-03-25)
+
+* Upgrade digital CNN to v8.2.0  (added new type of digits)
+* Supporting alignment structures in ROI definition
+* Bug fixing: definition of  hostname in `config.ini`
+
 ##### 6.4.0 Image Processing in Memory - (2021-03-20)
 
 * Additional alignment marks for settings the ROIs (analog and digit)
