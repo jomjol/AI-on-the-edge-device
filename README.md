@@ -41,11 +41,11 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 
 
-##### Rolling - (2021-03-21)
+##### 6.5.0 Image Processing in Memory - (2021-03-25)
 
-* Bug fixing in `html.zip`
-* Bug fixing: restart after renaming hostname in `config.ini` did not work reliable
-* based on v6.4.0
+* Upgrade digital CNN to v8.2.0  (added new type of digits)
+* Supporting alignment structures in ROI definition
+* Bug fixing: definition of  hostname in `config.ini`
 
 ##### 6.4.0 Image Processing in Memory - (2021-03-20)
 
