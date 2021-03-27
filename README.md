@@ -39,7 +39,10 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling - (2021-03-27)
 
+* Update SD-card handling (more stable support of different types)
+* based on v6.5.0
 
 ##### 6.5.0 Image Processing in Memory - (2021-03-25)
 
