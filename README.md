@@ -39,7 +39,9 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### 6.6.0 Image Processing in Memory - (2021-03-28)
 
+* Improved SD-card handling (increase compatibility with more type of cards)
 
 ##### 6.5.0 Image Processing in Memory - (2021-03-25)
 

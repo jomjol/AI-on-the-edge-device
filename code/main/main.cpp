@@ -25,7 +25,14 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
+
+
+#define __SD_USE_ONE_LINE_MODE__
+
+#ifdef __SD_USE_ONE_LINE_MODE__
 #include "server_GPIO.h"
+#endif
+
 static const char *TAGMAIN = "connect_wlan_main";
 
 #define FLASH_GPIO GPIO_NUM_4
@@ -37,33 +44,60 @@ void Init_NVS_SDCard()
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
+////////////////////////////////////////////////
 
-    ESP_LOGI(TAGMAIN, "Initializing SD card");
+    ESP_LOGI(TAG, "Using SDMMC peripheral");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
-    host.flags = SDMMC_HOST_FLAG_1BIT;    
-//    sdmmc_host_t host = SDMMC_HOST_SLOT_1();
-//    host.flags = SDMMC_HOST_FLAG_1BIT;
+
+    // This initializes the slot without card detect (CD) and write protect (WP) signals.
+    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-    slot_config.width = 1;  // 1 line SD mode
-    
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = { };
-    mount_config.format_if_mount_failed = false;
-    mount_config.max_files = 5;
 
-    gpio_set_pull_mode((gpio_num_t) 15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
-    gpio_set_pull_mode((gpio_num_t) 2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
+    // To use 1-line SD mode, uncomment the following line:
 
+#ifdef __SD_USE_ONE_LINE_MODE__
+    slot_config.width = 1;
+#endif
+
+    // GPIOs 15, 2, 4, 12, 13 should have external 10k pull-ups.
+    // Internal pull-ups are not sufficient. However, enabling internal pull-ups
+    // does make a difference some boards, so we do that here.
+    gpio_set_pull_mode(GPIO_NUM_15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
+    gpio_set_pull_mode(GPIO_NUM_2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
+    gpio_set_pull_mode(GPIO_NUM_4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
+    gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
+    gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
+
+    // Options for mounting the filesystem.
+    // If format_if_mount_failed is set to true, SD card will be partitioned and
+    // formatted in case when mounting fails.
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+        .format_if_mount_failed = false,
+        .max_files = 5,
+        .allocation_unit_size = 16 * 1024
+    };
+
+    // Use settings defined above to initialize SD card and mount FAT filesystem.
+    // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
+    // Please check its source code and implement error recovery when developing
+    // production applications.
     sdmmc_card_t* card;
     ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
+
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAGMAIN, "Failed to mount filesystem. If you want the card to be formatted, set format_if_mount_failed = true.");
+            ESP_LOGE(TAG, "Failed to mount filesystem. "
+                "If you want the card to be formatted, set format_if_mount_failed = true.");
         } else {
-            ESP_LOGE(TAGMAIN, "Failed to initialize the card (%d). Make sure SD card lines have pull-up resistors in place.", ret);
+            ESP_LOGE(TAG, "Failed to initialize the card (%s). "
+                "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
         return;
     }
+
+    // Card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
+
 
 	// Init the GPIO
     // Flash ausschalten
@@ -113,7 +147,11 @@ extern "C" void app_main(void)
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
+
+#ifdef __SD_USE_ONE_LINE_MODE__
     register_server_GPIO_uri(server);
+#endif    
+
     register_server_main_uri(server, "/sdcard");
 
     TFliteDoAutoStart();

@@ -1,6 +1,6 @@
 ## Feature Requests
 
-**There are a lot of ideas for further improvements, but only limited capacity on side of the developer. **Therefore I have created this page as a collection of ideas. 
+**There are a lot of ideas for further improvements, but only limited capacity on side of the developer.** Therefore I have created this page as a collection of ideas. 
 
 1. Who ever has a new idea can put it here, so it that it is not forgotten. 
 
@@ -11,6 +11,20 @@
 
 ____
 
+#### #4 Initial Shifting and Rotation
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/123
+
+Implementation of a shifting additional to the initial rotation of the raw camera input
+
+To do:
+
+* Implementation of shifting
+* Extension of configuration
+* Adaption of the html configuration to implement shifting
+
+
+
 #### #3 Allow grouping of digits to multiple reading values
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/123
@@ -20,9 +34,6 @@ Implementation of two different independent readouts in one setup
 To do:
 
 * Extend the configuration, setting and processing flow for two independend readouts
-
-
-#### 
 
 https://github.com/jomjol/AI-on-the-edge-device/issues/123
 
