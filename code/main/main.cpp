@@ -33,11 +33,14 @@
 #include "server_GPIO.h"
 #endif
 
+
+#define BLINK_GPIO GPIO_NUM_33
+
 static const char *TAGMAIN = "connect_wlan_main";
 
 #define FLASH_GPIO GPIO_NUM_4
 
-void Init_NVS_SDCard()
+bool Init_NVS_SDCard()
 {
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
@@ -92,7 +95,7 @@ void Init_NVS_SDCard()
             ESP_LOGE(TAG, "Failed to initialize the card (%s). "
                 "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
-        return;
+        return false;
     }
 
     // Card has been initialized, print its properties
@@ -104,6 +107,29 @@ void Init_NVS_SDCard()
     gpio_pad_select_gpio(FLASH_GPIO);
     gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
     gpio_set_level(FLASH_GPIO, 0);   
+
+    return true;
+}
+
+void task_NoSDBlink(void *pvParameter)
+{
+    gpio_pad_select_gpio(BLINK_GPIO);
+    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
+
+    
+    TickType_t xDelay;
+    xDelay = 100 / portTICK_PERIOD_MS;
+    printf("SD-Card could not be inialized - STOP THE PROGRAMM HERE\n");
+
+    while (1)
+    {
+        gpio_set_level(BLINK_GPIO, 1);
+        vTaskDelay( xDelay );   
+        gpio_set_level(BLINK_GPIO, 0); 
+        vTaskDelay( xDelay );   
+
+    }
+    vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
 extern "C" void app_main(void)
@@ -113,7 +139,11 @@ extern "C" void app_main(void)
     Camera.InitCam();
     Camera.LightOnOff(false); 
 
-    Init_NVS_SDCard();
+    if (!Init_NVS_SDCard())
+    {
+        xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
+        return;
+    };
 
     CheckOTAUpdate();
 
