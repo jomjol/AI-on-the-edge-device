@@ -6,6 +6,8 @@ This is an example of Artificial Intelligence (AI) calculations on a very cheap 
 
 A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4573481
 
+respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
+
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
