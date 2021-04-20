@@ -39,7 +39,20 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling - (2021-04-20)
 
+* Rollback to espressif 2.1.0, as 3.2.0 shows unstable reboot
+* Upgrade digital CNN to v8.3.0  (added new type of digits)
+* Bugfix: 
+  * WLAN-Password with '=' are now possible, 
+  * Change of hostname thru configini failed unter certain circumstances
+
+2021-04-05
+
+* Removal of not needed web server components (direct access to camera, menu point "check")
+* Update to espressif 3.2.0 (= esp-idf 4.2)
+* Internal update: TFlite (v2.5), esp32cam, startup-Sequence
+* based on v6.6.1
 
 ##### 6.6.1 Image Processing in Memory - (2021-04-05)
 

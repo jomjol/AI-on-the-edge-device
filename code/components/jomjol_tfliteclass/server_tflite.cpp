@@ -128,31 +128,6 @@ void blink_task_doFlow(void *pvParameter)
     xHandleblink_task_doFlow = NULL;
 }
 
-
-esp_err_t handler_init(httpd_req_t *req)
-{
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("handler_init - Start");       
-    printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
-#endif
-
-    char* resp_str = "Init started<br>";
-    httpd_resp_send(req, resp_str, strlen(resp_str));     
-
-    doInit();
-
-    resp_str = "Init done<br>";
-    httpd_resp_send(req, resp_str, strlen(resp_str));     
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);    
-
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("handler_init - Done");       
-#endif
-
-    return ESP_OK;
-};
-
 esp_err_t handler_doflow(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON          
@@ -434,44 +409,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
 
-
-    if (_task.compare("test_align") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }  
-    if (_task.compare("test_analog") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Analog]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }  
-    if (_task.compare("test_digits") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Digits]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    } 
-
-
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
@@ -606,11 +543,6 @@ void register_server_tflite_uri(httpd_handle_t server)
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;
 
-    camuri.uri       = "/doinit";
-    camuri.handler   = handler_init;
-    camuri.user_ctx  = (void*) "Light On";    
-    httpd_register_uri_handler(server, &camuri);
-
     camuri.uri       = "/setPreValue.html";
     camuri.handler   = handler_prevalue;
     camuri.user_ctx  = (void*) "Prevalue";    
@@ -620,7 +552,6 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_doflow;
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
-
     
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;

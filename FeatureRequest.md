@@ -11,6 +11,28 @@
 
 ____
 
+#### #6 Check for double ROI names
+
+Check during configuration, that ROI names are unique.
+
+To do:
+
+* Implementation of ROI name checking in html code before saving analog or digital ROIs
+
+  
+
+#### #5 Configurable decimal separator (point or comma) 
+
+Decimal separator configurable for different systems
+
+To do:
+
+* Implementation of decimal point into postprocessing module
+* Extension of configuration
+* Adaption of the html configuration to implement shifting
+
+
+
 #### #4 Initial Shifting and Rotation
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/123
