@@ -26,7 +26,8 @@ If you would like to support the developer with a cup of coffee you can do that 
 <input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
 </form>
-If you have any technical topics, you can file a issue in this repository. In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.png" height="30"> 
+If you have any technical topics, you can file a issue in this repository. 
+In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="30"> 
 
 ## Change log
 
