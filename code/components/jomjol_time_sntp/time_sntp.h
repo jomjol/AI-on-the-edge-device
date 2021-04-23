@@ -9,7 +9,6 @@
 #include "esp_log.h"
 #include "esp_attr.h"
 #include "esp_sleep.h"
-// #include "nvs_flash.h"
 #include "esp_sntp.h"
 
 void setup_time(void);

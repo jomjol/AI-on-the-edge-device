@@ -282,7 +282,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     if (!found)
     {
-        line = "hostname = \"" + _newhostname + "\"\n";
+        line = "\nhostname = \"" + _newhostname + "\"\n";
         neuesfile.push_back(line);        
     }
 
@@ -329,7 +329,7 @@ void LoadWlanFromFile(std::string fn)
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
         for (int i = 2; i < zerlegt.size(); ++i)
-            zerlegt[i] = zerlegt[i-1] + zerlegt[i];
+            zerlegt[1] = zerlegt[1] + zerlegt[i];
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
             hostname = trim(zerlegt[1]);

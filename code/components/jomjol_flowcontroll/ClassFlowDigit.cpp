@@ -224,7 +224,7 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
     string zwcnn =  FormatFileName("/sdcard" + cnnmodelfile);
     printf(zwcnn.c_str());printf("\n");
     tflite->LoadModel(zwcnn); 
-    tflite->MakeAllocate();
+//    tflite->MakeAllocate();
 #endif
 
     for (int i = 0; i < ROI.size(); ++i)

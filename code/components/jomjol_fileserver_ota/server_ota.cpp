@@ -412,11 +412,26 @@ void task_reboot(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+
+
+inline void invoke_abort(void)
+{
+    while (1) {
+        if (esp_cpu_in_ocd_debug_mode()) {
+            __asm__ ("break 0,0");
+        }
+        *((int *) 0) = 0;
+    }
+}
+
+
 void doReboot(){
     LogFile.WriteToFile("Reboot - now");
-    KillTFliteTasks();
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
+    KillTFliteTasks();
+//    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     vTaskDelay(5000 / portTICK_PERIOD_MS);
+    invoke_abort();
     esp_restart();
     hard_restart();    
 }

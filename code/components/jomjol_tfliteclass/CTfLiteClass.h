@@ -9,7 +9,7 @@
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
-#include "tensorflow/lite/version.h"
+//#include "tensorflow/lite/version.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -41,7 +41,7 @@ class CTfLiteClass
         const tflite::Model* model;
         tflite::MicroInterpreter* interpreter;
         TfLiteTensor* output = nullptr;     
-        static tflite::AllOpsResolver resolver;
+        tflite::AllOpsResolver resolver;
 
         int kTensorArenaSize;
         uint8_t *tensor_arena;
@@ -52,12 +52,12 @@ class CTfLiteClass
 
         long GetFileSize(std::string filename);
         unsigned char* ReadFileToCharArray(std::string _fn);
-        
+
+        void MakeAllocate();
     public:
         CTfLiteClass();
         ~CTfLiteClass();        
         void LoadModel(std::string _fn);
-        void MakeAllocate();
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
