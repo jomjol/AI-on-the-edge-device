@@ -24,7 +24,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 <input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
 </form>
-
+If you have any technical topics, you can file a issue in this repository. In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.png" height="30"> 
 
 ## Change log
 
@@ -39,20 +39,17 @@ If you would like to support the developer with a cup of coffee you can do that 
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2021-04-20)
 
-* Rollback to espressif 2.1.0, as 3.2.0 shows unstable reboot
+
+##### 6.7.0 Image Processing in Memory - (2021-04-23)
+
 * Upgrade digital CNN to v8.3.0  (added new type of digits)
-* Bugfix: 
-  * WLAN-Password with '=' are now possible, 
-  * Change of hostname thru configini failed unter certain circumstances
+* Internal update: TFlite (v2.5), esp32cam, startup sequence
+* Rollback to espressif v2.1.0, as v3.2.0 shows unstable reboot
 
-2021-04-05
+* Bugfix: WLan-passwords, reset of hostname
 
-* Removal of not needed web server components (direct access to camera, menu point "check")
-* Update to espressif 3.2.0 (= esp-idf 4.2)
-* Internal update: TFlite (v2.5), esp32cam, startup-Sequence
-* based on v6.6.1
+  
 
 ##### 6.6.1 Image Processing in Memory - (2021-04-05)
 
