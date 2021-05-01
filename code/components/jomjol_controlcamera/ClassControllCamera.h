@@ -25,7 +25,6 @@ class CCamera {
         framesize_t ActualResolution;
         int brightness, contrast, saturation;
         bool isFixedExposure;
-        
         int waitbeforepicture_org;
 
     public:
@@ -50,7 +49,6 @@ class CCamera {
         esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);
 };
 
-void PowerResetCamera();
 
 extern CCamera Camera;
 

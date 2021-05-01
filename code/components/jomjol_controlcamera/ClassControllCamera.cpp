@@ -8,7 +8,6 @@
 
 #include "Helper.h"
 #include "CImageBasis.h"
-#include "server_ota.h" 
 
 
 #define BOARD_ESP32CAM_AITHINKER
@@ -72,7 +71,7 @@ static camera_config_t camera_config = {
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
 //    .xclk_freq_hz = 20000000,             // Orginalwert
-    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!! ging mal mit 5000000
+    .xclk_freq_hz = 5000000,               // Test, um die Bildfehler los zu werden !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
@@ -83,7 +82,7 @@ static camera_config_t camera_config = {
     
 
     .jpeg_quality = 5, //0-63 lower number means higher quality
-    .fb_count = 2       //if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_count = 1       //if more than one, i2s runs in continuous mode. Use only with JPEG
 };
 
 
@@ -225,9 +224,16 @@ void CCamera::EnableAutoExposure(int flashdauer)
     const TickType_t xDelay = flashdauer / portTICK_PERIOD_MS;
     vTaskDelay( xDelay );
 
+    camera_fb_t * fb = esp_camera_fb_get();
+    if (!fb) {
+        ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+    }
+    esp_camera_fb_return(fb);        
+
     sensor_t * s = esp_camera_sensor_get(); 
     s->set_gain_ctrl(s, 0);
     s->set_exposure_ctrl(s, 0);
+
 
     LEDOnOff(false);  
     LightOnOff(false);
@@ -264,10 +270,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
-        LightOnOff(false);
-        LogFile.WriteHeapInfo("Camera Capture Failed - Reinit Camera");
-        Camera.InitCam();
-        doReboot();
+        LEDOnOff(false);
         return ESP_FAIL;
     }
 
@@ -352,9 +355,6 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
         LEDOnOff(false);
-        LogFile.WriteHeapInfo("Camera Capture Failed - Reinit Camera");
-        Camera.InitCam();
-        doReboot();
         return ESP_FAIL;
     }
     LEDOnOff(false);    
@@ -439,13 +439,10 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         vTaskDelay( xDelay );
     }
 
+
     fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera capture failed");
-        LightOnOff(false);
-        LogFile.WriteHeapInfo("Camera Capture Failed - Reinit Camera");
-        Camera.InitCam();
-        doReboot();
         httpd_resp_send_500(req);
         return ESP_FAIL;
     }
@@ -581,16 +578,10 @@ CCamera::CCamera()
     contrast = -5;
     saturation = -5;
     isFixedExposure = false;
-    ActualQuality = camera_config.jpeg_quality;
-    ActualResolution = camera_config.frame_size;
-
 }
 
 esp_err_t CCamera::InitCam()
 {
-    esp_camera_deinit();
-    PowerResetCamera();
-
     if(CAM_PIN_PWDN != -1){
         // Init the GPIO
         gpio_pad_select_gpio(CAM_PIN_PWDN);
@@ -600,6 +591,8 @@ esp_err_t CCamera::InitCam()
     }
 
     printf("Init Camera\n");
+    ActualQuality = camera_config.jpeg_quality;
+    ActualResolution = camera_config.frame_size;
     //initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
@@ -607,42 +600,5 @@ esp_err_t CCamera::InitCam()
         return err;
     }
 
-    SetBrightnessContrastSaturation(brightness, contrast, saturation);
-    SetQualitySize(ActualQuality, ActualResolution);
-
-    if (isFixedExposure)
-        EnableAutoExposure(waitbeforepicture_org);
-
-    LightOnOff(false);
-
     return ESP_OK;
 }
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-void PowerResetCamera(){
-        printf("Resetting camera by power down line.\n");
-/*
-        gpio_config_t conf = { 0 };
-        conf.pin_bit_mask = 1LL << GPIO_NUM_32;
-        conf.mode = GPIO_MODE_OUTPUT;
-        gpio_config(&conf);
-*/
-
-        gpio_pad_select_gpio(GPIO_NUM_32);
-        /* Set the GPIO as a push/pull output */
-        gpio_set_direction(GPIO_NUM_32, GPIO_MODE_OUTPUT);  
-
-
-        // carefull, logic is inverted compared to reset pin
-        gpio_set_level(GPIO_NUM_32, 0);     // ehemals 1 !!!!!!!!!!!!!!!!!!!!
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_NUM_32, 1);     // ehemals 0 !!!!!!!!!!!!!!!!!!!!
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-}
-

@@ -45,10 +45,14 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 6.7.0 Image Processing in Memory - (2021-04-23)
+##### 6.7.1 Image Processing in Memory - (2021-04-30)
+
+* NEW 6.7.1: Improved stability of camera (as of v6.6.1)
 
 * Upgrade digital CNN to v8.3.0  (added new type of digits)
+
 * Internal update: TFlite (v2.5), esp32cam, startup sequence
+
 * Rollback to espressif v2.1.0, as v3.2.0 shows unstable reboot
 
 * Bugfix: WLan-passwords, reset of hostname

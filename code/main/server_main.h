@@ -9,7 +9,7 @@
 #include <sys/param.h>
 #include "nvs_flash.h"
 #include "tcpip_adapter.h"
-//#include "esp_eth.h"
+#include "esp_eth.h"
 
 
 #include <esp_http_server.h>
