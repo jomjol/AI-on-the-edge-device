@@ -6,13 +6,9 @@
 
 // #define DEBUG_DETAIL_ON
 
-//#define GET_MEMORY(X) malloc(X)
-#define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
-
-
 float CTfLiteClass::GetOutputValue(int nr)
 {
-    TfLiteTensor* output2 = interpreter->output(0);
+    TfLiteTensor* output2 = this->interpreter->output(0);
 
     int numeroutput = output2->dims->data[1];
     if ((nr+1) > numeroutput)
@@ -57,7 +53,7 @@ int CTfLiteClass::GetOutClassification()
 
 void CTfLiteClass::GetInputDimension(bool silent = false)
 {
-  TfLiteTensor* input2 = interpreter->input(0);
+  TfLiteTensor* input2 = this->interpreter->input(0);
 
   int numdim = input2->dims->size;
   if (!silent)  printf("NumDimension: %d\n", numdim);  
@@ -76,7 +72,7 @@ void CTfLiteClass::GetInputDimension(bool silent = false)
 
 void CTfLiteClass::GetOutPut()
 {
-  TfLiteTensor* output2 = interpreter->output(0);
+  TfLiteTensor* output2 = this->interpreter->output(0);
 
   int numdim = output2->dims->size;
   printf("NumDimension: %d\n", numdim);  
@@ -146,20 +142,20 @@ void CTfLiteClass::MakeAllocate()
     static tflite::AllOpsResolver resolver;
 
 //    printf(LogFile.getESPHeapInfo().c_str()); printf("\n");
-    interpreter = new tflite::MicroInterpreter(model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
+    this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 //    printf(LogFile.getESPHeapInfo().c_str()); printf("\n");
 
-    TfLiteStatus allocate_status = interpreter->AllocateTensors();
+    TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
         TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
-    GetInputDimension();   
+    this->GetInputDimension();   
     return;
   }
 //    printf("Allocate Done.\n");
 }
 
 void CTfLiteClass::GetInputTensorSize(){
-    float *zw = input;
+    float *zw = this->input;
     int test = sizeof(zw);
 #ifdef DEBUG_DETAIL_ON    
     printf("Input Tensor Dimension: %d\n", test);       
@@ -215,39 +211,36 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 void CTfLiteClass::LoadModel(std::string _fn){
 
 #ifdef SUPRESS_TFLITE_ERRORS
-    error_reporter = new tflite::OwnMicroErrorReporter;
+    this->error_reporter = new tflite::OwnMicroErrorReporter;
 #else
-    error_reporter = new tflite::MicroErrorReporter;
+    this->error_reporter = new tflite::MicroErrorReporter;
 #endif
 
     unsigned char *rd;
     rd = ReadFileToCharArray(_fn.c_str());
 
-    model = tflite::GetModel(rd);
+    this->model = tflite::GetModel(rd);
     free(rd);
     TFLITE_MINIMAL_CHECK(model != nullptr); 
-    MakeAllocate();
 }
 
 
 
 CTfLiteClass::CTfLiteClass()
 {
-    model = nullptr;
-    interpreter = nullptr;
-    input = nullptr;
-    output = nullptr;  
-    kTensorArenaSize = 200 * 1024;   /// laut testfile: 108000 - bisher 600
-    tensor_arena = (uint8_t*) GET_MEMORY(kTensorArenaSize);
-
-//    tensor_arena = new uint8_t[kTensorArenaSize]; 
+    this->model = nullptr;
+    this->interpreter = nullptr;
+    this->input = nullptr;
+    this->output = nullptr;  
+    this->kTensorArenaSize = 200 * 1024;   /// laut testfile: 108000 - bisher 600
+    this->tensor_arena = new uint8_t[kTensorArenaSize]; 
 }
 
 CTfLiteClass::~CTfLiteClass()
 {
-  delete tensor_arena;
-  delete interpreter;
-  delete error_reporter;
+  delete this->tensor_arena;
+  delete this->interpreter;
+  delete this->error_reporter;
 }        
 
 

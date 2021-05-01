@@ -721,21 +721,33 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
 
     /* Validate file storage base path */
     if (!base_path) {
+//    if (!base_path || strcmp(base_path, "/spiffs") != 0) {
         ESP_LOGE(TAG, "File server base_path not set");
+//        return ESP_ERR_INVALID_ARG;
     }
 
     if (server_data) {
         ESP_LOGE(TAG, "File server already started");
+//        return ESP_ERR_INVALID_STATE;
     }
 
     /* Allocate memory for server data */
     server_data = (file_server_data *) calloc(1, sizeof(struct file_server_data));
     if (!server_data) {
         ESP_LOGE(TAG, "Failed to allocate memory for server data");
+//        return ESP_ERR_NO_MEM;
     }
     strlcpy(server_data->base_path, base_path,
             sizeof(server_data->base_path));
 
+
+
+    /* URI handler for getting uploaded files */
+//    char zw[sizeof(serverprefix)+1];
+//    strcpy(zw, serverprefix);
+//    zw[strlen(serverprefix)] = '*';
+//    zw[strlen(serverprefix)+1] = '\0';    
+//    printf("zw: %s\n", zw);
     httpd_uri_t file_download = {
         .uri       = "/fileserver*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
@@ -743,6 +755,8 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_download);
+
+
 
     httpd_uri_t file_logfileact = {
         .uri       = "/logfileact",  // Match all URIs of type /path/to/file
@@ -770,4 +784,5 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_delete);
+
 }

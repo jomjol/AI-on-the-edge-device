@@ -24,6 +24,8 @@
 #include "time_sntp.h"
 #include "ClassControllCamera.h"
 #include "server_main.h"
+#include "server_camera.h"
+
 
 #define __SD_USE_ONE_LINE_MODE__
 
@@ -113,6 +115,7 @@ void task_NoSDBlink(void *pvParameter)
 {
     gpio_pad_select_gpio(BLINK_GPIO);
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
+
     
     TickType_t xDelay;
     xDelay = 100 / portTICK_PERIOD_MS;
@@ -124,20 +127,25 @@ void task_NoSDBlink(void *pvParameter)
         vTaskDelay( xDelay );   
         gpio_set_level(BLINK_GPIO, 0); 
         vTaskDelay( xDelay );   
+
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
 extern "C" void app_main(void)
 {
+    printf("Do Reset Camera\n");
+    PowerResetCamera();
+    Camera.InitCam();
+    Camera.LightOnOff(false); 
+
     if (!Init_NVS_SDCard())
     {
         xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
         return;
     };
-    CheckOTAUpdate();
 
-    Camera.InitCam();
+    CheckOTAUpdate();
 
     LoadWlanFromFile("/sdcard/wlan.ini"); 
     ConnectToWLAN();
@@ -145,7 +153,7 @@ extern "C" void app_main(void)
     
     TickType_t xDelay;
     xDelay = 2000 / portTICK_PERIOD_MS;
-//    printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+    printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
 //    LogFile.WriteToFile("Startsequence 06");      
     vTaskDelay( xDelay );   
 //    LogFile.WriteToFile("Startsequence 07");  
@@ -155,14 +163,17 @@ extern "C" void app_main(void)
     LogFile.WriteToFile("=============================================================================================");
     LogFile.SwitchOnOff(false);
 
-//    std::string zw = gettimestring("%Y%m%d-%H%M%S");
-//    printf("time %s\n", zw.c_str());    
+    std::string zw = gettimestring("%Y%m%d-%H%M%S");
+    printf("time %s\n", zw.c_str());    
 
+//    Camera.InitCam();
+//    Camera.LightOnOff(false); 
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
     vTaskDelay( xDelay ); 
 
     server = start_webserver();   
+    register_server_camera_uri(server); 
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);

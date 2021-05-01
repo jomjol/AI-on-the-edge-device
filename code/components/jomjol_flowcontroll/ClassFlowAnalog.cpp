@@ -285,7 +285,7 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
     zwcnn = FormatFileName(zwcnn);
     printf(zwcnn.c_str());printf("\n");
     tflite->LoadModel(zwcnn); 
-//    tflite->MakeAllocate();
+    tflite->MakeAllocate();
 #endif
 
     for (int i = 0; i < ROI.size(); ++i)
