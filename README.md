@@ -45,9 +45,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 6.7.1 Image Processing in Memory - (2021-04-30)
+##### 6.7.1 Image Processing in Memory - (2021-01-05)
 
-* NEW 6.7.1: Improved stability of camera (as of v6.6.1)
+* NEW 6.7.1: Improved stability of camera (back to v6.6.1) - remove black strips and areas
 
 * Upgrade digital CNN to v8.3.0  (added new type of digits)
 
