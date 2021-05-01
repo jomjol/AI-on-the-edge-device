@@ -4,7 +4,9 @@ This is an example of Artificial Intelligence (AI) calculations on a very cheap 
 
 ### Details on **function**, **installation** and **configuration** can be found on the **[Wiki Page](https://github.com/jomjol/AI-on-the-edge-device/wiki)**
 
-A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4571627
+A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4573481
+
+respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
 
@@ -24,7 +26,9 @@ If you would like to support the developer with a cup of coffee you can do that 
 <input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
 </form>
-If you have any technical topics, you can file a issue in this repository. In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.png" height="30"> 
+If you have any technical topics, you can file a issue in this repository. 
+
+In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25"> 
 
 ## Change log
 
@@ -41,9 +45,9 @@ If you have any technical topics, you can file a issue in this repository. In ot
 
 
 
-##### 6.7.1 Image Processing in Memory - (2021-04-30)
+##### 6.7.1 Image Processing in Memory - (2021-01-05)
 
-* NEW 6.7.1: Improved stability of camera (as of v6.6.1)
+* NEW 6.7.1: Improved stability of camera (back to v6.6.1) - remove black strips and areas
 
 * Upgrade digital CNN to v8.3.0  (added new type of digits)
 
