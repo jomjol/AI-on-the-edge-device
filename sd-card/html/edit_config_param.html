@@ -683,9 +683,13 @@ textarea {
 	<p>
 		
 	</p>
-	<p>
-		<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
-	</p>
+	<div id="doreboot">
+		<p>
+			<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>
+			
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
+		</p>
+	</div>
 
 </div>
 
@@ -701,6 +705,14 @@ textarea {
 
 
 function LoadConfigNeu() {
+
+	var isInitialSetup = getParameterByName('InitialSetup');
+	if (isInitialSetup === 'true')
+	{
+		document.getElementById("reboot").style.display = "none";
+	}
+
+
 	basepath = getbasepath(); 
 	if (!loadConfig(basepath)) {
 		alert("Config.ini could not be loaded!\nPlease reload the page.");
@@ -714,6 +726,16 @@ function LoadConfigNeu() {
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
 	}
+
+
+function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}	
 
 function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
 	if (_param[_cat][_name]["found"]){
