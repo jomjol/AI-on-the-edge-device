@@ -84,6 +84,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "Topic");
      ParamAddValue(param, catname, "TopicError");
+     ParamAddValue(param, catname, "TopicRate");
+     ParamAddValue(param, catname, "TopicTimeStamp");
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");     

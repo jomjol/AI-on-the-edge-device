@@ -11,6 +11,8 @@ void ClassFlowMQTT::SetInitialParameter(void)
     uri = "";
     topic = "";
     topicError = "";
+    topicRate = "";
+    topicTimeStamp = "";
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -94,6 +96,15 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->topicError = zerlegt[1];
         }
+        if ((toUpper(zerlegt[0]) == "TOPICRATE") && (zerlegt.size() > 1))
+        {
+            this->topicRate  = zerlegt[1];
+        }
+        if ((toUpper(zerlegt[0]) == "TOPICTIMESTAMP") && (zerlegt.size() > 1))
+        {
+            this->topicTimeStamp  = zerlegt[1];
+        }
+
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
             this->clientname = zerlegt[1];
@@ -114,12 +125,16 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 {
     std::string result;
     std::string resulterror = "";
+    std::string resultrate = "";
+    std::string resulttimestamp = "";
     string zw = "";
     
     if (flowpostprocessing)
     {
         result =  flowpostprocessing->getReadoutParam(false, true);
         resulterror = flowpostprocessing->getReadoutError();
+        resultrate = flowpostprocessing->getReadoutRate();
+        resulttimestamp = flowpostprocessing->getReadoutTimeStamp();
     }
     else
     {
@@ -140,6 +155,14 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     if (topicError.length() > 0) {
         MQTTPublish(topicError, resulterror);
+    }
+
+    if (topicRate.length() > 0) {
+        MQTTPublish(topicRate, resultrate);
+    }
+
+    if (topicRate.length() > 0) {
+        MQTTPublish(topicTimeStamp, resulttimestamp);
     }
 
     OldValue = result;

@@ -46,6 +46,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### Rolling - (2021-05-06)
 
+* Additional MQTT topics: flow rate (units/minute), time stamp last correct readout
 * Portrait or landscape image orientation in rotated image
 * based on v6.7.2
 
