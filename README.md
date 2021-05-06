@@ -44,8 +44,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
+##### Rolling - (2021-05-06)
 
-##### 6.7.2 Image Processing in Memory - (2021-01-05)
+* Portrait or landscape image orientation in rotated image
+* based on v6.7.2
+
+
+##### 6.7.2 Image Processing in Memory - (2021-05-01)
 
 * NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)
 

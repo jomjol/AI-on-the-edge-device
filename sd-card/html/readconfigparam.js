@@ -39,7 +39,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "InitialMirror");
      ParamAddValue(param, catname, "SearchFieldX");
      ParamAddValue(param, catname, "SearchFieldY");     
-     ParamAddValue(param, catname, "AlignmentAlgo");     
+     ParamAddValue(param, catname, "AlignmentAlgo");
+     ParamAddValue(param, catname, "FlipImageSize");
 
      var catname = "Digits";
      category[catname] = new Object(); 

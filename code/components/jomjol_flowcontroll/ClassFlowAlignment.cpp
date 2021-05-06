@@ -19,6 +19,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     initalrotate = 0;
     anz_ref = 0;
     initialmirror = false;
+    initialflip = false;
     SaveAllFiles = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
     FileStoreRefAlignment = "/sdcard/config/align.txt";
@@ -72,6 +73,11 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(zerlegt[0]) == "FLIPIMAGESIZE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                initialflip = true;
+        }
         if ((toUpper(zerlegt[0]) == "INITIALMIRROR") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
@@ -153,7 +159,13 @@ bool ClassFlowAlignment::doFlow(string time)
         delete AlignAndCutImage;
     AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);   
 
-    CRotateImage rt(AlignAndCutImage, ImageTMP);
+    CRotateImage rt(AlignAndCutImage, ImageTMP, initialflip);
+    if (initialflip)
+    {
+        int _zw = ImageBasis->height;
+        ImageBasis->height = ImageBasis->width;
+        ImageBasis->width = _zw;
+    }
 
     if (initialmirror){
         printf("do mirror\n");
@@ -161,7 +173,7 @@ bool ClassFlowAlignment::doFlow(string time)
         if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/mirror.jpg"));
     }
  
-    if (initalrotate != 0)
+    if ((initalrotate != 0) || initialflip)
     {
         rt.Rotate(initalrotate);
         if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
@@ -176,6 +188,12 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (SaveAllFiles)
     {
+        if (initialflip)
+        {
+            int _zw = ImageTMP->width;
+            ImageTMP->width = ImageTMP->height;
+            ImageTMP->height = _zw;
+        }
         DrawRef(ImageTMP);
         ImageTMP->SaveToFile(FormatFileName("/sdcard/img_tmp/alg_roi.jpg"));
     }
