@@ -63,7 +63,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     int yy, month, dd, hh, mm, ss;
     struct tm whenStart;
 
-    sscanf(zwtime.c_str(), "%d-%d-%d_%d-%d-%d", &yy, &month, &dd, &hh, &mm, &ss);
+    sscanf(zwtime.c_str(), "%d-%d-%dT%d:%d:%d", &yy, &month, &dd, &hh, &mm, &ss);
     whenStart.tm_year = yy - 1900;
     whenStart.tm_mon = month - 1;
     whenStart.tm_mday = dd;
@@ -121,7 +121,7 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
         time(&rawtime);
         timeinfo = localtime(&rawtime);
 
-        strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
+        strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
         timeStamp = std::string(buffer);
     }
     else
@@ -305,7 +305,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     timeinfo = localtime(&imagetime);
 
     char strftime_buf[64];
-    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H-%M-%S", timeinfo);
+    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%dT%H:%M:%S", timeinfo);
     zwtime = std::string(strftime_buf);
 
 
@@ -367,14 +367,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
 
-    time_t currenttime;
-    time(&currenttime);
-    localtime(&currenttime);
-    double difference = difftime(currenttime, lastvalue);      // in Sekunden
-    difference /= 60;                                          // in Minuten
-
-    FlowRateAct = (Value - PreValue) / difference;
-
     if ((!AllowNegativeRates) && (Value < PreValue))
     {
         ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " - raw value: " + ReturnRawValue + " - checked value: " + std::to_string(Value) + " "; 
@@ -389,6 +381,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
 
+
     ReturnValueNoError = zwvalue;
     ReturnValue = zwvalue;
     if (ErrorMessage && (ErrorMessageText.length() > 0))
@@ -396,10 +389,15 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if (ErrorMessageText.length() == 0)
     {
+        time_t currenttime;
+        time(&currenttime);
+        localtime(&currenttime);
+        double difference = difftime(currenttime, lastvalue);      // in Sekunden
+        difference /= 60;                                          // in Minuten
+        FlowRateAct = (Value - PreValue) / difference;
+
         PreValue = Value;
-        
         SavePreValue(Value, zwtime);
-       
     }
     return true;
 }

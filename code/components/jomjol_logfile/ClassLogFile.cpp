@@ -77,7 +77,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
             time(&rawtime);
             timeinfo = localtime(&rawtime);
 
-            strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
+            strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
 
             zwtime = std::string(buffer);
             info = zwtime + ": " + info;

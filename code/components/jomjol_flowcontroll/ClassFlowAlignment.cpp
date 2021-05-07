@@ -227,7 +227,7 @@ void ClassFlowAlignment::SaveReferenceAlignmentValues()
         time(&rawtime);
         timeinfo = localtime(&rawtime);
 
-        strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
+        strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
         zwtime = std::string(buffer);
     }
 

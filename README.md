@@ -44,11 +44,23 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
-##### Rolling - (2021-05-06)
+
+##### Rolling - (2021-05-07)
+
+* Upgrade digital CNN to v8.5.0  (added new images)
+* Updated number format ("2021-05-07T19:04:01")
+* Update MQTT/Error topic to " " in case no error (instead of empty string)
+
+
+Rolling - (2021-05-06)
 
 * Additional MQTT topics: flow rate (units/minute), time stamp last correct readout
+
 * Portrait or landscape image orientation in rotated image
+
 * based on v6.7.2
+
+  
 
 
 ##### 6.7.2 Image Processing in Memory - (2021-05-01)
