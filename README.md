@@ -45,100 +45,16 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-05-07)
+##### 7.0.0 MQTT-Update - (2021-05-08)
 
 * Upgrade digital CNN to v8.5.0  (added new images)
-* Updated number format ("2021-05-07T19:04:01")
+* New MQTT topics: flow rate (units/minute), time stamp (last correct read readout)
+
 * Update MQTT/Error topic to " " in case no error (instead of empty string)
 
-
-Rolling - (2021-05-06)
-
-* Additional MQTT topics: flow rate (units/minute), time stamp last correct readout
-
-* Portrait or landscape image orientation in rotated image
-
-* based on v6.7.2
+* Portrait or landscape image orientation in rotated image (avoid cropping)
 
   
-
-
-##### 6.7.2 Image Processing in Memory - (2021-05-01)
-
-* NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)
-
-* NEW 6.7.1: Improved stability of camera (back to v6.6.1) - remove black strips and areas
-
-* Upgrade digital CNN to v8.3.0  (added new type of digits)
-
-* Internal update: TFlite (v2.5), esp32cam, startup sequence
-
-* Rollback to espressif v2.1.0, as v3.2.0 shows unstable reboot
-
-* Bugfix: WLan-passwords, reset of hostname
-
-  
-
-##### 6.6.1 Image Processing in Memory - (2021-04-05)
-
-* NEW 6.6.1: failed SD card initialization indicated by fast blinking LED at startup
-* Improved SD-card handling (increase compatibility with more type of cards)
-
-##### 6.5.0 Image Processing in Memory - (2021-03-25)
-
-* Upgrade digital CNN to v8.2.0  (added new type of digits)
-* Supporting alignment structures in ROI definition
-* Bug fixing: definition of  hostname in `config.ini`
-
-##### 6.4.0 Image Processing in Memory - (2021-03-20)
-
-* Additional alignment marks for settings the ROIs (analog and digit)
-* Upgrade analog CNN to v7.0.0 (added new type of pointer)
-
-##### 6.3.1 Image Processing in Memory - (2021-03-16)
-
-* NEW: 6.3.1: bug fixing in initial edit reference image and `config.ini` (Spelling error in `InitialRotate`)
-* Initial setup mode: bug fixing, error correction
-* Bug-fixing
-
-##### 6.2.2 Image Processing in Memory - (2021-03-10)
-
-* NEW 6.2.2: bug fixing
-* NEW 6.2.1: Changed brightness and contrast to default if not enabled (resolves to bright images)
-* Determination of fixed illumination settings during startup - speed up of 5s in each run
-* Update digital CNN to v8.1.1 (additional digital images trained)
-* Extended error message in MQTT error message
-
-
-* Image brightness is now adjustable 
-
-
-* Bug fixing: minor topics 
-
-
-##### 6.1.0 Image Processing in Memory - (2021-01-20)
-
-* Disabling of analog / digital counters in configuration 
-* Improved Alignment Algorithm (`AlignmentAlgo`  = `Default`,  `Accurate` , `Fast`)
-* Analog counters: `ExtendedResolution` (last digit is extended by sub comma value of CNN)
-* `config.ini`: additional parameter `hostname`  (additional to wlan.ini)
-* Switching of GPIO12/13 via http-interface: `/GPIO?GPIO=12&Status=high/low`
-* Bug fixing: html configuration page, wlan password ("=" now possible)
-
-##### 6.0.0 Image Processing in Memory - (2021-01-02)
-
-* **Major change**: image processing fully in memory - no need of SD card buffer anymore
-  
-  * Need to limit camera resolution to VGA (due to memory limits)
-* MQTT: Last Will Testament (LWT) implemented: "connection lost" in case of connection lost to `TopicError`
-* Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
-* Update digital CNN to v7.2.1 (additional digital images trained) 
-* Setting of arbitrary time server in `config.ini`
-* Option for fixed IP-, DNS-Settings in `wlan.ini`
-* Increased stability (internal image and camera handling)
-* Bug fixing: edit digits, handling PreValue, html-bugs
-
-
 
 
 ## Additional ideas
@@ -150,6 +66,8 @@ There are some ideas and feature request, which are not followed currently - mai
 ------
 
 ## History
+
+##### 6.7.2 Image Processing in Memory - (2021-05-01)
 
 ##### 5.0.0 Setup Modus - (2020-12-06)
 
