@@ -44,6 +44,11 @@ table {
 	  <tr>
 		<td style="padding-top: 10px"><label for="mirror" id="labelmirror">Mirror Image:</label></td>
         <td style="padding-top: 10px"><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+      </tr>
+      <tr>
+
+		<td><label for="flip" id="labelflip">Flip Image Size:</label></td>
+        <td><input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
         
 	  </tr>
 	  <tr>
@@ -129,6 +134,13 @@ table {
                 document.getElementById("labelmirror").style = "color:lightgrey;";
             }
 
+            if (param["Alignment"]["FlipImageSize"].found)
+                document.getElementById("flip").disabled = false;
+            else
+            {
+                document.getElementById("labelflip").style = "color:lightgrey;";
+            }
+
             if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
                 document.getElementById("MakeImage_Brightness_value1").disabled = false;
             else
@@ -156,6 +168,9 @@ table {
             if (_param["Alignment"]["InitialMirror"].found && (_param["Alignment"]["InitialMirror"].value1 == "true"))
                 document.getElementById("mirror").checked = true;
 
+            if (_param["Alignment"]["FlipImageSize"].found && (_param["Alignment"]["FlipImageSize"].value1 == "true"))
+                document.getElementById("flip").checked = true;
+
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("updatereferenceimage").disabled = true;
@@ -164,6 +179,7 @@ table {
 //            document.getElementById("MakeImage_Saturation_value1").disabled = true;
 //            document.getElementById("MakeImage_Contrast_value1").disabled = true;
             document.getElementById("mirror").disabled = false;
+            document.getElementById("flip").disabled = false;
             if (!(param["MakeImage"]["Brightness"].found))
             {
                 document.getElementById("MakeImage_Brightness_value1").type = "hidden";
@@ -172,6 +188,7 @@ table {
 
 
             document.getElementById("mirror").disabled = true;
+            document.getElementById("flip").disabled = true;
 
             isActReference = true;                                  
             loadCanvas(url);
@@ -190,10 +207,16 @@ table {
         function SaveReference(){
             if (confirm("Are you sure you want to update the reference image?")) {
                 param["Alignment"]["InitialRotate"].value1 = document.getElementById("prerotateangle").value;
+
                 if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
                     param["Alignment"]["InitialMirror"].value1 = "true";
                 else
                     param["Alignment"]["InitialMirror"].value1 = "false";
+
+                if ((param["Alignment"]["FlipImageSize"].found == true) && (document.getElementById("flip").checked))
+                    param["Alignment"]["FlipImageSize"].value1 = "true";
+                else
+                    param["Alignment"]["FlipImageSize"].value1 = "false";
 
                 if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
                 {
@@ -319,6 +342,7 @@ table {
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
             mirror = document.getElementById("mirror").checked;
+            flip = document.getElementById("flip").checked;
 
             if (finerot == 1) {
                 prerot+=1
@@ -333,9 +357,21 @@ table {
             document.getElementById("prerotateangle").value =  prerot;
 
             var canvas = document.getElementById('canvas');
+            if (flip == 1)
+            {
+                canvas.width = imageObj.height;
+                canvas.height = imageObj.width;
+            }
+            else
+            {
+                canvas.width = imageObj.width;
+                canvas.height = imageObj.height;
+            }
+
+            var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
 
-            context.clearRect(0,0,imageObj.width,imageObj.height);
+            context.clearRect(0,0,canvas.width,canvas.height);
             context.save();
 
             if (isActReference)
@@ -344,17 +380,12 @@ table {
             }
             else
             {
+                context.translate(canvas.width/2,canvas.height/2);
+                context.rotate(degrees*Math.PI/180);
                 if (mirror) {
                     context.scale(-1, 1);
-                    context.translate(-imageObj.width/2,imageObj.height/2);
-                    context.rotate(-degrees*Math.PI/180);
-                    context.drawImage(imageObj, imageObj.width/2,-imageObj.height/2, -imageObj.width, imageObj.height);
                 }
-                else {
-                    context.translate(imageObj.width/2,imageObj.height/2);
-                    context.rotate(degrees*Math.PI/180);
-                    context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
-                }
+                context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
             }
             
             

@@ -15,6 +15,7 @@ class ClassFlowAlignment :
 protected:
     float initalrotate;
     bool initialmirror;
+    bool initialflip;
     RefInfo References[2];
     int anz_ref;
     string namerawimage;

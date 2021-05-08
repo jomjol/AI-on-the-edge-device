@@ -19,6 +19,10 @@ esp_err_t ClassFlowMakeImage::camera_capture(){
 
 void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
 {
+    // für den Fall, dass das Bild geflippt wird, muss es hier zurück gesetzt werden ////
+    rawImage->width = image_width;          
+    rawImage->height = image_height;
+    /////////////////////////////////////////////////////////////////////////////////////
     Camera.CaptureToBasisImage(rawImage, flashdauer);
     if (SaveAllFiles) rawImage->SaveToFile(namerawimage);
 }

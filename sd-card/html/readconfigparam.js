@@ -39,7 +39,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "InitialMirror");
      ParamAddValue(param, catname, "SearchFieldX");
      ParamAddValue(param, catname, "SearchFieldY");     
-     ParamAddValue(param, catname, "AlignmentAlgo");     
+     ParamAddValue(param, catname, "AlignmentAlgo");
+     ParamAddValue(param, catname, "FlipImageSize");
 
      var catname = "Digits";
      category[catname] = new Object(); 
@@ -83,6 +84,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "Topic");
      ParamAddValue(param, catname, "TopicError");
+     ParamAddValue(param, catname, "TopicRate");
+     ParamAddValue(param, catname, "TopicTimeStamp");
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");     

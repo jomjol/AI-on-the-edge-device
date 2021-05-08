@@ -17,6 +17,9 @@ protected:
     bool PreValueOkay;
     bool checkDigitIncreaseConsistency;
     int DecimalShift;
+    time_t lastvalue;
+    float FlowRateAct;          // m3 / min
+
 
     string FilePreValue;
     float PreValue;             // letzter Wert, der gut ausgelesen wurde
@@ -25,6 +28,7 @@ protected:
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
     string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
     string ErrorMessageText;        // Fehlermeldung bei Consistency Check
+    string timeStamp;
 
     bool LoadPreValue(void);
     string ShiftDecimal(string in, int _decShift);
@@ -40,6 +44,8 @@ public:
     string getReadout();
     string getReadoutParam(bool _rawValue, bool _noerror);
     string getReadoutError();
+    string getReadoutRate();
+    string getReadoutTimeStamp();
     void SavePreValue(float value, string time = "");
     string GetPreValue();
 

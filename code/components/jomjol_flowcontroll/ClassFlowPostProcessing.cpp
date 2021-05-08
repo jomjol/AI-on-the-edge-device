@@ -63,7 +63,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     int yy, month, dd, hh, mm, ss;
     struct tm whenStart;
 
-    sscanf(zwtime.c_str(), "%d-%d-%d_%d-%d-%d", &yy, &month, &dd, &hh, &mm, &ss);
+    sscanf(zwtime.c_str(), "%d-%d-%dT%d:%d:%d", &yy, &month, &dd, &hh, &mm, &ss);
     whenStart.tm_year = yy - 1900;
     whenStart.tm_mon = month - 1;
     whenStart.tm_mday = dd;
@@ -74,10 +74,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
 
     tStart = mktime(&whenStart);
 
-    time_t now;
-    time(&now);
-    localtime(&now);
-    double difference = difftime(now, tStart);
+    time(&lastvalue);
+    localtime(&lastvalue);
+    double difference = difftime(lastvalue, tStart);
     difference /= 60;
     if (difference > PreValueAgeStartup)
         return false;
@@ -122,13 +121,17 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
         time(&rawtime);
         timeinfo = localtime(&rawtime);
 
-        strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
-        zwtime = std::string(buffer);
+        strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
+        timeStamp = std::string(buffer);
+    }
+    else
+    {
+        timeStamp = zwtime;
     }
 
     PreValue = value;
 
-    fputs(zwtime.c_str(), pFile);
+    fputs(timeStamp.c_str(), pFile);
     fputs("\n", pFile);
     fputs(to_string(value).c_str(), pFile);
     fputs("\n", pFile);
@@ -139,6 +142,7 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
 {
+    FlowRateAct = 0;
     PreValueUse = false;
     PreValueAgeStartup = 30;
     AllowNegativeRates = false;
@@ -150,6 +154,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     checkDigitIncreaseConsistency = false;
     DecimalShift = 0;    
     ErrorMessageText = "";
+    timeStamp = "";
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
 }
@@ -300,7 +305,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     timeinfo = localtime(&imagetime);
 
     char strftime_buf[64];
-    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H-%M-%S", timeinfo);
+    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%dT%H:%M:%S", timeinfo);
     zwtime = std::string(strftime_buf);
 
 
@@ -343,11 +348,14 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             PreValueOkay = true;
             PreValue = Value;
-            
+            time(&lastvalue);
+            localtime(&lastvalue);
+
             SavePreValue(Value, zwtime);
         }
         return true;
     }
+
 
     zw = ErsetzteN(ReturnRawValue); 
 
@@ -373,6 +381,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
     }
 
+
     ReturnValueNoError = zwvalue;
     ReturnValue = zwvalue;
     if (ErrorMessage && (ErrorMessageText.length() > 0))
@@ -380,10 +389,15 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     if (ErrorMessageText.length() == 0)
     {
+        time_t currenttime;
+        time(&currenttime);
+        localtime(&currenttime);
+        double difference = difftime(currenttime, lastvalue);      // in Sekunden
+        difference /= 60;                                          // in Minuten
+        FlowRateAct = (Value - PreValue) / difference;
+
         PreValue = Value;
-        
         SavePreValue(Value, zwtime);
-       
     }
     return true;
 }
@@ -504,6 +518,16 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     }
 
     return input;
+}
+
+string ClassFlowPostProcessing::getReadoutRate()
+{
+    return std::to_string(FlowRateAct);
+}
+
+string ClassFlowPostProcessing::getReadoutTimeStamp()
+{
+   return timeStamp; 
 }
 
 
