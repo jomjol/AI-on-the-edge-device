@@ -45,9 +45,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 7.0.0 MQTT-Update - (2021-05-08)
+##### 7.0.1 MQTT-Update - (2021-05-13)
+
+* NEW: 7.0.1: bug fix wlan password with "=" 
 
 * Upgrade digital CNN to v8.5.0  (added new images)
+
 * New MQTT topics: flow rate (units/minute), time stamp (last correct read readout)
 
 * Update MQTT/Error topic to " " in case no error (instead of empty string)
