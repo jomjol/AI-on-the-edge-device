@@ -158,7 +158,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
         {
             resulterror = " ";
         }
-        MQTTPublish(topicError, resulterror);
+        MQTTPublish(topicError, resulterror, 1);
     }
 
     if (topicRate.length() > 0) {

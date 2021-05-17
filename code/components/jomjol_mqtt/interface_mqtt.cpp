@@ -16,11 +16,11 @@ esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
 bool mqtt_connected = false;
 esp_mqtt_client_handle_t client = NULL;
 
-void MQTTPublish(std::string _key, std::string _content){
+void MQTTPublish(std::string _key, std::string _content, int retained_flag){
     if (client && mqtt_connected) {
         int msg_id;
         std::string zw;
-        msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, 0);
+        msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
         zw = "sent publish successful in MQTTPublish, msg_id=" + std::to_string(msg_id) + ", " + _key + ", " + _content;
         if (debugdetail) LogFile.WriteToFile(zw);
         ESP_LOGI(TAG, "sent publish successful in MQTTPublish, msg_id=%d, %s, %s", msg_id, _key.c_str(), _content.c_str());
