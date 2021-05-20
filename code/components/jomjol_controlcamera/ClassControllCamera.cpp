@@ -9,6 +9,8 @@
 #include "Helper.h"
 #include "CImageBasis.h"
 
+#include "server_ota.h"
+
 
 #define BOARD_ESP32CAM_AITHINKER
 
@@ -227,6 +229,7 @@ void CCamera::EnableAutoExposure(int flashdauer)
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+        doReboot();
     }
     esp_camera_fb_return(fb);        
 
@@ -271,6 +274,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
         LEDOnOff(false);
+        doReboot();
+
         return ESP_FAIL;
     }
 
@@ -354,7 +359,11 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+        ESP_LOGE(TAGCAMERACLASS, "Reboot ?????");
         LEDOnOff(false);
+        LightOnOff(false);
+        doReboot();
+
         return ESP_FAIL;
     }
     LEDOnOff(false);    
@@ -443,7 +452,10 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     fb = esp_camera_fb_get();
     if (!fb) {
         ESP_LOGE(TAGCAMERACLASS, "Camera capture failed");
+        LightOnOff(false);
         httpd_resp_send_500(req);
+//        doReboot();
+
         return ESP_FAIL;
     }
 

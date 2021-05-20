@@ -43,8 +43,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2021-05-17)
+##### Rolling - (2021-05-20)
 
+* Bug fix: WLan reconnect after connection lost
+
+Rolling - (2021-05-17)
 * Update wlan handling to esp-idf 4.1
 * Set mqtt error message with retain flag
 * based on v7.0.1
