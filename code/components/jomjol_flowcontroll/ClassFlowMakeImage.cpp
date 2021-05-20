@@ -14,6 +14,9 @@ static const char* TAG = "flow_make_image";
 esp_err_t ClassFlowMakeImage::camera_capture(){
     string nm =  namerawimage;
     Camera.CaptureToFile(nm);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     return ESP_OK;
 }
 
@@ -24,6 +27,9 @@ void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
     rawImage->height = image_height;
     /////////////////////////////////////////////////////////////////////////////////////
     Camera.CaptureToBasisImage(rawImage, flashdauer);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     if (SaveAllFiles) rawImage->SaveToFile(namerawimage);
 }
 
@@ -169,6 +175,9 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
 {
     int flashdauer = (int) (waitbeforepicture * 1000);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     return Camera.CaptureToHTTP(req, flashdauer);
 }
 
@@ -179,6 +188,9 @@ ImageData* ClassFlowMakeImage::SendRawImage()
     ImageData *id;
     int flashdauer = (int) (waitbeforepicture * 1000);
     Camera.CaptureToBasisImage(zw, flashdauer);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     id = zw->writeToMemoryAsJPG();    
     delete zw;
     return id;  

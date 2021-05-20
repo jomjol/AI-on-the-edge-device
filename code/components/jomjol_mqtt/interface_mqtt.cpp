@@ -74,6 +74,7 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
         .client_id = _clientid.c_str(),
         .lwt_topic = _LWTContext.c_str(),
         .lwt_msg = _zwmessage.c_str(),
+        .lwt_retain = 1,
         .lwt_msg_len = _lzw,
         .keepalive = _keepalive
     };
@@ -88,5 +89,5 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
     esp_mqtt_client_register_event(client, esp_mmqtt_ID, mqtt_event_handler, client);
     esp_mqtt_client_start(client);
 
-    MQTTPublish(_LWTContext, "");
+    MQTTPublish(_LWTContext, "", 1);
 }

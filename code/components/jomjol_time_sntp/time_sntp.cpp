@@ -27,6 +27,17 @@ void time_sync_notification_cb(struct timeval *tv)
     ESP_LOGI(TAG, "Notification of a time synchronization event");
 }
 
+std::string ConvertTimeToString(time_t _time, const char * frm)
+{
+    struct tm timeinfo;
+    char strftime_buf[64];
+    localtime_r(&_time, &timeinfo);
+    strftime(strftime_buf, sizeof(strftime_buf), frm, &timeinfo);
+
+    std::string result(strftime_buf);
+    return result;
+}
+
 std::string gettimestring(const char * frm)
 {
     time_t now;

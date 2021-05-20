@@ -392,6 +392,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         time_t currenttime;
         time(&currenttime);
         localtime(&currenttime);
+//        currenttime = 
         double difference = difftime(currenttime, lastvalue);      // in Sekunden
         difference /= 60;                                          // in Minuten
         FlowRateAct = (Value - PreValue) / difference;
