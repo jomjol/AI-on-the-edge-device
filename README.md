@@ -44,8 +44,8 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
-##### Rolling - (2021-05-22)
-* Bug fix: calculation of flow rate
+##### Rolling - (2021-05-22 - v2)
+* Bug fix: calculation of flow rate, MQTT sending of rate
 
 Rolling - (2021-05-20)
 * Bug fix: mqtt retain message flag
