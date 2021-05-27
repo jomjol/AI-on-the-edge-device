@@ -44,7 +44,14 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 
-##### Rolling - (2021-05-22 - v2)
+
+##### Rolling - (2021-05-27)
+
+* MQTT error message: changes from blank to "no error" in case everything is okay
+* Bug fix: disable LED, enable GPIO again
+* Bug fix: if in fixed ip modus no DNS is specified, the gateway will be used
+
+Rolling - (2021-05-22 - v2)
 * Bug fix: calculation of flow rate, MQTT sending of rate
 
 Rolling - (2021-05-20)

@@ -434,6 +434,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (ErrorMessageText.length() == 0)
     {
         PreValue = Value;
+        ErrorMessageText = "no error";
         SavePreValue(Value, zwtime);
     }
     return true;

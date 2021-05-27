@@ -176,7 +176,11 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    if (_dns != NULL) {
+    if ((_ipadr != NULL) && (_gw != NULL) && (_netmask != NULL))
+    {
+        if (_dns == NULL)
+            _dns = _gw;
+            
         ESP_LOGI(TAG, "set DNS manual");
         esp_netif_dns_info_t dns_info;
         ip4_addr_t ip;

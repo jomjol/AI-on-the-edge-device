@@ -31,7 +31,7 @@
 #define __SD_USE_ONE_LINE_MODE__
 
 #ifdef __SD_USE_ONE_LINE_MODE__
-// #include "server_GPIO.h"
+#include "server_GPIO.h"
 #endif
 
 
@@ -200,7 +200,7 @@ extern "C" void app_main(void)
     register_server_ota_sdcard_uri(server);
 
 #ifdef __SD_USE_ONE_LINE_MODE__
-//    register_server_GPIO_uri(server);
+    register_server_GPIO_uri(server);
 #endif    
     printf("vor reg server main\n");
 

@@ -222,7 +222,8 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 void CCamera::EnableAutoExposure(int flashdauer)
 {
     LEDOnOff(true);
-    LightOnOff(true);
+    if (flashdauer > 0)
+        LightOnOff(true);
     const TickType_t xDelay = flashdauer / portTICK_PERIOD_MS;
     vTaskDelay( xDelay );
 

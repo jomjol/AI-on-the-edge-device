@@ -26,7 +26,8 @@ void ClassFlowDigit::SetInitialParameter(void)
     previousElement = NULL;    
     SaveAllFiles = false;
     disabled = false;
-
+    DecimalShift = 0;
+    DecimalShiftEnabled = false;
 }    
 
 ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
@@ -88,8 +89,25 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph)) 
             return false;
 
+    printf("aktparamgraph: %s\n", aktparamgraph.c_str());
+
+
+/*
     if ((aktparamgraph.compare("[Digits]") != 0) && (aktparamgraph.compare(";[Digits]") != 0))       // Paragraph passt nich zu MakeImage
         return false;
+*/
+
+    if ((aktparamgraph.compare(0, 7, "[Digits") != 0) && (aktparamgraph.compare(0, 8, ";[Digits") != 0))       // Paragraph passt nich zu MakeImage
+        return false;
+
+    int _pospkt = aktparamgraph.find_first_of(".");
+    int _posklammerzu = aktparamgraph.find_first_of("]");
+//    printf("Pos: %d, %d\n", _pospkt, _posklammerzu);
+    if (_pospkt > -1)
+        NameDigit = aktparamgraph.substr(_pospkt+1, _posklammerzu - _pospkt-1);
+    else
+        NameDigit = "";
+    printf("Name Digit: %s\n", NameDigit.c_str());
 
     if (aktparamgraph[0] == ';')
     {
