@@ -4,4 +4,4 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
 
 //void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user = "", std::string _password = "");
 
-void MQTTPublish(std::string _key, std::string _content);
+void MQTTPublish(std::string _key, std::string _content, int retained_flag = 0);

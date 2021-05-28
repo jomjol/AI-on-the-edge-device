@@ -11,6 +11,13 @@
 
 #include <time.h>
 
+#include "time_sntp.h"
+
+
+#define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S"
+#define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
+
+
 string ClassFlowPostProcessing::GetPreValue()
 {
     std::string result;
@@ -63,7 +70,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     int yy, month, dd, hh, mm, ss;
     struct tm whenStart;
 
-    sscanf(zwtime.c_str(), "%d-%d-%dT%d:%d:%d", &yy, &month, &dd, &hh, &mm, &ss);
+    sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
     whenStart.tm_year = yy - 1900;
     whenStart.tm_mon = month - 1;
     whenStart.tm_mday = dd;
@@ -72,11 +79,11 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     whenStart.tm_sec = ss;
     whenStart.tm_isdst = -1;
 
-    tStart = mktime(&whenStart);
+    lastvalue = mktime(&whenStart);
 
-    time(&lastvalue);
-    localtime(&lastvalue);
-    double difference = difftime(lastvalue, tStart);
+    time(&tStart);
+    localtime(&tStart);
+    double difference = difftime(tStart, lastvalue);
     difference /= 60;
     if (difference > PreValueAgeStartup)
         return false;
@@ -121,7 +128,7 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
         time(&rawtime);
         timeinfo = localtime(&rawtime);
 
-        strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
+        strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         timeStamp = std::string(buffer);
     }
     else
@@ -157,6 +164,15 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     timeStamp = "";
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
+    flowMakeImage = NULL;
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowMakeImage") == 0)
+        {
+            flowMakeImage = (ClassFlowMakeImage*) (*ListFlowControll)[i];
+        }
+    }
 }
 
 
@@ -348,8 +364,16 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             PreValueOkay = true;
             PreValue = Value;
-            time(&lastvalue);
-            localtime(&lastvalue);
+            if (flowMakeImage) 
+            {
+                lastvalue = flowMakeImage->getTimeImageTaken();
+                zwtime = ConvertTimeToString(lastvalue, PREVALUE_TIME_FORMAT_OUTPUT);
+            }
+            else
+            {
+                time(&lastvalue);
+                localtime(&lastvalue);
+            }
 
             SavePreValue(Value, zwtime);
         }
@@ -387,16 +411,30 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     if (ErrorMessage && (ErrorMessageText.length() > 0))
         ReturnValue = ReturnValue + "\t" + ErrorMessageText;
 
-    if (ErrorMessageText.length() == 0)
+    time_t currenttime;
+    if (flowMakeImage) 
     {
-        time_t currenttime;
+        currenttime = flowMakeImage->getTimeImageTaken();
+        zwtime = ConvertTimeToString(currenttime, PREVALUE_TIME_FORMAT_OUTPUT);
+    }
+    else
+    {
         time(&currenttime);
         localtime(&currenttime);
-        double difference = difftime(currenttime, lastvalue);      // in Sekunden
-        difference /= 60;                                          // in Minuten
-        FlowRateAct = (Value - PreValue) / difference;
+    }
 
+    double difference = difftime(currenttime, lastvalue);      // in Sekunden
+    difference /= 60;                                          // in Minuten
+    FlowRateAct = (Value - PreValue) / difference;
+    lastvalue = currenttime;
+//    std::string _zw = "CalcRate: " + std::to_string(FlowRateAct) + " TimeDifference[min]: " +  std::to_string(difference);
+//    _zw = _zw  + " Value: " +  std::to_string(Value) + " PreValue: " +  std::to_string(PreValue);
+//    LogFile.WriteToFile(_zw);
+
+    if (ErrorMessageText.length() == 0)
+    {
         PreValue = Value;
+        ErrorMessageText = "no error";
         SavePreValue(Value, zwtime);
     }
     return true;

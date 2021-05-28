@@ -1,7 +1,10 @@
 #pragma once
 #include "ClassFlow.h"
+#include "ClassFlowMakeImage.h"
 
 #include <string>
+
+
 
 
 class ClassFlowPostProcessing :
@@ -29,6 +32,8 @@ protected:
     string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
     string ErrorMessageText;        // Fehlermeldung bei Consistency Check
     string timeStamp;
+
+    ClassFlowMakeImage *flowMakeImage;
 
     bool LoadPreValue(void);
     string ShiftDecimal(string in, int _decShift);

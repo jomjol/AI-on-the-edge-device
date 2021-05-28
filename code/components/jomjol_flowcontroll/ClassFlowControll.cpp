@@ -1,6 +1,7 @@
 #include "ClassFlowControll.h"
 
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 
 #include "freertos/task.h"
 
@@ -21,13 +22,16 @@ static const char* TAG = "flow_controll";
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
+//    printf("_stepname: %s\n", _stepname.c_str());
     if ((_stepname.compare("[MakeImage]") == 0) || (_stepname.compare(";[MakeImage]") == 0)){
         _classname = "ClassFlowMakeImage";
     }
     if ((_stepname.compare("[Alignment]") == 0) || (_stepname.compare(";[Alignment]") == 0)){
         _classname = "ClassFlowAlignment";
     }
-    if ((_stepname.compare("[Digits]") == 0) || (_stepname.compare(";[Digits]") == 0)){
+    if ((_stepname.compare(0, 7, "[Digits") == 0) || (_stepname.compare(0, 8, ";[Digits") == 0)) {
+//    if ((_stepname.compare("[Digits]") == 0) || (_stepname.compare(";[Digits]") == 0)){
+//        printf("Digits!!!\n");
         _classname = "ClassFlowDigit";
     }
     if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
@@ -109,7 +113,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         cfc = new ClassFlowAnalog(&FlowControll);
         flowanalog = (ClassFlowAnalog*) cfc;
     }
-    if (toUpper(_type).compare("[DIGITS]") == 0)
+    if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
     {
         cfc = new ClassFlowDigit(&FlowControll);
         flowdigit = (ClassFlowDigit*) cfc;

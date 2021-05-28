@@ -17,6 +17,7 @@
 #include "ClassLogFile.h"
 
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 
 #include "server_tflite.h"
 #include "server_file.h"
@@ -67,8 +68,10 @@ bool Init_NVS_SDCard()
     // does make a difference some boards, so we do that here.
     gpio_set_pull_mode(GPIO_NUM_15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
     gpio_set_pull_mode(GPIO_NUM_2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
+#ifndef __SD_USE_ONE_LINE_MODE__
     gpio_set_pull_mode(GPIO_NUM_4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
     gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
+#endif
     gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
 
     // Options for mounting the filesystem.
@@ -104,6 +107,7 @@ bool Init_NVS_SDCard()
 
 	// Init the GPIO
     // Flash ausschalten
+    
     gpio_pad_select_gpio(FLASH_GPIO);
     gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
     gpio_set_level(FLASH_GPIO, 0);   
@@ -147,9 +151,26 @@ extern "C" void app_main(void)
 
     CheckOTAUpdate();
 
-    LoadWlanFromFile("/sdcard/wlan.ini"); 
-    ConnectToWLAN();
-    printf("\nNetparameter: IP: %s - GW: %s - NetMask %s\n", getIPAddress().c_str(), getGW().c_str(), getNetMask().c_str());
+    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
+
+    if (ssid != NULL && passwd != NULL)
+        printf("\nWLan: %s, %s\n", ssid, passwd);
+    else
+        printf("No SSID and PASSWORD set!!!");
+
+    if (hostname != NULL)
+        printf("Hostename: %s\n", hostname);
+    else
+        printf("Hostname not set.\n");
+
+    if (ip != NULL && gateway != NULL && netmask != NULL)
+       printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip, gateway, netmask);
+    if (dns != NULL)
+       printf("DNS IP: %s\n", dns);
+
+
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);
     
     TickType_t xDelay;
     xDelay = 2000 / portTICK_PERIOD_MS;
@@ -181,8 +202,10 @@ extern "C" void app_main(void)
 #ifdef __SD_USE_ONE_LINE_MODE__
     register_server_GPIO_uri(server);
 #endif    
+    printf("vor reg server main\n");
 
     register_server_main_uri(server, "/sdcard");
 
+    printf("vor dotautostart\n");
     TFliteDoAutoStart();
 }

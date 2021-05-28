@@ -14,6 +14,9 @@ static const char* TAG = "flow_make_image";
 esp_err_t ClassFlowMakeImage::camera_capture(){
     string nm =  namerawimage;
     Camera.CaptureToFile(nm);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     return ESP_OK;
 }
 
@@ -23,7 +26,11 @@ void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
     rawImage->width = image_width;          
     rawImage->height = image_height;
     /////////////////////////////////////////////////////////////////////////////////////
+    printf("Flashdauer: %d\n", flashdauer);
     Camera.CaptureToBasisImage(rawImage, flashdauer);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     if (SaveAllFiles) rawImage->SaveToFile(namerawimage);
 }
 
@@ -86,6 +93,12 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 SaveAllFiles = true;
         }
+        
+        if ((toUpper(zerlegt[0]) == "WAITBEFORETAKINGPICTURE") && (zerlegt.size() > 1))
+        {
+            waitbeforepicture = stoi(zerlegt[1]);
+        }
+
 
         if ((toUpper(zerlegt[0]) == "BRIGHTNESS") && (zerlegt.size() > 1))
         {
@@ -118,9 +131,9 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     rawImage->CreateEmptyImage(image_width, image_height, 3);
 
     waitbeforepicture_store = waitbeforepicture;
-    if (FixedExposure)
+    if (FixedExposure && (waitbeforepicture > 0))
     {
-        printf("Fixed Exposure enabled!\n");
+//        printf("Fixed Exposure enabled!\n");
         int flashdauer = (int) (waitbeforepicture * 1000);
         Camera.EnableAutoExposure(flashdauer);
         waitbeforepicture = 0.2;
@@ -169,6 +182,9 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
 {
     int flashdauer = (int) (waitbeforepicture * 1000);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     return Camera.CaptureToHTTP(req, flashdauer);
 }
 
@@ -179,6 +195,9 @@ ImageData* ClassFlowMakeImage::SendRawImage()
     ImageData *id;
     int flashdauer = (int) (waitbeforepicture * 1000);
     Camera.CaptureToBasisImage(zw, flashdauer);
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
     id = zw->writeToMemoryAsJPG();    
     delete zw;
     return id;  

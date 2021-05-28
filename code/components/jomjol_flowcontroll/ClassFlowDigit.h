@@ -21,6 +21,10 @@ protected:
     string cnnmodelfile;
     int modelxsize, modelysize;
     bool SaveAllFiles;
+    string NameDigit;
+    int DecimalShift;
+    bool DecimalShiftEnabled;
+
 
     ClassFlowAlignment* flowpostalignment;
  
