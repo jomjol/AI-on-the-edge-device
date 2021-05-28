@@ -45,26 +45,17 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-05-27)
 
-* MQTT error message: changes from blank to "no error" in case everything is okay
-* Bug fix: disable LED, enable GPIO again
-* Bug fix: if in fixed ip modus no DNS is specified, the gateway will be used
+##### 7.1.0 MQTT-Update - (2021-05-28)
 
-Rolling - (2021-05-22 - v2)
-* Bug fix: calculation of flow rate, MQTT sending of rate
+* MQTT error message: changes "no error", send retain flag
 
-Rolling - (2021-05-20)
-* Bug fix: mqtt retain message flag
-
-Rolling - (2021-05-20)
-* Bug fix: WLan reconnect after connection lost
-
-
-Rolling - (2021-05-17)
 * Update wlan handling to esp-idf 4.1
-* Set mqtt error message with retain flag
-* based on v7.0.1
+
+* Upgrade digital CNN to v8.7.0  (added new images)
+
+* Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
+
 
 ##### 7.0.1 MQTT-Update - (2021-05-13)
 
