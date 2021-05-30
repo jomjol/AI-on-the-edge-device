@@ -46,7 +46,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 7.1.1 MQTT-Update - (2021-05-28)
+##### 7.1.1 MQTT-Update - (2021-05-30)
 
 * NEW: 7.1.1: bug fix wlan password with "="  (again)
 * MQTT error message: changes "no error", send retain flag
