@@ -46,14 +46,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 7.1.0 MQTT-Update - (2021-05-28)
+##### 7.1.1 MQTT-Update - (2021-05-28)
 
+* NEW: 7.1.1: bug fix wlan password with "="  (again)
 * MQTT error message: changes "no error", send retain flag
-
 * Update wlan handling to esp-idf 4.1
-
 * Upgrade digital CNN to v8.7.0  (added new images)
-
 * Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
 
 

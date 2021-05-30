@@ -70,7 +70,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
         zerlegt = ZerlegeZeile(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
         for (int i = 2; i < zerlegt.size(); ++i)
-            zerlegt[1] = zerlegt[1] + zerlegt[i];
+            zerlegt[1] = zerlegt[1] + "=" + zerlegt[i];
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
             hostname = trim(zerlegt[1]);
