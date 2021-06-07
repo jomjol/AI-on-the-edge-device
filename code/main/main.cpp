@@ -179,6 +179,7 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );   
 //    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
+    setBootTime();
     LogFile.WriteToFile("=============================================================================================");
     LogFile.WriteToFile("=================================== Main Started ============================================");
     LogFile.WriteToFile("=============================================================================================");

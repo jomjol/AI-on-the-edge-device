@@ -19,6 +19,19 @@ p {font-size: 1em;}
 textarea {
 	font-size: 14px;
 }
+
+.description {
+	color: black;
+	font-size: 80%;
+}
+
+.disabled {
+	color:lightgrey;
+}
+
+.smallSelect {
+	width: 30px;
+}
 </style>
 
 </head>
@@ -69,7 +82,7 @@ textarea {
 			<td>
 				<input type="text" name="name" id="MakeImage_LogImageLocation_value1">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Location to store raw images for logging
 			</td>
 		</tr>
@@ -83,7 +96,7 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Time to keep the raw image (in days -"0" = forever)
 			</td>
 		</tr>
@@ -97,7 +110,7 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Wait time between illumination switch on and take the picture (in seconds)
 			</td>
 		</tr>
@@ -110,7 +123,7 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_ImageQuality_value1" size="13"   min="0" max="63">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Quality index for picture (default = "5" - "0" high ... "63" low)
 			</td>
 		</tr>
@@ -126,7 +139,7 @@ textarea {
 					<option value="1" >QVGA</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Picture size camera (default = "VGA")
 			</td>
 		</tr>
@@ -293,8 +306,8 @@ textarea {
 				<class id="Digits_ModelInputSize_text" style="color:black;">ModelInputSize</class>
 			</td>
 			<td>
-				x: <input type="number" id="Digits_ModelInputSize_value1" style="width: 30px;" min="1" step="1">
-				y: <input type="number" id="Digits_ModelInputSize_value2" style="width: 30px;" min="1" step="1">
+				x: <input type="number" id="Digits_ModelInputSize_value1" class="smallSelect" min="1" step="1">
+				y: <input type="number" id="Digits_ModelInputSize_value2" class="smallSelect" min="1" step="1">
 			</td>
 			<td style="font-size: 80%;">
 				Size of the input image for the CNN model
@@ -353,8 +366,8 @@ textarea {
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
 			<td>
-				x: <input type="number" id="Analog_ModelInputSize_value1" style="width: 30px;" min="1" step="1">
-				y: <input type="number" id="Analog_ModelInputSize_value2" style="width: 30px;" min="1" step="1">
+				x: <input type="number" id="Analog_ModelInputSize_value1" class="smallSelect" min="1" step="1">
+				y: <input type="number" id="Analog_ModelInputSize_value2" class="smallSelect" min="1" step="1">
 			</td>
 			<td style="font-size: 80%;"> Size of the input image for the CNN model </td>
 		</tr>
@@ -623,6 +636,41 @@ textarea {
 		</tr>
 
 		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > GPIO Settings</h4></td>
+		</tr> 	
+		<tr class="GPIO_IO16">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_IO16_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO16")' unchecked>
+			</td>
+			<td>
+				<span id="GPIO_IO16_text">GPIO 16 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO16_value1">
+						<option value="input" >input</option>
+						<option value="output" >output</option>
+					</select>
+				</td>
+			</td>
+			<td class="description">
+				GPIO 16 is usable without restrictions
+			</td>
+		</tr>
+		<tr class="GPIO_IO16">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 16 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO16_value2"></td>
+			</td>
+			<td class="description">
+				GPIO 16 MQTT topic name (empty = gpio16)
+			</td>
+		</tr>
+
+		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4>Debug</h4></td>
 		</tr> 		
 		<tr>
@@ -638,7 +686,7 @@ textarea {
 					<option value="1" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Turn on/off the extended logging
 			</td>
 		</tr>
@@ -652,7 +700,7 @@ textarea {
 			<td>
 				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Time to keep the log files (in days - "0" = forever)
 			</td>
 		</tr>
@@ -670,7 +718,7 @@ textarea {
 			<td>
 				<input type="text" id="System_TimeZone_value1">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)
 			</td>
 		</tr>
@@ -684,7 +732,7 @@ textarea {
 			<td>
 				<input type="text" id="System_TimeServer_value1">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Time server to synchronize system time (default: "pool.ntp.org" - used if nothing is specified)
 			</td>
 		</tr>
@@ -698,7 +746,7 @@ textarea {
 			<td>
 				<input type="text" id="System_Hostname_value1">
 			</td>
-			<td style="font-size: 80%;">
+			<td class="description">
 				Hostname for server - will be transfered to wlan.ini at next startup)
 			</td>
 		</tr>
@@ -733,7 +781,7 @@ textarea {
 
 
 function LoadConfigNeu() {
-
+	console.log("LoadConfigNeu");
 	var isInitialSetup = getParameterByName('InitialSetup');
 	if (isInitialSetup === 'true')
 	{
@@ -744,6 +792,7 @@ function LoadConfigNeu() {
 	basepath = getbasepath(); 
 	if (!loadConfig(basepath)) {
 		alert("Config.ini could not be loaded!\nPlease reload the page.");
+		console.log("LoadConfigNeu end ret");
 		return;
 	} 
 	loadConfig(basepath); 
@@ -753,19 +802,25 @@ function LoadConfigNeu() {
 	UpdateInput();
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
-	}
+	console.log("LoadConfigNeu end");
+}
 
 
 function getParameterByName(name, url = window.location.href) {
+	console.log("getParameterByName");
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);
-    if (!results) return null;
+
+	console.log("getParameterByName end");
+	if (!results) return null;
     if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+	return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }	
 
 function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
+	console.log("InvertEnableItem");
+
 	if (_param[_cat][_name]["found"]){
 		if (_optional) {
 			document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
@@ -774,22 +829,23 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _select = fal
 			}		
 		}
 		document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
-		if (_select) {
-			var textToFind = _param[_cat][_name]["value1"];
-			var dd = document.getElementById(_cat+"_"+_name+"_value1");
-			for (var i = 0; i < dd.options.length; i++) {
-				if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
-					dd.selectedIndex = i;
-					break;
+		setEnabled(_cat+"_"+_name, true);
+
+		for (var j = 1; j <= _anzpara; ++j) {
+			let element = document.getElementById(_cat+"_"+_name+"_value"+j);
+			if (element.tagName == "select") {
+				var textToFind = _param[_cat][_name]["value1"];
+				for (var i = 0; i < element.options.length; i++) {
+					if (element.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
+						element.selectedIndex = i;
+						break;
+					}
 				}
 			}
-		}
-		else {
-			for (var j = 1; j <= _anzpara; ++j) {
-				document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
+			else {
+				element.value = _param[_cat][_name]["value"+j];
 			}
 		}
-
 	}
 	else {
 		if (_optional) {
@@ -798,7 +854,8 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _select = fal
 				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
 			}	
 		}
-		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
+		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"
+		setEnabled(_cat+"_"+_name, false);	
 	}
 
 
@@ -812,12 +869,16 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _select = fal
 			}	
 		}
 		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
+		setEnabled(_cat+"_"+_name, false);
 	}
 	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional);
+
+	console.log("InvertEnableItem end");
 }
 
 function InvertEnableItem(_cat, _param)
 {
+	console.log("InvertEnableItem");
 	_zw = _cat + "_" + _param + "_enabled";
 	_isOn = document.getElementById(_zw).checked;
 
@@ -830,21 +891,42 @@ function InvertEnableItem(_cat, _param)
 	document.getElementById(_zw).disabled = !_isOn;
 	document.getElementById(_zw).style = _color;
 
-	if (param[_cat][_param]["anzParam"] == 2) {
-		_color = "width: 30px;" + _color;
-	}
+	setEnabled(_cat + "_" + _param, _isOn);
 
 	for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
 			document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
 			document.getElementById(_cat+"_"+_param+"_value"+j).style=_color;	
 	}
 
-	
+	console.log("InvertEnableItem end");
+}
 
+function setEnabled(className, enabled) {
+	let elements = document.getElementsByClassName(className);
+	for (i = 0; i < elements.length; i++) {
+		if (enabled) {
+			elements[i].classList.remove("disabled");
+		} else {
+			elements[i].classList.add("disabled");
+		}
+
+		let inputs = elements[i].getElementsByTagName("input");
+		for (j = 0; j < inputs.length; j++) {
+			if (inputs[j].id.endsWith("_enabled"))
+				continue;
+
+			if (enabled) {
+				inputs[j].removeAttribute("disabled");
+			} else {
+				inputs[j].setAttribute("disabled", "disabled");
+			}
+		}
+	}
 }
 
 function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 {
+	console.log("EnDisableItem");
 	_status = _param[_cat][_name]["found"] && _category[_cat]["enabled"];
 
 	_color = "color:lightgrey;";
@@ -865,39 +947,40 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 	document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
 	document.getElementById(_cat+"_"+_name+"_text").style = _color;
 
-	if (_param[_cat][_name]["anzParam"] == 2) {
-		_color = "width: 30px;" + _color;
-	}
+	setEnabled(_cat+"_"+_name, _status);
 
 	for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
 			document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
 			document.getElementById(_cat+"_"+_name+"_value"+j).style=_color;	
 	}
-
+	console.log("EnDisableItem end");
 }
 
 
-function ReadParameter(_param, _cat, _name, _optional, _select = false){
+function ReadParameter(_param, _cat, _name, _optional){
 	if (_param[_cat][_name]["found"]){
 		if (_optional) {
 			_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
 		}
-		if (_select) {
-			var sel = document.getElementById(_cat+"_"+_name+"_value1");
-			_param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
-		}
-		else {
-			for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-				_param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+
+		for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+			let element = document.getElementById(_cat+"_"+_name+"_value"+j);
+			if (element.tagName == "select") {
+				_param[_cat][_name]["value1"] = element.options[element.selectedIndex].text;
 			}
-		}
+			else {
+				_param[_cat][_name]["value"+j] = element.value;	
+			}
+		}		
 	}
 }
 
 function UpdateInput() {
+	console.log("UpdateInput");
 	document.getElementById("Category_Analog_enabled").checked = category["Analog"]["enabled"];
 	document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
+	document.getElementById("Category_GPIO_enabled").checked = category["GPIO"]["enabled"];
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
 	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
@@ -939,7 +1022,9 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "TopicTimeStamp", true);	
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
-	WriteParameter(param, category, "MQTT", "password", true);	
+	WriteParameter(param, category, "MQTT", "password", true);
+	
+	WriteParameter(param, category, "GPIO", "IO16", true, true, 2);
 
 	WriteParameter(param, category, "AutoTimer", "AutoStart", false, true);	
 	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
@@ -949,15 +1034,18 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
-	WriteParameter(param, category, "System", "TimeServer", true);	
+	WriteParameter(param, category, "System", "TimeServer", true);
+	console.log("UpdateInput end");	
 }
 
 function ReadParameterAll()
 {
+	console.log("ReadParameterAll");
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
-
+	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
+	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
 	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
@@ -965,31 +1053,31 @@ function ReadParameterAll()
 	ReadParameter(param, "MakeImage", "Brightness", false);		
 //	ReadParameter(param, "MakeImage", "Contrast", false);		
 //	ReadParameter(param, "MakeImage", "Saturation", false);		
-	ReadParameter(param, "MakeImage", "ImageSize", false, true);	
-	ReadParameter(param, "MakeImage", "FixedExposure", false, true);	
+	ReadParameter(param, "MakeImage", "ImageSize", false);	
+	ReadParameter(param, "MakeImage", "FixedExposure", false);	
 
 	ReadParameter(param, "Alignment", "SearchFieldX", false);		
 	ReadParameter(param, "Alignment", "SearchFieldY", false);
-	ReadParameter(param, "Alignment", "AlignmentAlgo", true, true);
+	ReadParameter(param, "Alignment", "AlignmentAlgo", true);
 
 	ReadParameter(param, "Digits", "Model", false);		
 	ReadParameter(param, "Digits", "LogImageLocation", true);		
 	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
-	ReadParameter(param, "Digits", "ModelInputSize", false, false, 2);
+	ReadParameter(param, "Digits", "ModelInputSize", false);
 
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
-	ReadParameter(param, "Analog", "ExtendedResolution", true, true);		
-	ReadParameter(param, "Analog", "ModelInputSize", false, false, 2);
+	ReadParameter(param, "Analog", "ExtendedResolution", true);		
+	ReadParameter(param, "Analog", "ModelInputSize", false);
 
 	ReadParameter(param, "PostProcessing", "DecimalShift", true);		
-	ReadParameter(param, "PostProcessing", "PreValueUse", true, true);		
+	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, true);
+	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
 	ReadParameter(param, "PostProcessing", "MaxRateValue", true);		
-	ReadParameter(param, "PostProcessing", "ErrorMessage", true, true);
-	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
+	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
+	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
 	ReadParameter(param, "MQTT", "Uri", true);	
 	ReadParameter(param, "MQTT", "Topic", true);	
@@ -1000,10 +1088,12 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 
-	ReadParameter(param, "AutoTimer", "AutoStart", false, true);	
+	ReadParameter(param, "GPIO", "IO16", true);
+
+	ReadParameter(param, "AutoTimer", "AutoStart", false);	
 	ReadParameter(param, "AutoTimer", "Intervall", false);	
 
-	ReadParameter(param, "Debug", "Logfile", true, true);	
+	ReadParameter(param, "Debug", "Logfile", true);	
 	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	
 
 	ReadParameter(param, "System", "TimeZone", true);	
@@ -1011,30 +1101,38 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeServer", true);	
 	
 	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
+	console.log("ReadParameterAll end");
 }
 
 function WriteConfig(){
+	console.log("WriteConfig");
 	ReadParameterAll();
+	console.log("WriteConfig end");
 	return setConfigParameters(param, category);
 }
 
 function FormatDecimalValue(_param, _cat, _name) {
+	console.log("FormatDecimalValue");
 	for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
 		var _val = _param[_cat][_name]["value"+j];
 		_val = _val.replace(",", ".");
 		_param[_cat][_name]["value"+j] = _val;
 	}
+	console.log("FormatDecimalValue end");
 }
 
 function UpdateAfterCategoryCheck() {
+	console.log("UpdateAfterCategoryCheck");
 	ReadParameterAll();
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	UpdateInput();
+	console.log("UpdateAfterCategoryCheck end");
 }
 
 function UpdateExpertModus()
 {
+	console.log("UpdateExpertModus");
 	var _style = 'display:none;';
 	if (document.getElementById("ExpertModus_enabled").checked) {
 		_style = '';
@@ -1049,19 +1147,22 @@ function UpdateExpertModus()
 	for (var i = 0; i < expert.length; i++) {
 		document.getElementById(expert[i].id).style = _style;
 	}
-
+	console.log("UpdateExpertModus end");
 }
 
 function saveTextAsFile()
 {
+	console.log("saveTextAsFile");
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
 		var textToSave = WriteConfig();
 		FileDeleteOnServer("/config/config.ini", basepath);
 		FileSendContent(textToSave, "/config/config.ini", basepath);
 	}
+	console.log("saveTextAsFile end");
 }
 
 function doReboot() {
+	console.log("doReboot");
 	if (confirm("Are you sure you want to reboot the ESP32?")) {
 		var stringota = "/reboot";
 		window.location = stringota;
@@ -1069,9 +1170,11 @@ function doReboot() {
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}
+	console.log("doReboot end");
 }
 
 function editConfigDirect() {
+	console.log("editConfigDirect");
 	if (confirm("Did you save your changes?")) {
 		var stringota = "/edit_config.html";
 		window.location = stringota;
@@ -1079,6 +1182,7 @@ function editConfigDirect() {
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}	
+	console.log("editConfigDirect end");
 }
  
 LoadConfigNeu();

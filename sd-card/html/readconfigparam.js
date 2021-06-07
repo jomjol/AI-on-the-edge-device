@@ -88,7 +88,14 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TopicTimeStamp");
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
-     ParamAddValue(param, catname, "password");     
+     ParamAddValue(param, catname, "password");
+     
+     var catname = "GPIO";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "IO16", 2);
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 
@@ -177,8 +184,12 @@ function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _
 
 function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
      for (var paramname in _param[_catname]) {
-          if ((_linesplit[0].toUpperCase() == paramname.toUpperCase()) && (_linesplit.length > _param[_catname][paramname]["anzParam"]))
+          if (_linesplit[0].toUpperCase() == paramname.toUpperCase())
           {
+               while (_linesplit.length <= _param[_catname][paramname]["anzParam"]) {
+                    _linesplit.push("");
+               }
+
                _param[_catname][paramname]["found"] = true;
                _param[_catname][paramname]["enabled"] = !_iscom;
                _param[_catname][paramname]["line"] = _aktline;
