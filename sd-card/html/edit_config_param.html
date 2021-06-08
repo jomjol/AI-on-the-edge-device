@@ -32,6 +32,10 @@ textarea {
 .smallSelect {
 	width: 30px;
 }
+
+.invalid-input {
+	background-color: #FFAA00;
+}
 </style>
 
 </head>
@@ -561,6 +565,34 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_TopicUptime_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "TopicUptime")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_TopicUptime_text" style="color:black;">TopicUptime</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_TopicUptime_value1">
+			</td>
+			<td style="font-size: 80%;">
+				MQTT topic, ESP uptime of last flow
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_MainTopicGPIO_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopicGPIO")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_MainTopicGPIO_text" style="color:black;">MainTopicGPIO</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_MainTopicGPIO_value1">
+			</td>
+			<td style="font-size: 80%;">
+				MQTT main topic for GPIO
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
 			</td>
 			<td  width="200px">
@@ -666,7 +698,7 @@ textarea {
 				<td"><input type="text" id="GPIO_IO16_value2"></td>
 			</td>
 			<td class="description">
-				GPIO 16 MQTT topic name (empty = gpio16)
+				GPIO 16 MQTT topic name (empty = gpio16). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
 		</tr>
 
@@ -818,7 +850,7 @@ function getParameterByName(name, url = window.location.href) {
 	return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }	
 
-function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
+function WriteParameter(_param, _category, _cat, _name, _optional, _anzpara = 1){
 	console.log("InvertEnableItem");
 
 	if (_param[_cat][_name]["found"]){
@@ -963,13 +995,22 @@ function ReadParameter(_param, _cat, _name, _optional){
 			_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
 		}
 
-		for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-			let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-			if (element.tagName == "select") {
-				_param[_cat][_name]["value1"] = element.options[element.selectedIndex].text;
+		for (var j = 0; j < _param[_cat][_name]["anzParam"]; ++j) {
+			let element = document.getElementById(_cat+"_"+_name+"_value"+(j+1));
+			console.log("check value", element.tagName, element.value, _param[_cat][_name].checkRegExList == null ? null : _param[_cat][_name].checkRegExList[j]);
+			if (element.tagName.toLowerCase() == "select") {
+				_param[_cat][_name]["value1"] = element.selectedIndex > -1 ? element.options[element.selectedIndex].text : "";
 			}
 			else {
-				_param[_cat][_name]["value"+j] = element.value;	
+				if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j] != null)) {
+					console.log("check regex", element.value.match(_param[_cat][_name].checkRegExList[j]));
+					if (!element.value.match(_param[_cat][_name].checkRegExList[j])) {
+						element.classList.add("invalid-input");
+					} else {
+						element.classList.remove("invalid-input");
+					}
+				}
+				_param[_cat][_name]["value"+(j+1)] = element.value;	
 			}
 		}		
 	}
@@ -989,47 +1030,49 @@ function UpdateInput() {
 	WriteParameter(param, category, "MakeImage", "Brightness", false);		
 //	WriteParameter(param, category, "MakeImage", "Contrast", false);		
 //	WriteParameter(param, category, "MakeImage", "Saturation", false);		
-	WriteParameter(param, category, "MakeImage", "ImageSize", false, true, true);		
-	WriteParameter(param, category, "MakeImage", "FixedExposure", false, true, true);		
+	WriteParameter(param, category, "MakeImage", "ImageSize", false, true);		
+	WriteParameter(param, category, "MakeImage", "FixedExposure", false, true);		
 
 	WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
 	WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
-	WriteParameter(param, category, "Alignment", "AlignmentAlgo", true, true, true);		
+	WriteParameter(param, category, "Alignment", "AlignmentAlgo", true, true);		
 
 	WriteParameter(param, category, "Digits", "Model", false);		
 	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
 	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
-	WriteParameter(param, category, "Digits", "ModelInputSize", false, false, 2);	
+	WriteParameter(param, category, "Digits", "ModelInputSize", false, 2);	
 	
 	WriteParameter(param, category, "Analog", "Model", false);		
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
-	WriteParameter(param, category, "Analog", "ExtendedResolution", true, true);		
-	WriteParameter(param, category, "Analog", "ModelInputSize", false, false, 2);		
+	WriteParameter(param, category, "Analog", "ExtendedResolution", true);		
+	WriteParameter(param, category, "Analog", "ModelInputSize", false, 2);		
 	
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true);		
-	WriteParameter(param, category, "PostProcessing", "PreValueUse", true, true);		
+	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
-	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, true);
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true);		
-	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true, true);
-	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
+	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
+	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
 	WriteParameter(param, category, "MQTT", "Uri", true);	
 	WriteParameter(param, category, "MQTT", "Topic", true);	
 	WriteParameter(param, category, "MQTT", "TopicError", true);	
 	WriteParameter(param, category, "MQTT", "TopicRate", true);	
-	WriteParameter(param, category, "MQTT", "TopicTimeStamp", true);	
+	WriteParameter(param, category, "MQTT", "TopicTimeStamp", true);
+	WriteParameter(param, category, "MQTT", "TopicUptime", true);	
+	WriteParameter(param, category, "MQTT", "MainTopicGPIO", true);
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	
-	WriteParameter(param, category, "GPIO", "IO16", true, true, 2);
+	WriteParameter(param, category, "GPIO", "IO16", true, 2);
 
-	WriteParameter(param, category, "AutoTimer", "AutoStart", false, true);	
+	WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
 	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
 
-	WriteParameter(param, category, "Debug", "Logfile", true, true);	
+	WriteParameter(param, category, "Debug", "Logfile", true);	
 	WriteParameter(param, category, "Debug", "LogfileRetentionInDays", true);	
 
 	WriteParameter(param, category, "System", "TimeZone", true);	
@@ -1040,7 +1083,6 @@ function UpdateInput() {
 
 function ReadParameterAll()
 {
-	console.log("ReadParameterAll");
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
@@ -1084,6 +1126,8 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "TopicError", true);	
 	ReadParameter(param, "MQTT", "TopicRate", true);
 	ReadParameter(param, "MQTT", "TopicTimeStamp", true);
+	ReadParameter(param, "MQTT", "TopicUptime", true);
+	ReadParameter(param, "MQTT", "MainTopicGPIO", true);
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
@@ -1101,13 +1145,10 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeServer", true);	
 	
 	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
-	console.log("ReadParameterAll end");
 }
 
 function WriteConfig(){
-	console.log("WriteConfig");
 	ReadParameterAll();
-	console.log("WriteConfig end");
 	return setConfigParameters(param, category);
 }
 
@@ -1155,6 +1196,10 @@ function saveTextAsFile()
 	console.log("saveTextAsFile");
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
 		var textToSave = WriteConfig();
+		if (document.getElementsByClassName("invalid-input").length > 0) {
+			alert("Settings cannot be saved. Please check your entries.");
+			return;
+		}
 		FileDeleteOnServer("/config/config.ini", basepath);
 		FileSendContent(textToSave, "/config/config.ini", basepath);
 	}

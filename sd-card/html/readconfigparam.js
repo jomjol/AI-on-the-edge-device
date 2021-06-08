@@ -86,6 +86,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TopicError");
      ParamAddValue(param, catname, "TopicRate");
      ParamAddValue(param, catname, "TopicTimeStamp");
+     ParamAddValue(param, catname, "TopicUptime", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "MainTopicGPIO", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
@@ -95,7 +97,7 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "IO16", 2);
+     ParamAddValue(param, catname, "IO16", 2, [null, /^[a-zA-Z0-9_-]*$/]);
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 
@@ -143,12 +145,13 @@ function ParseConfig() {
      }
 }
 
-function ParamAddValue(param, _cat, _param, _anzParam = 1){
+function ParamAddValue(param, _cat, _param, _anzParam = 1, _checkRegExList = null){
      param[_cat][_param] = new Object(); 
      param[_cat][_param]["found"] = false;
      param[_cat][_param]["enabled"] = false;
      param[_cat][_param]["line"] = -1; 
-     param[_cat][_param]["anzParam"] = _anzParam;    
+     param[_cat][_param]["anzParam"] = _anzParam;
+     param[_cat][_param].checkRegExList = _checkRegExList;
 };
 
 
