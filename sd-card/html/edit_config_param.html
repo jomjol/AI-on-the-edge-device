@@ -692,10 +692,22 @@ textarea {
 		<tr class="GPIO_IO16">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
+				<span>GPIO 16 use interrupt</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO16_value2"></td>
+			</td>
+			<td class="description">
+				GPIO 16 enable interrupt trigger
+			</td>
+		</tr>
+		<tr class="GPIO_IO16">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span>GPIO 16 name</span>
 			</td>
 			<td>
-				<td"><input type="text" id="GPIO_IO16_value2"></td>
+				<td"><input type="text" id="GPIO_IO16_value3"></td>
 			</td>
 			<td class="description">
 				GPIO 16 MQTT topic name (empty = gpio16). Allowed characters (a-z, A-Z, 0-9, _, -)
@@ -813,7 +825,6 @@ textarea {
 
 
 function LoadConfigNeu() {
-	console.log("LoadConfigNeu");
 	var isInitialSetup = getParameterByName('InitialSetup');
 	if (isInitialSetup === 'true')
 	{
@@ -824,7 +835,6 @@ function LoadConfigNeu() {
 	basepath = getbasepath(); 
 	if (!loadConfig(basepath)) {
 		alert("Config.ini could not be loaded!\nPlease reload the page.");
-		console.log("LoadConfigNeu end ret");
 		return;
 	} 
 	loadConfig(basepath); 
@@ -834,38 +844,35 @@ function LoadConfigNeu() {
 	UpdateInput();
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
-	console.log("LoadConfigNeu end");
 }
 
 
 function getParameterByName(name, url = window.location.href) {
-	console.log("getParameterByName");
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);
 
-	console.log("getParameterByName end");
 	if (!results) return null;
     if (!results[2]) return '';
 	return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }	
 
-function WriteParameter(_param, _category, _cat, _name, _optional, _anzpara = 1){
-	console.log("InvertEnableItem");
+function WriteParameter(_param, _category, _cat, _name, _optional){
 
+	let anzpara = _param[_cat][_name].anzParam;
 	if (_param[_cat][_name]["found"]){
 		if (_optional) {
 			document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
-			for (var j = 1; j <= _anzpara; ++j) {
+			for (var j = 1; j <= anzpara; ++j) {
 				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
 			}		
 		}
 		document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
 		setEnabled(_cat+"_"+_name, true);
 
-		for (var j = 1; j <= _anzpara; ++j) {
+		for (var j = 1; j <= anzpara; ++j) {
 			let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-			if (element.tagName == "select") {
+			if (element.tagName.toLowerCase() == "select") {
 				var textToFind = _param[_cat][_name]["value1"];
 				for (var i = 0; i < element.options.length; i++) {
 					if (element.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
@@ -873,6 +880,9 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _anzpara = 1)
 						break;
 					}
 				}
+			}
+			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
+				element.checked = _param[_cat][_name]["value"+j] == "true";
 			}
 			else {
 				element.value = _param[_cat][_name]["value"+j];
@@ -882,7 +892,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _anzpara = 1)
 	else {
 		if (_optional) {
 			document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
-			for (var j = 1; j <= _anzpara; ++j) {
+			for (var j = 1; j <= anzpara; ++j) {
 				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
 			}	
 		}
@@ -896,7 +906,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _anzpara = 1)
 	{
 		if (_optional) {
 			document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
-			for (var j = 1; j <= _anzpara; ++j) {
+			for (var j = 1; j <= anzpara; ++j) {
 				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
 			}	
 		}
@@ -904,13 +914,10 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _anzpara = 1)
 		setEnabled(_cat+"_"+_name, false);
 	}
 	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional);
-
-	console.log("InvertEnableItem end");
 }
 
 function InvertEnableItem(_cat, _param)
 {
-	console.log("InvertEnableItem");
 	_zw = _cat + "_" + _param + "_enabled";
 	_isOn = document.getElementById(_zw).checked;
 
@@ -929,8 +936,6 @@ function InvertEnableItem(_cat, _param)
 			document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
 			document.getElementById(_cat+"_"+_param+"_value"+j).style=_color;	
 	}
-
-	console.log("InvertEnableItem end");
 }
 
 function setEnabled(className, enabled) {
@@ -958,7 +963,6 @@ function setEnabled(className, enabled) {
 
 function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 {
-	console.log("EnDisableItem");
 	_status = _param[_cat][_name]["found"] && _category[_cat]["enabled"];
 
 	_color = "color:lightgrey;";
@@ -985,7 +989,6 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 			document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
 			document.getElementById(_cat+"_"+_name+"_value"+j).style=_color;	
 	}
-	console.log("EnDisableItem end");
 }
 
 
@@ -997,13 +1000,14 @@ function ReadParameter(_param, _cat, _name, _optional){
 
 		for (var j = 0; j < _param[_cat][_name]["anzParam"]; ++j) {
 			let element = document.getElementById(_cat+"_"+_name+"_value"+(j+1));
-			console.log("check value", element.tagName, element.value, _param[_cat][_name].checkRegExList == null ? null : _param[_cat][_name].checkRegExList[j]);
 			if (element.tagName.toLowerCase() == "select") {
 				_param[_cat][_name]["value1"] = element.selectedIndex > -1 ? element.options[element.selectedIndex].text : "";
 			}
+			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
+				_param[_cat][_name]["value"+(j+1)] = element.checked;
+			}
 			else {
 				if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j] != null)) {
-					console.log("check regex", element.value.match(_param[_cat][_name].checkRegExList[j]));
 					if (!element.value.match(_param[_cat][_name].checkRegExList[j])) {
 						element.classList.add("invalid-input");
 					} else {
@@ -1017,7 +1021,6 @@ function ReadParameter(_param, _cat, _name, _optional){
 }
 
 function UpdateInput() {
-	console.log("UpdateInput");
 	document.getElementById("Category_Analog_enabled").checked = category["Analog"]["enabled"];
 	document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
@@ -1040,13 +1043,13 @@ function UpdateInput() {
 	WriteParameter(param, category, "Digits", "Model", false);		
 	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
 	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
-	WriteParameter(param, category, "Digits", "ModelInputSize", false, 2);	
+	WriteParameter(param, category, "Digits", "ModelInputSize", false);	
 	
 	WriteParameter(param, category, "Analog", "Model", false);		
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
 	WriteParameter(param, category, "Analog", "ExtendedResolution", true);		
-	WriteParameter(param, category, "Analog", "ModelInputSize", false, 2);		
+	WriteParameter(param, category, "Analog", "ModelInputSize", false);		
 	
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
@@ -1067,7 +1070,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	
-	WriteParameter(param, category, "GPIO", "IO16", true, 2);
+	WriteParameter(param, category, "GPIO", "IO16", true);
 
 	WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
 	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
@@ -1078,7 +1081,6 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
-	console.log("UpdateInput end");	
 }
 
 function ReadParameterAll()
@@ -1153,27 +1155,22 @@ function WriteConfig(){
 }
 
 function FormatDecimalValue(_param, _cat, _name) {
-	console.log("FormatDecimalValue");
 	for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
 		var _val = _param[_cat][_name]["value"+j];
 		_val = _val.replace(",", ".");
 		_param[_cat][_name]["value"+j] = _val;
 	}
-	console.log("FormatDecimalValue end");
 }
 
 function UpdateAfterCategoryCheck() {
-	console.log("UpdateAfterCategoryCheck");
 	ReadParameterAll();
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	UpdateInput();
-	console.log("UpdateAfterCategoryCheck end");
 }
 
 function UpdateExpertModus()
 {
-	console.log("UpdateExpertModus");
 	var _style = 'display:none;';
 	if (document.getElementById("ExpertModus_enabled").checked) {
 		_style = '';
@@ -1188,12 +1185,10 @@ function UpdateExpertModus()
 	for (var i = 0; i < expert.length; i++) {
 		document.getElementById(expert[i].id).style = _style;
 	}
-	console.log("UpdateExpertModus end");
 }
 
 function saveTextAsFile()
 {
-	console.log("saveTextAsFile");
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
 		var textToSave = WriteConfig();
 		if (document.getElementsByClassName("invalid-input").length > 0) {
@@ -1203,11 +1198,9 @@ function saveTextAsFile()
 		FileDeleteOnServer("/config/config.ini", basepath);
 		FileSendContent(textToSave, "/config/config.ini", basepath);
 	}
-	console.log("saveTextAsFile end");
 }
 
 function doReboot() {
-	console.log("doReboot");
 	if (confirm("Are you sure you want to reboot the ESP32?")) {
 		var stringota = "/reboot";
 		window.location = stringota;
@@ -1215,11 +1208,9 @@ function doReboot() {
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}
-	console.log("doReboot end");
 }
 
 function editConfigDirect() {
-	console.log("editConfigDirect");
 	if (confirm("Did you save your changes?")) {
 		var stringota = "/edit_config.html";
 		window.location = stringota;
@@ -1227,7 +1218,6 @@ function editConfigDirect() {
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}	
-	console.log("editConfigDirect end");
 }
  
 LoadConfigNeu();
