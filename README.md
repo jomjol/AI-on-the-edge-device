@@ -50,7 +50,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 * Restructuring for multi number counters
   * Major internal and html changes 
     (html and firmware)
-    
+*  **ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**
+
+
 
 ##### 7.1.1 MQTT-Update - (2021-05-30)
 
