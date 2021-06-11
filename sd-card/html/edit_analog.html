@@ -69,6 +69,21 @@ th, td {
    
 
 <div id="div1">
+    <p>
+        <table>
+            <tr>
+                <class id="Numbers_text" style="color:black;">Number: </class>
+                <select id="Numbers_value1" onchange="numberChanged()">
+                    <option value="0" selected>default</option>
+                    <option value="1" >NT</option>
+                    <option value="2" >HT</option>
+                </select>
+                <input class="move" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename">  
+                <input class="move" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New">  
+                <input class="move" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Remove">
+            </tr>
+        </table>
+    </p>
 
 	<table>
 	  <tr>
@@ -89,10 +104,12 @@ th, td {
 			  <option value="1" >ROI 1</option>
             </select>
 		</td>
-		<td>Name: <input type="text" name="name" id="name" onchange="onNameChange()" size="13"></td>
+		<td>                
+            <input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename">  
 		<td>
-		<input class="button" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
-		<input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
+		<td>
+		<input class="move" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
+		<input class="move" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
 		</td>	
 	  </tr>
 	  <tr>
@@ -114,11 +131,10 @@ th, td {
     </table>	
 
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script>  
-<script type="text/javascript" src="./readconfig.js"></script>  
-<script type="text/javascript" src="./jquery-3.5.1.min.js"></script>  
-
+    <script type="text/javascript" src="./gethost.js"></script> 
+    <script type="text/javascript" src="./readconfigcommon.js"></script>
+    <script type="text/javascript" src="./readconfigparam.js"></script>  
+    
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
@@ -179,21 +195,22 @@ function deleteROI(){
 }
 
 function newROI(){
-    var zw = ROIInfo[ROIInfo.length-1];
-    ROIInfo.push(zw);
-    for (var i = ROIInfo.length-2; i > aktindex + 1; --i){
-        ROIInfo[i] = ROIInfo[i-1];
-    }
-    aktindex++;
-    ROIInfo[aktindex] = new Object;
-    ROIInfo[aktindex]["pos_ref"] = -1;
-    ROIInfo[aktindex]["name"] = "ROI" + aktindex;
-    ROIInfo[aktindex]["x"] = 1;
-    ROIInfo[aktindex]["y"] = 1;
-    ROIInfo[aktindex]["dx"] = ROIInfo[aktindex-1]["dx"];
-    ROIInfo[aktindex]["dy"] = ROIInfo[aktindex-1]["dy"];
-    ROIInfo[aktindex]["ar"] = ROIInfo[aktindex-1]["ar"];
-    UpdateROIs();
+    var sel = document.getElementById("Numbers_value1");
+    var _number= sel.options[sel.selectedIndex].text;
+    sel = document.getElementById("index");
+    var _roialt= sel.options[sel.selectedIndex].text;
+
+    var _roinew = prompt("Please enter name of new ROI", "name");
+
+    if (ROIInfo.length > 0)
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"]);
+    else
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30);
+
+    if (erg != "")
+        alert(erg);
+    else
+        UpdateROIs(_roinew);
 }
 
 function movePrevious(){
@@ -223,22 +240,47 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    _enabled = document.getElementById("Category_Analog_enabled").checked;
-    SaveROIToConfig(ROIInfo, "[Analog]", basepath, _enabled);
-    UpdatePage();  
+    _zwcat = getConfigCategory();
+    _zwcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+    WriteConfigININew();
+    SaveConfigToServer(basepath);    
 }
 
 
 function UpdateROIs(){
+    document.getElementById("Category_Analog_enabled").checked = true;
+    var sel = document.getElementById("Numbers_value1");
+    var _number = sel.options[sel.selectedIndex].text;
+
+    ROIInfo = getROIInfo("analog", _number);
+    _catzw = getConfigCategory();
+
+    if (_catzw["Analog"]["enabled"] == false) 
+    {
+        document.getElementById("Category_Analog_enabled").checked = false;
+        EnDisableDigits();
+        alert("Analog ROIs are disabled - please enable (Check box top left).\n");
+        return;
+    }
+
     if (ROIInfo.length == 0){
-        alert("There are no ROIs defined.\nPlease first define minimum one ROI in the config.ini by hand.\n");
-        document.getElementById("newROI").disabled = true;
+        alert("There are no ROIs defined.\nPlease first create a new ROI (\"New ROIs ...\").\n");
+        document.getElementById("newROI").disabled = false;
         document.getElementById("deleteROI").disabled = true;
         document.getElementById("index").disabled = true;
         document.getElementById("saveroi").disabled = true;
+        document.getElementById("renameROI").disabled = true;
         document.getElementById("moveNext").disabled = true;
         document.getElementById("movePrevious").disabled = true;
         return;
+    }
+    else
+    {
+        document.getElementById("newROI").disabled = false;
+        document.getElementById("deleteROI").disabled = false;
+        document.getElementById("renameROI").disabled = false;
+        document.getElementById("index").disabled = false;
+        document.getElementById("saveroi").disabled = false;
     }
 
     var _index = document.getElementById("index");
@@ -246,11 +288,18 @@ function UpdateROIs(){
         _index.remove(0);
     }
 
+    if (aktindex > ROIInfo.length)
+        aktindex = ROIInfo.length;
+
     for (var i = 0; i < ROIInfo.length; ++i){
         var option = document.createElement("option");
-        option.text = "ROI " + (i + 1);
+        option.text = ROIInfo[i]["name"];
         option.value = i;
-        _index.add(option); 
+        _index.add(option);
+        if (typeof _sel !== 'undefined') {
+            if (option.text == _sel)
+                aktindex = i;
+        }
     }
     _index.selectedIndex = aktindex; 
 
@@ -267,7 +316,6 @@ function UpdateROIs(){
     
     document.getElementById("lockAR").checked = lockAR;
        
-    document.getElementById("name").value = ROIInfo[aktindex]["name"];
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
     document.getElementById("refdx").value = ROIInfo[aktindex]["dx"];  
@@ -277,26 +325,8 @@ function UpdateROIs(){
     rect.w = ROIInfo[aktindex]["dx"];
     rect.h = ROIInfo[aktindex]["dy"];
     draw();      
+
 }
-
-function ParseIni(_basepath) {
-    loadConfig(_basepath);
-    ParseConfig();
-
-    document.getElementById("Category_Analog_enabled").checked = true;
-    ROIInfo = getROIInfo("[Analog]");
-
-    if (!GetAnalogEnabled()) 
-    {
-        document.getElementById("Category_Analog_enabled").checked = false;
-        EnDisableAnalog();
-        alert("Analog ROIs are disabled - please enable (Check box top left).\n");
-        return;
-    }
-
-    UpdateROIs();
-}
-			
     
         function loadCanvas(dataURL) {
                 var canvas = document.getElementById('canvas');
@@ -334,7 +364,10 @@ function ParseIni(_basepath) {
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
             loadCanvas(basepath + "/fileserver/config/reference.jpg");
-            ParseIni(basepath);
+            loadConfig(basepath); 
+            ParseConfig();
+            param = getConfigParameters(); 
+            UpdateNUMBERS();
             drawImage();
             draw();
         }
@@ -348,6 +381,66 @@ function ParseIni(_basepath) {
             context.drawImage(imageObj, 0, 0);
 //            context.restore();
         }  
+
+function UpdateNUMBERS(_sel){
+    zw = getNUMBERInfo();
+
+    index = 0;
+
+    var _index = document.getElementById("Numbers_value1");
+    while (_index.length){
+        _index.remove(0);
+    }
+
+    for (var i = 0; i < zw.length; ++i){
+        var option = document.createElement("option");
+        option.text = zw[i]["name"];
+        option.value = i;
+        _index.add(option); 
+
+        if (typeof _sel !== 'undefined') {
+            if (zw[i]["name"] == _sel)
+                index = i
+        }
+    }
+    _index.selectedIndex = index;
+
+    UpdateROIs();
+}
+
+function renameNumber(){
+    var sel = document.getElementById("Numbers_value1");
+    var _delte= sel.options[sel.selectedIndex].text;
+    var _numbernew = prompt("Please enter new name", _delte);
+
+    erg = RenameNUMBER(_delte, _numbernew);
+    if (erg != "")
+        alert(erg);
+    else
+        UpdateNUMBERS(_numbernew);
+}
+
+function newNumber(){
+    var _numbernew = prompt("Please enter name of new number", "name");
+
+    erg = CreateNUMBER(_numbernew);
+    if (erg != "")
+        alert(erg);
+    else
+        UpdateNUMBERS(_numbernew);
+}
+
+
+function removeNumber(){
+	if (confirm("This will remove the number complete (analog and digital).\nIf you only want to remove the digital ROIs, please use \"Delete ROIs\".\nDo you want to proceed?")) {
+        var sel = document.getElementById("Numbers_value1");
+        var _delte= sel.options[sel.selectedIndex].text;
+        erg = DeleteNUMBER(_delte);
+        if (erg != "")
+            alert(erg);
+        UpdateNUMBERS();
+	}	    
+}
 
 
     function draw() {
@@ -482,6 +575,30 @@ function ParseIni(_basepath) {
             draw();            
         }
     }
+
+
+    function renameROI(){
+        var sel = document.getElementById("Numbers_value1");
+        var _number= sel.options[sel.selectedIndex].text;
+        sel = document.getElementById("index");
+        var _roialt= sel.options[sel.selectedIndex].text;
+
+
+        var _roinew = prompt("Please enter new name", _roialt);
+
+        erg = RenameROI(_number, "analog", _roialt, _roinew);
+        if (erg != "")
+            alert(erg);
+        else
+            UpdateROIs(_roinew);
+    }
+
+    function numberChanged()
+    {
+        UpdateROIs();
+    }    
+
+
 
     
     init();

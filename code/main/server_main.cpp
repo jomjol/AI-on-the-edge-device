@@ -234,7 +234,7 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
     printf("File to upload: %s\n", filetosend.c_str());    
 
-    esp_err_t res = send_file(req, filetosend);
+    esp_err_t res = send_file(req, filetosend); 
     if (res != ESP_OK)
         return res;
 

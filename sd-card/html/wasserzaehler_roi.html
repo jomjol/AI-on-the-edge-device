@@ -7,7 +7,7 @@
 <style>
 .tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:585px;}
 .tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{height: 55px;font-size:24px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
+.tg th{height: 50px;font-size:24px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
 .tg .tg-1{width:77%;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-2{font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-3{height: 15px;font-size:14px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}		
@@ -15,27 +15,72 @@
 
 </head>
 
-<script src="/jquery-3.5.1.min.js"></script>
+<body style="font-family: arial">
 
-<script>
-	function addZero(i) {
+<table class="tg">
+  <tr>
+    <td class="tg-1" rowspan="9"><div id="img"></div></td>
+    <th class="th">Value:</th>
+  </tr>	
+  <tr>	
+    <td class="tg-2">
+	<div id="value"></div>
+	</td>	
+  </tr>
+  <tr>
+    <th class="th">Previous Value:</th>
+  </tr>	
+  <tr>	
+    <td class="tg-2">
+	<div id="prevalue"></div>
+	</td>	
+  </tr>
+
+  <tr>
+    <th class="th">Raw Value:</th>
+  </tr>	
+  <tr>	
+    <td class="tg-2">
+	<div id="raw"></div>
+	</td>	
+  </tr>
+  <tr>
+    <th class="th">Error:</th>
+  </tr>	
+  <tr>	
+    <td class="tg-2">
+	<div id="error"></div>
+	</td>	
+  </tr> 
+  <tr>	
+    <td class="tg-3">
+	<div id="timestamp" ></div>	
+	</td>	
+  </tr>    
+</table>
+
+</body>
+</html>
+
+<script src="/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script> 
+<script type="text/javascript">
+
+function addZero(i) {
 	  if (i < 10) {
 		i = "0" + i;
 	  }
 	  return i;
 	}
 
-	$ (document).ready(function() {
+	$(document).ready(function() {
 	var d = new Date();
 	var h = addZero(d.getHours());
 	var m = addZero(d.getMinutes());
 	var s = addZero(d.getSeconds());
 
 	$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-	$("#raw").load("/wasserzaehler.html?rawvalue=true");
-	$("#corrected").load("/wasserzaehler.html");
-	$("#checked").load("/setPreValue.html");
-	$("#start").load("/starttime");
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	refresh();
 	});
@@ -50,58 +95,63 @@
 	var s = addZero(d.getSeconds());	
 	// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp
 	$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'"max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-	$("#raw").load("/wasserzaehler.html?rawvalue=true");
-	$("#corrected").load("/wasserzaehler.html");
-	$("#checked").load("/setPreValue.html");
-	$("#start").load("/starttime");
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+	init();
 	  refresh();
 	}, 300000);
+
   }
+
+	var basepath = "http://192.168.178.22"; 
+
+	function loadValue(_type, _div, _style) {
+		url = basepath + '/wasserzaehler.html?all=true&type=' + _type;     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			var _rsp = xhttp.responseText;
+			var _split = _rsp.split("\r");
+			if (typeof _style == undefined)
+				out = "<table>";
+			else
+				out = "<table style=\"" + _style + "\">";
+
+			if (_split.length == 1)
+			{
+				var _zer = ZerlegeZeile(_split[0], "\t")
+				if (_zer.length > 1)
+					out = _zer[1]; 
+				else
+					out = ""; 
+			}
+			else
+			{
+				for (var j = 0; j < _split.length; ++j)
+				{
+					var _zer = ZerlegeZeile(_split[j], "\t")
+					if (_zer.length == 1)
+						out = out + "<tr><td>" + _zer[0] + "</td><td> </td></tr>"; 
+					else
+						out = out + "<tr><td>" + _zer[0] + "</td><td>" + _zer[1] + "</td></tr>"; 
+				}
+				out = out + "</table>"
+
+				}
+			document.getElementById(_div).innerHTML = out;
+			}
+		};
+		xhttp.open("GET", url, true);
+		xhttp.send();		
+	}
+
+	function init(){
+		basepath = getbasepath();
+		loadValue("value", "value");
+		loadValue("raw", "raw");
+		loadValue("prevalue", "prevalue");
+		loadValue("error", "error", "font-size:8px");
+	}
+
+	init();
+
 </script>
-
-<body style="font-family: arial">
-
-<table class="tg">
-  <tr>
-    <td class="tg-1" rowspan="9"><div id="img"></div></td>
-    <th class="th">Raw Value:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="raw"></div>
-	</td>	
-  </tr>
-  <tr>
-    <th class="th">Corrected Value:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="corrected"></div>
-	</td>	
-  </tr>
-  <tr>
-    <th class="th">Checked Value:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="checked"></div>
-	</td>	
-  </tr> 
-   <tr>
-    <th class="th">Start Time:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="start"></div>	
-	</td>	
-  </tr> 
-  <tr>	
-    <td class="tg-3">
-	<div id="timestamp"></div>	
-	</td>	
-  </tr>    
-</table>
-
-</body>
-</html>

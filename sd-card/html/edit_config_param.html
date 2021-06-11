@@ -364,20 +364,6 @@ textarea {
 		</tr> 		
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class>
-			</td>
-			<td>
-				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
-			</td>
-			<td style="font-size: 80%;">
-				shift the digit separator within the digital digits (positiv and negativ)
-			</td>
-		</tr>
-		<tr>
-			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueUse")' unchecked >
 			</td>
 			<td  width="200px">
@@ -472,6 +458,34 @@ textarea {
 				Activate to enalbe additional consistency check - especially zero crossing check between digits
 			</td>
 		</tr>
+
+		<tr>
+			<td style="padding-left: 40px;" colspan="4">
+				<br>
+				<b>Postprocessing Individual Paramters: 
+                <select id="Numbers_value1" onchange="numberChanged()">
+                    <option value="0" selected>default</option>
+                    <option value="1" >NT</option>
+                    <option value="2" >HT</option>
+                </select></b>
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class>
+			</td>
+			<td>
+				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
+			</td>
+			<td style="font-size: 80%;">
+				shift the digit separator within the digital digits (positiv and negativ)
+			</td>
+		</tr>
+
+
 
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > MQTT</h4></td>
@@ -730,6 +744,8 @@ textarea {
 		basepath = "http://192.168.178.22"; 
 		param;
 		category;
+		NUNBERSAkt = -1;
+		NUMBERS;
 
 
 function LoadConfigNeu() {
@@ -749,11 +765,31 @@ function LoadConfigNeu() {
 	loadConfig(basepath); 
 	ParseConfig();	
 	param = getConfigParameters();
-	category = getConfigCategory();	
+	category = getConfigCategory();
+	InitIndivParameter();
+
 	UpdateInput();
+	UpdateInputIndividual();
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
 	}
+
+function InitIndivParameter()
+{
+	NUMBERS = getNUMBERInfo();
+
+    var _index = document.getElementById("Numbers_value1");
+    while (_index.length)
+        _index.remove(0);
+
+    for (var i = 0; i < NUMBERS.length; ++i){
+        var option = document.createElement("option");
+        option.text = NUMBERS[i]["name"];
+        option.value = i;
+        _index.add(option);
+        }
+    _index.selectedIndex = 0; 
+}
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -765,42 +801,77 @@ function getParameterByName(name, url = window.location.href) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }	
 
-function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
-	if (_param[_cat][_name]["found"]){
-		if (_optional) {
-			document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
-			for (var j = 1; j <= _anzpara; ++j) {
-				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
-			}		
-		}
-		document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
-		if (_select) {
-			var textToFind = _param[_cat][_name]["value1"];
-			var dd = document.getElementById(_cat+"_"+_name+"_value1");
-			for (var i = 0; i < dd.options.length; i++) {
-				if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
-					dd.selectedIndex = i;
-					break;
+function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1, _number = -1){
+	if (_number > -1)
+	{
+		if (NUMBERS[_number][_cat][_name]["found"]){
+			if (_optional) {
+				document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
+				for (var j = 1; j <= _anzpara; ++j) 
+					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = NUMBERS[_number][_cat][_name]["enabled"];
+			}
+			document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
+			if (_select) {
+				var textToFind; 
+				textToFind = NUMBERS[_number][_cat][_name]["value1"];
+				var dd = document.getElementById(_cat+"_"+_name+"_value1");
+				for (var i = 0; i < dd.options.length; i++) {
+					if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
+						dd.selectedIndex = i;
+						break;
+					}
 				}
+			}
+			else {
+				for (var j = 1; j <= _anzpara; ++j) 
+					document.getElementById(_cat+"_"+_name+"_value"+j).value = NUMBERS[_number][_cat][_name]["value"+j];
 			}
 		}
 		else {
-			for (var j = 1; j <= _anzpara; ++j) {
-				document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
+			if (_optional) {
+				document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
+				for (var j = 1; j <= _anzpara; ++j) {
+					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
+				}	
+			}
+			document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
+		}
+	}
+	else
+	{
+		if (_param[_cat][_name]["found"]){
+			if (_optional) {
+				document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
+				for (var j = 1; j <= _anzpara; ++j) 
+					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];
+			}
+			document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
+			if (_select) {
+				var textToFind; 
+				textToFind = _param[_cat][_name]["value1"];
+				var dd = document.getElementById(_cat+"_"+_name+"_value1");
+				for (var i = 0; i < dd.options.length; i++) {
+					if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
+						dd.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			else {
+				for (var j = 1; j <= _anzpara; ++j) 
+					document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
 			}
 		}
-
-	}
-	else {
-		if (_optional) {
-			document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
-			for (var j = 1; j <= _anzpara; ++j) {
-				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
-			}	
+		else {
+			if (_optional) {
+				document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
+				for (var j = 1; j <= _anzpara; ++j) {
+					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
+				}	
+			}
+			document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
 		}
-		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
 	}
-
 
 	///////////////// am Ende, falls Kategorie als gesamtes nicht ausgewählt --> deaktivieren
 	if (_category[_cat]["enabled"] == false) 
@@ -813,6 +884,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _select = fal
 		}
 		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
 	}
+
 	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional);
 }
 
@@ -843,7 +915,7 @@ function InvertEnableItem(_cat, _param)
 
 }
 
-function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
+function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
 {
 	_status = _param[_cat][_name]["found"] && _category[_cat]["enabled"];
 
@@ -857,10 +929,18 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 		document.getElementById(_cat+"_"+_name+"_enabled").style=_color;	
 	}
 
-	if (!_param[_cat][_name]["enabled"]) {
-		_status = false;
-		_color = "color:lightgrey;";
+	if (_number == -1){
+		if (!_param[_cat][_name]["enabled"]) {
+			_status = false;
+			_color = "color:lightgrey;";
+		}
 	}
+	else
+		if (!NUMBERS[_number][_cat][_name]["enabled"]) {
+				_status = false;
+				_color = "color:lightgrey;";
+			}
+
 
 	document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
 	document.getElementById(_cat+"_"+_name+"_text").style = _color;
@@ -877,21 +957,58 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 }
 
 
-function ReadParameter(_param, _cat, _name, _optional, _select = false){
-	if (_param[_cat][_name]["found"]){
-		if (_optional) {
-			_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-		}
-		if (_select) {
-			var sel = document.getElementById(_cat+"_"+_name+"_value1");
-			_param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
-		}
-		else {
-			for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-				_param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+function ReadParameter(_param, _cat, _name, _optional, _select = false, _number = -1){
+	if (_number > -1)
+	{
+		if (_cat == "Digits")
+			_cat = "digit"
+		if (_cat == "Analog")
+			_cat = "analog"
+
+		if (NUMBERS[_number][_cat][_name]["found"]){
+			if (_optional) {
+				NUMBERS[_number][_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;
+			}
+			if (_select) {
+				var sel = document.getElementById(_cat+"_"+_name+"_value1");
+				NUMBERS[_number][_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
+			}
+			else {
+				for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+					NUMBERS[_number][_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+				}
 			}
 		}
 	}
+	else
+	{
+		if (_param[_cat][_name]["found"]){
+			if (_optional) {
+				_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;
+			}
+			if (_select) {
+				var sel = document.getElementById(_cat+"_"+_name+"_value1");
+				_param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
+			}
+			else {
+				for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+					_param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+				}
+			}
+		}
+	}
+}
+
+function UpdateInputIndividual()
+{
+	if (NUNBERSAkt != -1)
+	{
+		ReadParameter(param, "PostProcessing", "DecimalShift", true, false, NUNBERSAkt)		
+	}
+
+	var sel = document.getElementById("Numbers_value1");
+	NUNBERSAkt = sel.selectedIndex;
+	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, false, 1, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -924,7 +1041,6 @@ function UpdateInput() {
 	WriteParameter(param, category, "Analog", "ExtendedResolution", true, true);		
 	WriteParameter(param, category, "Analog", "ModelInputSize", false, false, 2);		
 	
-	WriteParameter(param, category, "PostProcessing", "DecimalShift", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true, true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, true);
@@ -975,15 +1091,14 @@ function ReadParameterAll()
 	ReadParameter(param, "Digits", "Model", false);		
 	ReadParameter(param, "Digits", "LogImageLocation", true);		
 	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
-	ReadParameter(param, "Digits", "ModelInputSize", false, false, 2);
+	ReadParameter(param, "Digits", "ModelInputSize", false, false);
 
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
 	ReadParameter(param, "Analog", "ExtendedResolution", true, true);		
-	ReadParameter(param, "Analog", "ModelInputSize", false, false, 2);
+	ReadParameter(param, "Analog", "ModelInputSize", false, false);
 
-	ReadParameter(param, "PostProcessing", "DecimalShift", true);		
 	ReadParameter(param, "PostProcessing", "PreValueUse", true, true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
 	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, true);
@@ -1009,6 +1124,8 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true);	
+
+	UpdateInputIndividual();
 	
 	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
@@ -1031,6 +1148,7 @@ function UpdateAfterCategoryCheck() {
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	UpdateInput();
+	UpdateInputIndividual();
 }
 
 function UpdateExpertModus()
@@ -1055,9 +1173,13 @@ function UpdateExpertModus()
 function saveTextAsFile()
 {
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
-		var textToSave = WriteConfig();
-		FileDeleteOnServer("/config/config.ini", basepath);
-		FileSendContent(textToSave, "/config/config.ini", basepath);
+		ReadParameterAll();
+		WriteConfigININew();
+	    SaveConfigToServer(basepath);    
+
+//		var textToSave = WriteConfig();
+//		FileDeleteOnServer("/config/config.ini", basepath);
+//		FileSendContent(textToSave, "/config/config.ini", basepath);
 	}
 }
 
@@ -1079,6 +1201,11 @@ function editConfigDirect() {
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}	
+}
+
+function numberChanged()
+{
+	UpdateInputIndividual();
 }
  
 LoadConfigNeu();

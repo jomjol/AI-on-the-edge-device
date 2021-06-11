@@ -20,65 +20,7 @@ function SaveConfigToServer(_basepath){
      FileSendContent(config_gesamt, "/config/config.ini", _basepath);          
 }
 
-function UpdateConfigFileReferenceChange(_basepath){
-     for (var _index = 0; _index < ref.length; ++_index){
-          var zeile = ref[_index]["name"] + " " + ref[_index]["x"] + " " + ref[_index]["y"];
-          var _pos = ref[_index]["pos_ref"];
-          config_split[_pos] = zeile;          
-     }
-
-     zeile = "InitialRotate = " + initalrotate["angle"];
-     var _pos = initalrotate["pos_config"];
-     config_split[_pos] = zeile;
-
-     var mirror = false;
-     if (initalrotate.hasOwnProperty("mirror")) {
-          mirror = initalrotate["mirror"];
-     }
-     var mirror_pos = -1;
-     if (initalrotate.hasOwnProperty("pos_config_mirror")) {
-          mirror_pos = initalrotate["pos_config_mirror"];
-     }     
-     if (mirror_pos > -1) {
-          if (mirror) {
-               config_split[mirror_pos] = "InitialMirror = true";
-          }
-          else {
-               config_split[mirror_pos] = "InitialMirror = false";
-          }
-     }
-     else {
-          if (mirror) {       // neue Zeile muss an der richtigen Stelle eingefügt werden - hier direct nach [Alignment]
-               var aktline = 0;
-
-               while (aktline < config_split.length){
-                    if (config_split[aktline].trim() == "[Alignment]") {
-                         break;
-                    }
-                    aktline++
-               }
-
-               // fuege neue Zeile in config_split ein
-               var zw = config_split[config_split.length-1];
-               config_split.push(zw);
-               for (var j = config_split.length-2; j > aktline + 1; --j){
-                    config_split[j] = config_split[j-1];
-               }
-
-               config_split[aktline + 1] = "InitialMirror = True"
-          }
-     }
-
-     SaveConfigToServer(_basepath);
-}
-
 function UpdateConfig(zw, _index, _enhance, _basepath){
-     var zeile = zw["name"] + " " + zw["x"] + " " + zw["y"];
-     var _pos = ref[_index]["pos_ref"];
-     config_split[_pos] = zeile;
-
-     SaveConfigToServer(_basepath);
-
      var namezw = zw["name"];
      FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _basepath);
      var namezw = zw["name"].replace(".jpg", "_org.jpg");
@@ -102,10 +44,10 @@ function createReader(file) {
 
 
 
-function ZerlegeZeile(input)
+function ZerlegeZeile(input, delimiter = " =,\t")
      {
           var Output = Array(0);
-          delimiter = " =,\r";
+//          delimiter = " =,\t";
      
           input = trim(input, delimiter);
           var pos = findDelimiterPos(input, delimiter);
@@ -262,3 +204,53 @@ function FileSendContent(_content, _filename, _basepath = ""){
      }     
     return okay;        
 }
+
+
+function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
+     var JPEG_QUALITY=0.8;
+     var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
+     var rtn = dataURLtoBlob(dataUrl);
+
+     if (_delete) {
+          FileDeleteOnServer(_filename, _basepath);
+     }
+	
+     FileSendContent(rtn, _filename, _basepath);
+}
+
+function MakeContrastImageZW(zw, _enhance, _basepath){
+     _filename = zw["name"].replace("/config/", "/img_tmp/");
+     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     if (_enhance == true){
+          url = url + "&enhance=true";
+     }
+
+     var xhttp = new XMLHttpRequest();  
+     try {
+          xhttp.open("GET", url, false);
+          xhttp.send();     }
+     catch (error)
+     {
+//          alert("Deleting Config.ini failed");
+     }
+}
+
+
+
+function MakeRefZW(zw, _basepath){
+     _filetarget = zw["name"].replace("/config/", "/img_tmp/");
+     _filetarget = _filetarget.replace(".jpg", "_org.jpg");
+     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     var xhttp = new XMLHttpRequest();  
+     try {
+          xhttp.open("GET", url, false);
+          xhttp.send();     }
+     catch (error)
+     {
+//          alert("Deleting Config.ini failed");
+     }
+     _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
+//     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
+     FileCopyOnServer(_filetarget, _filetarget2, _basepath);
+}
+
