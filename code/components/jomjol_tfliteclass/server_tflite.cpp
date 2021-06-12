@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "../../main/defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -87,11 +88,10 @@ void KillTFliteTasks()
 
 void doInit(void)
 {
-    string config = "/sdcard/config/config.ini";
 #ifdef DEBUG_DETAIL_ON             
     printf("Start tfliteflow.InitFlow(config);\n");
 #endif
-    tfliteflow.InitFlow(config);
+    tfliteflow.InitFlow(CONFIG_FILE);
 #ifdef DEBUG_DETAIL_ON      
     printf("Finished tfliteflow.InitFlow(config);\n");
 #endif

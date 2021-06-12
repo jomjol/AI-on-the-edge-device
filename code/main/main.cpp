@@ -3,6 +3,7 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
+#include "defines.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
 
@@ -40,6 +41,8 @@
 static const char *TAGMAIN = "connect_wlan_main";
 
 #define FLASH_GPIO GPIO_NUM_4
+
+GpioHandler *gpioHandler = NULL;
 
 bool Init_NVS_SDCard()
 {
@@ -201,7 +204,7 @@ extern "C" void app_main(void)
     register_server_ota_sdcard_uri(server);
 
 #ifdef __SD_USE_ONE_LINE_MODE__
-    register_server_GPIO_uri(server);
+    gpioHandler = new GpioHandler(CONFIG_FILE, server);
 #endif    
     printf("vor reg server main\n");
 
