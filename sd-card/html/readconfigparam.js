@@ -97,7 +97,8 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "IO16", 3, [null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO12", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO13", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 

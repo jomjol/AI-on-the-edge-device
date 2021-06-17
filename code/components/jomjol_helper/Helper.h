@@ -10,7 +10,7 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
 
 void CopyFile(string input, string output);
 
-FILE* OpenFileAndWait(const char* nm, char* _mode, int _waitsec = 1);
+FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1);
 
 size_t findDelimiterPos(string input, string delimiter);
 //string trim(string istring);
@@ -22,6 +22,7 @@ string getFileType(string filename);
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);
 
+string toLower(string in);
 string toUpper(string in);
 
 float temperatureRead();

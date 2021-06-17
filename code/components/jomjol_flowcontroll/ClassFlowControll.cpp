@@ -454,6 +454,12 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     esp_err_t result = ESP_FAIL;
     bool Dodelete = false;    
 
+    if (flowalignment == NULL)
+    {
+        printf("Can't continue, flowalignment is NULL\n");
+        return ESP_FAIL;
+    }
+
     if (_fn == "alg.jpg")
     {
         _send = flowalignment->ImageBasis;  
@@ -485,7 +491,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             if (htmlinfo[i]->image_org)
                 _send = htmlinfo[i]->image_org;        
         }
+        delete htmlinfo[i];
     }
+    htmlinfo.clear();
 
     htmlinfo = GetAllAnalog();
     for (int i = 0; i < htmlinfo.size(); ++i)
@@ -500,7 +508,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             if (htmlinfo[i]->image_org)
                 _send = htmlinfo[i]->image_org;        
         }
+        delete htmlinfo[i];
     }
+    htmlinfo.clear();
 
     if (_send)
     {

@@ -139,6 +139,19 @@ void task_NoSDBlink(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+esp_err_t handler_gpio(httpd_req_t *req)
+{
+    printf("freemem -3-: %u\n", esp_get_free_heap_size());
+    gpioHandler->init();
+    printf("freemem -4-: %u\n", esp_get_free_heap_size());
+
+    char resp_str [30];
+    sprintf(resp_str, "OK. freemem %u", esp_get_free_heap_size());
+    httpd_resp_send(req, resp_str, strlen(resp_str));
+    
+    return ESP_OK;
+}
+
 extern "C" void app_main(void)
 {
     printf("Do Reset Camera\n");
@@ -203,9 +216,19 @@ extern "C" void app_main(void)
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
 
+    httpd_uri_t camuri = { };
+    camuri.method    = HTTP_GET;
+    camuri.uri       = "/test";
+    camuri.handler   = handler_gpio;
+    camuri.user_ctx  = (void*)server;    
+    httpd_register_uri_handler(server, &camuri);
+
 #ifdef __SD_USE_ONE_LINE_MODE__
+    printf("freemem -1-: %u\n", esp_get_free_heap_size());
     gpioHandler = new GpioHandler(CONFIG_FILE, server);
+    printf("freemem -2-: %u\n", esp_get_free_heap_size());
 #endif    
+
     printf("vor reg server main\n");
 
     register_server_main_uri(server, "/sdcard");
@@ -213,3 +236,4 @@ extern "C" void app_main(void)
     printf("vor dotautostart\n");
     TFliteDoAutoStart();
 }
+

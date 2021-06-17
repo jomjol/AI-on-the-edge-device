@@ -139,8 +139,8 @@ textarea {
 			</td>
 			<td>
 				<select id="MakeImage_ImageSize_value1">
-					<option value="0" selected>VGA</option>
-					<option value="1" >QVGA</option>
+					<option value="VGA" selected>VGA</option>
+					<option value="QVGA" >QVGA</option>
 				</select>
 			</td>
 			<td class="description">
@@ -168,8 +168,8 @@ textarea {
 			</td>
 			<td>
 				<select id="MakeImage_FixedExposure_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -247,9 +247,9 @@ textarea {
 			</td>
 			<td>
 				<select id="Alignment_AlignmentAlgo_value1">
-					<option value="0" selected>Default</option>
-					<option value="1" >HighAccurity</option>
-					<option value="2" >Fast</option>
+					<option value="default" selected>Default</option>
+					<option value="highAccurity" >HighAccurity</option>
+					<option value="fast" >Fast</option>
 				</select>
 				</td>
 			<td style="font-size: 80%;">
@@ -354,8 +354,8 @@ textarea {
 			</td>
 			<td>
 				<select id="Analog_ExtendedResolution_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -402,8 +402,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_PreValueUse_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -433,8 +433,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -464,8 +464,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -481,8 +481,8 @@ textarea {
 			</td>
 			<td>
 				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -645,8 +645,8 @@ textarea {
 			</td>
 			<td>
 				<select id="AutoTimer_AutoStart_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td style="font-size: 80%;">
@@ -670,47 +670,186 @@ textarea {
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > GPIO Settings</h4></td>
 		</tr> 	
-		<tr class="GPIO_IO16">
+		
+		<tr class="GPIO_IO12">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="GPIO_IO16_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO16")' unchecked>
+				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
 			</td>
 			<td>
-				<span id="GPIO_IO16_text">GPIO 16 state</span>
+				<span id="GPIO_IO12_text">GPIO 12 state</span>
 			</td>
 			<td>
 				<td">
-					<select id="GPIO_IO16_value1">
-						<option value="input" >input</option>
-						<option value="output" >output</option>
+					<select id="GPIO_IO12_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="output-pwm" disabled>output pwm (not implemented)</option>
+						<option value="external-flash-pwm" disabled>external flash light pwm controlled (not implemented)</option>
+						<option value="external-flash-ws281x" disabled>external flash light ws281x controlled (not implemented)</option>
 					</select>
 				</td>
 			</td>
 			<td class="description">
-				GPIO 16 is usable without restrictions
+				GPIO 12 is usable without restrictions
 			</td>
 		</tr>
-		<tr class="GPIO_IO16">
+		<tr class="GPIO_IO12">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
-				<span>GPIO 16 use interrupt</span>
+				<span>GPIO 12 use interrupt</span>
 			</td>
 			<td>
-				<td"><input type="checkbox" id="GPIO_IO16_value2"></td>
+				<td">
+					<select id="GPIO_IO12_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge" disabled>rising edge (not implemented)</option>
+						<option value="falling-edge" disabled>falling edge (not implemented)</option>
+					</select>	
+				</td>
 			</td>
 			<td class="description">
-				GPIO 16 enable interrupt trigger
+				GPIO 12 enable interrupt trigger
 			</td>
 		</tr>
-		<tr class="GPIO_IO16">
+		<tr class="GPIO_IO12">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
-				<span>GPIO 16 name</span>
+				<span>GPIO 12 PWM duty resolution</span>
 			</td>
 			<td>
-				<td"><input type="text" id="GPIO_IO16_value3"></td>
+				<td"><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
 			</td>
 			<td class="description">
-				GPIO 16 MQTT topic name (empty = gpio16). Allowed characters (a-z, A-Z, 0-9, _, -)
+				GPIO 12 LEDC PWM duty resolution in bit
+			</td>
+		</tr>
+		<tr class="GPIO_IO12">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 12 enable MQTT</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO12_value4"></td>
+			</td>
+			<td class="description">
+				GPIO 12 enable MQTT publishing/subscribing
+			</td>
+		</tr>
+		<tr class="GPIO_IO12">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 12 enable HTTP</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO12_value5"></td>
+			</td>
+			<td class="description">
+				GPIO 12 enable HTTP write/read
+			</td>
+		</tr>
+		<tr class="GPIO_IO12">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 12 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO12_value6"></td>
+			</td>
+			<td class="description">
+				GPIO 12 MQTT topic name (empty = gpio12). Allowed characters (a-z, A-Z, 0-9, _, -)
+			</td>
+		</tr>
+
+		<tr class="GPIO_IO13">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
+			</td>
+			<td>
+				<span id="GPIO_IO13_text">GPIO 13 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO13_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="output-pwm" disabled>output pwm (not implemented)</option>
+						<option value="external-flash-pwm" disabled>external flash light pwm controlled (not implemented)</option>
+						<option value="external-flash-ws281x" disabled>external flash light ws281x controlled (not implemented)</option>
+					</select>
+				</td>
+			</td>
+			<td class="description">
+				GPIO 13 is usable without restrictions
+			</td>
+		</tr>
+		<tr class="GPIO_IO13">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 13 use interrupt</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO13_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge" disabled>rising edge (not implemented)</option>
+						<option value="falling-edge" disabled>falling edge (not implemented)</option>
+					</select>	
+				</td>
+			</td>
+			<td class="description">
+				GPIO 13 enable interrupt trigger
+			</td>
+		</tr>
+		<tr class="GPIO_IO13">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 13 PWM duty resolution</span>
+			</td>
+			<td>
+				<td"><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
+			</td>
+			<td class="description">
+				GPIO 13 LEDC PWM duty resolution in bit
+			</td>
+		</tr>
+		<tr class="GPIO_IO13">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 13 enable MQTT</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO13_value4"></td>
+			</td>
+			<td class="description">
+				GPIO 13 enable MQTT publishing/subscribing
+			</td>
+		</tr>
+		<tr class="GPIO_IO13">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 13 enable HTTP</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO13_value5"></td>
+			</td>
+			<td class="description">
+				GPIO 13 enable HTTP write/read
+			</td>
+		</tr>
+		<tr class="GPIO_IO13">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 13 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO13_value6"></td>
+			</td>
+			<td class="description">
+				GPIO 13 MQTT topic name (empty = gpio13). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
 		</tr>
 
@@ -726,8 +865,8 @@ textarea {
 			</td>
 			<td>
 				<select id="Debug_Logfile_value1">
-					<option value="0" selected>true</option>
-					<option value="1" >false</option>
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
 				</select>
 			</td>
 			<td class="description">
@@ -873,9 +1012,9 @@ function WriteParameter(_param, _category, _cat, _name, _optional){
 		for (var j = 1; j <= anzpara; ++j) {
 			let element = document.getElementById(_cat+"_"+_name+"_value"+j);
 			if (element.tagName.toLowerCase() == "select") {
-				var textToFind = _param[_cat][_name]["value1"];
+				var textToFind = _param[_cat][_name]["value"+j];
 				for (var i = 0; i < element.options.length; i++) {
-					if (element.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
+					if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
 						element.selectedIndex = i;
 						break;
 					}
@@ -998,23 +1137,23 @@ function ReadParameter(_param, _cat, _name, _optional){
 			_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
 		}
 
-		for (var j = 0; j < _param[_cat][_name]["anzParam"]; ++j) {
-			let element = document.getElementById(_cat+"_"+_name+"_value"+(j+1));
+		for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+			let element = document.getElementById(_cat+"_"+_name+"_value"+j);
 			if (element.tagName.toLowerCase() == "select") {
-				_param[_cat][_name]["value1"] = element.selectedIndex > -1 ? element.options[element.selectedIndex].text : "";
+				_param[_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-				_param[_cat][_name]["value"+(j+1)] = element.checked;
+				_param[_cat][_name]["value"+j] = element.checked;
 			}
 			else {
-				if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j] != null)) {
-					if (!element.value.match(_param[_cat][_name].checkRegExList[j])) {
+				if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j-1] != null)) {
+					if (!element.value.match(_param[_cat][_name].checkRegExList[j-1])) {
 						element.classList.add("invalid-input");
 					} else {
 						element.classList.remove("invalid-input");
 					}
 				}
-				_param[_cat][_name]["value"+(j+1)] = element.value;	
+				_param[_cat][_name]["value"+j] = element.value;	
 			}
 		}		
 	}
@@ -1070,7 +1209,8 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	
-	WriteParameter(param, category, "GPIO", "IO16", true);
+	WriteParameter(param, category, "GPIO", "IO12", true);
+	WriteParameter(param, category, "GPIO", "IO13", true);
 
 	WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
 	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
@@ -1134,7 +1274,8 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 
-	ReadParameter(param, "GPIO", "IO16", true);
+	ReadParameter(param, "GPIO", "IO12", true);
+	ReadParameter(param, "GPIO", "IO13", true);
 
 	ReadParameter(param, "AutoTimer", "AutoStart", false);	
 	ReadParameter(param, "AutoTimer", "Intervall", false);	
