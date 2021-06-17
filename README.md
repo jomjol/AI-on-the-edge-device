@@ -46,8 +46,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 7.1.1 MQTT-Update - (2021-05-30)
+##### 7.1.2 MQTT-Update - (2021-06-17)
 
+* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
 * NEW: 7.1.1: bug fix wlan password with "="  (again)
 * MQTT error message: changes "no error", send retain flag
 * Update wlan handling to esp-idf 4.1
