@@ -135,7 +135,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     fclose(pFile);
 
     // Check if Hostname was empty in .ini if yes set to std_hostname
-    if(hostname.length() >= 0){
+    if(hostname.length() == 0){
         hostname = std_hostname;
     }
 

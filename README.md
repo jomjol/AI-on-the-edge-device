@@ -45,7 +45,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-06-11)
+##### Rolling - (2021-06-17)
+
+* bug fix setting hostname, Flash-LED not off during reboot
+
+Rolling - (2021-06-11)
 
 * Restructuring for multi number counters
   * Major internal and html changes 
@@ -54,9 +58,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 7.1.1 MQTT-Update - (2021-05-30)
+##### 7.1.2 MQTT-Update - (2021-06-17)
 
-* NEW: 7.1.1: bug fix wlan password with "="  (again)
+* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during rebootNEW: 7.1.1: bug fix wlan password with "="  (again)
 * MQTT error message: changes "no error", send retain flag
 * Update wlan handling to esp-idf 4.1
 * Upgrade digital CNN to v8.7.0  (added new images)
