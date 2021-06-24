@@ -1,9 +1,6 @@
 #include <string>
 #include <vector>
 
-static const char *TAGCONFIGFILE = "configFile";
-
-
 class ConfigFile {
 public:
     ConfigFile(std::string filePath);

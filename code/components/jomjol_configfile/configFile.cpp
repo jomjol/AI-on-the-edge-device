@@ -5,6 +5,8 @@
 #include "Helper.h"
 #include "configFile.h"
 
+//static const char *TAGCONFIGFILE = "configFile";
+
 ConfigFile::ConfigFile(std::string filePath)
 {
     std::string config = FormatFileName(filePath);

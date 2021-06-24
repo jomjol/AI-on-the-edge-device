@@ -1,4 +1,5 @@
 #include <string>
+#include <functional>
 #include "string.h"
 
 #include <string.h>
@@ -7,7 +8,6 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
-#include "driver/gpio.h"
 //#include "errno.h"
 
 #include <sys/stat.h>
@@ -19,23 +19,43 @@
 #include "ClassLogFile.h"
 #include "configFile.h"
 #include "Helper.h"
+#include "interface_mqtt.h"
+
+static const char *TAG_SERVERGPIO = "server_GPIO";
 
 // #define DEBUG_DETAIL_ON 
 
-GpioPin::GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, bool mqttEnable, bool httpEnable) 
+GpioPin::GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, std::string mqttTopic, bool httpEnable) 
 {
     _gpio = gpio;
     _name = name; 
     _mode = mode;
     _interruptType = interruptType;    
+    _mqttTopic = mqttTopic;
 
     //initGPIO();
 }
 
 GpioPin::~GpioPin()
 {
-    printf("reset GPIO pin %d", _gpio);
+    ESP_LOGI(TAG_SERVERGPIO,"reset GPIO pin %d", _gpio);
+    if (_interruptType != GPIO_INTR_DISABLE) {
+        //hook isr handler for specific gpio pin
+        gpio_isr_handler_remove(_gpio);
+    }
     gpio_reset_pin(_gpio);
+}
+
+static void IRAM_ATTR gpio_isr_handler(void* arg)
+{
+    GpioPin* gpioPin = (GpioPin*) arg;
+    gpioPin->gpioInterrupt();
+}
+
+void GpioPin::gpioInterrupt () {
+    if (_mqttTopic != "") {
+        MQTTPublish(_mqttTopic, (gpio_get_level(_gpio) == 1) ? "true" : "false");
+    }
 }
 
 void GpioPin::init()
@@ -44,15 +64,25 @@ void GpioPin::init()
     //set interrupt
     io_conf.intr_type = _interruptType;
     //set as output mode
-    io_conf.mode = _mode == gpio_pin_mode_t::GPIO_PIN_MODE_OUTPUT ? gpio_mode_t::GPIO_MODE_OUTPUT : gpio_mode_t::GPIO_MODE_INPUT;
+    io_conf.mode = _mode == GPIO_PIN_MODE_OUTPUT ? gpio_mode_t::GPIO_MODE_OUTPUT : gpio_mode_t::GPIO_MODE_INPUT;
     //bit mask of the pins that you want to set,e.g.GPIO18/19
     io_conf.pin_bit_mask = (1ULL << _gpio);
     //set pull-down mode
-    io_conf.pull_down_en = _mode == gpio_pin_mode_t::GPIO_PIN_MODE_INPUT_PULLDOWN ? gpio_pulldown_t::GPIO_PULLDOWN_ENABLE : gpio_pulldown_t::GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_down_en = _mode == GPIO_PIN_MODE_INPUT_PULLDOWN ? gpio_pulldown_t::GPIO_PULLDOWN_ENABLE : gpio_pulldown_t::GPIO_PULLDOWN_DISABLE;
     //set pull-up mode
-    io_conf.pull_up_en = _mode == gpio_pin_mode_t::GPIO_PIN_MODE_INPUT_PULLDOWN ? gpio_pullup_t::GPIO_PULLUP_ENABLE : gpio_pullup_t::GPIO_PULLUP_DISABLE;
+    io_conf.pull_up_en = _mode == GPIO_PIN_MODE_INPUT_PULLDOWN ? gpio_pullup_t::GPIO_PULLUP_ENABLE : gpio_pullup_t::GPIO_PULLUP_DISABLE;
     //configure GPIO with the given settings
     gpio_config(&io_conf);
+
+    if (_interruptType != GPIO_INTR_DISABLE) {
+        //hook isr handler for specific gpio pin
+        gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*) this);
+    }
+
+    if ((_mqttTopic != "") && ((_mode == GPIO_PIN_MODE_OUTPUT) || (_mode == GPIO_PIN_MODE_OUTPUT_PWM))) {
+        std::function<bool(std::string, char*, int)> f = std::bind(&GpioPin::handleMQTT, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        MQTTregisterSubscribeFunction(_mqttTopic, f);
+    }
 }
 
 bool GpioPin::getValue(std::string* errorText)
@@ -65,37 +95,59 @@ bool GpioPin::getValue(std::string* errorText)
 }
 
 void GpioPin::setValue(bool value, std::string* errorText)
-{   
+{
+    printf("setValue %d\r\n", value);
+   
     if ((_mode != GPIO_PIN_MODE_OUTPUT) && (_mode != GPIO_PIN_MODE_OUTPUT_PWM)) {
         (*errorText) = "GPIO is not in output mode";
+    } else {
+        gpio_set_level(_gpio, value);
+    }
+}
+
+bool GpioPin::handleMQTT(std::string, char* data, int data_len) {
+    printf("handleMQTT data %.*s\r\n", data_len, data);
+    
+    std::string dataStr(data, data_len);
+    dataStr = toLower(dataStr);
+    std::string errorText = "";
+    if ((dataStr == "true") || (dataStr == "1")) {
+        setValue(true, &errorText);
+    } else if ((dataStr == "false") || (dataStr == "0")) {
+        setValue(false, &errorText);    
+    } else {
+        errorText = "wrong value ";
+        errorText.append(data, data_len);
     }
 
-    gpio_set_level(_gpio, value);
+    if (errorText != "") {
+        printf(errorText.c_str());
+    }
+
+    return (errorText == "");
 }
 
 
 esp_err_t callHandleHttpRequest(httpd_req_t *req)
 {
-    printf("callHandleHttpRequest\n");
+    ESP_LOGI(TAG_SERVERGPIO,"callHandleHttpRequest");
     GpioHandler *gpioHandler = (GpioHandler*)req->user_ctx;
     return gpioHandler->handleHttpRequest(req);
 }
 
 void taskGpioHandler(void *pvParameter)
 {
-    printf("taskGpioHandler\n");
+    ESP_LOGI(TAG_SERVERGPIO,"taskGpioHandler");
     ((GpioHandler*)pvParameter)->init();
 }
 
 GpioHandler::GpioHandler(std::string configFile, httpd_handle_t httpServer) 
 {
-    printf("---- start GpioHandler ----\n");
+    ESP_LOGI(TAG_SERVERGPIO,"start GpioHandler");
     _configFile = configFile;
-    printf("-1-\n");
     _httpServer = httpServer;
-    printf("-2-\n");
 
-    printf("register GPIO Uri\n");
+    ESP_LOGI(TAG_SERVERGPIO, "register GPIO Uri");
     registerGpioUri();
 
     //xTaskCreate((TaskFunction_t)&taskGpioHandler, "taskGpioHandler", configMINIMAL_STACK_SIZE * 64, this, tskIDLE_PRIORITY+1, &xHandletaskGpioHandler);
@@ -110,9 +162,8 @@ GpioHandler::~GpioHandler()  {
 
 void GpioHandler::init()
 {
-    printf("freemem -3.1-: %u\n", esp_get_free_heap_size());
     // TickType_t xDelay = 60000 / portTICK_PERIOD_MS;
-    // printf("wait before start %ldms\n", (long) xDelay);
+    // printf("wait before start %ldms\r\n", (long) xDelay);
     // vTaskDelay( xDelay );
 
     if (gpioMap == NULL) {
@@ -121,17 +172,18 @@ void GpioHandler::init()
         clear();
     }
     
-    printf("read GPIO config and init GPIO\n");
-    printf("freemem -3.2-: %u\n", esp_get_free_heap_size());
+    ESP_LOGI(TAG_SERVERGPIO, "read GPIO config and init GPIO");
     readConfig();
-    printf("freemem -3.3-: %u\n", esp_get_free_heap_size());
 
     for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
         it->second->init();
     }
-    printf("freemem -3.4-: %u\n", esp_get_free_heap_size());
 
-    printf("GPIO init comleted\n");
+    ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted");
+}
+
+void GpioHandler::destroy() {
+    clear();
 }
 
 bool GpioHandler::readConfig() 
@@ -150,6 +202,8 @@ bool GpioHandler::readConfig()
     if (eof)
         return false;
 
+    std::string mainTopicMQTT = "";
+    bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
         zerlegt = configFile.ZerlegeZeile(line);
@@ -158,9 +212,13 @@ bool GpioHandler::readConfig()
         // if (std::regex_match(zerlegt[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
         // {
         //     std::string gpioStr = pieces_match[1];
-        if (zerlegt[0].rfind("IO", 0) == 0)
+        printf("conf param %s\r\n", toUpper(zerlegt[0]).c_str());
+        if (toUpper(zerlegt[0]) == "MAINTOPICMQTT") {
+            printf("MAINTOPICMQTT found\r\n");
+            mainTopicMQTT = zerlegt[1];
+        } else if (zerlegt[0].rfind("IO", 0) == 0)
         {
-            printf("Enable GP%s in %s mode\n", zerlegt[0].c_str(), zerlegt[1].c_str());
+            ESP_LOGI(TAG_SERVERGPIO,"Enable GP%s in %s mode", zerlegt[0].c_str(), zerlegt[1].c_str());
             std::string gpioStr = zerlegt[0].substr(2, 2);
             gpio_num_t gpioNr = (gpio_num_t)atoi(gpioStr.c_str());
             gpio_pin_mode_t pinMode = resolvePinMode(toLower(zerlegt[1]));
@@ -168,8 +226,19 @@ bool GpioHandler::readConfig()
             uint16_t dutyResolution = (uint8_t)atoi(zerlegt[3].c_str());
             bool mqttEnabled = toLower(zerlegt[4]) == "true";
             bool httpEnabled = toLower(zerlegt[5]) == "true";
-            (*gpioMap)[gpioNr] = new GpioPin(gpioNr, zerlegt[6].c_str(), pinMode, intType,dutyResolution, mqttEnabled, httpEnabled);
+            std::string mqttTopic = mqttEnabled ? (mainTopicMQTT + "/" + zerlegt[6]) : "";
+            GpioPin* gpioPin = new GpioPin(gpioNr, zerlegt[6].c_str(), pinMode, intType,dutyResolution, mqttTopic, httpEnabled);
+            (*gpioMap)[gpioNr] = gpioPin;
+
+            if (intType != GPIO_INTR_DISABLE) {
+                registerISR = true;
+            }
         }
+    }
+
+    if (registerISR) {
+        //install gpio isr service
+        gpio_install_isr_service(ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM);
     }
 
     return true;
@@ -181,11 +250,13 @@ void GpioHandler::clear()
         delete it->second;
     }
     gpioMap->clear();
+
+    // gpio_uninstall_isr_service(); can't uninstall, isr service is used by camera
 }
  
 void GpioHandler::registerGpioUri() 
 {
-    ESP_LOGI(TAGPARTGPIO, "server_GPIO - Registering URI handlers");
+    ESP_LOGI(TAG_SERVERGPIO, "server_GPIO - Registering URI handlers");
     
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;
@@ -197,7 +268,7 @@ void GpioHandler::registerGpioUri()
 
 esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
 {
-    printf("handleHttpRequest\n");
+    ESP_LOGI(TAG_SERVERGPIO, "handleHttpRequest");
 
 #ifdef DEBUG_DETAIL_ON 
     LogFile.WriteHeapInfo("handler_switch_GPIO - Start");    
@@ -208,14 +279,14 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
     char _valueGPIO[30];    
     char _valueStatus[30];    
     std::string gpio, status;
-    printf("-1-\n");
+    printf("-1-\r\n");
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK) {
-        printf("Query: "); printf(_query); printf("\n");
+        printf("Query: "); printf(_query); printf("\r\n");
         
         if (httpd_query_key_value(_query, "GPIO", _valueGPIO, 30) == ESP_OK)
         {
-            printf("GPIO is found "); printf(_valueGPIO); printf("\n"); 
+            printf("GPIO is found "); printf(_valueGPIO); printf("\r\n"); 
             gpio = std::string(_valueGPIO);
         } else {
             std::string resp_str = "GPIO No is not defined";
@@ -224,15 +295,15 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
         }
         if (httpd_query_key_value(_query, "Status", _valueStatus, 30) == ESP_OK)
         {
-            printf("Status is found "); printf(_valueStatus); printf("\n"); 
+            printf("Status is found "); printf(_valueStatus); printf("\r\n"); 
             status = std::string(_valueStatus);
         }
     } else {
-        char* resp_str = "Error in call. Use /GPIO?GPIO=12&Status=high";
+        const char* resp_str = "Error in call. Use /GPIO?GPIO=12&Status=high";
         httpd_resp_send(req, resp_str, strlen(resp_str));    
         return ESP_OK;
     }
-    printf("-2-\n");
+    printf("-2-\r\n");
 
     status = toUpper(status);
     if ((status != "HIGH") && (status != "LOW") && (status != "TRUE") && (status != "FALSE") && (status != "0") && (status != "1") && (status != ""))
@@ -242,7 +313,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, NULL);          
         return ESP_OK;    
     }
-    printf("-3-\n");
+    printf("-3-\r\n");
 
     int gpionum = stoi(gpio);
 
@@ -263,7 +334,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
         return ESP_OK;     
     }
     
-    printf("-4-\n");
+    printf("-4-\r\n");
 
     if (status == "") 
     {
@@ -285,7 +356,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, resp_str.c_str());
         httpd_resp_sendstr_chunk(req, NULL);
     }
-    printf("-5-\n");
+    printf("-5-\r\n");
           
     return ESP_OK;    
 };

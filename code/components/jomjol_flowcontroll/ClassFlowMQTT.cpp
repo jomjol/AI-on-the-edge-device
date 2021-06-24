@@ -112,7 +112,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     }
 
-    if ((uri.length() > 0) && (topic.length() > 0)) 
+    if (!MQTTisConnected() && (uri.length() > 0) && (topic.length() > 0)) 
     {
         MQTTInit(uri, clientname, user, password, topicError, 60);
     }

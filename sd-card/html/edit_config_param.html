@@ -579,20 +579,6 @@ textarea {
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="MQTT_MainTopicGPIO_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopicGPIO")' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="MQTT_MainTopicGPIO_text" style="color:black;">MainTopicGPIO</class>
-			</td>
-			<td>
-				<input type="text" id="MQTT_MainTopicGPIO_value1">
-			</td>
-			<td style="font-size: 80%;">
-				MQTT main topic for GPIO
-			</td>
-		</tr>
-		<tr>
-			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
 			</td>
 			<td  width="200px">
@@ -671,6 +657,20 @@ textarea {
 			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > GPIO Settings</h4></td>
 		</tr> 	
 		
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_MainTopicMQTT_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "MainTopicMQTT")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="GPIO_MainTopicMQTT_text" style="color:black;">MainTopicMQTT</class>
+			</td>
+			<td>
+				<input type="text" id="GPIO_MainTopicMQTT_value1">
+			</td>
+			<td style="font-size: 80%;">
+				MQTT main topic for GPIO
+			</td>
+		</tr>
 		<tr class="GPIO_IO12">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
@@ -704,8 +704,8 @@ textarea {
 				<td">
 					<select id="GPIO_IO12_value2">
 						<option value="disabled">disabled</option>
-						<option value="rising-edge" disabled>rising edge (not implemented)</option>
-						<option value="falling-edge" disabled>falling edge (not implemented)</option>
+						<option value="rising-edge">rising edge</option>
+						<option value="falling-edge">falling edge</option>
 					</select>	
 				</td>
 			</td>
@@ -1204,11 +1204,11 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "TopicRate", true);	
 	WriteParameter(param, category, "MQTT", "TopicTimeStamp", true);
 	WriteParameter(param, category, "MQTT", "TopicUptime", true);	
-	WriteParameter(param, category, "MQTT", "MainTopicGPIO", true);
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	
+	WriteParameter(param, category, "GPIO", "MainTopicMQTT", true);
 	WriteParameter(param, category, "GPIO", "IO12", true);
 	WriteParameter(param, category, "GPIO", "IO13", true);
 
@@ -1269,11 +1269,11 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "TopicRate", true);
 	ReadParameter(param, "MQTT", "TopicTimeStamp", true);
 	ReadParameter(param, "MQTT", "TopicUptime", true);
-	ReadParameter(param, "MQTT", "MainTopicGPIO", true);
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 
+	ReadParameter(param, "GPIO", "MainTopicMQTT", true);
 	ReadParameter(param, "GPIO", "IO12", true);
 	ReadParameter(param, "GPIO", "IO13", true);
 

@@ -20,8 +20,9 @@
 
 
 httpd_handle_t server = NULL;   
-
 std::string starttime = "";
+
+static const char *TAG_SERVERMAIN = "server-main";
 
 
 /* An HTTP GET handler */
@@ -198,7 +199,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     printf("File requested: %s\n", filetosend.c_str());    
 
     if (!filename) {
-        ESP_LOGE(TAG, "Filename is too long");
+        ESP_LOGE(TAG_SERVERMAIN, "Filename is too long");
         /* Respond with 500 Internal Server Error */
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
         return ESP_FAIL;
@@ -410,14 +411,14 @@ httpd_handle_t start_webserver(void)
     starttime = gettimestring("%Y%m%d-%H%M%S");
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG_SERVERMAIN, "Starting server on port: '%d'", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
-        ESP_LOGI(TAG, "Registering URI handlers");
+        ESP_LOGI(TAG_SERVERMAIN, "Registering URI handlers");
         return server;
     }
 
-    ESP_LOGI(TAG, "Error starting server!");
+    ESP_LOGI(TAG_SERVERMAIN, "Error starting server!");
     return NULL;
 }
 
@@ -432,7 +433,7 @@ void disconnect_handler(void* arg, esp_event_base_t event_base,
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
-        ESP_LOGI(TAG, "Stopping webserver");
+        ESP_LOGI(TAG_SERVERMAIN, "Stopping webserver");
         stop_webserver(*server);
         *server = NULL;
     }
@@ -443,7 +444,7 @@ void connect_handler(void* arg, esp_event_base_t event_base,
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {
-        ESP_LOGI(TAG, "Starting webserver");
+        ESP_LOGI(TAG_SERVERMAIN, "Starting webserver");
         *server = start_webserver();
     }
 }

@@ -50,7 +50,7 @@
 #define CAM_PIN_HREF 23
 #define CAM_PIN_PCLK 22
 
-static const char *TAG = "example:take_picture";
+static const char *TAGCAMERACLASS = "server_part_camera"; 
 
 static camera_config_t camera_config = {
     .pin_pwdn = CAM_PIN_PWDN,

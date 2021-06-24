@@ -46,6 +46,7 @@ static char ota_write_data[BUFFSIZE + 1] = { 0 };
 
 
 #define OTA_URL_SIZE 256
+static const char *TAGPARTOTA = "server_ota";
 
 
 static void infinite_loop(void)

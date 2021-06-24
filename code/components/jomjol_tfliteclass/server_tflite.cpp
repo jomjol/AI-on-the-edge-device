@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "../../main/defines.h"
+#include "defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -37,6 +37,9 @@ bool auto_isrunning = false;
 
 
 int countRounds = 0;
+
+static const char *TAGTFLITE = "server_tflite";
+
 
 int getCountFlowRounds() {
     return countRounds;
@@ -136,7 +139,7 @@ esp_err_t handler_init(httpd_req_t *req)
     printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
 #endif
 
-    char* resp_str = "Init started<br>";
+    const char* resp_str = "Init started<br>";
     httpd_resp_send(req, resp_str, strlen(resp_str));     
 
     doInit();
@@ -159,8 +162,6 @@ esp_err_t handler_doflow(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_doflow - Start");       
 #endif
 
-    char* resp_str;
-
     printf("handler_doFlow uri: "); printf(req->uri); printf("\n");
 
     if (flowisrunning)
@@ -173,7 +174,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
     {
         xTaskCreate(&blink_task_doFlow, "blink_doFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandleblink_task_doFlow);
     }
-    resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
+    const char* resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
     httpd_resp_send(req, resp_str, strlen(resp_str));  
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);       
@@ -429,7 +430,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
 //        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        bool changed = Camera.SetBrightnessContrastSaturation(bri, con, sat);
+        Camera.SetBrightnessContrastSaturation(bri, con, sat);
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
@@ -535,17 +536,18 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
+    printf("task_autodoFlow: start\r\n");
     doInit();
-    
+    printf("-a-\r\n");
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
-
+    printf("-b-\r\n");
     if (isSetupModusActive()) {
         auto_isrunning = false;
         std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
         tfliteflow.doFlowMakeImageOnly(zw_time);
 
     }
-
+    printf("-c-\r\n");
     while (auto_isrunning)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
@@ -588,8 +590,10 @@ void task_autodoFlow(void *pvParameter)
             vTaskDelay( xDelay );        
         }
     }
+    printf("-d-\r\n");
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
+    printf("task_autodoFlow: end\r\n");
 }
 
 void TFliteDoAutoStart()
