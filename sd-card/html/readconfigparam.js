@@ -84,10 +84,7 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "Topic");
-     ParamAddValue(param, catname, "TopicError");
-     ParamAddValue(param, catname, "TopicRate");
-     ParamAddValue(param, catname, "TopicTimeStamp");
+     ParamAddValue(param, catname, "MainTopic");
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");     
@@ -191,7 +188,8 @@ function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _
 
 function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
      for (var paramname in _param[_catname]) {
-          if ((_linesplit[0].toUpperCase() == paramname.toUpperCase()) && (_linesplit.length > _param[_catname][paramname]["anzParam"]))
+          _param_zw = _linesplit[0].substring(_linesplit[0].length - paramname.length, _linesplit[0].length);
+          if ((_param_zw.toUpperCase() == paramname.toUpperCase()) && (_linesplit.length > _param[_catname][paramname]["anzParam"]))
           {
                _param[_catname][paramname]["found"] = true;
                _param[_catname][paramname]["enabled"] = !_iscom;
@@ -258,38 +256,36 @@ function WriteConfigININew()
                {
                     for (_num in NUMBERS)
                     {
-                         if (NUMBERS[_num][cat][name]["found"]) {
-                              if (NUMBERS[_num]["name"] == "default")
-                                   text = name;
-                              else
-                                   text = name + "." + NUMBERS[_num]["name"];
+                         if (NUMBERS[_num]["name"] == "default")
+                              text = name;
+                         else
+                              text = NUMBERS[_num]["name"] + "." + name;
 
-                              var text = text + " =" 
-                              
-                              for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
-                                   text = text + " " + NUMBERS[_num][cat][name]["value"+j];
-                                   }
-                              if (!NUMBERS[_num][cat][name]["enabled"]) {
-                                   text = ";" + text;
-                              }
-                              config_split.push(text);
-                         }
-                    }
-               }
-               else
-               {
-                    if (param[cat][name]["found"]) {
-                         var text = name + " =" 
+                         var text = text + " =" 
                          
                          for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
-                              text = text + " " + param[cat][name]["value"+j];
+                              if (!(typeof NUMBERS[_num][cat][name]["value"+j] == 'undefined'))
+                                   text = text + " " + NUMBERS[_num][cat][name]["value"+j];
                               }
-                         if (!param[cat][name]["enabled"]) {
+                         if (!NUMBERS[_num][cat][name]["enabled"]) {
                               text = ";" + text;
                          }
                          config_split.push(text);
                     }
+               }
+               else
+               {
+                    var text = name + " =" 
+                    
+                    for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
+                         if (!(typeof param[cat][name]["value"+j] == 'undefined'))
+                              text = text + " " + param[cat][name]["value"+j];
+                         }
+                    if (!param[cat][name]["enabled"]) {
+                         text = ";" + text;
                     }
+                    config_split.push(text);
+               }
           }
           if (cat == "Digits")
           {
@@ -597,6 +593,18 @@ function CreateNUMBER(_numbernew){
      _ret["name"] = _numbernew;
      _ret['digit'] = new Array();
      _ret['analog'] = new Array();
+
+     for (_cat in param)
+          for (_param in param[_cat])
+               if (param[_cat][_param]["Numbers"] == true){
+                    _ret[_cat] = new Object();
+                    _ret[_cat][_param] = new Object();
+                    _ret[_cat][_param]["found"] = false;
+                    _ret[_cat][_param]["enabled"] = false;
+                    _ret[_cat][_param]["anzParam"] = param[_cat][_param]["anzParam"]; 
+
+               }
+
      NUMBERS.push(_ret);
 
      return "";

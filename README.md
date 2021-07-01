@@ -12,6 +12,8 @@ respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
 
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
+
 
 
 
@@ -45,7 +47,25 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-06-17)
+##### Rolling - (2021-07-01)
+
+* NEW FEATURE: adding support for more than 1 number on a meter (e.g. two different power readings)
+  Therefore the concept of "Numbers" is implemented - a bunch of digits and analog counters are combined to one number. You can define them during setup of digital and analog ROIs:
+  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/numbers.jpg" width="300"> 
+  
+* MQTT: standardization of the naming - only the main topic needs to be specified. The subtopics will be named automatically. This is necessary to handle the multi number option.
+  **ATTENTION**: the parameter `maintopic` needs to be set
+  
+* Remark: 
+  
+  * This is an early stage - do only use it on a test system and make a backup of your configuration. 
+  * The documentation is not updated yet.
+
+* <span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
+
+  
+
+Rolling - (2021-06-17)
 
 * bug fix setting hostname, Flash-LED not off during reboot
 

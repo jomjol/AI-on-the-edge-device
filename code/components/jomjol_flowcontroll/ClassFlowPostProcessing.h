@@ -23,11 +23,13 @@ struct NumberPost {
     float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-    string ReturnValueNoError;  // korrigierter Rückgabewert ohne Fehlermeldung
+    string ReturnPreValue;  // korrigierter Rückgabewert ohne Fehlermeldung
+    string ReturnValueNoError;
     string ErrorMessageText;        // Fehlermeldung bei Consistency Check
     int AnzahlAnalog;
     int AnzahlDigital;
     int DecimalShift;
+    int Nachkomma;
 //    ClassFlowAnalog* ANALOG;
 //    ClassFlowDigit* DIGIT;
 

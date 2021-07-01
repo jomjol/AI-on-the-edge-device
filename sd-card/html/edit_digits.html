@@ -59,10 +59,17 @@ th, td {
         Edit Digits</h2>
 
 <div id="div1">
+
+	<table>
+	  <tr>
+		<canvas id="canvas" crossorigin></canvas>
+	  </tr>
+	</table>
+    
     <p>
         <table>
             <tr>
-                <class id="Numbers_text" style="color:black;">Number: </class>
+                <class id="Numbers_text" style="color:black;"><b>Number:</b> </class>
                 <select id="Numbers_value1" onchange="numberChanged()">
                     <option value="0" selected>default</option>
                     <option value="1" >NT</option>
@@ -74,17 +81,8 @@ th, td {
             </tr>
         </table>
     </p>
-
-	<table>
-	  <tr>
-		<canvas id="canvas" crossorigin></canvas>
-	  </tr>
-	</table>	
-			 
-	<table>
-
     
-
+	<table>
 	  <tr>
 		<td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI (after current)"></td>	  
 		<td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>

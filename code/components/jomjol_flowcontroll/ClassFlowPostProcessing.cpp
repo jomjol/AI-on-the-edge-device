@@ -28,10 +28,11 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
         if (NUMBERS[i]->name == _number)
             index = i;
 
-    result = RundeOutput(NUMBERS[index]->PreValue, -NUMBERS[index]->DecimalShift);
+//    result = RundeOutput(NUMBERS[index]->PreValue, -NUMBERS[index]->DecimalShift);
+    result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
 
-    if (NUMBERS[index]->digit_roi && NUMBERS[index]->analog_roi)
-        result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->AnzahlAnalog - NUMBERS[index]->DecimalShift);
+//    if (NUMBERS[index]->digit_roi && NUMBERS[index]->analog_roi)
+//        result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->AnzahlAnalog - NUMBERS[index]->DecimalShift);
 
     return result;
 }
@@ -83,6 +84,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 if (NUMBERS[j]->name == name)
                 {
                     NUMBERS[j]->PreValue = stof(zwvalue.c_str());
+                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
                     time_t tStart;
                     int yy, month, dd, hh, mm, ss;
@@ -247,10 +249,10 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    printf("Name: %s, Pospunkt: %d\n", _name.c_str(), _pospunkt);
+    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
     {
-        _digit = _decsep.substr(_pospunkt+1, _decsep.length() - _pospunkt - 1);
+        _digit = _decsep.substr(0, _pospunkt);
     }
     else
     {
@@ -264,6 +266,8 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 
         if (NUMBERS[j]->name == _digit)
             NUMBERS[j]->DecimalShift = stoi(_value);
+
+        NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
     }
 }
 
@@ -289,7 +293,9 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((toUpper(zerlegt[0].substr(0, 12)) == "DECIMALSHIFT") && (zerlegt.size() > 1))
+        std::string _param = GetParameterName(zerlegt[0]);
+
+        if ((toUpper(_param) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
             handleDecimalSeparator(zerlegt[0], zerlegt[1]);
         }
@@ -364,8 +370,10 @@ void ClassFlowPostProcessing::InitNUMBERS()
         }
     }
 
-    flowDigit->UpdateNameNumbers(&name_numbers);
-    flowAnalog->UpdateNameNumbers(&name_numbers);
+    if (flowDigit)
+        flowDigit->UpdateNameNumbers(&name_numbers);
+    if (flowAnalog)
+        flowAnalog->UpdateNameNumbers(&name_numbers);
 
     printf("Anzahl NUMBERS: %d - DIGITS: %d, ANALOG: %d\n", name_numbers.size(), anzDIGIT, anzANALOG);
 
@@ -398,6 +406,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
         _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
+        _number->ReturnPreValue = "";
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
         _number->MaxRateValue = 0.1;
@@ -413,6 +422,8 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
         _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
+
+        _number->Nachkomma = _number->AnzahlAnalog;
 
         NUMBERS.push_back(_number);
     }
@@ -519,6 +530,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
                 NUMBERS[j]->PreValueOkay = true;
                 NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->lastvalue = flowMakeImage->getTimeImageTaken();
                 zwtime = ConvertTimeToString(NUMBERS[j]->lastvalue, PREVALUE_TIME_FORMAT_OUTPUT);
 
@@ -547,9 +559,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             if (NUMBERS[j]->useMaxRateValue && (abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue))
             {
-                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + zwvalue + " - Pre: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift) + " ";
+                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " ";
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift);
+                zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
             }
 
             NUMBERS[j]->ReturnValueNoError = zwvalue;
@@ -566,6 +578,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             if (NUMBERS[j]->ErrorMessageText.length() == 0)
             {
                 NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->ErrorMessageText = "no error";
                 UpdatePreValueINI = true;
             }

@@ -275,7 +275,7 @@ string ClassFlowControll::getReadoutAll(int _type)
                 out = out + numbers[i]->ReturnValue;
                 break;
             case READOUT_TYPE_PREVALUE:
-                out = out + std::to_string(numbers[i]->PreValue);
+                out = out + numbers[i]->ReturnPreValue;
                 break;
             case READOUT_TYPE_RAWVALUE:
                 out = out + numbers[i]->ReturnRawValue;

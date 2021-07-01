@@ -12,7 +12,9 @@ protected:
     std::string uri, topic, topicError, clientname, topicRate, topicTimeStamp;
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
-    std::string user, password;  
+    std::string user, password; 
+
+    std::string maintopic, mainerrortopic; 
 	void SetInitialParameter(void);        
 
 public:
