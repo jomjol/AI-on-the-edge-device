@@ -249,15 +249,11 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
-    {
         _digit = _decsep.substr(0, _pospunkt);
-    }
     else
-    {
         _digit = "default";
-    }
 
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
@@ -268,6 +264,32 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
             NUMBERS[j]->DecimalShift = stoi(_value);
 
         NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
+    }
+}
+
+void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        {
+            NUMBERS[j]->useMaxRateValue = true;
+            NUMBERS[j]->MaxRateValue = stof(_value);
+        }
+
+        if (NUMBERS[j]->name == _digit)
+        {
+            NUMBERS[j]->useMaxRateValue = true;
+            NUMBERS[j]->MaxRateValue = stof(_value);
+        }
     }
 }
 
@@ -299,42 +321,38 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             handleDecimalSeparator(zerlegt[0], zerlegt[1]);
         }
+        if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
+        {
+            handleDecimalSeparator(zerlegt[0], zerlegt[1]);
+        }
 
-        if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "PREVALUEUSE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
             {
                 PreValueUse = true;
             }
         }
-        if ((toUpper(zerlegt[0]) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
         }        
-        if ((toUpper(zerlegt[0]) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->AllowNegativeRates = true;
         }
-        if ((toUpper(zerlegt[0]) == "ERRORMESSAGE") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ERRORMESSAGE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 ErrorMessage = true;
         }
-        if ((toUpper(zerlegt[0]) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
         {
             PreValueAgeStartup = std::stoi(zerlegt[1]);
-        }
-        if ((toUpper(zerlegt[0]) == "MAXRATEVALUE") && (zerlegt.size() > 1))
-        {
-            for (_n = 0; _n < NUMBERS.size(); ++_n)
-            {
-            NUMBERS[_n]->useMaxRateValue = true;
-            NUMBERS[_n]->MaxRateValue = std::stof(zerlegt[1]);
-            }
         }
     }
 

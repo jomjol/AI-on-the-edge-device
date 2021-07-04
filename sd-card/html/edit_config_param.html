@@ -410,20 +410,6 @@ textarea {
 				Set on "false" to ensure, that only positive changes are accepted (typically for counter)
 			</td>
 		</tr>
-		<tr>
-			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class>
-			</td>
-			<td>
-				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
-			</td>
-			<td style="font-size: 80%;">
-				Maximum change of reading from one to the next readout
-			</td>
-		</tr>
 		<tr class="expert"  id="ex12">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
@@ -482,6 +468,20 @@ textarea {
 			</td>
 			<td style="font-size: 80%;">
 				shift the digit separator within the digital digits (positiv and negativ)
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class>
+			</td>
+			<td>
+				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
+			</td>
+			<td style="font-size: 80%;">
+				Maximum change of reading from one to the next readout
 			</td>
 		</tr>
 
@@ -722,7 +722,6 @@ function LoadConfigNeu() {
 		alert("Config.ini could not be loaded!\nPlease reload the page.");
 		return;
 	} 
-//	loadConfig(basepath); 
 	ParseConfig();	
 	param = getConfigParameters();
 	category = getConfigCategory();
@@ -942,11 +941,13 @@ function UpdateInputIndividual()
 	if (NUNBERSAkt != -1)
 	{
 		ReadParameter(param, "PostProcessing", "DecimalShift", true, false, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "MaxRateValue", true, false, NUNBERSAkt)		
 	}
 
 	var sel = document.getElementById("Numbers_value1");
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, false, 1, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, false, 1, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -982,7 +983,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true, true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, true);
-	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true);		
+//	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true);		
 	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true, true);
 	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true, true);
 

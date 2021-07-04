@@ -24,6 +24,9 @@ void ClassFlowMQTT::SetInitialParameter(void)
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
+    MQTTenable = false;
+    
+    
 
 }       
 
@@ -108,6 +111,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         mainerrortopic = maintopic + "/connection";
         MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
         MQTTPublish(mainerrortopic, "connected");
+        MQTTenable = true;
     }
    
     return true;
@@ -116,6 +120,9 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
+    if (!MQTTenable)
+        return true;
+
     std::string result;
     std::string resulterror = "";
     std::string resultrate = "";

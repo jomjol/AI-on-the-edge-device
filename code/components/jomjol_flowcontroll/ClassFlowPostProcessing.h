@@ -53,15 +53,8 @@ protected:
 
     bool PreValueUse;
     int PreValueAgeStartup; 
-//    bool AllowNegativeRates;
-//    float MaxRateValue;
-//    bool useMaxRateValue;
     bool ErrorMessage;
- //   bool PreValueOkay;
-//    bool checkDigitIncreaseConsistency;
-//    int DecimalShift;
-//    time_t lastvalue;
-//    float FlowRateAct;          // m3 / min
+
 
     ClassFlowAnalog* flowAnalog;
     ClassFlowDigit* flowDigit;    
@@ -80,6 +73,7 @@ protected:
 
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
+    void handleMaxRateValue(string _decsep, string _value);
 
 
 public:

@@ -120,6 +120,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
+        
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 

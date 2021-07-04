@@ -74,7 +74,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "PreValueUse");
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
-     ParamAddValue(param, catname, "MaxRateValue");
+     ParamAddValue(param, catname, "MaxRateValue", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
 
@@ -476,7 +476,8 @@ function getNUMBERS(_name, _type, _create = true)
           for (_cat in param)
                for (_param in param[_cat])
                     if (param[_cat][_param]["Numbers"] == true){
-                         _ret[_cat] = new Object();
+                         if (typeof  _ret[_cat] == 'undefined')
+                              _ret[_cat] = new Object();
                          _ret[_cat][_param] = new Object();
                          _ret[_cat][_param]["found"] = false;
                          _ret[_cat][_param]["enabled"] = false;
