@@ -323,7 +323,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
         {
-            handleDecimalSeparator(zerlegt[0], zerlegt[1]);
+            handleMaxRateValue(zerlegt[0], zerlegt[1]);
         }
 
         if ((toUpper(_param) == "PREVALUEUSE") && (zerlegt.size() > 1))
