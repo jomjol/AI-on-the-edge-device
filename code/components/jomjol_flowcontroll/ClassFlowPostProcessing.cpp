@@ -432,6 +432,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->checkDigitIncreaseConsistency = false;
         _number->PreValueOkay = false;
         _number->useMaxRateValue = false;
+        _number->DecimalShift = 0;
 
         _number->FlowRateAct = 0;          // m3 / min
         _number->PreValue = 0;             // letzter Wert, der gut ausgelesen wurde
