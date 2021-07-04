@@ -1,4 +1,4 @@
-const char* GIT_REV="d995c31";
+const char* GIT_REV="7b8f10a";
 const char* GIT_TAG="";
 const char* GIT_BRANCH="gpio-handler";
-const char* BUILD_TIME="2021-06-21 23:55";
+const char* BUILD_TIME="2021-07-03 00:47";

@@ -132,3 +132,11 @@ void setBootTime()
 {
     time(&bootTime);
 }
+
+time_t getUpTime() 
+{
+    time_t now;
+    time(&now);
+
+    return now - bootTime;
+}

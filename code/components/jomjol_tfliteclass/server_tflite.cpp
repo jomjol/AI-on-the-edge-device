@@ -18,8 +18,9 @@
 #include "ClassFlowControll.h"
 
 #include "ClassLogFile.h"
+#include "server_main.h"
 
-//#define DEBUG_DETAIL_ON       
+#define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
@@ -68,9 +69,11 @@ void KillTFliteTasks()
 #ifdef DEBUG_DETAIL_ON          
     printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);  
 #endif  
-    if (xHandleblink_task_doFlow)
+    if (xHandleblink_task_doFlow != NULL)
     {
-        vTaskDelete(xHandleblink_task_doFlow);
+        TaskHandle_t xHandleblink_task_doFlowTmp = xHandleblink_task_doFlow;
+        xHandleblink_task_doFlow = NULL;
+        vTaskDelete(xHandleblink_task_doFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandleblink_task_doFlow\n");
 #endif
@@ -79,9 +82,11 @@ void KillTFliteTasks()
 #ifdef DEBUG_DETAIL_ON      
     printf("Handle: xHandletask_autodoFlow: %ld\n", (long) xHandletask_autodoFlow);  
 #endif
-    if (xHandletask_autodoFlow)
+    if (xHandletask_autodoFlow != NULL)
     {
-        vTaskDelete(xHandletask_autodoFlow);
+        TaskHandle_t xHandletask_autodoFlowTmp = xHandletask_autodoFlow;
+        xHandletask_autodoFlow = NULL;
+        vTaskDelete(xHandletask_autodoFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandletask_autodoFlow\n");
 #endif
@@ -538,16 +543,15 @@ void task_autodoFlow(void *pvParameter)
 
     printf("task_autodoFlow: start\r\n");
     doInit();
-    printf("-a-\r\n");
+    gpio_handler_init();
+
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
-    printf("-b-\r\n");
     if (isSetupModusActive()) {
         auto_isrunning = false;
         std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
         tfliteflow.doFlowMakeImageOnly(zw_time);
 
     }
-    printf("-c-\r\n");
     while (auto_isrunning)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
@@ -590,7 +594,6 @@ void task_autodoFlow(void *pvParameter)
             vTaskDelay( xDelay );        
         }
     }
-    printf("-d-\r\n");
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
     printf("task_autodoFlow: end\r\n");

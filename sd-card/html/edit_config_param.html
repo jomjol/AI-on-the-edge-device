@@ -574,7 +574,21 @@ textarea {
 				<input type="text" id="MQTT_TopicUptime_value1">
 			</td>
 			<td style="font-size: 80%;">
-				MQTT topic, ESP uptime of last flow
+				MQTT topic, ESP uptime after last flow
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_TopicFreeMem_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "TopicFreeMem")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_TopicFreeMem_text" style="color:black;">TopicFreeMem</class>
+			</td>
+			<td>
+				<input type="text" id="MQTT_TopicFreeMem_value1">
+			</td>
+			<td style="font-size: 80%;">
+				MQTT topic, ESP free heap memory after last flow
 			</td>
 		</tr>
 		<tr>
@@ -654,7 +668,12 @@ textarea {
 		</tr>
 
 		<tr>
-			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > GPIO Settings</h4></td>
+			<td colspan="4" style="padding-left: 20px;">
+				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
+					GPIO Settings
+					<span style="color: red;">Enabling GPIO handler, disable by default integrated flash light. Please enable it with GPIO4 settings.</span>
+				</h4>	
+			</td>
 		</tr> 	
 		
 		<tr>
@@ -671,6 +690,396 @@ textarea {
 				MQTT main topic for GPIO
 			</td>
 		</tr>
+
+		<!------------- GPIO0 begin ------------------>
+		<tr class="GPIO_IO0">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' unchecked>
+			</td>
+			<td>
+				<span id="GPIO_IO0_text">GPIO 0 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO0_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="output-pwm" disabled>output pwm (not implemented)</option>
+						<option value="external-flash-pwm" disabled>external flash light pwm controlled (not implemented)</option>
+						<option value="external-flash-ws281x" disabled>external flash light ws281x controlled (not implemented)</option>
+					</select>
+				</td>
+			</td>
+			<td class="description">
+				GPIO 0 Usable with restrictions.<br> 
+				<span style="color: red">Must be disabled when camera is used.</span><br>
+				<span style="color: red">Pin is used to activate flash mode and must therefore be HIGH when booting.</span>
+			</td>
+		</tr>
+		<tr class="GPIO_IO0">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 0 use interrupt</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO0_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge">rising edge</option>
+						<option value="falling-edge">falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
+			</td>
+			<td class="description">
+				GPIO 0 enable interrupt trigger
+			</td>
+		</tr>
+		<tr class="GPIO_IO0">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 0 PWM duty resolution</span>
+			</td>
+			<td>
+				<td"><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
+			</td>
+			<td class="description">
+				GPIO 0 LEDC PWM duty resolution in bit
+			</td>
+		</tr>
+		<tr class="GPIO_IO0">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 0 enable MQTT</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO0_value4"></td>
+			</td>
+			<td class="description">
+				GPIO 0 enable MQTT publishing/subscribing
+			</td>
+		</tr>
+		<tr class="GPIO_IO0">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 0 enable HTTP</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO0_value5"></td>
+			</td>
+			<td class="description">
+				GPIO 0 enable HTTP write/read
+			</td>
+		</tr>
+		<tr class="GPIO_IO0">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 0 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO0_value6"></td>
+			</td>
+			<td class="description">
+				GPIO 0 MQTT topic name (empty = GPIO0). Allowed characters (a-z, A-Z, 0-9, _, -)
+			</td>
+		</tr>
+		<!------------- GPIO0 end ------------------>
+
+		<!------------- GPIO1 begin ------------------>
+		<tr class="GPIO_IO1">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
+			</td>
+			<td>
+				<span id="GPIO_IO1_text">GPIO 1 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO1_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="output-pwm" disabled>output pwm (not implemented)</option>
+						<option value="external-flash-pwm" disabled>external flash light pwm controlled (not implemented)</option>
+						<option value="external-flash-ws281x" disabled>external flash light ws281x controlled (not implemented)</option>
+					</select>
+				</td>
+			</td>
+			<td class="description">
+				GPIO 1 <br><span style="color: blue">Used by default for serial communication as TX pin.<br>Required for seriales monitor.</span>
+			</td>
+		</tr>
+		<tr class="GPIO_IO1">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 1 use interrupt</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO1_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge" disabled>rising edge</option>
+						<option value="falling-edge" disabled>falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
+			</td>
+			<td class="description">
+				GPIO 1 enable interrupt trigger
+			</td>
+		</tr>
+		<tr class="GPIO_IO1">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 1 PWM duty resolution</span>
+			</td>
+			<td>
+				<td"><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
+			</td>
+			<td class="description">
+				GPIO 1 LEDC PWM duty resolution in bit
+			</td>
+		</tr>
+		<tr class="GPIO_IO1">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 1 enable MQTT</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO1_value4"></td>
+			</td>
+			<td class="description">
+				GPIO 1 enable MQTT publishing/subscribing
+			</td>
+		</tr>
+		<tr class="GPIO_IO1">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 1 enable HTTP</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO1_value5"></td>
+			</td>
+			<td class="description">
+				GPIO 1 enable HTTP write/read
+			</td>
+		</tr>
+		<tr class="GPIO_IO1">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 1 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO1_value6"></td>
+			</td>
+			<td class="description">
+				GPIO 1 MQTT topic name (empty = GPIO1). Allowed characters (a-z, A-Z, 0-9, _, -)
+			</td>
+		</tr>
+		<!------------- GPIO1 end ------------------>
+
+		<!------------- GPIO3 begin ------------------>
+		<tr class="GPIO_IO3">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
+			</td>
+			<td>
+				<span id="GPIO_IO3_text">GPIO 3 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO3_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="output-pwm" disabled>output pwm (not implemented)</option>
+						<option value="external-flash-pwm" disabled>external flash light pwm controlled (not implemented)</option>
+						<option value="external-flash-ws281x" disabled>external flash light ws281x controlled (not implemented)</option>
+					</select>
+				</td>
+			</td>
+			<td class="description">
+				GPIO 3 <span style="color: blue">Used by default for serial communication as RX pin.</span>
+			</td>
+		</tr>
+		<tr class="GPIO_IO3">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 3 use interrupt</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO3_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge" disabled>rising edge</option>
+						<option value="falling-edge" disabled>falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
+			</td>
+			<td class="description">
+				GPIO 3 Used by default for serial communication as RX pin.
+			</td>
+		</tr>
+		<tr class="GPIO_IO3">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 3 PWM duty resolution</span>
+			</td>
+			<td>
+				<td"><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
+			</td>
+			<td class="description">
+				GPIO 3 LEDC PWM duty resolution in bit
+			</td>
+		</tr>
+		<tr class="GPIO_IO3">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 3 enable MQTT</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO3_value4"></td>
+			</td>
+			<td class="description">
+				GPIO 3 enable MQTT publishing/subscribing
+			</td>
+		</tr>
+		<tr class="GPIO_IO3">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 3 enable HTTP</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO3_value5"></td>
+			</td>
+			<td class="description">
+				GPIO 3 enable HTTP write/read
+			</td>
+		</tr>
+		<tr class="GPIO_IO3">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 3 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO3_value6"></td>
+			</td>
+			<td class="description">
+				GPIO 3 MQTT topic name (empty = GPIO3). Allowed characters (a-z, A-Z, 0-9, _, -)
+			</td>
+		</tr>
+		<!------------- GPIO3 end ------------------>
+
+		<!------------- GPIO4 begin ------------------>
+		<tr class="GPIO_IO4">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPI4", "IO4")' unchecked>
+			</td>
+			<td>
+				<span id="GPIO_IO4_text">GPIO 4 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO4_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="built-in-led">built-in led flash light</option>
+						<option value="output-pwm" disabled>output pwm (not implemented)</option>
+						<option value="external-flash-pwm" disabled>external flash light pwm controlled (not implemented)</option>
+						<option value="external-flash-ws281x" disabled>external flash light ws281x controlled (not implemented)</option>
+					</select>
+				</td>
+			</td>
+			<td class="description">
+				GPIO 4 Usable with restrictions.<br> 
+				<span style="color: red">Pin is used for build-in flash light.</span>
+			</td>
+		</tr>
+		<tr class="GPIO_IO4">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 4 use interrupt</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO4_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge">rising edge</option>
+						<option value="falling-edge">falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
+			</td>
+			<td class="description">
+				GPIO 4 enable interrupt trigger
+			</td>
+		</tr>
+		<tr class="GPIO_IO4">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 4 PWM duty resolution</span>
+			</td>
+			<td>
+				<td"><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
+			</td>
+			<td class="description">
+				GPIO 4 LEDC PWM duty resolution in bit
+			</td>
+		</tr>
+		<tr class="GPIO_IO4">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 4 enable MQTT</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO4_value4"></td>
+			</td>
+			<td class="description">
+				GPIO 4 enable MQTT publishing/subscribing
+			</td>
+		</tr>
+		<tr class="GPIO_IO4">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 4 enable HTTP</span>
+			</td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO4_value5"></td>
+			</td>
+			<td class="description">
+				GPIO 4 enable HTTP write/read
+			</td>
+		</tr>
+		<tr class="GPIO_IO4">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
+				<span>GPIO 4 name</span>
+			</td>
+			<td>
+				<td"><input type="text" id="GPIO_IO4_value6"></td>
+			</td>
+			<td class="description">
+				GPIO 4 MQTT topic name (empty = GPIO4). Allowed characters (a-z, A-Z, 0-9, _, -)
+			</td>
+		</tr>
+		<!------------- GPIO4 end ------------------>
+
+		<!------------- GPIO12 begin ------------------>
 		<tr class="GPIO_IO12">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
@@ -706,6 +1115,9 @@ textarea {
 						<option value="disabled">disabled</option>
 						<option value="rising-edge">rising edge</option>
 						<option value="falling-edge">falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
 			</td>
@@ -758,10 +1170,12 @@ textarea {
 				<td"><input type="text" id="GPIO_IO12_value6"></td>
 			</td>
 			<td class="description">
-				GPIO 12 MQTT topic name (empty = gpio12). Allowed characters (a-z, A-Z, 0-9, _, -)
+				GPIO 12 MQTT topic name (empty = GPIO12). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
 		</tr>
+		<!------------- GPIO12 end ------------------>
 
+		<!------------- GPIO13 begin ------------------>
 		<tr class="GPIO_IO13">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
@@ -795,8 +1209,11 @@ textarea {
 				<td">
 					<select id="GPIO_IO13_value2">
 						<option value="disabled">disabled</option>
-						<option value="rising-edge" disabled>rising edge (not implemented)</option>
-						<option value="falling-edge" disabled>falling edge (not implemented)</option>
+						<option value="rising-edge" disabled>rising edge</option>
+						<option value="falling-edge" disabled>falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
 			</td>
@@ -849,9 +1266,10 @@ textarea {
 				<td"><input type="text" id="GPIO_IO13_value6"></td>
 			</td>
 			<td class="description">
-				GPIO 13 MQTT topic name (empty = gpio13). Allowed characters (a-z, A-Z, 0-9, _, -)
+				GPIO 13 MQTT topic name (empty = GPIO13). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
 		</tr>
+		<!------------- GPIO13 end ------------------>
 
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4>Debug</h4></td>
@@ -1204,11 +1622,16 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "TopicRate", true);	
 	WriteParameter(param, category, "MQTT", "TopicTimeStamp", true);
 	WriteParameter(param, category, "MQTT", "TopicUptime", true);	
+	WriteParameter(param, category, "MQTT", "TopicFreeMem", true);	
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	
 	WriteParameter(param, category, "GPIO", "MainTopicMQTT", true);
+	WriteParameter(param, category, "GPIO", "IO0", true);
+	WriteParameter(param, category, "GPIO", "IO1", true);
+	WriteParameter(param, category, "GPIO", "IO3", true);
+	WriteParameter(param, category, "GPIO", "IO4", true);
 	WriteParameter(param, category, "GPIO", "IO12", true);
 	WriteParameter(param, category, "GPIO", "IO13", true);
 
@@ -1269,11 +1692,16 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "TopicRate", true);
 	ReadParameter(param, "MQTT", "TopicTimeStamp", true);
 	ReadParameter(param, "MQTT", "TopicUptime", true);
+	ReadParameter(param, "MQTT", "TopicFreeMem", true);
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 
 	ReadParameter(param, "GPIO", "MainTopicMQTT", true);
+	ReadParameter(param, "GPIO", "IO0", true);
+	ReadParameter(param, "GPIO", "IO1", true);
+	ReadParameter(param, "GPIO", "IO3", true);
+	ReadParameter(param, "GPIO", "IO4", true);
 	ReadParameter(param, "GPIO", "IO12", true);
 	ReadParameter(param, "GPIO", "IO13", true);
 

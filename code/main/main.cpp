@@ -3,7 +3,6 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
-#include "defines.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
 
@@ -20,6 +19,7 @@
 #include "connect_wlan.h"
 #include "read_wlanini.h"
 
+#include "server_main.h"
 #include "server_tflite.h"
 #include "server_file.h"
 #include "server_ota.h"
@@ -38,7 +38,7 @@
 
 static const char *TAGMAIN = "main";
 
-#define FLASH_GPIO GPIO_NUM_4
+//#define FLASH_GPIO GPIO_NUM_4
 
 bool Init_NVS_SDCard()
 {
@@ -107,9 +107,9 @@ bool Init_NVS_SDCard()
 	// Init the GPIO
     // Flash ausschalten
     
-    gpio_pad_select_gpio(FLASH_GPIO);
-    gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
-    gpio_set_level(FLASH_GPIO, 0);   
+    // gpio_pad_select_gpio(FLASH_GPIO);
+    // gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
+    // gpio_set_level(FLASH_GPIO, 0);   
 
     return true;
 }
@@ -138,7 +138,7 @@ void task_NoSDBlink(void *pvParameter)
 esp_err_t handler_gpio(httpd_req_t *req)
 {
     printf("freemem -3-: %u\n", esp_get_free_heap_size());
-    gpioHandler->init();
+    gpio_handler_init();
     printf("freemem -4-: %u\n", esp_get_free_heap_size());
 
     char resp_str [30];
@@ -219,14 +219,9 @@ extern "C" void app_main(void)
     camuri.user_ctx  = (void*)server;    
     httpd_register_uri_handler(server, &camuri);
 
-#ifdef __SD_USE_ONE_LINE_MODE__
-    printf("freemem -1-: %u\n", esp_get_free_heap_size());
-    gpioHandler = new GpioHandler(CONFIG_FILE, server);
-    printf("freemem -2-: %u\n", esp_get_free_heap_size());
-#endif    
+    gpio_handler_create();
 
     printf("vor reg server main\n");
-
     register_server_main_uri(server, "/sdcard");
 
     printf("vor dotautostart\n");

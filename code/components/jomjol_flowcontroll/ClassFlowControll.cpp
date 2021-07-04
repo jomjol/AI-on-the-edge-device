@@ -442,7 +442,7 @@ int ClassFlowControll::CleanTempFolder() {
 
 esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 {
-    return flowmakeimage->SendRawJPG(req);
+    return flowmakeimage != NULL ? flowmakeimage->SendRawJPG(req) : ESP_FAIL;
 }
 
 

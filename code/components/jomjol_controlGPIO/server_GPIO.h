@@ -15,11 +15,22 @@ typedef enum {
     GPIO_PIN_MODE_INPUT_PULLUP          = 0x2,
     GPIO_PIN_MODE_INPUT_PULLDOWN        = 0x3,
     GPIO_PIN_MODE_OUTPUT                = 0x4,
-    GPIO_PIN_MODE_OUTPUT_PWM            = 0x5,
-    GPIO_PIN_MODE_EXTERNAL_FLASH_PWM    = 0x5,
-    GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X = 0x5,
+    GPIO_PIN_MODE_BUILT_IN_FLASH_LED    = 0x5,
+    GPIO_PIN_MODE_OUTPUT_PWM            = 0x6,
+    GPIO_PIN_MODE_EXTERNAL_FLASH_PWM    = 0x7,
+    GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X = 0x8,
 } gpio_pin_mode_t;
 
+struct GpioResult {
+    gpio_num_t gpio;
+    bool value;
+};
+
+typedef enum {
+    GPIO_SET_SOURCE_INTERNAL  = 0,
+    GPIO_SET_SOURCE_MQTT  = 1,
+    GPIO_SET_SOURCE_HTTP  = 2,
+} gpio_set_source;
 
 class GpioPin {
 public:
@@ -27,10 +38,12 @@ public:
     ~GpioPin();
 
     bool getValue(std::string* errorText);
-    void setValue(bool value, std::string* errorText);
+    void setValue(bool value, gpio_set_source setSource, std::string* errorText);
     void init();
     bool handleMQTT(std::string, char* data, int data_len);
-    void gpioInterrupt();
+    void gpioInterrupt(bool value);
+    gpio_int_type_t getInterruptType() { return _interruptType; }
+    gpio_pin_mode_t getMode() { return _mode; }
 
 private:
     gpio_num_t _gpio;
@@ -49,15 +62,19 @@ public:
     ~GpioHandler();
     
     void init();
-    void destroy();
+    void deinit();
     void registerGpioUri();
-    esp_err_t handleHttpRequest(httpd_req_t *req);  
+    esp_err_t handleHttpRequest(httpd_req_t *req);
+    void gpioInterrupt(GpioResult* gpioResult);  
+    void flashLightEnable(bool value);
+    bool isEnabled() { return _isEnabled; }
 
 private:
     std::string _configFile;
     httpd_handle_t _httpServer;
     std::map<gpio_num_t, GpioPin*> *gpioMap = NULL;
     TaskHandle_t xHandletaskGpioHandler = NULL;
+    bool _isEnabled = false;
 
     bool readConfig();
     void clear();

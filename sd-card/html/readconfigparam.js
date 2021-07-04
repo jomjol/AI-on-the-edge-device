@@ -87,6 +87,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TopicRate");
      ParamAddValue(param, catname, "TopicTimeStamp");
      ParamAddValue(param, catname, "TopicUptime", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "TopicFreeMem", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
@@ -97,6 +98,10 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "MainTopicMQTT", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "IO0", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO1", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO3", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO4", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO12", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO13", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
 

@@ -1,6 +1,8 @@
+#include <sstream>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 
+#include "time_sntp.h"
 #include "interface_mqtt.h"
 #include "ClassFlowPostProcessing.h"
 
@@ -13,6 +15,8 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicError = "";
     topicRate = "";
     topicTimeStamp = "";
+    topicUptime = "";
+    topicFreeMem = "";
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -104,6 +108,14 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->topicTimeStamp  = zerlegt[1];
         }
+        if ((toUpper(zerlegt[0]) == "TOPICUPTIME") && (zerlegt.size() > 1))
+        {
+            this->topicUptime  = zerlegt[1];
+        }
+        if ((toUpper(zerlegt[0]) == "TOPICFREEMEM") && (zerlegt.size() > 1))
+        {
+            this->topicFreeMem  = zerlegt[1];
+        }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
@@ -167,6 +179,18 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     if (topicTimeStamp.length() > 0) {
         MQTTPublish(topicTimeStamp, resulttimestamp);
+    }
+
+    if (topicUptime.length() > 0) {
+        char uptimeStr[11];
+        sprintf(uptimeStr, "%ld", (long)getUpTime());
+        MQTTPublish(topicUptime, uptimeStr);
+    }
+
+    if (topicFreeMem.length() > 0) {
+        char freeheapmem[11];
+        sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+        MQTTPublish(topicFreeMem, freeheapmem);
     }
 
     OldValue = result;

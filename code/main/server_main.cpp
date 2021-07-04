@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "defines.h"
 #include "server_help.h"
 #include "ClassLogFile.h"
 
@@ -23,6 +24,8 @@ httpd_handle_t server = NULL;
 std::string starttime = "";
 
 static const char *TAG_SERVERMAIN = "server-main";
+
+static GpioHandler *gpioHandler = NULL;
 
 
 /* An HTTP GET handler */
@@ -300,7 +303,9 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     std::string gitbranch = libfive_git_branch();
     std::string gitbasebranch = git_base_branch();
     std::string htmlversion = getHTMLversion();
-
+    char freeheapmem[11];
+    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+    
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     const char *hostname;
@@ -315,7 +320,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
                 \"html\" : \"" + htmlversion + "\",\
                 \"cputemp\" : \"" + cputemp + "\",\
                 \"hostname\" : \"" + hostname + "\",\
-                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\"\
+                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\",\
+                \"freeHeapMem\" : \"" + freeheapmem + "\"\
             }\
         ]";
 
@@ -449,4 +455,34 @@ void connect_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
+void gpio_handler_create() 
+{
+    if (gpioHandler == NULL)
+        gpioHandler = new GpioHandler(CONFIG_FILE, server);
+}
 
+void gpio_handler_init() 
+{
+    if (gpioHandler != NULL) {
+        gpioHandler->init();
+    }
+}
+
+void gpio_handler_deinit() {
+    if (gpioHandler != NULL) {
+        gpioHandler->deinit();
+   }
+}
+
+void gpio_handler_destroy()
+{
+    if (gpioHandler != NULL) {
+        delete gpioHandler;
+        gpioHandler = NULL;
+    }
+}
+
+GpioHandler* gpio_handler_get()
+{
+    return gpioHandler;
+}

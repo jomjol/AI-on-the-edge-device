@@ -16,10 +16,15 @@
 
 extern httpd_handle_t server;
 
-static GpioHandler *gpioHandler = NULL;
+void gpio_handler_create();
+void gpio_handler_init();
+void gpio_handler_deinit();
+void gpio_handler_destroy();
+GpioHandler* gpio_handler_get();
 
 httpd_handle_t start_webserver(void);
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path);
+
 
 #endif

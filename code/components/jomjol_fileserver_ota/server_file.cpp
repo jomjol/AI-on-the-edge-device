@@ -502,10 +502,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 
     if (strcmp(filepath, CONFIG_FILE) == 0) {
         printf("New config foung. Reload handler.");
+        gpio_handler_deinit();
         MQTTdestroy();
-        if (gpioHandler != NULL) {
-            gpioHandler->destroy();
-        }
     }
 
     return ESP_OK;
