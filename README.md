@@ -47,12 +47,16 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-07-03)
+##### Rolling - (2021-07-05)
+
+* Update jquery, inital config.ini
+
+Rolling - (2021-07-03)
 
 * Parameter `MaxRateValue` individual for each number
 * BugFix: MQTT server tried to connect even in case it was disabled
 
-##### Rolling - (2021-07-01)
+Rolling - (2021-07-01)
 
 * NEW FEATURE: adding support for more than 1 number on a meter (e.g. two different power readings)
   Therefore the concept of "Numbers" is implemented - a bunch of digits and analog counters are combined to one number. You can define them during setup of digital and analog ROIs:

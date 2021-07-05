@@ -256,10 +256,7 @@ function WriteConfigININew()
                {
                     for (_num in NUMBERS)
                     {
-                         if (NUMBERS[_num]["name"] == "default")
-                              text = name;
-                         else
-                              text = NUMBERS[_num]["name"] + "." + name;
+                         text = NUMBERS[_num]["name"] + "." + name;
 
                          var text = text + " =" 
                          
@@ -295,10 +292,7 @@ function WriteConfigININew()
                     {
                          for (var _roiddet in NUMBERS[_roi]["digit"])
                          {
-                              if (NUMBERS[_roi]["name"] == "default")
-                                   text = NUMBERS[_roi]["digit"][_roiddet]["name"];
-                              else
-                                   text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["digit"][_roiddet]["name"];
+                              text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["digit"][_roiddet]["name"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["x"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["y"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["dx"];
@@ -316,10 +310,7 @@ function WriteConfigININew()
                     {
                          for (var _roiddet in NUMBERS[_roi]["analog"])
                          {
-                              if (NUMBERS[_roi]["name"] == "default")
-                                   text = NUMBERS[_roi]["analog"][_roiddet]["name"];
-                              else
-                                   text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["analog"][_roiddet]["name"];
+                              text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["analog"][_roiddet]["name"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["x"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["y"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["dx"];
