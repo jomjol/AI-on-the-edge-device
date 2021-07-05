@@ -25,9 +25,6 @@ std::string starttime = "";
 
 static const char *TAG_SERVERMAIN = "server-main";
 
-static GpioHandler *gpioHandler = NULL;
-
-
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
 {
@@ -453,36 +450,4 @@ void connect_handler(void* arg, esp_event_base_t event_base,
         ESP_LOGI(TAG_SERVERMAIN, "Starting webserver");
         *server = start_webserver();
     }
-}
-
-void gpio_handler_create() 
-{
-    if (gpioHandler == NULL)
-        gpioHandler = new GpioHandler(CONFIG_FILE, server);
-}
-
-void gpio_handler_init() 
-{
-    if (gpioHandler != NULL) {
-        gpioHandler->init();
-    }
-}
-
-void gpio_handler_deinit() {
-    if (gpioHandler != NULL) {
-        gpioHandler->deinit();
-   }
-}
-
-void gpio_handler_destroy()
-{
-    if (gpioHandler != NULL) {
-        delete gpioHandler;
-        gpioHandler = NULL;
-    }
-}
-
-GpioHandler* gpio_handler_get()
-{
-    return gpioHandler;
 }

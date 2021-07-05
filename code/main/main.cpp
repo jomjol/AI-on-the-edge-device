@@ -137,9 +137,7 @@ void task_NoSDBlink(void *pvParameter)
 
 esp_err_t handler_gpio(httpd_req_t *req)
 {
-    printf("freemem -3-: %u\n", esp_get_free_heap_size());
     gpio_handler_init();
-    printf("freemem -4-: %u\n", esp_get_free_heap_size());
 
     char resp_str [30];
     sprintf(resp_str, "OK. freemem %u", esp_get_free_heap_size());
@@ -219,7 +217,7 @@ extern "C" void app_main(void)
     camuri.user_ctx  = (void*)server;    
     httpd_register_uri_handler(server, &camuri);
 
-    gpio_handler_create();
+    gpio_handler_create(server);
 
     printf("vor reg server main\n");
     register_server_main_uri(server, "/sdcard");

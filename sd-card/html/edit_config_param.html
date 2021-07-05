@@ -36,6 +36,10 @@ textarea {
 .invalid-input {
 	background-color: #FFAA00;
 }
+
+.hidden {
+	display: none;
+}
 </style>
 
 </head>
@@ -676,7 +680,7 @@ textarea {
 			</td>
 		</tr> 	
 		
-		<tr>
+		<tr class="GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_MainTopicMQTT_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "MainTopicMQTT")' unchecked >
 			</td>
@@ -692,7 +696,7 @@ textarea {
 		</tr>
 
 		<!------------- GPIO0 begin ------------------>
-		<tr class="GPIO_IO0">
+		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' unchecked>
 			</td>
@@ -718,7 +722,7 @@ textarea {
 				<span style="color: red">Pin is used to activate flash mode and must therefore be HIGH when booting.</span>
 			</td>
 		</tr>
-		<tr class="GPIO_IO0">
+		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 0 use interrupt</span>
@@ -739,7 +743,7 @@ textarea {
 				GPIO 0 enable interrupt trigger
 			</td>
 		</tr>
-		<tr class="GPIO_IO0">
+		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 0 PWM duty resolution</span>
@@ -751,7 +755,7 @@ textarea {
 				GPIO 0 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
-		<tr class="GPIO_IO0">
+		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 0 enable MQTT</span>
@@ -763,7 +767,7 @@ textarea {
 				GPIO 0 enable MQTT publishing/subscribing
 			</td>
 		</tr>
-		<tr class="GPIO_IO0">
+		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 0 enable HTTP</span>
@@ -775,7 +779,7 @@ textarea {
 				GPIO 0 enable HTTP write/read
 			</td>
 		</tr>
-		<tr class="GPIO_IO0">
+		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 0 name</span>
@@ -790,7 +794,7 @@ textarea {
 		<!------------- GPIO0 end ------------------>
 
 		<!------------- GPIO1 begin ------------------>
-		<tr class="GPIO_IO1">
+		<tr class="GPIO_IO1 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
 			</td>
@@ -814,7 +818,7 @@ textarea {
 				GPIO 1 <br><span style="color: blue">Used by default for serial communication as TX pin.<br>Required for seriales monitor.</span>
 			</td>
 		</tr>
-		<tr class="GPIO_IO1">
+		<tr class="GPIO_IO1 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 1 use interrupt</span>
@@ -835,7 +839,7 @@ textarea {
 				GPIO 1 enable interrupt trigger
 			</td>
 		</tr>
-		<tr class="GPIO_IO1">
+		<tr class="GPIO_IO1 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 1 PWM duty resolution</span>
@@ -847,7 +851,7 @@ textarea {
 				GPIO 1 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
-		<tr class="GPIO_IO1">
+		<tr class="GPIO_IO1 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 1 enable MQTT</span>
@@ -859,7 +863,7 @@ textarea {
 				GPIO 1 enable MQTT publishing/subscribing
 			</td>
 		</tr>
-		<tr class="GPIO_IO1">
+		<tr class="GPIO_IO1 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 1 enable HTTP</span>
@@ -871,7 +875,7 @@ textarea {
 				GPIO 1 enable HTTP write/read
 			</td>
 		</tr>
-		<tr class="GPIO_IO1">
+		<tr class="GPIO_IO1 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 1 name</span>
@@ -886,7 +890,7 @@ textarea {
 		<!------------- GPIO1 end ------------------>
 
 		<!------------- GPIO3 begin ------------------>
-		<tr class="GPIO_IO3">
+		<tr class="GPIO_IO3 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
 			</td>
@@ -910,7 +914,7 @@ textarea {
 				GPIO 3 <span style="color: blue">Used by default for serial communication as RX pin.</span>
 			</td>
 		</tr>
-		<tr class="GPIO_IO3">
+		<tr class="GPIO_IO3 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 3 use interrupt</span>
@@ -931,7 +935,7 @@ textarea {
 				GPIO 3 Used by default for serial communication as RX pin.
 			</td>
 		</tr>
-		<tr class="GPIO_IO3">
+		<tr class="GPIO_IO3 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 3 PWM duty resolution</span>
@@ -943,7 +947,7 @@ textarea {
 				GPIO 3 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
-		<tr class="GPIO_IO3">
+		<tr class="GPIO_IO3 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 3 enable MQTT</span>
@@ -955,7 +959,7 @@ textarea {
 				GPIO 3 enable MQTT publishing/subscribing
 			</td>
 		</tr>
-		<tr class="GPIO_IO3">
+		<tr class="GPIO_IO3 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 3 enable HTTP</span>
@@ -967,7 +971,7 @@ textarea {
 				GPIO 3 enable HTTP write/read
 			</td>
 		</tr>
-		<tr class="GPIO_IO3">
+		<tr class="GPIO_IO3 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 3 name</span>
@@ -982,9 +986,9 @@ textarea {
 		<!------------- GPIO3 end ------------------>
 
 		<!------------- GPIO4 begin ------------------>
-		<tr class="GPIO_IO4">
+		<tr class="GPIO_IO4 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPI4", "IO4")' unchecked>
+				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO4")' unchecked>
 			</td>
 			<td>
 				<span id="GPIO_IO4_text">GPIO 4 state</span>
@@ -1008,7 +1012,7 @@ textarea {
 				<span style="color: red">Pin is used for build-in flash light.</span>
 			</td>
 		</tr>
-		<tr class="GPIO_IO4">
+		<tr class="GPIO_IO4 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 4 use interrupt</span>
@@ -1029,7 +1033,7 @@ textarea {
 				GPIO 4 enable interrupt trigger
 			</td>
 		</tr>
-		<tr class="GPIO_IO4">
+		<tr class="GPIO_IO4 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 4 PWM duty resolution</span>
@@ -1041,7 +1045,7 @@ textarea {
 				GPIO 4 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
-		<tr class="GPIO_IO4">
+		<tr class="GPIO_IO4 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 4 enable MQTT</span>
@@ -1053,7 +1057,7 @@ textarea {
 				GPIO 4 enable MQTT publishing/subscribing
 			</td>
 		</tr>
-		<tr class="GPIO_IO4">
+		<tr class="GPIO_IO4 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 4 enable HTTP</span>
@@ -1065,7 +1069,7 @@ textarea {
 				GPIO 4 enable HTTP write/read
 			</td>
 		</tr>
-		<tr class="GPIO_IO4">
+		<tr class="GPIO_IO4 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 4 name</span>
@@ -1080,7 +1084,7 @@ textarea {
 		<!------------- GPIO4 end ------------------>
 
 		<!------------- GPIO12 begin ------------------>
-		<tr class="GPIO_IO12">
+		<tr class="GPIO_IO12 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
 			</td>
@@ -1104,7 +1108,7 @@ textarea {
 				GPIO 12 is usable without restrictions
 			</td>
 		</tr>
-		<tr class="GPIO_IO12">
+		<tr class="GPIO_IO12 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 12 use interrupt</span>
@@ -1125,7 +1129,7 @@ textarea {
 				GPIO 12 enable interrupt trigger
 			</td>
 		</tr>
-		<tr class="GPIO_IO12">
+		<tr class="GPIO_IO12 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 12 PWM duty resolution</span>
@@ -1137,7 +1141,7 @@ textarea {
 				GPIO 12 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
-		<tr class="GPIO_IO12">
+		<tr class="GPIO_IO12 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 12 enable MQTT</span>
@@ -1149,7 +1153,7 @@ textarea {
 				GPIO 12 enable MQTT publishing/subscribing
 			</td>
 		</tr>
-		<tr class="GPIO_IO12">
+		<tr class="GPIO_IO12 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 12 enable HTTP</span>
@@ -1161,7 +1165,7 @@ textarea {
 				GPIO 12 enable HTTP write/read
 			</td>
 		</tr>
-		<tr class="GPIO_IO12">
+		<tr class="GPIO_IO12 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 12 name</span>
@@ -1176,7 +1180,7 @@ textarea {
 		<!------------- GPIO12 end ------------------>
 
 		<!------------- GPIO13 begin ------------------>
-		<tr class="GPIO_IO13">
+		<tr class="GPIO_IO13 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
 			</td>
@@ -1200,7 +1204,7 @@ textarea {
 				GPIO 13 is usable without restrictions
 			</td>
 		</tr>
-		<tr class="GPIO_IO13">
+		<tr class="GPIO_IO13 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 13 use interrupt</span>
@@ -1221,7 +1225,7 @@ textarea {
 				GPIO 13 enable interrupt trigger
 			</td>
 		</tr>
-		<tr class="GPIO_IO13">
+		<tr class="GPIO_IO13 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 13 PWM duty resolution</span>
@@ -1233,7 +1237,7 @@ textarea {
 				GPIO 13 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
-		<tr class="GPIO_IO13">
+		<tr class="GPIO_IO13 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 13 enable MQTT</span>
@@ -1245,7 +1249,7 @@ textarea {
 				GPIO 13 enable MQTT publishing/subscribing
 			</td>
 		</tr>
-		<tr class="GPIO_IO13">
+		<tr class="GPIO_IO13 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 13 enable HTTP</span>
@@ -1257,7 +1261,7 @@ textarea {
 				GPIO 13 enable HTTP write/read
 			</td>
 		</tr>
-		<tr class="GPIO_IO13">
+		<tr class="GPIO_IO13 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;"></td>
 			<td>
 				<span>GPIO 13 name</span>
@@ -1518,6 +1522,17 @@ function setEnabled(className, enabled) {
 	}
 }
 
+function setVisible(className, visible) {
+	let elements = document.getElementsByClassName(className);
+	for (i = 0; i < elements.length; i++) {
+		if (visible) {
+			elements[i].classList.remove("hidden");
+		} else {
+			elements[i].classList.add("hidden");
+		}
+	}
+}
+
 function EnDisableItem(_status, _param, _category, _cat, _name, _optional)
 {
 	_status = _param[_cat][_name]["found"] && _category[_cat]["enabled"];
@@ -1582,6 +1597,7 @@ function UpdateInput() {
 	document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
 	document.getElementById("Category_GPIO_enabled").checked = category["GPIO"]["enabled"];
+	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
 	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);

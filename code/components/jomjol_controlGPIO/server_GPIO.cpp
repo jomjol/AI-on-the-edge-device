@@ -14,13 +14,14 @@
 #include <vector>
 //#include <regex>
 
+#include "defines.h"
+
 #include "server_GPIO.h"
 
 #include "ClassLogFile.h"
 #include "configFile.h"
 #include "Helper.h"
 #include "interface_mqtt.h"
-#include "ClassFlowMQTT.h"
 
 static const char *TAG_SERVERGPIO = "server_GPIO";
 QueueHandle_t gpio_queue_handle = NULL;
@@ -480,4 +481,38 @@ gpio_int_type_t GpioHandler::resolveIntType(std::string input)
 
 
     return GPIO_INTR_DISABLE;
+}
+
+static GpioHandler *gpioHandler = NULL;
+
+void gpio_handler_create(httpd_handle_t server) 
+{
+    if (gpioHandler == NULL)
+        gpioHandler = new GpioHandler(CONFIG_FILE, server);
+}
+
+void gpio_handler_init() 
+{
+    if (gpioHandler != NULL) {
+        gpioHandler->init();
+    }
+}
+
+void gpio_handler_deinit() {
+    if (gpioHandler != NULL) {
+        gpioHandler->deinit();
+   }
+}
+
+void gpio_handler_destroy()
+{
+    if (gpioHandler != NULL) {
+        delete gpioHandler;
+        gpioHandler = NULL;
+    }
+}
+
+GpioHandler* gpio_handler_get()
+{
+    return gpioHandler;
 }

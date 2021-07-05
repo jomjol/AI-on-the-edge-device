@@ -84,6 +84,12 @@ private:
     gpio_int_type_t resolveIntType(std::string input);
 };
 
-void GpioHandlerStart();
+void gpio_handler_create(httpd_handle_t server);
+void gpio_handler_init();
+void gpio_handler_deinit();
+void gpio_handler_destroy();
+GpioHandler* gpio_handler_get();
+
+
 
 #endif //SERVER_GPIO_H

@@ -209,7 +209,7 @@ bool ClassFlowControll::doFlow(string time)
     int repeat = 0;
 
 #ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
+    LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
 #endif
 
     for (int i = 0; i < FlowControll.size(); ++i)
@@ -238,7 +238,7 @@ bool ClassFlowControll::doFlow(string time)
         }
         
 #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
+        LogFile.WriteHeapInfo("ClassFlowControll::doFlow");
 #endif
 
     }

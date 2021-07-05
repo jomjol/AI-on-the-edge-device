@@ -243,6 +243,7 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
     printf(zwcnn.c_str());printf("\n");
     if (!tflite->LoadModel(zwcnn)) {
         printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        delete tflite;
         return false;
     } 
 
