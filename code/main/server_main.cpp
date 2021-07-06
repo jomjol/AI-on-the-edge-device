@@ -234,7 +234,7 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
     printf("File to upload: %s\n", filetosend.c_str());    
 
-    esp_err_t res = send_file(req, filetosend);
+    esp_err_t res = send_file(req, filetosend); 
     if (res != ESP_OK)
         return res;
 
@@ -387,7 +387,7 @@ httpd_handle_t start_webserver(void)
     httpd_config_t config = { };
 
     config.task_priority      = tskIDLE_PRIORITY+5;
-    config.stack_size         = 32384;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
+    config.stack_size         = 32768;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
     config.core_id            = tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;

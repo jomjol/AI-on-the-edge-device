@@ -10,6 +10,7 @@
 #include <string.h>
 #include <esp_log.h>
 
+
 #include "ClassLogFile.h"
 //#include "ClassLogFile.h"
 
@@ -358,3 +359,30 @@ int removeFolder(const char* folderPath, const char* logTag) {
 
 	return deleted;
 }
+
+
+
+std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter = "")
+{
+	std::vector<string> Output;
+	std::string delimiter = " =,";
+    if (_delimiter.length() > 0){
+        delimiter = _delimiter;
+    }
+
+	input = trim(input, delimiter);
+	size_t pos = findDelimiterPos(input, delimiter);
+	std::string token;
+	while (pos != std::string::npos) {
+		token = input.substr(0, pos);
+		token = trim(token, delimiter);
+		Output.push_back(token);
+		input.erase(0, pos + 1);
+		input = trim(input, delimiter);
+		pos = findDelimiterPos(input, delimiter);
+	}
+	Output.push_back(input);
+
+	return Output;
+}
+

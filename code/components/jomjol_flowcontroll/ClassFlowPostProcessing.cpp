@@ -1,8 +1,6 @@
 #include "ClassFlowPostProcessing.h"
 
 #include "Helper.h"
-#include "ClassFlowAnalog.h"
-#include "ClassFlowDigit.h"
 #include "ClassFlowMakeImage.h"
 #include "ClassLogFile.h"
 
@@ -18,130 +16,205 @@
 #define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
 
 
-string ClassFlowPostProcessing::GetPreValue()
+string ClassFlowPostProcessing::GetPreValue(std::string _number)
 {
     std::string result;
-    bool isAnalog = false;
-    bool isDigit = false;
+    int index = -1;
 
-    int AnzahlAnalog = 0;
-    result = RundeOutput(PreValue, -DecimalShift);
+    if (_number == "")
+        _number = "default";
 
-    for (int i = 0; i < ListFlowControll->size(); ++i)
-    {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
-        {
-            isAnalog = true;
-            AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-        }
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
-        {
-            isDigit = true;
-        }
-    }
+    for (int i = 0; i < NUMBERS.size(); ++i)
+        if (NUMBERS[i]->name == _number)
+            index = i;
 
-    if (isDigit && isAnalog)
-        result = RundeOutput(PreValue, AnzahlAnalog - DecimalShift);
+//    result = RundeOutput(NUMBERS[index]->PreValue, -NUMBERS[index]->DecimalShift);
+    result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
+
+//    if (NUMBERS[index]->digit_roi && NUMBERS[index]->analog_roi)
+//        result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->AnzahlAnalog - NUMBERS[index]->DecimalShift);
 
     return result;
 }
 
+void ClassFlowPostProcessing::SetPreValue(float zw, string _numbers)
+{
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        if (NUMBERS[j]->name == _numbers)
+            NUMBERS[j]->PreValue = zw;
+    }
+    UpdatePreValueINI = true;
+    SavePreValue();
+}
+
+
 bool ClassFlowPostProcessing::LoadPreValue(void)
 {
+    std::vector<string> zerlegt;
     FILE* pFile;
     char zw[1024];
-    string zwtime, zwvalue;
+    string zwtime, zwvalue, name;
+    bool _done = false;
+
+    UpdatePreValueINI = false;       // Konvertierung ins neue Format
+
 
     pFile = fopen(FilePreValue.c_str(), "r");
     if (pFile == NULL)
         return false;
 
     fgets(zw, 1024, pFile);
-    printf("%s", zw);
+    printf("Read Zeile Prevalue.ini: %s", zw);
     zwtime = trim(std::string(zw));
-
-    fgets(zw, 1024, pFile);
-    fclose(pFile);
-    printf("%s", zw);
-    zwvalue = trim(std::string(zw));
-    PreValue = stof(zwvalue.c_str());
-
-    time_t tStart;
-    int yy, month, dd, hh, mm, ss;
-    struct tm whenStart;
-
-    sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
-    whenStart.tm_year = yy - 1900;
-    whenStart.tm_mon = month - 1;
-    whenStart.tm_mday = dd;
-    whenStart.tm_hour = hh;
-    whenStart.tm_min = mm;
-    whenStart.tm_sec = ss;
-    whenStart.tm_isdst = -1;
-
-    lastvalue = mktime(&whenStart);
-
-    time(&tStart);
-    localtime(&tStart);
-    double difference = difftime(tStart, lastvalue);
-    difference /= 60;
-    if (difference > PreValueAgeStartup)
+    if (zwtime.length() == 0)
         return false;
 
-    Value = PreValue;
-    ReturnValue = to_string(Value);
-    ReturnValueNoError = ReturnValue; 
-
-    bool isAnalog = false;
-    bool isDigit = false;
-    int AnzahlAnalog = 0;
-
-    for (int i = 0; i < ListFlowControll->size(); ++i)
+    zerlegt = HelperZerlegeZeile(zwtime, "\t");
+    if (zerlegt.size() > 1)     // neues Format
     {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
-            isAnalog = true;
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
-            isDigit = true;
-    }
+        while ((zerlegt.size() > 1) && !_done)
+        {
+            name = trim(zerlegt[0]);
+            zwtime = trim(zerlegt[1]);
+            zwvalue = trim(zerlegt[2]);
 
-    if (isDigit || isAnalog)
+            for (int j = 0; j < NUMBERS.size(); ++j)
+            {
+                if (NUMBERS[j]->name == name)
+                {
+                    NUMBERS[j]->PreValue = stof(zwvalue.c_str());
+                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+
+                    time_t tStart;
+                    int yy, month, dd, hh, mm, ss;
+                    struct tm whenStart;
+
+                    sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
+                    whenStart.tm_year = yy - 1900;
+                    whenStart.tm_mon = month - 1;
+                    whenStart.tm_mday = dd;
+                    whenStart.tm_hour = hh;
+                    whenStart.tm_min = mm;
+                    whenStart.tm_sec = ss;
+                    whenStart.tm_isdst = -1;
+
+                    NUMBERS[j]->lastvalue = mktime(&whenStart);
+
+                    time(&tStart);
+                    localtime(&tStart);
+                    double difference = difftime(tStart, NUMBERS[j]->lastvalue);
+                    difference /= 60;
+                    if (difference > PreValueAgeStartup)
+                    {
+                        NUMBERS[j]->PreValueOkay = false;
+                    }
+                    else
+                    {
+                        NUMBERS[j]->PreValueOkay = true;
+                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                        NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->Value);
+                        NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue; 
+
+                        if (NUMBERS[j]->digit_roi || NUMBERS[j]->analog_roi)
+                        {
+                            NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift);
+                            NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue;
+                        }
+                    }
+
+                }
+            }
+
+            if (!fgets(zw, 1024, pFile))
+                _done = true;
+            else
+            {
+                printf("Read Zeile Prevalue.ini: %s", zw);
+                zerlegt = HelperZerlegeZeile(trim(std::string(zw)), "\t");
+                if (zerlegt.size() > 1)
+                {
+                    name = trim(zerlegt[0]);
+                    zwtime = trim(zerlegt[1]);
+                    zwvalue = trim(zerlegt[2]);
+                }
+            }
+        }
+        fclose(pFile);
+    }   
+    else        // altes Format
     {
-        ReturnValue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
-        ReturnValueNoError = ReturnValue;
-    }
-   
+        fgets(zw, 1024, pFile);
+        fclose(pFile);
+        printf("%s", zw);
+        zwvalue = trim(std::string(zw));
+        NUMBERS[0]->PreValue = stof(zwvalue.c_str());
+
+        time_t tStart;
+        int yy, month, dd, hh, mm, ss;
+        struct tm whenStart;
+
+        sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
+        whenStart.tm_year = yy - 1900;
+        whenStart.tm_mon = month - 1;
+        whenStart.tm_mday = dd;
+        whenStart.tm_hour = hh;
+        whenStart.tm_min = mm;
+        whenStart.tm_sec = ss;
+        whenStart.tm_isdst = -1;
+
+        printf("TIME: %d, %d, %d, %d, %d, %d\n", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
+
+        NUMBERS[0]->lastvalue = mktime(&whenStart);
+
+        time(&tStart);
+        localtime(&tStart);
+        double difference = difftime(tStart, NUMBERS[0]->lastvalue);
+        difference /= 60;
+        if (difference > PreValueAgeStartup)
+            return false;
+
+        NUMBERS[0]->Value = NUMBERS[0]->PreValue;
+        NUMBERS[0]->ReturnValue = to_string(NUMBERS[0]->Value);
+        NUMBERS[0]->ReturnValueNoError = NUMBERS[0]->ReturnValue; 
+
+        if (NUMBERS[0]->digit_roi || NUMBERS[0]->analog_roi)
+        {
+            NUMBERS[0]->ReturnValue = RundeOutput(NUMBERS[0]->Value, NUMBERS[0]->AnzahlAnalog - NUMBERS[0]->DecimalShift);
+            NUMBERS[0]->ReturnValueNoError = NUMBERS[0]->ReturnValue;
+        }
+
+        UpdatePreValueINI = true;       // Konvertierung ins neue Format
+        SavePreValue();
+    } 
+
     return true;
 }
 
-void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
+void ClassFlowPostProcessing::SavePreValue()
 {
     FILE* pFile;
+    string _zw;
+
+    if (!UpdatePreValueINI)         // PreValues unverändert --> File muss nicht neu geschrieben werden
+        return;
 
     pFile = fopen(FilePreValue.c_str(), "w");
 
-    if (strlen(zwtime.c_str()) == 0)
+    for (int j = 0; j < NUMBERS.size(); ++j)
     {
-        time_t rawtime;
-        struct tm* timeinfo;
         char buffer[80];
-
-        time(&rawtime);
-        timeinfo = localtime(&rawtime);
-
+        struct tm* timeinfo = localtime(&NUMBERS[j]->lastvalue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
-        timeStamp = std::string(buffer);
-    }
-    else
-    {
-        timeStamp = zwtime;
+        NUMBERS[j]->timeStamp = std::string(buffer);
+
+        _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + to_string(NUMBERS[j]->PreValue) + "\n";
+        printf("Write PreValue Zeile: %s\n", _zw.c_str());
+
+        fputs(_zw.c_str(), pFile);
     }
 
-    PreValue = value;
-
-    fputs(timeStamp.c_str(), pFile);
-    fputs("\n", pFile);
-    fputs(to_string(value).c_str(), pFile);
-    fputs("\n", pFile);
+    UpdatePreValueINI = false;
 
     fclose(pFile);
 }
@@ -149,22 +222,19 @@ void ClassFlowPostProcessing::SavePreValue(float value, string zwtime)
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
 {
-    FlowRateAct = 0;
+//    FlowRateAct = 0;
     PreValueUse = false;
     PreValueAgeStartup = 30;
-    AllowNegativeRates = false;
-    MaxRateValue = 0.1;
     ErrorMessage = false;
     ListFlowControll = NULL;
-    PreValueOkay = false;
-    useMaxRateValue = false;
-    checkDigitIncreaseConsistency = false;
-    DecimalShift = 0;    
-    ErrorMessageText = "";
-    timeStamp = "";
+//    PreValueOkay = false;
+//    DecimalShift = 0;    
+//    ErrorMessageText = "";
+//    timeStamp = "";
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
     flowMakeImage = NULL;
+    UpdatePreValueINI = false;
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
@@ -175,10 +245,59 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     }
 }
 
+void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+            NUMBERS[j]->DecimalShift = stoi(_value);
+
+        if (NUMBERS[j]->name == _digit)
+            NUMBERS[j]->DecimalShift = stoi(_value);
+
+        NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
+    }
+}
+
+void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        {
+            NUMBERS[j]->useMaxRateValue = true;
+            NUMBERS[j]->MaxRateValue = stof(_value);
+        }
+
+        if (NUMBERS[j]->name == _digit)
+        {
+            NUMBERS[j]->useMaxRateValue = true;
+            NUMBERS[j]->MaxRateValue = stof(_value);
+        }
+    }
+}
+
 
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> zerlegt;
+    int _n;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -190,51 +309,146 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
     if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph passt nich zu MakeImage
         return false;
 
+    InitNUMBERS();
+
+
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         zerlegt = this->ZerlegeZeile(aktparamgraph);
-        if ((toUpper(zerlegt[0]) == "DECIMALSHIFT") && (zerlegt.size() > 1))
+        std::string _param = GetParameterName(zerlegt[0]);
+
+        if ((toUpper(_param) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
-            DecimalShift = stoi(zerlegt[1]);
+            handleDecimalSeparator(zerlegt[0], zerlegt[1]);
+        }
+        if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
+        {
+            handleMaxRateValue(zerlegt[0], zerlegt[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "PREVALUEUSE") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "PREVALUEUSE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
             {
                 PreValueUse = true;
             }
         }
-        if ((toUpper(zerlegt[0]) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
-                checkDigitIncreaseConsistency = true;
+                for (_n = 0; _n < NUMBERS.size(); ++_n)
+                    NUMBERS[_n]->checkDigitIncreaseConsistency = true;
         }        
-        if ((toUpper(zerlegt[0]) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
-                AllowNegativeRates = true;
+                for (_n = 0; _n < NUMBERS.size(); ++_n)
+                    NUMBERS[_n]->AllowNegativeRates = true;
         }
-        if ((toUpper(zerlegt[0]) == "ERRORMESSAGE") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ERRORMESSAGE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 ErrorMessage = true;
         }
-        if ((toUpper(zerlegt[0]) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
         {
             PreValueAgeStartup = std::stoi(zerlegt[1]);
-        }
-        if ((toUpper(zerlegt[0]) == "MAXRATEVALUE") && (zerlegt.size() > 1))
-        {
-            useMaxRateValue = true;
-            MaxRateValue = std::stof(zerlegt[1]);
         }
     }
 
     if (PreValueUse) {
-        PreValueOkay = LoadPreValue();
+        LoadPreValue();
     }
+
     return true;
+}
+
+void ClassFlowPostProcessing::InitNUMBERS()
+{
+//    ClassFlowDigit* _cdigit = NULL;
+//    ClassFlowAnalog* _canalog = NULL;
+    int anzDIGIT = 0;
+    int anzANALOG = 0;
+    std::vector<std::string> name_numbers;
+
+    flowAnalog = NULL;
+    flowDigit = NULL;
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
+        {
+            flowDigit = (ClassFlowDigit*) (*ListFlowControll)[i];
+            anzDIGIT = flowDigit->getAnzahlDIGIT();
+        }
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
+        {
+            flowAnalog = (ClassFlowAnalog*)(*ListFlowControll)[i];
+            anzANALOG = flowAnalog->getAnzahlANALOG();
+        }
+    }
+
+    if (flowDigit)
+        flowDigit->UpdateNameNumbers(&name_numbers);
+    if (flowAnalog)
+        flowAnalog->UpdateNameNumbers(&name_numbers);
+
+    printf("Anzahl NUMBERS: %d - DIGITS: %d, ANALOG: %d\n", name_numbers.size(), anzDIGIT, anzANALOG);
+
+    for (int _num = 0; _num < name_numbers.size(); ++_num)
+    {
+        NumberPost *_number = new NumberPost;
+
+        _number->name = name_numbers[_num];
+        
+        _number->digit_roi = NULL;
+        if (flowDigit)
+            _number->digit_roi = flowDigit->FindDIGIT(name_numbers[_num]);
+        
+        if (_number->digit_roi)
+            _number->AnzahlDigital = _number->digit_roi->ROI.size();
+        else
+            _number->AnzahlDigital = 0;
+
+        _number->analog_roi = NULL;
+        if (flowAnalog)
+            _number->analog_roi = flowAnalog->FindANALOG(name_numbers[_num]);
+
+
+        if (_number->analog_roi)
+            _number->AnzahlAnalog = _number->analog_roi->ROI.size();
+        else
+            _number->AnzahlAnalog = 0;
+
+        _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
+        _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
+        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
+        _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
+        _number->ReturnPreValue = "";
+        _number->PreValueOkay = false;
+        _number->AllowNegativeRates = false;
+        _number->MaxRateValue = 0.1;
+        _number->useMaxRateValue = false;
+        _number->checkDigitIncreaseConsistency = false;
+        _number->PreValueOkay = false;
+        _number->useMaxRateValue = false;
+        _number->DecimalShift = 0;
+
+        _number->FlowRateAct = 0;          // m3 / min
+        _number->PreValue = 0;             // letzter Wert, der gut ausgelesen wurde
+        _number->Value = 0;                // letzer ausgelesener Wert, inkl. Korrekturen
+        _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
+        _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
+        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
+        _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
+
+        _number->Nachkomma = _number->AnzahlAnalog;
+
+        NUMBERS.push_back(_number);
+    }
+
+    for (int i = 0; i < NUMBERS.size(); ++i)
+        printf("Number %s, Anz DIG: %d, Anz ANA %d\n", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigital, NUMBERS[i]->AnzahlAnalog);
 }
 
 string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
@@ -285,173 +499,127 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     string digit = "";
     string analog = "";
     string zwvalue;
-    bool isdigit = false;
-    bool isanalog = false;
-    int AnzahlAnalog = 0;
     string zw;
     time_t imagetime = 0;
     string rohwert;
 
-    ErrorMessageText = "";
+//    ErrorMessageText = "";
 
-
-    for (int i = 0; i < ListFlowControll->size(); ++i)
-    {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowMakeImage") == 0)
-        {
-            imagetime = ((ClassFlowMakeImage*)(*ListFlowControll)[i])->getTimeImageTaken();
-        }
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
-        {
-            isdigit = true;
-            digit = (*ListFlowControll)[i]->getReadout();
-        }
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
-        {
-            isanalog = true;
-            analog = (*ListFlowControll)[i]->getReadout();
-            AnzahlAnalog = ((ClassFlowAnalog*)(*ListFlowControll)[i])->AnzahlROIs();
-        }
-    }
-
+    imagetime = flowMakeImage->getTimeImageTaken();
     if (imagetime == 0)
         time(&imagetime);
 
     struct tm* timeinfo;
     timeinfo = localtime(&imagetime);
-
     char strftime_buf[64];
     strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%dT%H:%M:%S", timeinfo);
     zwtime = std::string(strftime_buf);
 
+    printf("Anzahl NUMBERS: %d\n", NUMBERS.size());
 
-    //    // TESTING ONLY////////////////////
-    //    isdigit = true; digit = "12N";
-    //    isanalog = true; analog = "456";
-
-    ReturnRawValue = "";
-
-    if (isdigit)
-        ReturnRawValue = digit;
-    if (isdigit && isanalog)
-        ReturnRawValue = ReturnRawValue + ".";
-    if (isanalog)
-        ReturnRawValue = ReturnRawValue + analog; 
-
-
-    if (!isdigit)
+    for (int j = 0; j < NUMBERS.size(); ++j)
     {
-        AnzahlAnalog = 0;
-    }
+        NUMBERS[j]->ReturnRawValue = "";
+        NUMBERS[j]->ErrorMessageText = "";
 
-    ReturnRawValue = ShiftDecimal(ReturnRawValue, DecimalShift);   
+        if (NUMBERS[j]->digit_roi)
+            NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j);
+        if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
+            NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + ".";
+        if (NUMBERS[j]->analog_roi)
+            NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + flowAnalog->getReadout(j); 
 
-    rohwert = ReturnRawValue;
+        NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);   
 
-    if (!PreValueUse || !PreValueOkay)
-    {
-        ReturnValue = ReturnRawValue;
-        ReturnValueNoError = ReturnRawValue;
+        rohwert = NUMBERS[j]->ReturnRawValue;
 
-        if ((findDelimiterPos(ReturnValue, "N") == std::string::npos) && (ReturnValue.length() > 0))
+        if (!PreValueUse || !NUMBERS[j]->PreValueOkay)
         {
-            while ((ReturnValue.length() > 1) && (ReturnValue[0] == '0'))
-            {
-                ReturnValue.erase(0, 1);
-            }
-            Value = std::stof(ReturnValue);
-            ReturnValueNoError = ReturnValue;
+            NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnRawValue;
+            NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnRawValue;
 
-            PreValueOkay = true;
-            PreValue = Value;
-            if (flowMakeImage) 
+            if ((findDelimiterPos(NUMBERS[j]->ReturnValue, "N") == std::string::npos) && (NUMBERS[j]->ReturnValue.length() > 0))
             {
-                lastvalue = flowMakeImage->getTimeImageTaken();
-                zwtime = ConvertTimeToString(lastvalue, PREVALUE_TIME_FORMAT_OUTPUT);
-            }
-            else
-            {
-                time(&lastvalue);
-                localtime(&lastvalue);
-            }
+                while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
+                {
+                    NUMBERS[j]->ReturnValue.erase(0, 1);
+                }
+                NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
+                NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue;
 
-            SavePreValue(Value, zwtime);
+                NUMBERS[j]->PreValueOkay = true;
+                NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+                NUMBERS[j]->lastvalue = flowMakeImage->getTimeImageTaken();
+                zwtime = ConvertTimeToString(NUMBERS[j]->lastvalue, PREVALUE_TIME_FORMAT_OUTPUT);
+
+                UpdatePreValueINI = true;
+                SavePreValue();
+            }
         }
-        return true;
+        else
+        {
+            zw = ErsetzteN(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->PreValue); 
+
+            NUMBERS[j]->Value = std::stof(zw);
+            if (NUMBERS[j]->checkDigitIncreaseConsistency)
+            {
+                NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
+            }
+
+            zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift);
+
+            if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue))
+            {
+                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + std::to_string(NUMBERS[j]->Value) + " "; 
+                NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift);
+            }
+
+            if (NUMBERS[j]->useMaxRateValue && (abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue))
+            {
+                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " ";
+                NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
+            }
+
+            NUMBERS[j]->ReturnValueNoError = zwvalue;
+            NUMBERS[j]->ReturnValue = zwvalue;
+            if (NUMBERS[j]->ErrorMessage && (NUMBERS[j]->ErrorMessageText.length() > 0))
+                NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnValue + "\t" + NUMBERS[j]->ErrorMessageText;
+
+
+            double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
+            difference /= 60;                                          // in Minuten
+            NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+            NUMBERS[j]->lastvalue = imagetime;
+
+            if (NUMBERS[j]->ErrorMessageText.length() == 0)
+            {
+                NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+                NUMBERS[j]->ErrorMessageText = "no error";
+                UpdatePreValueINI = true;
+            }
+        }
     }
 
-
-    zw = ErsetzteN(ReturnRawValue); 
-
-    Value = std::stof(zw);
-    if (checkDigitIncreaseConsistency)
-    {
-        Value = checkDigitConsistency(Value, DecimalShift, isanalog);
-    }
-
-    zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
-
-    if ((!AllowNegativeRates) && (Value < PreValue))
-    {
-        ErrorMessageText = ErrorMessageText + "Negative Rate - Returned old value - read value: " + zwvalue + " - raw value: " + ReturnRawValue + " - checked value: " + std::to_string(Value) + " "; 
-        Value = PreValue;
-        zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
-    }
-
-    if (useMaxRateValue && (abs(Value - PreValue) > MaxRateValue))
-    {
-        ErrorMessageText = ErrorMessageText + "Rate too high - Returned old value - read value: " + zwvalue + " - checked value: " + RundeOutput(Value, AnzahlAnalog - DecimalShift) + " ";
-        Value = PreValue;
-        zwvalue = RundeOutput(Value, AnzahlAnalog - DecimalShift);
-    }
-
-
-    ReturnValueNoError = zwvalue;
-    ReturnValue = zwvalue;
-    if (ErrorMessage && (ErrorMessageText.length() > 0))
-        ReturnValue = ReturnValue + "\t" + ErrorMessageText;
-
-    time_t currenttime;
-    if (flowMakeImage) 
-    {
-        currenttime = flowMakeImage->getTimeImageTaken();
-        zwtime = ConvertTimeToString(currenttime, PREVALUE_TIME_FORMAT_OUTPUT);
-    }
-    else
-    {
-        time(&currenttime);
-        localtime(&currenttime);
-    }
-
-    double difference = difftime(currenttime, lastvalue);      // in Sekunden
-    difference /= 60;                                          // in Minuten
-    FlowRateAct = (Value - PreValue) / difference;
-    lastvalue = currenttime;
-//    std::string _zw = "CalcRate: " + std::to_string(FlowRateAct) + " TimeDifference[min]: " +  std::to_string(difference);
-//    _zw = _zw  + " Value: " +  std::to_string(Value) + " PreValue: " +  std::to_string(PreValue);
-//    LogFile.WriteToFile(_zw);
-
-    if (ErrorMessageText.length() == 0)
-    {
-        PreValue = Value;
-        ErrorMessageText = "no error";
-        SavePreValue(Value, zwtime);
-    }
+    SavePreValue();
     return true;
 }
 
-string ClassFlowPostProcessing::getReadout()
+string ClassFlowPostProcessing::getReadout(int _number)
 {
-    return ReturnValue;
+    return NUMBERS[_number]->ReturnValue;
 }
 
-string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror)
+string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, int _number)
 {
     if (_rawValue)
-        return ReturnRawValue;
+        return NUMBERS[_number]->ReturnRawValue;
     if (_noerror)
-        return ReturnValueNoError;
-    return ReturnValue;
+        return NUMBERS[_number]->ReturnValueNoError;
+    return NUMBERS[_number]->ReturnValue;
 }
 
 string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
@@ -478,7 +646,7 @@ string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
 }
 
 
-string ClassFlowPostProcessing::ErsetzteN(string input)
+string ClassFlowPostProcessing::ErsetzteN(string input, float _prevalue)
 {
     int posN, posPunkt;
     int pot, ziffer;
@@ -499,7 +667,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input)
             pot = posPunkt - posN;
         }
 
-        zw = PreValue / pow(10, pot);
+        zw =_prevalue / pow(10, pot);
         ziffer = ((int) zw) % 10;
         input[posN] = ziffer + 48;
 
@@ -509,7 +677,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input)
     return input;
 }
 
-float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamshift, bool _isanalog){
+float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamshift, bool _isanalog, float _preValue){
     int aktdigit, olddigit;
     int aktdigit_before, olddigit_before;
     int pot, pot_max;
@@ -527,12 +695,12 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     {
         zw = input / pow(10, pot-1);
         aktdigit_before = ((int) zw) % 10;
-        zw = PreValue / pow(10, pot-1);
+        zw = _preValue / pow(10, pot-1);
         olddigit_before = ((int) zw) % 10;
 
         zw = input / pow(10, pot);
         aktdigit = ((int) zw) % 10;
-        zw = PreValue / pow(10, pot);
+        zw = _preValue / pow(10, pot);
         olddigit = ((int) zw) % 10;
 
         no_nulldurchgang = (olddigit_before <= aktdigit_before);
@@ -558,18 +726,18 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     return input;
 }
 
-string ClassFlowPostProcessing::getReadoutRate()
+string ClassFlowPostProcessing::getReadoutRate(int _number)
 {
-    return std::to_string(FlowRateAct);
+    return std::to_string(NUMBERS[_number]->FlowRateAct);
 }
 
-string ClassFlowPostProcessing::getReadoutTimeStamp()
+string ClassFlowPostProcessing::getReadoutTimeStamp(int _number)
 {
-   return timeStamp; 
+   return NUMBERS[_number]->timeStamp; 
 }
 
 
-string ClassFlowPostProcessing::getReadoutError() 
+string ClassFlowPostProcessing::getReadoutError(int _number) 
 {
-    return ErrorMessageText;
+    return NUMBERS[_number]->ErrorMessageText;
 }

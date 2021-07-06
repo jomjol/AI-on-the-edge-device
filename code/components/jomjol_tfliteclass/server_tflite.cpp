@@ -18,7 +18,7 @@
 
 #include "ClassLogFile.h"
 
-//#define DEBUG_DETAIL_ON       
+// #define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
@@ -196,6 +196,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
     bool _rawValue = false;
     bool _noerror = false;
+    bool _all = false;
+    std::string _type = "value";
     string zw;
 
     printf("handler_wasserzaehler uri:\n"); printf(req->uri); printf("\n");
@@ -206,6 +208,22 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
 //        printf("Query: "); printf(_query); printf("\n");
+        if (httpd_query_key_value(_query, "all", _size, 10) == ESP_OK)
+        {
+#ifdef DEBUG_DETAIL_ON       
+            printf("all is found"); printf(_size); printf("\n"); 
+#endif
+            _all = true;
+        }
+
+        if (httpd_query_key_value(_query, "type", _size, 10) == ESP_OK)
+        {
+#ifdef DEBUG_DETAIL_ON       
+            printf("all is found"); printf(_size); printf("\n"); 
+#endif
+            _type = std::string(_size);
+        }
+
         if (httpd_query_key_value(_query, "rawvalue", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
@@ -221,6 +239,29 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             _noerror = true;
         }        
     }  
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    if (_all)
+    {
+        httpd_resp_set_type(req, "text/plain");
+        printf("TYPE: %s\n", _type.c_str());
+        int _intype = READOUT_TYPE_VALUE;
+        if (_type == "prevalue")
+            _intype = READOUT_TYPE_PREVALUE;
+        if (_type == "raw")
+            _intype = READOUT_TYPE_RAWVALUE;
+        if (_type == "error")
+            _intype = READOUT_TYPE_ERROR;
+
+
+        zw = tfliteflow.getReadoutAll(_intype);
+        printf("ZW: %s\n", zw.c_str());
+        if (zw.length() > 0)
+            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+        httpd_resp_sendstr_chunk(req, NULL);   
+        return ESP_OK;
+    }
 
     zw = tfliteflow.getReadout(_rawValue, _noerror);
     if (zw.length() > 0)
@@ -498,6 +539,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
     char _query[100];
     char _size[10] = "";
+    char _numbers[50] = "default";
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
@@ -511,14 +553,23 @@ esp_err_t handler_prevalue(httpd_req_t *req)
             printf("Value: "); printf(_size); printf("\n"); 
 #endif
         }
+
+        httpd_query_key_value(_query, "numbers", _numbers, 50);
     }      
 
     if (strlen(_size) == 0)
-        zw = tfliteflow.GetPrevalue();
+    {
+        zw = tfliteflow.GetPrevalue(std::string(_numbers));
+    }
     else
-        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size);
+    {
+        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size, _numbers);
+    }
     
     resp_str = zw.c_str();
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
 
     httpd_resp_send(req, resp_str, strlen(resp_str));   
     /* Respond with an empty chunk to signal HTTP response completion */

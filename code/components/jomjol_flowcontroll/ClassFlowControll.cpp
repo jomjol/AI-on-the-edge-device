@@ -120,6 +120,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
+        
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 
@@ -262,6 +263,38 @@ void ClassFlowControll::UpdateAktStatus(std::string _flow)
 }
 
 
+string ClassFlowControll::getReadoutAll(int _type)
+{
+    std::vector<NumberPost*> numbers = flowpostprocessing->GetNumbers();
+    std::string out = "";
+
+    for (int i = 0; i < numbers.size(); ++i)
+    {
+        out = out + numbers[i]->name + "\t";
+        switch (_type) {
+            case READOUT_TYPE_VALUE:
+                out = out + numbers[i]->ReturnValue;
+                break;
+            case READOUT_TYPE_PREVALUE:
+                out = out + numbers[i]->ReturnPreValue;
+                break;
+            case READOUT_TYPE_RAWVALUE:
+                out = out + numbers[i]->ReturnRawValue;
+                break;
+            case READOUT_TYPE_ERROR:
+                out = out + numbers[i]->ErrorMessageText;
+                break;
+        }
+        if (i < numbers.size()-1)
+            out = out + "\r\n";
+    }
+
+//    printf("OUT: %s", out.c_str());
+
+    return out;
+}	
+
+
 string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false)
 {
     if (flowpostprocessing)
@@ -285,17 +318,17 @@ string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = fal
     return result;
 }
 
-string ClassFlowControll::GetPrevalue()	
+string ClassFlowControll::GetPrevalue(std::string _number)	
 {
     if (flowpostprocessing)
     {
-        return flowpostprocessing->GetPreValue();   
+        return flowpostprocessing->GetPreValue(_number);   
     }
 
     return std::string();    
 }
 
-std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
+std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers)
 {
     float zw;
     char* p;
@@ -317,7 +350,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
 
     if (flowpostprocessing)
     {
-        flowpostprocessing->SavePreValue(zw);
+        flowpostprocessing->SetPreValue(zw, _numbers);
         return _newvalue;    
     }
 

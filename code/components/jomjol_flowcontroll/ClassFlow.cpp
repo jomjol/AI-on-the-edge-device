@@ -94,6 +94,23 @@ string ClassFlow::getReadout()
 	return string();
 }
 
+std::string ClassFlow::GetParameterName(std::string _input)
+{
+    string _param;
+    int _pospunkt = _input.find_first_of(".");
+    if (_pospunkt > -1)
+    {
+        _param = _input.substr(_pospunkt+1, _input.length() - _pospunkt - 1);
+    }
+    else
+    {
+        _param = _input;
+    }
+//    printf("Parameter: %s, Pospunkt: %d\n", _param.c_str(), _pospunkt);
+	return _param;
+}
+
+
 bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 {
 	char zw[1024];
@@ -102,13 +119,13 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 		*rt = "";
 		return false;
 	}
-	fgets(zw, 1024, pfile);
-	printf("%s", zw);
-	if ((strlen(zw) == 0) && feof(pfile))
+	if (!fgets(zw, 1024, pfile))
 	{
 		*rt = "";
+		printf("END OF FILE\n");
 		return false;
 	}
+	printf("%s", zw);
 	*rt = zw;
 	*rt = trim(*rt);
 	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph

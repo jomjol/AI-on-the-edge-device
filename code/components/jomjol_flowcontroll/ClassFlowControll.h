@@ -11,6 +11,12 @@
 #include "ClassFlowMQTT.h"
 
 
+#define READOUT_TYPE_VALUE 0
+#define READOUT_TYPE_PREVALUE 1
+#define READOUT_TYPE_RAWVALUE 2
+#define READOUT_TYPE_ERROR 3
+
+
 class ClassFlowControll :
     public ClassFlow
 {
@@ -38,8 +44,9 @@ public:
 	void doFlowMakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};
 	string getReadout(bool _rawvalue, bool _noerror);
-	string UpdatePrevalue(std::string _newvalue);
-	string GetPrevalue();	
+	string getReadoutAll(int _type);	
+	string UpdatePrevalue(std::string _newvalue, std::string _numbers);
+	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 
 	esp_err_t GetJPGStream(std::string _fn, httpd_req_t *req);

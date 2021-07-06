@@ -64,16 +64,16 @@ ClassFlowDigit::ClassFlowDigit(std::vector<ClassFlow*>* lfc, ClassFlow *_prev) :
     }    
 }
 
-string ClassFlowDigit::getReadout()
+string ClassFlowDigit::getReadout(int _digit = 0)
 {
     string rst = "";
 
-    for (int i = 0; i < ROI.size(); ++i)
+    for (int i = 0; i < DIGIT[_digit]->ROI.size(); ++i)
     {
-        if (ROI[i]->resultklasse == 10)
+        if (DIGIT[_digit]->ROI[i]->resultklasse == 10)
             rst = rst + "N";
         else
-            rst = rst + std::to_string(ROI[i]->resultklasse);
+            rst = rst + std::to_string(DIGIT[_digit]->ROI[i]->resultklasse);
     }
 
     return rst;
@@ -91,18 +91,11 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     printf("aktparamgraph: %s\n", aktparamgraph.c_str());
 
-
-/*
-    if ((aktparamgraph.compare("[Digits]") != 0) && (aktparamgraph.compare(";[Digits]") != 0))       // Paragraph passt nich zu MakeImage
-        return false;
-*/
-
     if ((aktparamgraph.compare(0, 7, "[Digits") != 0) && (aktparamgraph.compare(0, 8, ";[Digits") != 0))       // Paragraph passt nich zu MakeImage
         return false;
 
     int _pospkt = aktparamgraph.find_first_of(".");
     int _posklammerzu = aktparamgraph.find_first_of("]");
-//    printf("Pos: %d, %d\n", _pospkt, _posklammerzu);
     if (_pospkt > -1)
         NameDigit = aktparamgraph.substr(_pospkt+1, _posklammerzu - _pospkt-1);
     else
@@ -137,8 +130,8 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if (zerlegt.size() >= 5)
         {
-            roi* neuroi = new roi;
-            neuroi->name = zerlegt[0];
+            digit* _digit = GetDIGIT(zerlegt[0], true);
+            roi* neuroi = _digit->ROI[_digit->ROI.size()-1];
             neuroi->posx = std::stoi(zerlegt[1]);
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
@@ -146,7 +139,6 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->resultklasse = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;            
-            ROI.push_back(neuroi);
         }
 
         if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
@@ -157,14 +149,73 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     }
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
-        ROI[i]->image_org = new CImageBasis(ROI[i]->deltax, ROI[i]->deltay, 3);
-    }
+   for (int _dig = 0; _dig < DIGIT.size(); ++_dig)
+        for (int i = 0; i < DIGIT[_dig]->ROI.size(); ++i)
+        {
+            DIGIT[_dig]->ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+            DIGIT[_dig]->ROI[i]->image_org = new CImageBasis(DIGIT[_dig]->ROI[i]->deltax, DIGIT[_dig]->ROI[i]->deltay, 3);
+        }
 
     return true;
 }
+
+digit* ClassFlowDigit::FindDIGIT(string _name_number)
+{
+    digit *_ret = NULL;
+
+    for (int i = 0; i < DIGIT.size(); ++i)
+    {
+        if (DIGIT[i]->name == _name_number)
+            return DIGIT[i];
+    }
+
+    return NULL;
+}
+
+
+digit* ClassFlowDigit::GetDIGIT(string _name, bool _create = true)
+{
+    string _digit, _roi;
+    int _pospunkt = _name.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _name.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+    {
+        _digit = _name.substr(0, _pospunkt);
+        _roi = _name.substr(_pospunkt+1, _name.length() - _pospunkt - 1);
+    }
+    else
+    {
+        _digit = "default";
+        _roi = _name;
+    }
+
+    digit *_ret = NULL;
+
+    for (int i = 0; i < DIGIT.size(); ++i)
+    {
+        if (DIGIT[i]->name == _digit)
+            _ret = DIGIT[i];
+    }
+
+    if (!_create)         // nicht gefunden und soll auch nicht erzeugt werden, ggf. geht eine NULL zurück
+        return _ret;
+
+    if (_ret == NULL)
+    {
+        _ret = new digit;
+        _ret->name = _digit;
+        DIGIT.push_back(_ret);
+    }
+
+    roi* neuroi = new roi;
+    neuroi->name = _roi;
+    _ret->ROI.push_back(neuroi);
+
+    printf("GetDIGIT - digit %s - roi %s\n", _digit.c_str(), _roi.c_str());
+
+    return _ret;
+}
+
 
 
 string ClassFlowDigit::getHTMLSingleStep(string host)
@@ -216,17 +267,32 @@ bool ClassFlowDigit::doAlignAndCut(string time)
 
     CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();
 
-    for (int i = 0; i < ROI.size(); ++i)
+    for (int _dig = 0; _dig < DIGIT.size(); ++_dig)
     {
-        printf("DigitalDigit %d - Align&Cut\n", i);
-        
-        caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, ROI[i]->image_org);
-        if (SaveAllFiles) ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
+        printf("DIGIT[_dig]->ROI.size() %d\n", DIGIT[_dig]->ROI.size());
+        for (int i = 0; i < DIGIT[_dig]->ROI.size(); ++i)
+        {
+            printf("DigitalDigit %d - Align&Cut\n", i);
+            
+            caic->CutAndSave(DIGIT[_dig]->ROI[i]->posx, DIGIT[_dig]->ROI[i]->posy, DIGIT[_dig]->ROI[i]->deltax, DIGIT[_dig]->ROI[i]->deltay, DIGIT[_dig]->ROI[i]->image_org);
+            if (SaveAllFiles)
+            {
+                if (DIGIT[_dig]->name == "default")
+                    DIGIT[_dig]->ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + DIGIT[_dig]->ROI[i]->name + ".jpg"));
+                else
+                    DIGIT[_dig]->ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + DIGIT[_dig]->name + "_" + DIGIT[_dig]->ROI[i]->name + ".jpg"));
+            } 
 
-        ROI[i]->image_org->Resize(modelxsize, modelysize, ROI[i]->image);
-        if (SaveAllFiles) ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
+            DIGIT[_dig]->ROI[i]->image_org->Resize(modelxsize, modelysize, DIGIT[_dig]->ROI[i]->image);
+            if (SaveAllFiles)
+            {
+                if (DIGIT[_dig]->name == "default")
+                    DIGIT[_dig]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + DIGIT[_dig]->ROI[i]->name + ".bmp"));
+                else
+                    DIGIT[_dig]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + DIGIT[_dig]->name + "_" + DIGIT[_dig]->ROI[i]->name + ".bmp"));
+            } 
+        }
     }
-
     return true;
 } 
 
@@ -245,22 +311,23 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
     tflite->MakeAllocate();
 #endif
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        printf("DigitalDigit %d - TfLite\n", i);
-
-        ROI[i]->resultklasse = 0;
-#ifndef OHNETFLITE
-        ROI[i]->resultklasse = tflite->GetClassFromImageBasis(ROI[i]->image);
-
-#endif
-        printf("Result Digit%i: %d\n", i, ROI[i]->resultklasse);
-
-        if (isLogImage)
+    for (int _dig = 0; _dig < DIGIT.size(); ++_dig)
+        for (int i = 0; i < DIGIT[_dig]->ROI.size(); ++i)
         {
-            LogImage(logPath, ROI[i]->name, NULL, &ROI[i]->resultklasse, time, ROI[i]->image_org);
+            printf("DigitalDigit %d - TfLite\n", i);
+
+            DIGIT[_dig]->ROI[i]->resultklasse = 0;
+    #ifndef OHNETFLITE
+            DIGIT[_dig]->ROI[i]->resultklasse = tflite->GetClassFromImageBasis(DIGIT[_dig]->ROI[i]->image);
+
+    #endif
+            printf("Result Digit%i: %d\n", i, DIGIT[_dig]->ROI[i]->resultklasse);
+
+            if (isLogImage)
+            {
+                LogImage(logPath, DIGIT[_dig]->ROI[i]->name, NULL, &DIGIT[_dig]->ROI[i]->resultklasse, time, DIGIT[_dig]->ROI[i]->image_org);
+            }
         }
-    }
 #ifndef OHNETFLITE
         delete tflite;
 #endif
@@ -269,25 +336,82 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
 
 void ClassFlowDigit::DrawROI(CImageBasis *_zw)
 {
-    for (int i = 0; i < ROI.size(); ++i)
-        _zw->drawRect(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, 0, 0, 255, 2);
+    for (int _dig = 0; _dig < DIGIT.size(); ++_dig)
+        for (int i = 0; i < DIGIT[_dig]->ROI.size(); ++i)
+            _zw->drawRect(DIGIT[_dig]->ROI[i]->posx, DIGIT[_dig]->ROI[i]->posy, DIGIT[_dig]->ROI[i]->deltax, DIGIT[_dig]->ROI[i]->deltay, 0, 0, (255 - _dig*100), 2);
 }     
 
 std::vector<HTMLInfo*> ClassFlowDigit::GetHTMLInfo()
 {
     std::vector<HTMLInfo*> result;
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        HTMLInfo *zw = new HTMLInfo;
-        zw->filename = ROI[i]->name + ".bmp";
-        zw->filename_org = ROI[i]->name + ".jpg";
-        zw->val = ROI[i]->resultklasse;
-        zw->image = ROI[i]->image;
-        zw->image_org = ROI[i]->image_org;
-        result.push_back(zw);
-    }
+    for (int _dig = 0; _dig < DIGIT.size(); ++_dig)
+        for (int i = 0; i < DIGIT[_dig]->ROI.size(); ++i)
+        {
+                if (DIGIT[_dig]->name == "default")
+                    DIGIT[_dig]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + DIGIT[_dig]->ROI[i]->name + ".bmp"));
+                else
+                    DIGIT[_dig]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + DIGIT[_dig]->name + "_" + DIGIT[_dig]->ROI[i]->name + ".bmp"));
+
+
+            HTMLInfo *zw = new HTMLInfo;
+            if (DIGIT[_dig]->name == "default")
+            {
+                zw->filename = DIGIT[_dig]->ROI[i]->name + ".bmp";
+                zw->filename_org = DIGIT[_dig]->ROI[i]->name + ".jpg";
+            }
+            else
+            {
+                zw->filename = DIGIT[_dig]->name + "_" + DIGIT[_dig]->ROI[i]->name + ".bmp";
+                zw->filename_org = DIGIT[_dig]->name + "_" + DIGIT[_dig]->ROI[i]->name + ".jpg";
+            }
+
+            zw->val = DIGIT[_dig]->ROI[i]->resultklasse;
+            zw->image = DIGIT[_dig]->ROI[i]->image;
+            zw->image_org = DIGIT[_dig]->ROI[i]->image_org;
+            result.push_back(zw);
+        }
 
     return result;
 }
+
+int ClassFlowDigit::getAnzahlDIGIT()
+{
+    return DIGIT.size();
+}
+
+string ClassFlowDigit::getNameDIGIT(int _digit)
+{
+    if (_digit < DIGIT.size())
+        return DIGIT[_digit]->name;
+
+    return "DIGIT DOES NOT EXIST";
+}
+
+digit* ClassFlowDigit::GetDIGIT(int _digit)
+{
+    if (_digit < DIGIT.size())
+        return DIGIT[_digit];
+
+    return NULL;
+}
+
+void ClassFlowDigit::UpdateNameNumbers(std::vector<std::string> *_name_numbers)
+{
+    for (int _dig = 0; _dig < DIGIT.size(); _dig++)
+    {
+        std::string _name = DIGIT[_dig]->name;
+        bool found = false;
+        for (int i = 0; i < (*_name_numbers).size(); ++i)
+        {
+            if ((*_name_numbers)[i] == _name)
+                found = true;
+        }
+        if (!found)
+            (*_name_numbers).push_back(_name);
+    }
+}
+
+
+
 

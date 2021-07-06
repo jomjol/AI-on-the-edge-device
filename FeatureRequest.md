@@ -11,6 +11,22 @@
 
 ____
 
+#### #8 MQTT configurable readout intervall
+
+Make the readout intervall configurable via MQTT.
+
+* Change the mqtt part to receive and process input and not only sending
+
+#### #7 Extended Error Handling
+
+Check different types of error (e.g. tflite not availabe) and generate an error on the html page.
+
+To do:
+
+* Make a list of "important" errors
+* Implement a checking algo
+* Extend the firmware and html page for the error handling
+
 #### #6 Check for double ROI names
 
 Check during configuration, that ROI names are unique.
