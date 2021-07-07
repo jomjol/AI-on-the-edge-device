@@ -447,6 +447,26 @@ function removeNumber(){
         context.drawImage(imageObj, 0, 0);
         if (document.getElementById("Category_Analog_enabled").checked)
         {
+            var sel = document.getElementById("index");
+            var _number = sel.selectedIndex;
+            for (var _nb = 0; _nb < ROIInfo.length; _nb++)
+            {
+                if (_nb != _number)
+                {
+                    lw = 1;
+                    context.lineWidth = lw;
+                    context.strokeStyle = "#990000";
+                    var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                    var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                    var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                    var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                    context.strokeRect(x0, y0, dx, dy);
+                }
+
+            }
+
+
+
             lw = 4
             context.lineWidth = lw;
             context.strokeStyle = "#FF0000";

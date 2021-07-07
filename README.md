@@ -47,7 +47,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-07-05)
+##### Rolling - (2021-07-07)
+
+* Updated server configuration (avoid server blocking in case too many connections in parallel)
+* HTML: update ROI definition (show all ROIs)
+
+Rolling - (2021-07-05)
 
 * Update jquery, inital config.ini
 
