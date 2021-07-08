@@ -208,7 +208,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
     return result;
 }
 
-void CTfLiteClass::LoadModel(std::string _fn){
+bool CTfLiteClass::LoadModel(std::string _fn){
 
 #ifdef SUPRESS_TFLITE_ERRORS
     this->error_reporter = new tflite::OwnMicroErrorReporter;
@@ -219,9 +219,14 @@ void CTfLiteClass::LoadModel(std::string _fn){
     unsigned char *rd;
     rd = ReadFileToCharArray(_fn.c_str());
 
+    if (rd == NULL) 
+      return false;
+
     this->model = tflite::GetModel(rd);
     free(rd);
     TFLITE_MINIMAL_CHECK(model != nullptr); 
+    
+    return true;
 }
 
 

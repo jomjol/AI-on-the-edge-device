@@ -359,7 +359,11 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     printf(zwcnn.c_str());printf("\n");
-    tflite->LoadModel(zwcnn); 
+    if (!tflite->LoadModel(zwcnn)) {
+        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        delete tflite;
+        return false;
+    } 
     tflite->MakeAllocate();
 #endif
 

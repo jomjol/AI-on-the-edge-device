@@ -19,3 +19,6 @@ std::string ConvertTimeToString(time_t _time, const char * frm);
 
 void setTimeZone(std::string _tzstring);
 void reset_servername(std::string _servername);
+
+void setBootTime();
+time_t getUpTime();

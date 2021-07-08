@@ -19,6 +19,7 @@
 #include "connect_wlan.h"
 #include "read_wlanini.h"
 
+#include "server_main.h"
 #include "server_tflite.h"
 #include "server_file.h"
 #include "server_ota.h"
@@ -30,16 +31,14 @@
 
 #define __SD_USE_ONE_LINE_MODE__
 
-#ifdef __SD_USE_ONE_LINE_MODE__
 #include "server_GPIO.h"
-#endif
 
 
 #define BLINK_GPIO GPIO_NUM_33
 
-static const char *TAGMAIN = "connect_wlan_main";
+static const char *TAGMAIN = "main";
 
-#define FLASH_GPIO GPIO_NUM_4
+//#define FLASH_GPIO GPIO_NUM_4
 
 bool Init_NVS_SDCard()
 {
@@ -50,7 +49,7 @@ bool Init_NVS_SDCard()
     }
 ////////////////////////////////////////////////
 
-    ESP_LOGI(TAG, "Using SDMMC peripheral");
+    ESP_LOGI(TAGMAIN, "Using SDMMC peripheral");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
@@ -92,10 +91,10 @@ bool Init_NVS_SDCard()
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount filesystem. "
+            ESP_LOGE(TAGMAIN, "Failed to mount filesystem. "
                 "If you want the card to be formatted, set format_if_mount_failed = true.");
         } else {
-            ESP_LOGE(TAG, "Failed to initialize the card (%s). "
+            ESP_LOGE(TAGMAIN, "Failed to initialize the card (%s). "
                 "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
         return false;
@@ -108,9 +107,9 @@ bool Init_NVS_SDCard()
 	// Init the GPIO
     // Flash ausschalten
     
-    gpio_pad_select_gpio(FLASH_GPIO);
-    gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
-    gpio_set_level(FLASH_GPIO, 0);   
+    // gpio_pad_select_gpio(FLASH_GPIO);
+    // gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
+    // gpio_set_level(FLASH_GPIO, 0);   
 
     return true;
 }
@@ -134,6 +133,17 @@ void task_NoSDBlink(void *pvParameter)
 
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
+}
+
+esp_err_t handler_gpio(httpd_req_t *req)
+{
+    gpio_handler_init();
+
+    char resp_str [30];
+    sprintf(resp_str, "OK. freemem %u", esp_get_free_heap_size());
+    httpd_resp_send(req, resp_str, strlen(resp_str));
+    
+    return ESP_OK;
 }
 
 extern "C" void app_main(void)
@@ -174,11 +184,12 @@ extern "C" void app_main(void)
     
     TickType_t xDelay;
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+    printf("main: sleep for : %ldms\n", (long) xDelay);
 //    LogFile.WriteToFile("Startsequence 06");      
     vTaskDelay( xDelay );   
 //    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
+    setBootTime();
     LogFile.WriteToFile("=============================================================================================");
     LogFile.WriteToFile("=================================== Main Started ============================================");
     LogFile.WriteToFile("=============================================================================================");
@@ -190,7 +201,7 @@ extern "C" void app_main(void)
 //    Camera.InitCam();
 //    Camera.LightOnOff(false); 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+    printf("main: sleep for : %ldms\n", (long) xDelay);
     vTaskDelay( xDelay ); 
 
     server = start_webserver();   
@@ -199,13 +210,19 @@ extern "C" void app_main(void)
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
 
-#ifdef __SD_USE_ONE_LINE_MODE__
-    register_server_GPIO_uri(server);
-#endif    
-    printf("vor reg server main\n");
+    httpd_uri_t camuri = { };
+    camuri.method    = HTTP_GET;
+    camuri.uri       = "/test";
+    camuri.handler   = handler_gpio;
+    camuri.user_ctx  = (void*)server;    
+    httpd_register_uri_handler(server, &camuri);
 
+    gpio_handler_create(server);
+
+    printf("vor reg server main\n");
     register_server_main_uri(server, "/sdcard");
 
     printf("vor dotautostart\n");
     TFliteDoAutoStart();
 }
+

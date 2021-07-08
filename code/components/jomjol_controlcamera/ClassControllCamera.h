@@ -16,9 +16,6 @@
 #define CAMERA_MODEL_AI_THINKER
 
 
-static const char *TAGCAMERACLASS = "server_part_camera"; 
-
-
 class CCamera {
     protected:
         int ActualQuality;

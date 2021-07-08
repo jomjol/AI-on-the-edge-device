@@ -1,6 +1,8 @@
+#include <sstream>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 
+#include "time_sntp.h"
 #include "interface_mqtt.h"
 #include "ClassFlowPostProcessing.h"
 
@@ -16,6 +18,8 @@ void ClassFlowMQTT::SetInitialParameter(void)
     maintopic = "";
     mainerrortopic = ""; 
 
+    topicUptime = "";
+    topicFreeMem = "";
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -106,7 +110,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    if ((uri.length() > 0) && (maintopic.length() > 0)) 
+    if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
     {
         mainerrortopic = maintopic + "/connection";
         MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
@@ -132,6 +136,16 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     MQTTPublish(mainerrortopic, "connected");
     
+    zw = maintopic + "/" + "uptime";
+    char uptimeStr[11];
+    sprintf(uptimeStr, "%ld", (long)getUpTime());
+    MQTTPublish(zw, uptimeStr);
+
+    zw = maintopic + "/" + "freeMem";
+    char freeheapmem[11];
+    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+    MQTTPublish(zw, freeheapmem);
+
     if (flowpostprocessing)
     {
         std::vector<NumberPost*> NUMBERS = flowpostprocessing->GetNumbers();
@@ -158,7 +172,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             zw = namenumber + "rate";    
             MQTTPublish(zw, resultrate);
 
-            zw = namenumber + "timestamp";    
+            zw = namenumber + "timestamp";
             MQTTPublish(zw, resulttimestamp);
         }
     }
@@ -178,7 +192,6 @@ bool ClassFlowMQTT::doFlow(string zwtime)
         MQTTPublish(topic, result);
     }
     
-
     OldValue = result;
     
     return true;
