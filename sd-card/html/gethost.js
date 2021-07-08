@@ -8,8 +8,8 @@ function getbasepath(){
     if ((host == "127.0.0.1") || (host == "localhost"))
     {
 //        host = "http://192.168.2.219";          // jomjol interner test
-        host = "http://192.168.178.46";          // jomjol interner test
-        host = "http://192.168.178.22";          // jomjol interner Real
+        host = "http://192.168.178.51";          // jomjol interner test
+//        host = "http://192.168.178.22";          // jomjol interner Real
 
 //        host = ".";                           // jomjol interner localhost   
 

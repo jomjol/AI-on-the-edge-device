@@ -160,6 +160,15 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             zw = namenumber + "timestamp";    
             MQTTPublish(zw, resulttimestamp);
+
+
+            std::string json="{\"value\":"+result;
+            json += ",\"error\":\""+resulterror;
+            json += "\",\"rate\":"+resultrate;
+            json += ",\"timestamp\":\""+resulttimestamp+"\"}";
+
+            zw = namenumber + "json";
+            MQTTPublish(zw, json);
         }
     }
     else

@@ -47,7 +47,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-07-07)
+##### Rolling - (2021-07-08)
+
+* MQTT: added json output
+
+Rolling - (2021-07-07)
 
 * Updated server configuration (avoid server blocking in case too many connections in parallel)
 * HTML: update ROI definition (show all ROIs)
