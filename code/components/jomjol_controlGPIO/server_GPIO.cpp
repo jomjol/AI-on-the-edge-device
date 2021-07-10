@@ -7,6 +7,8 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_event.h"
+
+//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 //#include "errno.h"
 
@@ -51,7 +53,7 @@ static void IRAM_ATTR gpio_isr_handler(void* arg)
 {
     GpioResult gpioResult;
     gpioResult.gpio = *(gpio_num_t*) arg;
-    gpioResult.value = gpio_get_level(gpioResult.gpio) == 1;
+    gpioResult.value = gpio_get_level(gpioResult.gpio);
     BaseType_t ContextSwitchRequest = pdFALSE;
  
     xQueueSendToBackFromISR(gpio_queue_handle,(void*)&gpioResult,&ContextSwitchRequest);
@@ -61,7 +63,8 @@ static void IRAM_ATTR gpio_isr_handler(void* arg)
     }
 }
 
-static void gpioInterruptTask(void *arg) {
+static void gpioHandlerTask(void *arg) {
+    ESP_LOGD(TAG_SERVERGPIO,"start interrupt task");
     while(1){
         if(uxQueueMessagesWaiting(gpio_queue_handle)){
             while(uxQueueMessagesWaiting(gpio_queue_handle)){
@@ -71,15 +74,18 @@ static void gpioInterruptTask(void *arg) {
                 ((GpioHandler*)arg)->gpioInterrupt(&gpioResult);
             }  
         }
+
+        ((GpioHandler*)arg)->taskHandler();
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
-void GpioPin::gpioInterrupt(bool value) {
+void GpioPin::gpioInterrupt(int value) {
     if (_mqttTopic != "") {
         ESP_LOGD(TAG_SERVERGPIO, "gpioInterrupt %s %d", _mqttTopic.c_str(), value);
 
         MQTTPublish(_mqttTopic, value ? "true" : "false");
+        currentState = value;
     }
 }
 
@@ -101,6 +107,7 @@ void GpioPin::init()
 
     if (_interruptType != GPIO_INTR_DISABLE) {
         //hook isr handler for specific gpio pin
+        ESP_LOGD(TAG_SERVERGPIO, "GpioPin::init add isr handler for GPIO %d\r\n", _gpio);
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*)&_gpio);
     }
 
@@ -131,6 +138,15 @@ void GpioPin::setValue(bool value, gpio_set_source setSource, std::string* error
         if ((_mqttTopic != "") && (setSource != GPIO_SET_SOURCE_MQTT)) {
             MQTTPublish(_mqttTopic, value ? "true" : "false");
         }
+    }
+}
+
+void GpioPin::publishState() {
+    int newState = gpio_get_level(_gpio);
+    if (newState != currentState) {
+        ESP_LOGD(TAG_SERVERGPIO,"publish state of GPIO %d new state %d", _gpio, newState);
+        MQTTPublish(_mqttTopic, newState ? "true" : "false");
+        currentState = newState;
     }
 }
 
@@ -179,8 +195,6 @@ GpioHandler::GpioHandler(std::string configFile, httpd_handle_t httpServer)
 
     ESP_LOGI(TAG_SERVERGPIO, "register GPIO Uri");
     registerGpioUri();
-
-    //xTaskCreate((TaskFunction_t)&taskGpioHandler, "taskGpioHandler", configMINIMAL_STACK_SIZE * 64, this, tskIDLE_PRIORITY+1, &xHandletaskGpioHandler);
 }
 
 GpioHandler::~GpioHandler()  {
@@ -207,18 +221,51 @@ void GpioHandler::init()
 
     for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
         it->second->init();
-        
-        if ((it->second->getInterruptType() != GPIO_INTR_DISABLE) && (gpio_queue_handle == NULL)) {
-            gpio_queue_handle = xQueueCreate(10,sizeof(GpioResult));
-            xTaskCreate(gpioInterruptTask, "GPIO Task", configMINIMAL_STACK_SIZE * 64, (void *)this, 10, NULL);
+    }
+
+    std::function<void()> f = std::bind(&GpioHandler::handleMQTTconnect, this);
+    MQTTregisterConnectFunction("gpio-handler", f);
+
+    if (xHandleTaskGpio == NULL) {
+        gpio_queue_handle = xQueueCreate(10,sizeof(GpioResult));
+        BaseType_t  xReturned = xTaskCreate(&gpioHandlerTask, "gpio_int", configMINIMAL_STACK_SIZE * 8, (void *)this, tskIDLE_PRIORITY + 2, &xHandleTaskGpio);
+        if(xReturned == pdPASS ) {
+            ESP_LOGD(TAG_SERVERGPIO, "xHandletaskGpioHandler started");
+        } else {
+            ESP_LOGD(TAG_SERVERGPIO, "xHandletaskGpioHandler not started %d ", (int)xHandleTaskGpio);
         }
     }
 
     ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted");
 }
 
+void GpioHandler::taskHandler() {
+    if (gpioMap != NULL) {
+        for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
+            if ((it->second->getInterruptType() == GPIO_INTR_DISABLE))
+                it->second->publishState();
+        }
+    }
+}
+
+
+void GpioHandler::handleMQTTconnect()
+{
+    if (gpioMap != NULL) {
+        for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
+            if ((it->second->getMode() == GPIO_PIN_MODE_INPUT) || (it->second->getMode() == GPIO_PIN_MODE_INPUT_PULLDOWN) || (it->second->getMode() == GPIO_PIN_MODE_INPUT_PULLUP))
+                it->second->publishState();
+        }
+    }
+}
+
 void GpioHandler::deinit() {
+    MQTTunregisterConnectFunction("gpio-handler");
     clear();
+    if (xHandleTaskGpio != NULL) {
+        vTaskDelete(xHandleTaskGpio);
+        xHandleTaskGpio = NULL;
+    }
 }
 
 void GpioHandler::gpioInterrupt(GpioResult* gpioResult) {

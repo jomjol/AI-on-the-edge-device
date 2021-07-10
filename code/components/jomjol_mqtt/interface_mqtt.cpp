@@ -1,12 +1,13 @@
 #include "interface_mqtt.h"
 
-
+//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
 
 static const char *TAG_INTERFACEMQTT = "interface_mqtt";
 
+std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
 bool debugdetail = true;
 
@@ -24,10 +25,10 @@ void MQTTPublish(std::string _key, std::string _content, int retained_flag){
         msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
         zw = "sent publish successful in MQTTPublish, msg_id=" + std::to_string(msg_id) + ", " + _key + ", " + _content;
         if (debugdetail) LogFile.WriteToFile(zw);
-        ESP_LOGI(TAG_INTERFACEMQTT, "sent publish successful in MQTTPublish, msg_id=%d, %s, %s", msg_id, _key.c_str(), _content.c_str());
+        ESP_LOGD(TAG_INTERFACEMQTT, "sent publish successful in MQTTPublish, msg_id=%d, %s, %s", msg_id, _key.c_str(), _content.c_str());
     }
     else {
-        ESP_LOGI(TAG_INTERFACEMQTT, "Problem with Publish, client=%d, mqtt_connected %d", (int) client, (int) mqtt_connected);
+        ESP_LOGW(TAG_INTERFACEMQTT, "Problem with Publish, client=%d, mqtt_connected %d", (int) client, (int) mqtt_connected);
     }
 }
 
@@ -38,12 +39,12 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_CONNECTED");
+            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_BEFORE_CONNECT");
             break;
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_CONNECTED");
             mqtt_connected = true;
-            MQTTsubscribeFunctions();
+            MQTTconnected();
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DISCONNECTED");
@@ -61,19 +62,16 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
+            ESP_LOGI(TAG_INTERFACEMQTT, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            ESP_LOGI(TAG_INTERFACEMQTT, "DATA=%.*s\r\n", event->data_len, event->data);
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
-                for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
-                    printf("compare %s %s\r\n", it->first.c_str(), topic.c_str());
-                }
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
-                    printf("call handler function\r\n");
+                    ESP_LOGD(TAG_INTERFACEMQTT, "call handler function\r\n");
                     (*subscribeFunktionMap)[topic](topic, event->data, event->data_len);
                 }
             } else {
-                printf("no handler available\r\n");
+                ESP_LOGW(TAG_INTERFACEMQTT, "no handler available\r\n");
             }
             break;
         case MQTT_EVENT_ERROR:
@@ -109,7 +107,7 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
     if (_user.length() && _password.length()){
         mqtt_cfg.username = _user.c_str();
         mqtt_cfg.password = _password.c_str();
-        printf("Connect to MQTT: %s, %s", mqtt_cfg.username, mqtt_cfg.password);
+        ESP_LOGI(TAG_INTERFACEMQTT, "Connect to MQTT: %s, %s", mqtt_cfg.username, mqtt_cfg.password);
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);
@@ -130,8 +128,33 @@ bool MQTTisConnected() {
     return mqtt_connected;
 }
 
+void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
+    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisteronnectFunction %s\r\n", name.c_str());
+    if (connectFunktionMap == NULL) {
+        connectFunktionMap = new std::map<std::string, std::function<void()>>();
+    }
+
+    if ((*connectFunktionMap)[name] != NULL) {
+        ESP_LOGW(TAG_INTERFACEMQTT, "connect function %s already registred", name.c_str());
+        return;
+    }
+
+    (*connectFunktionMap)[name] = func;
+
+    if (mqtt_connected) {
+        func();
+    }
+}
+
+void MQTTunregisterConnectFunction(std::string name){
+    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisteronnectFunction %s\r\n", name.c_str());
+    if ((connectFunktionMap != NULL) && (connectFunktionMap->find(name) != connectFunktionMap->end())) {
+        connectFunktionMap->erase(name);
+    }
+}
+
 void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::string, char*, int)> func){
-    printf("MQTTregisterSubscribeFunction %s\r\n", topic.c_str());
+    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisterSubscribeFunction %s\r\n", topic.c_str());
     if (subscribeFunktionMap == NULL) {
         subscribeFunktionMap = new std::map<std::string, std::function<bool(std::string, char*, int)>>();
     }
@@ -145,16 +168,23 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 
     if (mqtt_connected) {
         int msg_id = esp_mqtt_client_subscribe(client, topic.c_str(), 0);
-        ESP_LOGI(TAG_INTERFACEMQTT, "topic %s subscribe successful, msg_id=%d", topic.c_str(), msg_id);
+        ESP_LOGD(TAG_INTERFACEMQTT, "topic %s subscribe successful, msg_id=%d", topic.c_str(), msg_id);
     }
 }
 
-void MQTTsubscribeFunctions(){
-    if (subscribeFunktionMap != NULL) {
-        if (mqtt_connected) {
+void MQTTconnected(){
+    if (mqtt_connected) {
+        if (connectFunktionMap != NULL) {
+            for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
+                it->second();
+                ESP_LOGD(TAG_INTERFACEMQTT, "call connect function %s", it->first.c_str());
+            }
+        }
+
+        if (subscribeFunktionMap != NULL) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
                 int msg_id = esp_mqtt_client_subscribe(client, it->first.c_str(), 0);
-                ESP_LOGI(TAG_INTERFACEMQTT, "topic %s subscribe successful, msg_id=%d", it->first.c_str(), msg_id);
+                ESP_LOGD(TAG_INTERFACEMQTT, "topic %s subscribe successful, msg_id=%d", it->first.c_str(), msg_id);
             }
         }
     }

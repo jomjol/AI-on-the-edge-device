@@ -23,7 +23,7 @@ typedef enum {
 
 struct GpioResult {
     gpio_num_t gpio;
-    bool value;
+    int value;
 };
 
 typedef enum {
@@ -37,11 +37,12 @@ public:
     GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, std::string mqttTopic, bool httpEnable);
     ~GpioPin();
 
+    void init();
     bool getValue(std::string* errorText);
     void setValue(bool value, gpio_set_source setSource, std::string* errorText);
-    void init();
     bool handleMQTT(std::string, char* data, int data_len);
-    void gpioInterrupt(bool value);
+    void publishState();
+    void gpioInterrupt(int value);
     gpio_int_type_t getInterruptType() { return _interruptType; }
     gpio_pin_mode_t getMode() { return _mode; }
 
@@ -51,6 +52,7 @@ private:
     gpio_pin_mode_t _mode;
     gpio_int_type_t _interruptType;
     std::string _mqttTopic;
+    int currentState = -1;
 };
 
 esp_err_t callHandleHttpRequest(httpd_req_t *req);
@@ -65,15 +67,17 @@ public:
     void deinit();
     void registerGpioUri();
     esp_err_t handleHttpRequest(httpd_req_t *req);
+    void taskHandler();
     void gpioInterrupt(GpioResult* gpioResult);  
     void flashLightEnable(bool value);
     bool isEnabled() { return _isEnabled; }
+    void handleMQTTconnect();
 
 private:
     std::string _configFile;
     httpd_handle_t _httpServer;
     std::map<gpio_num_t, GpioPin*> *gpioMap = NULL;
-    TaskHandle_t xHandletaskGpioHandler = NULL;
+    TaskHandle_t xHandleTaskGpio = NULL;
     bool _isEnabled = false;
 
     bool readConfig();

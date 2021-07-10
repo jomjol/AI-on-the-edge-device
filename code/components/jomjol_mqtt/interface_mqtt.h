@@ -14,8 +14,10 @@ void MQTTPublish(std::string _key, std::string _content, int retained_flag = 0);
 
 bool MQTTisConnected();
 
+void MQTTregisterConnectFunction(std::string name, std::function<void()> func);
+void MQTTunregisterConnectFunction(std::string name);
 void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::string, char*, int)> func);
 void MQTTdestroySubscribeFunction();
-void MQTTsubscribeFunctions();
+void MQTTconnected();
 
 #endif //INTERFACE_MQTT_H
