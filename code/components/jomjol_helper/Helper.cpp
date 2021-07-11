@@ -78,8 +78,9 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 
 
-FILE* OpenFileAndWait(const char* nm, char* _mode, int _waitsec)
+FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
+	printf("open config file %s in mode %s\n", nm, _mode);
 	FILE *pfile = fopen(nm, _mode);
 
 	if (pfile == NULL)
@@ -310,6 +311,14 @@ string toUpper(string in)
 {
 	for (int i = 0; i < in.length(); ++i)
 		in[i] = toupper(in[i]);
+	
+	return in;
+}
+
+string toLower(string in)
+{
+	for (int i = 0; i < in.length(); ++i)
+		in[i] = tolower(in[i]);
 	
 	return in;
 }

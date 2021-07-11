@@ -12,7 +12,7 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_log.h"
 #include <esp_ota_ops.h>
 #include "esp_http_client.h"
@@ -28,6 +28,7 @@
 
 #include "server_tflite.h"
 #include "server_file.h"
+#include "server_GPIO.h"
 
 #include "ClassLogFile.h"
 
@@ -46,6 +47,7 @@ static char ota_write_data[BUFFSIZE + 1] = { 0 };
 
 
 #define OTA_URL_SIZE 256
+static const char *TAGPARTOTA = "server_ota";
 
 
 static void infinite_loop(void)
@@ -60,14 +62,14 @@ static void infinite_loop(void)
 
 
 
-static bool ota_example_task(std::string fn)
+static bool ota_update_task(std::string fn)
 {
     esp_err_t err;
     /* update handle : set by esp_ota_begin(), must be freed via esp_ota_end() */
     esp_ota_handle_t update_handle = 0 ;
     const esp_partition_t *update_partition = NULL;
 
-    ESP_LOGI(TAGPARTOTA, "Starting OTA example");
+    ESP_LOGI(TAGPARTOTA, "Starting OTA update");
 
     const esp_partition_t *configured = esp_ota_get_boot_partition();
     const esp_partition_t *running = esp_ota_get_running_partition();
@@ -374,7 +376,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     const char* resp_str;    
 
-    if (ota_example_task(fn))
+    KillTFliteTasks();
+    gpio_handler_deinit();
+    if (ota_update_task(fn))
     {
         resp_str = "Firmware Update Successfull!<br><br>You can restart now.";
     }
@@ -400,8 +404,6 @@ void hard_restart() {
 
 void task_reboot(void *pvParameter)
 {
-
-
     while(1)
     {
         vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -413,12 +415,14 @@ void task_reboot(void *pvParameter)
 }
 
 void doReboot(){
-    LogFile.WriteToFile("Reboot - now");
-    KillTFliteTasks();
+    ESP_LOGI(TAGPARTOTA, "Reboot in 5sec");
+    LogFile.WriteToFile("Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
+    // KillTFliteTasks(); // kills itself 
+    gpio_handler_destroy();
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart();
-    hard_restart();    
+    hard_restart();
 }
 
 
