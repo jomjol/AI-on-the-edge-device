@@ -44,7 +44,7 @@ function createReader(file) {
 
 
 
-function ZerlegeZeile(input, delimiter = " =,\t\r")
+function ZerlegeZeile(input, delimiter = " =\t\r")
      {
           var Output = Array(0);
 //          delimiter = " =,\t";

@@ -257,11 +257,22 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
+        int _zwdc = 0;
+
+        try
+        {
+            _zwdc = stoi(_value);
+        }
+        catch(const std::exception& e)
+        {
+            printf("ERROR - Decimalshift is not a number: %s\n", _value.c_str());
+        }
+        
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
-            NUMBERS[j]->DecimalShift = stoi(_value);
+            NUMBERS[j]->DecimalShift = _zwdc;
 
         if (NUMBERS[j]->name == _digit)
-            NUMBERS[j]->DecimalShift = stoi(_value);
+            NUMBERS[j]->DecimalShift = _zwdc;
 
         NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
     }
@@ -279,16 +290,28 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
+        float _zwdc = 1;
+
+        try
+        {
+            _zwdc = stoi(_value);
+        }
+        catch(const std::exception& e)
+        {
+            printf("ERROR - MaxRateValue is not a number: %s\n", _value.c_str());
+        }
+
+
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
         {
             NUMBERS[j]->useMaxRateValue = true;
-            NUMBERS[j]->MaxRateValue = stof(_value);
+            NUMBERS[j]->MaxRateValue = _zwdc;
         }
 
         if (NUMBERS[j]->name == _digit)
         {
             NUMBERS[j]->useMaxRateValue = true;
-            NUMBERS[j]->MaxRateValue = stof(_value);
+            NUMBERS[j]->MaxRateValue = _zwdc;
         }
     }
 }

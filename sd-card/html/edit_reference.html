@@ -208,7 +208,11 @@ table {
                 param["Alignment"]["InitialRotate"].value1 = document.getElementById("prerotateangle").value;
 
                 if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
+                {
                     param["Alignment"]["InitialMirror"].value1 = "true";
+                    param["Alignment"]["InitialMirror"]["found"] = true;
+                    param["Alignment"]["InitialMirror"]["enabled"] = true;
+                }
                 else
                     param["Alignment"]["InitialMirror"].value1 = "false";
 

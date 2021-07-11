@@ -70,11 +70,11 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "DecimalShift", 1);
+     ParamAddValue(param, catname, "DecimalShift", 1, true);
      ParamAddValue(param, catname, "PreValueUse");
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
-     ParamAddValue(param, catname, "MaxRateValue", 1);
+     ParamAddValue(param, catname, "MaxRateValue", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
 
@@ -84,7 +84,7 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "MainTopic", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "MainTopic", 1, false, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
@@ -94,13 +94,13 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "MainTopicMQTT", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
-     ParamAddValue(param, catname, "IO0", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO1", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO3", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO4", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO12", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO13", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "MainTopicMQTT", 1, false, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "IO0", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO1", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO3", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO4", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO12", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO13", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 
@@ -149,12 +149,13 @@ function ParseConfig() {
      }
 }
 
-function ParamAddValue(param, _cat, _param, _anzParam = 1, _checkRegExList = null){
+function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
      param[_cat][_param] = new Object(); 
      param[_cat][_param]["found"] = false;
      param[_cat][_param]["enabled"] = false;
      param[_cat][_param]["line"] = -1; 
      param[_cat][_param]["anzParam"] = _anzParam;
+     param[_cat][_param]["Numbers"] = _isNUMBER;
      param[_cat][_param].checkRegExList = _checkRegExList;
 };
 
@@ -201,7 +202,15 @@ function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _
 
 function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
      for (var paramname in _param[_catname]) {
-          if (_linesplit[0].toUpperCase() == paramname.toUpperCase())
+          _AktROI = "default";
+          _AktPara = _linesplit[0];
+          _pospunkt = _AktPara.indexOf (".");
+          if (_pospunkt > -1)
+          {
+               _AktROI = _AktPara.substring(0, _pospunkt);
+               _AktPara = _AktPara.substring(_pospunkt+1);
+          }
+          if (_AktPara.toUpperCase() == paramname.toUpperCase())
           {
                while (_linesplit.length <= _param[_catname][paramname]["anzParam"]) {
                     _linesplit.push("");
@@ -222,13 +231,9 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
                          }
                     if (abc["name"] == "default")
                     {
-                         _param[_catname][paramname]["found"] = true;
-                         _param[_catname][paramname]["enabled"] = !_iscom;
-                         _param[_catname][paramname]["line"] = _aktline;
-                         for (var j = 1; j <= _param[_catname][paramname]["anzParam"]; ++j) {
-                              _param[_catname][paramname]["value"+j] = _linesplit[j];
-                              }
-                         for (_num in NUMBERS)         // wert mit Default belegen
+                    for (_num in NUMBERS)         // wert mit Default belegen
+                         {
+                              if (NUMBERS[_num][_catname][paramname]["found"] == false)
                               {
                                    NUMBERS[_num][_catname][paramname]["found"] = true;
                                    NUMBERS[_num][_catname][paramname]["enabled"] = !_iscom;
@@ -236,7 +241,9 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
                                    for (var j = 1; j <= _param[_catname][paramname]["anzParam"]; ++j) {
                                         NUMBERS[_num][_catname][paramname]["value"+j] = _linesplit[j];
                                         }
-                                   }
+
+                              }
+                         }
                     }
                }
                else
