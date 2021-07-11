@@ -406,7 +406,8 @@ httpd_handle_t start_webserver(void)
     config.global_transport_ctx = NULL;                   
     config.global_transport_ctx_free_fn = NULL;           
     config.open_fn = NULL;                                
-    config.close_fn = NULL;                               
+    config.close_fn = NULL;     
+    config.lru_purge_enable = true;             // neu, um schlechte Serverbindung zu verhindern                          
 //    config.uri_match_fn = NULL;                            
     config.uri_match_fn = httpd_uri_match_wildcard;
 
