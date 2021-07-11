@@ -9,7 +9,7 @@ class ClassFlowMQTT :
     public ClassFlow
 {
 protected:
-    std::string uri, topic, topicError, clientname, topicRate, topicTimeStamp;
+    std::string uri, topic, topicError, clientname, topicRate, topicTimeStamp, topicUptime, topicFreeMem;
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 

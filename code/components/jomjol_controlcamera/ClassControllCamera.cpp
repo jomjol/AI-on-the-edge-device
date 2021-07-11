@@ -10,12 +10,13 @@
 #include "CImageBasis.h"
 
 #include "server_ota.h"
+#include "server_GPIO.h"
 
 
 #define BOARD_ESP32CAM_AITHINKER
 
 
-#include <esp_event_loop.h>
+#include <esp_event.h>
 #include <esp_log.h>
 #include <esp_system.h>
 #include <nvs_flash.h>
@@ -50,7 +51,7 @@
 #define CAM_PIN_HREF 23
 #define CAM_PIN_PCLK 22
 
-static const char *TAG = "example:take_picture";
+static const char *TAGCAMERACLASS = "server_part_camera"; 
 
 static camera_config_t camera_config = {
     .pin_pwdn = CAM_PIN_PWDN,
@@ -275,7 +276,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+        ESP_LOGE(TAGCAMERACLASS, "CaptureToBasisImage: Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
         doReboot();
@@ -362,8 +363,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
-        ESP_LOGE(TAGCAMERACLASS, "Reboot ?????");
+        ESP_LOGE(TAGCAMERACLASS, "CaptureToFile: Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
         doReboot();
@@ -497,15 +497,20 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
 void CCamera::LightOnOff(bool status)
 {
-	// Init the GPIO
-    gpio_pad_select_gpio(FLASH_GPIO);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
+    GpioHandler* gpioHandler = gpio_handler_get();
+    if ((gpioHandler != NULL) && (gpioHandler->isEnabled())) {
+        gpioHandler->flashLightEnable(status);
+    }  else {
+        // Init the GPIO
+        gpio_pad_select_gpio(FLASH_GPIO);
+        /* Set the GPIO as a push/pull output */
+        gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
 
-    if (status)  
-        gpio_set_level(FLASH_GPIO, 1);
-    else
-        gpio_set_level(FLASH_GPIO, 0);      
+        if (status)  
+            gpio_set_level(FLASH_GPIO, 1);
+        else
+            gpio_set_level(FLASH_GPIO, 0);
+    }
 }
 
 void CCamera::LEDOnOff(bool status)

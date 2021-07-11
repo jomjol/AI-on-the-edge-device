@@ -70,11 +70,11 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "DecimalShift", 1, true);
+     ParamAddValue(param, catname, "DecimalShift", 1);
      ParamAddValue(param, catname, "PreValueUse");
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
-     ParamAddValue(param, catname, "MaxRateValue", 1, true);
+     ParamAddValue(param, catname, "MaxRateValue", 1);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
 
@@ -84,10 +84,23 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "MainTopic");
+     ParamAddValue(param, catname, "MainTopic", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
-     ParamAddValue(param, catname, "password");     
+     ParamAddValue(param, catname, "password");
+     
+     var catname = "GPIO";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "MainTopicMQTT", 1, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "IO0", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO1", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO3", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO4", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO12", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO13", 6, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 
@@ -136,13 +149,13 @@ function ParseConfig() {
      }
 }
 
-function ParamAddValue(param, _cat, _param, _anzParam = 1, _isIndividual = false){
+function ParamAddValue(param, _cat, _param, _anzParam = 1, _checkRegExList = null){
      param[_cat][_param] = new Object(); 
      param[_cat][_param]["found"] = false;
      param[_cat][_param]["enabled"] = false;
      param[_cat][_param]["line"] = -1; 
-     param[_cat][_param]["anzParam"] = _anzParam;    
-     param[_cat][_param]["Numbers"] = _isIndividual;
+     param[_cat][_param]["anzParam"] = _anzParam;
+     param[_cat][_param].checkRegExList = _checkRegExList;
 };
 
 function ParseConfigParamAll(_aktline, _catname){
@@ -188,9 +201,12 @@ function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _
 
 function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
      for (var paramname in _param[_catname]) {
-          _param_zw = _linesplit[0].substring(_linesplit[0].length - paramname.length, _linesplit[0].length);
-          if ((_param_zw.toUpperCase() == paramname.toUpperCase()) && (_linesplit.length > _param[_catname][paramname]["anzParam"]))
+          if (_linesplit[0].toUpperCase() == paramname.toUpperCase())
           {
+               while (_linesplit.length <= _param[_catname][paramname]["anzParam"]) {
+                    _linesplit.push("");
+               }
+
                _param[_catname][paramname]["found"] = true;
                _param[_catname][paramname]["enabled"] = !_iscom;
                _param[_catname][paramname]["line"] = _aktline;

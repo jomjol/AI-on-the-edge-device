@@ -1,1 +1,1 @@
-powershell Compress-Archive "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\sd-card\html\*.*" "C:\Users\Muell\Documents\Programmieren\GitHub\AI-on-the-edge-device\firmware\html.zip"
+powershell Compress-Archive "..\..\sd-card\html\*.*" "..\..\firmware\html.zip"
