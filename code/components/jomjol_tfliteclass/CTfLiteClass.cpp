@@ -98,7 +98,8 @@ void CTfLiteClass::GetOutPut()
 
 void CTfLiteClass::Invoke()
 {
-    interpreter->Invoke();
+    if (interpreter != nullptr)
+      interpreter->Invoke();
 }
 
 

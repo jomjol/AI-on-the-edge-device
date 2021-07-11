@@ -221,6 +221,7 @@ void GpioHandler::init()
         clear();
         delete gpioMap;
         gpioMap = NULL;
+        ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted, handler is disabled");
         return;
     }
 
@@ -241,7 +242,7 @@ void GpioHandler::init()
         }
     }
 
-    ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted");
+    ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted, is enabled");
 }
 
 void GpioHandler::taskHandler() {
