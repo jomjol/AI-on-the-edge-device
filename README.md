@@ -45,7 +45,23 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling - (2021-07-11)
 
+* GPIO: implements basic functionality for GPIO handler.
+  - Configuration via config.ini / HTML page
+  - GPIO 12, 13, 1, 3, 0, 4 can be used (see restrictions in HTML configuration page)  
+  - GPIO can be used as input or output
+  - pullup / pulldown can be enabled
+  - supports all interrupt types of the ESP32
+  - publishing via MQTT or HTTP
+  - definition of the MQTT topic name
+* HTML: implements regex mask for text input fields (currently enabled for GPIO inputs and main topic)
+* HTML: automatic detection of select fields
+* MQTT: added readings for uptime and freeMem (can be used for tracking with Infux DB and as memory leak detection)
+* MQTT: connection is no longer terminated and reestablished on each flow
+* Classe ConfigFile created. Can be used by all components in the future.
+* Bugfix: memory leaks in ClassFlowAnalog and ClassFlowControll fixed.
+* Removed compiler warnings 
 
 ##### Rolling - (2021-07-08)
 

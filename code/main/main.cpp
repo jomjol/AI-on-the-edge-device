@@ -135,17 +135,6 @@ void task_NoSDBlink(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
-esp_err_t handler_gpio(httpd_req_t *req)
-{
-    gpio_handler_init();
-
-    char resp_str [30];
-    sprintf(resp_str, "OK. freemem %u", esp_get_free_heap_size());
-    httpd_resp_send(req, resp_str, strlen(resp_str));
-    
-    return ESP_OK;
-}
-
 extern "C" void app_main(void)
 {
     printf("Do Reset Camera\n");
@@ -209,13 +198,6 @@ extern "C" void app_main(void)
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
-
-    httpd_uri_t camuri = { };
-    camuri.method    = HTTP_GET;
-    camuri.uri       = "/test";
-    camuri.handler   = handler_gpio;
-    camuri.user_ctx  = (void*)server;    
-    httpd_register_uri_handler(server, &camuri);
 
     gpio_handler_create(server);
 

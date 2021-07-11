@@ -217,7 +217,12 @@ void GpioHandler::init()
     }
     
     ESP_LOGI(TAG_SERVERGPIO, "read GPIO config and init GPIO");
-    readConfig();
+    if (!readConfig()) {
+        clear();
+        delete gpioMap;
+        gpioMap = NULL;
+        return;
+    }
 
     for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
         it->second->init();
@@ -289,8 +294,12 @@ bool GpioHandler::readConfig()
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || (line.compare("[GPIO]") != 0)) && !disabledLine && !eof) {}
     if (eof)
         return false;
+    
+    _isEnabled = !disabledLine;
 
-    _isEnabled = true;
+    if (!_isEnabled)
+        return false;
+
     std::string mainTopicMQTT = "";
     bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))

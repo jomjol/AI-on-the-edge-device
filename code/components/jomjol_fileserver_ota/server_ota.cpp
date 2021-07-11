@@ -62,14 +62,14 @@ static void infinite_loop(void)
 
 
 
-static bool ota_example_task(std::string fn)
+static bool ota_update_task(std::string fn)
 {
     esp_err_t err;
     /* update handle : set by esp_ota_begin(), must be freed via esp_ota_end() */
     esp_ota_handle_t update_handle = 0 ;
     const esp_partition_t *update_partition = NULL;
 
-    ESP_LOGI(TAGPARTOTA, "Starting OTA example");
+    ESP_LOGI(TAGPARTOTA, "Starting OTA update");
 
     const esp_partition_t *configured = esp_ota_get_boot_partition();
     const esp_partition_t *running = esp_ota_get_running_partition();
@@ -378,7 +378,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     KillTFliteTasks();
     gpio_handler_deinit();
-    if (ota_example_task(fn))
+    if (ota_update_task(fn))
     {
         resp_str = "Firmware Update Successfull!<br><br>You can restart now.";
     }
