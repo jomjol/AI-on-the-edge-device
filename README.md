@@ -45,7 +45,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling - (2021-07-11)
+Rolling - (2021-07-12)
+
+* HTML: Bug fixing
+
+Rolling - (2021-07-11) - **SPECIAL THANKS TO https://github.com/Zwer2k**
 
 * GPIO: implements basic functionality for GPIO handler.
   - Configuration via config.ini / HTML page
@@ -63,7 +67,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 * Bugfix: memory leaks in ClassFlowAnalog and ClassFlowControll fixed.
 * Removed compiler warnings 
 
-##### Rolling - (2021-07-08)
+Rolling - (2021-07-08)
 
 * MQTT: added json output
 

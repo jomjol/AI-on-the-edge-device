@@ -1777,10 +1777,6 @@ function ReadParameterAll()
 //	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
 
-function WriteConfig(){
-	ReadParameterAll();
-	return setConfigParameters(param, category);
-}
 
 function FormatDecimalValue(_param, _cat, _name) {
 	for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {

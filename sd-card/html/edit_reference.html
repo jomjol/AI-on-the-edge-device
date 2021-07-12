@@ -231,9 +231,8 @@ table {
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
 
-                var textToSave = setConfigParameters(param);
-                FileDeleteOnServer("/config/config.ini", basepath);
-                FileSendContent(textToSave, "/config/config.ini", basepath);
+                WriteConfigININew();
+                SaveConfigToServer(basepath);    
 
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
                 showReference();

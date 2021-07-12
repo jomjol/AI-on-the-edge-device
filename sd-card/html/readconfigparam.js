@@ -265,6 +265,17 @@ function getConfigParameters() {
 
 function WriteConfigININew()
 {
+     // Cleanup empty NUMBERS
+     for (var j = 0; j < NUMBERS.length; ++j)
+     {
+          if ((NUMBERS[j]["digit"].length + NUMBERS[j]["analog"].length) == 0)
+          {
+               NUMBERS.splice(j, 1);
+          }
+     }
+
+
+
      config_split = new Array(0);
 
      for (var cat in param) {
@@ -358,52 +369,6 @@ function WriteConfigININew()
      }
 }
 
-function setConfigParameters(_param, _category = "") {
-     for (var cat in _param) {
-          for (var name in _param[cat]) {
-               param[cat][name]["found"] = _param[cat][name]["found"];
-               param[cat][name]["enabled"] = _param[cat][name]["enabled"];
-               param[cat][name]["line"] = _param[cat][name]["line"];
-
-               param[cat][name]["anzParam"] = _param[cat][name]["anzParam"];
-               for (var j = 1; j <= _param[cat][name]["anzParam"]; ++j) {
-                    param[cat][name]["value"+j] =  _param[cat][name]["value"+j];
-                    }
-
-               if (param[cat][name]["found"]) {
-                    var text = name + " =" 
-                    
-                    for (var j = 1; j <= _param[cat][name]["anzParam"]; ++j) {
-                         text = text + " " + param[cat][name]["value"+j];
-                         }
-                    if (!param[cat][name]["enabled"]) {
-                         text = ";" + text;
-                    }
-                    config_split[param[cat][name]["line"]] = text;
-               }
-          }
-     }
-
-     for (var cat in _category) {
-          if (category[cat]["found"])
-          {
-               category[cat]["enabled"] = _category[cat]["enabled"];
-               text = "[" + cat + "]";
-               if (!category[cat]["enabled"]) {
-                    text = ";" + text;
-               }
-               config_split[category[cat]["line"]] = text;
-
-          }
-     }
-     
-     config_gesamt = config_split[0];
-     for (var i = 1; i < config_split.length; ++i){
-          config_gesamt = config_gesamt + "\n" + config_split[i]; 
-     }
-
-     return config_gesamt;
-}
 
 
 function isCommented(input)
@@ -611,8 +576,12 @@ function CreateNUMBER(_numbernew){
 
      for (_cat in param)
           for (_param in param[_cat])
-               if (param[_cat][_param]["Numbers"] == true){
-                    _ret[_cat] = new Object();
+               if (param[_cat][_param]["Numbers"] == true)
+               {
+                    if (typeof (_ret[_cat]) === "undefined")
+                    {
+                         _ret[_cat] = new Object();
+                    }
                     _ret[_cat][_param] = new Object();
                     _ret[_cat][_param]["found"] = false;
                     _ret[_cat][_param]["enabled"] = false;
@@ -620,8 +589,7 @@ function CreateNUMBER(_numbernew){
 
                }
 
-     NUMBERS.push(_ret);
-
+     NUMBERS.push(_ret);               
      return "";
 }
 
