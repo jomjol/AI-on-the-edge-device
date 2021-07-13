@@ -45,6 +45,22 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+
+
+##### Rolling - **BETA for v8.0.0 - Multi Meter Support** (2021-07-13)
+
+* Dual / multi meter support (more than 1 number to be recognized)
+  This is implemented with the feature "number" on the ROI definition as well as selected options
+* MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
+* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and functional fully yet
+* Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
+
+<span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
+
+
+
+
+
 Rolling - (2021-07-12)
 
 * HTML: Bug fixing
