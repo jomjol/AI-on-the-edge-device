@@ -47,88 +47,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - **BETA for v8.0.0 - Multi Meter Support** (2021-07-13)
+##### 8.0.0 - Multi Meter Support (2021-07-14)
 
 * Dual / multi meter support (more than 1 number to be recognized)
   This is implemented with the feature "number" on the ROI definition as well as selected options
 * MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
-* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and functional fully yet
+* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and fully functional yet
 * Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
 
 <span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
-
-
-
-
-
-Rolling - (2021-07-12)
-
-* HTML: Bug fixing
-
-Rolling - (2021-07-11) - **SPECIAL THANKS TO https://github.com/Zwer2k**
-
-* GPIO: implements basic functionality for GPIO handler.
-  - Configuration via config.ini / HTML page
-  - GPIO 12, 13, 1, 3, 0, 4 can be used (see restrictions in HTML configuration page)  
-  - GPIO can be used as input or output
-  - pullup / pulldown can be enabled
-  - supports all interrupt types of the ESP32
-  - publishing via MQTT or HTTP
-  - definition of the MQTT topic name
-* HTML: implements regex mask for text input fields (currently enabled for GPIO inputs and main topic)
-* HTML: automatic detection of select fields
-* MQTT: added readings for uptime and freeMem (can be used for tracking with Infux DB and as memory leak detection)
-* MQTT: connection is no longer terminated and reestablished on each flow
-* Classe ConfigFile created. Can be used by all components in the future.
-* Bugfix: memory leaks in ClassFlowAnalog and ClassFlowControll fixed.
-* Removed compiler warnings 
-
-Rolling - (2021-07-08)
-
-* MQTT: added json output
-
-Rolling - (2021-07-07)
-
-* Updated server configuration (avoid server blocking in case too many connections in parallel)
-* HTML: update ROI definition (show all ROIs)
-
-Rolling - (2021-07-05)
-
-* Update jquery, inital config.ini
-
-Rolling - (2021-07-03)
-
-* Parameter `MaxRateValue` individual for each number
-* BugFix: MQTT server tried to connect even in case it was disabled
-
-Rolling - (2021-07-01)
-
-* NEW FEATURE: adding support for more than 1 number on a meter (e.g. two different power readings)
-  Therefore the concept of "Numbers" is implemented - a bunch of digits and analog counters are combined to one number. You can define them during setup of digital and analog ROIs:
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/numbers.jpg" width="300"> 
-  
-* MQTT: standardization of the naming - only the main topic needs to be specified. The subtopics will be named automatically. This is necessary to handle the multi number option.
-  **ATTENTION**: the parameter `maintopic` needs to be set
-  
-* Remark: 
-  
-  * This is an early stage - do only use it on a test system and make a backup of your configuration. 
-  * The documentation is not updated yet.
-
-* <span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
-
-  
-
-Rolling - (2021-06-17)
-
-* bug fix setting hostname, Flash-LED not off during reboot
-
-Rolling - (2021-06-11)
-
-* Restructuring for multi number counters
-  * Major internal and html changes 
-    (html and firmware)
-*  **ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**
 
 
 
