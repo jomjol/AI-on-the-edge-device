@@ -1,7 +1,7 @@
 #include "ClassFlowAnalog.h"
 
 #include <math.h>
-#include <iomanip>
+#include <iomanip> 
 #include <sys/types.h>
 #include <sstream>      // std::stringstream
 
@@ -46,9 +46,9 @@ ClassFlowAnalog::ClassFlowAnalog(std::vector<ClassFlow*>* lfc) : ClassFlowImage(
 }
 
 
-int ClassFlowAnalog::AnzahlROIs()
+int ClassFlowAnalog::AnzahlROIs(int _analog = 0)
 {
-    int zw = ROI.size();
+    int zw = ANALOG[_analog]->ROI.size();
     if (extendedResolution)
         zw++;
     
@@ -56,27 +56,27 @@ int ClassFlowAnalog::AnzahlROIs()
 } 
 
 
-string ClassFlowAnalog::getReadout()
+string ClassFlowAnalog::getReadout(int _analog = 0)
 {
     string result = "";    
-    if (ROI.size() == 0)
+    if (ANALOG[_analog]->ROI.size() == 0)
         return result;
 
 
-    float zahl = ROI[ROI.size() - 1]->result;
+    float zahl = ANALOG[_analog]->ROI[ANALOG[_analog]->ROI.size() - 1]->result;
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
 
     int prev = -1;
 
-    prev = ZeigerEval(ROI[ROI.size() - 1]->result, prev);
+    prev = ZeigerEval(ANALOG[_analog]->ROI[ANALOG[_analog]->ROI.size() - 1]->result, prev);
     result = std::to_string(prev);
 
     if (extendedResolution)
         result = result + std::to_string(ergebnis_nachkomma);
 
-    for (int i = ROI.size() - 2; i >= 0; --i)
+    for (int i = ANALOG[_analog]->ROI.size() - 2; i >= 0; --i)
     {
-        prev = ZeigerEval(ROI[i]->result, prev);
+        prev = ZeigerEval(ANALOG[_analog]->ROI[i]->result, prev);
         result = std::to_string(prev) + result;
     }
 
@@ -153,8 +153,8 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if (zerlegt.size() >= 5)
         {
-            roianalog* neuroi = new roianalog;
-            neuroi->name = zerlegt[0];
+            analog* _analog = GetANALOG(zerlegt[0], true);
+            roianalog* neuroi = _analog->ROI[_analog->ROI.size()-1];
             neuroi->posx = std::stoi(zerlegt[1]);
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
@@ -162,7 +162,7 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->result = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;
-            ROI.push_back(neuroi);
+//            ROI.push_back(neuroi);
         }
 
         if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
@@ -178,14 +178,75 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
-        ROI[i]->image_org = new CImageBasis(ROI[i]->deltax, ROI[i]->deltay, 3);
-    }
+   for (int _ana = 0; _ana < ANALOG.size(); ++_ana)
+        for (int i = 0; i < ANALOG[_ana]->ROI.size(); ++i)
+        {
+            ANALOG[_ana]->ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+            ANALOG[_ana]->ROI[i]->image_org = new CImageBasis(ANALOG[_ana]->ROI[i]->deltax, ANALOG[_ana]->ROI[i]->deltay, 3);
+        }
 
     return true;
 }
+
+analog* ClassFlowAnalog::FindANALOG(string _name_number)
+{
+    analog *_ret = NULL;
+
+    for (int i = 0; i < ANALOG.size(); ++i)
+    {
+        if (ANALOG[i]->name == _name_number)
+            return ANALOG[i];
+    }
+
+    return NULL;
+}
+
+
+
+analog* ClassFlowAnalog::GetANALOG(string _name, bool _create = true)
+{
+    string _analog, _roi;
+    int _pospunkt = _name.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _name.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+    {
+        _analog = _name.substr(0, _pospunkt);
+        _roi = _name.substr(_pospunkt+1, _name.length() - _pospunkt - 1);
+    }
+    else
+    {
+        _analog = "default";
+        _roi = _name;
+    }
+
+    analog *_ret = NULL;
+
+    for (int i = 0; i < ANALOG.size(); ++i)
+    {
+        if (ANALOG[i]->name == _analog)
+            _ret = ANALOG[i];
+    }
+
+    if (!_create)         // nicht gefunden und soll auch nicht erzeugt werden
+        return _ret;
+
+
+    if (_ret == NULL)
+    {
+        _ret = new analog;
+        _ret->name = _analog;
+        ANALOG.push_back(_ret);
+    }
+
+    roianalog* neuroi = new roianalog;
+    neuroi->name = _roi;
+    _ret->ROI.push_back(neuroi);
+
+    printf("GetANALOG - ANALOG %s - roi %s\n", _analog.c_str(), _roi.c_str());
+
+    return _ret;
+}
+
 
 
 string ClassFlowAnalog::getHTMLSingleStep(string host)
@@ -238,16 +299,29 @@ bool ClassFlowAnalog::doAlignAndCut(string time)
 
     CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();    
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        printf("Analog %d - Align&Cut\n", i);
-        
-        caic->CutAndSave(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, ROI[i]->image_org);
-        if (SaveAllFiles) ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".jpg"));
+    for (int _ana = 0; _ana < ANALOG.size(); ++_ana)
+        for (int i = 0; i < ANALOG[_ana]->ROI.size(); ++i)
+        {
+            printf("Analog %d - Align&Cut\n", i);
+            
+            caic->CutAndSave(ANALOG[_ana]->ROI[i]->posx, ANALOG[_ana]->ROI[i]->posy, ANALOG[_ana]->ROI[i]->deltax, ANALOG[_ana]->ROI[i]->deltay, ANALOG[_ana]->ROI[i]->image_org);
+            if (SaveAllFiles)
+            {
+                if (ANALOG[_ana]->name == "default")
+                    ANALOG[_ana]->ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ANALOG[_ana]->ROI[i]->name + ".jpg"));
+                else
+                    ANALOG[_ana]->ROI[i]->image_org->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ANALOG[_ana]->name + "_" + ANALOG[_ana]->ROI[i]->name + ".jpg"));
+            } 
 
-        ROI[i]->image_org->Resize(modelxsize, modelysize, ROI[i]->image);
-        if (SaveAllFiles) ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ROI[i]->name + ".bmp"));
-    }
+            ANALOG[_ana]->ROI[i]->image_org->Resize(modelxsize, modelysize, ANALOG[_ana]->ROI[i]->image);
+            if (SaveAllFiles)
+            {
+                if (ANALOG[_ana]->name == "default")
+                    ANALOG[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ANALOG[_ana]->ROI[i]->name + ".bmp"));
+                else
+                    ANALOG[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ANALOG[_ana]->name + "_" + ANALOG[_ana]->ROI[i]->name + ".bmp"));
+            } 
+        }
 
     return true;
 } 
@@ -258,13 +332,14 @@ void ClassFlowAnalog::DrawROI(CImageBasis *_zw)
     int g = 255;
     int b = 0;
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        _zw->drawRect(ROI[i]->posx, ROI[i]->posy, ROI[i]->deltax, ROI[i]->deltay, r, g, b, 1);
-        _zw->drawCircle((int) (ROI[i]->posx + ROI[i]->deltax/2), (int)  (ROI[i]->posy + ROI[i]->deltay/2), (int) (ROI[i]->deltax/2), r, g, b, 2);
-        _zw->drawLine((int) (ROI[i]->posx + ROI[i]->deltax/2), (int) ROI[i]->posy, (int) (ROI[i]->posx + ROI[i]->deltax/2), (int) (ROI[i]->posy + ROI[i]->deltay), r, g, b, 2);
-        _zw->drawLine((int) ROI[i]->posx, (int) (ROI[i]->posy + ROI[i]->deltay/2), (int) ROI[i]->posx + ROI[i]->deltax, (int) (ROI[i]->posy + ROI[i]->deltay/2), r, g, b, 2);
-    }
+    for (int _ana = 0; _ana < ANALOG.size(); ++_ana)
+        for (int i = 0; i < ANALOG[_ana]->ROI.size(); ++i)
+        {
+            _zw->drawRect(ANALOG[_ana]->ROI[i]->posx, ANALOG[_ana]->ROI[i]->posy, ANALOG[_ana]->ROI[i]->deltax, ANALOG[_ana]->ROI[i]->deltay, r, g, b, 1);
+            _zw->drawCircle((int) (ANALOG[_ana]->ROI[i]->posx + ANALOG[_ana]->ROI[i]->deltax/2), (int)  (ANALOG[_ana]->ROI[i]->posy + ANALOG[_ana]->ROI[i]->deltay/2), (int) (ANALOG[_ana]->ROI[i]->deltax/2), r, g, b, 2);
+            _zw->drawLine((int) (ANALOG[_ana]->ROI[i]->posx + ANALOG[_ana]->ROI[i]->deltax/2), (int) ANALOG[_ana]->ROI[i]->posy, (int) (ANALOG[_ana]->ROI[i]->posx + ANALOG[_ana]->ROI[i]->deltax/2), (int) (ANALOG[_ana]->ROI[i]->posy + ANALOG[_ana]->ROI[i]->deltay), r, g, b, 2);
+            _zw->drawLine((int) ANALOG[_ana]->ROI[i]->posx, (int) (ANALOG[_ana]->ROI[i]->posy + ANALOG[_ana]->ROI[i]->deltay/2), (int) ANALOG[_ana]->ROI[i]->posx + ANALOG[_ana]->ROI[i]->deltax, (int) (ANALOG[_ana]->ROI[i]->posy + ANALOG[_ana]->ROI[i]->deltay/2), r, g, b, 2);
+        }
 } 
 
 bool ClassFlowAnalog::doNeuralNetwork(string time)
@@ -284,43 +359,46 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     printf(zwcnn.c_str());printf("\n");
-    tflite->LoadModel(zwcnn); 
+    if (!tflite->LoadModel(zwcnn)) {
+        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        delete tflite;
+        return false;
+    } 
     tflite->MakeAllocate();
 #endif
 
-    for (int i = 0; i < ROI.size(); ++i)
+    for (int _ana = 0; _ana < ANALOG.size(); ++_ana)
     {
-        printf("Analog %d - TfLite\n", i);
-        ioresize = "/sdcard/img_tmp/ra" + std::to_string(i) + ".bmp";
-        ioresize = FormatFileName(ioresize);
-
-
-        float f1, f2;
-        f1 = 0; f2 = 0;
-
-#ifndef OHNETFLITE
-//        LogFile.WriteToFile("ClassFlowAnalog::doNeuralNetwork vor CNN tflite->LoadInputImage(ioresize)");
-//        tflite->LoadInputImage(ioresize);
-        tflite->LoadInputImageBasis(ROI[i]->image);        
-        tflite->Invoke();
-        if (debugdetailanalog) LogFile.WriteToFile("Nach Invoke");
-
-
-        f1 = tflite->GetOutputValue(0);
-        f2 = tflite->GetOutputValue(1);
-#endif
-
-        float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
-//        printf("Result sin, cos, ziffer: %f, %f, %f\n", f1, f2, result);  
-        ROI[i]->result = result * 10;
-
-        printf("Result Analog%i: %f\n", i, ROI[i]->result); 
-
-        if (isLogImage)
+        for (int i = 0; i < ANALOG[_ana]->ROI.size(); ++i)
         {
-            LogImage(logPath, ROI[i]->name, &ROI[i]->result, NULL, time, ROI[i]->image_org);
+            printf("Analog %d - TfLite\n", i);
+
+            float f1, f2;
+            f1 = 0; f2 = 0;
+
+    #ifndef OHNETFLITE
+            tflite->LoadInputImageBasis(ANALOG[_ana]->ROI[i]->image);        
+            tflite->Invoke();
+            if (debugdetailanalog) LogFile.WriteToFile("Nach Invoke");
+
+
+            f1 = tflite->GetOutputValue(0);
+            f2 = tflite->GetOutputValue(1);
+    #endif
+
+            float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
+    //        printf("Result sin, cos, ziffer: %f, %f, %f\n", f1, f2, result);  
+            ANALOG[_ana]->ROI[i]->result = result * 10;
+
+            printf("Result Analog%i: %f\n", i, ANALOG[_ana]->ROI[i]->result); 
+
+            if (isLogImage)
+            {
+                LogImage(logPath, ANALOG[_ana]->ROI[i]->name, &ANALOG[_ana]->ROI[i]->result, NULL, time, ANALOG[_ana]->ROI[i]->image_org);
+            }
         }
     }
+
 #ifndef OHNETFLITE
         delete tflite;
 #endif    
@@ -333,18 +411,78 @@ std::vector<HTMLInfo*> ClassFlowAnalog::GetHTMLInfo()
 {
     std::vector<HTMLInfo*> result;
 
-    for (int i = 0; i < ROI.size(); ++i)
-    {
-        HTMLInfo *zw = new HTMLInfo;
-        zw->filename = ROI[i]->name + ".bmp";
-        zw->filename_org = ROI[i]->name + ".jpg";
-        zw->val = ROI[i]->result;
-        zw->image = ROI[i]->image;
-        zw->image_org = ROI[i]->image_org;
-        result.push_back(zw);
-    }
+    for (int _ana = 0; _ana < ANALOG.size(); ++_ana)
+        for (int i = 0; i < ANALOG[_ana]->ROI.size(); ++i)
+        {
+                if (ANALOG[_ana]->name == "default")
+                    ANALOG[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ANALOG[_ana]->ROI[i]->name + ".bmp"));
+                else
+                    ANALOG[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + ANALOG[_ana]->name + "_" + ANALOG[_ana]->ROI[i]->name + ".bmp"));
+
+
+            HTMLInfo *zw = new HTMLInfo;
+            if (ANALOG[_ana]->name == "default")
+            {
+                zw->filename = ANALOG[_ana]->ROI[i]->name + ".bmp";
+                zw->filename_org = ANALOG[_ana]->ROI[i]->name + ".jpg";
+            }
+            else
+            {
+                zw->filename = ANALOG[_ana]->name + "_" + ANALOG[_ana]->ROI[i]->name + ".bmp";
+                zw->filename_org = ANALOG[_ana]->name + "_" + ANALOG[_ana]->ROI[i]->name + ".jpg";
+            }
+
+            zw->val = ANALOG[_ana]->ROI[i]->result;
+            zw->image = ANALOG[_ana]->ROI[i]->image;
+            zw->image_org = ANALOG[_ana]->ROI[i]->image_org;
+
+            result.push_back(zw);
+        }
 
     return result;
 }
+
+
+
+int ClassFlowAnalog::getAnzahlANALOG()
+{
+    return ANALOG.size();
+}
+
+string ClassFlowAnalog::getNameANALOG(int _analog)
+{
+    if (_analog < ANALOG.size())
+        return ANALOG[_analog]->name;
+
+    return "ANALOG DOES NOT EXIST";
+}
+
+analog* ClassFlowAnalog::GetANALOG(int _analog)
+{
+    if (_analog < ANALOG.size())
+        return ANALOG[_analog];
+
+    return NULL;
+}
+
+
+
+void ClassFlowAnalog::UpdateNameNumbers(std::vector<std::string> *_name_numbers)
+{
+    for (int _dig = 0; _dig < ANALOG.size(); _dig++)
+    {
+        std::string _name = ANALOG[_dig]->name;
+        bool found = false;
+        for (int i = 0; i < (*_name_numbers).size(); ++i)
+        {
+            if ((*_name_numbers)[i] == _name)
+                found = true;
+        }
+        if (!found)
+            (*_name_numbers).push_back(_name);
+    }
+}
+
+
 
 

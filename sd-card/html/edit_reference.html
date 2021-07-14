@@ -53,7 +53,7 @@ table {
 	  </tr>
 	  <tr>
         <td><label for="mirror">Pre-rotate Angle:</label></td>	  
-		<td><input type="number" id="prerotateangle" name="prerotateangle" value=0 min="-360" max="360" onchange="drawRotated()">Degrees</td>
+		<td><input type="number" id="prerotateangle" name="prerotateangle" value="0" min="-360" max="360" onchange="drawRotated()">Degrees</td>
         <td>
             <class id="MakeImage_Brightness_text" style="color:black;">Brightness: </class>
             <input type="number" id="MakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
@@ -86,7 +86,6 @@ table {
 
 
     <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfig.js"></script>  
     <script type="text/javascript" src="./readconfigcommon.js"></script>  
     <script type="text/javascript" src="./readconfigparam.js"></script>  
     
@@ -209,7 +208,11 @@ table {
                 param["Alignment"]["InitialRotate"].value1 = document.getElementById("prerotateangle").value;
 
                 if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
+                {
                     param["Alignment"]["InitialMirror"].value1 = "true";
+                    param["Alignment"]["InitialMirror"]["found"] = true;
+                    param["Alignment"]["InitialMirror"]["enabled"] = true;
+                }
                 else
                     param["Alignment"]["InitialMirror"].value1 = "false";
 
@@ -228,9 +231,8 @@ table {
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
 
-                var textToSave = setConfigParameters(param);
-                FileDeleteOnServer("/config/config.ini", basepath);
-                FileSendContent(textToSave, "/config/config.ini", basepath);
+                WriteConfigININew();
+                SaveConfigToServer(basepath);    
 
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
                 showReference();

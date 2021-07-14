@@ -120,6 +120,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
+        
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 
@@ -209,7 +210,7 @@ bool ClassFlowControll::doFlow(string time)
     int repeat = 0;
 
 #ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
+    LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
 #endif
 
     for (int i = 0; i < FlowControll.size(); ++i)
@@ -238,7 +239,7 @@ bool ClassFlowControll::doFlow(string time)
         }
         
 #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
+        LogFile.WriteHeapInfo("ClassFlowControll::doFlow");
 #endif
 
     }
@@ -260,6 +261,38 @@ void ClassFlowControll::UpdateAktStatus(std::string _flow)
 
 
 }
+
+
+string ClassFlowControll::getReadoutAll(int _type)
+{
+    std::vector<NumberPost*> numbers = flowpostprocessing->GetNumbers();
+    std::string out = "";
+
+    for (int i = 0; i < numbers.size(); ++i)
+    {
+        out = out + numbers[i]->name + "\t";
+        switch (_type) {
+            case READOUT_TYPE_VALUE:
+                out = out + numbers[i]->ReturnValue;
+                break;
+            case READOUT_TYPE_PREVALUE:
+                out = out + numbers[i]->ReturnPreValue;
+                break;
+            case READOUT_TYPE_RAWVALUE:
+                out = out + numbers[i]->ReturnRawValue;
+                break;
+            case READOUT_TYPE_ERROR:
+                out = out + numbers[i]->ErrorMessageText;
+                break;
+        }
+        if (i < numbers.size()-1)
+            out = out + "\r\n";
+    }
+
+//    printf("OUT: %s", out.c_str());
+
+    return out;
+}	
 
 
 string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false)
@@ -285,17 +318,17 @@ string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = fal
     return result;
 }
 
-string ClassFlowControll::GetPrevalue()	
+string ClassFlowControll::GetPrevalue(std::string _number)	
 {
     if (flowpostprocessing)
     {
-        return flowpostprocessing->GetPreValue();   
+        return flowpostprocessing->GetPreValue(_number);   
     }
 
     return std::string();    
 }
 
-std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
+std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers)
 {
     float zw;
     char* p;
@@ -317,7 +350,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue)
 
     if (flowpostprocessing)
     {
-        flowpostprocessing->SavePreValue(zw);
+        flowpostprocessing->SetPreValue(zw, _numbers);
         return _newvalue;    
     }
 
@@ -442,7 +475,7 @@ int ClassFlowControll::CleanTempFolder() {
 
 esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 {
-    return flowmakeimage->SendRawJPG(req);
+    return flowmakeimage != NULL ? flowmakeimage->SendRawJPG(req) : ESP_FAIL;
 }
 
 
@@ -453,6 +486,12 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     CImageBasis *_send = NULL;
     esp_err_t result = ESP_FAIL;
     bool Dodelete = false;    
+
+    if (flowalignment == NULL)
+    {
+        printf("Can't continue, flowalignment is NULL\n");
+        return ESP_FAIL;
+    }
 
     if (_fn == "alg.jpg")
     {
@@ -485,7 +524,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             if (htmlinfo[i]->image_org)
                 _send = htmlinfo[i]->image_org;        
         }
+        delete htmlinfo[i];
     }
+    htmlinfo.clear();
 
     htmlinfo = GetAllAnalog();
     for (int i = 0; i < htmlinfo.size(); ++i)
@@ -500,7 +541,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             if (htmlinfo[i]->image_org)
                 _send = htmlinfo[i]->image_org;        
         }
+        delete htmlinfo[i];
     }
+    htmlinfo.clear();
 
     if (_send)
     {

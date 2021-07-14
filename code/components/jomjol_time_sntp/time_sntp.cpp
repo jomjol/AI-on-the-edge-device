@@ -18,6 +18,7 @@
 static const char *TAG = "sntp";
 
 bool setTimeAlwaysOnReboot = true;
+time_t bootTime;
 
 static void obtain_time(void);
 static void initialize_sntp(void);
@@ -125,4 +126,17 @@ static void initialize_sntp(void)
     sntp_setservername(0, "pool.ntp.org");
 //    sntp_set_time_sync_notification_cb(time_sync_notification_cb);
     sntp_init();
+}
+
+void setBootTime() 
+{
+    time(&bootTime);
+}
+
+time_t getUpTime() 
+{
+    time_t now;
+    time(&now);
+
+    return now - bootTime;
 }

@@ -10,6 +10,7 @@
 #include <string.h>
 #include <esp_log.h>
 
+
 #include "ClassLogFile.h"
 //#include "ClassLogFile.h"
 
@@ -77,8 +78,9 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 
 
-FILE* OpenFileAndWait(const char* nm, char* _mode, int _waitsec)
+FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
+	printf("open config file %s in mode %s\n", nm, _mode);
 	FILE *pfile = fopen(nm, _mode);
 
 	if (pfile == NULL)
@@ -313,6 +315,14 @@ string toUpper(string in)
 	return in;
 }
 
+string toLower(string in)
+{
+	for (int i = 0; i < in.length(); ++i)
+		in[i] = tolower(in[i]);
+	
+	return in;
+}
+
 // CPU Temp
 extern "C" uint8_t temprature_sens_read();
 float temperatureRead()
@@ -358,3 +368,30 @@ int removeFolder(const char* folderPath, const char* logTag) {
 
 	return deleted;
 }
+
+
+
+std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter = "")
+{
+	std::vector<string> Output;
+	std::string delimiter = " =,";
+    if (_delimiter.length() > 0){
+        delimiter = _delimiter;
+    }
+
+	input = trim(input, delimiter);
+	size_t pos = findDelimiterPos(input, delimiter);
+	std::string token;
+	while (pos != std::string::npos) {
+		token = input.substr(0, pos);
+		token = trim(token, delimiter);
+		Output.push_back(token);
+		input.erase(0, pos + 1);
+		input = trim(input, delimiter);
+		pos = findDelimiterPos(input, delimiter);
+	}
+	Output.push_back(input);
+
+	return Output;
+}
+

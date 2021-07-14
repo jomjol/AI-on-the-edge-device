@@ -1,6 +1,8 @@
+#include <sstream>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 
+#include "time_sntp.h"
 #include "interface_mqtt.h"
 #include "ClassFlowPostProcessing.h"
 
@@ -13,6 +15,11 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicError = "";
     topicRate = "";
     topicTimeStamp = "";
+    maintopic = "";
+    mainerrortopic = ""; 
+
+    topicUptime = "";
+    topicFreeMem = "";
     clientname = "watermeter";
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -21,6 +28,9 @@ void ClassFlowMQTT::SetInitialParameter(void)
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
+    MQTTenable = false;
+    
+    
 
 }       
 
@@ -88,33 +98,24 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->uri = zerlegt[1];
         }
-        if ((toUpper(zerlegt[0]) == "TOPIC") && (zerlegt.size() > 1))
-        {
-            this->topic = zerlegt[1];
-        }
-        if ((toUpper(zerlegt[0]) == "TOPICERROR") && (zerlegt.size() > 1))
-        {
-            this->topicError = zerlegt[1];
-        }
-        if ((toUpper(zerlegt[0]) == "TOPICRATE") && (zerlegt.size() > 1))
-        {
-            this->topicRate  = zerlegt[1];
-        }
-        if ((toUpper(zerlegt[0]) == "TOPICTIMESTAMP") && (zerlegt.size() > 1))
-        {
-            this->topicTimeStamp  = zerlegt[1];
-        }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
             this->clientname = zerlegt[1];
         }
 
+        if (((toUpper(zerlegt[0]) == "TOPIC") || (toUpper(zerlegt[0]) == "MAINTOPIC")) && (zerlegt.size() > 1))
+        {
+            maintopic = zerlegt[1];
+        }
     }
 
-    if ((uri.length() > 0) && (topic.length() > 0)) 
+    if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
     {
-        MQTTInit(uri, clientname, user, password, topicError, 60);
+        mainerrortopic = maintopic + "/connection";
+        MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
+        MQTTPublish(mainerrortopic, "connected");
+        MQTTenable = true;
     }
    
     return true;
@@ -123,18 +124,66 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
+    if (!MQTTenable)
+        return true;
+
     std::string result;
     std::string resulterror = "";
     std::string resultrate = "";
     std::string resulttimestamp = "";
     string zw = "";
+    string namenumber = "";
+
+    MQTTPublish(mainerrortopic, "connected");
     
+    zw = maintopic + "/" + "uptime";
+    char uptimeStr[11];
+    sprintf(uptimeStr, "%ld", (long)getUpTime());
+    MQTTPublish(zw, uptimeStr);
+
+    zw = maintopic + "/" + "freeMem";
+    char freeheapmem[11];
+    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+    MQTTPublish(zw, freeheapmem);
+
     if (flowpostprocessing)
     {
-        result =  flowpostprocessing->getReadoutParam(false, true);
-        resulterror = flowpostprocessing->getReadoutError();
-        resultrate = flowpostprocessing->getReadoutRate();
-        resulttimestamp = flowpostprocessing->getReadoutTimeStamp();
+        std::vector<NumberPost*> NUMBERS = flowpostprocessing->GetNumbers();
+
+        for (int i = 0; i < NUMBERS.size(); ++i)
+        {
+            result =  NUMBERS[i]->ReturnValueNoError;
+            resulterror = NUMBERS[i]->ErrorMessageText;
+            resultrate = std::to_string(NUMBERS[i]->FlowRateAct);
+            resulttimestamp = NUMBERS[i]->timeStamp;
+
+            namenumber = NUMBERS[i]->name;
+            if (namenumber == "default")
+                namenumber = maintopic + "/";
+            else
+                namenumber = maintopic + "/" + namenumber + "/";
+
+            zw = namenumber + "value";    
+            MQTTPublish(zw, result);
+
+            zw = namenumber + "error";    
+            MQTTPublish(zw, resulterror, 1);
+
+            zw = namenumber + "rate";    
+            MQTTPublish(zw, resultrate);
+
+            zw = namenumber + "timestamp";
+            MQTTPublish(zw, resulttimestamp);
+
+
+            std::string json="{\"value\":"+result;
+            json += ",\"error\":\""+resulterror;
+            json += "\",\"rate\":"+resultrate;
+            json += ",\"timestamp\":\""+resulttimestamp+"\"}";
+
+            zw = namenumber + "json";
+            MQTTPublish(zw, json);
+        }
     }
     else
     {
@@ -149,26 +198,9 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                     result = result + "\t" + zw;
             }
         }
+        MQTTPublish(topic, result);
     }
     
-    MQTTPublish(topic, result);
-
-    if (topicError.length() > 0) {
-        if (resulterror.length() == 0)
-        {
-            resulterror = " ";
-        }
-        MQTTPublish(topicError, resulterror, 1);
-    }
-
-    if (topicRate.length() > 0) {
-        MQTTPublish(topicRate, resultrate);
-    }
-
-    if (topicTimeStamp.length() > 0) {
-        MQTTPublish(topicTimeStamp, resulttimestamp);
-    }
-
     OldValue = result;
     
     return true;

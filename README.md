@@ -12,6 +12,8 @@ respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
 
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
+
 
 
 
@@ -45,16 +47,27 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### 8.0.0 - Multi Meter Support (2021-07-14)
+
+* Dual / multi meter support (more than 1 number to be recognized)
+  This is implemented with the feature "number" on the ROI definition as well as selected options
+* MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
+* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and fully functional yet
+* Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
+
+<span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
+
+
 
 ##### 7.1.2 MQTT-Update - (2021-06-17)
 
-* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
-* NEW: 7.1.1: bug fix wlan password with "="  (again)
+* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during rebootNEW: 7.1.1: bug fix wlan password with "="  (again)
 * MQTT error message: changes "no error", send retain flag
 * Update wlan handling to esp-idf 4.1
 * Upgrade digital CNN to v8.7.0  (added new images)
 * Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
 
+  
 
 ##### 7.0.1 MQTT-Update - (2021-05-13)
 

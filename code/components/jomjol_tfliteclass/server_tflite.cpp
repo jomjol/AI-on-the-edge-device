@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -17,8 +18,9 @@
 #include "ClassFlowControll.h"
 
 #include "ClassLogFile.h"
+#include "server_GPIO.h"
 
-//#define DEBUG_DETAIL_ON       
+// #define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
@@ -36,6 +38,9 @@ bool auto_isrunning = false;
 
 
 int countRounds = 0;
+
+static const char *TAGTFLITE = "server_tflite";
+
 
 int getCountFlowRounds() {
     return countRounds;
@@ -64,9 +69,11 @@ void KillTFliteTasks()
 #ifdef DEBUG_DETAIL_ON          
     printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);  
 #endif  
-    if (xHandleblink_task_doFlow)
+    if (xHandleblink_task_doFlow != NULL)
     {
-        vTaskDelete(xHandleblink_task_doFlow);
+        TaskHandle_t xHandleblink_task_doFlowTmp = xHandleblink_task_doFlow;
+        xHandleblink_task_doFlow = NULL;
+        vTaskDelete(xHandleblink_task_doFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandleblink_task_doFlow\n");
 #endif
@@ -75,9 +82,11 @@ void KillTFliteTasks()
 #ifdef DEBUG_DETAIL_ON      
     printf("Handle: xHandletask_autodoFlow: %ld\n", (long) xHandletask_autodoFlow);  
 #endif
-    if (xHandletask_autodoFlow)
+    if (xHandletask_autodoFlow != NULL)
     {
-        vTaskDelete(xHandletask_autodoFlow);
+        TaskHandle_t xHandletask_autodoFlowTmp = xHandletask_autodoFlow;
+        xHandletask_autodoFlow = NULL;
+        vTaskDelete(xHandletask_autodoFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandletask_autodoFlow\n");
 #endif
@@ -87,11 +96,10 @@ void KillTFliteTasks()
 
 void doInit(void)
 {
-    string config = "/sdcard/config/config.ini";
 #ifdef DEBUG_DETAIL_ON             
     printf("Start tfliteflow.InitFlow(config);\n");
 #endif
-    tfliteflow.InitFlow(config);
+    tfliteflow.InitFlow(CONFIG_FILE);
 #ifdef DEBUG_DETAIL_ON      
     printf("Finished tfliteflow.InitFlow(config);\n");
 #endif
@@ -136,7 +144,7 @@ esp_err_t handler_init(httpd_req_t *req)
     printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
 #endif
 
-    char* resp_str = "Init started<br>";
+    const char* resp_str = "Init started<br>";
     httpd_resp_send(req, resp_str, strlen(resp_str));     
 
     doInit();
@@ -159,8 +167,6 @@ esp_err_t handler_doflow(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_doflow - Start");       
 #endif
 
-    char* resp_str;
-
     printf("handler_doFlow uri: "); printf(req->uri); printf("\n");
 
     if (flowisrunning)
@@ -173,7 +179,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
     {
         xTaskCreate(&blink_task_doFlow, "blink_doFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandleblink_task_doFlow);
     }
-    resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
+    const char* resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
     httpd_resp_send(req, resp_str, strlen(resp_str));  
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);       
@@ -196,6 +202,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
     bool _rawValue = false;
     bool _noerror = false;
+    bool _all = false;
+    std::string _type = "value";
     string zw;
 
     printf("handler_wasserzaehler uri:\n"); printf(req->uri); printf("\n");
@@ -206,6 +214,22 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
 //        printf("Query: "); printf(_query); printf("\n");
+        if (httpd_query_key_value(_query, "all", _size, 10) == ESP_OK)
+        {
+#ifdef DEBUG_DETAIL_ON       
+            printf("all is found"); printf(_size); printf("\n"); 
+#endif
+            _all = true;
+        }
+
+        if (httpd_query_key_value(_query, "type", _size, 10) == ESP_OK)
+        {
+#ifdef DEBUG_DETAIL_ON       
+            printf("all is found"); printf(_size); printf("\n"); 
+#endif
+            _type = std::string(_size);
+        }
+
         if (httpd_query_key_value(_query, "rawvalue", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
@@ -221,6 +245,29 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             _noerror = true;
         }        
     }  
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    if (_all)
+    {
+        httpd_resp_set_type(req, "text/plain");
+        printf("TYPE: %s\n", _type.c_str());
+        int _intype = READOUT_TYPE_VALUE;
+        if (_type == "prevalue")
+            _intype = READOUT_TYPE_PREVALUE;
+        if (_type == "raw")
+            _intype = READOUT_TYPE_RAWVALUE;
+        if (_type == "error")
+            _intype = READOUT_TYPE_ERROR;
+
+
+        zw = tfliteflow.getReadoutAll(_intype);
+        printf("ZW: %s\n", zw.c_str());
+        if (zw.length() > 0)
+            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+        httpd_resp_sendstr_chunk(req, NULL);   
+        return ESP_OK;
+    }
 
     zw = tfliteflow.getReadout(_rawValue, _noerror);
     if (zw.length() > 0)
@@ -429,7 +476,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
 //        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        bool changed = Camera.SetBrightnessContrastSaturation(bri, con, sat);
+        Camera.SetBrightnessContrastSaturation(bri, con, sat);
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
@@ -498,6 +545,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
     char _query[100];
     char _size[10] = "";
+    char _numbers[50] = "default";
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
@@ -511,14 +559,23 @@ esp_err_t handler_prevalue(httpd_req_t *req)
             printf("Value: "); printf(_size); printf("\n"); 
 #endif
         }
+
+        httpd_query_key_value(_query, "numbers", _numbers, 50);
     }      
 
     if (strlen(_size) == 0)
-        zw = tfliteflow.GetPrevalue();
+    {
+        zw = tfliteflow.GetPrevalue(std::string(_numbers));
+    }
     else
-        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size);
+    {
+        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size, _numbers);
+    }
     
     resp_str = zw.c_str();
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
 
     httpd_resp_send(req, resp_str, strlen(resp_str));   
     /* Respond with an empty chunk to signal HTTP response completion */
@@ -535,17 +592,17 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
+    printf("task_autodoFlow: start\r\n");
     doInit();
-    
-    auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
+    gpio_handler_init();
 
+    auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
     if (isSetupModusActive()) {
         auto_isrunning = false;
         std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
         tfliteflow.doFlowMakeImageOnly(zw_time);
 
     }
-
     while (auto_isrunning)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
@@ -590,6 +647,7 @@ void task_autodoFlow(void *pvParameter)
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
+    printf("task_autodoFlow: end\r\n");
 }
 
 void TFliteDoAutoStart()

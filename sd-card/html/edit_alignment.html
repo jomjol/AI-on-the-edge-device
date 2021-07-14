@@ -61,7 +61,7 @@ select {
 			  <option value="1" >Reference 1</option>
 			</select>
 		</td>
-		<td colspan="2">Storage Path/Name: <input type="text" name="name" id="name"></td>
+		<td colspan="2">Storage Path/Name: <input type="text" name="name" id="name" onchange="namechanged()"></td>
 	  </tr>
 	  <tr>
 		<td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
@@ -90,9 +90,8 @@ select {
 	</table>
 
 <script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfig.js"></script> 
 <script type="text/javascript" src="./readconfigcommon.js"></script>
-
+<script type="text/javascript" src="./readconfigparam.js"></script>  
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -105,7 +104,8 @@ select {
             enhanceCon = false,
             param;
             basepath = "http://192.168.178.26";
-            basepath = "";
+            basepath = "",
+            param;
 
 function ChangeSelection(){
     aktindex = parseInt(document.getElementById("index").value);
@@ -113,14 +113,9 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-/*
-    refInfo[aktindex]["name"] = document.getElementById("name").value;
-    refInfo[aktindex]["x"] = document.getElementById("refx").value;
-    refInfo[aktindex]["y"] = document.getElementById("refy").value; 
-    refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
-    refInfo[aktindex]["dy"] = document.getElementById("refdy").value;
-*/   
-    UpdateConfigReference(refInfo, basepath); 
+    WriteConfigININew();
+    UpdateConfigReference(basepath)
+    SaveConfigToServer(basepath);
 }
 
 function EnhanceContrast(){
@@ -133,10 +128,6 @@ function EnhanceContrast(){
     enhanceCon = true;
     MakeContrastImageZW(refInfo[aktindex], enhanceCon, basepath);
     UpdateReference();
-//    var url = basepath + "/fileserver" + "/img_tmp/ref_zw.jpg?" + Date.now();
-//    document.getElementById("img_ref").src = url;
-//    var url = basepath + "/fileserver" + "/img_tmp/ref_zw_org.jpg?" + Date.now();
-//    document.getElementById("img_ref_org").src = url;
 }
 
 function UpdateReference(){
@@ -211,6 +202,7 @@ function dataURLtoBlob(dataurl) {
             basepath = getbasepath();
             loadConfig(basepath); 
             ParseConfig();
+            param = getConfigParameters();
 
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
@@ -353,6 +345,12 @@ function dataURLtoBlob(dataurl) {
             context.lineTo(x, canvas.height);
             context.stroke();            
         }
+    }
+
+    function namechanged()
+    {
+        _name = document.getElementById("name").value;
+        refInfo[aktindex]["name"] = _name;
     }
 
     function valuemanualchanged(){
