@@ -161,8 +161,6 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 digit* ClassFlowDigit::FindDIGIT(string _name_number)
 {
-    digit *_ret = NULL;
-
     for (int i = 0; i < DIGIT.size(); ++i)
     {
         if (DIGIT[i]->name == _name_number)

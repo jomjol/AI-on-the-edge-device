@@ -354,12 +354,10 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     int memsize = width * height * channels;
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
 
-    TickType_t xDelay;
     int anz = 1;
     while (!rgb_image && (anz < _anzrepeat))    
     {
-		    printf("Create Image from Copy - Speicher ist voll - Versuche es erneut: %d.\n", anz);
-        xDelay = 1000 / portTICK_PERIOD_MS;
+	    printf("Create Image from Copy - Speicher ist voll - Versuche es erneut: %d.\n", anz);
         rgb_image = (unsigned char*) malloc(memsize);
         anz++;
     }

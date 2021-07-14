@@ -190,7 +190,6 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 analog* ClassFlowAnalog::FindANALOG(string _name_number)
 {
-    analog *_ret = NULL;
 
     for (int i = 0; i < ANALOG.size(); ++i)
     {
