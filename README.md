@@ -47,8 +47,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 8.0.0 - Multi Meter Support (2021-07-14)
+##### 8.0.1 - Multi Meter Support (2021-07-18)
 
+* NEW 8.0.1: bug fix html handling of parameter `FixedExposure` and `ImageSize`
 * Dual / multi meter support (more than 1 number to be recognized)
   This is implemented with the feature "number" on the ROI definition as well as selected options
 * MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
