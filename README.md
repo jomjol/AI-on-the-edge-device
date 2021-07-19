@@ -47,6 +47,14 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2021-07-19)
+
+* Saving of rounded prevalue
+
+* based on v8.0.1 (2021-07-08)
+
+  
+
 ##### 8.0.1 - Multi Meter Support (2021-07-18)
 
 * NEW 8.0.1: bug fix html handling of parameter `FixedExposure` and `ImageSize`
