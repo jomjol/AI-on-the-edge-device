@@ -208,7 +208,7 @@ void ClassFlowPostProcessing::SavePreValue()
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         NUMBERS[j]->timeStamp = std::string(buffer);
 
-        _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + to_string(NUMBERS[j]->PreValue) + "\n";
+        _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + "\n";
         printf("Write PreValue Zeile: %s\n", _zw.c_str());
 
         fputs(_zw.c_str(), pFile);
@@ -594,7 +594,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue))
             {
-                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + std::to_string(NUMBERS[j]->Value) + " "; 
+                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift);
             }
