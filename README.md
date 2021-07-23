@@ -49,7 +49,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### 8.0.2 - Multi Meter Support (2021-07-23
 
-* NEW 8.0.1: saving roundes prevalue, bug fix html server
+* NEW 8.0.2: saving roundes prevalue, bug fix html server
 * NEW 8.0.1: bug fix html handling of parameter `FixedExposure` and `ImageSize`
 * Dual / multi meter support (more than 1 number to be recognized)
   This is implemented with the feature "number" on the ROI definition as well as selected options
