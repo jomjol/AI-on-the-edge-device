@@ -120,6 +120,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
+        
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll); 
@@ -209,7 +210,7 @@ bool ClassFlowControll::doFlow(string time)
     int repeat = 0;
 
 #ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow - Start");
+    LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
 #endif
 
     for (int i = 0; i < FlowControll.size(); ++i)
@@ -238,7 +239,7 @@ bool ClassFlowControll::doFlow(string time)
         }
         
 #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowAnalog::doFlow");
+        LogFile.WriteHeapInfo("ClassFlowControll::doFlow");
 #endif
 
     }
@@ -275,7 +276,7 @@ string ClassFlowControll::getReadoutAll(int _type)
                 out = out + numbers[i]->ReturnValue;
                 break;
             case READOUT_TYPE_PREVALUE:
-                out = out + std::to_string(numbers[i]->PreValue);
+                out = out + numbers[i]->ReturnPreValue;
                 break;
             case READOUT_TYPE_RAWVALUE:
                 out = out + numbers[i]->ReturnRawValue;
@@ -474,7 +475,7 @@ int ClassFlowControll::CleanTempFolder() {
 
 esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 {
-    return flowmakeimage->SendRawJPG(req);
+    return flowmakeimage != NULL ? flowmakeimage->SendRawJPG(req) : ESP_FAIL;
 }
 
 
@@ -485,6 +486,12 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     CImageBasis *_send = NULL;
     esp_err_t result = ESP_FAIL;
     bool Dodelete = false;    
+
+    if (flowalignment == NULL)
+    {
+        printf("Can't continue, flowalignment is NULL\n");
+        return ESP_FAIL;
+    }
 
     if (_fn == "alg.jpg")
     {
@@ -517,7 +524,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             if (htmlinfo[i]->image_org)
                 _send = htmlinfo[i]->image_org;        
         }
+        delete htmlinfo[i];
     }
+    htmlinfo.clear();
 
     htmlinfo = GetAllAnalog();
     for (int i = 0; i < htmlinfo.size(); ++i)
@@ -532,7 +541,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             if (htmlinfo[i]->image_org)
                 _send = htmlinfo[i]->image_org;        
         }
+        delete htmlinfo[i];
     }
+    htmlinfo.clear();
 
     if (_send)
     {

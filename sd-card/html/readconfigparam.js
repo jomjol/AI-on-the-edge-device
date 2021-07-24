@@ -74,7 +74,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "PreValueUse");
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
-     ParamAddValue(param, catname, "MaxRateValue");
+     ParamAddValue(param, catname, "MaxRateValue", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
 
@@ -84,13 +84,23 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "Topic");
-     ParamAddValue(param, catname, "TopicError");
-     ParamAddValue(param, catname, "TopicRate");
-     ParamAddValue(param, catname, "TopicTimeStamp");
+     ParamAddValue(param, catname, "MainTopic", 1, false, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
-     ParamAddValue(param, catname, "password");     
+     ParamAddValue(param, catname, "password");
+     
+     var catname = "GPIO";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "MainTopicMQTT", 1, false, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "IO0", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO1", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO3", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO4", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO12", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO13", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 
@@ -139,13 +149,14 @@ function ParseConfig() {
      }
 }
 
-function ParamAddValue(param, _cat, _param, _anzParam = 1, _isIndividual = false){
+function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
      param[_cat][_param] = new Object(); 
      param[_cat][_param]["found"] = false;
      param[_cat][_param]["enabled"] = false;
      param[_cat][_param]["line"] = -1; 
-     param[_cat][_param]["anzParam"] = _anzParam;    
-     param[_cat][_param]["Numbers"] = _isIndividual;
+     param[_cat][_param]["anzParam"] = _anzParam;
+     param[_cat][_param]["Numbers"] = _isNUMBER;
+     param[_cat][_param].checkRegExList = _checkRegExList;
 };
 
 function ParseConfigParamAll(_aktline, _catname){
@@ -191,8 +202,20 @@ function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _
 
 function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
      for (var paramname in _param[_catname]) {
-          if ((_linesplit[0].toUpperCase() == paramname.toUpperCase()) && (_linesplit.length > _param[_catname][paramname]["anzParam"]))
+          _AktROI = "default";
+          _AktPara = _linesplit[0];
+          _pospunkt = _AktPara.indexOf (".");
+          if (_pospunkt > -1)
           {
+               _AktROI = _AktPara.substring(0, _pospunkt);
+               _AktPara = _AktPara.substring(_pospunkt+1);
+          }
+          if (_AktPara.toUpperCase() == paramname.toUpperCase())
+          {
+               while (_linesplit.length <= _param[_catname][paramname]["anzParam"]) {
+                    _linesplit.push("");
+               }
+
                _param[_catname][paramname]["found"] = true;
                _param[_catname][paramname]["enabled"] = !_iscom;
                _param[_catname][paramname]["line"] = _aktline;
@@ -208,13 +231,9 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
                          }
                     if (abc["name"] == "default")
                     {
-                         _param[_catname][paramname]["found"] = true;
-                         _param[_catname][paramname]["enabled"] = !_iscom;
-                         _param[_catname][paramname]["line"] = _aktline;
-                         for (var j = 1; j <= _param[_catname][paramname]["anzParam"]; ++j) {
-                              _param[_catname][paramname]["value"+j] = _linesplit[j];
-                              }
-                         for (_num in NUMBERS)         // wert mit Default belegen
+                    for (_num in NUMBERS)         // wert mit Default belegen
+                         {
+                              if (NUMBERS[_num][_catname][paramname]["found"] == false)
                               {
                                    NUMBERS[_num][_catname][paramname]["found"] = true;
                                    NUMBERS[_num][_catname][paramname]["enabled"] = !_iscom;
@@ -222,7 +241,9 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom){
                                    for (var j = 1; j <= _param[_catname][paramname]["anzParam"]; ++j) {
                                         NUMBERS[_num][_catname][paramname]["value"+j] = _linesplit[j];
                                         }
-                                   }
+
+                              }
+                         }
                     }
                }
                else
@@ -244,6 +265,17 @@ function getConfigParameters() {
 
 function WriteConfigININew()
 {
+     // Cleanup empty NUMBERS
+     for (var j = 0; j < NUMBERS.length; ++j)
+     {
+          if ((NUMBERS[j]["digit"].length + NUMBERS[j]["analog"].length) == 0)
+          {
+               NUMBERS.splice(j, 1);
+          }
+     }
+
+
+
      config_split = new Array(0);
 
      for (var cat in param) {
@@ -258,38 +290,33 @@ function WriteConfigININew()
                {
                     for (_num in NUMBERS)
                     {
-                         if (NUMBERS[_num][cat][name]["found"]) {
-                              if (NUMBERS[_num]["name"] == "default")
-                                   text = name;
-                              else
-                                   text = name + "." + NUMBERS[_num]["name"];
+                         text = NUMBERS[_num]["name"] + "." + name;
 
-                              var text = text + " =" 
-                              
-                              for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
-                                   text = text + " " + NUMBERS[_num][cat][name]["value"+j];
-                                   }
-                              if (!NUMBERS[_num][cat][name]["enabled"]) {
-                                   text = ";" + text;
-                              }
-                              config_split.push(text);
-                         }
-                    }
-               }
-               else
-               {
-                    if (param[cat][name]["found"]) {
-                         var text = name + " =" 
+                         var text = text + " =" 
                          
                          for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
-                              text = text + " " + param[cat][name]["value"+j];
+                              if (!(typeof NUMBERS[_num][cat][name]["value"+j] == 'undefined'))
+                                   text = text + " " + NUMBERS[_num][cat][name]["value"+j];
                               }
-                         if (!param[cat][name]["enabled"]) {
+                         if (!NUMBERS[_num][cat][name]["enabled"]) {
                               text = ";" + text;
                          }
                          config_split.push(text);
                     }
+               }
+               else
+               {
+                    var text = name + " =" 
+                    
+                    for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
+                         if (!(typeof param[cat][name]["value"+j] == 'undefined'))
+                              text = text + " " + param[cat][name]["value"+j];
+                         }
+                    if (!param[cat][name]["enabled"]) {
+                         text = ";" + text;
                     }
+                    config_split.push(text);
+               }
           }
           if (cat == "Digits")
           {
@@ -299,10 +326,7 @@ function WriteConfigININew()
                     {
                          for (var _roiddet in NUMBERS[_roi]["digit"])
                          {
-                              if (NUMBERS[_roi]["name"] == "default")
-                                   text = NUMBERS[_roi]["digit"][_roiddet]["name"];
-                              else
-                                   text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["digit"][_roiddet]["name"];
+                              text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["digit"][_roiddet]["name"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["x"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["y"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["dx"];
@@ -320,10 +344,7 @@ function WriteConfigININew()
                     {
                          for (var _roiddet in NUMBERS[_roi]["analog"])
                          {
-                              if (NUMBERS[_roi]["name"] == "default")
-                                   text = NUMBERS[_roi]["analog"][_roiddet]["name"];
-                              else
-                                   text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["analog"][_roiddet]["name"];
+                              text = NUMBERS[_roi]["name"] + "." + NUMBERS[_roi]["analog"][_roiddet]["name"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["x"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["y"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["dx"];
@@ -348,52 +369,6 @@ function WriteConfigININew()
      }
 }
 
-function setConfigParameters(_param, _category = "") {
-     for (var cat in _param) {
-          for (var name in _param[cat]) {
-               param[cat][name]["found"] = _param[cat][name]["found"];
-               param[cat][name]["enabled"] = _param[cat][name]["enabled"];
-               param[cat][name]["line"] = _param[cat][name]["line"];
-
-               param[cat][name]["anzParam"] = _param[cat][name]["anzParam"];
-               for (var j = 1; j <= _param[cat][name]["anzParam"]; ++j) {
-                    param[cat][name]["value"+j] =  _param[cat][name]["value"+j];
-                    }
-
-               if (param[cat][name]["found"]) {
-                    var text = name + " =" 
-                    
-                    for (var j = 1; j <= _param[cat][name]["anzParam"]; ++j) {
-                         text = text + " " + param[cat][name]["value"+j];
-                         }
-                    if (!param[cat][name]["enabled"]) {
-                         text = ";" + text;
-                    }
-                    config_split[param[cat][name]["line"]] = text;
-               }
-          }
-     }
-
-     for (var cat in _category) {
-          if (category[cat]["found"])
-          {
-               category[cat]["enabled"] = _category[cat]["enabled"];
-               text = "[" + cat + "]";
-               if (!category[cat]["enabled"]) {
-                    text = ";" + text;
-               }
-               config_split[category[cat]["line"]] = text;
-
-          }
-     }
-     
-     config_gesamt = config_split[0];
-     for (var i = 1; i < config_split.length; ++i){
-          config_gesamt = config_gesamt + "\n" + config_split[i]; 
-     }
-
-     return config_gesamt;
-}
 
 
 function isCommented(input)
@@ -480,7 +455,8 @@ function getNUMBERS(_name, _type, _create = true)
           for (_cat in param)
                for (_param in param[_cat])
                     if (param[_cat][_param]["Numbers"] == true){
-                         _ret[_cat] = new Object();
+                         if (typeof  _ret[_cat] == 'undefined')
+                              _ret[_cat] = new Object();
                          _ret[_cat][_param] = new Object();
                          _ret[_cat][_param]["found"] = false;
                          _ret[_cat][_param]["enabled"] = false;
@@ -597,8 +573,23 @@ function CreateNUMBER(_numbernew){
      _ret["name"] = _numbernew;
      _ret['digit'] = new Array();
      _ret['analog'] = new Array();
-     NUMBERS.push(_ret);
 
+     for (_cat in param)
+          for (_param in param[_cat])
+               if (param[_cat][_param]["Numbers"] == true)
+               {
+                    if (typeof (_ret[_cat]) === "undefined")
+                    {
+                         _ret[_cat] = new Object();
+                    }
+                    _ret[_cat][_param] = new Object();
+                    _ret[_cat][_param]["found"] = false;
+                    _ret[_cat][_param]["enabled"] = false;
+                    _ret[_cat][_param]["anzParam"] = param[_cat][_param]["anzParam"]; 
+
+               }
+
+     NUMBERS.push(_ret);               
      return "";
 }
 

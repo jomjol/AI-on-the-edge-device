@@ -98,7 +98,8 @@ void CTfLiteClass::GetOutPut()
 
 void CTfLiteClass::Invoke()
 {
-    interpreter->Invoke();
+    if (interpreter != nullptr)
+      interpreter->Invoke();
 }
 
 
@@ -155,9 +156,9 @@ void CTfLiteClass::MakeAllocate()
 }
 
 void CTfLiteClass::GetInputTensorSize(){
+#ifdef DEBUG_DETAIL_ON    
     float *zw = this->input;
     int test = sizeof(zw);
-#ifdef DEBUG_DETAIL_ON    
     printf("Input Tensor Dimension: %d\n", test);       
 #endif
 }
@@ -184,13 +185,11 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
     unsigned char *result = (unsigned char*) malloc(size);
     int anz = 1;
-    TickType_t xDelay;
     while (!result && (anz < 6))    // maximal 5x versuchen (= 5s)
     {
 #ifdef DEBUG_DETAIL_ON      
 		    printf("Speicher ist voll - Versuche es erneut: %d.\n", anz);
 #endif
-        xDelay = 1000 / portTICK_PERIOD_MS;
         result = (unsigned char*) malloc(size);
         anz++;
     }
@@ -208,7 +207,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
     return result;
 }
 
-void CTfLiteClass::LoadModel(std::string _fn){
+bool CTfLiteClass::LoadModel(std::string _fn){
 
 #ifdef SUPRESS_TFLITE_ERRORS
     this->error_reporter = new tflite::OwnMicroErrorReporter;
@@ -219,9 +218,14 @@ void CTfLiteClass::LoadModel(std::string _fn){
     unsigned char *rd;
     rd = ReadFileToCharArray(_fn.c_str());
 
+    if (rd == NULL) 
+      return false;
+
     this->model = tflite::GetModel(rd);
     free(rd);
     TFLITE_MINIMAL_CHECK(model != nullptr); 
+    
+    return true;
 }
 
 

@@ -44,7 +44,7 @@ function createReader(file) {
 
 
 
-function ZerlegeZeile(input, delimiter = " =,\t")
+function ZerlegeZeile(input, delimiter = " =\t\r")
      {
           var Output = Array(0);
 //          delimiter = " =,\t";
@@ -105,6 +105,11 @@ function trim(istring, adddelimiter)
           return istring;
      }
      
+
+function getConfig()
+{
+     return config_gesamt;
+}
 
      
 function loadConfig(_basepath) {

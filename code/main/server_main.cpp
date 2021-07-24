@@ -20,9 +20,9 @@
 
 
 httpd_handle_t server = NULL;   
-
 std::string starttime = "";
 
+static const char *TAG_SERVERMAIN = "server-main";
 
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
@@ -198,7 +198,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     printf("File requested: %s\n", filetosend.c_str());    
 
     if (!filename) {
-        ESP_LOGE(TAG, "Filename is too long");
+        ESP_LOGE(TAG_SERVERMAIN, "Filename is too long");
         /* Respond with 500 Internal Server Error */
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
         return ESP_FAIL;
@@ -299,7 +299,9 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     std::string gitbranch = libfive_git_branch();
     std::string gitbasebranch = git_base_branch();
     std::string htmlversion = getHTMLversion();
-
+    char freeheapmem[11];
+    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+    
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     const char *hostname;
@@ -314,7 +316,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
                 \"html\" : \"" + htmlversion + "\",\
                 \"cputemp\" : \"" + cputemp + "\",\
                 \"hostname\" : \"" + hostname + "\",\
-                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\"\
+                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\",\
+                \"freeHeapMem\" : \"" + freeheapmem + "\"\
             }\
         ]";
 
@@ -387,7 +390,7 @@ httpd_handle_t start_webserver(void)
     httpd_config_t config = { };
 
     config.task_priority      = tskIDLE_PRIORITY+5;
-    config.stack_size         = 32384;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
+    config.stack_size         = 32768;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
     config.core_id            = tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;
@@ -403,21 +406,22 @@ httpd_handle_t start_webserver(void)
     config.global_transport_ctx = NULL;                   
     config.global_transport_ctx_free_fn = NULL;           
     config.open_fn = NULL;                                
-    config.close_fn = NULL;                               
+    config.close_fn = NULL;     
+    config.lru_purge_enable = true;             // neu, um schlechte Serverbindung zu verhindern                          
 //    config.uri_match_fn = NULL;                            
     config.uri_match_fn = httpd_uri_match_wildcard;
 
     starttime = gettimestring("%Y%m%d-%H%M%S");
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG_SERVERMAIN, "Starting server on port: '%d'", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
-        ESP_LOGI(TAG, "Registering URI handlers");
+        ESP_LOGI(TAG_SERVERMAIN, "Registering URI handlers");
         return server;
     }
 
-    ESP_LOGI(TAG, "Error starting server!");
+    ESP_LOGI(TAG_SERVERMAIN, "Error starting server!");
     return NULL;
 }
 
@@ -432,7 +436,7 @@ void disconnect_handler(void* arg, esp_event_base_t event_base,
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
-        ESP_LOGI(TAG, "Stopping webserver");
+        ESP_LOGI(TAG_SERVERMAIN, "Stopping webserver");
         stop_webserver(*server);
         *server = NULL;
     }
@@ -443,9 +447,7 @@ void connect_handler(void* arg, esp_event_base_t event_base,
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {
-        ESP_LOGI(TAG, "Starting webserver");
+        ESP_LOGI(TAG_SERVERMAIN, "Starting webserver");
         *server = start_webserver();
     }
 }
-
-

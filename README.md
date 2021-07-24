@@ -12,6 +12,8 @@ respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
 
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
+
 
 
 
@@ -45,16 +47,17 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling - (2021-06-17)
+##### 8.0.2 - Multi Meter Support (2021-07-23
 
-* bug fix setting hostname, Flash-LED not off during reboot
+* NEW 8.0.2: saving roundes prevalue, bug fix html server
+* NEW 8.0.1: bug fix html handling of parameter `FixedExposure` and `ImageSize`
+* Dual / multi meter support (more than 1 number to be recognized)
+  This is implemented with the feature "number" on the ROI definition as well as selected options
+* MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
+* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and fully functional yet
+* Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
 
-Rolling - (2021-06-11)
-
-* Restructuring for multi number counters
-  * Major internal and html changes 
-    (html and firmware)
-*  **ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**
+<span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
 
 
 

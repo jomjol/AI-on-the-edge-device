@@ -190,7 +190,6 @@ bool ClassFlowAnalog::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 analog* ClassFlowAnalog::FindANALOG(string _name_number)
 {
-    analog *_ret = NULL;
 
     for (int i = 0; i < ANALOG.size(); ++i)
     {
@@ -359,7 +358,11 @@ bool ClassFlowAnalog::doNeuralNetwork(string time)
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     printf(zwcnn.c_str());printf("\n");
-    tflite->LoadModel(zwcnn); 
+    if (!tflite->LoadModel(zwcnn)) {
+        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        delete tflite;
+        return false;
+    } 
     tflite->MakeAllocate();
 #endif
 

@@ -56,7 +56,7 @@ class CTfLiteClass
     public:
         CTfLiteClass();
         ~CTfLiteClass();        
-        void LoadModel(std::string _fn);
+        bool LoadModel(std::string _fn);
         void MakeAllocate();
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);

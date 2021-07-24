@@ -63,10 +63,10 @@ p {font-size: 1em;}
             param = getConfigParameters();
             param["System"]["SetupMode"]["enabled"] = false;
             param["System"]["SetupMode"]["value1"] = "false";
-            setConfigParameters(param);
-            var textToSave = setConfigParameters(param);
-		    FileDeleteOnServer("/config/config.ini", basepath);
-		    FileSendContent(textToSave, "/config/config.ini", basepath);
+
+            WriteConfigININew();
+            SaveConfigToServer(basepath);    
+
 
             var stringota = "/reboot";
             window.location = stringota;

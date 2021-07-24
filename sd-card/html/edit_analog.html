@@ -69,10 +69,16 @@ th, td {
    
 
 <div id="div1">
+	<table>
+	  <tr>
+		<td><canvas id="canvas" crossorigin></canvas></td>
+	  </tr>
+	</table>	
+
     <p>
         <table>
             <tr>
-                <class id="Numbers_text" style="color:black;">Number: </class>
+                <class id="Numbers_text" style="color:black;"><b>Number: </b></class>
                 <select id="Numbers_value1" onchange="numberChanged()">
                     <option value="0" selected>default</option>
                     <option value="1" >NT</option>
@@ -85,12 +91,6 @@ th, td {
         </table>
     </p>
 
-	<table>
-	  <tr>
-		<td><canvas id="canvas" crossorigin></canvas></td>
-	  </tr>
-	</table>	
-			 
 	<table>
 	  <tr>
 		<td><input class="button" type="submit" id= "newROI" name="newROI" onclick="newROI()" value="New ROI (after current)"></td>	  
@@ -268,7 +268,6 @@ function UpdateROIs(){
         document.getElementById("newROI").disabled = false;
         document.getElementById("deleteROI").disabled = true;
         document.getElementById("index").disabled = true;
-        document.getElementById("saveroi").disabled = true;
         document.getElementById("renameROI").disabled = true;
         document.getElementById("moveNext").disabled = true;
         document.getElementById("movePrevious").disabled = true;
@@ -280,7 +279,6 @@ function UpdateROIs(){
         document.getElementById("deleteROI").disabled = false;
         document.getElementById("renameROI").disabled = false;
         document.getElementById("index").disabled = false;
-        document.getElementById("saveroi").disabled = false;
     }
 
     var _index = document.getElementById("index");
@@ -449,6 +447,26 @@ function removeNumber(){
         context.drawImage(imageObj, 0, 0);
         if (document.getElementById("Category_Analog_enabled").checked)
         {
+            var sel = document.getElementById("index");
+            var _number = sel.selectedIndex;
+            for (var _nb = 0; _nb < ROIInfo.length; _nb++)
+            {
+                if (_nb != _number)
+                {
+                    lw = 1;
+                    context.lineWidth = lw;
+                    context.strokeStyle = "#990000";
+                    var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                    var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                    var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                    var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                    context.strokeRect(x0, y0, dx, dy);
+                }
+
+            }
+
+
+
             lw = 4
             context.lineWidth = lw;
             context.strokeStyle = "#FF0000";

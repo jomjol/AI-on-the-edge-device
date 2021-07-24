@@ -11,13 +11,35 @@
 
 ____
 
-#### #6 Check for double ROI names
+#### #9 Basic auth for the UI
 
-Check during configuration, that ROI names are unique.
+* https://github.com/jomjol/AI-on-the-edge-device/issues/283
+
+* Implementation of an authentication mechanism.
+
+#### #8 MQTT configurable readout intervall
+
+Make the readout intervall configurable via MQTT.
+
+* Change the mqtt part to receive and process input and not only sending
+
+#### #7 Extended Error Handling
+
+Check different types of error (e.g. tflite not availabe) and generate an error on the html page.
 
 To do:
 
-* Implementation of ROI name checking in html code before saving analog or digital ROIs
+* Make a list of "important" errors
+* Implement a checking algo
+* Extend the firmware and html page for the error handling
+
+#### ~~#6 Check for double ROI names~~ - implemented v8.0.0
+
+~~Check during configuration, that ROI names are unique.~~
+
+~~To do:~~
+
+* ~~Implementation of ROI name checking in html code before saving analog or digital ROIs~~
 
   
 
@@ -33,31 +55,31 @@ To do:
 
 
 
-#### #4 Initial Shifting and Rotation
+#### ~~#4 Initial Shifting and Rotation~~ - implemented v7.0.0
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/123
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/123~~
 
-Implementation of a shifting additional to the initial rotation of the raw camera input
+~~Implementation of a shifting additional to the initial rotation of the raw camera input~~
 
-To do:
+~~To do:~~
 
-* Implementation of shifting
-* Extension of configuration
-* Adaption of the html configuration to implement shifting
+* ~~Implementation of shifting~~
+* ~~Extension of configuration~~
+* ~~Adaption of the html configuration to implement shifting~~
 
 
 
-#### #3 Allow grouping of digits to multiple reading values
+#### ~~#3 Allow grouping of digits to multiple reading values~~ - implemented v8.0.0
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/123
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/123~~
 
-Implementation of two different independent readouts in one setup
+~~Implementation of two different independent readouts in one setup~~
 
-To do:
+~~To do:~~
 
-* Extend the configuration, setting and processing flow for two independend readouts
+* ~~Extend the configuration, setting and processing flow for two independend readouts~~
 
-https://github.com/jomjol/AI-on-the-edge-device/issues/123
+
 
 
 
@@ -80,15 +102,16 @@ To do:
 
 ____
 
-#### #1 Optional GPIO for external flash/lighting
+#### ~~#1 Optional GPIO for external flash/lighting~~ - implemented (v8.0.0)
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/133
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/133~~
 
-Implementation of an an extrnal flash / lightning through GPIOs.
-* available GPIOs: 12 & 13 (currently in use for html switching)
+~~Implementation of an an extrnal flash / lightning through GPIOs.~~
 
-To do:
+* ~~available GPIOs: 12 & 13 (currently in use for html switching)~~
 
-* Implementation of a software module for external light source (e.g. WS8132 LED controller, ...)
-* Update of the camera module to use the external light instead of the internal flash light
-* Adopt the configuration algorithm with a configurable light source
+~~To do:~~
+
+* ~~Implementation of a software module for external light source (e.g. WS8132 LED controller, ...)~~
+* ~~Update of the camera module to use the external light instead of the internal flash light~~
+* ~~Adopt the configuration algorithm with a configurable light source~~

@@ -37,6 +37,8 @@ protected:
 
 	virtual void SetInitialParameter(void);
 
+	std::string GetParameterName(std::string _input);
+
 	bool disabled;
 
 public:

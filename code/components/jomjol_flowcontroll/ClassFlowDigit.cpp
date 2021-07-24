@@ -161,8 +161,6 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 digit* ClassFlowDigit::FindDIGIT(string _name_number)
 {
-    digit *_ret = NULL;
-
     for (int i = 0; i < DIGIT.size(); ++i)
     {
         if (DIGIT[i]->name == _name_number)
@@ -307,7 +305,12 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
     CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn =  FormatFileName("/sdcard" + cnnmodelfile);
     printf(zwcnn.c_str());printf("\n");
-    tflite->LoadModel(zwcnn); 
+    if (!tflite->LoadModel(zwcnn)) {
+        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        delete tflite;
+        return false;
+    } 
+
     tflite->MakeAllocate();
 #endif
 

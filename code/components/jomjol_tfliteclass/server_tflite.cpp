@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -17,6 +18,7 @@
 #include "ClassFlowControll.h"
 
 #include "ClassLogFile.h"
+#include "server_GPIO.h"
 
 // #define DEBUG_DETAIL_ON       
 
@@ -36,6 +38,9 @@ bool auto_isrunning = false;
 
 
 int countRounds = 0;
+
+static const char *TAGTFLITE = "server_tflite";
+
 
 int getCountFlowRounds() {
     return countRounds;
@@ -64,9 +69,11 @@ void KillTFliteTasks()
 #ifdef DEBUG_DETAIL_ON          
     printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);  
 #endif  
-    if (xHandleblink_task_doFlow)
+    if (xHandleblink_task_doFlow != NULL)
     {
-        vTaskDelete(xHandleblink_task_doFlow);
+        TaskHandle_t xHandleblink_task_doFlowTmp = xHandleblink_task_doFlow;
+        xHandleblink_task_doFlow = NULL;
+        vTaskDelete(xHandleblink_task_doFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandleblink_task_doFlow\n");
 #endif
@@ -75,9 +82,11 @@ void KillTFliteTasks()
 #ifdef DEBUG_DETAIL_ON      
     printf("Handle: xHandletask_autodoFlow: %ld\n", (long) xHandletask_autodoFlow);  
 #endif
-    if (xHandletask_autodoFlow)
+    if (xHandletask_autodoFlow != NULL)
     {
-        vTaskDelete(xHandletask_autodoFlow);
+        TaskHandle_t xHandletask_autodoFlowTmp = xHandletask_autodoFlow;
+        xHandletask_autodoFlow = NULL;
+        vTaskDelete(xHandletask_autodoFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
         printf("Killed: xHandletask_autodoFlow\n");
 #endif
@@ -87,11 +96,10 @@ void KillTFliteTasks()
 
 void doInit(void)
 {
-    string config = "/sdcard/config/config.ini";
 #ifdef DEBUG_DETAIL_ON             
     printf("Start tfliteflow.InitFlow(config);\n");
 #endif
-    tfliteflow.InitFlow(config);
+    tfliteflow.InitFlow(CONFIG_FILE);
 #ifdef DEBUG_DETAIL_ON      
     printf("Finished tfliteflow.InitFlow(config);\n");
 #endif
@@ -136,7 +144,7 @@ esp_err_t handler_init(httpd_req_t *req)
     printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
 #endif
 
-    char* resp_str = "Init started<br>";
+    const char* resp_str = "Init started<br>";
     httpd_resp_send(req, resp_str, strlen(resp_str));     
 
     doInit();
@@ -159,8 +167,6 @@ esp_err_t handler_doflow(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_doflow - Start");       
 #endif
 
-    char* resp_str;
-
     printf("handler_doFlow uri: "); printf(req->uri); printf("\n");
 
     if (flowisrunning)
@@ -173,7 +179,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
     {
         xTaskCreate(&blink_task_doFlow, "blink_doFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandleblink_task_doFlow);
     }
-    resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
+    const char* resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
     httpd_resp_send(req, resp_str, strlen(resp_str));  
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);       
@@ -470,7 +476,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
 //        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        bool changed = Camera.SetBrightnessContrastSaturation(bri, con, sat);
+        Camera.SetBrightnessContrastSaturation(bri, con, sat);
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
@@ -586,17 +592,17 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
+    printf("task_autodoFlow: start\r\n");
     doInit();
-    
-    auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
+    gpio_handler_init();
 
+    auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
     if (isSetupModusActive()) {
         auto_isrunning = false;
         std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
         tfliteflow.doFlowMakeImageOnly(zw_time);
 
     }
-
     while (auto_isrunning)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
@@ -641,6 +647,7 @@ void task_autodoFlow(void *pvParameter)
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
+    printf("task_autodoFlow: end\r\n");
 }
 
 void TFliteDoAutoStart()

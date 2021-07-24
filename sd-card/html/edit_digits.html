@@ -59,10 +59,17 @@ th, td {
         Edit Digits</h2>
 
 <div id="div1">
+
+	<table>
+	  <tr>
+		<canvas id="canvas" crossorigin></canvas>
+	  </tr>
+	</table>
+    
     <p>
         <table>
             <tr>
-                <class id="Numbers_text" style="color:black;">Number: </class>
+                <class id="Numbers_text" style="color:black;"><b>Number:</b> </class>
                 <select id="Numbers_value1" onchange="numberChanged()">
                     <option value="0" selected>default</option>
                     <option value="1" >NT</option>
@@ -74,17 +81,8 @@ th, td {
             </tr>
         </table>
     </p>
-
-	<table>
-	  <tr>
-		<canvas id="canvas" crossorigin></canvas>
-	  </tr>
-	</table>	
-			 
-	<table>
-
     
-
+	<table>
 	  <tr>
 		<td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI (after current)"></td>	  
 		<td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
@@ -127,7 +125,7 @@ th, td {
 <script type="text/javascript" src="./readconfigcommon.js"></script>
 <script type="text/javascript" src="./readconfigparam.js"></script>  
 
-<script type="text/javascript" src="./jquery-3.5.1.min.js"></script>  
+<script type="text/javascript" src="./jquery-3.6.0.min.js"></script>  
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -441,6 +439,24 @@ function draw() {
         context.drawImage(imageObj, 0, 0);
         if (document.getElementById("Category_Digits_enabled").checked)
         {
+            var sel = document.getElementById("index");
+            var _number = sel.selectedIndex;
+            for (var _nb = 0; _nb < ROIInfo.length; _nb++)
+            {
+                if (_nb != _number)
+                {
+                    lw = 2;
+                    context.lineWidth = lw;
+                    context.strokeStyle = "#990000";
+                    var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                    var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                    var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                    var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                    context.strokeRect(x0, y0, dx, dy);
+                }
+
+            }
+
             lw = 4
             context.lineWidth = lw;
             context.strokeStyle = "#FF0000";
