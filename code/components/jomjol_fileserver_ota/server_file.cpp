@@ -486,10 +486,10 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
     printf("Directory: %s, start_fn: %d, found: %d\n", directory.c_str(), start_fn, found);
 	directory = directory.substr(start_fn, found - start_fn + 1);
-    printf("Directory danach: %s\n", directory.c_str());    
+    printf("Directory danach 1: %s\n", directory.c_str());    
 
     directory = "/fileserver" + directory;
-    printf("Directory danach: %s\n", directory.c_str());   
+    printf("Directory danach 2: %s\n", directory.c_str());   
 
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
@@ -500,11 +500,13 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Location", directory.c_str());
     httpd_resp_sendstr(req, "File uploaded successfully");
 
+/*
     if (strcmp(filepath, CONFIG_FILE) == 0) {
-        printf("New config foung. Reload handler.");
+        printf("New config found. Reload handler.");
         gpio_handler_deinit();
         MQTTdestroy();
     }
+*/
 
     return ESP_OK;
 }
@@ -606,10 +608,10 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
         printf("Directory: %s, start_fn: %d, found: %d\n", directory.c_str(), start_fn, found);
         directory = directory.substr(start_fn, found - start_fn + 1);
-        printf("Directory danach: %s\n", directory.c_str());    
+        printf("Directory danach 3: %s\n", directory.c_str());    
 
         directory = "/fileserver" + directory;
-        printf("Directory danach: %s\n", directory.c_str());   
+        printf("Directory danach 4: %s\n", directory.c_str());   
     }
     
 
