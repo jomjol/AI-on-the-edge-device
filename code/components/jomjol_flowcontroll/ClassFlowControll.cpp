@@ -173,9 +173,12 @@ void ClassFlowControll::InitFlow(std::string config)
         }
         else
         {
-            fgets(zw, 1024, pFile);
-            printf("%s", zw);
-            line = std::string(zw);
+            line = "";
+            if (fgets(zw, 1024, pFile) && !feof(pFile))
+                {
+                    printf("Read: %s", zw);
+                    line = std::string(zw);
+                }
         }
     }
 

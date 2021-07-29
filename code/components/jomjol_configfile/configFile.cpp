@@ -39,18 +39,27 @@ bool ConfigFile::GetNextParagraph(std::string& aktparamgraph, bool &disabled, bo
 bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 {
     eof = false;
-	char zw[1024];
+	char zw[1024] = "";
 	if (pFile == NULL)
 	{
 		*rt = "";
 		return false;
 	}
-	fgets(zw, 1024, pFile);
-	printf("%s", zw);
-	if ((strlen(zw) == 0) && feof(pFile))
+
+	if (fgets(zw, 1024, pFile))
+	{
+		printf("%s", zw);
+		if ((strlen(zw) == 0) && feof(pFile))
+		{
+			*rt = "";
+			eof = true;
+			return false;
+		}
+	}
+	else
 	{
 		*rt = "";
-        eof = true;
+		eof = true;
 		return false;
 	}
 	*rt = zw;

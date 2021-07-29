@@ -216,6 +216,7 @@ void GpioHandler::init()
         clear();
     }
     
+    
     ESP_LOGI(TAG_SERVERGPIO, "read GPIO config and init GPIO");
     if (!readConfig()) {
         clear();
@@ -224,6 +225,7 @@ void GpioHandler::init()
         ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted, handler is disabled");
         return;
     }
+
 
     for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
         it->second->init();

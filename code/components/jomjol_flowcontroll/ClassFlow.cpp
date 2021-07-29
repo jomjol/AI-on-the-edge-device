@@ -130,11 +130,9 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 	*rt = trim(*rt);
 	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph
 	{
+		*rt = "";
 		if (!fgets(zw, 1024, pfile))
-		{
-			*rt = "";
 			return false;
-		}
 		printf("%s", zw);		
 		*rt = zw;
 		*rt = trim(*rt);
