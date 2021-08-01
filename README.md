@@ -47,7 +47,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 8.0.5 - Multi Meter Support (2021-07-29)
+##### 8.0.5 - Multi Meter Support (2021-08-01)
 
 * NEW 8.0.5: bug fix: saving prevalue
 * NEW 8.0.4: bug fix: load config.ini after upgrade
