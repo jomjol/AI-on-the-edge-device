@@ -331,7 +331,7 @@ string ClassFlowControll::GetPrevalue(std::string _number)
     return std::string();    
 }
 
-std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers)
+std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)
 {
     float zw;
     char* p;
@@ -353,7 +353,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string
 
     if (flowpostprocessing)
     {
-        flowpostprocessing->SetPreValue(zw, _numbers);
+        flowpostprocessing->SetPreValue(zw, _numbers, _extern);
         return _newvalue;    
     }
 

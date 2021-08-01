@@ -37,12 +37,22 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     return result;
 }
 
-void ClassFlowPostProcessing::SetPreValue(float zw, string _numbers)
+void ClassFlowPostProcessing::SetPreValue(float zw, string _numbers, bool _extern)
 {
+    printf("SetPrevalue: %f, %s\n", zw, _numbers.c_str());
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
+//        printf("Number %d, %s\n", j, NUMBERS[j]->name.c_str());
         if (NUMBERS[j]->name == _numbers)
+        {
             NUMBERS[j]->PreValue = zw;
+            if (_extern)
+            {
+                time(&(NUMBERS[j]->lastvalue));
+                localtime(&(NUMBERS[j]->lastvalue));
+            }
+//            printf("Found %d! - set to %f\n", j,  NUMBERS[j]->PreValue);
+        }
     }
     UpdatePreValueINI = true;
     SavePreValue();
@@ -207,8 +217,9 @@ void ClassFlowPostProcessing::SavePreValue()
         struct tm* timeinfo = localtime(&NUMBERS[j]->lastvalue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         NUMBERS[j]->timeStamp = std::string(buffer);
+//        printf("SaverPreValue %d, Value: %f, Nachkomma %d\n", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
-        _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + "\n";
+        _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
         printf("Write PreValue Zeile: %s\n", _zw.c_str());
 
         fputs(_zw.c_str(), pFile);

@@ -152,7 +152,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
         for (int i = 0; i < NUMBERS.size(); ++i)
         {
-            result =  NUMBERS[i]->ReturnValueNoError;
+            result =  NUMBERS[i]->ReturnValue;
             resulterror = NUMBERS[i]->ErrorMessageText;
             resultrate = std::to_string(NUMBERS[i]->FlowRateAct);
             resulttimestamp = NUMBERS[i]->timeStamp;

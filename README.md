@@ -47,9 +47,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 8.0.4 - Multi Meter Support (2021-07-29)
+##### 8.0.5 - Multi Meter Support (2021-07-29)
 
-* NEW 8.0.4: bug fix: failed configuration after upgrade
+* NEW 8.0.5: bug fix: saving prevalue
+* NEW 8.0.4: bug fix: load config.ini after upgrade
 * NEW 8.0.3: bug fix: reboot during `config.ini` handling, html error
 * NEW 8.0.2: saving roundes prevalue, bug fix html server
 * NEW 8.0.1: bug fix: html handling of parameter `FixedExposure` and `ImageSize`

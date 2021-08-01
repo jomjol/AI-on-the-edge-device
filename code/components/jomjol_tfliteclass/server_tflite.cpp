@@ -569,7 +569,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     }
     else
     {
-        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size, _numbers);
+        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size, _numbers, true);
     }
     
     resp_str = zw.c_str();

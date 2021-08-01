@@ -87,7 +87,7 @@ public:
     string getReadoutTimeStamp(int _number = 0);
     void SavePreValue();
     string GetPreValue(std::string _number = "");
-    void SetPreValue(float zw, string _numbers);
+    void SetPreValue(float zw, string _numbers, bool _extern = false);
     std::vector<NumberPost*> GetNumbers(){return NUMBERS;};
 
     string name(){return "ClassFlowPostProcessing";};
