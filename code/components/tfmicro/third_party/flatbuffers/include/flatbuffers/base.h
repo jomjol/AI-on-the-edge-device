@@ -1,6 +1,16 @@
 #ifndef FLATBUFFERS_BASE_H_
 #define FLATBUFFERS_BASE_H_
 
+// For TFLM, we always want FLATBUFFERS_LOCALE_INDEPENDENT to be defined as 0.
+// We could achieve this by adding -DFLATBUFFERS_LOCALE_INDEPENDENT=0 to the
+// TFLM Makefile. However, for (at least) the Arduino, adding additional build
+// flags during the compilation can be a bit awkward. As such, we have instead
+// made a decision to change the default to be FLATBUFFERS_LOCALE_INDEPENDENT=0
+// for TFLM to make it easier for external IDE integration.
+#ifndef FLATBUFFERS_LOCALE_INDEPENDENT
+#define FLATBUFFERS_LOCALE_INDEPENDENT 0
+#endif
+
 // clang-format off
 
 // If activate should be declared and included first.

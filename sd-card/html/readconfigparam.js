@@ -94,7 +94,6 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "MainTopicMQTT", 1, false, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
      ParamAddValue(param, catname, "IO0", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO1", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO3", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);

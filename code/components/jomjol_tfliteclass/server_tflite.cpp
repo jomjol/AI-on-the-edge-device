@@ -655,6 +655,11 @@ void TFliteDoAutoStart()
     xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
 }
 
+std::string GetMQTTMainTopic()
+{
+    return tfliteflow.GetMQTTMainTopic();
+}
+
 
 
 void register_server_tflite_uri(httpd_handle_t server)

@@ -15,26 +15,6 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_KERNELS_INTERNAL_OPTIMIZED_NEON_CHECK_H_
 #define TENSORFLOW_LITE_KERNELS_INTERNAL_OPTIMIZED_NEON_CHECK_H_
 
-#if defined(__ARM_NEON__) || defined(__ARM_NEON)
-#define USE_NEON
-#include <arm_neon.h>
-#endif
-
-#if defined __GNUC__ && defined __SSE4_1__ && !defined TF_LITE_DISABLE_X86_NEON
-#define USE_NEON
-#include "NEON_2_SSE.h"
-#endif
-
-// NEON_OR_PORTABLE(SomeFunc, args) calls NeonSomeFunc(args) if USE_NEON is
-// defined, PortableSomeFunc(args) otherwise.
-#ifdef USE_NEON
-// Always use Neon code
-#define NEON_OR_PORTABLE(funcname, ...) Neon##funcname(__VA_ARGS__)
-
-#else
-// No NEON available: Use Portable code
-#define NEON_OR_PORTABLE(funcname, ...) Portable##funcname(__VA_ARGS__)
-
-#endif  // defined(USE_NEON)
+// TFLM does not need to utilize any Neon optimizations.
 
 #endif  // TENSORFLOW_LITE_KERNELS_INTERNAL_OPTIMIZED_NEON_CHECK_H_

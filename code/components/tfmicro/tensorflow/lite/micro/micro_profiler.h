@@ -1,4 +1,4 @@
-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,14 +53,19 @@ class MicroProfiler {
   // event[i] <= start time of event[i+1]).
   int32_t GetTotalTicks() const;
 
-  // Prints the profiling information of each of the events.
+  // Prints the profiling information of each of the events in human readable
+  // form.
   void Log() const;
+
+  // Prints the profiling information of each of the events in CSV (Comma
+  // Separated Value) form.
+  void LogCsv() const;
 
  private:
   // Maximum number of events that this class can keep track of. If we call
   // AddEvent more than kMaxEvents number of times, then the oldest event's
   // profiling information will be overwritten.
-  static constexpr int kMaxEvents = 50;
+  static constexpr int kMaxEvents = 1024;
 
   const char* tags_[kMaxEvents];
   int32_t start_ticks_[kMaxEvents];
@@ -70,7 +75,7 @@ class MicroProfiler {
   TF_LITE_REMOVE_VIRTUAL_DELETE;
 };
 
-#if defined(NDEBUG)
+#if defined(TF_LITE_STRIP_ERROR_STRINGS)
 // For release builds, the ScopedMicroProfiler is a noop.
 //
 // This is done because the ScipedProfiler is used as part of the
@@ -111,7 +116,7 @@ class ScopedMicroProfiler {
   uint32_t event_handle_ = 0;
   MicroProfiler* profiler_ = nullptr;
 };
-#endif  // !defined(NDEBUG)
+#endif  // !defined(TF_LITE_STRIP_ERROR_STRINGS)
 
 }  // namespace tflite
 

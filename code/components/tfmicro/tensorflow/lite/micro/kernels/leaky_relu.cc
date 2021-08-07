@@ -68,7 +68,7 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteNode* node) {
                     GetOutputSafe(context, node, kOutputTensor, &output));
   TF_LITE_ENSURE_TYPES_EQ(context, input->type, output->type);
 
-  if (output->type == kTfLiteInt8) {
+  if (output->type == kTfLiteInt8 || output->type == kTfLiteInt16) {
     LeakyReluOpData* data = static_cast<LeakyReluOpData*>(node->user_data);
     const auto* params =
         static_cast<TfLiteLeakyReluParams*>(node->builtin_data);
@@ -125,6 +125,10 @@ TfLiteStatus LeakyReluEval(TfLiteContext* context, TfLiteNode* node) {
     } break;
     case kTfLiteInt8: {
       QuantizeLeakyRelu<int8_t>(data, input, output);
+      return kTfLiteOk;
+    } break;
+    case kTfLiteInt16: {
+      QuantizeLeakyRelu<int16_t>(data, input, output);
       return kTfLiteOk;
     } break;
     default:

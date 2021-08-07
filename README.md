@@ -45,7 +45,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling (2021-08-07)
 
+* GPIO: using the general mqtt main topic for GPIO
+* Update tfmicro to new master (2021-08-07)
+* Bug fix: mqtt value
+* Based on v2021-08-01
 
 ##### 8.0.5 - Multi Meter Support (2021-08-01)
 

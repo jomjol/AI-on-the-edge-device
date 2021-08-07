@@ -19,6 +19,7 @@ limitations under the License.
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 
 #include "tensorflow/lite/c/common.h"
 
@@ -43,11 +44,13 @@ T FloatToQuantizedType(const float value, const float scale, int zero_point) {
 
 template <typename T>
 T FloatToSymmetricQuantizedType(const float value, const float scale) {
-  int32_t result = round(value / scale);
-  result =
-      std::max(static_cast<int32_t>(std::numeric_limits<T>::min() + 1), result);
-  result =
-      std::min(static_cast<int32_t>(std::numeric_limits<T>::max()), result);
+  // 64-bit values are required since 8x16 conv accumulates to int64, meaning
+  // an int64 bias is required.
+  std::int64_t result = round(value / scale);
+  result = std::max(
+      static_cast<std::int64_t>(std::numeric_limits<T>::min() + 1), result);
+  result = std::min(static_cast<std::int64_t>(std::numeric_limits<T>::max()),
+                    result);
   return result;
 }
 

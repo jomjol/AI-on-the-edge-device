@@ -15,7 +15,6 @@ limitations under the License.
 
 #include <numeric>
 
-#define FLATBUFFERS_LOCALE_INDEPENDENT 0
 #include "flatbuffers/flexbuffers.h"
 #include "tensorflow/lite/c/builtin_op_data.h"
 #include "tensorflow/lite/c/common.h"
@@ -117,12 +116,11 @@ struct OpData {
 };
 
 void* Init(TfLiteContext* context, const char* buffer, size_t length) {
+  TFLITE_DCHECK(context->AllocatePersistentBuffer != nullptr);
   OpData* op_data = nullptr;
 
   const uint8_t* buffer_t = reinterpret_cast<const uint8_t*>(buffer);
   const flexbuffers::Map& m = flexbuffers::GetRoot(buffer_t, length).AsMap();
-
-  TFLITE_DCHECK(context->AllocatePersistentBuffer != nullptr);
   op_data = reinterpret_cast<OpData*>(
       context->AllocatePersistentBuffer(context, sizeof(OpData)));
 

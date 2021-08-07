@@ -72,6 +72,19 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 }
 
 
+
+string ClassFlowControll::GetMQTTMainTopic()
+{
+    for (int i = 0; i < FlowControll.size(); ++i)
+        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
+            return ((ClassFlowMQTT*) (FlowControll[i]))->GetMQTTMainTopic();
+
+
+    return "";
+}
+
+
+
 void ClassFlowControll::SetInitialParameter(void)
 {
     AutoStart = false;
@@ -444,6 +457,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
     return true;
 }
+
 
 int ClassFlowControll::CleanTempFolder() {
     const char* folderPath = "/sdcard/img_tmp";

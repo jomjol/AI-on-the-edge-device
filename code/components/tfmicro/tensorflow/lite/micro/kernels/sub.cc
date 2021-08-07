@@ -19,6 +19,7 @@ limitations under the License.
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/common.h"
 #include "tensorflow/lite/kernels/internal/quantization_util.h"
+#include "tensorflow/lite/kernels/internal/reference/add.h"
 #include "tensorflow/lite/kernels/internal/reference/process_broadcast_shapes.h"
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "tensorflow/lite/kernels/internal/types.h"
@@ -62,12 +63,17 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteSubParams* params,
                              OpData* data) {
   data->requires_broadcast = !HaveSameShapes(input1, input2);
 
-  if (output->type == kTfLiteUInt8 || output->type == kTfLiteInt8) {
+  if (output->type == kTfLiteUInt8 || output->type == kTfLiteInt8 ||
+      output->type == kTfLiteInt16) {
     // 8bit -> 8bit general quantized path, with general rescalings
     data->input1_offset = -input1->params.zero_point;
     data->input2_offset = -input2->params.zero_point;
     data->output_offset = output->params.zero_point;
-    data->left_shift = 20;
+
+    // The shift is set to 15 in case of 16-bit and 20 in case of 8-bit,
+    // accordingly. In case of 16-bit we have 65535 << 15 which is less than 1
+    // << 31, therefore the addition will still fit in a 32 bit accumulator.
+    data->left_shift = output->type == kTfLiteInt16 ? 15 : 20;
     const float twice_max_input_scale =
         2 * std::max(input1->params.scale, input2->params.scale);
     const double real_input1_multiplier =
@@ -84,6 +90,9 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteSubParams* params,
     QuantizeMultiplierSmallerThanOneExp(
         real_input2_multiplier, &data->input2_multiplier, &data->input2_shift);
 
+    // Use add kernel for 16-bit sub, since it supports output requantization.
+    // This matches behavior in TFLite.
+    data->input2_multiplier *= (output->type == kTfLiteInt16) ? -1 : 1;
     QuantizeMultiplierSmallerThanOneExp(
         real_output_multiplier, &data->output_multiplier, &data->output_shift);
 
@@ -151,25 +160,25 @@ TfLiteStatus EvalSubQuantized(TfLiteContext* context, TfLiteNode* node,
                               const TfLiteEvalTensor* input1,
                               const TfLiteEvalTensor* input2,
                               TfLiteEvalTensor* output) {
-  if (output->type == kTfLiteUInt8 || output->type == kTfLiteInt8) {
-    tflite::ArithmeticParams op_params;
-    op_params.left_shift = data->left_shift;
-    op_params.input1_offset = data->input1_offset;
-    op_params.input1_multiplier = data->input1_multiplier;
-    op_params.input1_shift = data->input1_shift;
-    op_params.input2_offset = data->input2_offset;
-    op_params.input2_multiplier = data->input2_multiplier;
-    op_params.input2_shift = data->input2_shift;
-    op_params.output_offset = data->output_offset;
-    op_params.output_multiplier = data->output_multiplier;
-    op_params.output_shift = data->output_shift;
-    SetActivationParams(data->output_activation_min,
-                        data->output_activation_max, &op_params);
-    bool need_broadcast = reference_ops::ProcessBroadcastShapes(
-        tflite::micro::GetTensorShape(input1),
-        tflite::micro::GetTensorShape(input2), &op_params);
+  tflite::ArithmeticParams op_params;
+  op_params.left_shift = data->left_shift;
+  op_params.input1_offset = data->input1_offset;
+  op_params.input1_multiplier = data->input1_multiplier;
+  op_params.input1_shift = data->input1_shift;
+  op_params.input2_offset = data->input2_offset;
+  op_params.input2_multiplier = data->input2_multiplier;
+  op_params.input2_shift = data->input2_shift;
+  op_params.output_offset = data->output_offset;
+  op_params.output_multiplier = data->output_multiplier;
+  op_params.output_shift = data->output_shift;
+  SetActivationParams(data->output_activation_min, data->output_activation_max,
+                      &op_params);
+  bool need_broadcast = reference_ops::ProcessBroadcastShapes(
+      tflite::micro::GetTensorShape(input1),
+      tflite::micro::GetTensorShape(input2), &op_params);
 
-    if (output->type == kTfLiteInt8) {
+  switch (output->type) {
+    case kTfLiteInt8: {
       if (need_broadcast) {
         tflite::reference_ops::BroadcastSubSlow(
             op_params, tflite::micro::GetTensorShape(input1),
@@ -187,27 +196,53 @@ TfLiteStatus EvalSubQuantized(TfLiteContext* context, TfLiteNode* node,
             tflite::micro::GetTensorShape(output),
             tflite::micro::GetTensorData<int8_t>(output));
       }
-    } else {
-      if (need_broadcast) {
-        tflite::reference_ops::BroadcastSubSlow(
-            op_params, tflite::micro::GetTensorShape(input1),
-            tflite::micro::GetTensorData<uint8_t>(input1),
-            tflite::micro::GetTensorShape(input2),
-            tflite::micro::GetTensorData<uint8_t>(input2),
-            tflite::micro::GetTensorShape(output),
-            tflite::micro::GetTensorData<uint8_t>(output));
-      } else {
-        tflite::reference_ops::Sub(
-            op_params, tflite::micro::GetTensorShape(input1),
-            tflite::micro::GetTensorData<uint8_t>(input1),
-            tflite::micro::GetTensorShape(input2),
-            tflite::micro::GetTensorData<uint8_t>(input2),
-            tflite::micro::GetTensorShape(output),
-            tflite::micro::GetTensorData<uint8_t>(output));
-      }
+      break;
     }
+    case kTfLiteInt16: {
+      if (need_broadcast) {
+        tflite::reference_ops::BroadcastAdd4DSlow(
+            op_params, tflite::micro::GetTensorShape(input1),
+            tflite::micro::GetTensorData<int16_t>(input1),
+            tflite::micro::GetTensorShape(input2),
+            tflite::micro::GetTensorData<int16_t>(input2),
+            tflite::micro::GetTensorShape(output),
+            tflite::micro::GetTensorData<int16_t>(output));
+      } else {
+        tflite::reference_ops::Add(
+            op_params, tflite::micro::GetTensorShape(input1),
+            tflite::micro::GetTensorData<int16_t>(input1),
+            tflite::micro::GetTensorShape(input2),
+            tflite::micro::GetTensorData<int16_t>(input2),
+            tflite::micro::GetTensorShape(output),
+            tflite::micro::GetTensorData<int16_t>(output), false);
+      }
+      break;
+    }
+    case kTfLiteUInt8: {
+      if (need_broadcast) {
+        tflite::reference_ops::BroadcastSubSlow(
+            op_params, tflite::micro::GetTensorShape(input1),
+            tflite::micro::GetTensorData<uint8_t>(input1),
+            tflite::micro::GetTensorShape(input2),
+            tflite::micro::GetTensorData<uint8_t>(input2),
+            tflite::micro::GetTensorShape(output),
+            tflite::micro::GetTensorData<uint8_t>(output));
+      } else {
+        tflite::reference_ops::Sub(
+            op_params, tflite::micro::GetTensorShape(input1),
+            tflite::micro::GetTensorData<uint8_t>(input1),
+            tflite::micro::GetTensorShape(input2),
+            tflite::micro::GetTensorData<uint8_t>(input2),
+            tflite::micro::GetTensorShape(output),
+            tflite::micro::GetTensorData<uint8_t>(output));
+      }
+      break;
+    }
+    default:
+      TF_LITE_KERNEL_LOG(context, "Quantized type %s not currently supported.",
+                         TfLiteTypeGetName(output->type));
+      return kTfLiteError;
   }
-
   return kTfLiteOk;
 }
 
@@ -226,7 +261,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
   if (output->type == kTfLiteFloat32) {
     EvalSub(context, node, params, &data, input1, input2, output);
-  } else if (output->type == kTfLiteUInt8 || output->type == kTfLiteInt8) {
+  } else if (output->type == kTfLiteUInt8 || output->type == kTfLiteInt8 ||
+             output->type == kTfLiteInt16) {
     TF_LITE_ENSURE_OK(context, EvalSubQuantized(context, node, params, &data,
                                                 input1, input2, output));
   } else {

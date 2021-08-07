@@ -122,6 +122,12 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 }
 
 
+string ClassFlowMQTT::GetMQTTMainTopic()
+{
+    return maintopic;
+}
+
+
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
     if (!MQTTenable)
@@ -152,7 +158,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
         for (int i = 0; i < NUMBERS.size(); ++i)
         {
-            result =  NUMBERS[i]->ReturnValue;
+            result =  NUMBERS[i]->ReturnValueNoError;
             resulterror = NUMBERS[i]->ErrorMessageText;
             resultrate = std::to_string(NUMBERS[i]->FlowRateAct);
             resulttimestamp = NUMBERS[i]->timeStamp;

@@ -147,8 +147,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_EQ(context, params->activation, kTfLiteActNone);
   TF_LITE_ENSURE(context,
                  input_type == kTfLiteFloat32 || input_type == kTfLiteUInt8 ||
-                     input_type == kTfLiteInt8 || input_type == kTfLiteInt32 ||
-                     input_type == kTfLiteInt64);
+                     input_type == kTfLiteInt8 || input_type == kTfLiteInt16 ||
+                     input_type == kTfLiteInt32 || input_type == kTfLiteInt64);
 
   // Output type must match input type
   TF_LITE_ENSURE_EQ(context, output_type, input_type);
@@ -182,6 +182,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 
   switch (output_type) {  // Already know in/outtypes are same.
     case kTfLiteFloat32:
+    case kTfLiteInt16:
     case kTfLiteInt32:
     case kTfLiteInt64: {
       data->params.axis = CalculatePositiveAxis(params->axis, output);
@@ -246,6 +247,9 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       break;
     case kTfLiteInt64:
       EvalUnquantized<int64_t>(context, node);
+      break;
+    case kTfLiteInt16:
+      EvalUnquantized<int16_t>(context, node);
       break;
 
     default:

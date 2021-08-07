@@ -57,6 +57,7 @@ TfLiteStatus PrepareQuantizeReference(TfLiteContext* context,
 
   if ((input->type == kTfLiteInt16 && output->type == kTfLiteInt8) ||
       (input->type == kTfLiteInt8 && output->type == kTfLiteInt8) ||
+      (input->type == kTfLiteInt8 && output->type == kTfLiteInt16) ||
       (input->type == kTfLiteInt8 && output->type == kTfLiteInt32) ||
       (input->type == kTfLiteInt16 && output->type == kTfLiteInt16) ||
       (input->type == kTfLiteInt16 && output->type == kTfLiteInt32)) {
@@ -144,6 +145,13 @@ TfLiteStatus EvalQuantizeReference(TfLiteContext* context, TfLiteNode* node) {
             data->requantize_output_multiplier, data->requantize_output_shift,
             data->input_zero_point, data->quantization_params.zero_point,
             tflite::micro::GetTensorData<int8_t>(output));
+        break;
+      case kTfLiteInt16:
+        reference_ops::Requantize(
+            tflite::micro::GetTensorData<int8_t>(input), size,
+            data->requantize_output_multiplier, data->requantize_output_shift,
+            data->input_zero_point, data->quantization_params.zero_point,
+            tflite::micro::GetTensorData<int16_t>(output));
         break;
       case kTfLiteInt32:
         reference_ops::Requantize(

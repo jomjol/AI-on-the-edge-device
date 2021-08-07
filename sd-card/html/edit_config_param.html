@@ -623,21 +623,6 @@ textarea {
 			</td>
 		</tr> 	
 		
-		<tr class="GPIO_item">
-			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="GPIO_MainTopicMQTT_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "MainTopicMQTT")' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="GPIO_MainTopicMQTT_text" style="color:black;">MainTopicMQTT</class>
-			</td>
-			<td>
-				<input type="text" id="GPIO_MainTopicMQTT_value1">
-			</td>
-			<td style="font-size: 80%;">
-				MQTT main topic for GPIO
-			</td>
-		</tr>
-
 		<!------------- GPIO0 begin ------------------>
 		<tr class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
@@ -1687,7 +1672,6 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	
-	WriteParameter(param, category, "GPIO", "MainTopicMQTT", true);
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
 	WriteParameter(param, category, "GPIO", "IO3", true);
@@ -1751,7 +1735,6 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 
-	ReadParameter(param, "GPIO", "MainTopicMQTT", true);
 	ReadParameter(param, "GPIO", "IO0", true);
 	ReadParameter(param, "GPIO", "IO1", true);
 	ReadParameter(param, "GPIO", "IO3", true);

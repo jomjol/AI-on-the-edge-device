@@ -8,6 +8,8 @@
 #include "esp_system.h"
 #include "esp_event.h"
 
+#include "server_tflite.h"
+
 //#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 //#include "errno.h"
@@ -303,7 +305,14 @@ bool GpioHandler::readConfig()
     if (!_isEnabled)
         return false;
 
-    std::string mainTopicMQTT = "";
+//    std::string mainTopicMQTT = "";
+    std::string mainTopicMQTT = GetMQTTMainTopic();
+    if (mainTopicMQTT.length() > 0)
+    {
+        mainTopicMQTT = mainTopicMQTT + "/GPIO";
+        ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found\r\n");
+    }
+
     bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
@@ -315,8 +324,8 @@ bool GpioHandler::readConfig()
         //     std::string gpioStr = pieces_match[1];
         ESP_LOGD(TAG_SERVERGPIO, "conf param %s\r\n", toUpper(zerlegt[0]).c_str());
         if (toUpper(zerlegt[0]) == "MAINTOPICMQTT") {
-            ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found\r\n");
-            mainTopicMQTT = zerlegt[1];
+//            ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found\r\n");
+//            mainTopicMQTT = zerlegt[1];
         } else if ((zerlegt[0].rfind("IO", 0) == 0) && (zerlegt.size() >= 6))
         {
             ESP_LOGI(TAG_SERVERGPIO,"Enable GP%s in %s mode", zerlegt[0].c_str(), zerlegt[1].c_str());

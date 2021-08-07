@@ -23,6 +23,8 @@ public:
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc);
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
+    string GetMQTTMainTopic();
+
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string name(){return "ClassFlowMQTT";};

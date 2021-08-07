@@ -49,6 +49,8 @@ public:
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 
+	string GetMQTTMainTopic();
+
 	esp_err_t GetJPGStream(std::string _fn, httpd_req_t *req);
 	esp_err_t SendRawJPG(httpd_req_t *req);
 

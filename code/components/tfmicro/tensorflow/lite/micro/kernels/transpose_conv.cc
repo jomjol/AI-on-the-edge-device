@@ -47,6 +47,10 @@ struct OpData {
   // A scratch buffer is required for quantized implementations.
   int scratch_buffer_index;
 
+  // TODO(b/192090531): Remove this once all 8x16 transpose conv models use
+  // 64-bit biases.
+  int bias_converted_buffer_index;
+
   // Multiplier and shift arrays are required for the int8 implementation.
   int32_t* per_channel_output_multiplier;
   int32_t* per_channel_output_shift;
@@ -103,9 +107,21 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteNode* node,
         &data->params.output_multiplier, &data->params.output_shift,
         &data->params.quantized_activation_min,
         &data->params.quantized_activation_max,
-        data->per_channel_output_multiplier,
-        reinterpret_cast<int*>(data->per_channel_output_shift),
+        data->per_channel_output_multiplier, data->per_channel_output_shift,
         output_channels));
+
+    // TODO(b/192090531): Remove this once all 8x16 transpose conv models use
+    // 64-bit biases.
+    if (input->type == kTfLiteInt16) {
+      TFLITE_DCHECK(filter->type == kTfLiteInt8);
+      TFLITE_DCHECK(output->type == kTfLiteInt16);
+      if (bias->type == kTfLiteInt16) {
+        TFLITE_DCHECK(
+            context->RequestScratchBufferInArena(
+                context, GetTensorShape(bias).FlatSize() * sizeof(std::int64_t),
+                &(data->bias_converted_buffer_index)) == kTfLiteOk);
+      }
+    }
   }
   return kTfLiteOk;
 }
@@ -154,8 +170,17 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
                       &(data->scratch_buffer_index)) == kTfLiteOk);
   }
 
+  // Quantized 16x8 kernels use an int64 scratch buffer.
+  if (input->type == kTfLiteInt16) {
+    TFLITE_DCHECK(context->RequestScratchBufferInArena != nullptr);
+    TFLITE_DCHECK(context->RequestScratchBufferInArena(
+                      context,
+                      GetTensorShape(output).FlatSize() * sizeof(std::int64_t),
+                      &(data->scratch_buffer_index)) == kTfLiteOk);
+  }
+
   // All per-channel quantized tensors need valid zero point and scale arrays.
-  if (input->type == kTfLiteInt8) {
+  if (input->type == kTfLiteInt8 || input->type == kTfLiteInt16) {
     TF_LITE_ENSURE_EQ(context, filter->quantization.type,
                       kTfLiteAffineQuantization);
 
@@ -212,8 +237,11 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   const OpData& data = *(static_cast<const OpData*>(node->user_data));
 
   TF_LITE_ENSURE_EQ(context, input->type, output->type);
-  TF_LITE_ENSURE_MSG(context, input->type == filter->type,
-                     "Hybrid models are not supported on TFLite Micro.");
+  TF_LITE_ENSURE_MSG(
+      context,
+      input->type == filter->type ||
+          (input->type == kTfLiteInt16 && filter->type == kTfLiteInt8),
+      "Hybrid models are not supported on TFLite Micro.");
 
   switch (input->type) {  // Already know in/out types are same.
     case kTfLiteFloat32: {
@@ -243,6 +271,44 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
           tflite::micro::GetTensorShape(output),
           tflite::micro::GetTensorData<int8_t>(output),
           tflite::micro::GetTensorShape(nullptr), nullptr, scratch_buffer);
+      break;
+    }
+    case kTfLiteInt16: {
+      std::int64_t* scratch_buffer = static_cast<int64_t*>(
+          context->GetScratchBuffer(context, data.scratch_buffer_index));
+      // TODO(b/192090531): Remove this once all 8x16 transpose conv models use
+      // 64-bit biases.
+      if (bias->type == kTfLiteInt16) {
+        std::int64_t* bias_converted_buffer =
+            static_cast<int64_t*>(context->GetScratchBuffer(
+                context, data.bias_converted_buffer_index));
+        for (int i = 0; i < tflite::micro::GetTensorShape(bias).FlatSize();
+             i++) {
+          bias_converted_buffer[i] = bias->data.i16[i];
+        }
+        reference_integer_ops::TransposeConv(
+            data.params, data.per_channel_output_multiplier,
+            data.per_channel_output_shift, tflite::micro::GetTensorShape(input),
+            tflite::micro::GetTensorData<int16_t>(input),
+            tflite::micro::GetTensorShape(filter),
+            tflite::micro::GetTensorData<int8_t>(filter),
+            tflite::micro::GetTensorShape(bias), bias_converted_buffer,
+            tflite::micro::GetTensorShape(output),
+            tflite::micro::GetTensorData<int16_t>(output),
+            tflite::micro::GetTensorShape(nullptr), nullptr, scratch_buffer);
+      } else {
+        reference_integer_ops::TransposeConv(
+            data.params, data.per_channel_output_multiplier,
+            data.per_channel_output_shift, tflite::micro::GetTensorShape(input),
+            tflite::micro::GetTensorData<int16_t>(input),
+            tflite::micro::GetTensorShape(filter),
+            tflite::micro::GetTensorData<int8_t>(filter),
+            tflite::micro::GetTensorShape(bias),
+            tflite::micro::GetTensorData<std::int64_t>(bias),
+            tflite::micro::GetTensorShape(output),
+            tflite::micro::GetTensorData<int16_t>(output),
+            tflite::micro::GetTensorShape(nullptr), nullptr, scratch_buffer);
+      }
       break;
     }
     default:

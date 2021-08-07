@@ -21,6 +21,7 @@ limitations under the License.
 
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/op_macros.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 
@@ -50,7 +51,8 @@ void SignedSymmetricPerChannelQuantize(const float* values,
     stride = channel_count;
     channel_stride = 1;
   } else {
-    TF_LITE_FATAL("quantized dimension must be 0 or 3");
+    MicroPrintf("quantized dimension must be 0 or 3");
+    TFLITE_ABORT;
   }
 
   // Calculate scales for each channel.

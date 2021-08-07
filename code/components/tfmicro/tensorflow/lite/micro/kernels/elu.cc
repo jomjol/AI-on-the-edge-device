@@ -25,6 +25,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/types.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 namespace {
@@ -45,7 +46,10 @@ using TransformFunc = float (*)(float);
 template <typename T>
 void PopulateLookupTable(const TfLiteTensor* input, const TfLiteTensor* output,
                          const TransformFunc transform, OpData* data) {
-  if (sizeof(T) != 1) TF_LITE_FATAL("Lookup table valid only for 8bit");
+  if (sizeof(T) != 1) {
+    MicroPrintf("Lookup table valid only for 8bit");
+    TFLITE_ABORT;
+  }
 
   const float inverse_scale = 1 / output->params.scale;
   int32_t maxval = std::numeric_limits<T>::max();

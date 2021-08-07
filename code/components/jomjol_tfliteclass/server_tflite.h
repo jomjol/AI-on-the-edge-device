@@ -1,4 +1,5 @@
 #include <esp_log.h>
+#include <string>
 
 #include <esp_http_server.h>
 #include "CImageBasis.h"
@@ -12,6 +13,8 @@ void KillTFliteTasks();
 void TFliteDoAutoStart();
 
 bool isSetupModusActive();
+
+std::string GetMQTTMainTopic();
 
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req);
 

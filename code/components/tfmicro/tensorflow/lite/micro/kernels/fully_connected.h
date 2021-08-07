@@ -65,7 +65,7 @@ TfLiteStatus CalculateOpDataFullyConnected(
 // (reference or optimized) must define this function.
 TfLiteRegistration Register_FULLY_CONNECTED();
 
-#if defined(CMSIS_NN) || defined(ARDUINO)
+#if defined(CMSIS_NN)
 // The Arduino is a special case where we use the CMSIS kernels, but because of
 // the current approach to building for Arduino, we do not support -DCMSIS_NN as
 // part of the build. As a result, we use defined(ARDUINO) as proxy for the

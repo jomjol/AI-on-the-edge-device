@@ -373,6 +373,10 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
       return ParseReducer(op, error_reporter, allocator, builtin_data);
     }
 
+    case BuiltinOperator_REDUCE_ALL: {
+      return ParseReducer(op, error_reporter, allocator, builtin_data);
+    }
+
     case BuiltinOperator_REDUCE_MAX: {
       return ParseReducer(op, error_reporter, allocator, builtin_data);
     }
@@ -663,7 +667,6 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
       return kTfLiteOk;
     }
     case BuiltinOperator_DELEGATE: {
-      // TODO(ycling): Revisit when supporting saving delegated models.
       TF_LITE_REPORT_ERROR(error_reporter,
                            "DELEGATE op shouldn't exist in model.");
       return kTfLiteError;
@@ -757,7 +760,8 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
       *builtin_data = params.release();
       return kTfLiteOk;
     }
-    case BuiltinOperator_CONV_3D: {
+    case BuiltinOperator_CONV_3D:
+    case BuiltinOperator_CONV_3D_TRANSPOSE: {
       auto params = safe_allocator.Allocate<TfLiteConv3DParams>();
       TF_LITE_ENSURE(error_reporter, params != nullptr);
       if (const auto* conv3d_params = op->builtin_options_as_Conv3DOptions()) {
@@ -785,6 +789,21 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
         TF_LITE_ENSURE_STATUS(ConvertTensorType(hashtable_params->value_dtype(),
                                                 &params->value_dtype,
                                                 error_reporter));
+      }
+      *builtin_data = params.release();
+      return kTfLiteOk;
+    }
+    case BuiltinOperator_VAR_HANDLE: {
+      auto params = safe_allocator.Allocate<TfLiteVarHandleParams>();
+      TF_LITE_ENSURE(error_reporter, params != nullptr);
+      params->container = nullptr;
+      params->shared_name = nullptr;
+      if (const auto* var_handle_params =
+              op->builtin_options_as_VarHandleOptions()) {
+        if (var_handle_params->container())
+          params->container = var_handle_params->container()->c_str();
+        if (var_handle_params->shared_name())
+          params->shared_name = var_handle_params->shared_name()->c_str();
       }
       *builtin_data = params.release();
       return kTfLiteOk;
@@ -825,6 +844,9 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
     case BuiltinOperator_HASHTABLE_FIND:
     case BuiltinOperator_HASHTABLE_IMPORT:
     case BuiltinOperator_HASHTABLE_SIZE:
+    case BuiltinOperator_READ_VARIABLE:
+    case BuiltinOperator_ASSIGN_VARIABLE:
+    case BuiltinOperator_BROADCAST_ARGS:
       return kTfLiteOk;
     case BuiltinOperator_PLACEHOLDER_FOR_GREATER_OP_CODES:
       return kTfLiteError;
@@ -1369,6 +1391,30 @@ TfLiteStatus ParseGreaterEqual(const Operator*, ErrorReporter*,
 // selective registration for the OpResolver implementation in micro.
 TfLiteStatus ParseHardSwish(const Operator*, ErrorReporter*,
                             BuiltinDataAllocator*, void**) {
+  return kTfLiteOk;
+}
+
+TfLiteStatus ParseIf(const Operator* op, ErrorReporter* error_reporter,
+                     BuiltinDataAllocator* allocator, void** builtin_data) {
+  CheckParsePointerParams(op, error_reporter, allocator, builtin_data);
+
+  SafeBuiltinDataAllocator safe_allocator(allocator);
+  std::unique_ptr<TfLiteIfParams, SafeBuiltinDataAllocator::BuiltinDataDeleter>
+      params = safe_allocator.Allocate<TfLiteIfParams>();
+  TF_LITE_ENSURE(error_reporter, params != nullptr);
+
+  const IfOptions* schema_params = op->builtin_options_as_IfOptions();
+
+  if (schema_params != nullptr) {
+    params->then_subgraph_index = schema_params->then_subgraph_index();
+    params->else_subgraph_index = schema_params->else_subgraph_index();
+  } else {
+    // TODO(b/157480169): We should either return kTfLiteError or fill in some
+    // reasonable defaults in the params struct. We are not doing so until we
+    // better undertand the ramifications of changing the legacy behavior.
+  }
+
+  *builtin_data = params.release();
   return kTfLiteOk;
 }
 
