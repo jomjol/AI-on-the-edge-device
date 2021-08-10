@@ -11,6 +11,12 @@
 
 ____
 
+#### #10 Improve and bug fix logging of images
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/307
+
+  
+
 #### #9 Basic auth for the UI
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/283
