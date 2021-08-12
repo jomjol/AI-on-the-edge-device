@@ -47,16 +47,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2021-08-09)
-
-* remove reconnect limit in wlan module
-
-Rolling (2021-08-07)
+##### 8.1.0 - Multi Meter Support (2021-08-12)
 
 * GPIO: using the general mqtt main topic for GPIO
+
+* Upgrade digital CNN to v12.0.0  (added new images)
 * Update tfmicro to new master (2021-08-07)
-* Bug fix: mqtt value
-* Based on v2021-08-01
+* Bug fix: remove text in mqtt value, remove connect limit in wlan reconnet
 
 ##### 8.0.5 - Multi Meter Support (2021-08-01)
 

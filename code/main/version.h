@@ -13,7 +13,7 @@ extern "C"
 #include "Helper.h"
 #include <fstream>
 
-const char* GIT_BASE_BRANCH = "master - v8.0.5 - 2021-08-01";
+const char* GIT_BASE_BRANCH = "master - v8.1.0 - 2021-08-12";
 
 
 const char* git_base_branch(void)
