@@ -55,12 +55,11 @@
   <tr>	
     <td class="tg-3">
 	<div id="timestamp" ></div>	
+	<div id="statusflow" ></div>	
 	</td>	
   </tr>    
 </table>
 
-</body>
-</html>
 
 <script src="/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="./gethost.js"></script> 
@@ -82,10 +81,11 @@ function addZero(i) {
 
 	$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+	loadStatus();
 	refresh();
 	});
 
-	function refresh() {
+function refresh() {
 	setTimeout (function() {
 	var time = new Date();
 	var timestamp = new Date().getTime();
@@ -96,6 +96,7 @@ function addZero(i) {
 	// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp
 	$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'"max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+	loadStatus();
 	init();
 	  refresh();
 	}, 300000);
@@ -103,6 +104,20 @@ function addZero(i) {
   }
 
 	var basepath = "http://192.168.178.22"; 
+
+	function loadStatus() {
+		url = basepath + '/statusflow.html';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				_rsp = "Status: " + _rsp;
+				$('#statusflow').html(_rsp);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();		
+	}
 
 	function loadValue(_type, _div, _style) {
 		url = basepath + '/wasserzaehler.html?all=true&type=' + _type;     
@@ -150,8 +165,11 @@ function addZero(i) {
 		loadValue("raw", "raw");
 		loadValue("prevalue", "prevalue");
 		loadValue("error", "error", "font-size:8px");
+		loadStatus();
 	}
 
 	init();
 
 </script>
+</body>
+</html>

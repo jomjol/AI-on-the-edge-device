@@ -33,6 +33,9 @@ protected:
     int DecimalShift;
     bool DecimalShiftEnabled;
 
+    bool isLogImageSelect;
+    string LogImageSelect;
+
 
     ClassFlowAlignment* flowpostalignment;
  

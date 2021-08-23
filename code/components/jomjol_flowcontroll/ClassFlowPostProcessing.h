@@ -51,7 +51,6 @@ protected:
     std::vector<NumberPost*> NUMBERS;
     bool UpdatePreValueINI;
 
-    bool PreValueUse;
     int PreValueAgeStartup; 
     bool ErrorMessage;
 
@@ -77,6 +76,8 @@ protected:
 
 
 public:
+    bool PreValueUse;
+
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc);
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);

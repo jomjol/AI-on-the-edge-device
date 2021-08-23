@@ -64,6 +64,7 @@ class CTfLiteClass
         void GetOutPut();
         int GetOutClassification();
         int GetClassFromImageBasis(CImageBasis *rs);
+        std::string GetStatusFlow();
 
         float GetOutputValue(int nr);
         void GetInputDimension(bool silent);

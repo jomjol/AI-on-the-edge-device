@@ -45,7 +45,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling (2021-08-23)
 
+* Improved server responsiveness
+* Added flow status to overview (lower left)
+* Aligned MQTT and prevalue handling, including status of prevalue if not valid/used
+* based on v8.1.0
 
 ##### 8.1.0 - Multi Meter Support (2021-08-12)
 
