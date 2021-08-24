@@ -28,6 +28,7 @@ void ClassFlowDigit::SetInitialParameter(void)
     disabled = false;
     DecimalShift = 0;
     DecimalShiftEnabled = false;
+    isLogImageSelect = false;
 }    
 
 ClassFlowDigit::ClassFlowDigit() : ClassFlowImage(TAG)
@@ -119,6 +120,13 @@ bool ClassFlowDigit::ReadParameter(FILE* pfile, string& aktparamgraph)
             LogImageLocation = "/sdcard" + zerlegt[1];
             isLogImage = true;            
         }
+
+        if ((zerlegt[0] == "LogImageSelect") && (zerlegt.size() > 1))
+        {
+            LogImageSelect = zerlegt[1];
+            isLogImageSelect = true;            
+        }
+
         if ((zerlegt[0] == "Model") && (zerlegt.size() > 1))
         {
             cnnmodelfile = zerlegt[1];
@@ -328,7 +336,17 @@ bool ClassFlowDigit::doNeuralNetwork(string time)
 
             if (isLogImage)
             {
-                LogImage(logPath, DIGIT[_dig]->ROI[i]->name, NULL, &DIGIT[_dig]->ROI[i]->resultklasse, time, DIGIT[_dig]->ROI[i]->image_org);
+                if (isLogImageSelect)
+                {
+                    if (LogImageSelect.find(DIGIT[_dig]->ROI[i]->name) != std::string::npos)
+                    {
+                        LogImage(logPath, DIGIT[_dig]->ROI[i]->name, NULL, &DIGIT[_dig]->ROI[i]->resultklasse, time, DIGIT[_dig]->ROI[i]->image_org);
+                    }
+                }
+                else
+                {
+                    LogImage(logPath, DIGIT[_dig]->ROI[i]->name, NULL, &DIGIT[_dig]->ROI[i]->resultklasse, time, DIGIT[_dig]->ROI[i]->image_org);
+                }
             }
         }
 #ifndef OHNETFLITE

@@ -17,6 +17,7 @@ float CTfLiteClass::GetOutputValue(int nr)
     return output2->data.f[nr];
 }
 
+
 int CTfLiteClass::GetClassFromImageBasis(CImageBasis *rs)
 {
     if (!LoadInputImageBasis(rs))

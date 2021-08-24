@@ -36,8 +36,6 @@ protected:
 	std::string aktstatus;
 	int aktRunNr;
 
-	void UpdateAktStatus(std::string _flow);
-
 public:
 	void InitFlow(std::string config);
 	bool doFlow(string time);
@@ -48,6 +46,8 @@ public:
 	string UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
+
+	string TranslateAktstatus(std::string _input);
 
 	string GetMQTTMainTopic();
 

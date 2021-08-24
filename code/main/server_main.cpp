@@ -131,6 +131,16 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
+    if (_task.compare("FlowStatus") == 0)
+    {
+        std::string zw;
+        zw = std::string("FlowStatus");
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+
 #ifdef DEBUG_DETAIL_ON      
     LogFile.WriteHeapInfo("info_get_handler - Done"); 
 #endif   
@@ -398,7 +408,7 @@ httpd_handle_t start_webserver(void)
     config.max_uri_handlers   = 24;                       
     config.max_resp_headers   = 8;                        
     config.backlog_conn       = 5;                        
-    config.lru_purge_enable   = false;                    
+    config.lru_purge_enable   = true;       // dadurch werden alter Verbindungen gekappt, falls neue benögt werden.               
     config.recv_wait_timeout  = 30;         // default: 5                       
     config.send_wait_timeout  = 30;         // default: 5                        
     config.global_user_ctx = NULL;                        

@@ -12,6 +12,9 @@
 #include "Helper.h"
 #include "server_ota.h"
 
+
+//#include "CImg.h"
+
 #include "server_help.h"
 
 //#define DEBUG_DETAIL_ON  
@@ -50,6 +53,25 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
     return result;
 }
+
+std::string ClassFlowControll::TranslateAktstatus(std::string _input)
+{
+    if (_input.compare("ClassFlowMakeImage") == 0)
+        return ("Take Image");
+    if (_input.compare("ClassFlowAlignment") == 0)
+        return ("Aligning");
+    if (_input.compare("ClassFlowAnalog") == 0)
+        return ("Analog ROIs");
+    if (_input.compare("ClassFlowDigit") == 0)
+        return ("Digital ROIs");
+    if (_input.compare("ClassFlowMQTT") == 0)
+        return ("Sending MQTT");
+    if (_input.compare("ClassFlowPostProcessing") == 0)
+        return ("Processing");
+
+    return "Unkown Status";
+}
+
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 {
@@ -95,7 +117,7 @@ void ClassFlowControll::SetInitialParameter(void)
     flowpostprocessing = NULL;
     disabled = false;
     aktRunNr = 0;
-    aktstatus = "Startup";
+    aktstatus = "Booting ...";
 
 }
 
@@ -209,9 +231,9 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         if (FlowControll[i]->name() == "ClassFlowMakeImage") {
-            zw_time = gettimestring("%Y%m%d-%H%M%S");
-            aktstatus = zw_time + ": " + FlowControll[i]->name();
-            string zw = "FlowControll.doFlowMakeImageOnly - " + FlowControll[i]->name();
+//            zw_time = gettimestring("%Y%m%d-%H%M%S");
+            zw_time = gettimestring("%H:%M:%S");
+            aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
             FlowControll[i]->doFlow(time);
         }
     }
@@ -231,8 +253,11 @@ bool ClassFlowControll::doFlow(string time)
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
-        zw_time = gettimestring("%Y%m%d-%H%M%S");
-        aktstatus = zw_time + ": " + FlowControll[i]->name();
+        zw_time = gettimestring("%H:%M:%S");
+        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + "(" + zw_time + ")";
+
+//        zw_time = gettimestring("%Y%m%d-%H%M%S");
+//        aktstatus = zw_time + ": " + FlowControll[i]->name();
         
        
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
@@ -259,23 +284,9 @@ bool ClassFlowControll::doFlow(string time)
 #endif
 
     }
-    zw_time = gettimestring("%Y%m%d-%H%M%S");    
-    aktstatus = zw_time + ": Flow is done";
+    zw_time = gettimestring("%H:%M:%S");
+    aktstatus = "Flow finished (" + zw_time + ")";
     return result;
-}
-
-void ClassFlowControll::UpdateAktStatus(std::string _flow)
-{
-    aktstatus = gettimestring("%Y%m%d-%H%M%S");
-    aktstatus = aktstatus + "\t" + std::to_string(aktRunNr) + "\t";
-    
-    if (_flow == "ClassFlowMakeImage")
-        aktstatus = aktstatus + "Taking Raw Image";
-    else
-        if (_flow == "ClassFlowAlignment")
-            aktstatus = aktstatus + "Aligning Image";
-
-
 }
 
 
@@ -289,10 +300,18 @@ string ClassFlowControll::getReadoutAll(int _type)
         out = out + numbers[i]->name + "\t";
         switch (_type) {
             case READOUT_TYPE_VALUE:
-                out = out + numbers[i]->ReturnValue;
+                out = out + numbers[i]->ReturnValueNoError;
                 break;
             case READOUT_TYPE_PREVALUE:
-                out = out + numbers[i]->ReturnPreValue;
+                if (flowpostprocessing->PreValueUse)
+                {
+                    if (numbers[i]->PreValueOkay)
+                        out = out + numbers[i]->ReturnPreValue;
+                    else
+                        out = out + "PreValue too old";                
+                }
+                else
+                    out = out + "PreValue deactivated";
                 break;
             case READOUT_TYPE_RAWVALUE:
                 out = out + numbers[i]->ReturnRawValue;
@@ -523,6 +542,18 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
         flowalignment->DrawRef(_imgzw);
         if (flowdigit) flowdigit->DrawROI(_imgzw);
         if (flowanalog) flowanalog->DrawROI(_imgzw);
+
+/*/////////////////////////////////////        
+        cimg_library::CImg<unsigned char> cimg(_imgzw->rgb_image, _imgzw->bpp, _imgzw->width, _imgzw->height, 1);
+    
+        //Convert cimg type
+//        cimg.permute_axes("yzcx");
+        cimg.draw_text(300, 300, "Dies ist ein Test", "black");
+
+        
+        //Convert back to stb type to save
+//        cimg.permute_axes("cxyz");
+*////////////////////////////////////
         _send = _imgzw;
         Dodelete = true;
     }

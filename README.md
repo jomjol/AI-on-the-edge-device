@@ -47,6 +47,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### 8.2.0 - Multi Meter Support (2021-08-24)
+
+* Improve server responsiveness
+* Flow status and prevalue status in overview
+* Improved prevalue handling 
+
 ##### 8.1.0 - Multi Meter Support (2021-08-12)
 
 * GPIO: using the general mqtt main topic for GPIO
@@ -71,32 +77,6 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 <span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
 
 
-
-##### 7.1.2 MQTT-Update - (2021-06-17)
-
-* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during rebootNEW: 7.1.1: bug fix wlan password with "="  (again)
-* MQTT error message: changes "no error", send retain flag
-* Update wlan handling to esp-idf 4.1
-* Upgrade digital CNN to v8.7.0  (added new images)
-* Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
-
-  
-
-##### 7.0.1 MQTT-Update - (2021-05-13)
-
-* NEW: 7.0.1: bug fix wlan password with "=" 
-
-* Upgrade digital CNN to v8.5.0  (added new images)
-
-* New MQTT topics: flow rate (units/minute), time stamp (last correct read readout)
-
-* Update MQTT/Error topic to " " in case no error (instead of empty string)
-
-* Portrait or landscape image orientation in rotated image (avoid cropping)
-
-  
-
-
 ## Additional ideas
 
 There are some ideas and feature request, which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)
@@ -106,6 +86,10 @@ There are some ideas and feature request, which are not followed currently - mai
 ------
 
 ## History
+
+##### 7.1.2 MQTT-Update - (2021-06-17)
+
+**7.0.1 MQTT-Update - (2021-05-13)**
 
 ##### 6.7.2 Image Processing in Memory - (2021-05-01)
 
@@ -129,8 +113,3 @@ There are some ideas and feature request, which are not followed currently - mai
 
 #### [Full Changelog](Changelog.md)
 
-
-
-## Solved topics
-
-* n.a.

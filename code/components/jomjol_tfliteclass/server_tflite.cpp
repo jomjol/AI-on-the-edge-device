@@ -530,6 +530,36 @@ esp_err_t handler_editflow(httpd_req_t *req)
 };
 
 
+esp_err_t handler_statusflow(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_prevalue - Start");       
+#endif
+
+    const char* resp_str;
+    string zw;
+
+#ifdef DEBUG_DETAIL_ON       
+    printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
+#endif
+
+    zw = tfliteflow.getActStatus();
+    
+    resp_str = zw.c_str();
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, resp_str, strlen(resp_str));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_prevalue - Start");       
+#endif
+
+    return ESP_OK;
+};
+
+
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON       
@@ -684,6 +714,10 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
 
+    camuri.uri       = "/statusflow.html";
+    camuri.handler   = handler_statusflow;
+    camuri.user_ctx  = (void*) "Light Off"; 
+    httpd_register_uri_handler(server, &camuri);  
     
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;
