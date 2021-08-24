@@ -2,6 +2,34 @@
 
 
 
+
+
+##### 7.1.2 MQTT-Update - (2021-06-17)
+
+* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during rebootNEW: 7.1.1: bug fix wlan password with "="  (again)
+
+* MQTT error message: changes "no error", send retain flag
+
+* Update wlan handling to esp-idf 4.1
+
+* Upgrade digital CNN to v8.7.0  (added new images)
+
+* Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
+
+  
+
+##### 7.0.1 MQTT-Update - (2021-05-13)
+
+* NEW: 7.0.1: bug fix wlan password with "=" 
+
+* Upgrade digital CNN to v8.5.0  (added new images)
+
+* New MQTT topics: flow rate (units/minute), time stamp (last correct read readout)
+
+* Update MQTT/Error topic to " " in case no error (instead of empty string)
+
+* Portrait or landscape image orientation in rotated image (avoid cropping)
+
 ##### 6.7.2 Image Processing in Memory - (2021-05-01)
 
 * NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)

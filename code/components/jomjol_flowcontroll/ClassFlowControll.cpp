@@ -233,7 +233,7 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
         if (FlowControll[i]->name() == "ClassFlowMakeImage") {
 //            zw_time = gettimestring("%Y%m%d-%H%M%S");
             zw_time = gettimestring("%H:%M:%S");
-            aktstatus = TranslateAktstatus(FlowControll[i]->name()) + "(" + zw_time + ")";
+            aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
             FlowControll[i]->doFlow(time);
         }
     }
