@@ -233,19 +233,15 @@ void ClassFlowPostProcessing::SavePreValue()
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
 {
-//    FlowRateAct = 0;
     PreValueUse = false;
     PreValueAgeStartup = 30;
     ErrorMessage = false;
     ListFlowControll = NULL;
-//    PreValueOkay = false;
-//    DecimalShift = 0;    
-//    ErrorMessageText = "";
-//    timeStamp = "";
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
     flowMakeImage = NULL;
     UpdatePreValueINI = false;
+    IgnoreLeadingNaN = false;
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
@@ -384,6 +380,13 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 ErrorMessage = true;
         }
+        if ((toUpper(_param) == "IGNORELEADINGNAN") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                IgnoreLeadingNaN = true;
+        }
+
+        
         if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
         {
             PreValueAgeStartup = std::stoi(zerlegt[1]);
@@ -563,7 +566,18 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + flowAnalog->getReadout(j); 
 
-        NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);   
+        NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);  
+
+
+///////////////// SPEZIALFALL für User Gustl ///////////////////////////////////////////////////////
+        if (IgnoreLeadingNaN)               
+        {
+            while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == 'N'))
+            {
+                NUMBERS[j]->ReturnValue.erase(0, 1);
+            }
+        } 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
         rohwert = NUMBERS[j]->ReturnRawValue;
 

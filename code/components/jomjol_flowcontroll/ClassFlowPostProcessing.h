@@ -9,7 +9,6 @@
 
 
 struct NumberPost {
-//    int PreValueAgeStartup; 
     float MaxRateValue;
     bool useMaxRateValue;
     bool ErrorMessage;
@@ -30,13 +29,9 @@ struct NumberPost {
     int AnzahlDigital;
     int DecimalShift;
     int Nachkomma;
-//    ClassFlowAnalog* ANALOG;
-//    ClassFlowDigit* DIGIT;
 
     digit *digit_roi;
     analog *analog_roi;
-
-
 
     string name;
 };
@@ -53,6 +48,7 @@ protected:
 
     int PreValueAgeStartup; 
     bool ErrorMessage;
+    bool IgnoreLeadingNaN;          // SPEZIALFALL für User Gustl
 
 
     ClassFlowAnalog* flowAnalog;

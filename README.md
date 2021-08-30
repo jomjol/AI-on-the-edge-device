@@ -47,6 +47,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2021-08-30)
+
+* dedicated NaN-test case
+* based on v8.2.0
+
 ##### 8.2.0 - Multi Meter Support (2021-08-24)
 
 * Improve server responsiveness
