@@ -47,10 +47,14 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2021-08-30)
+##### Rolling (2021-08-31)
 
-* dedicated NaN-test case
-* based on v8.2.0
+* Bug fix
+
+Rolling (2021-08-30)
+
+* Dedicated NaN-test case
+* Based on v8.2.0
 
 ##### 8.2.0 - Multi Meter Support (2021-08-24)
 

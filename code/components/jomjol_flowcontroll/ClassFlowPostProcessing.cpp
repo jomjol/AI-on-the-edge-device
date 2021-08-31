@@ -402,8 +402,6 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 void ClassFlowPostProcessing::InitNUMBERS()
 {
-//    ClassFlowDigit* _cdigit = NULL;
-//    ClassFlowAnalog* _canalog = NULL;
     int anzDIGIT = 0;
     int anzANALOG = 0;
     std::vector<std::string> name_numbers;
@@ -572,9 +570,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 ///////////////// SPEZIALFALL für User Gustl ///////////////////////////////////////////////////////
         if (IgnoreLeadingNaN)               
         {
-            while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == 'N'))
+            while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N'))
             {
-                NUMBERS[j]->ReturnValue.erase(0, 1);
+                NUMBERS[j]->ReturnRawValue.erase(0, 1);
             }
         } 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
