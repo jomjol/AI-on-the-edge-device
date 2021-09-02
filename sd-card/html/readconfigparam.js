@@ -77,6 +77,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "MaxRateValue", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
+     ParamAddValue(param, catname, "IgnoreLeadingNaN");     
 
      var catname = "MQTT";
      category[catname] = new Object(); 
