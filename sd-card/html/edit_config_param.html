@@ -52,7 +52,7 @@ textarea {
 			</td>
 			<td>
 				<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>
-				<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expertenmodus </label> 
+				<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
 			</td>
 		</tr>
 	</table>
@@ -276,7 +276,7 @@ textarea {
 				<input type="text" id="Digits_Model_value1">
 			</td>
 			<td style="font-size: 80%;">
-				path to CNN model file for image recognition
+				Path to CNN model file for image recognition
 			</td>
 		</tr>
 		<tr>
@@ -330,7 +330,7 @@ textarea {
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td width="200px"> <class id="Analog_Model_text" style="color:black;">Model</class> </td>
 			<td> <input type="text" id="Analog_Model_value1"> </td>
-			<td style="font-size: 80%;"> path to CNN model file for image recognition</td>
+			<td style="font-size: 80%;"> Path to CNN model file for image recognition</td>
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
@@ -459,7 +459,7 @@ textarea {
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Activate to enalbe additional consistency check - especially zero crossing check between digits
+				Enable additional consistency check - especially zero crossing check between digits
 			</td>
 		</tr>
 
@@ -485,7 +485,7 @@ textarea {
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
 			<td style="font-size: 80%;">
-				shift the digit separator within the digital digits (positiv and negativ)
+				Shift the digit separator within the digital digits (positiv and negativ)
 			</td>
 		</tr>
 		<tr>
@@ -533,9 +533,9 @@ textarea {
 				<input type="text" id="MQTT_MainTopic_value1">
 			</td>
 			<td style="font-size: 80%;">
-				MQTT main topic, under which the counters are published. The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMTER <br>
+				MQTT main topic, under which the counters are published. The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMETER <br>
 				where parameters are: value, rate, timestamp, error<br>
-				The general connection status can be found in MAINTOPiC"/CONNECTION
+				The general connection status can be found in MAINTOPIC/CONNECTION
 			</td>
 		</tr>
 		<tr>
@@ -563,7 +563,7 @@ textarea {
 				<input type="text" id="MQTT_user_value1">
 			</td>
 			<td style="font-size: 80%;">
-				user for MQTT authentication
+				User for MQTT authentication
 			</td>
 		</tr>
 		<tr>
@@ -577,7 +577,7 @@ textarea {
 				<input type="text" id="MQTT_password_value1">
 			</td>
 			<td style="font-size: 80%;">
-				password for MQTT authentication
+				Password for MQTT authentication
 			</td>
 		</tr>
 	
