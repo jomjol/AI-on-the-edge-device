@@ -28,6 +28,48 @@ int CTfLiteClass::GetClassFromImageBasis(CImageBasis *rs)
     return GetOutClassification();
 }
 
+
+int CTfLiteClass::GetOutClassification(int _von, int _bis)
+{
+  TfLiteTensor* output2 = interpreter->output(0);
+
+  float zw_max;
+  float zw;
+  int zw_class;
+
+  if (output2 == NULL)
+    return -1;
+
+  int numeroutput = output2->dims->data[1];
+  //printf("\n number output neurons: %d\n\n", numeroutput);
+
+  if (_bis == -1)
+    _bis = numeroutput;
+
+  if (_von == -1)
+    _von = 0;
+
+  if (_bis > numeroutput)
+  {
+    printf("ANZAHL OUTPUT NEURONS passt nicht zu geforderter Classifizierung!");
+    return -1;
+  }
+
+  zw_max = output2->data.f[_von];
+  zw_class = _von;
+  for (int i = _von+1; i <= _bis; ++i)
+  {
+    zw = output2->data.f[i];
+    if (zw > zw_max)
+    {
+        zw_max = zw;
+        zw_class = i;
+    }
+  }
+  return (zw_class - _von);
+}
+
+/*
 int CTfLiteClass::GetOutClassification()
 {
   TfLiteTensor* output2 = interpreter->output(0);
@@ -51,6 +93,7 @@ int CTfLiteClass::GetOutClassification()
   }
   return zw_class;
 }
+*/
 
 void CTfLiteClass::GetInputDimension(bool silent = false)
 {
@@ -71,18 +114,18 @@ void CTfLiteClass::GetInputDimension(bool silent = false)
 }
 
 
-void CTfLiteClass::GetOutPut()
+int CTfLiteClass::GetAnzOutPut(bool silent)
 {
   TfLiteTensor* output2 = this->interpreter->output(0);
 
   int numdim = output2->dims->size;
-  printf("NumDimension: %d\n", numdim);  
+  if (!silent) printf("NumDimension: %d\n", numdim);  
 
   int sizeofdim;
   for (int j = 0; j < numdim; ++j)
   {
     sizeofdim = output2->dims->data[j];
-    printf("SizeOfDimension %d: %d\n", j, sizeofdim);  
+    if (!silent) printf("SizeOfDimension %d: %d\n", j, sizeofdim);  
   }
 
 
@@ -93,8 +136,9 @@ void CTfLiteClass::GetOutPut()
   for (int i = 0; i < numeroutput; ++i)
   {
    fo = output2->data.f[i];
-    printf("Result %d: %f\n", i, fo);  
+    if (!silent) printf("Result %d: %f\n", i, fo);  
   }
+  return numeroutput;
 }
 
 void CTfLiteClass::Invoke()
@@ -107,7 +151,7 @@ void CTfLiteClass::Invoke()
 
 bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
 {
-    std::string zw = "ClassFlowAnalog::doNeuralNetwork nach LoadInputResizeImage: ";
+    std::string zw = "ClassFlowCNNGeneral::doNeuralNetwork nach LoadInputResizeImage: ";
 
     unsigned int w = rs->width;
     unsigned int h = rs->height;

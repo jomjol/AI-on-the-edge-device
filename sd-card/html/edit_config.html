@@ -60,6 +60,7 @@ function saveTextAsFile()
 		FileDeleteOnServer("/config/config.ini", basepath);
 		var textToSave = document.getElementById("inputTextToSave").value;
 		FileSendContent(textToSave, "/config/config.ini", basepath);
+		alert("Config.ini is updated!")
 	}
 }
 

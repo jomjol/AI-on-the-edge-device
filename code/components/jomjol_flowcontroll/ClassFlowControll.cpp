@@ -35,10 +35,10 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if ((_stepname.compare(0, 7, "[Digits") == 0) || (_stepname.compare(0, 8, ";[Digits") == 0)) {
 //    if ((_stepname.compare("[Digits]") == 0) || (_stepname.compare(";[Digits]") == 0)){
 //        printf("Digits!!!\n");
-        _classname = "ClassFlowDigit";
+        _classname = "ClassFlowCNNGeneral";
     }
     if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
-        _classname = "ClassFlowAnalog";
+        _classname = "ClassFlowCNNGeneral";
     }
     if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
         _classname = "ClassFlowMQTT";
@@ -54,16 +54,17 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     return result;
 }
 
+
 std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 {
     if (_input.compare("ClassFlowMakeImage") == 0)
         return ("Take Image");
     if (_input.compare("ClassFlowAlignment") == 0)
         return ("Aligning");
-    if (_input.compare("ClassFlowAnalog") == 0)
-        return ("Analog ROIs");
-    if (_input.compare("ClassFlowDigit") == 0)
-        return ("Digital ROIs");
+    //if (_input.compare("ClassFlowAnalog") == 0)
+    //    return ("Analog ROIs");
+    if (_input.compare("ClassFlowCNNGeneral") == 0)
+        return ("Digitalization of ROIs");
     if (_input.compare("ClassFlowMQTT") == 0)
         return ("Sending MQTT");
     if (_input.compare("ClassFlowPostProcessing") == 0)
@@ -75,9 +76,14 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 {
+/*    
     for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowDigit") == 0)
-            return ((ClassFlowDigit*) (FlowControll[i]))->GetHTMLInfo();
+        if (FlowControll[i]->name().compare("ClassFlowCNNGeneral") == 0)
+            return ((ClassFlowCNNGeneral*) (FlowControll[i]))->GetHTMLInfo();
+*/
+
+    if (flowdigit)
+        flowdigit->GetHTMLInfo();
 
     std::vector<HTMLInfo*> empty;
     return empty;
@@ -85,13 +91,38 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 {
+/*
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare("ClassFlowAnalog") == 0)
             return ((ClassFlowAnalog*) (FlowControll[i]))->GetHTMLInfo();
 
     std::vector<HTMLInfo*> empty;
     return empty;
+*/
+
+    if (flowanalog)
+        flowanalog->GetHTMLInfo();
+
+    std::vector<HTMLInfo*> empty;
+    return empty;
 }
+
+t_CNNType ClassFlowControll::GetTypeDigital()
+{
+    if (flowdigit)
+        return flowdigit->getCNNType();
+
+    return t_CNNType::None;
+}
+
+t_CNNType ClassFlowControll::GetTypeAnalog()
+{
+    if (flowanalog)
+        return flowanalog->getCNNType();
+
+    return t_CNNType::None;
+}
+
 
 
 
@@ -145,20 +176,20 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[ANALOG]") == 0)
     {
-        cfc = new ClassFlowAnalog(&FlowControll);
-        flowanalog = (ClassFlowAnalog*) cfc;
+        cfc = new ClassFlowCNNGeneral(flowalignment);
+        flowanalog = (ClassFlowCNNGeneral*) cfc;
     }
     if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
     {
-        cfc = new ClassFlowDigit(&FlowControll);
-        flowdigit = (ClassFlowDigit*) cfc;
+        cfc = new ClassFlowCNNGeneral(flowalignment);
+        flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
         
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
-        cfc = new ClassFlowPostProcessing(&FlowControll); 
+        cfc = new ClassFlowPostProcessing(&FlowControll, flowanalog, flowdigit); 
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
     }
 
@@ -203,7 +234,7 @@ void ClassFlowControll::InitFlow(std::string config)
         cfc = CreateClassFlow(line);
         if (cfc)
         {
-            printf("Start ReadParameter\n");
+            printf("Start ReadParameter (%s)\n", line.c_str());
             cfc->ReadParameter(pFile, line);
         }
         else
@@ -254,7 +285,7 @@ bool ClassFlowControll::doFlow(string time)
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%H:%M:%S");
-        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + "(" + zw_time + ")";
+        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
 
 //        zw_time = gettimestring("%Y%m%d-%H%M%S");
 //        aktstatus = zw_time + ": " + FlowControll[i]->name();

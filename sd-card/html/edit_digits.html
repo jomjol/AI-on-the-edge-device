@@ -236,7 +236,8 @@ function SaveToConfig(){
     _zwcat = getConfigCategory();
     _zwcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     WriteConfigININew();
-    SaveConfigToServer(basepath);    
+    SaveConfigToServer(basepath); 
+	alert("Config.ini is updated!");
 }
 
 

@@ -47,7 +47,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2021-08-31)
+##### Rolling (2021-09-10)
+
+* Upgrade digital CNN to v12.1.0 (added new images)
+* Internal refactoring (CNN-Handling)
+* html: confirmation after config update, spelling corrections
+
+Rolling (2021-08-31)
 
 * Bug fix
 

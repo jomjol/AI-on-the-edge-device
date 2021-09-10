@@ -28,11 +28,7 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
         if (NUMBERS[i]->name == _number)
             index = i;
 
-//    result = RundeOutput(NUMBERS[index]->PreValue, -NUMBERS[index]->DecimalShift);
     result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
-
-//    if (NUMBERS[index]->digit_roi && NUMBERS[index]->analog_roi)
-//        result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->AnzahlAnalog - NUMBERS[index]->DecimalShift);
 
     return result;
 }
@@ -231,7 +227,7 @@ void ClassFlowPostProcessing::SavePreValue()
 }
 
 
-ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
+ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit)
 {
     PreValueUse = false;
     PreValueAgeStartup = 30;
@@ -242,6 +238,9 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc)
     flowMakeImage = NULL;
     UpdatePreValueINI = false;
     IgnoreLeadingNaN = false;
+    flowAnalog = _analog;
+    flowDigit = _digit;
+
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
@@ -276,10 +275,16 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
         }
         
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        {
             NUMBERS[j]->DecimalShift = _zwdc;
+            NUMBERS[j]->DecimalShiftInitial = _zwdc;
+        }
 
         if (NUMBERS[j]->name == _digit)
+        {
             NUMBERS[j]->DecimalShift = _zwdc;
+            NUMBERS[j]->DecimalShiftInitial = _zwdc;
+        }
 
         NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
     }
@@ -406,27 +411,16 @@ void ClassFlowPostProcessing::InitNUMBERS()
     int anzANALOG = 0;
     std::vector<std::string> name_numbers;
 
-    flowAnalog = NULL;
-    flowDigit = NULL;
-
-    for (int i = 0; i < ListFlowControll->size(); ++i)
-    {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowDigit") == 0)
-        {
-            flowDigit = (ClassFlowDigit*) (*ListFlowControll)[i];
-            anzDIGIT = flowDigit->getAnzahlDIGIT();
-        }
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowAnalog") == 0)
-        {
-            flowAnalog = (ClassFlowAnalog*)(*ListFlowControll)[i];
-            anzANALOG = flowAnalog->getAnzahlANALOG();
-        }
-    }
-
     if (flowDigit)
+    {
+        anzDIGIT = flowDigit->getAnzahlGENERAL();
         flowDigit->UpdateNameNumbers(&name_numbers);
+    }
     if (flowAnalog)
+    {
+        anzANALOG = flowAnalog->getAnzahlGENERAL();
         flowAnalog->UpdateNameNumbers(&name_numbers);
+    }
 
     printf("Anzahl NUMBERS: %d - DIGITS: %d, ANALOG: %d\n", name_numbers.size(), anzDIGIT, anzANALOG);
 
@@ -438,7 +432,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         
         _number->digit_roi = NULL;
         if (flowDigit)
-            _number->digit_roi = flowDigit->FindDIGIT(name_numbers[_num]);
+            _number->digit_roi = flowDigit->FindGENERAL(name_numbers[_num]);
         
         if (_number->digit_roi)
             _number->AnzahlDigital = _number->digit_roi->ROI.size();
@@ -447,7 +441,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
 
         _number->analog_roi = NULL;
         if (flowAnalog)
-            _number->analog_roi = flowAnalog->FindANALOG(name_numbers[_num]);
+            _number->analog_roi = flowAnalog->FindGENERAL(name_numbers[_num]);
 
 
         if (_number->analog_roi)
@@ -468,6 +462,8 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->PreValueOkay = false;
         _number->useMaxRateValue = false;
         _number->DecimalShift = 0;
+        _number->DecimalShiftInitial = 0;
+
 
         _number->FlowRateAct = 0;          // m3 / min
         _number->PreValue = 0;             // letzter Wert, der gut ausgelesen wurde
@@ -540,6 +536,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
 //    ErrorMessageText = "";
 
+    // Update Nachkomma, da sich beim Wechsel von CNNType Auto --> xyz auch die Nachkommastellen ändern können:
+
+
+
     imagetime = flowMakeImage->getTimeImageTaken();
     if (imagetime == 0)
         time(&imagetime);
@@ -556,6 +556,11 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     {
         NUMBERS[j]->ReturnRawValue = "";
         NUMBERS[j]->ErrorMessageText = "";
+
+        if (flowAnalog) NUMBERS[j]->AnzahlAnalog = flowAnalog->AnzahlROIs(j);
+        if (flowDigit) NUMBERS[j]->AnzahlDigital = flowDigit->AnzahlROIs(j);
+        NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
+
 
         if (NUMBERS[j]->digit_roi)
             NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j);

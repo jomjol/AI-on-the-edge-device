@@ -61,8 +61,11 @@ class CTfLiteClass
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
-        void GetOutPut();
-        int GetOutClassification();
+        int GetAnzOutPut(bool silent = true);        
+//        void GetOutPut();
+//        int GetOutClassification();
+        int GetOutClassification(int _von = -1, int _bis = -1);
+
         int GetClassFromImageBasis(CImageBasis *rs);
         std::string GetStatusFlow();
 

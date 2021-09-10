@@ -284,16 +284,27 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
         std::vector<HTMLInfo*> htmlinfo;
-        htmlinfo = tfliteflow.GetAllDigital();
+        htmlinfo = tfliteflow.GetAllDigital();  
+        printf("Size of htmlinfo: %i\n", htmlinfo.size());
         for (int i = 0; i < htmlinfo.size(); ++i)
         {
-            if (htmlinfo[i]->val == 10)
-                zw = "NaN";
+            if (tfliteflow.GetTypeDigital() == Digital)
+            {
+                if (htmlinfo[i]->val == 10)
+                    zw = "NaN";
+                else
+                    zw = to_string((int) htmlinfo[i]->val);
+
+                txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+            }
             else
             {
-                zw = to_string((int) htmlinfo[i]->val);
+                std::stringstream stream;
+                stream << std::fixed << std::setprecision(1) << htmlinfo[i]->val;
+                zw = stream.str();
+
+                txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
             }
-            txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
             delete htmlinfo[i];
         }
@@ -493,7 +504,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
         std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }  
+    }
+
+/*      
     if (_task.compare("test_analog") == 0)
     {
         std::string _host = "";
@@ -504,7 +517,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
         std::string zw = tfliteflow.doSingleStep("[Analog]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }  
+    }
+*/  
+/*    
     if (_task.compare("test_digits") == 0)
     {
         std::string _host = "";
@@ -517,6 +532,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         std::string zw = tfliteflow.doSingleStep("[Digits]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
+*/
 
 
     /* Respond with an empty chunk to signal HTTP response completion */

@@ -1,8 +1,8 @@
 #pragma once
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
-#include "ClassFlowAnalog.h"
-#include "ClassFlowDigit.h"
+#include "ClassFlowCNNGeneral.h"
+#include "ClassFlowCNNGeneral.h"
 
 
 #include <string>
@@ -28,10 +28,11 @@ struct NumberPost {
     int AnzahlAnalog;
     int AnzahlDigital;
     int DecimalShift;
+    int DecimalShiftInitial;
     int Nachkomma;
 
-    digit *digit_roi;
-    analog *analog_roi;
+    general *digit_roi;
+    general *analog_roi;
 
     string name;
 };
@@ -51,8 +52,8 @@ protected:
     bool IgnoreLeadingNaN;          // SPEZIALFALL für User Gustl
 
 
-    ClassFlowAnalog* flowAnalog;
-    ClassFlowDigit* flowDigit;    
+    ClassFlowCNNGeneral* flowAnalog;
+    ClassFlowCNNGeneral* flowDigit;    
 
 
     string FilePreValue;
@@ -74,7 +75,7 @@ protected:
 public:
     bool PreValueUse;
 
-    ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc);
+    ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getReadout(int _number);

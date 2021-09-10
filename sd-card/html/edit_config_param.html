@@ -1804,7 +1804,8 @@ function saveTextAsFile()
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
 		ReadParameterAll();
 		WriteConfigININew();
-	    SaveConfigToServer(basepath);    
+	    SaveConfigToServer(basepath);
+		alert("Config.ini is updated!")
 	}
 }
 

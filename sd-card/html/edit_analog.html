@@ -243,7 +243,8 @@ function SaveToConfig(){
     _zwcat = getConfigCategory();
     _zwcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
     WriteConfigININew();
-    SaveConfigToServer(basepath);    
+    SaveConfigToServer(basepath);  
+	alert("Config.ini is updated!");
 }
 
 

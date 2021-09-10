@@ -5,10 +5,11 @@
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
 #include "ClassFlowAlignment.h"
-#include "ClassFlowDigit.h"
-#include "ClassFlowAnalog.h"
+//#include "ClassFlowDigit.h"
+#include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
 #include "ClassFlowMQTT.h"
+#include "ClassFlowCNNGeneral.h"
 
 
 #define READOUT_TYPE_VALUE 0
@@ -24,8 +25,9 @@ protected:
 	std::vector<ClassFlow*> FlowControll;
 	ClassFlowPostProcessing* flowpostprocessing;
 	ClassFlowAlignment* flowalignment;	
-	ClassFlowAnalog* flowanalog;
-	ClassFlowDigit* flowdigit;
+	ClassFlowCNNGeneral* flowanalog;
+	ClassFlowCNNGeneral* flowdigit;
+//	ClassFlowDigit* flowdigit;
 	ClassFlowMakeImage* flowmakeimage;
 	ClassFlow* CreateClassFlow(std::string _type);
 
@@ -62,6 +64,9 @@ public:
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	
+
+	t_CNNType GetTypeDigital();
+	t_CNNType GetTypeAnalog();
 
 	int CleanTempFolder();
 
