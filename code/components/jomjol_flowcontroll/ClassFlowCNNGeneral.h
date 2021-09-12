@@ -40,6 +40,8 @@ protected:
     bool extendedResolution;
 
     int ZeigerEval(float zahl, int ziffer_vorgaenger);
+    int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
+
 
     bool doNeuralNetwork(string time); 
     bool doAlignAndCut(string time);
@@ -64,7 +66,7 @@ public:
     general* FindGENERAL(string _name_number);    
     string getNameGENERAL(int _analog);    
 
-    bool isExtendedResolution(int _number); 
+    bool isExtendedResolution(int _number = 0); 
 
     void UpdateNameNumbers(std::vector<std::string> *_name_numbers);
 

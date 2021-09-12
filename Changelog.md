@@ -6,7 +6,9 @@
 
 ##### 7.1.2 MQTT-Update - (2021-06-17)
 
-* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during rebootNEW: 7.1.1: bug fix wlan password with "="  (again)
+* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
+
+* NEW: 7.1.1: bug fix wlan password with "="  (again)
 
 * MQTT error message: changes "no error", send retain flag
 

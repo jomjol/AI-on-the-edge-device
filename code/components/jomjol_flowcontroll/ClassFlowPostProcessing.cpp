@@ -559,6 +559,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (flowAnalog) NUMBERS[j]->AnzahlAnalog = flowAnalog->AnzahlROIs(j);
         if (flowDigit) NUMBERS[j]->AnzahlDigital = flowDigit->AnzahlROIs(j);
+        
+        if (flowDigit->isExtendedResolution()) 
+            NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial - 1;
+
         NUMBERS[j]->Nachkomma = NUMBERS[j]->AnzahlAnalog - NUMBERS[j]->DecimalShift;
 
 

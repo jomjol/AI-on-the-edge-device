@@ -76,17 +76,24 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
 
     if (CNNType == DigitalHyprid)
     {
-        int ergebnis_nachkomma = -1;
-        int prev = -1;
+//        int ergebnis_nachkomma = -1;
+        int zif_akt = -1;
 
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result;
         if (zahl >= 0)       // NaN?
         {
-            ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-            prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result, prev);
-            result = std::to_string(prev);
-            if (extendedResolution && (CNNType != Digital))
-                result = result + std::to_string(ergebnis_nachkomma);
+            if (extendedResolution)
+            {
+                int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+                int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
+
+                result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
+            }
+            else
+            {
+                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result, -1, -1);
+                result = std::to_string(zif_akt);
+            }
         }
         else
         {
@@ -99,12 +106,12 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
         {
             if (GENERAL[_analog]->ROI[i]->result >= 0)
             {
-                prev = ZeigerEval(GENERAL[_analog]->ROI[i]->result, prev);
-                result = std::to_string(prev) + result;
+                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result, GENERAL[_analog]->ROI[i+1]->result, zif_akt);
+                result = std::to_string(zif_akt) + result;
             }
             else
             {
-                prev = -1;
+                zif_akt = -1;
                 result = "N" + result;
             }
         }
@@ -112,6 +119,47 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
 
 
     return result;
+}
+
+int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger)
+{
+    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+//    int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
+
+    if (zahl_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
+    {
+        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+            return (int) round(zahl);
+        else
+            return (int) trunc(zahl);
+    }
+
+    if (zahl_vorgaenger > 9.2)              // Ziffernwechsel beginnt
+    {
+        if (eval_vorgaenger == 0)           // Wechsel hat schon stattgefunden
+        {
+            return (int) round(zahl);       // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
+        }
+        else
+        {
+            if (zahl_vorgaenger <= 9.5)     // Wechsel startet gerade, aber beginnt erst
+            {
+                if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+                    return (int) round(zahl);
+                else
+                    return (int) trunc(zahl);
+            }
+            else
+            {
+                return (int) trunc(zahl);   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
+            }
+        }
+    }
+
+    if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+        return (int) round(zahl);
+
+    return (int) trunc(zahl);
 }
 
 int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
@@ -407,6 +455,8 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     printf(zwcnn.c_str());printf("\n");
     if (!tflite->LoadModel(zwcnn)) {
         printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        LogFile.WriteToFile("Cannot load model");
+
         delete tflite;
         return false;
     } 
@@ -488,12 +538,19 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         _num = tflite->GetOutClassification(0, 10);
                         _nachkomma = tflite->GetOutClassification(11, 22);
 
+
+                        string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
+                        if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
+
                         if ((_num == 10) || (_nachkomma == 10))                      // NaN detektiert
                             GENERAL[_ana]->ROI[i]->result = -1;
                         else
-                            GENERAL[_ana]->ROI[i]->result = fmod(_num + (_nachkomma-5)/10 + 10, 10);
+                            GENERAL[_ana]->ROI[i]->result = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
 
                         printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result); 
+                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result);
+                        if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
+
                         if (isLogImage)
                             LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;

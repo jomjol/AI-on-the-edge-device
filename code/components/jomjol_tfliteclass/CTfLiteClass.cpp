@@ -194,6 +194,8 @@ void CTfLiteClass::MakeAllocate()
     TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
         TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
+        LogFile.WriteToFile("AllocateTensors() failed");
+
     this->GetInputDimension();   
     return;
   }
