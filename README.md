@@ -45,7 +45,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling (2021-09-13)
 
+* Change License to GPL-3.0 License
+
+Rolling (2021-09-12)
+
+* Preparation for external illumination (WS281x)
+* Bug fixing (html, Images of recognized numbers)
+* based on v8.3.0 (2021-09-12)
 
 ##### 8.3.0 - Multi Meter Support (2021-09-12)
 

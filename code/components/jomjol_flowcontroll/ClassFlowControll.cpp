@@ -83,7 +83,10 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 */
 
     if (flowdigit)
-        flowdigit->GetHTMLInfo();
+    {
+        printf("ClassFlowControll::GetAllDigital - flowdigit != NULL\n");
+        return flowdigit->GetHTMLInfo();
+    }
 
     std::vector<HTMLInfo*> empty;
     return empty;
@@ -91,17 +94,8 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 {
-/*
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowAnalog") == 0)
-            return ((ClassFlowAnalog*) (FlowControll[i]))->GetHTMLInfo();
-
-    std::vector<HTMLInfo*> empty;
-    return empty;
-*/
-
     if (flowanalog)
-        flowanalog->GetHTMLInfo();
+        return flowanalog->GetHTMLInfo();
 
     std::vector<HTMLInfo*> empty;
     return empty;

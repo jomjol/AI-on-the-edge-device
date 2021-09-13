@@ -284,8 +284,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
         std::vector<HTMLInfo*> htmlinfo;
-        htmlinfo = tfliteflow.GetAllDigital();  
-        printf("Size of htmlinfo: %i\n", htmlinfo.size());
+        htmlinfo = tfliteflow.GetAllDigital(); 
         for (int i = 0; i < htmlinfo.size(); ++i)
         {
             if (tfliteflow.GetTypeDigital() == Digital)

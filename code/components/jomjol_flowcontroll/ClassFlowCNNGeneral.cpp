@@ -600,12 +600,19 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
                 zw->filename_org = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
 
-            zw->val = GENERAL[_ana]->ROI[i]->result;
+            if (CNNType == Analogue)
+                zw->val = GENERAL[_ana]->ROI[i]->resultklasse;
+            else
+                zw->val = GENERAL[_ana]->ROI[i]->result;
             zw->image = GENERAL[_ana]->ROI[i]->image;
             zw->image_org = GENERAL[_ana]->ROI[i]->image_org;
 
+            printf("Push %s\n", zw->filename.c_str());
+
             result.push_back(zw);
         }
+
+    printf("größe: %d\n", result.size());
 
     return result;
 }

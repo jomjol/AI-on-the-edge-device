@@ -7,6 +7,8 @@
 #include <map>
 #include "driver/gpio.h"
 
+#include "SmartLeds.h"
+
 //#include "ClassControllCamera.h"
 
 typedef enum {
@@ -45,6 +47,7 @@ public:
     void gpioInterrupt(int value);
     gpio_int_type_t getInterruptType() { return _interruptType; }
     gpio_pin_mode_t getMode() { return _mode; }
+    gpio_num_t getGPIO(){return _gpio;};
 
 private:
     gpio_num_t _gpio;
@@ -79,6 +82,11 @@ private:
     std::map<gpio_num_t, GpioPin*> *gpioMap = NULL;
     TaskHandle_t xHandleTaskGpio = NULL;
     bool _isEnabled = false;
+
+    int LEDNumbers = 2;
+    Rgb LEDColor = Rgb{ 255, 255, 255 };
+    LedType LEDType = LED_WS2812;
+
 
     bool readConfig();
     void clear();

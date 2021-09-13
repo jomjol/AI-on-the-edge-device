@@ -31,6 +31,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
      ParamAddValue(param, catname, "FixedExposure");     
+     ParamAddValue(param, catname, "UseGPIOControlledIllumination");
 
      var catname = "Alignment";
      category[catname] = new Object(); 
@@ -102,6 +103,10 @@ function ParseConfig() {
      ParamAddValue(param, catname, "IO4", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO12", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO13", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "LEDType");
+     ParamAddValue(param, catname, "LEDNumbers");
+     ParamAddValue(param, catname, "LEDColor", 3);
+
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 

@@ -107,7 +107,8 @@ void GpioPin::init()
     //configure GPIO with the given settings
     gpio_config(&io_conf);
 
-    if (_interruptType != GPIO_INTR_DISABLE) {
+//    if (_interruptType != GPIO_INTR_DISABLE) {                // ohne GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X, wenn das genutzt wird, dann soll auch der Handler hier nicht initialisiert werden, da das dann über SmartLED erfolgt.
+    if ((_interruptType != GPIO_INTR_DISABLE) && (_interruptType != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
         //hook isr handler for specific gpio pin
         ESP_LOGD(TAG_SERVERGPIO, "GpioPin::init add isr handler for GPIO %d\r\n", _gpio);
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*)&_gpio);
@@ -212,6 +213,8 @@ void GpioHandler::init()
     // printf("wait before start %ldms\r\n", (long) xDelay);
     // vTaskDelay( xDelay );
 
+    printf("*************** Start GPIOHandler_Init *****************\n");
+
     if (gpioMap == NULL) {
         gpioMap = new std::map<gpio_num_t, GpioPin*>();
     } else {
@@ -295,15 +298,23 @@ bool GpioHandler::readConfig()
     std::string line = "";
     bool disabledLine = false;
     bool eof = false;
+    gpio_num_t gpioExtLED = (gpio_num_t) 0;
+    
+//    printf("readConfig - Start 1\n");
         
-    while ((!configFile.GetNextParagraph(line, disabledLine, eof) || (line.compare("[GPIO]") != 0)) && !disabledLine && !eof) {}
+    while ((!configFile.GetNextParagraph(line, disabledLine, eof) || (line.compare("[GPIO]") != 0)) && !eof) {}
     if (eof)
         return false;
-    
+
+//    printf("readConfig - Start 2 line: %s, disabbledLine: %d\n", line.c_str(), (int) disabledLine);
+
+
     _isEnabled = !disabledLine;
 
     if (!_isEnabled)
         return false;
+
+//    printf("readConfig - Start 3\n");
 
 //    std::string mainTopicMQTT = "";
     std::string mainTopicMQTT = GetMQTTMainTopic();
@@ -346,15 +357,67 @@ bool GpioHandler::readConfig()
             GpioPin* gpioPin = new GpioPin(gpioNr, gpioName, pinMode, intType,dutyResolution, mqttTopic, httpEnabled);
             (*gpioMap)[gpioNr] = gpioPin;
 
+            if (pinMode == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)
+            {
+                printf("Found WS2812 auf GPIO %d\n", gpioNr);
+                gpioExtLED = gpioNr;
+            }
+
             if (intType != GPIO_INTR_DISABLE) {
                 registerISR = true;
             }
+        }
+        if (toUpper(zerlegt[0]) == "LEDNUMBERS")
+        {
+            LEDNumbers = stoi(zerlegt[6]);
+        }
+        if (toUpper(zerlegt[0]) == "LEDCOLOR")
+        {
+            uint8_t _r, _g, _b;
+            _r = stoi(zerlegt[1]);
+            _g = stoi(zerlegt[2]);
+            _b = stoi(zerlegt[3]);
+
+            LEDColor = Rgb{_r, _g, _b};
+        }
+        if (toUpper(zerlegt[0]) == "LEDTYPE")
+        {
+            if (zerlegt[1] == "WS2812")
+                LEDType = LED_WS2812;
+            if (zerlegt[1] == "WS2812B")
+                LEDType = LED_WS2812B;
+            if (zerlegt[1] == "SK6812")
+                LEDType = LED_SK6812;
+            if (zerlegt[1] == "WS2813")
+                LEDType = LED_WS2813;
         }
     }
 
     if (registerISR) {
         //install gpio isr service
         gpio_install_isr_service(ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM);
+    }
+
+    if (gpioExtLED > 0)
+    {
+    //    LogFile.WriteToFile("Startsequence 06");      
+//        vTaskDelay( xDelay );   
+//        xDelay = 5000 / portTICK_PERIOD_MS;
+//        printf("main: sleep for : %ldms\n", (long) xDelay);
+
+        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
+
+
+        leds[ 0 ] = Rgb{ 255, 0, 0 };
+        leds[ 1 ] = Rgb{ 255, 255, 255 };
+        leds.show();    
+/*
+//        _SmartLED = new SmartLed(LEDType, LEDNumbers, gpioExtLED, 0, DoubleBuffer);
+        _SmartLED = new SmartLed( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
+        (*_SmartLED)[ 0 ] = Rgb{ 255, 0, 0 };
+        (*_SmartLED)[ 1 ] = LEDColor;
+        _SmartLED->show();
+*/
     }
 
     return true;
@@ -498,7 +561,24 @@ void GpioHandler::flashLightEnable(bool value)
                 } else {
                     ESP_LOGE(TAG_SERVERGPIO, "Can't set flash light pin GPIO %d.  Error: %s\r\n", (int)it->first, resp_str.c_str());
                 }
-            }
+            } else 
+                {
+                    if (it->second->getMode() == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)
+                    {
+                        SmartLed leds( LEDType, LEDNumbers, it->second->getGPIO(), 0, DoubleBuffer );
+                        if (value)
+                        {
+                            for (int i = 0; i < LEDNumbers; ++i)
+                                leds[i] = LEDColor;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < LEDNumbers; ++i)
+                                leds[i] = Rgb{0, 0, 0};
+                        }
+                        leds.show();   
+                    }
+                }
         }
     }
 }
