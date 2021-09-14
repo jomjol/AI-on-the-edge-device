@@ -47,8 +47,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 8.3.0 - Multi Meter Support (2021-09-12)
+##### 8.3.1 - Multi Meter Support (2021-09-14
 
+* NEW 8.3.1: Bug fix sd-card file structure (tmp_img)
 * Upgrade digital CNN to v12.1.0 (added new images)
 * Dedicated NaN handling, internal refactoring (CNN-Handling)
 * HTML: confirmation after config.ini update
