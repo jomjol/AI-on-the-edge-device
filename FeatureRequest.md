@@ -11,6 +11,12 @@
 
 ____
 
+#### #11 MQTT - configurable payload
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/344
+
+  
+
 #### #10 Improve and bug fix logging of images
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/307

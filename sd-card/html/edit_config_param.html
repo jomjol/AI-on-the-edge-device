@@ -349,24 +349,6 @@ textarea {
 			<td style="font-size: 80%;"> Time to keep the separated digit images (in days -"0" = forever) </td>
 		</tr>
 
-		<tr class="expert"  id="Analog_ExtendedResolution_ex10">
-			<td width="20px"  style="padding-left: 40px;">
-				<input type="checkbox" id="Analog_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ExtendedResolution")' unchecked >
-			</td>
-			<td  width="200px">
-				<class id="Analog_ExtendedResolution_text" style="color:black;">ExtendedResolution</class>
-			</td>
-			<td>
-				<select id="Analog_ExtendedResolution_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td style="font-size: 80%;">
-				Enable to use the after point resolution for the last analog counter
-			</td>
-		</tr>
-
 		<tr class="expert"  id="ex10">
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
@@ -500,6 +482,41 @@ textarea {
 			</td>
 			<td style="font-size: 80%;">
 				Maximum change of reading from one to the next readout
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ExtendedResolution")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class>
+			</td>
+			<td>
+				<select id="PostProcessing_ExtendedResolution_value1">
+					<option value="true" >true</option>
+					<option value="false" selected>false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable to use the after point resolution for the last analog counter
+			</td>
+		</tr>
+		
+		<tr>
+			<td id="ex121" width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_IgnoreLeadingNaN_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "IgnoreLeadingNaN")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class>
+			</td>
+			<td>
+				<select id="PostProcessing_IgnoreLeadingNaN_value1">
+					<option value="true" >true</option>
+					<option value="false" selected>false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Leading "N"'s will be deleted before further processing
 			</td>
 		</tr>
 
@@ -1452,7 +1469,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 		setEnabled(_cat+"_"+_name, false);
 	}
 
-	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional);
+	EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional, _number);
 }
 
 function InvertEnableItem(_cat, _param)
@@ -1619,12 +1636,16 @@ function UpdateInputIndividual()
 	{
 		ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
 	}
 
 	var sel = document.getElementById("Numbers_value1");
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -1656,7 +1677,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "Analog", "Model", false);		
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
-	WriteParameter(param, category, "Analog", "ExtendedResolution", true);		
+//	WriteParameter(param, category, "Analog", "ExtendedResolution", true);		
 	WriteParameter(param, category, "Analog", "ModelInputSize", false);		
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
@@ -1719,13 +1740,13 @@ function ReadParameterAll()
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
-	ReadParameter(param, "Analog", "ExtendedResolution", true);		
+//	ReadParameter(param, "Analog", "ExtendedResolution", true);		
 	ReadParameter(param, "Analog", "ModelInputSize", false);
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
 	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
-	ReadParameter(param, "PostProcessing", "MaxRateValue", true);		
+//	ReadParameter(param, "PostProcessing", "MaxRateValue", true);		
 	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 

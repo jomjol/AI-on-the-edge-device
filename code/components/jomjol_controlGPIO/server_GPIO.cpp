@@ -359,7 +359,7 @@ bool GpioHandler::readConfig()
 
             if (pinMode == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)
             {
-                printf("Found WS2812 auf GPIO %d\n", gpioNr);
+                printf("Set WS2812 to GPIO %d\n", gpioNr);
                 gpioExtLED = gpioNr;
             }
 
@@ -369,7 +369,7 @@ bool GpioHandler::readConfig()
         }
         if (toUpper(zerlegt[0]) == "LEDNUMBERS")
         {
-            LEDNumbers = stoi(zerlegt[6]);
+            LEDNumbers = stoi(zerlegt[1]);
         }
         if (toUpper(zerlegt[0]) == "LEDCOLOR")
         {

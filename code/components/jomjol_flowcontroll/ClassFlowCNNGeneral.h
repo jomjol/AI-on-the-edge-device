@@ -1,6 +1,10 @@
-#pragma once
-#include "ClassFlowImage.h"
+#ifndef __CLASSCNNGENERAL__
+#define __CLASSCNNGENERAL__
+
+#include"ClassFlowDefineTypes.h"
 #include "ClassFlowAlignment.h"
+// #include "ClassFlowPostProcessing.h"
+
 
 enum t_CNNType {
     AutoDetect,
@@ -9,20 +13,6 @@ enum t_CNNType {
     DigitalHyprid,
     None
  };
-
-struct roi {
-    int posx, posy, deltax, deltay;
-    float result;
-    int resultklasse;
-    string name;
-    CImageBasis *image, *image_org;
-};
-
-struct general {
-    string name;
-    std::vector<roi*> ROI;
-};
-
 
 class ClassFlowCNNGeneral :
     public ClassFlowImage
@@ -36,8 +26,9 @@ protected:
     bool isLogImageSelect;
     string LogImageSelect;
     ClassFlowAlignment* flowpostalignment;
+//    ClassFlowPostProcessing *flowpostprocessing = NULL;
     bool SaveAllFiles;   
-    bool extendedResolution;
+//    bool extendedResolution;
 
     int ZeigerEval(float zahl, int ziffer_vorgaenger);
     int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
@@ -53,20 +44,22 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog);   
+    string getReadout(int _analog, bool _extendedResolution);   
 
     void DrawROI(CImageBasis *_zw); 
 
    	std::vector<HTMLInfo*> GetHTMLInfo();   
 
-    int AnzahlROIs(int _analog);
+//    int AnzahlROIs(int _analog);
     int getAnzahlGENERAL();
     general* GetGENERAL(int _analog);
     general* GetGENERAL(string _name, bool _create);
     general* FindGENERAL(string _name_number);    
     string getNameGENERAL(int _analog);    
 
-    bool isExtendedResolution(int _number = 0); 
+    bool isExtendedResolution(int _number = 0);
+
+//    void setPostprocessing(ClassFlowPostProcessing *_fpp){flowpostprocessing = _fpp;}; 
 
     void UpdateNameNumbers(std::vector<std::string> *_name_numbers);
 
@@ -74,4 +67,6 @@ public:
 
     string name(){return "ClassFlowCNNGeneral";}; 
 };
+
+#endif
 

@@ -54,7 +54,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);     
-     ParamAddValue(param, catname, "ExtendedResolution");
+//     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "Analog";
      category[catname] = new Object(); 
@@ -65,7 +65,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);
-     ParamAddValue(param, catname, "ExtendedResolution");
+//     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 
@@ -77,9 +77,11 @@ function ParseConfig() {
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
      ParamAddValue(param, catname, "MaxRateValue", 1, true);
+     ParamAddValue(param, catname, "ExtendedResolution", 1, true);
+     ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
-     ParamAddValue(param, catname, "IgnoreLeadingNaN");     
+//     ParamAddValue(param, catname, "IgnoreLeadingNaN");     
 
      var catname = "MQTT";
      category[catname] = new Object(); 

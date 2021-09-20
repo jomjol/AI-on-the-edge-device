@@ -76,12 +76,6 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 {
-/*    
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowCNNGeneral") == 0)
-            return ((ClassFlowCNNGeneral*) (FlowControll[i]))->GetHTMLInfo();
-*/
-
     if (flowdigit)
     {
         printf("ClassFlowControll::GetAllDigital - flowdigit != NULL\n");

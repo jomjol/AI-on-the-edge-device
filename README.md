@@ -45,9 +45,26 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-09-13)
+##### Rolling (2021-09-20)
 
-* Change License to GPL-3.0 License
+* Moved setting `ExtendedResolution` to individual number settings
+
+* New parameter `IgnoreLeadingNaN`
+
+* **ATTENTION: update of `config.ini` is necessary**
+
+* Remove of the MIT license (see below)
+
+* bug fix: decimal shift
+
+  
+
+### **ATTENTION: LICENSE CHANGE - removal of MIT License.** 
+
+- Currently no licence published - copyright belongs to author
+- If you are interested in a commercial usage or dedicated versions please contact the developer
+
+
 
 Rolling (2021-09-12)
 

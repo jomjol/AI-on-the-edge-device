@@ -1,44 +1,12 @@
-#pragma once
+#ifndef __FLOWPOSTPROCESSING__
+#define __FLOWPOSTPROCESSING__
+
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
 #include "ClassFlowCNNGeneral.h"
-#include "ClassFlowCNNGeneral.h"
-
+#include "ClassFlowDefineTypes.h"
 
 #include <string>
-
-
-struct NumberPost {
-    float MaxRateValue;
-    bool useMaxRateValue;
-    bool ErrorMessage;
-    bool PreValueOkay;
-    bool AllowNegativeRates;
-    bool checkDigitIncreaseConsistency;
-    time_t lastvalue;
-    string timeStamp;
-    float FlowRateAct;          // m3 / min
-    float PreValue;             // letzter Wert, der gut ausgelesen wurde
-    float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
-    string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
-    string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-    string ReturnPreValue;  // korrigierter Rückgabewert ohne Fehlermeldung
-    string ReturnValueNoError;
-    string ErrorMessageText;        // Fehlermeldung bei Consistency Check
-    int AnzahlAnalog;
-    int AnzahlDigital;
-    int DecimalShift;
-    int DecimalShiftInitial;
-    int Nachkomma;
-
-    general *digit_roi;
-    general *analog_roi;
-
-    string name;
-};
-
-
-
 
 class ClassFlowPostProcessing :
     public ClassFlow
@@ -70,6 +38,8 @@ protected:
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
     void handleMaxRateValue(string _decsep, string _value);
+    void handleDecimalExtendedResolution(string _decsep, string _value);    
+
 
 
 public:
@@ -86,8 +56,13 @@ public:
     void SavePreValue();
     string GetPreValue(std::string _number = "");
     void SetPreValue(float zw, string _numbers, bool _extern = false);
+
+    void UpdateNachkommaDecimalShift();
+
     std::vector<NumberPost*> GetNumbers(){return NUMBERS;};
 
     string name(){return "ClassFlowPostProcessing";};
 };
 
+
+#endif

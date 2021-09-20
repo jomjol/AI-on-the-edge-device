@@ -1,11 +1,11 @@
-#pragma once
+#ifndef __FLOWCONTROLL__
+#define __FLOWCONTROLL__
 
 #include <string>
 
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
 #include "ClassFlowAlignment.h"
-//#include "ClassFlowDigit.h"
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
 #include "ClassFlowMQTT.h"
@@ -72,5 +72,7 @@ public:
 
 	string name(){return "ClassFlowControll";};
 };
+
+#endif
 
 
