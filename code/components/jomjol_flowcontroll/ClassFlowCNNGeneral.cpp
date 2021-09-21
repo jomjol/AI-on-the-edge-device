@@ -46,7 +46,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     if (CNNType == Analogue)
     {
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
-        int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+        int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
 
         int prev = -1;
 
@@ -88,6 +88,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
 
                 result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
+                zif_akt = ergebnis_vorkomma;
             }
             else
             {
@@ -128,43 +129,43 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
     if (zahl_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
     {
         if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            return (int) round(zahl);
+            return ((int) round(zahl) + 10) % 10;
         else
-            return (int) trunc(zahl);
+            return ((int) trunc(zahl) + 10) % 10;
     }
 
     if (zahl_vorgaenger > 9.2)              // Ziffernwechsel beginnt
     {
         if (eval_vorgaenger == 0)           // Wechsel hat schon stattgefunden
         {
-            return (int) round(zahl);       // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
+            return ((int) round(zahl) + 10) % 10;      // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
         }
         else
         {
             if (zahl_vorgaenger <= 9.5)     // Wechsel startet gerade, aber beginnt erst
             {
                 if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-                    return (int) round(zahl);
+                    return ((int) round(zahl) + 10) % 10;
                 else
-                    return (int) trunc(zahl);
+                    return ((int) trunc(zahl) + 10) % 10;
             }
             else
             {
-                return (int) trunc(zahl);   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
+                return ((int) trunc(zahl) + 10) % 10;   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
             }
         }
     }
 
     if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-        return (int) round(zahl);
+        return ((int) round(zahl) + 10) % 10;
 
-    return (int) trunc(zahl);
+    return ((int) trunc(zahl) + 10) % 10;
 }
 
 int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
 {
-    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
+    int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
+    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
     int ergebnis, ergebnis_rating;
 
     if (ziffer_vorgaenger == -1)
@@ -181,7 +182,7 @@ int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
     if (ergebnis == -1)
         ergebnis+=10;
 
-    ergebnis = ergebnis % 10;
+    ergebnis = (ergebnis + 10) % 10;
     return ergebnis;
 }
 
