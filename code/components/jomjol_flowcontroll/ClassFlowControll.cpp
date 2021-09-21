@@ -311,21 +311,21 @@ bool ClassFlowControll::doFlow(string time)
 
 string ClassFlowControll::getReadoutAll(int _type)
 {
-    std::vector<NumberPost*> numbers = flowpostprocessing->GetNumbers();
+    std::vector<NumberPost*> *numbers = flowpostprocessing->GetNumbers();
     std::string out = "";
 
-    for (int i = 0; i < numbers.size(); ++i)
+    for (int i = 0; i < (*numbers).size(); ++i)
     {
-        out = out + numbers[i]->name + "\t";
+        out = out + (*numbers)[i]->name + "\t";
         switch (_type) {
             case READOUT_TYPE_VALUE:
-                out = out + numbers[i]->ReturnValueNoError;
+                out = out + (*numbers)[i]->ReturnValueNoError;
                 break;
             case READOUT_TYPE_PREVALUE:
                 if (flowpostprocessing->PreValueUse)
                 {
-                    if (numbers[i]->PreValueOkay)
-                        out = out + numbers[i]->ReturnPreValue;
+                    if ((*numbers)[i]->PreValueOkay)
+                        out = out + (*numbers)[i]->ReturnPreValue;
                     else
                         out = out + "PreValue too old";                
                 }
@@ -333,13 +333,13 @@ string ClassFlowControll::getReadoutAll(int _type)
                     out = out + "PreValue deactivated";
                 break;
             case READOUT_TYPE_RAWVALUE:
-                out = out + numbers[i]->ReturnRawValue;
+                out = out + (*numbers)[i]->ReturnRawValue;
                 break;
             case READOUT_TYPE_ERROR:
-                out = out + numbers[i]->ErrorMessageText;
+                out = out + (*numbers)[i]->ErrorMessageText;
                 break;
         }
-        if (i < numbers.size()-1)
+        if (i < (*numbers).size()-1)
             out = out + "\r\n";
     }
 

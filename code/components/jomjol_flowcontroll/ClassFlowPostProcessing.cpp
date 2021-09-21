@@ -293,15 +293,15 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
     {
         int _zwdc = 0;
 
-        try
+//        try
         {
             _zwdc = stoi(_value);
         }
-        catch(const std::exception& e)
+/*        catch(const std::exception& e)
         {
             printf("ERROR - Decimalshift is not a number: %s\n", _value.c_str());
         }
-        
+*/        
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
         {
             NUMBERS[j]->DecimalShift = _zwdc;
@@ -332,15 +332,15 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
     {
         float _zwdc = 1;
 
-        try
+//        try
         {
             _zwdc = stof(_value);
         }
-        catch(const std::exception& e)
+/*        catch(const std::exception& e)
         {
             printf("ERROR - MaxRateValue is not a number: %s\n", _value.c_str());
         }
-
+*/
 
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
         {

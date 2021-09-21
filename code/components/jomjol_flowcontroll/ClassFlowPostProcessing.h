@@ -59,7 +59,7 @@ public:
 
     void UpdateNachkommaDecimalShift();
 
-    std::vector<NumberPost*> GetNumbers(){return NUMBERS;};
+    std::vector<NumberPost*>* GetNumbers(){return &NUMBERS;};
 
     string name(){return "ClassFlowPostProcessing";};
 };

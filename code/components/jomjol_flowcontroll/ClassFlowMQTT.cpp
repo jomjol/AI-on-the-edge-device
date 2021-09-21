@@ -154,16 +154,16 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     if (flowpostprocessing)
     {
-        std::vector<NumberPost*> NUMBERS = flowpostprocessing->GetNumbers();
+        std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
-        for (int i = 0; i < NUMBERS.size(); ++i)
+        for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
-            result =  NUMBERS[i]->ReturnValueNoError;
-            resulterror = NUMBERS[i]->ErrorMessageText;
-            resultrate = std::to_string(NUMBERS[i]->FlowRateAct);
-            resulttimestamp = NUMBERS[i]->timeStamp;
+            result =  (*NUMBERS)[i]->ReturnValueNoError;
+            resulterror = (*NUMBERS)[i]->ErrorMessageText;
+            resultrate = std::to_string((*NUMBERS)[i]->FlowRateAct);
+            resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
-            namenumber = NUMBERS[i]->name;
+            namenumber = (*NUMBERS)[i]->name;
             if (namenumber == "default")
                 namenumber = maintopic + "/";
             else
