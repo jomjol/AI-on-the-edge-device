@@ -45,7 +45,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-09-20)
+
+
+##### Rolling (2021-09-21)
+
+* bug fix
+
+Rolling (2021-09-20)
 
 * Moved setting `ExtendedResolution` to individual number settings
 
