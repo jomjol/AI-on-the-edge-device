@@ -74,7 +74,7 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 }
 
 
-std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
+std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital() 
 {
     if (flowdigit)
     {
@@ -240,8 +240,8 @@ void ClassFlowControll::InitFlow(std::string config)
 
 }
 
-std::string ClassFlowControll::getActStatus(){
-    return aktstatus;
+std::string* ClassFlowControll::getActStatus(){
+    return &aktstatus;
 }
 
 void ClassFlowControll::doFlowMakeImageOnly(string time){
@@ -554,65 +554,59 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     {
         _send = flowalignment->ImageBasis;  
     }
-
-
-
-    if (_fn == "alg_roi.jpg")
+    else
     {
-        CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
-        flowalignment->DrawRef(_imgzw);
-        if (flowdigit) flowdigit->DrawROI(_imgzw);
-        if (flowanalog) flowanalog->DrawROI(_imgzw);
+        if (_fn == "alg_roi.jpg")
+        {
+            CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
+            flowalignment->DrawRef(_imgzw);
+            if (flowdigit) flowdigit->DrawROI(_imgzw);
+            if (flowanalog) flowanalog->DrawROI(_imgzw);
+            _send = _imgzw;
+            Dodelete = true;
+        }
+        else
+        {
+            std::vector<HTMLInfo*> htmlinfo;
+            htmlinfo = GetAllDigital();
+            for (int i = 0; i < htmlinfo.size(); ++i)
+            {
+                if (_fn == htmlinfo[i]->filename)
+                {
+                    if (htmlinfo[i]->image)
+                        _send = htmlinfo[i]->image;
+                }
+                if (_fn == htmlinfo[i]->filename_org)
+                {
+                    if (htmlinfo[i]->image_org)
+                        _send = htmlinfo[i]->image_org;        
+                }
+                delete htmlinfo[i];
+            }
+            htmlinfo.clear();
 
-/*/////////////////////////////////////        
-        cimg_library::CImg<unsigned char> cimg(_imgzw->rgb_image, _imgzw->bpp, _imgzw->width, _imgzw->height, 1);
-    
-        //Convert cimg type
-//        cimg.permute_axes("yzcx");
-        cimg.draw_text(300, 300, "Dies ist ein Test", "black");
+            if (!_send)
+            {
+                htmlinfo = GetAllAnalog();
+                for (int i = 0; i < htmlinfo.size(); ++i)
+                {
+                    if (_fn == htmlinfo[i]->filename)
+                    {
+                        if (htmlinfo[i]->image)
+                            _send = htmlinfo[i]->image;
+                    }
+                    if (_fn == htmlinfo[i]->filename_org)
+                    {
+                        if (htmlinfo[i]->image_org)
+                            _send = htmlinfo[i]->image_org;        
+                    }
+                    delete htmlinfo[i];
+                }
+                htmlinfo.clear();
 
-        
-        //Convert back to stb type to save
-//        cimg.permute_axes("cxyz");
-*////////////////////////////////////
-        _send = _imgzw;
-        Dodelete = true;
+            }
+        }
     }
-
-    std::vector<HTMLInfo*> htmlinfo;
-    htmlinfo = GetAllDigital();
-    for (int i = 0; i < htmlinfo.size(); ++i)
-    {
-        if (_fn == htmlinfo[i]->filename)
-        {
-            if (htmlinfo[i]->image)
-                _send = htmlinfo[i]->image;
-        }
-        if (_fn == htmlinfo[i]->filename_org)
-        {
-            if (htmlinfo[i]->image_org)
-                _send = htmlinfo[i]->image_org;        
-        }
-        delete htmlinfo[i];
-    }
-    htmlinfo.clear();
-
-    htmlinfo = GetAllAnalog();
-    for (int i = 0; i < htmlinfo.size(); ++i)
-    {
-        if (_fn == htmlinfo[i]->filename)
-        {
-            if (htmlinfo[i]->image)
-                _send = htmlinfo[i]->image;
-        }
-        if (_fn == htmlinfo[i]->filename_org)
-        {
-            if (htmlinfo[i]->image_org)
-                _send = htmlinfo[i]->image_org;        
-        }
-        delete htmlinfo[i];
-    }
-    htmlinfo.clear();
 
     if (_send)
     {

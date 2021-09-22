@@ -47,6 +47,8 @@ esp_err_t info_get_handler(httpd_req_t *req)
         }
     };
 
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
     if (_task.compare("GitBranch") == 0)
     {
         std::string zw;
@@ -400,15 +402,15 @@ httpd_handle_t start_webserver(void)
     httpd_config_t config = { };
 
     config.task_priority      = tskIDLE_PRIORITY+5;
-    config.stack_size         = 32768;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
+    config.stack_size         = 32768;      //20210921 --> vorher 32768             // bei 32k stürzt das Programm beim Bilderaufnehmen ab
     config.core_id            = tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;
-    config.max_open_sockets   = 7;      
+    config.max_open_sockets   = 5;          //20210921 --> vorher 7   
     config.max_uri_handlers   = 24;                       
     config.max_resp_headers   = 8;                        
     config.backlog_conn       = 5;                        
-    config.lru_purge_enable   = true;       // dadurch werden alter Verbindungen gekappt, falls neue benögt werden.               
+    config.lru_purge_enable   = true;       // dadurch werden alte Verbindungen gekappt, falls neue benögt werden.               
     config.recv_wait_timeout  = 30;         // default: 5                       
     config.send_wait_timeout  = 30;         // default: 5                        
     config.global_user_ctx = NULL;                        

@@ -612,12 +612,12 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
             zw->image = GENERAL[_ana]->ROI[i]->image;
             zw->image_org = GENERAL[_ana]->ROI[i]->image_org;
 
-            printf("Push %s\n", zw->filename.c_str());
+//            printf("Push %s\n", zw->filename.c_str());
 
             result.push_back(zw);
         }
 
-    printf("größe: %d\n", result.size());
+//    printf("größe: %d\n", result.size());
 
     return result;
 }

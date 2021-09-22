@@ -73,7 +73,7 @@ li.dropdown {
 
 <body style="font-family: arial">
 
-<h1>Digitizer - AI on the edge</h1>
+<h1 id="id_title">Digitizer - AI on the edge</h1>
 <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
 
 <ul>
@@ -101,6 +101,38 @@ li.dropdown {
 <div class="h_iframe">
 	 <iframe name="maincontent" id ="maincontent" src="/wasserzaehler_roi.html" title="fileserver" allowfullscreen></iframe> 
 </div>
+
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>  
+<script type="text/javascript" src="./readconfigparam.js"></script>  
+
+
+<script type="text/javascript">
+	var basepath = "http://192.168.178.22";
+
+
+  function LoadHostname() {
+    _basepath = getbasepath(); 
+
+     var xhttp = new XMLHttpRequest();
+     try {
+          url = _basepath + '/version?type=Hostname';     
+          xhttp.open("GET", url, false);
+          xhttp.send();
+          hostname = xhttp.responseText;
+          document.title = "jomjol - AI on the edge - " + hostname;
+          document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
+
+     }
+     catch (error)
+     {
+               alert("Loading Hostname failed");
+     }
+  }
+
+  LoadHostname();
+
+</script>
 
 </body>
 </html>

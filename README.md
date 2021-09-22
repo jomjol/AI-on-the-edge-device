@@ -49,9 +49,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### Rolling (2021-09-22)
 
+* html: incorporate hostname to title and main page
+* Improved stability during html requests
+
+Rolling (2021-09-21)
+
 * bug fix
 
-  
 
 
 Rolling (2021-09-20)

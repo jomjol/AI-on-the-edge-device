@@ -69,32 +69,6 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
   return (zw_class - _von);
 }
 
-/*
-int CTfLiteClass::GetOutClassification()
-{
-  TfLiteTensor* output2 = interpreter->output(0);
-
-  float zw_max = 0;
-  float zw;
-  int zw_class = -1;
-
-  if (output2 == NULL)
-    return -1;
-
-  int numeroutput = output2->dims->data[1];
-  for (int i = 0; i < numeroutput; ++i)
-  {
-    zw = output2->data.f[i];
-    if (zw > zw_max)
-    {
-        zw_max = zw;
-        zw_class = i;
-    }
-  }
-  return zw_class;
-}
-*/
-
 void CTfLiteClass::GetInputDimension(bool silent = false)
 {
   TfLiteTensor* input2 = this->interpreter->input(0);
@@ -283,7 +257,7 @@ CTfLiteClass::CTfLiteClass()
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
-    this->kTensorArenaSize = 200 * 1024;   /// laut testfile: 108000 - bisher 600
+    this->kTensorArenaSize = 800 * 1024;   /// laut testfile: 108000 - bisher 600;; 2021-09-11: 200 * 1024
     this->tensor_arena = new uint8_t[kTensorArenaSize]; 
 }
 

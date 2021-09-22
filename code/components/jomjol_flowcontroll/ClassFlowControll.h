@@ -60,7 +60,7 @@ public:
 
 	bool isAutoStart(long &_intervall);
 
-	std::string getActStatus();
+	std::string* getActStatus();
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	

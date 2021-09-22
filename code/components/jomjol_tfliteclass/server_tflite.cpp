@@ -28,9 +28,6 @@ ClassFlowControll tfliteflow;
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
-
-
-
 bool flowisrunning = false;
 
 long auto_intervall = 0;
@@ -506,35 +503,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     }
 
-/*      
-    if (_task.compare("test_analog") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Analog]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }
-*/  
-/*    
-    if (_task.compare("test_digits") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Digits]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    } 
-*/
-
-
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
@@ -553,15 +521,13 @@ esp_err_t handler_statusflow(httpd_req_t *req)
 #endif
 
     const char* resp_str;
-    string zw;
 
 #ifdef DEBUG_DETAIL_ON       
     printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
 #endif
 
-    zw = tfliteflow.getActStatus();
-    
-    resp_str = zw.c_str();
+    string* zw = tfliteflow.getActStatus();
+    resp_str = zw->c_str();
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, resp_str, strlen(resp_str));   
