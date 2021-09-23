@@ -47,28 +47,19 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2021-09-22)
+##### 8.4.0 - Multi Meter Support (2021-09-24)
 
-* html: incorporate hostname to title and main page
-* Improved stability during html requests
+* License change (remove MIT license, remark see below)
 
-Rolling (2021-09-21)
+* html: show hostname in title and main page
 
-* bug fix
+* configuration: 
 
+  * moved setting `ExtendedResolution` to individual number settings
+  * New parameter `IgnoreLeadingNaN` (delete leading NaN's specifically)
+  * **ATTENTION**: update of the `config.ini` needed (open, adjust `ExtendedResolution`, save)
 
-
-Rolling (2021-09-20)
-
-* Moved setting `ExtendedResolution` to individual number settings
-
-* New parameter `IgnoreLeadingNaN`
-
-* **ATTENTION: update of `config.ini` is necessary**
-
-* Remove of the MIT license (see below)
-
-* bug fix: decimal shift
+* Bug fixing (html, images of recognized numbers)
 
   
 
@@ -76,14 +67,9 @@ Rolling (2021-09-20)
 
 - Currently no licence published - copyright belongs to author
 - If you are interested in a commercial usage or dedicated versions please contact the developer
+  - no limits to private usage
 
 
-
-Rolling (2021-09-12)
-
-* Preparation for external illumination (WS281x)
-* Bug fixing (html, Images of recognized numbers)
-* based on v8.3.0 (2021-09-12)
 
 ##### 8.3.0 - Multi Meter Support (2021-09-12)
 
