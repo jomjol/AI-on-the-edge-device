@@ -42,21 +42,19 @@ const char* libfive_git_branch(void)
     return GIT_BRANCH;
 }
 
-std::string getHTMLversion(void){
-    
-    string line = "";
-    
+
+char _char_getHTMLversion[20]="NaN\0";
+
+const char* getHTMLversion(void){
     FILE* pFile;
     string fn = FormatFileName("/sdcard/html/version.txt");
     pFile = fopen(fn.c_str(), "r");
 
     if (pFile == NULL)
-        return std::string("NAN");
+        return _char_getHTMLversion;
 
-    char zw[1024];
-    fgets(zw, 1024, pFile);
-    line = std::string(trim(zw));
+    fgets(_char_getHTMLversion, 20, pFile);
     fclose(pFile);
 
-    return line;
+    return _char_getHTMLversion;
 }

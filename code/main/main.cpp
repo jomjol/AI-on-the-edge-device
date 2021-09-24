@@ -216,26 +216,5 @@ extern "C" void app_main(void)
 
     printf("vor dotautostart\n");
     TFliteDoAutoStart();
-
-//////////////////////////  Test SmartLED Liberary //////////////////////////////////////////////
-/*
-    xDelay = 5000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay);
-//    LogFile.WriteToFile("Startsequence 06");      
-    vTaskDelay( xDelay );   
-
-    SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
-
-
-    leds[ 0 ] = Rgb{ 255, 0, 0 };
-    leds[ 1 ] = Rgb{ 255, 255, 255 };
-    leds.show();    
-
-    vTaskDelay( xDelay );   
-
-    leds[ 0 ] = Rgb{ 0, 0, 0 };
-    leds[ 1 ] = Rgb{ 0, 0, 0 };
-    leds.show();    
-*/ 
 }
 

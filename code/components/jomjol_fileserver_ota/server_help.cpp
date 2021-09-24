@@ -111,6 +111,8 @@ esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filename)
         return httpd_resp_set_type(req, "image/jpeg");
     } else if (IS_FILE_EXT(filename, ".ico")) {
         return httpd_resp_set_type(req, "image/x-icon");
+    } else if (IS_FILE_EXT(filename, ".js")) {
+        return httpd_resp_set_type(req, "text/javascript");
     }
     /* This is a limited set only */
     /* For any other type always set as plain text */

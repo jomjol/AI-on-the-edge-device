@@ -7,8 +7,8 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname);
 void wifi_init_sta(const char *_ssid, const char *_password);
 
-std::string getIPAddress();
-std::string getSSID();
+std::string* getIPAddress();
+std::string* getSSID();
 
 extern std::string hostname;
 extern std::string std_hostname;
