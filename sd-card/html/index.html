@@ -79,23 +79,23 @@ li.dropdown {
 
 <ul>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler_roi.html';">Overview</a></li>
-    <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">Configuration</a>
-    <div class="dropdown-content">
-      <a href="#"onclick="document.getElementById('maincontent').src = '/prevalue_set.html';">Set preValue</a>
-      <a href="index_configure.html">Edit Configuration</a>
-    </div>
+	<li class="dropdown">
+	<a href="javascript:void(0)" class="dropbtn">Configuration</a>
+	<div class="dropdown-content">
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/prevalue_set.html';">Set preValue</a>
+	  <a href="index_configure.html">Edit Configuration</a>
+	</div>
   </li>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler.html?full';">Recognition</a></li>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/';">File Server</a></li>
-    <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">System</a>
-    <div class="dropdown-content">
-      <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
-      <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log/message/?readonly=true';">Log Viewer</a>      
-      <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
-      <a href="#"onclick="document.getElementById('maincontent').src = '/info.html';">Info</a>      
-    </div> 
+	<li class="dropdown">
+	<a href="javascript:void(0)" class="dropbtn">System</a>
+	<div class="dropdown-content">
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log/message/?readonly=true';">Log Viewer</a>      
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/info.html';">Info</a>      
+	</div> 
 </ul>
 <p>
 
@@ -113,22 +113,31 @@ li.dropdown {
 
 
   function LoadHostname() {
-    _basepath = getbasepath(); 
+	_basepath = getbasepath(); 
 
-     var xhttp = new XMLHttpRequest();
-     try {
-          url = _basepath + '/version?type=Hostname';     
-          xhttp.open("GET", url, false);
-          xhttp.send();
-          hostname = xhttp.responseText;
-          document.title = "jomjol - AI on the edge - " + hostname;
-          document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
 
-     }
-     catch (error)
-     {
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener('load', function(event) {
+	  if (xhttp.status >= 200 && xhttp.status < 300) {
+		hostname = xhttp.responseText;
+		  document.title = "jomjol - AI on the edge - " + hostname;
+		  document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
+	  } else {
+		 console.warn(request.statusText, request.responseText);
+	  }
+	 });
+
+//     var xhttp = new XMLHttpRequest();
+	 try {
+		  url = _basepath + '/version?type=Hostname';     
+		  xhttp.open("GET", url, true);
+		  xhttp.send();
+
+	 }
+	 catch (error)
+	 {
 //               alert("Loading Hostname failed");
-     }
+	 }
   }
 
   LoadHostname();
