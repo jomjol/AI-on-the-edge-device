@@ -47,7 +47,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 8.4.0 - Multi Meter Support (2021-09-24)
+##### 8.4.0 - Multi Meter Support (2021-09-25)
 
 * License change (remove MIT license, remark see below)
 
