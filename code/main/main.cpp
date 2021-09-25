@@ -28,6 +28,9 @@
 #include "server_main.h"
 #include "server_camera.h"
 
+// #include "jomjol_WS2812Slow.h"
+#include "SmartLeds.h"
+
 
 #define __SD_USE_ONE_LINE_MODE__
 
@@ -135,8 +138,12 @@ void task_NoSDBlink(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+
 extern "C" void app_main(void)
 {
+    TickType_t xDelay;
+
+
     printf("Do Reset Camera\n");
     PowerResetCamera();
     Camera.InitCam();
@@ -171,7 +178,7 @@ extern "C" void app_main(void)
 
     wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);
     
-    TickType_t xDelay;
+
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("main: sleep for : %ldms\n", (long) xDelay);
 //    LogFile.WriteToFile("Startsequence 06");      
@@ -183,6 +190,9 @@ extern "C" void app_main(void)
     LogFile.WriteToFile("=================================== Main Started ============================================");
     LogFile.WriteToFile("=============================================================================================");
     LogFile.SwitchOnOff(false);
+
+
+
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    

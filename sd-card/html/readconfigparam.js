@@ -31,6 +31,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
      ParamAddValue(param, catname, "FixedExposure");     
+     ParamAddValue(param, catname, "UseGPIOControlledIllumination");
 
      var catname = "Alignment";
      category[catname] = new Object(); 
@@ -53,7 +54,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);     
-     ParamAddValue(param, catname, "ExtendedResolution");
+//     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "Analog";
      category[catname] = new Object(); 
@@ -64,7 +65,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);
-     ParamAddValue(param, catname, "ExtendedResolution");
+//     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 
@@ -76,9 +77,11 @@ function ParseConfig() {
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
      ParamAddValue(param, catname, "MaxRateValue", 1, true);
+     ParamAddValue(param, catname, "ExtendedResolution", 1, true);
+     ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
-     ParamAddValue(param, catname, "IgnoreLeadingNaN");     
+//     ParamAddValue(param, catname, "IgnoreLeadingNaN");     
 
      var catname = "MQTT";
      category[catname] = new Object(); 
@@ -102,6 +105,10 @@ function ParseConfig() {
      ParamAddValue(param, catname, "IO4", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO12", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "IO13", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "LEDType");
+     ParamAddValue(param, catname, "LEDNumbers");
+     ParamAddValue(param, catname, "LEDColor", 3);
+
 
      var catname = "AutoTimer";
      category[catname] = new Object(); 

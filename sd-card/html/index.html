@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html style="width: fit-content">
 <head>
+<link rel="icon" href="data:,">
 <title>jomjol - AI on the edge</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,34 +74,75 @@ li.dropdown {
 
 <body style="font-family: arial">
 
-<h1>Digitizer - AI on the edge</h1>
+<h1 id="id_title">Digitizer - AI on the edge</h1>
 <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
 
 <ul>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler_roi.html';">Overview</a></li>
-    <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">Configuration</a>
-    <div class="dropdown-content">
-      <a href="#"onclick="document.getElementById('maincontent').src = '/prevalue_set.html';">Set preValue</a>
-      <a href="index_configure.html">Edit Configuration</a>
-    </div>
+	<li class="dropdown">
+	<a href="javascript:void(0)" class="dropbtn">Configuration</a>
+	<div class="dropdown-content">
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/prevalue_set.html';">Set preValue</a>
+	  <a href="index_configure.html">Edit Configuration</a>
+	</div>
   </li>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/wasserzaehler.html?full';">Recognition</a></li>
   <li><a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/';">File Server</a></li>
-    <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">System</a>
-    <div class="dropdown-content">
-      <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
-      <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log/message/?readonly=true';">Log Viewer</a>      
-      <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
-      <a href="#"onclick="document.getElementById('maincontent').src = '/info.html';">Info</a>      
-    </div> 
+	<li class="dropdown">
+	<a href="javascript:void(0)" class="dropbtn">System</a>
+	<div class="dropdown-content">
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log/message/?readonly=true';">Log Viewer</a>      
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
+	  <a href="#"onclick="document.getElementById('maincontent').src = '/info.html';">Info</a>      
+	</div> 
 </ul>
 <p>
 
 <div class="h_iframe">
 	 <iframe name="maincontent" id ="maincontent" src="/wasserzaehler_roi.html" title="fileserver" allowfullscreen></iframe> 
 </div>
+
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>  
+<script type="text/javascript" src="./readconfigparam.js"></script>  
+
+
+<script type="text/javascript">
+	var basepath = "http://192.168.178.22";
+
+
+  function LoadHostname() {
+	_basepath = getbasepath(); 
+
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener('load', function(event) {
+	  if (xhttp.status >= 200 && xhttp.status < 300) {
+		hostname = xhttp.responseText;
+		  document.title = "jomjol - AI on the edge - " + hostname;
+		  document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
+	  } else {
+		 console.warn(request.statusText, request.responseText);
+	  }
+	 });
+
+//     var xhttp = new XMLHttpRequest();
+	 try {
+		  url = _basepath + '/version?type=Hostname';     
+		  xhttp.open("GET", url, true);
+		  xhttp.send();
+
+	 }
+	 catch (error)
+	 {
+//               alert("Loading Hostname failed");
+	 }
+  }
+
+  LoadHostname();
+
+</script>
 
 </body>
 </html>

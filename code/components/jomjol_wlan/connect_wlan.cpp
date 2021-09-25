@@ -50,14 +50,14 @@ std::string std_hostname = "watermeter";
 std::string ipadress = "";
 std::string ssid = "";
 
-std::string getIPAddress()
+std::string* getIPAddress()
 {
-    return ipadress;
+    return &ipadress;
 }
 
-std::string getSSID()
+std::string* getSSID()
 {
-    return ssid;
+    return &ssid;
 }
 
 

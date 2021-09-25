@@ -28,9 +28,6 @@ ClassFlowControll tfliteflow;
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
-
-
-
 bool flowisrunning = false;
 
 long auto_intervall = 0;
@@ -283,48 +280,48 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         txt = txt + "Digital Counter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
-        std::vector<HTMLInfo*> htmlinfo;
-        htmlinfo = tfliteflow.GetAllDigital();  
-        printf("Size of htmlinfo: %i\n", htmlinfo.size());
-        for (int i = 0; i < htmlinfo.size(); ++i)
+        std::vector<HTMLInfo*> htmlinfodig;
+        htmlinfodig = tfliteflow.GetAllDigital();  
+        for (int i = 0; i < htmlinfodig.size(); ++i)
         {
             if (tfliteflow.GetTypeDigital() == Digital)
             {
-                if (htmlinfo[i]->val == 10)
+                if (htmlinfodig[i]->val == 10)
                     zw = "NaN";
                 else
-                    zw = to_string((int) htmlinfo[i]->val);
+                    zw = to_string((int) htmlinfodig[i]->val);
 
-                txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+                txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
             }
             else
             {
                 std::stringstream stream;
-                stream << std::fixed << std::setprecision(1) << htmlinfo[i]->val;
+                stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
                 zw = stream.str();
 
-                txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+                txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
             }
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            delete htmlinfo[i];
+            delete htmlinfodig[i];
         }
-        htmlinfo.clear();
+        htmlinfodig.clear();
       
         txt = " <p> Analog Meter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
-        htmlinfo = tfliteflow.GetAllAnalog();
-        for (int i = 0; i < htmlinfo.size(); ++i)
+        std::vector<HTMLInfo*> htmlinfoana;
+        htmlinfoana = tfliteflow.GetAllAnalog();
+        for (int i = 0; i < htmlinfoana.size(); ++i)
         {
             std::stringstream stream;
-            stream << std::fixed << std::setprecision(1) << htmlinfo[i]->val;
+            stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
             zw = stream.str();
 
-            txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+            txt = "<img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"> " + zw;
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            delete htmlinfo[i];
+            delete htmlinfoana[i];
         }
-        htmlinfo.clear();   
+        htmlinfoana.clear();   
 
     }   
 
@@ -506,35 +503,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     }
 
-/*      
-    if (_task.compare("test_analog") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Analog]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }
-*/  
-/*    
-    if (_task.compare("test_digits") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Digits]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    } 
-*/
-
-
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
@@ -553,15 +521,13 @@ esp_err_t handler_statusflow(httpd_req_t *req)
 #endif
 
     const char* resp_str;
-    string zw;
 
 #ifdef DEBUG_DETAIL_ON       
     printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
 #endif
 
-    zw = tfliteflow.getActStatus();
-    
-    resp_str = zw.c_str();
+    string* zw = tfliteflow.getActStatus();
+    resp_str = zw->c_str();
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, resp_str, strlen(resp_str));   

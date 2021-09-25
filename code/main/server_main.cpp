@@ -47,11 +47,11 @@ esp_err_t info_get_handler(httpd_req_t *req)
         }
     };
 
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
     if (_task.compare("GitBranch") == 0)
     {
-        std::string zw;
-        zw = std::string(libfive_git_branch());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, libfive_git_branch());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
@@ -59,9 +59,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
 
     if (_task.compare("GitTag") == 0)
     {
-        std::string zw;
-        zw = std::string(libfive_git_version());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, libfive_git_version());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
@@ -70,36 +68,30 @@ esp_err_t info_get_handler(httpd_req_t *req)
 
     if (_task.compare("GitRevision") == 0)
     {
-        std::string zw;
-        zw = std::string(libfive_git_revision());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, libfive_git_revision());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
 
     if (_task.compare("BuildTime") == 0)
     {
-        std::string zw;
-        zw = std::string(build_time());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, build_time());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
 
     if (_task.compare("GitBaseBranch") == 0)
     {
-        std::string zw;
-        zw = std::string(git_base_branch());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, git_base_branch());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
 
     if (_task.compare("HTMLVersion") == 0)
     {
-        std::string zw;
-        zw = std::string(getHTMLversion());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+//        std::string zw;
+//        zw = std::string(getHTMLversion());
+        httpd_resp_sendstr_chunk(req, getHTMLversion());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
@@ -115,18 +107,18 @@ esp_err_t info_get_handler(httpd_req_t *req)
 
     if (_task.compare("IP") == 0)
     {
-        std::string zw;
-        zw = std::string(getIPAddress());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        std::string *zw;
+        zw = getIPAddress();
+        httpd_resp_sendstr_chunk(req, zw->c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
 
     if (_task.compare("SSID") == 0)
     {
-        std::string zw;
-        zw = std::string(getSSID());
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        std::string *zw;
+        zw = getSSID();
+        httpd_resp_sendstr_chunk(req, zw->c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
@@ -140,27 +132,14 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
-
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("info_get_handler - Done"); 
-#endif   
-
     return ESP_OK;
 }
 
 esp_err_t starttime_get_handler(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("starttime_get_handler - Start");       
-#endif
-
     httpd_resp_send(req, starttime.c_str(), strlen(starttime.c_str())); 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);  
-
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("starttime_get_handler - Done"); 
-#endif         
 
     return ESP_OK;
 }
@@ -215,12 +194,15 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     }
 
     res = send_file(req, filetosend);
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);
+
     if (res != ESP_OK)
         return res;
 
     /* Respond with an empty chunk to signal HTTP response completion */
 //    httpd_resp_sendstr(req, "");
-    httpd_resp_send_chunk(req, NULL, 0);
+//    httpd_resp_send_chunk(req, NULL, 0);
 
 #ifdef DEBUG_DETAIL_ON      
     LogFile.WriteHeapInfo("hello_main_handler - Stop");   
@@ -297,10 +279,6 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("sysinfo_handler - Start");  
-#endif
-
     const char* resp_str; 
     std::string zw;
     std::string cputemp = std::to_string(temperatureRead());
@@ -331,17 +309,12 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
             }\
         ]";
 
-
     resp_str = zw.c_str();
 
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, resp_str, strlen(resp_str));   
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);  
-
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("sysinfo_handler - Done");
-#endif          
 
     return ESP_OK;
 }
@@ -399,25 +372,24 @@ httpd_handle_t start_webserver(void)
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority      = tskIDLE_PRIORITY+5;
-    config.stack_size         = 32768;                  // bei 32k stürzt das Programm beim Bilderaufnehmen ab
+    config.task_priority      = tskIDLE_PRIORITY+1;         // 20210924 --> vorher +5
+    config.stack_size         = 32768;      //20210921 --> vorher 32768             // bei 32k stürzt das Programm beim Bilderaufnehmen ab
     config.core_id            = tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;
-    config.max_open_sockets   = 7;      
+    config.max_open_sockets   = 5;          //20210921 --> vorher 7   
     config.max_uri_handlers   = 24;                       
     config.max_resp_headers   = 8;                        
     config.backlog_conn       = 5;                        
-    config.lru_purge_enable   = true;       // dadurch werden alter Verbindungen gekappt, falls neue benögt werden.               
-    config.recv_wait_timeout  = 30;         // default: 5                       
-    config.send_wait_timeout  = 30;         // default: 5                        
+    config.lru_purge_enable   = true;       // dadurch werden alte Verbindungen gekappt, falls neue benögt werden.               
+    config.recv_wait_timeout  = 5;         // default: 5         20210924 --> vorher 30              
+    config.send_wait_timeout  = 5;         // default: 5         20210924 --> vorher 30                   
     config.global_user_ctx = NULL;                        
     config.global_user_ctx_free_fn = NULL;                
     config.global_transport_ctx = NULL;                   
     config.global_transport_ctx_free_fn = NULL;           
     config.open_fn = NULL;                                
     config.close_fn = NULL;     
-    config.lru_purge_enable = true;             // neu, um schlechte Serverbindung zu verhindern                          
 //    config.uri_match_fn = NULL;                            
     config.uri_match_fn = httpd_uri_match_wildcard;
 

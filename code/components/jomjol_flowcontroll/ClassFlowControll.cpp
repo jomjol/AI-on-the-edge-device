@@ -74,16 +74,13 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 }
 
 
-std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
+std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital() 
 {
-/*    
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowCNNGeneral") == 0)
-            return ((ClassFlowCNNGeneral*) (FlowControll[i]))->GetHTMLInfo();
-*/
-
     if (flowdigit)
-        flowdigit->GetHTMLInfo();
+    {
+        printf("ClassFlowControll::GetAllDigital - flowdigit != NULL\n");
+        return flowdigit->GetHTMLInfo();
+    }
 
     std::vector<HTMLInfo*> empty;
     return empty;
@@ -91,17 +88,8 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 {
-/*
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowAnalog") == 0)
-            return ((ClassFlowAnalog*) (FlowControll[i]))->GetHTMLInfo();
-
-    std::vector<HTMLInfo*> empty;
-    return empty;
-*/
-
     if (flowanalog)
-        flowanalog->GetHTMLInfo();
+        return flowanalog->GetHTMLInfo();
 
     std::vector<HTMLInfo*> empty;
     return empty;
@@ -252,8 +240,8 @@ void ClassFlowControll::InitFlow(std::string config)
 
 }
 
-std::string ClassFlowControll::getActStatus(){
-    return aktstatus;
+std::string* ClassFlowControll::getActStatus(){
+    return &aktstatus;
 }
 
 void ClassFlowControll::doFlowMakeImageOnly(string time){
@@ -297,7 +285,7 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            i = -1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
@@ -323,39 +311,41 @@ bool ClassFlowControll::doFlow(string time)
 
 string ClassFlowControll::getReadoutAll(int _type)
 {
-    std::vector<NumberPost*> numbers = flowpostprocessing->GetNumbers();
     std::string out = "";
-
-    for (int i = 0; i < numbers.size(); ++i)
+    if (flowpostprocessing)
     {
-        out = out + numbers[i]->name + "\t";
-        switch (_type) {
-            case READOUT_TYPE_VALUE:
-                out = out + numbers[i]->ReturnValueNoError;
-                break;
-            case READOUT_TYPE_PREVALUE:
-                if (flowpostprocessing->PreValueUse)
-                {
-                    if (numbers[i]->PreValueOkay)
-                        out = out + numbers[i]->ReturnPreValue;
-                    else
-                        out = out + "PreValue too old";                
-                }
-                else
-                    out = out + "PreValue deactivated";
-                break;
-            case READOUT_TYPE_RAWVALUE:
-                out = out + numbers[i]->ReturnRawValue;
-                break;
-            case READOUT_TYPE_ERROR:
-                out = out + numbers[i]->ErrorMessageText;
-                break;
-        }
-        if (i < numbers.size()-1)
-            out = out + "\r\n";
-    }
+        std::vector<NumberPost*> *numbers = flowpostprocessing->GetNumbers();
 
-//    printf("OUT: %s", out.c_str());
+        for (int i = 0; i < (*numbers).size(); ++i)
+        {
+            out = out + (*numbers)[i]->name + "\t";
+            switch (_type) {
+                case READOUT_TYPE_VALUE:
+                    out = out + (*numbers)[i]->ReturnValueNoError;
+                    break;
+                case READOUT_TYPE_PREVALUE:
+                    if (flowpostprocessing->PreValueUse)
+                    {
+                        if ((*numbers)[i]->PreValueOkay)
+                            out = out + (*numbers)[i]->ReturnPreValue;
+                        else
+                            out = out + "PreValue too old";                
+                    }
+                    else
+                        out = out + "PreValue deactivated";
+                    break;
+                case READOUT_TYPE_RAWVALUE:
+                    out = out + (*numbers)[i]->ReturnRawValue;
+                    break;
+                case READOUT_TYPE_ERROR:
+                    out = out + (*numbers)[i]->ErrorMessageText;
+                    break;
+            }
+            if (i < (*numbers).size()-1)
+                out = out + "\r\n";
+        }
+    //    printf("OUT: %s", out.c_str());
+    }
 
     return out;
 }	
@@ -564,65 +554,59 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     {
         _send = flowalignment->ImageBasis;  
     }
-
-
-
-    if (_fn == "alg_roi.jpg")
+    else
     {
-        CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
-        flowalignment->DrawRef(_imgzw);
-        if (flowdigit) flowdigit->DrawROI(_imgzw);
-        if (flowanalog) flowanalog->DrawROI(_imgzw);
+        if (_fn == "alg_roi.jpg")
+        {
+            CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
+            flowalignment->DrawRef(_imgzw);
+            if (flowdigit) flowdigit->DrawROI(_imgzw);
+            if (flowanalog) flowanalog->DrawROI(_imgzw);
+            _send = _imgzw;
+            Dodelete = true;
+        }
+        else
+        {
+            std::vector<HTMLInfo*> htmlinfo;
+            htmlinfo = GetAllDigital();
+            for (int i = 0; i < htmlinfo.size(); ++i)
+            {
+                if (_fn == htmlinfo[i]->filename)
+                {
+                    if (htmlinfo[i]->image)
+                        _send = htmlinfo[i]->image;
+                }
+                if (_fn == htmlinfo[i]->filename_org)
+                {
+                    if (htmlinfo[i]->image_org)
+                        _send = htmlinfo[i]->image_org;        
+                }
+                delete htmlinfo[i];
+            }
+            htmlinfo.clear();
 
-/*/////////////////////////////////////        
-        cimg_library::CImg<unsigned char> cimg(_imgzw->rgb_image, _imgzw->bpp, _imgzw->width, _imgzw->height, 1);
-    
-        //Convert cimg type
-//        cimg.permute_axes("yzcx");
-        cimg.draw_text(300, 300, "Dies ist ein Test", "black");
+            if (!_send)
+            {
+                htmlinfo = GetAllAnalog();
+                for (int i = 0; i < htmlinfo.size(); ++i)
+                {
+                    if (_fn == htmlinfo[i]->filename)
+                    {
+                        if (htmlinfo[i]->image)
+                            _send = htmlinfo[i]->image;
+                    }
+                    if (_fn == htmlinfo[i]->filename_org)
+                    {
+                        if (htmlinfo[i]->image_org)
+                            _send = htmlinfo[i]->image_org;        
+                    }
+                    delete htmlinfo[i];
+                }
+                htmlinfo.clear();
 
-        
-        //Convert back to stb type to save
-//        cimg.permute_axes("cxyz");
-*////////////////////////////////////
-        _send = _imgzw;
-        Dodelete = true;
+            }
+        }
     }
-
-    std::vector<HTMLInfo*> htmlinfo;
-    htmlinfo = GetAllDigital();
-    for (int i = 0; i < htmlinfo.size(); ++i)
-    {
-        if (_fn == htmlinfo[i]->filename)
-        {
-            if (htmlinfo[i]->image)
-                _send = htmlinfo[i]->image;
-        }
-        if (_fn == htmlinfo[i]->filename_org)
-        {
-            if (htmlinfo[i]->image_org)
-                _send = htmlinfo[i]->image_org;        
-        }
-        delete htmlinfo[i];
-    }
-    htmlinfo.clear();
-
-    htmlinfo = GetAllAnalog();
-    for (int i = 0; i < htmlinfo.size(); ++i)
-    {
-        if (_fn == htmlinfo[i]->filename)
-        {
-            if (htmlinfo[i]->image)
-                _send = htmlinfo[i]->image;
-        }
-        if (_fn == htmlinfo[i]->filename_org)
-        {
-            if (htmlinfo[i]->image_org)
-                _send = htmlinfo[i]->image_org;        
-        }
-        delete htmlinfo[i];
-    }
-    htmlinfo.clear();
 
     if (_send)
     {

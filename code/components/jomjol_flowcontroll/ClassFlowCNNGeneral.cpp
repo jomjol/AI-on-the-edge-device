@@ -21,23 +21,23 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     previousElement = NULL;   
     SaveAllFiles = false; 
     disabled = false;
-    extendedResolution = false;
+//    extendedResolution = false;
     isLogImageSelect = false;
     CNNType = AutoDetect;
     CNNType = _cnntype;
     flowpostalignment = _flowalign;
 }
 
-
+/*
 int ClassFlowCNNGeneral::AnzahlROIs(int _analog = 0)
 {
     int zw = GENERAL[_analog]->ROI.size();
     if (extendedResolution && (CNNType != Digital)) zw++;   // da letzte Ziffer inkl Nachhkomma, es sei denn, das Nachkomma gibt es nicht (Digital)
     return zw;
 } 
+*/
 
-
-string ClassFlowCNNGeneral::getReadout(int _analog = 0)
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution = false)
 {
     string result = "";    
     if (GENERAL[_analog]->ROI.size() == 0)
@@ -45,20 +45,20 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
 
     if (CNNType == Analogue)
     {
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result;
-        int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
+        int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
 
         int prev = -1;
 
-        prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result, prev);
+        prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
         result = std::to_string(prev);
 
-        if (extendedResolution && (CNNType != Digital))
+        if (_extendedResolution && (CNNType != Digital))
             result = result + std::to_string(ergebnis_nachkomma);
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i)
         {
-            prev = ZeigerEval(GENERAL[_analog]->ROI[i]->result, prev);
+            prev = ZeigerEval(GENERAL[_analog]->ROI[i]->result_float, prev);
             result = std::to_string(prev) + result;
         }
     }
@@ -67,10 +67,10 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
     {
         for (int i = 0; i < GENERAL[_analog]->ROI.size(); ++i)
         {
-            if (GENERAL[_analog]->ROI[i]->resultklasse == 10)
+            if (GENERAL[_analog]->ROI[i]->result_klasse >= 10)
                 result = result + "N";
             else
-                result = result + std::to_string(GENERAL[_analog]->ROI[i]->resultklasse);
+                result = result + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
         }
     }
 
@@ -79,34 +79,35 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
 //        int ergebnis_nachkomma = -1;
         int zif_akt = -1;
 
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result;
+        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         if (zahl >= 0)       // NaN?
         {
-            if (extendedResolution)
+            if (_extendedResolution)
             {
                 int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
                 int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
 
                 result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
+                zif_akt = ergebnis_vorkomma;
             }
             else
             {
-                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result, -1, -1);
+                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, -1, -1);
                 result = std::to_string(zif_akt);
             }
         }
         else
         {
             result = "N";
-            if (extendedResolution && (CNNType != Digital))
+            if (_extendedResolution && (CNNType != Digital))
                 result = "NN";
         }
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i)
         {
-            if (GENERAL[_analog]->ROI[i]->result >= 0)
+            if (GENERAL[_analog]->ROI[i]->result_float >= 0)
             {
-                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result, GENERAL[_analog]->ROI[i+1]->result, zif_akt);
+                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, zif_akt);
                 result = std::to_string(zif_akt) + result;
             }
             else
@@ -116,7 +117,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0)
             }
         }
     }
-
 
     return result;
 }
@@ -129,43 +129,43 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
     if (zahl_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
     {
         if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            return (int) round(zahl);
+            return ((int) round(zahl) + 10) % 10;
         else
-            return (int) trunc(zahl);
+            return ((int) trunc(zahl) + 10) % 10;
     }
 
     if (zahl_vorgaenger > 9.2)              // Ziffernwechsel beginnt
     {
         if (eval_vorgaenger == 0)           // Wechsel hat schon stattgefunden
         {
-            return (int) round(zahl);       // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
+            return ((int) round(zahl) + 10) % 10;      // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
         }
         else
         {
             if (zahl_vorgaenger <= 9.5)     // Wechsel startet gerade, aber beginnt erst
             {
                 if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-                    return (int) round(zahl);
+                    return ((int) round(zahl) + 10) % 10;
                 else
-                    return (int) trunc(zahl);
+                    return ((int) trunc(zahl) + 10) % 10;
             }
             else
             {
-                return (int) trunc(zahl);   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
+                return ((int) trunc(zahl) + 10) % 10;   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
             }
         }
     }
 
     if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-        return (int) round(zahl);
+        return ((int) round(zahl) + 10) % 10;
 
-    return (int) trunc(zahl);
+    return ((int) trunc(zahl) + 10) % 10;
 }
 
 int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
 {
-    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
+    int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
+    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
     int ergebnis, ergebnis_rating;
 
     if (ziffer_vorgaenger == -1)
@@ -182,7 +182,7 @@ int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
     if (ergebnis == -1)
         ergebnis+=10;
 
-    ergebnis = ergebnis % 10;
+    ergebnis = (ergebnis + 10) % 10;
     return ergebnis;
 }
 
@@ -260,7 +260,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
-            neuroi->result = -1;
+            neuroi->result_float = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;
         }
@@ -271,12 +271,15 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
                 SaveAllFiles = true;
         }
 
+/*
         if ((toUpper(zerlegt[0]) == "EXTENDEDRESOLUTION") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 extendedResolution = true;
         }
+*/
     }
+
 
    for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
@@ -482,6 +485,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
             default:
                 printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
         }
+//        flowpostprocessing->UpdateNachkommaDecimalShift();
     }
 
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
@@ -503,27 +507,27 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
                         float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
-                        GENERAL[_ana]->ROI[i]->result = result * 10;
-                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result); 
+                        GENERAL[_ana]->ROI[i]->result_float = result * 10;
+                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
                         if (isLogImage)
-                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;
                 case Digital:
                     {
-                        GENERAL[_ana]->ROI[i]->resultklasse = 0;
-                        GENERAL[_ana]->ROI[i]->resultklasse = tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image);
-                        printf("Result General(Digit)%i: %d\n", i, GENERAL[_ana]->ROI[i]->resultklasse);
+                        GENERAL[_ana]->ROI[i]->result_klasse = 0;
+                        GENERAL[_ana]->ROI[i]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image);
+                        printf("Result General(Digit)%i: %d\n", i, GENERAL[_ana]->ROI[i]->result_klasse);
 
                         if (isLogImage)
                         {
                             if (isLogImageSelect)
                             {
                                 if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, GENERAL[_ana]->ROI[i]->name, NULL, &GENERAL[_ana]->ROI[i]->resultklasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                                    LogImage(logPath, GENERAL[_ana]->ROI[i]->name, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
                             }
                             else
                             {
-                                LogImage(logPath, GENERAL[_ana]->ROI[i]->name, NULL, &GENERAL[_ana]->ROI[i]->resultklasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                                LogImage(logPath, GENERAL[_ana]->ROI[i]->name, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
                             }
                         }
                     } break;
@@ -543,16 +547,16 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
                         if ((_num == 10) || (_nachkomma == 10))                      // NaN detektiert
-                            GENERAL[_ana]->ROI[i]->result = -1;
+                            GENERAL[_ana]->ROI[i]->result_float = -1;
                         else
-                            GENERAL[_ana]->ROI[i]->result = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
+                            GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
 
-                        printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result); 
-                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result);
+                        printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
                         if (isLogImage)
-                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;
                 default:
                     break;
@@ -567,7 +571,8 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 {
-    if (extendedResolution && !(CNNType == Digital))
+//    if (extendedResolution && !(CNNType == Digital))
+    if (!(CNNType == Digital))
         return true;
 
     return false;
@@ -600,12 +605,19 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
                 zw->filename_org = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
 
-            zw->val = GENERAL[_ana]->ROI[i]->result;
+            if (CNNType == Digital)
+                zw->val = GENERAL[_ana]->ROI[i]->result_klasse;
+            else
+                zw->val = GENERAL[_ana]->ROI[i]->result_float;
             zw->image = GENERAL[_ana]->ROI[i]->image;
             zw->image_org = GENERAL[_ana]->ROI[i]->image_org;
 
+//            printf("Push %s\n", zw->filename.c_str());
+
             result.push_back(zw);
         }
+
+//    printf("größe: %d\n", result.size());
 
     return result;
 }
