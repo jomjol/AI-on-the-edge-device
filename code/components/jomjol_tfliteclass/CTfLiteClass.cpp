@@ -44,12 +44,12 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
   //printf("\n number output neurons: %d\n\n", numeroutput);
 
   if (_bis == -1)
-    _bis = numeroutput;
+    _bis = numeroutput -1;
 
   if (_von == -1)
     _von = 0;
 
-  if (_bis > numeroutput)
+  if (_bis >= numeroutput)
   {
     printf("ANZAHL OUTPUT NEURONS passt nicht zu geforderter Classifizierung!");
     return -1;
@@ -57,7 +57,7 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
 
   zw_max = output2->data.f[_von];
   zw_class = _von;
-  for (int i = _von+1; i <= _bis; ++i)
+  for (int i = _von + 1; i <= _bis; ++i)
   {
     zw = output2->data.f[i];
     if (zw > zw_max)

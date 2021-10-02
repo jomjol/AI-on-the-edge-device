@@ -31,7 +31,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
      ParamAddValue(param, catname, "FixedExposure");     
-     ParamAddValue(param, catname, "UseGPIOControlledIllumination");
 
      var catname = "Alignment";
      category[catname] = new Object(); 
@@ -54,7 +53,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);     
-//     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "Analog";
      category[catname] = new Object(); 
@@ -65,7 +63,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
      ParamAddValue(param, catname, "ModelInputSize", 2);
-//     ParamAddValue(param, catname, "ExtendedResolution");
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 
@@ -81,7 +78,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
-//     ParamAddValue(param, catname, "IgnoreLeadingNaN");     
 
      var catname = "MQTT";
      category[catname] = new Object(); 

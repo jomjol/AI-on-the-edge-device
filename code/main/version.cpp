@@ -1,4 +1,4 @@
-const char* GIT_REV="147d974";
-const char* GIT_TAG="";
-const char* GIT_BRANCH="master";
-const char* BUILD_TIME="2021-09-25 18:55";
+const char* GIT_REV="18f6e83";
+const char* GIT_TAG="v8.4.0";
+const char* GIT_BRANCH="rolling";
+const char* BUILD_TIME="2021-10-02 14:29";

@@ -89,7 +89,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 if (NUMBERS[j]->name == name)
                 {
                     NUMBERS[j]->PreValue = stof(zwvalue.c_str());
-                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // SIcherheitshalber 1 Stelle mehr, da ggf. Exgtended Resolution an ist (wird erst beim ersten Durchlauf gesetzt)
 
                     time_t tStart;
                     int yy, month, dd, hh, mm, ss;
@@ -123,7 +123,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
 
                         if (NUMBERS[j]->digit_roi || NUMBERS[j]->analog_roi)
                         {
-                            NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
+                            NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma + 1);  // SIcherheitshalber 1 Stelle mehr, da ggf. Exgtended Resolution an ist (wird erst beim ersten Durchlauf gesetzt)
                             NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue;
                         }
                     }
@@ -595,13 +595,14 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (NUMBERS[j]->digit_roi)
         {
-            if (NUMBERS[j]->analog_roi)
+            if (NUMBERS[j]->analog_roi) 
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false);
             else
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + ".";
+
         if (NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution); 
 
@@ -822,14 +823,14 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     while (pot <= pot_max)
     {
         zw = input / pow(10, pot-1);
-        aktdigit_before = ((int) zw) % 10;
+        aktdigit_before = ((int) zw + 10) % 10;
         zw = _preValue / pow(10, pot-1);
-        olddigit_before = ((int) zw) % 10;
+        olddigit_before = ((int) zw + 10) % 10;
 
         zw = input / pow(10, pot);
-        aktdigit = ((int) zw) % 10;
+        aktdigit = ((int) zw + 10) % 10;
         zw = _preValue / pow(10, pot);
-        olddigit = ((int) zw) % 10;
+        olddigit = ((int) zw + 10) % 10;
 
         no_nulldurchgang = (olddigit_before <= aktdigit_before);
 

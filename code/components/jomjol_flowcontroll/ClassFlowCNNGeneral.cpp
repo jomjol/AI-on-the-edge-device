@@ -61,6 +61,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             prev = ZeigerEval(GENERAL[_analog]->ROI[i]->result_float, prev);
             result = std::to_string(prev) + result;
         }
+        return result;
     }
 
     if (CNNType == Digital)
@@ -72,6 +73,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             else
                 result = result + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
         }
+        return result;
     }
 
     if (CNNType == DigitalHyprid)
@@ -116,6 +118,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 result = "N" + result;
             }
         }
+        return result;
     }
 
     return result;
@@ -540,7 +543,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         if (debugdetailgeneral) LogFile.WriteToFile("Nach Invoke");
 
                         _num = tflite->GetOutClassification(0, 10);
-                        _nachkomma = tflite->GetOutClassification(11, 22);
+                        _nachkomma = tflite->GetOutClassification(11, 21);
 
 
                         string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
