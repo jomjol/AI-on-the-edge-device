@@ -47,9 +47,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2021-10-02)
+##### 8.5.0 - Multi Meter Support (2021-10-07)
 
-* Bug fix: neural network output
+* Upgrade digital CNN to v13.1.0 (added new images)
+* bug fix: wlan password with space, double digit output
 
 ##### 8.4.0 - Multi Meter Support (2021-09-25)
 

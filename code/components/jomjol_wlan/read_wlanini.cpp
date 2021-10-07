@@ -12,7 +12,7 @@
 #include <string.h>
 
 
-std::vector<string> ZerlegeZeile(std::string input, std::string _delimiter = "")
+std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
 {
 	std::vector<string> Output;
 	std::string delimiter = " =,";
@@ -23,13 +23,13 @@ std::vector<string> ZerlegeZeile(std::string input, std::string _delimiter = "")
 	input = trim(input, delimiter);
 	size_t pos = findDelimiterPos(input, delimiter);
 	std::string token;
-	while (pos != std::string::npos) {
+    if (pos != std::string::npos)           // Zerlegt nur bis ersten Gleichheitszeichen !!! Sonderfall für WLAN.ini
+    {
 		token = input.substr(0, pos);
 		token = trim(token, delimiter);
 		Output.push_back(token);
 		input.erase(0, pos + 1);
 		input = trim(input, delimiter);
-		pos = findDelimiterPos(input, delimiter);
 	}
 	Output.push_back(input);
 
@@ -67,10 +67,8 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     while ((line.size() > 0) || !(feof(pFile)))
     {
 //        printf("%s", line.c_str());
-        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt = ZerlegeZeileWLAN(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
-        for (int i = 2; i < zerlegt.size(); ++i)
-            zerlegt[1] = zerlegt[1] + "=" + zerlegt[i];
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){
             hostname = trim(zerlegt[1]);
@@ -212,7 +210,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     while ((line.size() > 0) || !(feof(pFile)))
     {
         printf("%s", line.c_str());
-        zerlegt = ZerlegeZeile(line, "=");
+        zerlegt = ZerlegeZeileWLAN(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
 
         if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HOSTNAME")){

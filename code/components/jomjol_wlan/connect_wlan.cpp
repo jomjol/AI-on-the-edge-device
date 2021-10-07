@@ -184,32 +184,6 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
         ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
         ESP_ERROR_CHECK(esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info));
     }
-/////////////////////////////////////////////////////////////////
-
-
-//    esp_netif_create_default_wifi_sta();
-
-//    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-//    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-
-
-/* 
-////////////////////////////// esp-idf 4.2 //////////////////////////
-    esp_event_handler_instance_t instance_any_id;
-    esp_event_handler_instance_t instance_got_ip;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &event_handler,
-                                                        NULL,
-                                                        &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &event_handler,
-                                                        NULL,
-                                                        &instance_got_ip));
-////////////////////////// ENDE esp-idf 4.2 ///////////////////////////
-*/
 
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
@@ -253,27 +227,6 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
-
-    /* The event will not be processed after unregister */
-/* 
-////////////////////////////// esp-idf 4.2 //////////////////////////
-    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
-    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, instance_any_id));
-////////////////////////// ENDE esp-idf 4.2 ///////////////////////////
-*/
-
-/* Deaktiveren, damit bei einen Verbindungsabbruch neu aufgebaut wird
-    ESP_ERROR_CHECK(esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler));
-    ESP_ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler));
-    vEventGroupDelete(s_wifi_event_group);
-*/ 
-
-/*
-    while (BlinkIsRunning)
-    {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-    }
-*/
 }
 
 
