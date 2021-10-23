@@ -6,6 +6,8 @@ This is an example of Artificial Intelligence (AI) calculations on a very cheap 
 
 A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4573481
 
+or here https://www.thingiverse.com/thing:5028229
+
 respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
@@ -44,6 +46,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ------
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
+
+
+
+##### 9.0.0 - External Illumination (2021-10-23)
+
+* Implementation of external illumination to adjust positioning, brightness and color of the illumination now individually
+  * Technical details can be found in the wiki: https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED
+  <img src="https://raw.githubusercontent.com/jomjol/ai-on-the-edge-device/master/images/intern_vs_external.jpg" width="500">
+* New housing published for external LEDs and small clearing: https://www.thingiverse.com/thing:5028229
 
 
 
