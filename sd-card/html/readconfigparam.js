@@ -104,6 +104,12 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LEDType");
      ParamAddValue(param, catname, "LEDNumbers");
      ParamAddValue(param, catname, "LEDColor", 3);
+     // Default Values, um abwärtskompatiblität zu gewährleisten
+     param[catname]["LEDType"]["value1"] = "WS2812";
+     param[catname]["LEDNumbers"]["value1"] = "2";
+     param[catname]["LEDColor"]["value1"] = "50";
+     param[catname]["LEDColor"]["value2"] = "50";
+     param[catname]["LEDColor"]["value3"] = "50";
 
 
      var catname = "AutoTimer";
