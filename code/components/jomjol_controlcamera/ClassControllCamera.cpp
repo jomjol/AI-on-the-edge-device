@@ -499,7 +499,7 @@ void CCamera::LightOnOff(bool status)
 {
     GpioHandler* gpioHandler = gpio_handler_get();
     if ((gpioHandler != NULL) && (gpioHandler->isEnabled())) {
-        printf("Use gpioHandler flashLigh\n");
+        printf("Use gpioHandler flashLight\n");
         gpioHandler->flashLightEnable(status);
     }  else {
         // Init the GPIO
