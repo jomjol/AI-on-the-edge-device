@@ -108,7 +108,7 @@ void GpioPin::init()
     gpio_config(&io_conf);
 
 //    if (_interruptType != GPIO_INTR_DISABLE) {                // ohne GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X, wenn das genutzt wird, dann soll auch der Handler hier nicht initialisiert werden, da das dann über SmartLED erfolgt.
-    if ((_interruptType != GPIO_INTR_DISABLE) && (_interruptType != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
+    if ((_interruptType != GPIO_INTR_DISABLE) && (_mode != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
         //hook isr handler for specific gpio pin
         ESP_LOGD(TAG_SERVERGPIO, "GpioPin::init add isr handler for GPIO %d\r\n", _gpio);
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*)&_gpio);
@@ -405,19 +405,19 @@ bool GpioHandler::readConfig()
 //        xDelay = 5000 / portTICK_PERIOD_MS;
 //        printf("main: sleep for : %ldms\n", (long) xDelay);
 
-        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
+//        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
 
 
-        leds[ 0 ] = Rgb{ 255, 0, 0 };
-        leds[ 1 ] = Rgb{ 255, 255, 255 };
-        leds.show();    
-/*
+//        leds[ 0 ] = Rgb{ 255, 0, 0 };
+//        leds[ 1 ] = Rgb{ 255, 255, 255 };
+//        leds.show();    
+
 //        _SmartLED = new SmartLed(LEDType, LEDNumbers, gpioExtLED, 0, DoubleBuffer);
-        _SmartLED = new SmartLed( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
-        (*_SmartLED)[ 0 ] = Rgb{ 255, 0, 0 };
-        (*_SmartLED)[ 1 ] = LEDColor;
-        _SmartLED->show();
-*/
+//        _SmartLED = new SmartLed( LED_WS2812B, 2, GPIO_NUM_12, 0, DoubleBuffer );
+//        (*_SmartLED)[ 0 ] = Rgb{ 255, 0, 0 };
+//        (*_SmartLED)[ 1 ] = LEDColor;
+//        _SmartLED->show();
+
     }
 
     return true;
@@ -546,7 +546,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
 
 void GpioHandler::flashLightEnable(bool value) 
 {
-    ESP_LOGD(TAG_SERVERGPIO, "GpioHandler::flashLightEnable %s\r\n", value ? "true" : "false");
+    ESP_LOGD(TAG_SERVERGPIO, "GpioHandler::flashLightEnable %s", value ? "true" : "false");
 
     if (gpioMap != NULL) {
         for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) 
@@ -565,18 +565,31 @@ void GpioHandler::flashLightEnable(bool value)
                 {
                     if (it->second->getMode() == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)
                     {
-                        SmartLed leds( LEDType, LEDNumbers, it->second->getGPIO(), 0, DoubleBuffer );
+                        if (leds == NULL) {
+                            ESP_LOGI(TAG_SERVERGPIO, "init SmartLed: LEDNumber=%d, GPIO=%d", LEDNumbers, (int)it->second->getGPIO());
+                            leds = new SmartLed( LEDType, LEDNumbers, it->second->getGPIO(), 0, DoubleBuffer );
+                        } else {
+                            // wait until we can update: https://github.com/RoboticsBrno/SmartLeds/issues/10#issuecomment-386921623
+                            leds->wait();
+                        }
+
+                        //SmartLed leds( LEDType, LEDNumbers, it->second->getGPIO(), 0, DoubleBuffer );
+
                         if (value)
                         {
                             for (int i = 0; i < LEDNumbers; ++i)
-                                leds[i] = LEDColor;
+                                //leds[i] = LEDColor;
+                                (*leds)[i] = LEDColor;
                         }
                         else
                         {
                             for (int i = 0; i < LEDNumbers; ++i)
-                                leds[i] = Rgb{0, 0, 0};
+                                //leds[i] = Rgb{0, 0, 0};
+                                (*leds)[i] = Rgb{0, 0, 0};
                         }
-                        leds.show();   
+                        //leds.show();
+                        //leds.wait();    // https://github.com/RoboticsBrno/SmartLeds/issues/10#issuecomment-386921623
+                        leds->show();
                     }
                 }
         }

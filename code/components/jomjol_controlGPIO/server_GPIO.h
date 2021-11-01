@@ -86,6 +86,7 @@ private:
     int LEDNumbers = 2;
     Rgb LEDColor = Rgb{ 255, 255, 255 };
     LedType LEDType = LED_WS2812;
+    SmartLed *leds = NULL;
 
 
     bool readConfig();
