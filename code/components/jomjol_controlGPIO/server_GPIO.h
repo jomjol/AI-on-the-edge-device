@@ -11,6 +11,8 @@
 
 //#include "ClassControllCamera.h"
 
+#define __LEDGLOBAL
+
 typedef enum {
     GPIO_PIN_MODE_DISABLED              = 0x0,
     GPIO_PIN_MODE_INPUT                 = 0x1,
@@ -86,7 +88,9 @@ private:
     int LEDNumbers = 2;
     Rgb LEDColor = Rgb{ 255, 255, 255 };
     LedType LEDType = LED_WS2812;
-
+#ifdef __LEDGLOBAL
+    SmartLed *leds_global = NULL;
+#endif
 
     bool readConfig();
     void clear();

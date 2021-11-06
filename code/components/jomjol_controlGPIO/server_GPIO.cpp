@@ -405,19 +405,14 @@ bool GpioHandler::readConfig()
 //        xDelay = 5000 / portTICK_PERIOD_MS;
 //        printf("main: sleep for : %ldms\n", (long) xDelay);
 
-        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
+//        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
 
 
-        leds[ 0 ] = Rgb{ 255, 0, 0 };
-        leds[ 1 ] = Rgb{ 255, 255, 255 };
-        leds.show();    
-/*
-//        _SmartLED = new SmartLed(LEDType, LEDNumbers, gpioExtLED, 0, DoubleBuffer);
-        _SmartLED = new SmartLed( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
-        (*_SmartLED)[ 0 ] = Rgb{ 255, 0, 0 };
-        (*_SmartLED)[ 1 ] = LEDColor;
-        _SmartLED->show();
-*/
+//        leds[ 0 ] = Rgb{ 255, 0, 0 };
+//        leds[ 1 ] = Rgb{ 255, 255, 255 };
+//        leds.show();    
+//        SmartLed leds = new SmartLed(LEDType, LEDNumbers, gpioExtLED, 0, DoubleBuffer);
+//        _SmartLED = new SmartLed( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
     }
 
     return true;
@@ -565,18 +560,41 @@ void GpioHandler::flashLightEnable(bool value)
                 {
                     if (it->second->getMode() == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)
                     {
+#ifdef __LEDGLOBAL
+                        if (leds_global == NULL) {
+                            ESP_LOGI(TAG_SERVERGPIO, "init SmartLed: LEDNumber=%d, GPIO=%d", LEDNumbers, (int)it->second->getGPIO());
+                            leds_global = new SmartLed( LEDType, LEDNumbers, it->second->getGPIO(), 0, DoubleBuffer );
+                        } else {
+                            // wait until we can update: https://github.com/RoboticsBrno/SmartLeds/issues/10#issuecomment-386921623
+                            leds_global->wait();
+                        }
+#else
                         SmartLed leds( LEDType, LEDNumbers, it->second->getGPIO(), 0, DoubleBuffer );
+#endif
+  
                         if (value)
                         {
                             for (int i = 0; i < LEDNumbers; ++i)
+#ifdef __LEDGLOBAL
+                                (*leds_global)[i] = LEDColor;
+#else
                                 leds[i] = LEDColor;
+#endif
                         }
                         else
                         {
                             for (int i = 0; i < LEDNumbers; ++i)
+#ifdef __LEDGLOBAL
+                                (*leds_global)[i] = Rgb{0, 0, 0};
+#else
                                 leds[i] = Rgb{0, 0, 0};
+#endif
                         }
-                        leds.show();   
+#ifdef __LEDGLOBAL
+                        leds_global->show(); 
+#else
+                        leds.show(); 
+#endif 
                     }
                 }
         }

@@ -49,6 +49,18 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2021-11-06)
+
+* External LEDs: change control mode (problem with more than 2 LEDs)
+
+* Additional info into log file
+
+* Bug fix: wrong number of sub digits in case analog and decimal shift
+
+* Bug fix: html code
+
+  
+
 ##### 9.0.0 - External Illumination (2021-10-23)
 
 * Implementation of external illumination to adjust positioning, brightness and color of the illumination now individually

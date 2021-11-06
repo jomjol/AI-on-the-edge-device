@@ -568,11 +568,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     time_t imagetime = 0;
     string rohwert;
 
-//    ErrorMessageText = "";
-
     // Update Nachkomma, da sich beim Wechsel von CNNType Auto --> xyz auch die Nachkommastellen ändern können:
-
-
 
     imagetime = flowMakeImage->getTimeImageTaken();
     if (imagetime == 0)
@@ -688,6 +684,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 UpdatePreValueINI = true;
             }
         }
+        string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
+        LogFile.WriteToFile(_zw);
     }
 
     SavePreValue();
@@ -724,8 +722,8 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
         {
 //            printf("Nur digital + analog\n");
 
-            NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size();
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
+            NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size() - NUMBERS[j]->DecimalShift;
 
             if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
                 NUMBERS[j]->Nachkomma = NUMBERS[j]->Nachkomma+1;
