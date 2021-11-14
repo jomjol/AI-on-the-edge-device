@@ -49,6 +49,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### 9.1.0 - External Illumination (2021-11-14)
+
+- External LEDs: change control mode (resolve bug with more than 2 LEDs)
+- Additional info into log file
+- Bug fix: decimal shift, html, log file
+
 ##### 9.0.0 - External Illumination (2021-10-23)
 
 * Implementation of external illumination to adjust positioning, brightness and color of the illumination now individually

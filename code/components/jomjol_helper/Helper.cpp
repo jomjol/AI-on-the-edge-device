@@ -80,7 +80,7 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
-	printf("open config file %s in mode %s\n", nm, _mode);
+	printf("open file %s in mode %s\n", nm, _mode);
 	FILE *pfile = fopen(nm, _mode);
 
 /*
