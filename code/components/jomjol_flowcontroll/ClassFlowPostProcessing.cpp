@@ -492,8 +492,6 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->MaxRateValue = 0.1;
         _number->useMaxRateValue = false;
         _number->checkDigitIncreaseConsistency = false;
-        _number->PreValueOkay = false;
-        _number->useMaxRateValue = false;
         _number->DecimalShift = 0;
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
@@ -658,7 +656,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
             }
 
-            if (NUMBERS[j]->useMaxRateValue && (abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue))
+            if (NUMBERS[j]->useMaxRateValue && ((abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue)))
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;

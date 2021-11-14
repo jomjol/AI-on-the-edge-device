@@ -49,17 +49,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2021-11-06)
+##### 9.1.0 - External Illumination (2021-11-14)
 
-* External LEDs: change control mode (problem with more than 2 LEDs)
-
-* Additional info into log file
-
-* Bug fix: wrong number of sub digits in case analog and decimal shift
-
-* Bug fix: html code
-
-  
+- External LEDs: change control mode (resolve bug with more than 2 LEDs)
+- Additional info into log file
+- Bug fix: decimal shift, html, log file
 
 ##### 9.0.0 - External Illumination (2021-10-23)
 
