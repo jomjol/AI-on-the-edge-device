@@ -400,7 +400,7 @@ bool GpioHandler::readConfig()
 
     if (gpioExtLED > 0)
     {
-    //    LogFile.WriteToFile("Startsequence 06");      
+    //     LogFile.WriteToFile("Startsequence 06");      // Nremove
 //        vTaskDelay( xDelay );   
 //        xDelay = 5000 / portTICK_PERIOD_MS;
 //        printf("main: sleep for : %ldms\n", (long) xDelay);
