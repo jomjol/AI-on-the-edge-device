@@ -142,13 +142,7 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
-
-
-    printf("Do Reset Camera\n");
-    PowerResetCamera();
-    Camera.InitCam();
-    Camera.LightOnOff(false); 
-
+ 
     if (!Init_NVS_SDCard())
     {
         xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
@@ -176,8 +170,8 @@ extern "C" void app_main(void)
        printf("DNS IP: %s\n", dns);
 
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);
-    
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
+
 
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("main: sleep for : %ldms\n", (long) xDelay);
@@ -198,8 +192,8 @@ extern "C" void app_main(void)
     printf("time %s\n", zw.c_str());    
 
 //    Camera.InitCam();
-//    Camera.LightOnOff(false); 
-    xDelay = 2000 / portTICK_PERIOD_MS;
+//    Camera.LightOnOff(false);
+     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("main: sleep for : %ldms\n", (long) xDelay);
     vTaskDelay( xDelay ); 
 
@@ -215,6 +209,22 @@ extern "C" void app_main(void)
     register_server_main_uri(server, "/sdcard");
 
     printf("vor dotautostart\n");
-    TFliteDoAutoStart();
+
+    // init camera module
+    printf("Do Reset Camera\n");
+    PowerResetCamera();
+    esp_err_t cam = Camera.InitCam();
+    if (cam != ESP_OK) {
+            ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
+                "Check that your camera module is working and connected properly.");
+
+            LogFile.SwitchOnOff(true);
+            LogFile.WriteToFile("Failed to initialize camera module. "
+                    "Check that your camera module is working and connected properly.");
+            LogFile.SwitchOnOff(false);
+    } else {
+        Camera.LightOnOff(false);
+        TFliteDoAutoStart();
+    }
 }
 
