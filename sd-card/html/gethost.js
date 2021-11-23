@@ -3,9 +3,12 @@ function gethost_Version(){
     return "1.0.0 - 20200910";
 }
 
+
 function getbasepath(){
     var host = window.location.hostname;
-    if ((host == "127.0.0.1") || (host == "localhost") || (host == ""))
+    if (((host == "127.0.0.1") || (host == "localhost") || (host == "")) 
+       && ((window.location.port == "80") || (window.location.port == "")))
+    
     {
 //        host = "http://192.168.2.219";          // jomjol interner test
 //        host = "http://192.168.178.46";          // jomjol interner test
@@ -17,6 +20,10 @@ function getbasepath(){
     else
     {
         host = "http://" + host;
+    }
+
+    if (window.location.port != "") {
+       host = host + ":" + window.location.port;
     }
     return host;
 }

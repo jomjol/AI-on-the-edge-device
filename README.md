@@ -47,7 +47,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling (2021-11-23)
 
+- Error message in log file in case camera error during startup
+- Upgrade digital CNN to v13.3.0 (added new images)
+- html: support of different port
 
 ##### 9.1.1 - External Illumination (2021-11-16)
 
