@@ -625,3 +625,29 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
     return result;
 }
+
+
+string ClassFlowControll::getJSON()
+{
+    std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
+
+    std::string json="{\n";
+
+    for (int i = 0; i < (*NUMBERS).size(); ++i)
+    {
+        json += "\"" + (*NUMBERS)[i]->name + "\":\n";
+        json += "  {\n";
+        json += "    \"value\": \""      + (*NUMBERS)[i]->ReturnValueNoError          + "\",\n";
+        json += "    \"raw\": \""        + (*NUMBERS)[i]->ReturnRawValue              + "\",\n";
+        json += "    \"error\": \""     + (*NUMBERS)[i]->ErrorMessageText             + "\",\n";
+        json += "    \"rate\": \""      + std::to_string((*NUMBERS)[i]->FlowRateAct)  + "\",\n";
+        json += "    \"timestamp\": \"" + (*NUMBERS)[i]->timeStamp                    + "\"\n";
+        if ((i+1) < (*NUMBERS).size())
+            json += "  },\n";
+        else
+            json += "  }\n";
+    }
+    json += "}";
+
+    return json;
+}

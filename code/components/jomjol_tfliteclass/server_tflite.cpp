@@ -189,6 +189,36 @@ esp_err_t handler_doflow(httpd_req_t *req)
 };
 
 
+esp_err_t handler_json(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_json - Start");    
+#endif
+
+
+    printf("handler_JSON uri:\n"); printf(req->uri); printf("\n");
+
+    char _query[100];
+    char _size[10];
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "application/json");
+
+    std::string zw = tfliteflow.getJSON();
+    if (zw.length() > 0)
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+
+    string query = std::string(_query);
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_sendstr_chunk(req, NULL);   
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_JSON - Done");   
+#endif
+    return ESP_OK;
+};
+
 
 
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
@@ -710,4 +740,10 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
     httpd_register_uri_handler(server, &camuri);  
+
+    camuri.uri       = "/json";
+    camuri.handler   = handler_json;
+    camuri.user_ctx  = (void*) "JSON"; 
+    httpd_register_uri_handler(server, &camuri);     
+
 }
