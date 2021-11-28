@@ -11,6 +11,12 @@
 
 ____
 
+#### #12 Less reboots due to memory leakage
+
+* Issue: #414 & #425  #430
+
+  
+
 #### #11 MQTT - configurable payload
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/344

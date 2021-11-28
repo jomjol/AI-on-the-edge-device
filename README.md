@@ -47,10 +47,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-11-24)
+##### Rolling (2021-11-28)
 
 - Direct JSON access: ``http://IP-ADRESS/json`` 
 - Error message in log file in case camera error during startup
+- Upgrade analog CNN to v9.1.0
 - Upgrade digital CNN to v13.3.0 (added new images)
 - html: support of different port
 
