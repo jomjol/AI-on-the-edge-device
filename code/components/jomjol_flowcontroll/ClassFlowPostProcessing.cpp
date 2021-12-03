@@ -658,9 +658,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
             difference /= 60;                                                    // in Minuten
-            NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+            double flowrate = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
             
-            if (NUMBERS[j]->useMaxRateValue && (abs(NUMBERS[j]->FlowRateAct) > NUMBERS[j]->MaxRateValue))
+            if (NUMBERS[j]->useMaxRateValue && (abs(flowrate) > NUMBERS[j]->MaxRateValue))
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -676,6 +676,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             {
                 NUMBERS[j]->lastvalue = imagetime;
                 NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+                NUMBERS[j]->FlowRateAct = flowrate;
                 NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->ErrorMessageText = "no error";
                 UpdatePreValueINI = true;
