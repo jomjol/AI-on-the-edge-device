@@ -47,6 +47,14 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### Rolling (2021-12-03)
+
+- Normalized Parameter ``MaxRateValue``  to change per minute 
+
+- Moved Parameter ``CheckDigitIncreaseConsistency`` to expert mode (disabled in default config)
+
+  
+
 ##### 9.2.0 - External Illumination (2021-12-02)
 
 - Direct JSON access: ``http://IP-ADRESS/json`` 
