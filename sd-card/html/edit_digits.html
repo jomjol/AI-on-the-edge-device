@@ -91,7 +91,7 @@ th, td {
 	  </tr>
 	  <tr>
 		<td>
-			<select id="index" name="index" onchange="ChangeSelection()">
+			<select id="index" name="index" onchange="ChangeSelection()" tabindex=1>
 			  <option value="0" selected>ROI 0</option>
 			  <option value="1" >ROI 1</option>
 			</select>
@@ -104,13 +104,13 @@ th, td {
 		</td>	
 	  </tr>
 	  <tr>
-        <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>	  
-		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()"></td>
-		<td rowspan="2"><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked></td>
+        <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
+		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
+		<td rowspan="2"><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6> </td>
 	  </tr>
 	  <tr>
-		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>	
-		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
+		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
+		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
 	  </tr>
     </table>	
     
@@ -118,7 +118,7 @@ th, td {
 			 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini"></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=7></td>
 	  </tr>  
 	</table>
 
