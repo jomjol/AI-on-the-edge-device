@@ -2,9 +2,9 @@ function readconfig_Version(){
      return "1.0.0 - 20200910";
  }
 
-var config_gesamt;
-var config_split;
-var param;
+var config_gesamt = "";
+var config_split = [];
+var param = [];
 var category;
 var ref = new Array(2);
 var NUMBERS = new Array(0);

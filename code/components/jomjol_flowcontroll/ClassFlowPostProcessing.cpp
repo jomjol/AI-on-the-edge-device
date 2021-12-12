@@ -492,8 +492,6 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->MaxRateValue = 0.1;
         _number->useMaxRateValue = false;
         _number->checkDigitIncreaseConsistency = false;
-        _number->PreValueOkay = false;
-        _number->useMaxRateValue = false;
         _number->DecimalShift = 0;
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
@@ -568,11 +566,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     time_t imagetime = 0;
     string rohwert;
 
-//    ErrorMessageText = "";
-
     // Update Nachkomma, da sich beim Wechsel von CNNType Auto --> xyz auch die Nachkommastellen ändern können:
-
-
 
     imagetime = flowMakeImage->getTimeImageTaken();
     if (imagetime == 0)
@@ -662,7 +656,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
             }
 
-            if (NUMBERS[j]->useMaxRateValue && (abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue))
+            if (NUMBERS[j]->useMaxRateValue && ((abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue)))
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -688,6 +682,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 UpdatePreValueINI = true;
             }
         }
+        string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
+        LogFile.WriteToFile(_zw);
     }
 
     SavePreValue();
@@ -724,8 +720,8 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
         {
 //            printf("Nur digital + analog\n");
 
-            NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size();
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
+            NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size() - NUMBERS[j]->DecimalShift;
 
             if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
                 NUMBERS[j]->Nachkomma = NUMBERS[j]->Nachkomma+1;

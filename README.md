@@ -47,7 +47,20 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
+##### 9.2.0 - External Illumination (2021-12-02)
 
+- Direct JSON access: ``http://IP-ADRESS/json`` 
+- Error message in log file in case camera error during startup
+- Upgrade analog CNN to v9.1.0
+- Upgrade digital CNN to v13.3.0 (added new images)
+- html: support of different ports
+
+##### 9.1.1 - External Illumination (2021-11-16)
+
+- NEW 9.1.1 bug fix: LED implemenetation
+- External LEDs: change control mode (resolve bug with more than 2 LEDs)
+- Additional info into log file
+- Bug fix: decimal shift, html, log file
 
 ##### 9.0.0 - External Illumination (2021-10-23)
 
