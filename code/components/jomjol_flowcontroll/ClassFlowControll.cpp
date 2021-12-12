@@ -637,10 +637,17 @@ string ClassFlowControll::getJSON()
     {
         json += "\"" + (*NUMBERS)[i]->name + "\":\n";
         json += "  {\n";
-        json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValueNoError          + ",\n";
+        if ((*NUMBERS)[i]->ReturnValueNoError.length() > 0)
+            json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValueNoError          + ",\n";
+        else
+            json += "    \"value\": \"\",\n";
         json += "    \"raw\": \""        + (*NUMBERS)[i]->ReturnRawValue              + "\",\n";
         json += "    \"error\": \""     + (*NUMBERS)[i]->ErrorMessageText             + "\",\n";
-        json += "    \"rate\": "      + std::to_string((*NUMBERS)[i]->FlowRateAct)  + ",\n";
+        if ((*NUMBERS)[i]->ReturnRateValue.length() > 0)
+            json += "    \"rate\": "      + (*NUMBERS)[i]->ReturnRateValue                + ",\n";
+        else
+            json += "    \"rate\": \"\",\n";
+
         json += "    \"timestamp\": \"" + (*NUMBERS)[i]->timeStamp                    + "\"\n";
         if ((i+1) < (*NUMBERS).size())
             json += "  },\n";

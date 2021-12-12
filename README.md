@@ -34,24 +34,33 @@ If you have any technical topics, you can file a issue in this repository.
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25"> 
 
-## Change log
+------
+## Coming next
+
+* Automated update of the neural network file (tflite) to make the learing of additional pictures much easier and automated (GitHub action)
+* New "hyprid" neural network for digital numbers --> allowing the dedection of intermediate states ("ring between two numbers") as a subdigit
+
 
 ------
-
+## Change log
 ### Known Issues
 
 * slow response of web server during picture analysis
 * spontaneous reboots (mostly due to html access during image processing) - self recovery implemented
 
-------
-
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
-##### Rolling (2021-12-03)
+------
 
-- Normalized Parameter ``MaxRateValue``  to change per minute 
+##### Rolling (2021-12-12)
 
-- Moved Parameter ``CheckDigitIncreaseConsistency`` to expert mode (disabled in default config)
+- Corrected error handling: in case of error (too high rating, negative rate, ...) value, rate, timestamp are not transmitted any more - only the error text itself is send
+
+- Improved HTML behavior (tabulator usage for input) - thx to **[mad2xlc](https://github.com/mad2xlc)**
+
+- Normalized Parameter ``MaxRateValue``  to "change per minute" 
+
+- Moved Parameter ``CheckDigitIncreaseConsistency`` to expert mode (disabled in default configuration)
 
   
 

@@ -11,6 +11,14 @@
 
 ____
 
+#### #13 Manage non linear gauge without CNN re-training
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/443
+
+* Implement a look up table for non linear analog meters
+
+  
+
 #### #12 Less reboots due to memory leakage
 
 * Issue: #414 & #425  #430

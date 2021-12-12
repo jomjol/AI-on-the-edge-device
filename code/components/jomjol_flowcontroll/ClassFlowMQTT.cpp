@@ -160,7 +160,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
         {
             result =  (*NUMBERS)[i]->ReturnValueNoError;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
-            resultrate = std::to_string((*NUMBERS)[i]->FlowRateAct);
+            resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
             namenumber = (*NUMBERS)[i]->name;
@@ -169,22 +169,29 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-            zw = namenumber + "value";    
-            MQTTPublish(zw, result);
+            zw = namenumber + "value"; 
+            if (result.length() > 0)   
+                MQTTPublish(zw, result);
 
-            zw = namenumber + "error";    
-            MQTTPublish(zw, resulterror, 1);
+            zw = namenumber + "error"; 
+            if (resulterror.length() > 0)  
+                MQTTPublish(zw, resulterror, 1);
 
-            zw = namenumber + "rate";    
-            MQTTPublish(zw, resultrate);
+            zw = namenumber + "rate"; 
+            if (resultrate.length() > 0)   
+                MQTTPublish(zw, resultrate);
 
             zw = namenumber + "timestamp";
-            MQTTPublish(zw, resulttimestamp);
+            if (resulttimestamp.length() > 0)
+                MQTTPublish(zw, resulttimestamp);
 
 
             std::string json="{\"value\":"+result;
             json += ",\"error\":\""+resulterror;
-            json += "\",\"rate\":"+resultrate;
+            if (resultrate.length() > 0)
+                json += "\",\"rate\":"+resultrate;
+            else
+                json += "\",\"rate\":\"\"";
             json += ",\"timestamp\":\""+resulttimestamp+"\"}";
 
             zw = namenumber + "json";

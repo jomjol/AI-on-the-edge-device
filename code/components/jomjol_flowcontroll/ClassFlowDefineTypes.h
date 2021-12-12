@@ -29,6 +29,7 @@ struct NumberPost {
     float FlowRateAct;          // m3 / min
     float PreValue;             // letzter Wert, der gut ausgelesen wurde
     float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
+    string ReturnRateValue;      // RückgabewertRate
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
     string ReturnPreValue;  // korrigierter Rückgabewert ohne Fehlermeldung
