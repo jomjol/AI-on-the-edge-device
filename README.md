@@ -52,6 +52,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2021-12-23)
+
+- Removed regex constrain from MQTT topic
+
 ##### Rolling (2021-12-12)
 
 - Corrected error handling: in case of error (too high rating, negative rate, ...) value, rate, timestamp are not transmitted any more - only the error text itself is send

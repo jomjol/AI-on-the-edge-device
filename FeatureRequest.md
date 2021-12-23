@@ -11,6 +11,16 @@
 
 ____
 
+#### #14 Backup and restore option for configuration
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/459
+
+* Implement a zip file compression for store and restore
+
+* Update the html to handle it
+
+  
+
 #### #13 Manage non linear gauge without CNN re-training
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/443
