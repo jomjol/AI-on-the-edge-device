@@ -38,7 +38,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ## Coming next
 
 * Automated update of the neural network file (tflite) to make the learing of additional pictures much easier and automated (GitHub action)
-* New "hyprid" neural network for digital numbers --> allowing the dedection of intermediate states ("ring between two numbers") as a subdigit
+* New "hyprid" neural network for digital numbers --> allowing the detection of intermediate states ("ring between two numbers") as a subdigit
 
 
 ------
@@ -52,26 +52,18 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2021-12-30)
+##### 10.0.0 - Stability Increase (2021-12-30)
 
-- Major stability increase (removal of memory leak)
-- Updated Compiler Toolchain to ESP-IDF 4.3
+- Updated compiler toolchain to ESP-IDF 4.3
+- Removal of memory leak
 - Improved error handling during startup (check PSRAM and camera with remark in logfile)
-- MQTT: implemented raw value additionally
-
-##### Rolling (2021-12-23)
-
-- Removed regex constrain from MQTT topic
-
-##### Rolling (2021-12-12)
-
-- Corrected error handling: in case of error (too high rating, negative rate, ...) value, rate, timestamp are not transmitted any more - only the error text itself is send
-
-- Improved HTML behavior (tabulator usage for input) - thx to **[mad2xlc](https://github.com/mad2xlc)**
+- MQTT: implemented raw value additionally, removal of regex contrain
 
 - Normalized Parameter ``MaxRateValue``  to "change per minute" 
 
-- Moved Parameter ``CheckDigitIncreaseConsistency`` to expert mode (disabled in default configuration)
+- HTML: improved input handling
+
+- Corrected error handling: in case of error the old value, rate, timestamp are not transmitted any more
 
   
 
@@ -99,70 +91,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 8.5.0 - Multi Meter Support (2021-10-07)
 
-* Upgrade digital CNN to v13.1.0 (added new images)
-* bug fix: wlan password with space, double digit output
-
-##### 8.4.0 - Multi Meter Support (2021-09-25)
-
-* License change (remove MIT license, remark see below)
-
-* html: show hostname in title and main page
-
-* configuration: 
-
-  * moved setting `ExtendedResolution` to individual number settings
-  * New parameter `IgnoreLeadingNaN` (delete leading NaN's specifically)
-  * **ATTENTION**: update of the `config.ini` needed (open, adjust `ExtendedResolution`, save)
-
-* Bug fixing (html, images of recognized numbers)
-
-  
-
-### **ATTENTION: LICENSE CHANGE - removal of MIT License.** 
-
-- Currently no licence published - copyright belongs to author
-- If you are interested in a commercial usage or dedicated versions please contact the developer
-  - no limits to private usage
-
-
-
-##### 8.3.0 - Multi Meter Support (2021-09-12)
-
-* Upgrade digital CNN to v12.1.0 (added new images)
-* Dedicated NaN handling, internal refactoring (CNN-Handling)
-* HTML: confirmation after config.ini update
-* Bug fixing
-
-##### 8.2.0 - Multi Meter Support (2021-08-24)
-
-* Improve server responsiveness
-* Flow status and prevalue status in overview
-* Improved prevalue handling 
-
-##### 8.1.0 - Multi Meter Support (2021-08-12)
-
-* GPIO: using the general mqtt main topic for GPIO
-
-* Upgrade digital CNN to v12.0.0  (added new images)
-* Update tfmicro to new master (2021-08-07)
-* Bug fix: remove text in mqtt value, remove connect limit in wlan reconnet
-
-##### 8.0.5 - Multi Meter Support (2021-08-01)
-
-* NEW 8.0.5: bug fix: saving prevalue
-* NEW 8.0.4: bug fix: load config.ini after upgrade
-* NEW 8.0.3: bug fix: reboot during `config.ini` handling, html error
-* NEW 8.0.2: saving roundes prevalue, bug fix html server
-* NEW 8.0.1: bug fix: html handling of parameter `FixedExposure` and `ImageSize`
-* Dual / multi meter support (more than 1 number to be recognized)
-  This is implemented with the feature "number" on the ROI definition as well as selected options
-* MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
-* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and fully functional yet
-* Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
-
-<span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
 
 
 ## Additional ideas
@@ -175,9 +104,9 @@ There are some ideas and feature request, which are not followed currently - mai
 
 ## History
 
-##### 7.1.2 MQTT-Update - (2021-06-17)
+##### 8.5.0 - Multi Meter Support (2021-10-07)
 
-**7.0.1 MQTT-Update - (2021-05-13)**
+##### 7.1.2 MQTT-Update - (2021-06-17)
 
 ##### 6.7.2 Image Processing in Memory - (2021-05-01)
 
