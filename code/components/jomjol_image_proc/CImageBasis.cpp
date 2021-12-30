@@ -1,6 +1,7 @@
 #include "CImageBasis.h"
 #include "Helper.h"
 #include "ClassLogFile.h"
+#include "server_ota.h"
 
 #include <esp_log.h>
 
@@ -337,6 +338,18 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
     printf("Image loaded from memory: %d, %d, %d\n", width, height, channels);
+    if ((width * height * channels) == 0)
+    {
+        ESP_LOGE(TAG, "Image with size 0 loaded --> reboot to be done! "
+            "Check that your camera module is working and connected properly.");
+
+        LogFile.SwitchOnOff(true);
+        LogFile.WriteToFile("Image with size 0 loaded --> reboot to be done! "
+                "Check that your camera module is working and connected properly.");
+
+        doReboot();
+
+    }
     RGBImageRelease();
 }
 

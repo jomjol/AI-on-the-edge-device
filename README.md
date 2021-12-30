@@ -52,6 +52,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2021-12-30)
+
+- Major stability increase (removal of memory leak)
+- Updated Compiler Toolchain to ESP-IDF 4.3
+- Improved error handling during startup (check PSRAM and camera with remark in logfile)
+- MQTT: implemented raw value additionally
+
 ##### Rolling (2021-12-23)
 
 - Removed regex constrain from MQTT topic

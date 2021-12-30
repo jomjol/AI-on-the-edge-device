@@ -27,6 +27,7 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
+#include "Helper.h"
 
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
@@ -213,18 +214,44 @@ extern "C" void app_main(void)
     // init camera module
     printf("Do Reset Camera\n");
     PowerResetCamera();
-    esp_err_t cam = Camera.InitCam();
-    if (cam != ESP_OK) {
-            ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
-                "Check that your camera module is working and connected properly.");
 
-            LogFile.SwitchOnOff(true);
-            LogFile.WriteToFile("Failed to initialize camera module. "
-                    "Check that your camera module is working and connected properly.");
-            LogFile.SwitchOnOff(false);
+
+    size_t _hsize = getESPHeapSize();
+    if (_hsize < 4000000)
+    {
+                    std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+                    _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+                    printf(_zws.c_str());
+                    LogFile.SwitchOnOff(true);
+                    LogFile.WriteToFile(_zws);
+                    LogFile.SwitchOnOff(false);
     } else {
-        Camera.LightOnOff(false);
-        TFliteDoAutoStart();
+        esp_err_t cam = Camera.InitCam();
+        if (cam != ESP_OK) {
+                ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
+                    "Check that your camera module is working and connected properly.");
+
+                LogFile.SwitchOnOff(true);
+                LogFile.WriteToFile("Failed to initialize camera module. "
+                        "Check that your camera module is working and connected properly.");
+                LogFile.SwitchOnOff(false);
+        } else {
+// Test Camera            
+            camera_fb_t * fb = esp_camera_fb_get();
+            if (!fb) {
+                ESP_LOGE(TAGMAIN, "esp_camera_fb_get: Camera Capture Failed");
+                LogFile.SwitchOnOff(true);
+                LogFile.WriteToFile("Camera cannot be initialzed. "
+                        "System will reboot.");
+                doReboot();
+            }
+            esp_camera_fb_return(fb);   
+
+            Camera.LightOnOff(false);
+            TFliteDoAutoStart();
+        }
     }
+
+
 }
 

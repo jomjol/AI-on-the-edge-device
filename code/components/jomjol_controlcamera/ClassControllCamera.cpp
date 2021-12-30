@@ -74,7 +74,7 @@ static camera_config_t camera_config = {
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
 //    .xclk_freq_hz = 20000000,             // Orginalwert
-    .xclk_freq_hz = 5000000,               // Test, um die Bildfehler los zu werden !!!!
+    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
@@ -86,6 +86,8 @@ static camera_config_t camera_config = {
 
     .jpeg_quality = 5, //0-63 lower number means higher quality
     .fb_count = 1       //if more than one, i2s runs in continuous mode. Use only with JPEG
+//    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
+
 };
 
 
@@ -279,13 +281,23 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         ESP_LOGE(TAGCAMERACLASS, "CaptureToBasisImage: Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
-        doReboot();
+
+        LogFile.SwitchOnOff(true);
+        LogFile.WriteToFile("Camera is not working anymore - most propably hardware problem (instablility, ...). "
+                "System will reboot.");
+         doReboot();
 
         return ESP_FAIL;
     }
 
     int _size = fb->len;
     zwischenspeicher = (uint8_t*) malloc(_size);
+    if (!zwischenspeicher)
+    {
+        ESP_LOGE(TAGCAMERACLASS, "Nicht ausreichend Speicherplatz für Bild in Funktion CaptureToBasisImage()");
+        LogFile.SwitchOnOff(true);
+        LogFile.WriteToFile("Nicht ausreichend Speicherplatz für Bild in Funktion CaptureToBasisImage()");
+    }
     for (int i = 0; i < _size; ++i)
         *(zwischenspeicher + i) = *(fb->buf + i);
     esp_camera_fb_return(fb);        

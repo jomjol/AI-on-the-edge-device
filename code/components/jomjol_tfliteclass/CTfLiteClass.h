@@ -46,6 +46,9 @@ class CTfLiteClass
         int kTensorArenaSize;
         uint8_t *tensor_arena;
 
+        unsigned char *modelload = NULL;
+
+
         float* input;
         int input_i;
         int im_height, im_width, im_channel;

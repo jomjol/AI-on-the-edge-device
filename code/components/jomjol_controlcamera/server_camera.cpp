@@ -8,8 +8,8 @@
 
 #include "ClassLogFile.h"
 
-#define SCRATCH_BUFSIZE2  8192 
-char scratch2[SCRATCH_BUFSIZE2];
+// #define SCRATCH_BUFSIZE2  8192 
+// char scratch2[SCRATCH_BUFSIZE2];
 
 //#define DEBUG_DETAIL_ON   
 static const char *TAGPARTCAMERA = "server_camera";

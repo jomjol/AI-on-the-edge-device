@@ -11,11 +11,48 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define OV9650_PID     (0x96)
-#define OV7725_PID     (0x77)
-#define OV2640_PID     (0x26)
-#define OV3660_PID     (0x36)
-#define OV5640_PID     (0x56)
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef enum {
+    OV9650_PID = 0x96,
+    OV7725_PID = 0x77,
+    OV2640_PID = 0x26,
+    OV3660_PID = 0x3660,
+    OV5640_PID = 0x5640,
+    OV7670_PID = 0x76,
+    NT99141_PID = 0x1410,
+    GC2145_PID = 0x2145,
+    GC032A_PID = 0x232a,
+    GC0308_PID = 0x9b,
+} camera_pid_t;
+
+typedef enum {
+    CAMERA_OV7725,
+    CAMERA_OV2640,
+    CAMERA_OV3660,
+    CAMERA_OV5640,
+    CAMERA_OV7670,
+    CAMERA_NT99141,
+    CAMERA_GC2145,
+    CAMERA_GC032A,
+    CAMERA_GC0308,
+    CAMERA_MODEL_MAX,
+    CAMERA_NONE,
+} camera_model_t;
+
+typedef enum {
+    OV2640_SCCB_ADDR   = 0x30,// 0x60 >> 1
+    OV5640_SCCB_ADDR   = 0x3C,// 0x78 >> 1
+    OV3660_SCCB_ADDR   = 0x3C,// 0x78 >> 1
+    OV7725_SCCB_ADDR   = 0x21,// 0x42 >> 1
+    OV7670_SCCB_ADDR   = 0x21,// 0x42 >> 1
+    NT99141_SCCB_ADDR  = 0x2A,// 0x54 >> 1
+    GC2145_SCCB_ADDR   = 0x3C,// 0x78 >> 1
+    GC032A_SCCB_ADDR   = 0x21,// 0x42 >> 1
+    GC0308_SCCB_ADDR   = 0x21,// 0x42 >> 1
+} camera_sccb_addr_t;
 
 typedef enum {
     PIXFORMAT_RGB565,    // 2BPP/RGB565
@@ -55,6 +92,15 @@ typedef enum {
     FRAMESIZE_QSXGA,    // 2560x1920
     FRAMESIZE_INVALID
 } framesize_t;
+
+typedef struct {
+    const camera_model_t model;
+    const char *name;
+    const camera_sccb_addr_t sccb_addr;
+    const camera_pid_t pid;
+    const framesize_t max_size;
+    const bool support_jpeg;
+} camera_sensor_info_t;
 
 typedef enum {
     ASPECT_RATIO_4X3,
@@ -99,11 +145,13 @@ typedef struct {
 
 // Resolution table (in sensor.c)
 extern const resolution_info_t resolution[];
+// camera sensor table (in sensor.c)
+extern const camera_sensor_info_t camera_sensor[];
 
 typedef struct {
     uint8_t MIDH;
     uint8_t MIDL;
-    uint8_t PID;
+    uint16_t PID;
     uint8_t VER;
 } sensor_id_t;
 
@@ -187,5 +235,11 @@ typedef struct _sensor {
     int  (*set_pll)             (sensor_t *sensor, int bypass, int mul, int sys, int root, int pre, int seld5, int pclken, int pclk);
     int  (*set_xclk)            (sensor_t *sensor, int timer, int xclk);
 } sensor_t;
+
+camera_sensor_info_t *esp_camera_sensor_get_info(sensor_id_t *id);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SENSOR_H__ */

@@ -694,7 +694,23 @@ void task_autodoFlow(void *pvParameter)
 
 void TFliteDoAutoStart()
 {
-    xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    BaseType_t xReturned;
+
+    int _i = configMINIMAL_STACK_SIZE;
+
+    printf("task_autodoFlow configMINIMAL_STACK_SIZE: %d\n", _i);
+    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+
+    xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 60, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    if( xReturned != pdPASS )
+    {
+
+       //Memory: 64 --> 48 --> 35 --> 25
+       printf("ERROR task_autodoFlow konnte nicht erzeugt werden !!\r\n");
+    }
+    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+
+
 }
 
 std::string GetMQTTMainTopic()
