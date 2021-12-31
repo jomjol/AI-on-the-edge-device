@@ -194,7 +194,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             std::string json="{\"value\":"+result;
             json += ",\"raw\":\""+resultraw;
-            json += ",\"error\":\""+resulterror;
+            json += "\",\"error\":\""+resulterror;
             if (resultrate.length() > 0)
                 json += "\",\"rate\":"+resultrate;
             else

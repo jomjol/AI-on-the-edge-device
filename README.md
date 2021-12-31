@@ -52,11 +52,16 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### 10.0.0 - Stability Increase (2021-12-30)
+##### 10.0.1 - Stability Increase (2021-12-31)
+
+- NEW: Correcte JSON error
 
 - Updated compiler toolchain to ESP-IDF 4.3
+
 - Removal of memory leak
+
 - Improved error handling during startup (check PSRAM and camera with remark in logfile)
+
 - MQTT: implemented raw value additionally, removal of regex contrain
 
 - Normalized Parameter ``MaxRateValue``  to "change per minute" 
