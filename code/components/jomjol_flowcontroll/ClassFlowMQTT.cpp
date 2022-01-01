@@ -192,7 +192,13 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 MQTTPublish(zw, resulttimestamp);
 
 
-            std::string json="{\"value\":"+result;
+            std::string json = "";
+            
+            if (result.length() > 0)
+                json += "{\"value\":"+result;
+            else
+                json += "{\"value\":\"\"";
+
             json += ",\"raw\":\""+resultraw;
             json += "\",\"error\":\""+resulterror;
             if (resultrate.length() > 0)

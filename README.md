@@ -52,9 +52,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### 10.0.1 - Stability Increase (2021-12-31)
+##### 10.0.2 - Stability Increase (2022-01-01)
 
-- NEW: Correcte JSON error
+- NEW v10.0.2: Corrected JSON error
 
 - Updated compiler toolchain to ESP-IDF 4.3
 
