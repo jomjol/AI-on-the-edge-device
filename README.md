@@ -52,6 +52,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-01-03)
+
+- Update tflite (new source: https://github.com/espressif/tflite-micro-esp-examples)
+- Update digital neural network (dig-s1-q-20220102.tflite)
+- Increased web-server buffers
+- bug fix: compiler compatibility
+
+
+
 ##### 10.0.2 - Stability Increase (2022-01-01)
 
 - NEW v10.0.2: Corrected JSON error

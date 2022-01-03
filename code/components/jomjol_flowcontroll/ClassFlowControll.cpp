@@ -6,7 +6,15 @@
 #include "freertos/task.h"
 
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
+
 #include "ClassLogFile.h"
 #include "time_sntp.h"
 #include "Helper.h"

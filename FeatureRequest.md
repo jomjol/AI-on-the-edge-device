@@ -11,6 +11,20 @@
 
 ____
 
+
+
+#### #15 Calibration for FishEye image
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/507
+
+1.  The development of such a correction algorithm with the libraries, that are available for the ESP32 environment.
+2. New module for integration of the flow into the image processing flow.
+3. Extension of the configuration (config.ini) and html-pages
+4. Parameter adjustment and testing for every different fish-eye module
+5. Maintenance for further updates / modules, ...
+
+
+
 #### #14 Backup and restore option for configuration
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/459

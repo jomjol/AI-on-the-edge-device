@@ -6,7 +6,15 @@
 #include "Helper.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
+
 #include <string.h>
 #include <esp_log.h>
 

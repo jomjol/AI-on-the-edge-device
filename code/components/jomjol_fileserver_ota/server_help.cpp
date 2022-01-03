@@ -5,7 +5,14 @@
 #include <sys/param.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
 
 #include "esp_err.h"
 #include "esp_log.h"
