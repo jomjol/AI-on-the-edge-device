@@ -11,6 +11,13 @@
 
 ____
 
+#### #16 Serial Communication
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/512
+* Send the readout value via RX/TX interface with a dedicated TAG
+* Make dedicated communication FlowModule
+* Modification of RX/TX communication
+* Configuration interfache
 
 
 #### #15 Calibration for FishEye image

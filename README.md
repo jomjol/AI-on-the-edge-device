@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2022-01-03)
+##### Rolling (2022-01-04)
+
+- Reduce ESP32 frequency to 160MHz
+
+Rolling (2022-01-03)
 
 - Update tflite (new source: https://github.com/espressif/tflite-micro-esp-examples)
 - Update digital neural network (dig-s1-q-20220102.tflite)

@@ -215,7 +215,6 @@ extern "C" void app_main(void)
     printf("Do Reset Camera\n");
     PowerResetCamera();
 
-
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
