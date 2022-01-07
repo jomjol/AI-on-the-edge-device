@@ -11,6 +11,9 @@
 
 ____
 
+#### #15 Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post
+
+
 #### #14 Backup and restore option for configuration
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/459
