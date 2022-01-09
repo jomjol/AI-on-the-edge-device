@@ -52,18 +52,20 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2022-01-04)
+
+
+##### 10.1.0 - Stability Increase (2022-01-09)
 
 - Reduce ESP32 frequency to 160MHz
 
-Rolling (2022-01-03)
-
 - Update tflite (new source: https://github.com/espressif/tflite-micro-esp-examples)
+
+- Update analog neural network (ana-s3-q-20220105.tflite)
+
 - Update digital neural network (dig-s1-q-20220102.tflite)
+
 - Increased web-server buffers
 - bug fix: compiler compatibility
-
-
 
 ##### 10.0.2 - Stability Increase (2022-01-01)
 

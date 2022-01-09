@@ -11,6 +11,14 @@
 
 ____
 
+#### #17 Direct InfluxDB connection
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/534
+* Direct interface to a InfluxDB data base
+* Integrate InfluxDB interface in firmware
+* Adapt html web page for configuration
+
+
 #### #16 Serial Communication
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/512
