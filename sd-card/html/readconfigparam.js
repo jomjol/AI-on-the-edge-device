@@ -86,6 +86,7 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "MainTopic", 1, false);
+     ParamAddValue(param, catname, "Topic", 1, false);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
@@ -157,6 +158,14 @@ function ParseConfig() {
           }
           aktline++;
      }
+
+
+     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     if (param["MQTT"]["Topic"]["found"] == true && param["MQTT"]["MainTopic"]["found"] == false)
+     {
+          param["MQTT"]["MainTopic"] = param["MQTT"]["Topic"]
+     }
+     delete param["MQTT"]["Topic"]                // Dient nur der Downwardskompatibilität
 }
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
