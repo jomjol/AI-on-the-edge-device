@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sccb.h"
+#include "xclk.h"
 #include "ov3660.h"
 #include "ov3660_regs.h"
 #include "ov3660_settings.h"
@@ -142,7 +143,7 @@ static int calc_sysclk(int xclk, bool pll_bypass, int pll_multiplier, int pll_sy
     int PCLK = PLLCLK / 2 / ((pclk_manual && pclk_div)?pclk_div:1);
     int SYSCLK = PLLCLK / 4;
 
-    ESP_LOGD(TAG, "Calculated VCO: %d Hz, PLLCLK: %d Hz, SYSCLK: %d Hz, PCLK: %d Hz", VCO*1000, PLLCLK, SYSCLK, PCLK);
+    ESP_LOGI(TAG, "Calculated VCO: %d Hz, PLLCLK: %d Hz, SYSCLK: %d Hz, PCLK: %d Hz", VCO*1000, PLLCLK, SYSCLK, PCLK);
     return SYSCLK;
 }
 
@@ -310,13 +311,13 @@ static int set_image_options(sensor_t *sensor)
 static int set_framesize(sensor_t *sensor, framesize_t framesize)
 {
     int ret = 0;
-    framesize_t old_framesize = sensor->status.framesize;
-    sensor->status.framesize = framesize;
 
     if(framesize > FRAMESIZE_QXGA){
-        ESP_LOGE(TAG, "Invalid framesize: %u", framesize);
-        return -1;
+        ESP_LOGW(TAG, "Invalid framesize: %u", framesize);
+        framesize = FRAMESIZE_QXGA;
     }
+    framesize_t old_framesize = sensor->status.framesize;
+    sensor->status.framesize = framesize;
     uint16_t w = resolution[framesize].width;
     uint16_t h = resolution[framesize].height;
     aspect_ratio_t ratio = resolution[sensor->status.framesize].aspect_ratio;
@@ -355,7 +356,7 @@ static int set_framesize(sensor_t *sensor, framesize_t framesize)
     }
 
     if (sensor->pixformat == PIXFORMAT_JPEG) {
-        if (framesize == FRAMESIZE_QXGA) {
+        if (framesize == FRAMESIZE_QXGA || sensor->xclk_freq_hz == 16000000) {
             //40MHz SYSCLK and 10MHz PCLK
             ret = set_pll(sensor, false, 24, 1, 3, false, 0, true, 8);
         } else {
@@ -363,12 +364,16 @@ static int set_framesize(sensor_t *sensor, framesize_t framesize)
             ret = set_pll(sensor, false, 30, 1, 3, false, 0, true, 10);
         }
     } else {
-        if (framesize > FRAMESIZE_CIF) {
-            //10MHz SYSCLK and 10MHz PCLK (6.19 FPS)
-            ret = set_pll(sensor, false, 2, 1, 0, false, 0, true, 2);
+        //tuned for 16MHz XCLK and 8MHz PCLK
+        if (framesize > FRAMESIZE_HVGA) {
+            //8MHz SYSCLK and 8MHz PCLK (4.44 FPS)
+            ret = set_pll(sensor, false, 4, 1, 0, false, 2, true, 2);
+        } else if (framesize >= FRAMESIZE_QVGA) {
+            //16MHz SYSCLK and 8MHz PCLK (10.25 FPS)
+            ret = set_pll(sensor, false, 8, 1, 0, false, 2, true, 4);
         } else {
-            //25MHz SYSCLK and 10MHz PCLK (15.45 FPS)
-            ret = set_pll(sensor, false, 5, 1, 0, false, 0, true, 5);
+            //32MHz SYSCLK and 8MHz PCLK (17.77 FPS)
+            ret = set_pll(sensor, false, 8, 1, 0, false, 0, true, 8);
         }
     }
 
@@ -953,7 +958,6 @@ static int _set_pll(sensor_t *sensor, int bypass, int multiplier, int sys_div, i
     return set_pll(sensor, bypass > 0, multiplier, sys_div, pre_div, root_2x > 0, seld5, pclk_manual > 0, pclk_div);
 }
 
-esp_err_t xclk_timer_conf(int ledc_timer, int xclk_freq_hz);
 static int set_xclk(sensor_t *sensor, int timer, int xclk)
 {
     int ret = 0;
@@ -989,6 +993,22 @@ static int init_status(sensor_t *sensor)
     sensor->status.agc_gain = get_agc_gain(sensor);
     sensor->status.aec_value = get_aec_value(sensor);
     sensor->status.aec2 = check_reg_mask(sensor->slv_addr, 0x3a00, 0x04);
+    return 0;
+}
+
+int ov3660_detect(int slv_addr, sensor_id_t *id)
+{
+    if (OV3660_SCCB_ADDR == slv_addr) {
+        uint8_t h = SCCB_Read16(slv_addr, 0x300A);
+        uint8_t l = SCCB_Read16(slv_addr, 0x300B);
+        uint16_t PID = (h<<8) | l;
+        if (OV3660_PID == PID) {
+            id->PID = PID;
+            return PID;
+        } else {
+            ESP_LOGI(TAG, "Mismatch PID=0x%x", PID);
+        }
+    }
     return 0;
 }
 

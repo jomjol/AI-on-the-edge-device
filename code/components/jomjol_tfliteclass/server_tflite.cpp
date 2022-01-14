@@ -701,7 +701,7 @@ void TFliteDoAutoStart()
     printf("task_autodoFlow configMINIMAL_STACK_SIZE: %d\n", _i);
     printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
 
-    xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 60, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 48, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
     if( xReturned != pdPASS )
     {
 

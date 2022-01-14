@@ -45,7 +45,7 @@ static struct regval_list ov7670_default_regs[] = {
 	{CLKRC, 0x00},  
 	{DBLV,  0x4A},  
 
-    {COM10, COM10_VSYNC_NEG | COM10_PCLK_MASK},
+    {COM10, COM10_VSYNC_NEG | COM10_PCLK_FREE},
 
     /* Improve white balance */ 
 	{COM4, 0x40},  
@@ -392,6 +392,24 @@ static int init_status(sensor_t *sensor)
 
 static int set_dummy(sensor_t *sensor, int val){ return -1; }
 static int set_gainceiling_dummy(sensor_t *sensor, gainceiling_t val){ return -1; }
+
+int ov7670_detect(int slv_addr, sensor_id_t *id)
+{
+    if (OV7670_SCCB_ADDR == slv_addr) {
+        SCCB_Write(slv_addr, 0xFF, 0x01);//bank sensor
+        uint16_t PID = SCCB_Read(slv_addr, 0x0A);
+        if (OV7670_PID == PID) {
+            id->PID = PID;
+            id->VER = SCCB_Read(slv_addr, REG_VER);
+            id->MIDL = SCCB_Read(slv_addr, REG_MIDL);
+            id->MIDH = SCCB_Read(slv_addr, REG_MIDH);
+            return PID;
+        } else {
+            ESP_LOGI(TAG, "Mismatch PID=0x%x", PID);
+        }
+    }
+    return 0;
+}
 
 int ov7670_init(sensor_t *sensor)
 {

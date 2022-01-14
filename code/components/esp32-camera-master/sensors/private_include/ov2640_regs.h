@@ -120,8 +120,8 @@ typedef enum {
 #define HSTOP               0x18
 #define VSTART              0x19
 #define VSTOP               0x1A
-#define MIDH                0x1C
-#define MIDL                0x1D
+#define REG_MIDH            0x1C
+#define REG_MIDL            0x1D
 #define AEW                 0x24
 #define AEB                 0x25
 #define VV                  0x26
