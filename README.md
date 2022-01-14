@@ -56,6 +56,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### 10.2.0 - Stability Increase (2022-01-14)
 
+- **ATTENTION:** Due to the update camera driver, the image looks different and a new setup might be needed
+
+  - Update reference image
+  - Update Alignment marks
+
 - Reduce reboot due to camera problems
 
 - Update esp32-camera to new version (master as of 2022-01-09)
@@ -64,7 +69,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### 10.1.1 - Stability Increase (2022-01-12)
 
-- **Bug Fix MQTT problem**
+- Bug Fix MQTT problem
 - Issue:
   - Changing from v9.x to 10.x the MQTT-paramter "Topic" was renamed  into "MainTopic" to address multiple number meters This renaming should have been done automatically in the background  within the graphical configuration, but was not working. Instead the  parameter "Topic" was deleted and "MainTopic" was set to disabled and  "undefined".
 - ToDo
