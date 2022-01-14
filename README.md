@@ -54,24 +54,35 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### 10.2.0 - Stability Increase (2022-01-14)
+
+- Reduce reboot due to camera problems
+
+- Update esp32-camera to new version (master as of 2022-01-09)
+
+  
+
 ##### 10.1.1 - Stability Increase (2022-01-12)
 
 - **Bug Fix MQTT problem**
-- Issue: 
-  - Changing from v9.x to 10.x the MQTT-paramter "Topic" was renamed into "MainTopic" to address multiple number meters
-    This renaming should have been done automatically in the background within the graphical configuration, but was not working. Instead the parameter "Topic" was deleted and "MainTopic" was set to disabled and "undefined".
+- Issue:
+  - Changing from v9.x to 10.x the MQTT-paramter "Topic" was renamed  into "MainTopic" to address multiple number meters This renaming should have been done automatically in the background  within the graphical configuration, but was not working. Instead the  parameter "Topic" was deleted and "MainTopic" was set to disabled and  "undefined".
 - ToDo
   - Update the `html.zip`
   - If old `config.ini` available: copy it to `/config`, open the graphical configuration and save it again.
-  - If old `config.ini` not available: reset the parameter "MainTopic" within the `config.ini` manually 
+  - If old `config.ini` not available: reset the parameter "MainTopic" within the `config.ini` manually
   - Reboot
 
-##### 10.1.0 - Stability Increase (2022-01-12)
+##### 10.1.0 - Stability Increase (2022-01-09)
 
 - Reduce ESP32 frequency to 160MHz
+
 - Update tflite (new source: https://github.com/espressif/tflite-micro-esp-examples)
+
 - Update analog neural network (ana-s3-q-20220105.tflite)
+
 - Update digital neural network (dig-s1-q-20220102.tflite)
+
 - Increased web-server buffers
 - bug fix: compiler compatibility
 

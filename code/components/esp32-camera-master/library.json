@@ -16,6 +16,7 @@
       "-Idriver/private_include",
       "-Iconversions/private_include",
       "-Isensors/private_include",
+      "-Itarget/private_include",
       "-fno-rtti"
     ],
     "includeDir": ".",

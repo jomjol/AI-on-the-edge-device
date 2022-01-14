@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sccb.h"
+#include "xclk.h"
 #include "ov2640.h"
 #include "ov2640_regs.h"
 #include "ov2640_settings.h"
@@ -149,7 +150,7 @@ static int set_window(sensor_t *sensor, ov2640_sensor_mode_t mode, int offset_x,
         {VSIZE, max_y & 0xFF},
         {XOFFL, offset_x & 0xFF},
         {YOFFL, offset_y & 0xFF},
-        {VHYX, ((max_y >> 1) & 0X80) | ((offset_y >> 4) & 0X70) | ((max_x >> 5) & 0X08) | ((offset_y >> 8) & 0X07)},
+        {VHYX, ((max_y >> 1) & 0X80) | ((offset_y >> 4) & 0X70) | ((max_x >> 5) & 0X08) | ((offset_x >> 8) & 0X07)},
         {TEST, (max_x >> 2) & 0X80},
         {ZMOW, (w)&0xFF},
         {ZMOH, (h)&0xFF},
@@ -157,26 +158,40 @@ static int set_window(sensor_t *sensor, ov2640_sensor_mode_t mode, int offset_x,
         {0, 0}
     };
 
-    c.pclk_auto = 0;
-    c.pclk_div = 8;
-    c.clk_2x = 0;
-    c.clk_div = 0;
-
-    if(sensor->pixformat != PIXFORMAT_JPEG){
-        c.pclk_auto = 1;
+    if (sensor->pixformat == PIXFORMAT_JPEG) {
+        c.clk_2x = 0;
+        c.clk_div = 0;
+        c.pclk_auto = 0;
+        c.pclk_div = 8;
+        if(mode == OV2640_MODE_UXGA) {
+            c.pclk_div = 12;
+        }
+        // if (sensor->xclk_freq_hz == 16000000) {
+        //     c.pclk_div = c.pclk_div / 2;
+        // }
+    } else {
+#if CONFIG_IDF_TARGET_ESP32
+        c.clk_2x = 0;
+#else
+        c.clk_2x = 1;
+#endif
         c.clk_div = 7;
+        c.pclk_auto = 1;
+        c.pclk_div = 8;
+        if (mode == OV2640_MODE_CIF) {
+            c.clk_div = 3;
+        } else if(mode == OV2640_MODE_UXGA) {
+            c.pclk_div = 12;
+        }
     }
+    ESP_LOGI(TAG, "Set PLL: clk_2x: %u, clk_div: %u, pclk_auto: %u, pclk_div: %u", c.clk_2x, c.clk_div, c.pclk_auto, c.pclk_div);
 
     if (mode == OV2640_MODE_CIF) {
         regs = ov2640_settings_to_cif;
-        if(sensor->pixformat != PIXFORMAT_JPEG){
-            c.clk_div = 3;
-        }
     } else if (mode == OV2640_MODE_SVGA) {
         regs = ov2640_settings_to_svga;
     } else {
         regs = ov2640_settings_to_uxga;
-        c.pclk_div = 12;
     }
 
     WRITE_REG_OR_RETURN(BANK_DSP, R_BYPASS, R_BYPASS_DSP_BYPAS);
@@ -480,7 +495,6 @@ static int _set_pll(sensor_t *sensor, int bypass, int multiplier, int sys_div, i
     return -1;
 }
 
-esp_err_t xclk_timer_conf(int ledc_timer, int xclk_freq_hz);
 static int set_xclk(sensor_t *sensor, int timer, int xclk)
 {
     int ret = 0;
@@ -528,6 +542,24 @@ static int init_status(sensor_t *sensor){
 
     sensor->status.sharpness = 0;//not supported
     sensor->status.denoise = 0;
+    return 0;
+}
+
+int ov2640_detect(int slv_addr, sensor_id_t *id)
+{
+    if (OV2640_SCCB_ADDR == slv_addr) {
+        SCCB_Write(slv_addr, 0xFF, 0x01);//bank sensor
+        uint16_t PID = SCCB_Read(slv_addr, 0x0A);
+        if (OV2640_PID == PID) {
+            id->PID = PID;
+            id->VER = SCCB_Read(slv_addr, REG_VER);
+            id->MIDL = SCCB_Read(slv_addr, REG_MIDL);
+            id->MIDH = SCCB_Read(slv_addr, REG_MIDH);
+            return PID;
+        } else {
+            ESP_LOGI(TAG, "Mismatch PID=0x%x", PID);
+        }
+    }
     return 0;
 }
 
