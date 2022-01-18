@@ -54,6 +54,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-01-18)
+
+- Reduces camera clock speed to 5 MHz (instead of 20 MHz - `xclk_freq_hz =   5000000`)
+  
+
 ##### 10.2.0 - Stability Increase (2022-01-14)
 
 - **ATTENTION:** Due to the update camera driver, the image looks different and a new setup might be needed

@@ -11,6 +11,12 @@
 
 ____
 
+#### #19 Extended log informations
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/580
+
+  
+
 #### #18 Document WLAN-strength in web page
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/563
