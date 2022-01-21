@@ -16,7 +16,7 @@ static const char *TAGPARTCAMERA = "server_camera";
 
 
 void PowerResetCamera(){
-        ESP_LOGD(TAGPARTCAMERA, "Resetting camera by power down line");
+        printf("Resetting camera by power down line\n");
         gpio_config_t conf;
         conf.intr_type = GPIO_INTR_DISABLE;
         conf.pin_bit_mask = 1LL << GPIO_NUM_32;

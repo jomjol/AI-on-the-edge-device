@@ -143,7 +143,17 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
- 
+
+    PowerResetCamera();
+    esp_err_t cam = Camera.InitCam();
+    Camera.LightOnOff(false);
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("nach init camera: sleep for : %ldms\n", (long) xDelay);
+//    LogFile.WriteToFile("Startsequence 06");      
+    vTaskDelay( xDelay );   
+//    LogFile.WriteToFile("Startsequence 07");  
+
+
     if (!Init_NVS_SDCard())
     {
         xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
@@ -192,28 +202,7 @@ extern "C" void app_main(void)
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    
 
-//    Camera.InitCam();
-//    Camera.LightOnOff(false);
-     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay);
-    vTaskDelay( xDelay ); 
 
-    server = start_webserver();   
-    register_server_camera_uri(server); 
-    register_server_tflite_uri(server);
-    register_server_file_uri(server, "/sdcard");
-    register_server_ota_sdcard_uri(server);
-
-    gpio_handler_create(server);
-
-    printf("vor reg server main\n");
-    register_server_main_uri(server, "/sdcard");
-
-    printf("vor dotautostart\n");
-
-    // init camera module
-    printf("Do Reset Camera\n");
-    PowerResetCamera();
 
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
@@ -225,7 +214,6 @@ extern "C" void app_main(void)
                     LogFile.WriteToFile(_zws);
                     LogFile.SwitchOnOff(false);
     } else {
-        esp_err_t cam = Camera.InitCam();
         if (cam != ESP_OK) {
                 ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
                     "Check that your camera module is working and connected properly.");
@@ -245,12 +233,31 @@ extern "C" void app_main(void)
                 doReboot();
             }
             esp_camera_fb_return(fb);   
-
             Camera.LightOnOff(false);
-            TFliteDoAutoStart();
         }
     }
 
+
+
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("main: sleep for : %ldms\n", (long) xDelay*10);
+    vTaskDelay( xDelay ); 
+
+    printf("starting server\n");
+
+    server = start_webserver();   
+    register_server_camera_uri(server); 
+    register_server_tflite_uri(server);
+    register_server_file_uri(server, "/sdcard");
+    register_server_ota_sdcard_uri(server);
+
+    gpio_handler_create(server);
+
+    printf("vor reg server main\n");
+    register_server_main_uri(server, "/sdcard");
+
+    printf("vor dotautostart\n");
+    TFliteDoAutoStart();
 
 }
 

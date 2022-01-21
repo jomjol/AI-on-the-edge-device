@@ -62,6 +62,13 @@ menu "Camera configuration"
         help
             Enable this option if you want to use the GC0308.
             Disable this option to save memory.
+            
+    config BF3005_SUPPORT
+        bool "Support BF3005(BYD3005) VGA"
+        default y
+        help
+            Enable this option if you want to use the BF3005.
+            Disable this option to save memory.
 
     choice SCCB_HARDWARE_I2C_PORT
         bool "I2C peripheral to use for SCCB"
@@ -74,6 +81,14 @@ menu "Camera configuration"
 
     endchoice
 
+    config SCCB_CLK_FREQ
+    int "SCCB clk frequency"
+    default 100000
+    range 100000 400000
+    help
+        Increasing this value can reduce the initialization time of the sensor.
+        Please refer to the relevant instructions of the sensor to adjust the value.
+    
     choice GC_SENSOR_WINDOW_MODE
         bool "GalaxyCore Sensor Window Mode"
         depends on (GC2145_SUPPORT || GC032A_SUPPORT || GC0308_SUPPORT)

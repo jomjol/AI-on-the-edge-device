@@ -33,7 +33,7 @@
 
 // ESP32Cam (AiThinker) PIN Map
 
-#define CAM_PIN_PWDN (gpio_num_t) 32
+#define CAM_PIN_PWDN 32
 #define CAM_PIN_RESET -1 //software reset will be performed
 #define CAM_PIN_XCLK 0
 #define CAM_PIN_SIOD 26
@@ -50,6 +50,7 @@
 #define CAM_PIN_VSYNC 25
 #define CAM_PIN_HREF 23
 #define CAM_PIN_PCLK 22
+
 
 static const char *TAGCAMERACLASS = "server_part_camera"; 
 
@@ -623,13 +624,15 @@ CCamera::CCamera()
 
 esp_err_t CCamera::InitCam()
 {
-    if(CAM_PIN_PWDN != -1){
+/*
+    if( CAM_PIN_PWDN != -1){
         // Init the GPIO
-        gpio_pad_select_gpio(CAM_PIN_PWDN);
-        /* Set the GPIO as a push/pull output */
-        gpio_set_direction(CAM_PIN_PWDN, GPIO_MODE_OUTPUT);
-        gpio_set_level(CAM_PIN_PWDN, 0);
+        gpio_pad_select_gpio((gpio_num_t) CAM_PIN_PWDN);
+        // Set the GPIO as a push/pull output 
+        gpio_set_direction((gpio_num_t) CAM_PIN_PWDN, GPIO_MODE_OUTPUT);
+        gpio_set_level((gpio_num_t) CAM_PIN_PWDN, 0);
     }
+*/
 
     printf("Init Camera\n");
     ActualQuality = camera_config.jpeg_quality;

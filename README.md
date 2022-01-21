@@ -54,9 +54,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-01-18)
+##### Rolling (2022-01-21)
+
+- Changed startup sequence to try to reinitialize camera during startup after failure
+- Update esp32-camera to new version (master as of 2022-01-21)
+
+Rolling (2022-01-18)
 
 - Reduces camera clock speed to 5 MHz (instead of 20 MHz - `xclk_freq_hz =   5000000`)
+
   
 
 ##### 10.2.0 - Stability Increase (2022-01-14)

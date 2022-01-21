@@ -263,7 +263,7 @@ static esp_err_t cam_dma_config(const camera_config_t *config)
         }
     }
 
-    /* Allocate memeory for frame buffer */
+    /* Allocate memory for frame buffer */
     size_t alloc_size = fb_size * sizeof(uint8_t) + dma_align;
     uint32_t _caps = MALLOC_CAP_8BIT;
     if (CAMERA_FB_IN_DRAM == config->fb_location) {

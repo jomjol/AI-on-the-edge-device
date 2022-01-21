@@ -21,6 +21,12 @@
 #include "xclk.h"
 #include "cam_hal.h"
 
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#define GPIO_PIN_INTR_POSEDGE GPIO_INTR_POSEDGE
+#define GPIO_PIN_INTR_NEGEDGE GPIO_INTR_NEGEDGE
+#define gpio_matrix_in(a,b,c) gpio_iomux_in(a,b)
+#endif
+
 static const char *TAG = "s2 ll_cam";
 
 #define I2S_ISR_ENABLE(i) {I2S0.int_clr.i = 1;I2S0.int_ena.i = 1;}
