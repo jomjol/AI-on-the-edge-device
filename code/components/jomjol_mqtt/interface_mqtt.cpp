@@ -14,6 +14,7 @@ bool debugdetail = true;
 // #define CONFIG_BROKER_URL "mqtt://192.168.178.43:1883"
 
 esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
+// ESP_EVENT_ANY_ID
 
 bool mqtt_connected = false;
 esp_mqtt_client_handle_t client = NULL;

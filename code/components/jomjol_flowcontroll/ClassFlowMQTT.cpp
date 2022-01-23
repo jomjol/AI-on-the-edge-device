@@ -110,9 +110,12 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+    printf("Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
     if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
-    {
+    { 
+        printf("InitMQTTInit\n");
         mainerrortopic = maintopic + "/connection";
+        printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
         MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
         MQTTPublish(mainerrortopic, "connected");
         MQTTenable = true;

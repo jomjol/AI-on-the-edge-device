@@ -54,7 +54,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-01-21)
+##### Rolling (2022-01-23)
+
+- Bug fix: MQTT connection problems
+
+Rolling (2022-01-21)
 
 - Changed startup sequence to try to reinitialize camera during startup after failure
 - Update esp32-camera to new version (master as of 2022-01-21)
