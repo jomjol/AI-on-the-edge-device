@@ -30,6 +30,22 @@
 
 // #define DEBUG_DETAIL_ON
 
+#define USE_PWM_LEDFLASH
+
+#ifdef USE_PWM_LEDFLASH
+
+//// PWM für Flash-LED
+#define LEDC_TIMER              LEDC_TIMER_1 // LEDC_TIMER_0
+#define LEDC_MODE               LEDC_LOW_SPEED_MODE
+#define LEDC_OUTPUT_IO          (4) // Define the output GPIO
+#define LEDC_CHANNEL            LEDC_CHANNEL_1
+#define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
+//#define LEDC_DUTY               (195) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
+#define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
+
+#endif
+
+
 
 // ESP32Cam (AiThinker) PIN Map
 
@@ -74,18 +90,19 @@ static camera_config_t camera_config = {
     .pin_pclk = CAM_PIN_PCLK,
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-//    .xclk_freq_hz = 20000000,             // Orginalwert
-    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!!
+    .xclk_freq_hz = 20000000,             // Orginalwert
+//    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!! Hängt in Version 9.2 !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
     .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
     .frame_size = FRAMESIZE_VGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
 //    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    .jpeg_quality = 5, //0-63 lower number means higher quality
+    .jpeg_quality = 12, //0-63 lower number means higher quality
     .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
 //    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
-    .grab_mode = CAMERA_GRAB_LATEST,
+    .grab_mode = CAMERA_GRAB_LATEST,      // erst ab neuer esp32cam-version
     
 };
 
@@ -103,29 +120,36 @@ typedef struct {
 } jpg_chunking_t;
 
 
-#define LEDC_LS_CH2_GPIO       (4)
-#define LEDC_LS_CH2_CHANNEL    LEDC_CHANNEL_2
-#define LEDC_LS_TIMER          LEDC_TIMER_1
-#define LEDC_LS_MODE           LEDC_LOW_SPEED_MODE
-#define LEDC_TEST_DUTY         (4000)
+void CCamera::ledc_init(void)
+{
+#ifdef USE_PWM_LEDFLASH
 
-void test(){
+    // Prepare and then apply the LEDC PWM timer configuration
+    ledc_timer_config_t ledc_timer = { };
+
+    ledc_timer.speed_mode       = LEDC_MODE;
+    ledc_timer.timer_num        = LEDC_TIMER;
+    ledc_timer.duty_resolution  = LEDC_DUTY_RES;
+    ledc_timer.freq_hz          = LEDC_FREQUENCY;   // Set output frequency at 5 kHz
+    ledc_timer.clk_cfg          = LEDC_AUTO_CLK;
+
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
+
+    // Prepare and then apply the LEDC PWM channel configuration
     ledc_channel_config_t ledc_channel = { };
 
-    ledc_channel.channel = LEDC_LS_CH2_CHANNEL;
-    ledc_channel.duty       = 0;
-    ledc_channel.gpio_num   = FLASH_GPIO;
-    ledc_channel.speed_mode = LEDC_LS_MODE;
-    ledc_channel.hpoint     = 0;
-    ledc_channel.timer_sel  = LEDC_LS_TIMER;
+    ledc_channel.speed_mode     = LEDC_MODE;
+    ledc_channel.channel        = LEDC_CHANNEL;
+    ledc_channel.timer_sel      = LEDC_TIMER;
+    ledc_channel.intr_type      = LEDC_INTR_DISABLE;
+    ledc_channel.gpio_num       = LEDC_OUTPUT_IO;
+    ledc_channel.duty           = 0; // Set duty to 0%
+    ledc_channel.hpoint         = 0;
 
-    ledc_channel_config(&ledc_channel);
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 
-    ledc_set_duty(ledc_channel.speed_mode, ledc_channel.channel, LEDC_TEST_DUTY);
-    ledc_update_duty(ledc_channel.speed_mode, ledc_channel.channel);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-};
-
+#endif
+}
 
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
@@ -148,9 +172,11 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
         _brightness = min(2, max(-2, _brightness));
     if (_contrast > -100)
         _contrast = min(2, max(-2, _contrast));
-//    _saturation = min(2, max(-2, _saturation));
+    if (_saturation > -100)
+        _saturation = min(2, max(-2, _saturation));
 
-//    s->set_saturation(s, _saturation);
+    if (_saturation > -100)
+        s->set_saturation(s, _saturation);
     if (_contrast > -100)
         s->set_contrast(s, _contrast);
     if (_brightness > -100)
@@ -521,15 +547,31 @@ void CCamera::LightOnOff(bool status)
         printf("Use gpioHandler flashLigh\n");
         gpioHandler->flashLightEnable(status);
     }  else {
+    #ifdef USE_PWM_LEDFLASH
+        if (status)
+        {
+            printf("Internal Flash-LED turn on with PWMy\n");
+            ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, led_intensity));
+            // Update duty to apply the new value
+            ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
+        }
+        else
+        {
+            printf("Internal Flash-LED turn off PWM\n");
+            ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0));
+            ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
+        }
+    #else
         // Init the GPIO
         gpio_pad_select_gpio(FLASH_GPIO);
-        /* Set the GPIO as a push/pull output */
+        // Set the GPIO as a push/pull output 
         gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
 
         if (status)  
             gpio_set_level(FLASH_GPIO, 1);
         else
             gpio_set_level(FLASH_GPIO, 0);
+    #endif
     }
 }
 
@@ -620,20 +662,12 @@ CCamera::CCamera()
     contrast = -5;
     saturation = -5;
     isFixedExposure = false;
+
+    ledc_init();    
 }
 
 esp_err_t CCamera::InitCam()
 {
-/*
-    if( CAM_PIN_PWDN != -1){
-        // Init the GPIO
-        gpio_pad_select_gpio((gpio_num_t) CAM_PIN_PWDN);
-        // Set the GPIO as a push/pull output 
-        gpio_set_direction((gpio_num_t) CAM_PIN_PWDN, GPIO_MODE_OUTPUT);
-        gpio_set_level((gpio_num_t) CAM_PIN_PWDN, 0);
-    }
-*/
-
     printf("Init Camera\n");
     ActualQuality = camera_config.jpeg_quality;
     ActualResolution = camera_config.frame_size;
@@ -645,4 +679,13 @@ esp_err_t CCamera::InitCam()
     }
 
     return ESP_OK;
+}
+
+void CCamera::SetLEDIntensity(float _intrel)
+{
+    _intrel = min(_intrel, (float) 100);
+    _intrel = max(_intrel, (float) 0);
+    _intrel = _intrel / 100;
+    led_intensity = (int) (_intrel * 8191);
+    printf("Set led_intensity to %d of 8191\n", led_intensity);
 }

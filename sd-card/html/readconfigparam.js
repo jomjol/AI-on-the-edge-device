@@ -28,6 +28,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Brightness");
      ParamAddValue(param, catname, "Contrast");
      ParamAddValue(param, catname, "Saturation");
+     ParamAddValue(param, catname, "LEDIntensity");
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
      ParamAddValue(param, catname, "FixedExposure");     

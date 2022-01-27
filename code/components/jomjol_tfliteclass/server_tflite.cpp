@@ -199,7 +199,7 @@ esp_err_t handler_json(httpd_req_t *req)
     printf("handler_JSON uri:\n"); printf(req->uri); printf("\n");
 
     char _query[100];
-    char _size[10];
+//    char _size[10];
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "application/json");
@@ -491,12 +491,18 @@ esp_err_t handler_editflow(httpd_req_t *req)
         std::string _bri = "";
         std::string _con = "";
         std::string _sat = "";
+        std::string _int = "";
         int bri = -100;
         int sat = -100;
         int con = -100;
+        int intens = -100;
 
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
+        }
+        if (httpd_query_key_value(_query, "int", _valuechar, 30) == ESP_OK) {
+            _int = std::string(_valuechar);
+            intens = stoi(_int);
         }
         if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK) {
             _bri = std::string(_valuechar);
@@ -515,7 +521,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
+        Camera.SetLEDIntensity(intens);
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
 

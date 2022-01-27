@@ -54,7 +54,21 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-01-23)
+##### Rolling (2022-01-27)
+
+- Implemented LED flash dimming (in "Take Reference Image")
+
+- Additional camera parameters: saturation, contrast (although not too much impact)
+
+- Updated esp32 camera hardware driver
+
+- **ATTENTION: if the esp32 is stalled or permanently reboot try this:**
+  - Update the parameter `ImageQuality` to `12` instead of the default value `5`
+    (manually in the `config.ini`)
+  
+  
+
+Rolling (2022-01-23)
 
 - Bug fix: MQTT connection problems
 

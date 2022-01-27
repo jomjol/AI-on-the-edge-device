@@ -23,6 +23,9 @@ class CCamera {
         int brightness, contrast, saturation;
         bool isFixedExposure;
         int waitbeforepicture_org;
+        int led_intensity = 4095;
+
+        void ledc_init(void);
 
     public:
         int image_height, image_width;
@@ -36,6 +39,7 @@ class CCamera {
         void SetQualitySize(int qual, framesize_t resol);
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
+        void SetLEDIntensity(float _intrel);
 
         void EnableAutoExposure(int flashdauer);
         

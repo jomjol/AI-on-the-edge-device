@@ -45,34 +45,37 @@ table {
 	  <tr>
 		<td style="padding-top: 10px"><label for="mirror" id="labelmirror">Mirror Image:</label></td>
         <td style="padding-top: 10px"><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+        <td>
+            <class id="MakeImage_LEDIntensity_text" style="color:black;">LEDIntensity: </class>
+            <input type="number" id="MakeImage_LEDIntensity_value1" size="13" value=0  min="0" max="100" style="float: right; clear: both;">
+        </td>
       </tr>
       <tr>
 
 		<td><label for="flip" id="labelflip">Flip Image Size:</label></td>
         <td><input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
+        <td>
+            <class id="MakeImage_Brightness_text" style="color:black;">Brightness: </class>
+            <input type="number" id="MakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
+        </td>
         
 	  </tr>
 	  <tr>
         <td><label for="mirror">Pre-rotate Angle:</label></td>	  
 		<td><input type="number" id="prerotateangle" name="prerotateangle" value="0" min="-360" max="360" onchange="drawRotated()">Degrees</td>
         <td>
-            <class id="MakeImage_Brightness_text" style="color:black;">Brightness: </class>
-            <input type="number" id="MakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
+            <class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
+            <input type="number" id="MakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
         </td>
 	  </tr>
 	  <tr>
 		<td><label for="mirror">Fine Alignment:</label></td>	
 		<td><input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">Degrees</td>
-<!-- 
-        <td>
-            <class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
-            <input type="number" id="MakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
-        </td>
         <td>
             <class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
             <input type="number" id="MakeImage_Saturation_value1" size="13" value=0   min="-2" max="2" style="float: right; clear: both;">
         </td>
--->
+
     </tr>
 	</table>
 
@@ -104,10 +107,13 @@ table {
             var xhttp = new XMLHttpRequest();
             if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
             {
+                _intensity = document.getElementById("MakeImage_LEDIntensity_value1").value;
+                if (_intensity == "") _intensity = "50";
                 _brightness = document.getElementById("MakeImage_Brightness_value1").value;
-//            _contrast = document.getElementById("MakeImage_Contrast_value1").value;
-//            _saturation = document.getElementById("MakeImage_Saturation_value1").value;
-            url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
+                _contrast = document.getElementById("MakeImage_Contrast_value1").value;
+                _saturation = document.getElementById("MakeImage_Saturation_value1").value;
+                url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
+                url = url + "&con=" + _saturation + "&sat=" + _saturation + "&int=" + _intensity;
             }
             else
             {
@@ -116,8 +122,11 @@ table {
             if (basepath.length > 0){
                 url = url + "&host=" + basepath;
             }
+
             xhttp.open("GET", url, false);
             xhttp.send();
+
+
             loadRawImage();
         }
             
@@ -142,7 +151,12 @@ table {
             }
 
             if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
+            {
                 document.getElementById("MakeImage_Brightness_value1").disabled = false;
+                document.getElementById("MakeImage_Contrast_value1").disabled = false;
+                document.getElementById("MakeImage_Saturation_value1").disabled = false;
+                document.getElementById("MakeImage_LEDIntensity_value1").disabled = false;
+            }
             else
             {
                 document.getElementById("MakeImage_Brightness_value1").type = "hidden";
@@ -176,8 +190,9 @@ table {
             document.getElementById("updatereferenceimage").disabled = true;
             document.getElementById("take").disabled = true;
             document.getElementById("MakeImage_Brightness_value1").disabled = true;
-//            document.getElementById("MakeImage_Saturation_value1").disabled = true;
-//            document.getElementById("MakeImage_Contrast_value1").disabled = true;
+            document.getElementById("MakeImage_Saturation_value1").disabled = true;
+            document.getElementById("MakeImage_Contrast_value1").disabled = true;
+            document.getElementById("MakeImage_LEDIntensity_value1").disabled = true;
             document.getElementById("mirror").disabled = false;
             document.getElementById("flip").disabled = false;
             if (!(param["MakeImage"]["Brightness"].found))
@@ -225,8 +240,9 @@ table {
                 if (param["MakeImage"]["Brightness"].found && param["MakeImage"]["Brightness"].enabled)
                 {
                     ReadParameter(param, "MakeImage", "Brightness", false);		
-    //            	ReadParameter(param, "MakeImage", "Contrast", false);
-    //                ReadParameter(param, "MakeImage", "Saturation", false);
+                	ReadParameter(param, "MakeImage", "Contrast", false);
+                    ReadParameter(param, "MakeImage", "Saturation", false);
+                    ReadParameter(param, "MakeImage", "LEDIntensity", false);
                 }
 
                 var canvas = document.getElementById("canvas");
@@ -238,6 +254,7 @@ table {
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
                 showReference();
                 UpdatePage();
+                alert("Reference is updated!");
             }
         }
 
@@ -274,14 +291,42 @@ table {
             loadConfig(basepath); 
             ParseConfig();
             param = getConfigParameters();
+
+            param["MakeImage"]["LEDIntensity"]["enabled"] = true;
+            param["MakeImage"]["Brightness"]["enabled"] = true;
+            param["MakeImage"]["Contrast"]["enabled"] = true;
+            param["MakeImage"]["Saturation"]["enabled"] = true;
+
+            if (!param["MakeImage"]["LEDIntensity"]["found"])
+            {
+                param["MakeImage"]["LEDIntensity"]["found"] = true;
+                param["MakeImage"]["LEDIntensity"]["value1"] = "50";
+            }
+            if (!param["MakeImage"]["Brightness"]["found"])
+            {
+                param["MakeImage"]["Brightness"]["found"] = true;
+                param["MakeImage"]["Brightness"]["value1"] = "0";
+            }
+            if (!param["MakeImage"]["Contrast"]["found"])
+            {
+                param["MakeImage"]["Contrast"]["found"] = true;
+                param["MakeImage"]["Contrast"]["value1"] = "0";
+            }
+            if (!param["MakeImage"]["Saturation"]["found"])
+            {
+                param["MakeImage"]["Saturation"]["found"] = true;
+                param["MakeImage"]["Saturation"]["value1"] = "0";
+            }
+
             UpdateInput();
             showReference(param); 
         }
 
         function UpdateInput() {
             WriteParameter(param, category, "MakeImage", "Brightness", false);		
-//            WriteParameter(param, category, "MakeImage", "Contrast", false);		
-//            WriteParameter(param, category, "MakeImage", "Saturation", false);		
+            WriteParameter(param, category, "MakeImage", "Contrast", false);		
+            WriteParameter(param, category, "MakeImage", "Saturation", false);		
+            WriteParameter(param, category, "MakeImage", "LEDIntensity", false);		
         }
 
 
