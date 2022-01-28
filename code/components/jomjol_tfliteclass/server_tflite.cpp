@@ -522,6 +522,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
         Camera.SetLEDIntensity(intens);
+        printf("test_take - vor MakeImage");
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_sendstr_chunk(req, zw.c_str()); 

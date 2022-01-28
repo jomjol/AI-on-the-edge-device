@@ -128,7 +128,7 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(zerlegt[0]) == "LEDINTENSITY") && (zerlegt.size() > 1))
         {
             float ledintensity = stof(zerlegt[1]);
-            ledintensity = min((float) 1, ledintensity);
+            ledintensity = min((float) 100, ledintensity);
             ledintensity = max((float) 0, ledintensity);
             Camera.SetLEDIntensity(ledintensity);
         }

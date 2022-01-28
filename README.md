@@ -54,6 +54,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-01-28)
+
+- Bug fix: led intensity setting
+
 ##### Rolling (2022-01-27)
 
 - Implemented LED flash dimming (in "Take Reference Image")

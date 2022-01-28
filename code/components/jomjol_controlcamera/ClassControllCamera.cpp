@@ -249,6 +249,7 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 
 void CCamera::EnableAutoExposure(int flashdauer)
 {
+    printf("EnableAutoExposure");
     LEDOnOff(true);
     if (flashdauer > 0)
         LightOnOff(true);
@@ -550,7 +551,7 @@ void CCamera::LightOnOff(bool status)
     #ifdef USE_PWM_LEDFLASH
         if (status)
         {
-            printf("Internal Flash-LED turn on with PWMy\n");
+            printf("Internal Flash-LED turn on with PWM %d\n", led_intensity);
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, led_intensity));
             // Update duty to apply the new value
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
@@ -688,4 +689,5 @@ void CCamera::SetLEDIntensity(float _intrel)
     _intrel = _intrel / 100;
     led_intensity = (int) (_intrel * 8191);
     printf("Set led_intensity to %d of 8191\n", led_intensity);
+
 }
