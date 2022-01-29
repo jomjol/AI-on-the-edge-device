@@ -54,42 +54,26 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-01-28)
+##### 10.3.0 - Stability Increase (2022-01-29)
 
-- Bug fix: led intensity setting
-
-##### Rolling (2022-01-27)
-
-- Implemented LED flash dimming (in "Take Reference Image")
-
-- Additional camera parameters: saturation, contrast (although not too much impact)
-
+- Implemented LED flash dimming (`LEDIntensity`). 
+  Remark: as auto illumination in the camera is used, this is rather for energy saving. It will not help reducing reflections
+- Additional camera parameters: saturation, contrast (although not too much impact yet)
+- Readings with not automatically removable "N"s are handled like "error" --> no return value in the field "value" anymore 
+  (still reported back via field "raw value")
 - Updated esp32 camera hardware driver
+- Bug fix: MQTT, html improvements
 
-- **ATTENTION: if the esp32 is stalled or permanently reboot try this:**
-  - Update the parameter `ImageQuality` to `12` instead of the default value `5`
-    (manually in the `config.ini`)
-  
-  
+**ATTENTION:  The new ESP32 camera hardware driver is much more stable on newer OV2640  versions (no or much less reboots) but seems to be not fully compatible with older versions.**
 
-Rolling (2022-01-23)
+* If you have problem with stalled systems you can try the following
+  - Update the parameter `ImageQuality` to `12` instead of current value `5` (manually in the `config.ini`)
 
-- Bug fix: MQTT connection problems
-
-Rolling (2022-01-21)
-
-- Changed startup sequence to try to reinitialize camera during startup after failure
-- Update esp32-camera to new version (master as of 2022-01-21)
-
-Rolling (2022-01-18)
-
-- Reduces camera clock speed to 5 MHz (instead of 20 MHz - `xclk_freq_hz =   5000000`)
-
-  
+  - If this is not helping, you might need to update your hardware or stay with version 9.2
 
 ##### 10.2.0 - Stability Increase (2022-01-14)
 
-- **ATTENTION:** Due to the update camera driver, the image looks different and a new setup might be needed
+- Due to the update camera driver, the image looks different and a new setup might be needed
 
   - Update reference image
   - Update Alignment marks

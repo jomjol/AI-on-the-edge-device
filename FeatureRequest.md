@@ -11,6 +11,18 @@
 
 ____
 
+#### #21 Extended "CheckDigitalConsistency" Logik
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/590
+
+  
+
+#### #20 Deep sleep and push mode
+
+* Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post.
+
+  
+
 #### #19 Extended log informations
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/580

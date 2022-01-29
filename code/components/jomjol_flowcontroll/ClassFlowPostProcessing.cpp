@@ -111,25 +111,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                     double difference = difftime(tStart, NUMBERS[j]->lastvalue);
                     difference /= 60;
                     if (difference > PreValueAgeStartup)
-                    {
                         NUMBERS[j]->PreValueOkay = false;
-                    }
                     else
-                    {
                         NUMBERS[j]->PreValueOkay = true;
-/*
-                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                        NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->Value);
-                        NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue; 
-
-                        if (NUMBERS[j]->digit_roi || NUMBERS[j]->analog_roi)
-                        {
-                            NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma + 1);  // SIcherheitshalber 1 Stelle mehr, da ggf. Exgtended Resolution an ist (wird erst beim ersten Durchlauf gesetzt)
-                            NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue;
-                        }
-*/
-                    }
-
                 }
             }
 
@@ -637,6 +621,11 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
                 UpdatePreValueINI = true;
                 SavePreValue();
+            }
+            else
+            {
+                NUMBERS[j]->ReturnValue = "";
+                NUMBERS[j]->ReturnValueNoError = "";
             }
         }
         else
