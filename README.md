@@ -46,11 +46,19 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ### Known Issues
 
 * slow response of web server during picture analysis
-* spontaneous reboots (mostly due to html access during image processing) - self recovery implemented
+* ~~spontaneous reboots (mostly due to html access during image processing)~~  --> solved since v10.3.0
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
 ------
+
+##### Rolling (2022-02-06)
+
+- Graphical configuration: select availalbe neural network files (*.tfl, *.tflite) from drop down menue
+- OTA-update: add option to upload tfl / tflite files to the correct locatioin (`/config/`)
+  - in future the new files will also be copied to the `firmware` directory of the repository
+- Updated digital neural network file (`dig-s1-q-20220102.tflite`)
+- Updated build environment to `Espressif 3.5.0`
 
 
 

@@ -72,40 +72,44 @@ static const char *TAG_FILESERVER = "file_server";
 
 using namespace std;
 
-static esp_err_t get_tflite_file_handler(httpd_req_t *req){
+esp_err_t get_tflite_file_handler(httpd_req_t *req)
+{
     DIR *verzeichnis;
     struct dirent *files;
+    struct dirent *entry;
+    struct stat entry_stat;
 
-    std::string _filename, _fileext, _result = "";
-    std::string _delimiter = ".";
+
+    std::string _filename, _fileext;
     size_t pos = 0;
+    
+    const char verz_name[] = "/sdcard/config";
+    printf("Suche TFLITE in /sdcard/config/\n");
 
-    verzeichnis=opendir("/sdcard/config");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
 
-    printf("Suche TFLITE in /sdcard/config\n");
-
-    while((files = readdir(verzeichnis)))
+    DIR *dir = opendir(verz_name);
+    while ((entry = readdir(dir)) != NULL) 
     {
-        _filename = files->d_name;
-        _fileext = _filename;
+        _filename = std::string(entry->d_name);
         printf("File: %s\t", _filename.c_str());
 
-        while ((pos = _fileext.find(_delimiter))) {
-            _fileext.erase(0, pos + _delimiter.length());
-        }
+        _fileext = _filename;
+        pos = _fileext.find(".");
+        if (pos != std::string::npos)
+            _fileext = _fileext.erase(0, pos + 1);
 
         printf(" Extension: %s\n", _fileext.c_str());
 
         if ((_fileext == "tfl") || (_fileext == "tflite"))
         {
-            _result = _result + _filename + "\t";
+            _filename = "/config/" + _filename + "\t";
+            httpd_resp_sendstr_chunk(req, _filename.c_str());
         }
     }
-    closedir(verzeichnis);
+    closedir(dir);
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_set_type(req, "text/plain");
-    httpd_resp_sendstr_chunk(req, _result.c_str());
     httpd_resp_sendstr_chunk(req, NULL);
     return ESP_OK;
 }
@@ -363,6 +367,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
             }
         }
 
+        printf("uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
         return http_resp_dir_html(req, filepath, filename, readonly);
     }
 

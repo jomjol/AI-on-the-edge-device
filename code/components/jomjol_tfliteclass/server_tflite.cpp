@@ -20,7 +20,9 @@
 #include "ClassLogFile.h"
 #include "server_GPIO.h"
 
-// #define DEBUG_DETAIL_ON       
+#include "server_file.h"
+
+#define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
@@ -392,6 +394,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
             _task = string(_valuechar);
         }
     }  
+
+    if (_task.compare("tflite") == 0)
+    {
+        printf("Get tflite list\n");
+        return get_tflite_file_handler(req);
+    }
+
 
     if (_task.compare("copy") == 0)
     {

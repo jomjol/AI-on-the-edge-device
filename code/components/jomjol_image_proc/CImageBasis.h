@@ -57,6 +57,8 @@ class CImageBasis
         void drawRect(int x, int y, int dx, int dy, int r = 255, int g = 255, int b = 255, int thickness = 1);
         void drawLine(int x1, int y1, int x2, int y2, int r, int g, int b, int thickness = 1);
         void drawCircle(int x1, int y1, int rad, int r, int g, int b, int thickness = 1);
+        void drawEllipse(int x1, int y1, int radx, int rady, int r, int g, int b, int thickness = 1);
+
         void setPixelColor(int x, int y, int r, int g, int b);
         void Contrast(float _contrast);
         bool ImageOkay();

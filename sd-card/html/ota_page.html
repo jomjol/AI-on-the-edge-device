@@ -8,7 +8,7 @@
 <style>
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em;}
-h3 {font-size: 1.2em;}
+h3 {font-size: 1.2em;} 
 p {font-size: 1em;}
 
 input[type=number] {
@@ -114,6 +114,36 @@ input[type=number] {
 		</td>
 	</tr>
 </table>
+<h2>4. Upload neural network definition (tfl/tflite file)</h2>
+<table class="fixed" border="0">
+    <tr>
+        <td>
+            <table border="0">
+                <tr>
+                    <td>
+                        <label for="newfiletfl">Select the tfl/tflite file</label>
+                    </td>
+                    <td colspan="2">
+                        <input id="newfiletfl" type="file" onchange="setpathtfl()" style="width:100%;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="filepathtfl">Set path on server</label>
+                    </td>
+                    <td>
+                        <input id="filepathtfl" type="text" style="width:100%;" readonly>
+                    </td>
+                    <td>
+                        <button id="uploadtfl" type="button" onclick="uploadtfl()" disabled>Upload</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    The file must be activated in the config.ini file.
+</table>
+
 
 <script type="text/javascript" src="./gethost.js"></script> 
 
@@ -126,6 +156,7 @@ function init(){
     document.getElementById("uploadhtml").disabled = true;    
     document.getElementById("doUpdate").disabled = true;
     document.getElementById("doUpdatehtml").disabled = true;
+    document.getElementById("uploadtfl").disabled = true;
 }
 
 function doUpdate() {
@@ -201,6 +232,17 @@ function setpathhtml() {
     document.getElementById("filepathhtml").value = fileserverpraefix;
     document.getElementById("uploadhtml").disabled = false;
 }
+
+
+function setpathtfl() {
+    var nameneu = document.getElementById("newfiletfl").value;
+    nameneu = nameneu.split(/[\\\/]/).pop();
+    var fileserverpraefix = "/config/" + nameneu;
+    document.getElementById("filepathtfl").value = fileserverpraefix;
+    document.getElementById("uploadtfl").disabled = false;
+}
+
+
 
 
 function upload() {
@@ -340,6 +382,74 @@ function uploadhtml() {
         xhttp.send(file);
     }
 }
+
+
+function uploadtfl() {
+	var xhttp = new XMLHttpRequest();
+	
+	/* first delete the old firmware */	
+	xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4) {
+			if (xhttp.status == 200) {
+				/* keine Reaktion, damit sich das Dokument nicht ändert */
+			} else if (xhttp.status == 0) {
+				alert("Server closed the connection abruptly!");
+				UpdatePage();
+			} else {
+				alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				UpdatePage();
+			}
+		}
+	};
+	/* ----------------------------- */
+	
+    var filePath = document.getElementById("filepathtfl").value;
+    var upload_path = "/upload/" + filePath;
+    var fileInput = document.getElementById("newfiletfl").files;
+
+    /* Max size of an individual file. Make sure this
+     * value is same as that set in file_server.c */
+    var MAX_FILE_SIZE = 2000*1024;
+    var MAX_FILE_SIZE_STR = "2000KB";
+
+    if (fileInput.length == 0) {
+        alert("No file selected!");
+    } else if (filePath.length == 0) {
+        alert("File path on server is not set!");
+    } else if (filePath.indexOf(' ') >= 0) {
+        alert("File path on server cannot have spaces!");
+    } else if (filePath[filePath.length-1] == '/') {
+        alert("File name not specified after path!");
+    } else if (fileInput[0].size > 2000*1024) {
+        alert("File size must be less than 2000KB!");
+    } else {
+        document.getElementById("newfiletfl").disabled = true;
+        document.getElementById("filepathtfl").disabled = true;
+        document.getElementById("uploadtfl").disabled = true;
+		
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4) {
+                if (xhttp.status == 200) {
+					alert("Upload successfull!")
+                    document.getElementById("newfiletfl").disabled = false;
+                    document.getElementById("filepathtfl").disabled = false;
+                } else if (xhttp.status == 0) {
+                    alert("Server closed the connection abruptly!");
+                    UpdatePage();
+                } else {
+                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    UpdatePage();
+                }
+            }
+        };
+		
+
+        var file = fileInput[0];
+        xhttp.open("POST", upload_path, true);
+        xhttp.send(file);
+    }
+}
+
 
 
 init();

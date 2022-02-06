@@ -274,6 +274,28 @@ void CImageBasis::drawLine(int x1, int y1, int x2, int y2, int r, int g, int b, 
         }
 }
 
+void CImageBasis::drawEllipse(int x1, int y1, int radx, int rady, int r, int g, int b, int thickness)
+{
+    float deltarad, aktrad;
+    int _thick, _x, _y;
+    int rad = radx;
+
+    if (rady > radx)
+        rad = rady;
+
+    deltarad = 1 / (4 * M_PI * (rad + thickness - 1));
+
+    for (aktrad = 0; aktrad <= (2 * M_PI); aktrad += deltarad)
+        for (_thick = 0; _thick < thickness; ++_thick)
+        {
+            _x = sin(aktrad) * (radx + _thick) + x1;
+            _y = cos(aktrad) * (rady + _thick) + y1;
+            if (isInImage(_x, _y))
+                setPixelColor(_x, _y, r, g, b);
+        }
+}
+
+
 void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int thickness)
 {
     float deltarad, aktrad;
