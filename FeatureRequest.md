@@ -11,6 +11,12 @@
 
 ____
 
+#### #22 Direct hint to the different neural network files in the other repositories
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/644
+
+  
+
 #### #21 Extended "CheckDigitalConsistency" Logik
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/590
