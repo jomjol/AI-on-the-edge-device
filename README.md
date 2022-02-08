@@ -52,9 +52,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2022-02-06)
 
-- Graphical configuration: select availalbe neural network files (*.tfl, *.tflite) from drop down menue
+
+##### Rolling (2022-02-08)
+
+- added Wifi RSSI to MQTT information
+
+Rolling (2022-02-06)
+
+- Graphical configuration: select available neural network files (*.tfl, *.tflite) from drop down menu
 - OTA-update: add option to upload tfl / tflite files to the correct locatioin (`/config/`)
   - in future the new files will also be copied to the `firmware` directory of the repository
 - Updated digital neural network file (`dig-s1-q-20220102.tflite`)

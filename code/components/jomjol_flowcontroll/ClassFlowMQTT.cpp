@@ -1,6 +1,7 @@
 #include <sstream>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
+#include "connect_wlan.h"
 
 #include "time_sntp.h"
 #include "interface_mqtt.h"
@@ -155,6 +156,12 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     char freeheapmem[11];
     sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
     MQTTPublish(zw, freeheapmem);
+
+    zw = maintopic + "/" + "Wifi RSSI";
+    char rssi[11];
+    sprintf(rssi, "%d", get_WIFI_RSSI());
+    MQTTPublish(zw, rssi);
+
 
     if (flowpostprocessing)
     {

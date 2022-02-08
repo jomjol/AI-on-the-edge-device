@@ -343,6 +343,12 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 */
 }
 
+int get_WIFI_RSSI()
+{
+    wifi_ap_record_t ap;
+    esp_wifi_sta_get_ap_info(&ap);
+    return ap.rssi;
+}
 
 void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname)
 {
