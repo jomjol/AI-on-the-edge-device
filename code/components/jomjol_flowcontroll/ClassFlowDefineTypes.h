@@ -16,10 +16,16 @@ struct general {
     std::vector<roi*> ROI;
 };
 
+enum t_RateType {
+    AbsoluteChange,
+    RateChange
+ };
+
 
 struct NumberPost {
     float MaxRateValue;
     bool useMaxRateValue;
+    t_RateType RateType;
     bool ErrorMessage;
     bool PreValueOkay;
     bool AllowNegativeRates;

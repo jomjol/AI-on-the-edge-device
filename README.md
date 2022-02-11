@@ -54,7 +54,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-02-08)
+##### Rolling (2022-02-11)
+
+- Updated digital neural network file (`dig-s2-q-20220211.tflite`)
+- Corrected rounding in `CheckDigitIncreaseConsistency` algorithm
+
+Rolling (2022-02-08)
 
 - added Wifi RSSI to MQTT information
 

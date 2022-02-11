@@ -3,7 +3,6 @@
 
 #include"ClassFlowDefineTypes.h"
 #include "ClassFlowAlignment.h"
-// #include "ClassFlowPostProcessing.h"
 
 
 enum t_CNNType {
@@ -11,6 +10,7 @@ enum t_CNNType {
     Analogue,
     Digital,
     DigitalHyprid,
+    DigitalHyprid10,
     None
  };
 
@@ -50,7 +50,6 @@ public:
 
    	std::vector<HTMLInfo*> GetHTMLInfo();   
 
-//    int AnzahlROIs(int _analog);
     int getAnzahlGENERAL();
     general* GetGENERAL(int _analog);
     general* GetGENERAL(string _name, bool _create);
@@ -58,8 +57,6 @@ public:
     string getNameGENERAL(int _analog);    
 
     bool isExtendedResolution(int _number = 0);
-
-//    void setPostprocessing(ClassFlowPostProcessing *_fpp){flowpostprocessing = _fpp;}; 
 
     void UpdateNameNumbers(std::vector<std::string> *_name_numbers);
 

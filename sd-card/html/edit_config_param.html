@@ -503,7 +503,24 @@ textarea {
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
 			<td style="font-size: 80%;">
-				Maximum change of reading per minute
+				Maximum change of a reading - if threated as absolute or relative change see next parameter.
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class>
+			</td>
+			<td>
+				<select id="PostProcessing_MaxRateType_value1">
+					<option value="AbsoluteChange" >AbsoluteChange</option>
+					<option value="RateChange" selected>RateChange</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the intervall (RateChange = change/minute).
 			</td>
 		</tr>
 		<tr>
@@ -1697,6 +1714,7 @@ function UpdateInputIndividual()
 	{
 		ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
 	}
@@ -1705,6 +1723,7 @@ function UpdateInputIndividual()
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
 }

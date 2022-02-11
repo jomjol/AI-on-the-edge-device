@@ -8,6 +8,7 @@
 
 #include <string>
 
+
 class ClassFlowPostProcessing :
     public ClassFlow
 {
@@ -38,7 +39,9 @@ protected:
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
     void handleMaxRateValue(string _decsep, string _value);
-    void handleDecimalExtendedResolution(string _decsep, string _value);    
+    void handleDecimalExtendedResolution(string _decsep, string _value); 
+    void handleMaxRateType(string _decsep, string _value);
+
 
 
 

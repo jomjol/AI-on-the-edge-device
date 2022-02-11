@@ -304,6 +304,39 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
     }
 }
 
+
+
+void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        t_RateType _rt = AbsoluteChange;
+
+        if (toUpper(_value) == "RATECHANGE")
+            _rt = RateChange;
+
+        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        {
+            NUMBERS[j]->RateType = _rt;
+        }
+
+        if (NUMBERS[j]->name == _digit)
+        {
+            NUMBERS[j]->RateType = _rt;
+        }
+    }
+}
+
+
+
 void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 {
     string _digit, _decpos;
@@ -378,6 +411,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
         {
             handleMaxRateValue(zerlegt[0], zerlegt[1]);
+        }
+        if ((toUpper(_param) == "MAXRATETYPE") && (zerlegt.size() > 1))
+        {
+            handleMaxRateType(zerlegt[0], zerlegt[1]);
         }
 
         if ((toUpper(_param) == "PREVALUEUSE") && (zerlegt.size() > 1))
@@ -476,6 +513,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
         _number->MaxRateValue = 0.1;
+        _number->RateType = AbsoluteChange;
         _number->useMaxRateValue = false;
         _number->checkDigitIncreaseConsistency = false;
         _number->DecimalShift = 0;
@@ -648,11 +686,17 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
 
             double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
-            difference /= 60;                                                    // in Minuten
+            difference /= 60;  
             NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
             NUMBERS[j]->ReturnRateValue = std::to_string(NUMBERS[j]->FlowRateAct);
+
+            float _ratedifference;                                                   
+            if (NUMBERS[j]->RateType == RateChange)
+                _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+            else
+                _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
             
-            if (NUMBERS[j]->useMaxRateValue && (abs(NUMBERS[j]->FlowRateAct) > NUMBERS[j]->MaxRateValue))
+            if (NUMBERS[j]->useMaxRateValue && (abs(_ratedifference) > NUMBERS[j]->MaxRateValue))
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -820,14 +864,14 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     while (pot <= pot_max)
     {
         zw = input / pow(10, pot-1);
-        aktdigit_before = ((int) zw + 10) % 10;
+        aktdigit_before = ((int) round(zw) + 10) % 10;
         zw = _preValue / pow(10, pot-1);
-        olddigit_before = ((int) zw + 10) % 10;
+        olddigit_before = ((int) round(zw) + 10) % 10;
 
         zw = input / pow(10, pot);
-        aktdigit = ((int) zw + 10) % 10;
+        aktdigit = ((int) round(zw) + 10) % 10;
         zw = _preValue / pow(10, pot);
-        olddigit = ((int) zw + 10) % 10;
+        olddigit = ((int) round(zw) + 10) % 10;
 
         no_nulldurchgang = (olddigit_before <= aktdigit_before);
 
