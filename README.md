@@ -54,20 +54,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-02-11)
-
-- Updated digital neural network file (`dig-s2-q-20220211.tflite`)
-- Corrected rounding in `CheckDigitIncreaseConsistency` algorithm
-
-Rolling (2022-02-08)
-
-- added Wifi RSSI to MQTT information
-
-Rolling (2022-02-06)
+##### 10.4.0 - Stability Increase (2022-02-12)
 
 - Graphical configuration: select available neural network files (*.tfl, *.tflite) from drop down menu
 - OTA-update: add option to upload tfl / tflite files to the correct locatioin (`/config/`)
   - in future the new files will also be copied to the `firmware` directory of the repository
+- Added Wifi RSSI to MQTT information
+- Updated analog neural network file (`ana-s3-q-20220105.tflite`)
 - Updated digital neural network file (`dig-s1-q-20220102.tflite`)
 - Updated build environment to `Espressif 3.5.0`
 
