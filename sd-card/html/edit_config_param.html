@@ -1480,11 +1480,20 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (textToFind == undefined)
 					continue;
 
+				_isFound = false;
+				element.selectedIndex = -1;
 				for (var i = 0; i < element.options.length; i++) {
 					if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
 						element.selectedIndex = i;
+						_isFound = true;
 						break;
 					}
+				}
+				if (!_isFound)
+				{
+					_zw_txt = "In the selectd field the value '" + textToFind + "' in the parameter '";
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
+					alert(_zw_txt);
 				}
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
@@ -1512,12 +1521,22 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (textToFind == undefined)
 					continue;
 				
+				_isFound = false;
+				element.selectedIndex = -1;
 				for (var i = 0; i < element.options.length; i++) {
 					if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
 						element.selectedIndex = i;
+						_isFound = true;
 						break;
 					}
 				}
+				if (!_isFound)
+				{
+					_zw_txt = "In the selectd field the value '" + textToFind + "' in the section '";
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
+					alert(_zw_txt);
+				}
+
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
 				element.checked = _param[_cat][_name]["value"+j] == "true";

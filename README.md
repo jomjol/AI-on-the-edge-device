@@ -54,6 +54,16 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-02-15)
+
+- Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
+
+Rolling (2022-02-13)
+
+- HTML: check select able values for consistency
+
+
+
 ##### 10.4.0 - Stability Increase (2022-02-12)
 
 - Graphical configuration: select available neural network files (*.tfl, *.tflite) from drop down menu

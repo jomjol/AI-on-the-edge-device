@@ -327,7 +327,7 @@ string ClassFlowControll::getReadoutAll(int _type)
             out = out + (*numbers)[i]->name + "\t";
             switch (_type) {
                 case READOUT_TYPE_VALUE:
-                    out = out + (*numbers)[i]->ReturnValueNoError;
+                    out = out + (*numbers)[i]->ReturnValue;
                     break;
                 case READOUT_TYPE_PREVALUE:
                     if (flowpostprocessing->PreValueUse)
@@ -643,8 +643,8 @@ string ClassFlowControll::getJSON()
     {
         json += "\"" + (*NUMBERS)[i]->name + "\":\n";
         json += "  {\n";
-        if ((*NUMBERS)[i]->ReturnValueNoError.length() > 0)
-            json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValueNoError          + ",\n";
+        if ((*NUMBERS)[i]->ReturnValue.length() > 0)
+            json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValue          + ",\n";
         else
             json += "    \"value\": \"\",\n";
         json += "    \"raw\": \""        + (*NUMBERS)[i]->ReturnRawValue              + "\",\n";

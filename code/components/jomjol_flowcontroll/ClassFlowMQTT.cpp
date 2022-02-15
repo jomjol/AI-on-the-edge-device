@@ -157,7 +157,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
     MQTTPublish(zw, freeheapmem);
 
-    zw = maintopic + "/" + "Wifi RSSI";
+    zw = maintopic + "/" + "wifiRSSI";
     char rssi[11];
     sprintf(rssi, "%d", get_WIFI_RSSI());
     MQTTPublish(zw, rssi);
@@ -169,7 +169,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
-            result =  (*NUMBERS)[i]->ReturnValueNoError;
+            result =  (*NUMBERS)[i]->ReturnValue;
             resultraw =  (*NUMBERS)[i]->ReturnRawValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
