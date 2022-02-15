@@ -57,6 +57,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ##### Rolling (2022-02-15)
 
 - Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
+- MQTT: changed wifi naming to "wifiRSSI"
 
 Rolling (2022-02-13)
 
