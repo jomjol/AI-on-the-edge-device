@@ -11,6 +11,16 @@
 
 ____
 
+#### #24 Show Mqtt state directly in Webserver
+
+* Show MQTT log in Web page. E.g. connection established or failed to connect...
+
+
+#### #23 CPU Temp and Mqtt values
+
+* Show the CPU Temp directly in Webpage. Also add the value to MQTT sending
+
+
 #### #22 Direct hint to the different neural network files in the other repositories
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/644
