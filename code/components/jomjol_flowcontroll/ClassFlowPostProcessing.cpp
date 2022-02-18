@@ -626,7 +626,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
 
-        printf("RetunrRawValue %s", NUMBERS[j]->ReturnRawValue.c_str());  
+        printf("ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());  
 
 
         if (IgnoreLeadingNaN)               
@@ -676,7 +676,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             else
                 _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
 
-            if (abs(_ratedifference) > NUMBERS[j]->MaxRateValue)
+            if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue))
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -829,14 +829,14 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     while (pot <= pot_max)
     {
         zw = input / pow(10, pot-1);
-        aktdigit_before = ((int) round(zw) + 10) % 10;
+        aktdigit_before = ((int) zw) % 10;
         zw = _preValue / pow(10, pot-1);
-        olddigit_before = ((int) round(zw) + 10) % 10;
+        olddigit_before = ((int) zw) % 10;
 
         zw = input / pow(10, pot);
-        aktdigit = ((int) round(zw) + 10) % 10;
+        aktdigit = ((int) zw) % 10;
         zw = _preValue / pow(10, pot);
-        olddigit = ((int) round(zw) + 10) % 10;
+        olddigit = ((int) zw) % 10;
 
         no_nulldurchgang = (olddigit_before <= aktdigit_before);
 

@@ -46,7 +46,6 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ### Known Issues
 
 * slow response of web server during picture analysis
-* ~~spontaneous reboots (mostly due to html access during image processing)~~  --> solved since v10.3.0
 
 **General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
 
@@ -54,14 +53,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-02-15)
+##### 10.5.0 - Stability Increase (2022-02-18)
 
-- Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
 - MQTT: changed wifi naming to "wifiRSSI"
 
-Rolling (2022-02-13)
-
 - HTML: check select able values for consistency
+- Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
+- Bug Fix: corrected error in "Check Consistency Increase"
 
 
 

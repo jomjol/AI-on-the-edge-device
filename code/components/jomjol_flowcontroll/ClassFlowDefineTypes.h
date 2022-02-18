@@ -39,7 +39,6 @@ struct NumberPost {
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
     string ReturnPreValue;  // korrigierter Rückgabewert ohne Fehlermeldung
-//    string ReturnValueNoError;
     string ErrorMessageText;        // Fehlermeldung bei Consistency Check
     int AnzahlAnalog;
     int AnzahlDigital;
