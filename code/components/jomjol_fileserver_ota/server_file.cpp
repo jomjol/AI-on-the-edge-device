@@ -74,10 +74,10 @@ using namespace std;
 
 esp_err_t get_tflite_file_handler(httpd_req_t *req)
 {
-    DIR *verzeichnis;
-    struct dirent *files;
+//    DIR *verzeichnis;
+//    struct dirent *files;
     struct dirent *entry;
-    struct stat entry_stat;
+//    struct stat entry_stat;
 
 
     std::string _filename, _fileext;

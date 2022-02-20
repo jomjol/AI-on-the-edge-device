@@ -647,11 +647,14 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
             NUMBERS[j]->ReturnValue.erase(0, 1);
 
-
         NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency)
+        {
             NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
+        }
+
+
 
         if (!NUMBERS[j]->AllowNegativeRates)
         {
@@ -687,8 +690,12 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         NUMBERS[j]->lastvalue = imagetime;
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+        NUMBERS[j]->PreValueOkay = true;
 
+
+        NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+
         NUMBERS[j]->ErrorMessageText = "no error";
         UpdatePreValueINI = true;
 

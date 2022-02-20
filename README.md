@@ -53,10 +53,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 10.5.0 - Stability Increase (2022-02-18)
+##### 10.5.1 - Stability Increase (2022-02-20)
 
+- **NEW 10.5.1:** Bug Fix: wrong return value & PreValue status, HTML: SSID & IP were not displayed 
 - MQTT: changed wifi naming to "wifiRSSI"
-
 - HTML: check select able values for consistency
 - Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
 - Bug Fix: corrected error in "Check Consistency Increase"
