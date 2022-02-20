@@ -55,7 +55,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### 10.5.1 - Stability Increase (2022-02-20)
 
-- **NEW 10.5.1:** Bug Fix: wrong return value & PreValue status, HTML: SSID & IP were not displayed 
+- **NEW 10.5.1:** Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
 - MQTT: changed wifi naming to "wifiRSSI"
 - HTML: check select able values for consistency
 - Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)

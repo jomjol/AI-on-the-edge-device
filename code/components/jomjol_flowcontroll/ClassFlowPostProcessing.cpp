@@ -605,6 +605,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
         NUMBERS[j]->ReturnRawValue = "";
+        NUMBERS[j]->ReturnRateValue = "";
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
@@ -670,8 +671,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
         difference /= 60;  
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+        NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
-        if (NUMBERS[j]->useMaxRateValue)
+        if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay)
         {
             float _ratedifference;                                                   
             if (NUMBERS[j]->RateType == RateChange)
