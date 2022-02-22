@@ -686,6 +686,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
+                NUMBERS[j]->ReturnRateValue = "";
                 continue;
             }
         }
