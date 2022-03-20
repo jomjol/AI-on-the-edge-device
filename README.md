@@ -4,11 +4,10 @@ This is an example of Artificial Intelligence (AI) calculations on a very cheap 
 
 ### Details on **function**, **installation** and **configuration** can be found on the **[Wiki Page](https://github.com/jomjol/AI-on-the-edge-device/wiki)**
 
-A 3d-printable housing can be found here: https://www.thingiverse.com/thing:4573481
-
-or here https://www.thingiverse.com/thing:5028229
-
-respectively ESP32-Cam housing only: https://www.thingiverse.com/thing:4571627
+A 3d-printable housing can be found here:
+  - https://www.thingiverse.com/thing:4573481 (Water Meter)
+  - https://www.thingiverse.com/thing:5028229 (Power Meter)
+  - https://www.thingiverse.com/thing:4571627 (ESP32-Cam housing only)
 
 <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
 
@@ -45,20 +44,24 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ## Change log
 ### Known Issues
 
-* slow response of web server during picture analysis
+* Slow response of web server during picture analysis
 
-**General remark:** Beside the `firmware.bin`, typically also the content of `/html` needs to be updated!
+**General remark:** Besides the file `firmware.bin`, typically the content of `/html` will need to be updated!
 
 ------
 
 
 
+##### Rolling (2022-03-20)
+
+- MQTT: implemented "Retain Flag" - not tested in detail yet 
+
 ##### 10.5.2 - Stability Increase (2022-02-22)
 
-- **NEW 10.5.2:** Bug Fix: wrong `firmware.bin` (no rate update)
+- NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
 - NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
 - MQTT: changed wifi naming to "wifiRSSI"
-- HTML: check select able values for consistency
+- HTML: check selectable values for consistency
 - Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
 - Bug Fix: corrected error in "Check Consistency Increase"
 
@@ -67,8 +70,8 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 ##### 10.4.0 - Stability Increase (2022-02-12)
 
 - Graphical configuration: select available neural network files (*.tfl, *.tflite) from drop down menu
-- OTA-update: add option to upload tfl / tflite files to the correct locatioin (`/config/`)
-  - in future the new files will also be copied to the `firmware` directory of the repository
+- OTA-update: add option to upload tfl / tflite files to the correct location (`/config/`)
+  - In the future the new files will also be copied to the `firmware` directory of the repository
 - Added Wifi RSSI to MQTT information
 - Updated analog neural network file (`ana-s3-q-20220105.tflite`)
 - Updated digital neural network file (`dig-s1-q-20220102.tflite`)
@@ -81,12 +84,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 - Implemented LED flash dimming (`LEDIntensity`). 
   Remark: as auto illumination in the camera is used, this is rather for energy saving. It will not help reducing reflections
 - Additional camera parameters: saturation, contrast (although not too much impact yet)
-- Readings with not automatically removable "N"s are handled like "error" --> no return value in the field "value" anymore 
-  (still reported back via field "raw value")
+- Some readings will have removable "N"s that can not be removed automatically and are handled with an "error" --> no return value in the field "value" anymore (still reported back via field "raw value")
 - Updated esp32 camera hardware driver
-- Bug fix: MQTT, html improvements
+- Bug fix: MQTT, HTML improvements
 
-**ATTENTION:  The new ESP32 camera hardware driver is much more stable on newer OV2640  versions (no or much less reboots) but seems to be not fully compatible with older versions.**
+**ATTENTION:  The new ESP32 camera hardware driver is much more stable on newer OV2640 versions (no or much less reboots) but seems to be not fully compatible with older versions.**
 
 * If you have problem with stalled systems you can try the following
   - Update the parameter `ImageQuality` to `12` instead of current value `5` (manually in the `config.ini`)
@@ -95,8 +97,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### 10.2.0 - Stability Increase (2022-01-14)
 
-- Due to the update camera driver, the image looks different and a new setup might be needed
-
+- Due to the updated camera driver, the image looks different and a new setup might be needed
   - Update reference image
   - Update Alignment marks
 
@@ -110,7 +111,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 - Bug Fix MQTT problem
 - Issue:
-  - Changing from v9.x to 10.x the MQTT-paramter "Topic" was renamed  into "MainTopic" to address multiple number meters This renaming should have been done automatically in the background  within the graphical configuration, but was not working. Instead the  parameter "Topic" was deleted and "MainTopic" was set to disabled and  "undefined".
+  - Changing from v9.x to 10.x the MQTT-parameter "Topic" was renamed into "MainTopic" to address multiple number meters. This renaming should have been done automatically in the background within the graphical configuration, but was not working. Instead the parameter "Topic" was deleted and "MainTopic" was set to disabled and "undefined".
 - ToDo
   - Update the `html.zip`
   - If old `config.ini` available: copy it to `/config`, open the graphical configuration and save it again.
@@ -167,7 +168,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### 9.0.0 - External Illumination (2021-10-23)
 
-* Implementation of external illumination to adjust positioning, brightness and color of the illumination now individually
+* Implementation of external illumination to adjust positioning, brightness and color of the illumination now set individually
   * Technical details can be found in the wiki: https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED
   <img src="https://raw.githubusercontent.com/jomjol/ai-on-the-edge-device/master/images/intern_vs_external.jpg" width="500">
 * New housing published for external LEDs and small clearing: https://www.thingiverse.com/thing:5028229
@@ -177,9 +178,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-## Additional ideas
+## Additional Ideas
 
-There are some ideas and feature request, which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)
+There are some ideas and feature requests which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)
 
 
 
@@ -187,7 +188,7 @@ There are some ideas and feature request, which are not followed currently - mai
 
 ## History
 
-##### 8.5.0 - Multi Meter Support (2021-10-07)
+##### 8.5.0 Multi Meter Support (2021-10-07)
 
 ##### 7.1.2 MQTT-Update - (2021-06-17)
 

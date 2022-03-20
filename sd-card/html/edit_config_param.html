@@ -636,6 +636,23 @@ textarea {
 				Password for MQTT authentication
 			</td>
 		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="MQTT_SetRetainFlag_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "SetRetainFlag")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="MQTT_SetRetainFlag_text" style="color:black;">Enable MQTT Retain Flag</class>
+			</td>
+			<td>
+				<select id="MQTT_SetRetainFlag_value1">
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable or disable the retain flag for all MQTT entries
+			</td>
+		</tr>
 	
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
@@ -1792,6 +1809,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
+	WriteParameter(param, category, "MQTT", "SetRetainFlag", true);
 	
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
@@ -1885,6 +1903,7 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
+	ReadParameter(param, "MQTT", "SetRetainFlag", true);	
 
 	ReadParameter(param, "GPIO", "IO0", true);
 	ReadParameter(param, "GPIO", "IO1", true);

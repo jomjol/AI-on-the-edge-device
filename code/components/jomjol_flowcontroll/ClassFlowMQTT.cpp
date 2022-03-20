@@ -25,7 +25,8 @@ void ClassFlowMQTT::SetInitialParameter(void)
     OldValue = "";
     flowpostprocessing = NULL;  
     user = "";
-    password = "";   
+    password = ""; 
+    SetRetainFlag = 0;  
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
@@ -99,6 +100,12 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->uri = zerlegt[1];
         }
+        if ((toUpper(zerlegt[0]) == "SETRETAINFLAG") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                SetRetainFlag = 1;  
+        }
+
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
@@ -118,7 +125,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         mainerrortopic = maintopic + "/connection";
         printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
         MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
-        MQTTPublish(mainerrortopic, "connected");
+        MQTTPublish(mainerrortopic, "connected", SetRetainFlag);
         MQTTenable = true;
     }
    
@@ -150,17 +157,17 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     zw = maintopic + "/" + "uptime";
     char uptimeStr[11];
     sprintf(uptimeStr, "%ld", (long)getUpTime());
-    MQTTPublish(zw, uptimeStr);
+    MQTTPublish(zw, uptimeStr, SetRetainFlag);
 
     zw = maintopic + "/" + "freeMem";
     char freeheapmem[11];
     sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
-    MQTTPublish(zw, freeheapmem);
+    MQTTPublish(zw, freeheapmem, SetRetainFlag);
 
     zw = maintopic + "/" + "wifiRSSI";
     char rssi[11];
     sprintf(rssi, "%d", get_WIFI_RSSI());
-    MQTTPublish(zw, rssi);
+    MQTTPublish(zw, rssi, SetRetainFlag);
 
 
     if (flowpostprocessing)
@@ -183,23 +190,23 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             zw = namenumber + "value"; 
             if (result.length() > 0)   
-                MQTTPublish(zw, result);
+                MQTTPublish(zw, result, SetRetainFlag);
 
             zw = namenumber + "error"; 
             if (resulterror.length() > 0)  
-                MQTTPublish(zw, resulterror, 1);
+                MQTTPublish(zw, resulterror, SetRetainFlag);
 
             zw = namenumber + "rate"; 
             if (resultrate.length() > 0)   
-                MQTTPublish(zw, resultrate);
+                MQTTPublish(zw, resultrate, SetRetainFlag);
 
             zw = namenumber + "raw"; 
             if (resultraw.length() > 0)   
-                MQTTPublish(zw, resultraw);
+                MQTTPublish(zw, resultraw, SetRetainFlag);
 
             zw = namenumber + "timestamp";
             if (resulttimestamp.length() > 0)
-                MQTTPublish(zw, resulttimestamp);
+                MQTTPublish(zw, resulttimestamp, SetRetainFlag);
 
 
             std::string json = "";
@@ -218,7 +225,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             json += ",\"timestamp\":\""+resulttimestamp+"\"}";
 
             zw = namenumber + "json";
-            MQTTPublish(zw, json);
+            MQTTPublish(zw, json, SetRetainFlag);
         }
     }
     else
@@ -234,7 +241,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                     result = result + "\t" + zw;
             }
         }
-        MQTTPublish(topic, result);
+        MQTTPublish(topic, result, SetRetainFlag);
     }
     
     OldValue = result;

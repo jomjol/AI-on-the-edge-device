@@ -124,6 +124,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
+     ParamAddValue(param, catname, "SetRetainFlag");
      
      var catname = "GPIO";
      category[catname] = new Object(); 

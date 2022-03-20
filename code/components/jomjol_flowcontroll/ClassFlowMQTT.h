@@ -13,6 +13,7 @@ protected:
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
+    int SetRetainFlag;
     bool MQTTenable;
 
     std::string maintopic, mainerrortopic; 
