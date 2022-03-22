@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-03-20)
+##### Rolling (2022-03-22)
+
+- Bug Fix: no time with fixed IP 
+
+Rolling (2022-03-20)
 
 - MQTT: implemented "Retain Flag" - not tested in detail yet 
 

@@ -151,8 +151,24 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 
     if ((_ipadr != NULL) && (_gw != NULL) && (_netmask != NULL))
     {
+    /*
+       tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA);
+        tcpip_adapter_ip_info_t ip_info;
+        int a, b, c, d;
+        strinttoip4(_ipadr, a, b, c, d);
+        IP4_ADDR(&ip_info.ip, a, b, c, d);
+        strinttoip4(_gw, a, b, c, d);
+        IP4_ADDR(&ip_info.gw, a, b, c, d);
+        strinttoip4(_netmask, a, b, c, d);
+        IP4_ADDR(&ip_info.netmask, a, b, c, d);
+
+        tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info);
+    */
+
+
         ESP_LOGI(TAG, "set IP %s, GW %s, Netmask %s manual", _ipadr, _gw, _netmask);
         esp_netif_dhcpc_stop(my_sta);
+
         esp_netif_ip_info_t ip_info;
         int a, b, c, d;
         strinttoip4(_ipadr, a, b, c, d);
@@ -167,6 +183,22 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    if ((_ipadr != NULL) && (_gw != NULL) && (_netmask != NULL))
+    {
+        if (_dns == NULL)
+            _dns = _gw;
+            
+        ESP_LOGI(TAG, "set DNS manual");
+        esp_netif_dns_info_t dns_info;
+        ip4_addr_t ip;
+        ip.addr = esp_ip4addr_aton(_dns);
+        ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
+        ESP_ERROR_CHECK(esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info));
+    }
+
+
+
 
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
