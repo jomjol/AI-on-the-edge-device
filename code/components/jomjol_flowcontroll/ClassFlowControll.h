@@ -9,6 +9,7 @@
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
 #include "ClassFlowMQTT.h"
+#include "ClassFlowInfluxDB.h"
 #include "ClassFlowCNNGeneral.h"
 
 
