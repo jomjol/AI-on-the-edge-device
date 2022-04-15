@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-03-22)
+##### Rolling (2022-04-15)
+
+- IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
+
+Rolling (2022-03-22)
 
 - Bug Fix: no time with fixed IP 
 
