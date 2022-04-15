@@ -653,7 +653,81 @@ textarea {
 				Enable or disable the retain flag for all MQTT entries
 			</td>
 		</tr>
-	
+                                 
+		<tr>
+			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > InfluxDB</h4></td>
+		</tr> 		
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_Uri_text" style="color:black;">Uri</class>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_Uri_value1">
+			</td>
+			<td style="font-size: 80%;">
+				URI of the HTTP interface to InfluxDB, without traililing slash, e.g. http://IP-Address:Port
+			</td>
+		</tr>
+                <tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="InfluxDB_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Database")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_Database_text" style="color:black;">Database</class>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_Database_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Database name in which to publish the read value.
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="InfluxDB_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Measurement")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_Measurement_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Measurement name to use to publish the read value.
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_user_text" style="color:black;">user</class>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_user_value1">
+			</td>
+			<td style="font-size: 80%;">
+				User for InfluxDB authentication
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="InfluxDB_password_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "password")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_password_text" style="color:black;">password</class>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_password_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Password for InfluxDB authentication
+			</td>
+		</tr>
+		
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
 		</tr> 			
@@ -695,7 +769,7 @@ textarea {
 				</h4>	
 			</td>
 		</tr> 	
-		
+
 		<!------------- GPIO0 begin ------------------>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td width="20px"  style="padding-left: 40px;">
@@ -1811,6 +1885,12 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "password", true);
 	WriteParameter(param, category, "MQTT", "SetRetainFlag", true);
 	
+	WriteParameter(param, category, "InfluxDB", "Uri", true);	
+	WriteParameter(param, category, "InfluxDB", "Database", true);	
+	WriteParameter(param, category, "InfluxDB", "Measurement", true);	
+	WriteParameter(param, category, "InfluxDB", "user", true);	
+	WriteParameter(param, category, "InfluxDB", "password", true);	
+
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
 	WriteParameter(param, category, "GPIO", "IO3", true);
@@ -1865,6 +1945,7 @@ function ReadParameterAll()
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
+	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
@@ -1904,6 +1985,11 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 	ReadParameter(param, "MQTT", "SetRetainFlag", true);	
+
+	ReadParameter(param, "InfluxDB", "Uri", true);	
+	ReadParameter(param, "InfluxDB", "Measurement", true);	
+	ReadParameter(param, "InfluxDB", "user", true);	
+	ReadParameter(param, "InfluxDB", "password", true);	
 
 	ReadParameter(param, "GPIO", "IO0", true);
 	ReadParameter(param, "GPIO", "IO1", true);

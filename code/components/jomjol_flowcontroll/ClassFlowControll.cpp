@@ -49,6 +49,9 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
         _classname = "ClassFlowMQTT";
     }
+    if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)){
+        _classname = "ClassFlowInfluxDB";
+    }
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
@@ -73,6 +76,8 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         return ("Digitalization of ROIs");
     if (_input.compare("ClassFlowMQTT") == 0)
         return ("Sending MQTT");
+    if (_input.compare("ClassFlowInfluxDB") == 0)
+        return ("Sending InfluxDB");
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Processing");
 
@@ -180,6 +185,8 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
+    if (toUpper(_type).compare("[INFLUXDB]") == 0)
+        cfc = new ClassFlowInfluxDB(&FlowControll);
         
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
