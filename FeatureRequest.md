@@ -11,6 +11,14 @@
 
 ____
 
+
+
+#### #25 Trigger Measurement via MQTT
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/727
+
+  
+
 #### #24 Show Mqtt state directly in Webserver
 
 * Show MQTT log in Web page. E.g. connection established or failed to connect...
@@ -48,9 +56,9 @@ ____
 
   
 
-#### #18 Document WLAN-strength in web page
+#### ~~#18 Document WLAN-strength in web page~~
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/563
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/563~~
 
 
 
@@ -101,9 +109,9 @@ ____
 
   
 
-#### #12 Less reboots due to memory leakage
+#### ~~#12 Less reboots due to memory leakage~~
 
-* Issue: #414 & #425  #430
+* ~~Issue: #414 & #425  #430~~
 
   
 
