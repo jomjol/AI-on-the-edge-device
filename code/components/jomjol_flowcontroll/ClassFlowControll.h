@@ -11,6 +11,7 @@
 #include "ClassFlowMQTT.h"
 #include "ClassFlowInfluxDB.h"
 #include "ClassFlowCNNGeneral.h"
+#include "ClassFlowWriteList.h"
 
 
 #define READOUT_TYPE_VALUE 0
@@ -49,7 +50,7 @@ public:
 	string UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
-	string getJSON();
+	string getJSON(std::string _id = "", std::string _mac = "");
 
 	string TranslateAktstatus(std::string _input);
 

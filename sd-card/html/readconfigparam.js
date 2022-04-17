@@ -83,9 +83,11 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Model");
+     ParamAddValue(param, catname, "CNNGoodThreshold", 1); 
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
-     ParamAddValue(param, catname, "ModelInputSize", 2);     
+     ParamAddValue(param, catname, "ModelInputSize", 2); 
+         
 
      var catname = "Analog";
      category[catname] = new Object(); 

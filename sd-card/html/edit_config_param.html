@@ -298,6 +298,22 @@ textarea {
 				Path to CNN model file for image recognition
 			</td>
 		</tr>
+		
+		<tr class="expert"  id="ex91">
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="Digits_CNNGoodThreshold_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "CNNGoodThreshold")' unchecked >
+			</td>
+			<td>
+				<class id="Digits_CNNGoodThreshold_text" style="color:black;">CNNGoodThreshold</class>
+			</td>
+			<td>
+				<input type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1">
+			</td>
+			<td style="font-size: 80%;">
+				EXPERIMENTAL - NOT WORKING FOR ALL CNNs! - Threshold above which the classification should be to accept the value (only for digits meaningfull)
+			</td>
+		</tr>
+
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Digits_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogImageLocation")' unchecked >
@@ -728,6 +744,7 @@ textarea {
 			</td>
 		</tr>
 		
+	
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
 		</tr> 			
@@ -1860,21 +1877,18 @@ function UpdateInput() {
 	WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
 	WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);		
 
-//	WriteParameter(param, category, "Digits", "Model", false);		
+	WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
 	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
 	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
 	WriteParameter(param, category, "Digits", "ModelInputSize", false);	
 	
-//	WriteParameter(param, category, "Analog", "Model", false);		
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
-//	WriteParameter(param, category, "Analog", "ExtendedResolution", true);		
 	WriteParameter(param, category, "Analog", "ModelInputSize", false);		
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
-//	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true);		
 	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
 	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
@@ -1963,7 +1977,8 @@ function ReadParameterAll()
 	ReadParameter(param, "Alignment", "SearchFieldY", false);
 	ReadParameter(param, "Alignment", "AlignmentAlgo", true);
 
-	ReadParameter(param, "Digits", "Model", false);		
+	ReadParameter(param, "Digits", "Model", false);
+	ReadParameter(param, "Digits", "CNNGoodThreshold", true);
 	ReadParameter(param, "Digits", "LogImageLocation", true);		
 	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
 	ReadParameter(param, "Digits", "ModelInputSize", false);

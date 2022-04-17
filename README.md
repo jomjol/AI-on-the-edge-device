@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-04-15)
+##### Rolling (2022-04-17)
+
+- Internal preparation for new neural network type (digits with subdigit values)
+
+Rolling (2022-04-15)
 
 - IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
 

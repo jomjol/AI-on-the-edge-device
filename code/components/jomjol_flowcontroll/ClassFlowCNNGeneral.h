@@ -11,6 +11,7 @@ enum t_CNNType {
     Digital,
     DigitalHyprid,
     DigitalHyprid10,
+    DoubleHyprid10,
     None
  };
 
@@ -20,6 +21,7 @@ class ClassFlowCNNGeneral :
 protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
+    float CNNGoodThreshold;
 
     string cnnmodelfile;
     int modelxsize, modelysize;
@@ -44,7 +46,7 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution);   
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1);   
 
     void DrawROI(CImageBasis *_zw); 
 

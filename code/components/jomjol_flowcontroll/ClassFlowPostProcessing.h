@@ -60,6 +60,8 @@ public:
     string GetPreValue(std::string _number = "");
     void SetPreValue(float zw, string _numbers, bool _extern = false);
 
+    std::string GetJSON(std::string _id = "", std::string _mac = "", std::string _lineend = "\n");
+
     void UpdateNachkommaDecimalShift();
 
     std::vector<NumberPost*>* GetNumbers(){return &NUMBERS;};

@@ -9,7 +9,6 @@
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
-//#include "tensorflow/lite/version.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -65,8 +64,6 @@ class CTfLiteClass
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
         int GetAnzOutPut(bool silent = true);        
-//        void GetOutPut();
-//        int GetOutClassification();
         int GetOutClassification(int _von = -1, int _bis = -1);
 
         int GetClassFromImageBasis(CImageBasis *rs);

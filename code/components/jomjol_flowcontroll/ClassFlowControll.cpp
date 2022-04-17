@@ -70,8 +70,6 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         return ("Take Image");
     if (_input.compare("ClassFlowAlignment") == 0)
         return ("Aligning");
-    //if (_input.compare("ClassFlowAnalog") == 0)
-    //    return ("Analog ROIs");
     if (_input.compare("ClassFlowCNNGeneral") == 0)
         return ("Digitalization of ROIs");
     if (_input.compare("ClassFlowMQTT") == 0)
@@ -79,6 +77,8 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     if (_input.compare("ClassFlowInfluxDB") == 0)
         return ("Sending InfluxDB");
     if (_input.compare("ClassFlowPostProcessing") == 0)
+        return ("Processing");
+    if (_input.compare("ClassFlowWriteList") == 0)
         return ("Processing");
 
     return "Unkown Status";
@@ -185,9 +185,13 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
+
     if (toUpper(_type).compare("[INFLUXDB]") == 0)
         cfc = new ClassFlowInfluxDB(&FlowControll);
         
+    if (toUpper(_type).compare("[WRITELIST]") == 0)
+        cfc = new ClassFlowWriteList(&FlowControll);
+
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
         cfc = new ClassFlowPostProcessing(&FlowControll, flowanalog, flowdigit); 
@@ -639,35 +643,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     return result;
 }
 
-
-string ClassFlowControll::getJSON()
+string ClassFlowControll::getJSON(std::string _id, std::string _mac)
 {
-    std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
-
-    std::string json="{\n";
-
-    for (int i = 0; i < (*NUMBERS).size(); ++i)
-    {
-        json += "\"" + (*NUMBERS)[i]->name + "\":\n";
-        json += "  {\n";
-        if ((*NUMBERS)[i]->ReturnValue.length() > 0)
-            json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValue          + ",\n";
-        else
-            json += "    \"value\": \"\",\n";
-        json += "    \"raw\": \""        + (*NUMBERS)[i]->ReturnRawValue              + "\",\n";
-        json += "    \"error\": \""     + (*NUMBERS)[i]->ErrorMessageText             + "\",\n";
-        if ((*NUMBERS)[i]->ReturnRateValue.length() > 0)
-            json += "    \"rate\": "      + (*NUMBERS)[i]->ReturnRateValue                + ",\n";
-        else
-            json += "    \"rate\": \"\",\n";
-
-        json += "    \"timestamp\": \"" + (*NUMBERS)[i]->timeStamp                    + "\"\n";
-        if ((i+1) < (*NUMBERS).size())
-            json += "  },\n";
-        else
-            json += "  }\n";
-    }
-    json += "}";
-
-    return json;
+    return flowpostprocessing->GetJSON(_id, _mac);
 }
