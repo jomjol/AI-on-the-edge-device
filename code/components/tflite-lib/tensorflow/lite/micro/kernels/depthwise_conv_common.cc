@@ -94,13 +94,18 @@ TfLiteStatus CalculateOpDataDepthwiseConv(
       params.dilation_width_factor, height, width, filter_height, filter_width,
       padding, &out_height, &out_width);
 
-  const TfLiteTensor* input = GetInput(context, node, kConvInputTensor);
+  MicroContext* micro_context = GetMicroContext(context);
+
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kConvInputTensor);
   TF_LITE_ENSURE(context, input != nullptr);
-  const TfLiteTensor* filter = GetInput(context, node, kConvWeightsTensor);
+  TfLiteTensor* filter =
+      micro_context->AllocateTempInputTensor(node, kConvWeightsTensor);
   TF_LITE_ENSURE(context, filter != nullptr);
-  const TfLiteTensor* bias =
-      GetOptionalInputTensor(context, node, kConvBiasTensor);
-  TfLiteTensor* output = GetOutput(context, node, kConvOutputTensor);
+  TfLiteTensor* bias =
+      micro_context->AllocateTempInputTensor(node, kConvBiasTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kConvOutputTensor);
   TF_LITE_ENSURE(context, output != nullptr);
 
   // Note that quantized inference requires that all tensors have their
@@ -120,6 +125,11 @@ TfLiteStatus CalculateOpDataDepthwiseConv(
   data->filter_zero_point = filter->params.zero_point;
   data->output_zero_point = output->params.zero_point;
 
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(filter);
+  micro_context->DeallocateTempTfLiteTensor(bias);
+  micro_context->DeallocateTempTfLiteTensor(output);
+
   return kTfLiteOk;
 }
 
@@ -130,14 +140,16 @@ TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
   OpDataConv* data = static_cast<OpDataConv*>(node->user_data);
   const auto& params =
       *(static_cast<const TfLiteDepthwiseConvParams*>(node->builtin_data));
+  MicroContext* micro_context = GetMicroContext(context);
 
-  TfLiteTensor* output = GetOutput(context, node, kDepthwiseConvOutputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kDepthwiseConvOutputTensor);
   TF_LITE_ENSURE(context, output != nullptr);
-  const TfLiteTensor* input =
-      GetInput(context, node, kDepthwiseConvInputTensor);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kDepthwiseConvInputTensor);
   TF_LITE_ENSURE(context, input != nullptr);
-  const TfLiteTensor* filter =
-      GetInput(context, node, kDepthwiseConvWeightsTensor);
+  TfLiteTensor* filter =
+      micro_context->AllocateTempInputTensor(node, kDepthwiseConvWeightsTensor);
   TF_LITE_ENSURE(context, filter != nullptr);
 
   const int input_width = input->dims->data[2];
@@ -179,6 +191,10 @@ TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_STATUS(CalculateOpDataDepthwiseConv(
       context, node, params, input_width, input_height, filter_width,
       filter_height, output_width, output_height, input->type, data));
+
+  micro_context->DeallocateTempTfLiteTensor(output);
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(filter);
 
   return kTfLiteOk;
 }

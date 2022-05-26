@@ -32,13 +32,17 @@ const int kHardSwishInputTensor = 0;
 const int kHardSwishOutputTensor = 0;
 
 TfLiteStatus HardSwishPrepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
+
   TFLITE_DCHECK(node->user_data != nullptr);
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
-  const TfLiteTensor* input = GetInput(context, node, kHardSwishInputTensor);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kHardSwishInputTensor);
   TF_LITE_ENSURE(context, input != nullptr);
-  TfLiteTensor* output = GetOutput(context, node, kHardSwishOutputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kHardSwishOutputTensor);
   TF_LITE_ENSURE(context, output != nullptr);
 
   if (input->type == kTfLiteInt8) {
@@ -72,6 +76,9 @@ TfLiteStatus HardSwishPrepare(TfLiteContext* context, TfLiteNode* node) {
         reluish_multiplier_fixedpoint_int32,
         &params->reluish_multiplier_fixedpoint_int16);
   }
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(output);
 
   return kTfLiteOk;
 }

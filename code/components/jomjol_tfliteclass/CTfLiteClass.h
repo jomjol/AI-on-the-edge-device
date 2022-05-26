@@ -71,5 +71,6 @@ class CTfLiteClass
 
         float GetOutputValue(int nr);
         void GetInputDimension(bool silent);
+        int ReadInputDimenstion(int _dim);
 };
 

@@ -13,7 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+#include <algorithm>
 #include <numeric>
+#include <tuple>
 
 #include "flatbuffers/flexbuffers.h"
 #include "tensorflow/lite/c/builtin_op_data.h"
@@ -152,14 +154,17 @@ void Free(TfLiteContext* context, void* buffer) {}
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   auto* op_data = static_cast<OpData*>(node->user_data);
 
+  MicroContext* micro_context = GetMicroContext(context);
+
   // Inputs: box_encodings, scores, anchors
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 3);
-  const TfLiteTensor* input_box_encodings =
-      GetInput(context, node, kInputTensorBoxEncodings);
-  const TfLiteTensor* input_class_predictions =
-      GetInput(context, node, kInputTensorClassPredictions);
-  const TfLiteTensor* input_anchors =
-      GetInput(context, node, kInputTensorAnchors);
+  TfLiteTensor* input_box_encodings =
+      micro_context->AllocateTempInputTensor(node, kInputTensorBoxEncodings);
+  TfLiteTensor* input_class_predictions =
+      micro_context->AllocateTempInputTensor(node,
+                                             kInputTensorClassPredictions);
+  TfLiteTensor* input_anchors =
+      micro_context->AllocateTempInputTensor(node, kInputTensorAnchors);
   TF_LITE_ENSURE_EQ(context, NumDimensions(input_box_encodings), 3);
   TF_LITE_ENSURE_EQ(context, NumDimensions(input_class_predictions), 3);
   TF_LITE_ENSURE_EQ(context, NumDimensions(input_anchors), 2);
@@ -216,6 +221,10 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   // Outputs: detection_boxes, detection_scores, detection_classes,
   // num_detections
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 4);
+
+  micro_context->DeallocateTempTfLiteTensor(input_box_encodings);
+  micro_context->DeallocateTempTfLiteTensor(input_class_predictions);
+  micro_context->DeallocateTempTfLiteTensor(input_anchors);
 
   return kTfLiteOk;
 }
@@ -313,9 +322,10 @@ TfLiteStatus DecodeCenterSizeBoxes(TfLiteContext* context, TfLiteNode* node,
 void DecreasingPartialArgSort(const float* values, int num_values,
                               int num_to_sort, int* indices) {
   std::iota(indices, indices + num_values, 0);
-  std::partial_sort(
-      indices, indices + num_to_sort, indices + num_values,
-      [&values](const int i, const int j) { return values[i] > values[j]; });
+  std::partial_sort(indices, indices + num_to_sort, indices + num_values,
+                    [&values](const int i, const int j) {
+                      return std::tie(values[i], j) > std::tie(values[j], i);
+                    });
 }
 
 template <typename Compare>

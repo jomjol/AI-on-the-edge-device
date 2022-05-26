@@ -24,6 +24,7 @@ limitations under the License.
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "tensorflow/lite/micro/micro_allocator.h"
+#include "tensorflow/lite/micro/micro_context.h"
 #include "tensorflow/lite/micro/micro_graph.h"
 #include "tensorflow/lite/micro/micro_op_resolver.h"
 #include "tensorflow/lite/micro/micro_profiler.h"
@@ -78,10 +79,6 @@ class MicroInterpreter {
   // pointer should be at least as long as this interpreter. TFLM supports only
   // one external context.
   TfLiteStatus SetMicroExternalContext(void* external_context_payload);
-
-  // This function is used by the TfLiteContext::GetExternalContext() to get the
-  // external context.
-  void* GetMicroExternalContext();
 
   TfLiteTensor* input(size_t index);
   size_t inputs_size() const {
@@ -150,26 +147,6 @@ class MicroInterpreter {
   // Gets the current subgraph index used from within context methods.
   int get_subgraph_index() { return graph_.GetCurrentSubgraphIndex(); }
 
-  // Static functions that are bound to the TfLiteContext instance:
-  static void* AllocatePersistentBuffer(TfLiteContext* ctx, size_t bytes);
-  static TfLiteStatus RequestScratchBufferInArena(TfLiteContext* ctx,
-                                                  size_t bytes,
-                                                  int* buffer_idx);
-  static void* GetScratchBuffer(TfLiteContext* ctx, int buffer_idx);
-  static void ReportOpError(struct TfLiteContext* context, const char* format,
-                            ...);
-  static TfLiteTensor* GetTensor(const struct TfLiteContext* context,
-                                 int tensor_idx);
-  static TfLiteEvalTensor* GetEvalTensor(const struct TfLiteContext* context,
-                                         int tensor_idx);
-  static TfLiteStatus GetGraph(struct TfLiteContext* context,
-                               TfLiteIntArray** args);
-
-  // This callback is an implementation for TfLiteContext::GetExternalContext
-  // interface.
-  static TfLiteExternalContext* GetExternalContext(
-      TfLiteContext* context, TfLiteExternalContextType unused);
-
   const Model* model_;
   const MicroOpResolver& op_resolver_;
   ErrorReporter* error_reporter_;
@@ -181,12 +158,13 @@ class MicroInterpreter {
   TfLiteStatus initialization_status_;
 
   ScratchBufferHandle* scratch_buffer_handles_ = nullptr;
-  void* external_context_payload_ = nullptr;
 
   // TODO(b/162311891): Clean these pointers up when this class supports buffers
   // from TfLiteEvalTensor.
   TfLiteTensor** input_tensors_;
   TfLiteTensor** output_tensors_;
+
+  MicroContext micro_context_;
 };
 
 }  // namespace tflite

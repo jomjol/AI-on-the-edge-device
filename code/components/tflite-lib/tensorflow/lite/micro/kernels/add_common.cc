@@ -80,11 +80,15 @@ TfLiteStatus AddPrepare(TfLiteContext* context, TfLiteNode* node) {
   TFLITE_DCHECK(node->user_data != nullptr);
   TFLITE_DCHECK(node->builtin_data != nullptr);
 
-  const TfLiteTensor* input1 = GetInput(context, node, kAddInputTensor1);
+  MicroContext* micro_context = GetMicroContext(context);
+  TfLiteTensor* input1 =
+      micro_context->AllocateTempInputTensor(node, kAddInputTensor1);
   TF_LITE_ENSURE(context, input1 != nullptr);
-  const TfLiteTensor* input2 = GetInput(context, node, kAddInputTensor2);
+  TfLiteTensor* input2 =
+      micro_context->AllocateTempInputTensor(node, kAddInputTensor2);
   TF_LITE_ENSURE(context, input2 != nullptr);
-  TfLiteTensor* output = GetOutput(context, node, kAddOutputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kAddOutputTensor);
   TF_LITE_ENSURE(context, output != nullptr);
 
   OpDataAdd* data = static_cast<OpDataAdd*>(node->user_data);
@@ -93,6 +97,9 @@ TfLiteStatus AddPrepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_STATUS(
       CalculateOpDataAdd(context, params, input1, input2, output, data));
 
+  micro_context->DeallocateTempTfLiteTensor(input1);
+  micro_context->DeallocateTempTfLiteTensor(input2);
+  micro_context->DeallocateTempTfLiteTensor(output);
   return kTfLiteOk;
 }
 

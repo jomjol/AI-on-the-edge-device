@@ -24,7 +24,7 @@ protected:
     float CNNGoodThreshold;
 
     string cnnmodelfile;
-    int modelxsize, modelysize;
+    int modelxsize, modelysize, modelchannel;
     bool isLogImageSelect;
     string LogImageSelect;
     ClassFlowAlignment* flowpostalignment;
@@ -38,6 +38,8 @@ protected:
 
     bool doNeuralNetwork(string time); 
     bool doAlignAndCut(string time);
+
+    bool getNetworkParameter();
 
 public:
     ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype = AutoDetect);

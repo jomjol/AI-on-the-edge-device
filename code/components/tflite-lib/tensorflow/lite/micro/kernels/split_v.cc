@@ -74,13 +74,14 @@ TfLiteStatus SplitImpl(TfLiteContext* context, TfLiteNode* node,
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 3);
 
+  MicroContext* micro_context = GetMicroContext(context);
   // Dynamic output tensors are needed if axis tensor is not constant.
   // But Micro doesn't support dynamic memory allocation, so we only support
   // constant axis tensor for now.
-  const TfLiteTensor* axis = GetInput(context, node, 2);
+  TfLiteTensor* axis = micro_context->AllocateTempInputTensor(node, 2);
   TF_LITE_ENSURE_MSG(context, IsConstantTensor(axis),
                      "Non constant axis tensor not supported");
-
+  micro_context->DeallocateTempTfLiteTensor(axis);
   return kTfLiteOk;
 }
 

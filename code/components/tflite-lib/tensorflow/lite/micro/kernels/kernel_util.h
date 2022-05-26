@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/kernels/internal/types.h"
+#include "tensorflow/lite/micro/micro_context.h"
 
 namespace tflite {
 namespace micro {
@@ -69,23 +70,33 @@ TfLiteStatus CreateWritableTensorDimsWithCopy(TfLiteContext* context,
                                               TfLiteTensor* tensor,
                                               TfLiteEvalTensor* eval_tensor);
 
-// Returns a blob of payload data. The payload is subjected to interpretation by
-// the OP. This is the recommended API for an OP to get an external context. OP
-// should use this instead of directly calling GetExternalContext function in
-// context. Example usage:
-//
-// An application can set an external context through interpreter as below
-//     interpreter->SetMicroExternalContext(pointer_to_your_payload);
-//
-//  Inside an OP that needs this payload, it get the payload pointer by:
-//    Prepare(TfliteContext * context) {
-//       ...
-//       payload_ptr =
-//       reinterpret_cast<your_data_type>(GetMicroExternalContext(context))
-//       ...
-//    }
-//
-void* GetMicroExternalContext(TfLiteContext* context);
+// Copy all op input tensors to op output tensors. Requires all op input tensor
+// shapes and types to be identical to op output tensor shapes and types.
+TfLiteStatus CopyOpInputsToOpOutputs(TfLiteContext* context, TfLiteNode* node);
+
+// Copy all op input tensors to subgraph input tensors. Requires all op input
+// tensor shapes and types to be identical to subgraph input tensor shapes and
+// types.
+TfLiteStatus CopyOpInputsToSubgraphInputs(TfLiteContext* context,
+                                          TfLiteNode* node,
+                                          MicroGraph* graph_info,
+                                          int subgraph_idx,
+                                          int first_tensor_idx);
+
+// Copy all op output tensors to subgraph input tensors. Requires all op output
+// tensor shapes and types to be identical to subgraph input tensor shapes and
+// types.
+TfLiteStatus CopyOpOutputsToSubgraphInputs(TfLiteContext* context,
+                                           TfLiteNode* node,
+                                           MicroGraph* graph_info,
+                                           int subgraph_idx);
+
+// Copy all subgraph output tensors to op outputs. Requires all subgraph output
+// tensor shapes and types to be identical to op output tensor shapes and types.
+TfLiteStatus CopySubgraphOutputsToOpOutputs(TfLiteContext* context,
+                                            TfLiteNode* node,
+                                            MicroGraph* graph_info,
+                                            int subgraph_idx);
 
 }  // namespace micro
 }  // namespace tflite

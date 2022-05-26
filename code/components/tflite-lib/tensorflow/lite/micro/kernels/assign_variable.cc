@@ -52,21 +52,19 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
                            input_resource_id_tensor->type == kTfLiteInt32));
   TF_LITE_ENSURE_EQ(context, NumElements(input_resource_id_tensor->dims), 1);
 
-  const TfLiteTensor* input_value = GetInput(context, node, kInputValue);
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  TfLiteTensor* input_value =
+      micro_context->AllocateTempInputTensor(node, kInputValue);
   TFLITE_DCHECK(input_value != nullptr);
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
-  MicroResourceVariables* resources = graph_info->GetResourceVariables();
+  MicroGraph& graph_info = micro_context->graph();
+
+  MicroResourceVariables* resources = graph_info.GetResourceVariables();
   TF_LITE_ENSURE_OK(context,
                     resources->Allocate(input_resource_id_tensor->data.i32[0],
                                         context, input_value));
 
+  micro_context->DeallocateTempTfLiteTensor(input_value);
   return kTfLiteOk;
 }
 
@@ -79,14 +77,10 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       tflite::micro::GetEvalInput(context, node, kInputValue);
   TFLITE_DCHECK(input_value != nullptr);
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
-  MicroResourceVariables* resources = graph_info->GetResourceVariables();
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  MicroGraph& graph_info = micro_context->graph();
+
+  MicroResourceVariables* resources = graph_info.GetResourceVariables();
   if (resources == nullptr) {
     MicroPrintf(
         "ASSIGN_VARIABLE requires resource variables. Please create "

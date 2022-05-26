@@ -28,16 +28,19 @@ constexpr int kOutputTensor = 0;
 constexpr int MAX_INDICES_ND = 5;
 
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
+
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 2);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
-  const TfLiteTensor* params;
-  TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, kParams, &params));
-  const TfLiteTensor* indices;
-  TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, kIndices, &indices));
-  TfLiteTensor* output;
-  TF_LITE_ENSURE_OK(context,
-                    GetOutputSafe(context, node, kOutputTensor, &output));
+  TfLiteTensor* params = micro_context->AllocateTempInputTensor(node, kParams);
+  TF_LITE_ENSURE(context, params != nullptr);
+  TfLiteTensor* indices =
+      micro_context->AllocateTempInputTensor(node, kIndices);
+  TF_LITE_ENSURE(context, indices != nullptr);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
+  TF_LITE_ENSURE(context, output != nullptr);
 
   switch (params->type) {
     case kTfLiteFloat32:
@@ -98,6 +101,10 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     output_shape->data[output_index++] = params->dims->data[i];
   }
   output_shape->size = output_index;
+
+  micro_context->DeallocateTempTfLiteTensor(params);
+  micro_context->DeallocateTempTfLiteTensor(indices);
+  micro_context->DeallocateTempTfLiteTensor(output);
   return kTfLiteOk;
 }
 

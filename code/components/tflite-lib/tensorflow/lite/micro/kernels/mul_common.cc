@@ -37,11 +37,16 @@ void* MulInit(TfLiteContext* context, const char* buffer, size_t length) {
 
 TfLiteStatus CalculateOpDataMul(TfLiteContext* context, TfLiteNode* node,
                                 TfLiteMulParams* params, OpDataMul* data) {
-  const TfLiteTensor* input1 = GetInput(context, node, kMulInput1Tensor);
+  MicroContext* micro_context = GetMicroContext(context);
+
+  TfLiteTensor* input1 =
+      micro_context->AllocateTempInputTensor(node, kMulInput1Tensor);
   TF_LITE_ENSURE(context, input1 != nullptr);
-  const TfLiteTensor* input2 = GetInput(context, node, kMulInput2Tensor);
+  TfLiteTensor* input2 =
+      micro_context->AllocateTempInputTensor(node, kMulInput2Tensor);
   TF_LITE_ENSURE(context, input2 != nullptr);
-  TfLiteTensor* output = GetOutput(context, node, kMulOutputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kMulOutputTensor);
   TF_LITE_ENSURE(context, output != nullptr);
 
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 2);
@@ -72,6 +77,9 @@ TfLiteStatus CalculateOpDataMul(TfLiteContext* context, TfLiteNode* node,
                              &data->output_activation_max_f32);
   }
 
+  micro_context->DeallocateTempTfLiteTensor(input1);
+  micro_context->DeallocateTempTfLiteTensor(input2);
+  micro_context->DeallocateTempTfLiteTensor(output);
   return kTfLiteOk;
 }
 

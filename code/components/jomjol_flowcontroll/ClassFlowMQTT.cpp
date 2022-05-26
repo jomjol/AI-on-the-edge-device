@@ -149,6 +149,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     std::string resultraw = "";
     std::string resultrate = "";
     std::string resulttimestamp = "";
+    std::string resultchangabs = "";
     string zw = "";
     string namenumber = "";
 
@@ -180,6 +181,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             resultraw =  (*NUMBERS)[i]->ReturnRawValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
+            resultchangabs = (*NUMBERS)[i]->ReturnChangeAbsolute;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
             namenumber = (*NUMBERS)[i]->name;
@@ -199,6 +201,10 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             zw = namenumber + "rate"; 
             if (resultrate.length() > 0)   
                 MQTTPublish(zw, resultrate, SetRetainFlag);
+
+            zw = namenumber + "changeabsolut"; 
+            if (resultchangabs.length() > 0)   
+                MQTTPublish(zw, resultchangabs, SetRetainFlag);
 
             zw = namenumber + "raw"; 
             if (resultraw.length() > 0)   

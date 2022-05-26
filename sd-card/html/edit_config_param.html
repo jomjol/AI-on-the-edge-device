@@ -342,6 +342,8 @@ textarea {
 				Time to keep the separated digit images (in days -"0" = forever)
 			</td>
 		</tr>
+<!--
+
 		<tr class="expert"  id="ex9">
 			<td width="20px"  style="padding-left: 40px;">
 			</td>
@@ -356,6 +358,7 @@ textarea {
 				Size of the input image for the CNN model
 			</td>
 		</tr>
+-->
 
 		<tr id="Category_Analog_ex4">
 			<td colspan="4" style="padding-left: 20px;">
@@ -387,6 +390,8 @@ textarea {
 			<td style="font-size: 80%;"> Time to keep the separated digit images (in days -"0" = forever) </td>
 		</tr>
 
+<!--
+
 		<tr class="expert"  id="ex10">
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
@@ -396,6 +401,7 @@ textarea {
 			</td>
 			<td style="font-size: 80%;"> Size of the input image for the CNN model </td>
 		</tr>
+-->
 
 		<tr>
 			<td colspan="4" style="padding-left: 20px;"><h4>PostProcessing</h4></td>
@@ -1880,11 +1886,11 @@ function UpdateInput() {
 	WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
 	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
 	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
-	WriteParameter(param, category, "Digits", "ModelInputSize", false);	
+//	WriteParameter(param, category, "Digits", "ModelInputSize", false);	
 	
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
-	WriteParameter(param, category, "Analog", "ModelInputSize", false);		
+//	WriteParameter(param, category, "Analog", "ModelInputSize", false);		
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
@@ -1981,12 +1987,12 @@ function ReadParameterAll()
 	ReadParameter(param, "Digits", "CNNGoodThreshold", true);
 	ReadParameter(param, "Digits", "LogImageLocation", true);		
 	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
-	ReadParameter(param, "Digits", "ModelInputSize", false);
+//	ReadParameter(param, "Digits", "ModelInputSize", false);
 
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
-	ReadParameter(param, "Analog", "ModelInputSize", false);
+//	ReadParameter(param, "Analog", "ModelInputSize", false);
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		

@@ -197,33 +197,6 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
     return ((int) trunc(zahl) + 10) % 10;
 }
 
-/*
-int ClassFlowCNNGeneral::ZeigerEvalHybrid_NEU(float zahl, float zahl_vorgaenger)
-{
-    int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
-    int ergebnis, ergebnis_rating;
-
-
-    if (zahl_vorgaenger < 0) 
-        return ergebnis_vorkomma % 10;
-
-    ergebnis_rating = ergebnis_nachkomma - zahl_vorgaenger;
-    if (ergebnis_nachkomma >= 5)
-        ergebnis_rating-=5;
-    else
-        ergebnis_rating+=5;
-    ergebnis = (int) round(zahl);
-    if (ergebnis_rating < 0)
-        ergebnis-=1;
-    if (ergebnis == -1)
-        ergebnis+=10;
-
-    ergebnis = (ergebnis + 10) % 10;
-    return ergebnis;
-
-}
-*/
 
 
 int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
@@ -309,11 +282,12 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             CNNGoodThreshold = std::stof(zerlegt[1]);
         }
-        if ((toUpper(zerlegt[0]) == "MODELINPUTSIZE") && (zerlegt.size() > 2))
+/*        if ((toUpper(zerlegt[0]) == "MODELINPUTSIZE") && (zerlegt.size() > 2))
         {
             this->modelxsize = std::stoi(zerlegt[1]);
             this->modelysize = std::stoi(zerlegt[2]);
         }
+*/
         if (zerlegt.size() >= 5)
         {
             general* _analog = GetGENERAL(zerlegt[0], true);
@@ -334,11 +308,14 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+    if (!getNetworkParameter())
+        return false;
 
-   for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
+
+    for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            GENERAL[_ana]->ROI[i]->image = new CImageBasis(modelxsize, modelysize, 3);
+            GENERAL[_ana]->ROI[i]->image = new CImageBasis(modelxsize, modelysize, modelchannel);
             GENERAL[_ana]->ROI[i]->image_org = new CImageBasis(GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, 3);
         }
 
@@ -499,12 +476,10 @@ void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw)
     }
 } 
 
-bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
+bool ClassFlowCNNGeneral::getNetworkParameter()
 {
     if (disabled)
         return true;
-
-    string logPath = CreateLogFolder(time);
 
     CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
@@ -513,7 +488,6 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     if (!tflite->LoadModel(zwcnn)) {
         printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
         LogFile.WriteToFile("Cannot load model");
-
         delete tflite;
         return false;
     } 
@@ -521,6 +495,11 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
     if (CNNType == AutoDetect)
     {
+        tflite->GetInputDimension(false);
+        modelxsize = tflite->ReadInputDimenstion(0);
+        modelysize = tflite->ReadInputDimenstion(1);
+        modelchannel = tflite->ReadInputDimenstion(2);
+
         int _anzoutputdimensions = tflite->GetAnzOutPut();
         switch (_anzoutputdimensions) 
         {
@@ -548,6 +527,30 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                 printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
         }
     }
+
+    delete tflite;
+    return true;
+}
+
+bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
+{
+    if (disabled)
+        return true;
+
+    string logPath = CreateLogFolder(time);
+
+    CTfLiteClass *tflite = new CTfLiteClass;  
+    string zwcnn = "/sdcard" + cnnmodelfile;
+    zwcnn = FormatFileName(zwcnn);
+    printf(zwcnn.c_str());printf("\n");
+    if (!tflite->LoadModel(zwcnn)) {
+        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        LogFile.WriteToFile("Cannot load model");
+
+        delete tflite;
+        return false;
+    } 
+    tflite->MakeAllocate();
 
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
     {
@@ -581,14 +584,15 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         if (isLogImage)
                         {
+                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
                             if (isLogImageSelect)
                             {
                                 if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, GENERAL[_ana]->ROI[i]->name, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
                             }
                             else
                             {
-                                LogImage(logPath, GENERAL[_ana]->ROI[i]->name, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
                             }
                         }
                     } break;
@@ -617,7 +621,18 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
                         if (isLogImage)
-                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                        {
+                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            if (isLogImageSelect)
+                            {
+                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                            else
+                            {
+                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                        }
                     } break;
                 case DigitalHyprid10:
                     {
@@ -641,7 +656,18 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
                         if (isLogImage)
-                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                        {
+                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            if (isLogImageSelect)
+                            {
+                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                            else
+                            {
+                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                        }
                     } break;
 
                 case DoubleHyprid10:
@@ -649,6 +675,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         int _num, _numplus, _numminus;
                         float _val, _valplus, _valminus;
                         float _fit;
+                        float _result_save_file;
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
@@ -680,10 +707,13 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         if (result < 0)
                             result = result + 10;
 
+                        _result_save_file = result;
+
                         if (_fit < CNNGoodThreshold)
                         {
                             GENERAL[_ana]->ROI[i]->isReject = true;
                             result = -1;
+                            _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
                             string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
                             printf("Value Rejected due to Threshold (Fit: %f, Threshold: %f\n", _fit, CNNGoodThreshold);
                             LogFile.WriteToFile(zw);
@@ -693,9 +723,23 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             GENERAL[_ana]->ROI[i]->isReject = false;
                         }
 
+
                         GENERAL[_ana]->ROI[i]->result_float = result;
                         printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
 
+                        if (isLogImage)
+                        {
+                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            if (isLogImageSelect)
+                            {
+                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                            else
+                            {
+                                LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                        }
                     }
                     break;
             

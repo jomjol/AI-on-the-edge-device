@@ -45,16 +45,22 @@ void GetBeginAndSizeVectors(int dimensions, const TfLiteEvalTensor* begin,
 }
 
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
+
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 3);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
-  const TfLiteTensor* input = GetInput(context, node, kInputTensor);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kInputTensor);
   TFLITE_DCHECK(input != nullptr);
-  const TfLiteTensor* begin = GetInput(context, node, kBeginTensor);
+  TfLiteTensor* begin =
+      micro_context->AllocateTempInputTensor(node, kBeginTensor);
   TFLITE_DCHECK(begin != nullptr);
-  const TfLiteTensor* size = GetInput(context, node, kSizeTensor);
+  TfLiteTensor* size =
+      micro_context->AllocateTempInputTensor(node, kSizeTensor);
   TFLITE_DCHECK(size != nullptr);
-  TfLiteTensor* output = GetOutput(context, node, kOutputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
   TFLITE_DCHECK(output != nullptr);
 
   // Ensure validity of input tensor and its dimension.
@@ -66,6 +72,12 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TFLITE_DCHECK(NumDimensions(size) == 1);
   TFLITE_DCHECK(NumElements(begin) == NumElements(size));
   TFLITE_DCHECK(NumDimensions(input) <= kMaxDim);
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(begin);
+  micro_context->DeallocateTempTfLiteTensor(size);
+  micro_context->DeallocateTempTfLiteTensor(output);
+
   return kTfLiteOk;
 }
 

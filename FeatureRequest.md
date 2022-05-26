@@ -11,6 +11,10 @@
 
 ____
 
+#### #26 Changes behaviour for "N" replacement
+
+* in case the higher digits has already increased by minium 1 - don't set the "N" to the last value, but to "0"
+* https://github.com/jomjol/AI-on-the-edge-device/issues/792
 
 
 #### #25 Trigger Measurement via MQTT

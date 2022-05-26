@@ -35,6 +35,8 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
 }
 
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
+
   TFLITE_DCHECK(node->user_data != nullptr);
   TFLITE_DCHECK(node->builtin_data != nullptr);
 
@@ -42,23 +44,33 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   const auto params =
       static_cast<const TfLiteFullyConnectedParams*>(node->builtin_data);
 
-  const TfLiteTensor* input =
-      GetInput(context, node, kFullyConnectedInputTensor);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kFullyConnectedInputTensor);
   TF_LITE_ENSURE(context, input != nullptr);
-  const TfLiteTensor* filter =
-      GetInput(context, node, kFullyConnectedWeightsTensor);
+  TfLiteTensor* filter = micro_context->AllocateTempInputTensor(
+      node, kFullyConnectedWeightsTensor);
   TF_LITE_ENSURE(context, filter != nullptr);
-  const TfLiteTensor* bias =
-      GetOptionalInputTensor(context, node, kFullyConnectedBiasTensor);
-  TfLiteTensor* output = GetOutput(context, node, kFullyConnectedOutputTensor);
+  TfLiteTensor* bias =
+      micro_context->AllocateTempInputTensor(node, kFullyConnectedBiasTensor);
+  TfLiteTensor* output = micro_context->AllocateTempOutputTensor(
+      node, kFullyConnectedOutputTensor);
   TF_LITE_ENSURE(context, output != nullptr);
 
   TF_LITE_ENSURE_TYPES_EQ(context, input->type, output->type);
   TF_LITE_ENSURE_MSG(context, input->type == filter->type,
                      "Hybrid models are not supported on TFLite Micro.");
 
-  return CalculateOpDataFullyConnected(context, params->activation, input->type,
-                                       input, filter, bias, output, data);
+  TF_LITE_ENSURE_OK(context, CalculateOpDataFullyConnected(
+                                 context, params->activation, input->type,
+                                 input, filter, bias, output, data));
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(filter);
+  if (bias != nullptr) {
+    micro_context->DeallocateTempTfLiteTensor(bias);
+  }
+  micro_context->DeallocateTempTfLiteTensor(output);
+  return kTfLiteOk;
 }
 
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {

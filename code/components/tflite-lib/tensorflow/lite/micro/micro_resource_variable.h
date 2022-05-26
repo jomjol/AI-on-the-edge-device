@@ -51,6 +51,9 @@ class MicroResourceVariables {
   // in order to allocate the resource buffer.
   TfLiteStatus Assign(int id, const TfLiteEvalTensor* tensor);
 
+  // Zeros out all resource buffers.
+  TfLiteStatus ResetAll();
+
  private:
   int FindId(const char* container, const char* shared_name);
 

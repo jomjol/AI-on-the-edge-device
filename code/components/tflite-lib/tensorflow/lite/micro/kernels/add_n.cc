@@ -50,18 +50,19 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE(context, num_inputs >= 2);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
-  const TfLiteTensor* input_tensor_first;
-  TF_LITE_ENSURE_OK(
-      context, GetInputSafe(context, node, kInputTensor0, &input_tensor_first));
-  TfLiteTensor* output;
-  TF_LITE_ENSURE_OK(context,
-                    GetOutputSafe(context, node, kOutputTensor, &output));
+  MicroContext* micro_context = GetMicroContext(context);
+  TfLiteTensor* input_tensor_first =
+      micro_context->AllocateTempInputTensor(node, kInputTensor0);
+  TF_LITE_ENSURE(context, input_tensor_first != nullptr);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
+  TF_LITE_ENSURE(context, output != nullptr);
 
   // Check that all tensors have the same shape and type.
   TF_LITE_ENSURE_TYPES_EQ(context, output->type, input_tensor_first->type);
   for (int i = kInputTensor0 + 1; i < num_inputs; ++i) {
-    const TfLiteTensor* input;
-    TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, i, &input));
+    TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, i);
+    TF_LITE_ENSURE(context, input != nullptr);
     TF_LITE_ENSURE(context, HaveSameShapes(input_tensor_first, input));
     TF_LITE_ENSURE_TYPES_EQ(context, input_tensor_first->type, input->type);
 
@@ -72,6 +73,8 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteNode* node) {
       TF_LITE_ENSURE(context,
                      input_tensor_first->params.scale == input->params.scale);
     }
+
+    micro_context->DeallocateTempTfLiteTensor(input);
   }
 
   if (output->type == kTfLiteFloat32) {
@@ -122,6 +125,9 @@ TfLiteStatus CalculateOpData(TfLiteContext* context, TfLiteNode* node) {
                        TfLiteTypeGetName(output->type));
     return kTfLiteError;
   }
+
+  micro_context->DeallocateTempTfLiteTensor(input_tensor_first);
+  micro_context->DeallocateTempTfLiteTensor(output);
 
   return kTfLiteOk;
 }

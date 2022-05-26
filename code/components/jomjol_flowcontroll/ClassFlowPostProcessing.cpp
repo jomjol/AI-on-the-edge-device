@@ -77,6 +77,8 @@ void ClassFlowPostProcessing::SetPreValue(float zw, string _numbers, bool _exter
         if (NUMBERS[j]->name == _numbers)
         {
             NUMBERS[j]->PreValue = zw;
+            NUMBERS[j]->ReturnPreValue = std::to_string(zw);
+            NUMBERS[j]->PreValueOkay = true;
             if (_extern)
             {
                 time(&(NUMBERS[j]->lastvalue));
@@ -541,7 +543,6 @@ void ClassFlowPostProcessing::InitNUMBERS()
 
         _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-//        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
         _number->ReturnPreValue = "";
         _number->PreValueOkay = false;
@@ -560,7 +561,6 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->Value = 0;                // letzer ausgelesener Wert, inkl. Korrekturen
         _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-//        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
 
         _number->Nachkomma = _number->AnzahlAnalog;
@@ -722,7 +722,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay)
         {
-            float _ratedifference;                                                   
+            float _ratedifference;  
             if (NUMBERS[j]->RateType == RateChange)
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             else
@@ -745,6 +745,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
 
         NUMBERS[j]->ErrorMessageText = "no error";
         UpdatePreValueINI = true;
