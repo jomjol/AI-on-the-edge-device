@@ -109,7 +109,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     }
 
-    if ((CNNType == DigitalHyprid))
+    if ((CNNType == DigitalHyprid || CNNType == Digital100))
     {
         int zif_akt = -1;
 
@@ -523,6 +523,10 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 CNNType = DigitalHyprid;
                 printf("TFlite-Type set to DigitalHyprid\n");
                 break;
+             case 100:
+                CNNType = Digital100;
+                printf("TFlite-Type set to Digital\n");
+                break;
             default:
                 printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
         }
@@ -742,6 +746,26 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         }
                     }
                     break;
+                case Digital100:
+                    {
+                        
+                        GENERAL[_ana]->ROI[i]->result_float  = (float)tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image) /10.0;
+                        printf("Result General(Digit)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
+
+                        if (isLogImage)
+                        {
+                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            if (isLogImageSelect)
+                            {
+                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                            else
+                            {
+                                LogImage(logPath, _imagename, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            }
+                        }
+                    } break;
             
                 default:
                     break;

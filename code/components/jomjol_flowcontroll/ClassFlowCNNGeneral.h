@@ -12,6 +12,7 @@ enum t_CNNType {
     DigitalHyprid,
     DigitalHyprid10,
     DoubleHyprid10,
+    Digital100,
     None
  };
 
