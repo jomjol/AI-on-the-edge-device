@@ -738,6 +738,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
         }
 
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
         NUMBERS[j]->lastvalue = imagetime;
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
@@ -745,7 +746,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
-        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
 
         NUMBERS[j]->ErrorMessageText = "no error";
         UpdatePreValueINI = true;

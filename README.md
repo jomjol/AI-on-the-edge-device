@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-04-26)
+##### Rolling (2022-05-09)
+
+- Bug Fix: absolute value always had value "0"
+
+Rolling (2022-04-26)
 
 - Extended MQTT with absolute Change (in addition to rate)
 - Internal optimization, removal of modelfile from `config.ini` (is now read out of the cnn file directly)
