@@ -5,9 +5,13 @@
 #include "CImageBasis.h"
 #include "ClassControllCamera.h"
 
+#include "esp_wifi.h"
+
 #include <time.h>
 
 // #define DEBUG_DETAIL_ON 
+
+// #define WIFITURNOFF
 
 static const char* TAG = "flow_make_image";
 
@@ -118,7 +122,15 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(zerlegt[0]) == "FIXEDEXPOSURE") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
-                FixedExposure = true;
+                FixedExposure = true;  
+        }
+
+        if ((toUpper(zerlegt[0]) == "LEDINTENSITY") && (zerlegt.size() > 1))
+        {
+            float ledintensity = stof(zerlegt[1]);
+            ledintensity = min((float) 100, ledintensity);
+            ledintensity = max((float) 0, ledintensity);
+            Camera.SetLEDIntensity(ledintensity);
         }
     }
 
@@ -162,7 +174,17 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
     LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
 #endif
 
+
+#ifdef WIFITURNOFF
+    esp_wifi_stop();        // to save power usage and 
+#endif
+
     takePictureWithFlash(flashdauer);
+
+#ifdef WIFITURNOFF
+     esp_wifi_start();
+#endif
+
 
 #ifdef DEBUG_DETAIL_ON  
     LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After takePictureWithFlash");

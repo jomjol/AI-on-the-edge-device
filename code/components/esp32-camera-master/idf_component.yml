@@ -1,3 +1,5 @@
-version: "1.0.0"
-description: This package hosts ESP32 compatible driver for OV2640 image sensors. Additionally it provides a few tools, which allow converting the captured frame data to the more common BMP and JPEG formats.
-url: https://github.com/espressif/esp32-camera
+description: ESP32 compatible driver for OV2640, OV3660, OV5640, OV7670 and OV7725 image sensors.
+targets:
+  - esp32
+  - esp32s2
+  - esp32s3

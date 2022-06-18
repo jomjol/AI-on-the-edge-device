@@ -2,7 +2,15 @@
 #include <string>
 #include <string.h>
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
+
 #include "time_sntp.h"
 #include "ClassLogFile.h"
 #include "CImageBasis.h"

@@ -20,7 +20,9 @@
 #include "ClassLogFile.h"
 #include "server_GPIO.h"
 
-// #define DEBUG_DETAIL_ON       
+#include "server_file.h"
+
+#define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
@@ -199,7 +201,7 @@ esp_err_t handler_json(httpd_req_t *req)
     printf("handler_JSON uri:\n"); printf(req->uri); printf("\n");
 
     char _query[100];
-    char _size[10];
+//    char _size[10];
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "application/json");
@@ -393,6 +395,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
     }  
 
+    if (_task.compare("tflite") == 0)
+    {
+        printf("Get tflite list\n");
+        return get_tflite_file_handler(req);
+    }
+
+
     if (_task.compare("copy") == 0)
     {
         string in, out, zw;
@@ -491,12 +500,18 @@ esp_err_t handler_editflow(httpd_req_t *req)
         std::string _bri = "";
         std::string _con = "";
         std::string _sat = "";
+        std::string _int = "";
         int bri = -100;
         int sat = -100;
         int con = -100;
+        int intens = -100;
 
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
+        }
+        if (httpd_query_key_value(_query, "int", _valuechar, 30) == ESP_OK) {
+            _int = std::string(_valuechar);
+            intens = stoi(_int);
         }
         if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK) {
             _bri = std::string(_valuechar);
@@ -515,7 +530,10 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
+        Camera.SetLEDIntensity(intens);
+        printf("test_take - vor MakeImage");
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     } 
 
@@ -694,7 +712,23 @@ void task_autodoFlow(void *pvParameter)
 
 void TFliteDoAutoStart()
 {
-    xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    BaseType_t xReturned;
+
+    int _i = configMINIMAL_STACK_SIZE;
+
+    printf("task_autodoFlow configMINIMAL_STACK_SIZE: %d\n", _i);
+    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+
+    xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    if( xReturned != pdPASS )
+    {
+
+       //Memory: 64 --> 48 --> 35 --> 25
+       printf("ERROR task_autodoFlow konnte nicht erzeugt werden !!\r\n");
+    }
+    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+
+
 }
 
 std::string GetMQTTMainTopic()

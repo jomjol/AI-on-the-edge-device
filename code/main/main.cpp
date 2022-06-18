@@ -27,6 +27,7 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
+#include "Helper.h"
 
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
@@ -142,7 +143,17 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
- 
+
+    PowerResetCamera();
+    esp_err_t cam = Camera.InitCam();
+    Camera.LightOnOff(false);
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("nach init camera: sleep for : %ldms\n", (long) xDelay);
+//    LogFile.WriteToFile("Startsequence 06");      
+    vTaskDelay( xDelay );   
+//    LogFile.WriteToFile("Startsequence 07");  
+
+
     if (!Init_NVS_SDCard())
     {
         xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
@@ -191,11 +202,48 @@ extern "C" void app_main(void)
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    
 
-//    Camera.InitCam();
-//    Camera.LightOnOff(false);
-     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay);
+
+
+    size_t _hsize = getESPHeapSize();
+    if (_hsize < 4000000)
+    {
+                    std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+                    _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+                    printf(_zws.c_str());
+                    LogFile.SwitchOnOff(true);
+                    LogFile.WriteToFile(_zws);
+                    LogFile.SwitchOnOff(false);
+    } else {
+        if (cam != ESP_OK) {
+                ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
+                    "Check that your camera module is working and connected properly.");
+
+                LogFile.SwitchOnOff(true);
+                LogFile.WriteToFile("Failed to initialize camera module. "
+                        "Check that your camera module is working and connected properly.");
+                LogFile.SwitchOnOff(false);
+        } else {
+// Test Camera            
+            camera_fb_t * fb = esp_camera_fb_get();
+            if (!fb) {
+                ESP_LOGE(TAGMAIN, "esp_camera_fb_get: Camera Capture Failed");
+                LogFile.SwitchOnOff(true);
+                LogFile.WriteToFile("Camera cannot be initialzed. "
+                        "System will reboot.");
+                doReboot();
+            }
+            esp_camera_fb_return(fb);   
+            Camera.LightOnOff(false);
+        }
+    }
+
+
+
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("main: sleep for : %ldms\n", (long) xDelay*10);
     vTaskDelay( xDelay ); 
+
+    printf("starting server\n");
 
     server = start_webserver();   
     register_server_camera_uri(server); 
@@ -209,22 +257,7 @@ extern "C" void app_main(void)
     register_server_main_uri(server, "/sdcard");
 
     printf("vor dotautostart\n");
+    TFliteDoAutoStart();
 
-    // init camera module
-    printf("Do Reset Camera\n");
-    PowerResetCamera();
-    esp_err_t cam = Camera.InitCam();
-    if (cam != ESP_OK) {
-            ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
-                "Check that your camera module is working and connected properly.");
-
-            LogFile.SwitchOnOff(true);
-            LogFile.WriteToFile("Failed to initialize camera module. "
-                    "Check that your camera module is working and connected properly.");
-            LogFile.SwitchOnOff(false);
-    } else {
-        Camera.LightOnOff(false);
-        TFliteDoAutoStart();
-    }
 }
 

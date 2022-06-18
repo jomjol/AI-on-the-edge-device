@@ -14,6 +14,7 @@ bool debugdetail = true;
 // #define CONFIG_BROKER_URL "mqtt://192.168.178.43:1883"
 
 esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
+// ESP_EVENT_ANY_ID
 
 bool mqtt_connected = false;
 esp_mqtt_client_handle_t client = NULL;
@@ -111,10 +112,20 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_register_event(client, esp_mmqtt_ID, mqtt_event_handler, client);
-    esp_mqtt_client_start(client);
+    if (client)
+    {
+        if (esp_mqtt_client_register_event(client, esp_mmqtt_ID, mqtt_event_handler, client) != ESP_OK)
+            LogFile.WriteToFile("MQTT - Could not register event!");
+        if (esp_mqtt_client_start(client) != ESP_OK)
+            LogFile.WriteToFile("MQTT - Could not start client!");
 
-    MQTTPublish(_LWTContext, "", 1);
+        MQTTPublish(_LWTContext, "", 1);
+    }
+    else
+    {
+        LogFile.WriteToFile("MQTT - Could not Init MQTT Client!");
+    }
+
 }
 
 void MQTTdestroy() {

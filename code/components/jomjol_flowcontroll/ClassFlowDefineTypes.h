@@ -16,10 +16,16 @@ struct general {
     std::vector<roi*> ROI;
 };
 
+enum t_RateType {
+    AbsoluteChange,
+    RateChange
+ };
+
 
 struct NumberPost {
     float MaxRateValue;
     bool useMaxRateValue;
+    t_RateType RateType;
     bool ErrorMessage;
     bool PreValueOkay;
     bool AllowNegativeRates;
@@ -29,10 +35,10 @@ struct NumberPost {
     float FlowRateAct;          // m3 / min
     float PreValue;             // letzter Wert, der gut ausgelesen wurde
     float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
+    string ReturnRateValue;      // RückgabewertRate
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
     string ReturnPreValue;  // korrigierter Rückgabewert ohne Fehlermeldung
-    string ReturnValueNoError;
     string ErrorMessageText;        // Fehlermeldung bei Consistency Check
     int AnzahlAnalog;
     int AnzahlDigital;

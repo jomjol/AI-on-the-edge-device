@@ -10,6 +10,38 @@ var ref = new Array(2);
 var NUMBERS = new Array(0);
 var REFERENCES = new Array(0);
 
+
+function getTFLITEList() {
+	_basepath = getbasepath(); 
+     tflitelist = "";
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener('load', function(event) {
+	  if (xhttp.status >= 200 && xhttp.status < 300) {
+		tflitelist = xhttp.responseText;
+	  } else {
+		 console.warn(request.statusText, request.responseText);
+	  }
+	 });
+
+	 try {
+		  url = _basepath + '/editflow.html?task=tflite';     
+		  xhttp.open("GET", url, false);
+		  xhttp.send();
+
+	 }
+	 catch (error)
+	 {
+//               alert("Loading Hostname failed");
+	 }
+
+      tflitelist = tflitelist.split("\t");
+      tflitelist.pop();
+
+      return tflitelist;
+  }
+
+
 function ParseConfig() {
      config_split = config_gesamt.split("\n");
      var aktline = 0;
@@ -28,6 +60,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Brightness");
      ParamAddValue(param, catname, "Contrast");
      ParamAddValue(param, catname, "Saturation");
+     ParamAddValue(param, catname, "LEDIntensity");
      ParamAddValue(param, catname, "ImageQuality");
      ParamAddValue(param, catname, "ImageSize");     
      ParamAddValue(param, catname, "FixedExposure");     
@@ -74,6 +107,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "PreValueAgeStartup");
      ParamAddValue(param, catname, "AllowNegativeRates");
      ParamAddValue(param, catname, "MaxRateValue", 1, true);
+     ParamAddValue(param, catname, "MaxRateType", 1, true);
      ParamAddValue(param, catname, "ExtendedResolution", 1, true);
      ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true);
      ParamAddValue(param, catname, "ErrorMessage");
@@ -85,7 +119,8 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "MainTopic", 1, false, [/^([a-zA-Z0-9_-]+\/){0,10}[a-zA-Z0-9_-]+$/]);
+     ParamAddValue(param, catname, "MainTopic", 1, false);
+     ParamAddValue(param, catname, "Topic", 1, false);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
@@ -157,6 +192,14 @@ function ParseConfig() {
           }
           aktline++;
      }
+
+
+     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     if (param["MQTT"]["Topic"]["found"] == true && param["MQTT"]["MainTopic"]["found"] == false)
+     {
+          param["MQTT"]["MainTopic"] = param["MQTT"]["Topic"]
+     }
+     delete param["MQTT"]["Topic"]                // Dient nur der Downwardskompatibilität
 }
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){

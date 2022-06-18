@@ -111,23 +111,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                     double difference = difftime(tStart, NUMBERS[j]->lastvalue);
                     difference /= 60;
                     if (difference > PreValueAgeStartup)
-                    {
                         NUMBERS[j]->PreValueOkay = false;
-                    }
                     else
-                    {
                         NUMBERS[j]->PreValueOkay = true;
-                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                        NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->Value);
-                        NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue; 
-
-                        if (NUMBERS[j]->digit_roi || NUMBERS[j]->analog_roi)
-                        {
-                            NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma + 1);  // SIcherheitshalber 1 Stelle mehr, da ggf. Exgtended Resolution an ist (wird erst beim ersten Durchlauf gesetzt)
-                            NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue;
-                        }
-                    }
-
                 }
             }
 
@@ -181,12 +167,10 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
 
         NUMBERS[0]->Value = NUMBERS[0]->PreValue;
         NUMBERS[0]->ReturnValue = to_string(NUMBERS[0]->Value);
-        NUMBERS[0]->ReturnValueNoError = NUMBERS[0]->ReturnValue; 
 
         if (NUMBERS[0]->digit_roi || NUMBERS[0]->analog_roi)
         {
             NUMBERS[0]->ReturnValue = RundeOutput(NUMBERS[0]->Value, NUMBERS[0]->Nachkomma);
-            NUMBERS[0]->ReturnValueNoError = NUMBERS[0]->ReturnValue;
         }
 
         UpdatePreValueINI = true;       // Konvertierung ins neue Format
@@ -318,6 +302,39 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
     }
 }
 
+
+
+void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        t_RateType _rt = AbsoluteChange;
+
+        if (toUpper(_value) == "RATECHANGE")
+            _rt = RateChange;
+
+        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        {
+            NUMBERS[j]->RateType = _rt;
+        }
+
+        if (NUMBERS[j]->name == _digit)
+        {
+            NUMBERS[j]->RateType = _rt;
+        }
+    }
+}
+
+
+
 void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 {
     string _digit, _decpos;
@@ -392,6 +409,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
         {
             handleMaxRateValue(zerlegt[0], zerlegt[1]);
+        }
+        if ((toUpper(_param) == "MAXRATETYPE") && (zerlegt.size() > 1))
+        {
+            handleMaxRateType(zerlegt[0], zerlegt[1]);
         }
 
         if ((toUpper(_param) == "PREVALUEUSE") && (zerlegt.size() > 1))
@@ -484,12 +505,13 @@ void ClassFlowPostProcessing::InitNUMBERS()
 
         _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
+//        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
         _number->ReturnPreValue = "";
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
         _number->MaxRateValue = 0.1;
+        _number->RateType = AbsoluteChange;
         _number->useMaxRateValue = false;
         _number->checkDigitIncreaseConsistency = false;
         _number->DecimalShift = 0;
@@ -502,7 +524,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->Value = 0;                // letzer ausgelesener Wert, inkl. Korrekturen
         _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
+//        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
 
         _number->Nachkomma = _number->AnzahlAnalog;
@@ -583,7 +605,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
         NUMBERS[j]->ReturnRawValue = "";
+        NUMBERS[j]->ReturnRateValue = "";
+        NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
+        NUMBERS[j]->Value = -1;
 
         UpdateNachkommaDecimalShift();
 
@@ -600,88 +625,83 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution); 
 
-        NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);  
+        NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
+
+        printf("ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());  
 
 
         if (IgnoreLeadingNaN)               
-        {
             while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N'))
-            {
                 NUMBERS[j]->ReturnRawValue.erase(0, 1);
-            }
-        } 
 
-        rohwert = NUMBERS[j]->ReturnRawValue;
+        NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnRawValue;
 
-        if (!PreValueUse || !NUMBERS[j]->PreValueOkay)
+        if (findDelimiterPos(NUMBERS[j]->ReturnValue, "N") != std::string::npos)
         {
-            NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnRawValue;
-            NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnRawValue;
-
-            if ((findDelimiterPos(NUMBERS[j]->ReturnValue, "N") == std::string::npos) && (NUMBERS[j]->ReturnValue.length() > 0))
-            {
-                while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
-                {
-                    NUMBERS[j]->ReturnValue.erase(0, 1);
-                }
-                NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
-                NUMBERS[j]->ReturnValueNoError = NUMBERS[j]->ReturnValue;
-
-                NUMBERS[j]->PreValueOkay = true;
-                NUMBERS[j]->PreValue = NUMBERS[j]->Value;
-                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
-                NUMBERS[j]->lastvalue = flowMakeImage->getTimeImageTaken();
-                zwtime = ConvertTimeToString(NUMBERS[j]->lastvalue, PREVALUE_TIME_FORMAT_OUTPUT);
-
-                UpdatePreValueINI = true;
-                SavePreValue();
-            }
+            if (PreValueUse && NUMBERS[j]->PreValueOkay)
+                NUMBERS[j]->ReturnValue = ErsetzteN(NUMBERS[j]->ReturnValue, NUMBERS[j]->PreValue); 
+            else
+                continue; // es gibt keinen Zahl, da noch ein N vorhanden ist.
         }
-        else
+
+        // Lösche führende Nullen (außer es ist nur noch einen 0)
+        while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
+            NUMBERS[j]->ReturnValue.erase(0, 1);
+
+        NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
+
+        if (NUMBERS[j]->checkDigitIncreaseConsistency)
         {
-            zw = ErsetzteN(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->PreValue); 
+            NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
+        }
 
-            NUMBERS[j]->Value = std::stof(zw);
-            if (NUMBERS[j]->checkDigitIncreaseConsistency)
-            {
-                NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
-            }
 
-            zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
 
-            if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue))
+        if (!NUMBERS[j]->AllowNegativeRates)
+        {
+            if (NUMBERS[j]->Value < NUMBERS[j]->PreValue)
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
+                NUMBERS[j]->ReturnValue = "";
+                continue;
             }
+        }
 
-            if (NUMBERS[j]->useMaxRateValue && ((abs(NUMBERS[j]->Value - NUMBERS[j]->PreValue) > NUMBERS[j]->MaxRateValue)))
+        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
+        difference /= 60;  
+        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+        NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
+
+        if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay)
+        {
+            float _ratedifference;                                                   
+            if (NUMBERS[j]->RateType == RateChange)
+                _ratedifference = NUMBERS[j]->FlowRateAct;
+            else
+                _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
+
+            if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue))
             {
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                zwvalue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
-            }
-
-            NUMBERS[j]->ReturnValueNoError = zwvalue;
-            NUMBERS[j]->ReturnValue = zwvalue;
-            if (NUMBERS[j]->ErrorMessage && (NUMBERS[j]->ErrorMessageText.length() > 0))
-                NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnValue + "\t" + NUMBERS[j]->ErrorMessageText;
-
-
-            double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
-            difference /= 60;                                          // in Minuten
-            NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
-            NUMBERS[j]->lastvalue = imagetime;
-
-            if (NUMBERS[j]->ErrorMessageText.length() == 0)
-            {
-                NUMBERS[j]->PreValue = NUMBERS[j]->Value;
-                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
-                NUMBERS[j]->ErrorMessageText = "no error";
-                UpdatePreValueINI = true;
+                NUMBERS[j]->ReturnValue = "";
+                NUMBERS[j]->ReturnRateValue = "";
+                continue;
             }
         }
+
+        NUMBERS[j]->lastvalue = imagetime;
+        NUMBERS[j]->PreValue = NUMBERS[j]->Value;
+        NUMBERS[j]->PreValueOkay = true;
+
+
+        NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
+        NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+
+        NUMBERS[j]->ErrorMessageText = "no error";
+        UpdatePreValueINI = true;
+
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
         LogFile.WriteToFile(_zw);
     }
@@ -743,7 +763,7 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, i
     if (_rawValue)
         return NUMBERS[_number]->ReturnRawValue;
     if (_noerror)
-        return NUMBERS[_number]->ReturnValueNoError;
+        return NUMBERS[_number]->ReturnValue;
     return NUMBERS[_number]->ReturnValue;
 }
 
@@ -819,14 +839,14 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     while (pot <= pot_max)
     {
         zw = input / pow(10, pot-1);
-        aktdigit_before = ((int) zw + 10) % 10;
+        aktdigit_before = ((int) zw) % 10;
         zw = _preValue / pow(10, pot-1);
-        olddigit_before = ((int) zw + 10) % 10;
+        olddigit_before = ((int) zw) % 10;
 
         zw = input / pow(10, pot);
-        aktdigit = ((int) zw + 10) % 10;
+        aktdigit = ((int) zw) % 10;
         zw = _preValue / pow(10, pot);
-        olddigit = ((int) zw + 10) % 10;
+        olddigit = ((int) zw) % 10;
 
         no_nulldurchgang = (olddigit_before <= aktdigit_before);
 

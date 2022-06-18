@@ -17,7 +17,14 @@
 #include <sys/param.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
 
 #include "esp_err.h"
 #include "esp_log.h"
@@ -57,6 +64,56 @@ struct file_server_data {
 };
 
 static const char *TAG_FILESERVER = "file_server";
+
+
+#include <iostream>
+#include <sys/types.h>
+#include <dirent.h>
+
+using namespace std;
+
+esp_err_t get_tflite_file_handler(httpd_req_t *req)
+{
+//    DIR *verzeichnis;
+//    struct dirent *files;
+    struct dirent *entry;
+//    struct stat entry_stat;
+
+
+    std::string _filename, _fileext;
+    size_t pos = 0;
+    
+    const char verz_name[] = "/sdcard/config";
+    printf("Suche TFLITE in /sdcard/config/\n");
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
+
+    DIR *dir = opendir(verz_name);
+    while ((entry = readdir(dir)) != NULL) 
+    {
+        _filename = std::string(entry->d_name);
+        printf("File: %s\t", _filename.c_str());
+
+        _fileext = _filename;
+        pos = _fileext.find(".");
+        if (pos != std::string::npos)
+            _fileext = _fileext.erase(0, pos + 1);
+
+        printf(" Extension: %s\n", _fileext.c_str());
+
+        if ((_fileext == "tfl") || (_fileext == "tflite"))
+        {
+            _filename = "/config/" + _filename + "\t";
+            httpd_resp_sendstr_chunk(req, _filename.c_str());
+        }
+    }
+    closedir(dir);
+
+    httpd_resp_sendstr_chunk(req, NULL);
+    return ESP_OK;
+}
+
 
 /* Handler to redirect incoming GET request for /index.html to /
  * This can be overridden by uploading file with same name */
@@ -310,6 +367,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
             }
         }
 
+        printf("uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
         return http_resp_dir_html(req, filepath, filename, readonly);
     }
 
@@ -797,4 +855,15 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     };
     httpd_register_uri_handler(server, &file_delete);
 
+
+    /* URI handler for getting tflite files from server */
+/*
+    httpd_uri_t file_tflite = {
+        .uri       = "/tflite",   // Match all URIs of type /delete/path/to/file
+        .method    = HTTP_GET,
+        .handler   = get_tflite_file_handler,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &file_tflite);
+*/
 }

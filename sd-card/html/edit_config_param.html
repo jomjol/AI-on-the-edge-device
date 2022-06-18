@@ -133,7 +133,8 @@ textarea {
 				<input type="number" id="MakeImage_ImageQuality_value1" size="13"   min="0" max="63">
 			</td>
 			<td class="description">
-				Quality index for picture (default = "5" - "0" high ... "63" low)
+				Quality index for picture (default = "12" - "0" high ... "63" low) <br>
+				Remark: values smaller than 12 can result in a reboot, as the bigger sized JPEG might not fit in the available RAM!
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
@@ -152,6 +153,22 @@ textarea {
 				Picture size camera (default = "VGA")
 			</td>
 		</tr>
+
+		<tr class="expert"  id="LEDIntensity_ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_LEDIntensity_value1" size="13"   min="0" max="100">
+			</td>
+			<td style="font-size: 80%;">
+				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
+				Remark: as the camera autoillumination settings are used, this is rather for energy saving, than reducing reflections.
+			</td>
+		</tr>
+
 		<tr class="expert"  id="Brightness_ex3">
 			<td width="20px" style="padding-left: 40px;">
 			</td>
@@ -165,6 +182,37 @@ textarea {
 				Image Brightness (-2 .. 2 - default = "0")
 			</td>
 		</tr>
+
+		<tr class="expert"  id="Contrast_ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_Contrast_value1" size="13"   min="-2" max="2">
+			</td>
+			<td style="font-size: 80%;">
+				Image Contrast (-2 .. 2 - default = "0") <br>
+				Remark: camera driver is not fully supporting this setting yet (no impact on image)
+			</td>
+		</tr>
+
+		<tr class="expert"  id="Saturation_ex3">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
+				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_Saturation_value1" size="13"   min="-2" max="2">
+			</td>
+			<td style="font-size: 80%;">
+				Image Saturation (-2 .. 2 - default = "0") <br>
+				Remark: camera driver is not fully supporting this setting yet (no impact on image)
+			</td>
+		</tr>
+		
 		<tr class="expert"  id="MakeImage_FixedExposure_ex10">
 			<td width="20px"  style="padding-left: 40px;">
 			</td>
@@ -181,37 +229,6 @@ textarea {
 				Fixes the illumination setting of camera at the startup and uses this later --> individual round is faster
 			</td>
 		</tr>
-
-
-<!--
-		<tr class="expert"  id="Contrast_ex3">
-			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
-				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
-			</td>
-			<td>
-				<input type="number" id="MakeImage_Contrast_value1" size="13"   min="-2" max="2">
-			</td>
-			<td style="font-size: 80%;">
-				Image Contrast (-2 .. 2 - default = "0")
-			</td>
-		</tr>
-
-		<tr class="expert"  id="Saturation_ex3">
-			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
-				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
-			</td>
-			<td>
-				<input type="number" id="MakeImage_Saturation_value1" size="13"   min="-2" max="2">
-			</td>
-			<td style="font-size: 80%;">
-				Image Saturation (-2 .. 2 - default = "0")
-			</td>
-		</tr>
--->		
 
 
 		<tr class="expert"  id="ex4">
@@ -274,7 +291,8 @@ textarea {
 				<class id="Digits_Model_text" style="color:black;">Model</class>
 			</td>
 			<td>
-				<input type="text" id="Digits_Model_value1">
+				<select id="Digits_Model_value1">
+				</select>
 			</td>
 			<td style="font-size: 80%;">
 				Path to CNN model file for image recognition
@@ -323,14 +341,17 @@ textarea {
 			</td>
 		</tr>
 
-		<tr class="expert"  id="ex4">
+		<tr id="Category_Analog_ex4">
 			<td colspan="4" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > Analog</h4></td>
 		</tr> 
 		<tr>
 			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td width="200px"> <class id="Analog_Model_text" style="color:black;">Model</class> </td>
-			<td> <input type="text" id="Analog_Model_value1"> </td>
+			<td> 
+				<select id="Analog_Model_value1">
+				</select>
+			</td>
 			<td style="font-size: 80%;"> Path to CNN model file for image recognition</td>
 		</tr>
 		<tr>
@@ -428,7 +449,7 @@ textarea {
 				Do not show error message in return value - in error case, the last valid number will be send out
 			</td>
 		</tr>
-		<tr>
+		<tr class="expert" id="ex1dddd">
 			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "CheckDigitIncreaseConsistency")' unchecked >
 			</td>
@@ -449,7 +470,7 @@ textarea {
 		<tr>
 			<td style="padding-left: 40px;" colspan="4">
 				<br>
-				<b>Postprocessing Individual Paramters: 
+				<b>Postprocessing Individual Parameters: 
                 <select id="Numbers_value1" onchange="numberChanged()">
                     <option value="0" selected>default</option>
                     <option value="1" >NT</option>
@@ -482,7 +503,24 @@ textarea {
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
 			<td style="font-size: 80%;">
-				Maximum change of reading from one to the next readout
+				Maximum change of a reading - if threated as absolute or relative change see next parameter.
+			</td>
+		</tr>
+		<tr>
+			<td width="20px"  style="padding-left: 40px;">
+				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class>
+			</td>
+			<td>
+				<select id="PostProcessing_MaxRateType_value1">
+					<option value="AbsoluteChange" >AbsoluteChange</option>
+					<option value="RateChange" selected>RateChange</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the intervall (RateChange = change/minute).
 			</td>
 		</tr>
 		<tr>
@@ -1442,11 +1480,20 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (textToFind == undefined)
 					continue;
 
+				_isFound = false;
+				element.selectedIndex = -1;
 				for (var i = 0; i < element.options.length; i++) {
 					if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
 						element.selectedIndex = i;
+						_isFound = true;
 						break;
 					}
+				}
+				if (!_isFound)
+				{
+					_zw_txt = "In the selectd field the value '" + textToFind + "' in the parameter '";
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
+					alert(_zw_txt);
 				}
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
@@ -1474,12 +1521,22 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (textToFind == undefined)
 					continue;
 				
+				_isFound = false;
+				element.selectedIndex = -1;
 				for (var i = 0; i < element.options.length; i++) {
 					if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
 						element.selectedIndex = i;
+						_isFound = true;
 						break;
 					}
 				}
+				if (!_isFound)
+				{
+					_zw_txt = "In the selectd field the value '" + textToFind + "' in the section '";
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
+					alert(_zw_txt);
+				}
+
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
 				element.checked = _param[_cat][_name]["value"+j] == "true";
@@ -1676,6 +1733,7 @@ function UpdateInputIndividual()
 	{
 		ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
 	}
@@ -1684,6 +1742,7 @@ function UpdateInputIndividual()
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
 }
@@ -1700,8 +1759,9 @@ function UpdateInput() {
 	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
 	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
 	WriteParameter(param, category, "MakeImage", "Brightness", false);		
-//	WriteParameter(param, category, "MakeImage", "Contrast", false);		
-//	WriteParameter(param, category, "MakeImage", "Saturation", false);		
+	WriteParameter(param, category, "MakeImage", "Contrast", false);		
+	WriteParameter(param, category, "MakeImage", "Saturation", false);		
+	WriteParameter(param, category, "MakeImage", "LEDIntensity", false);		
 	WriteParameter(param, category, "MakeImage", "ImageSize", false);		
 	WriteParameter(param, category, "MakeImage", "FixedExposure", false);		
 
@@ -1709,12 +1769,12 @@ function UpdateInput() {
 	WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
 	WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);		
 
-	WriteParameter(param, category, "Digits", "Model", false);		
+//	WriteParameter(param, category, "Digits", "Model", false);		
 	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
 	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
 	WriteParameter(param, category, "Digits", "ModelInputSize", false);	
 	
-	WriteParameter(param, category, "Analog", "Model", false);		
+//	WriteParameter(param, category, "Analog", "Model", false);		
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
 //	WriteParameter(param, category, "Analog", "ExtendedResolution", true);		
@@ -1752,6 +1812,34 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
+
+	WriteModelFiles();
+}
+
+function WriteModelFiles()
+{
+	list_tflite = getTFLITEList();
+
+    var _index1 = document.getElementById("Digits_Model_value1");
+    var _index2 = document.getElementById("Analog_Model_value1");
+    while (_index1.length)
+        _index1.remove(0);
+	while (_index2.length)
+        _index2.remove(0);
+
+    for (var i = 0; i < list_tflite.length; ++i){
+        var option1 = document.createElement("option");
+        var option2 = document.createElement("option");
+        option1.text = list_tflite[i];
+        option1.value = list_tflite[i];
+        option2.text = list_tflite[i];
+        option2.value = list_tflite[i];
+        _index1.add(option1);
+        _index2.add(option2);
+        }
+
+	WriteParameter(param, category, "Analog", "Model", false);		
+	WriteParameter(param, category, "Digits", "Model", false);		
 }
 
 function ReadParameterAll()
@@ -1766,8 +1854,9 @@ function ReadParameterAll()
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
 	ReadParameter(param, "MakeImage", "ImageQuality", false);		
 	ReadParameter(param, "MakeImage", "Brightness", false);		
-//	ReadParameter(param, "MakeImage", "Contrast", false);		
-//	ReadParameter(param, "MakeImage", "Saturation", false);		
+	ReadParameter(param, "MakeImage", "Contrast", false);		
+	ReadParameter(param, "MakeImage", "Saturation", false);		
+	ReadParameter(param, "MakeImage", "LEDIntensity", false);		
 	ReadParameter(param, "MakeImage", "ImageSize", false);	
 	ReadParameter(param, "MakeImage", "FixedExposure", false);	
 
@@ -1783,13 +1872,11 @@ function ReadParameterAll()
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
-//	ReadParameter(param, "Analog", "ExtendedResolution", true);		
 	ReadParameter(param, "Analog", "ModelInputSize", false);
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
 	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
-//	ReadParameter(param, "PostProcessing", "MaxRateValue", true);		
 	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 

@@ -25,6 +25,10 @@
 #if ESP_IDF_VERSION_MAJOR >= 4 // IDF 4+
 #if CONFIG_IDF_TARGET_ESP32 // ESP32/PICO-D4
 #include "esp32/spiram.h"
+#elif CONFIG_IDF_TARGET_ESP32S2
+#include "esp32s2/spiram.h"
+#elif CONFIG_IDF_TARGET_ESP32S3
+#include "esp32s3/spiram.h"
 #else 
 #error Target CONFIG_IDF_TARGET is not supported
 #endif
@@ -195,7 +199,7 @@ public:
             return true;
         }
         if ((size_t)len > (max_len - index)) {
-            ESP_LOGW(TAG, "JPG output overflow: %d bytes", len - (max_len - index));
+            //ESP_LOGW(TAG, "JPG output overflow: %d bytes (%d,%d,%d)", len - (max_len - index), len, index, max_len);
             len = max_len - index;
         }
         if (len) {
@@ -215,7 +219,7 @@ bool fmt2jpg(uint8_t *src, size_t src_len, uint16_t width, uint16_t height, pixf
 {
     //todo: allocate proper buffer for holding JPEG data
     //this should be enough for CIF frame size
-    int jpg_buf_len = 64*1024;
+    int jpg_buf_len = 128*1024;
 
 
     uint8_t * jpg_buf = (uint8_t *)_malloc(jpg_buf_len);

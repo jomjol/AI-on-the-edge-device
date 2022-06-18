@@ -11,6 +11,96 @@
 
 ____
 
+#### #24 Show Mqtt state directly in Webserver
+
+* Show MQTT log in Web page. E.g. connection established or failed to connect...
+
+  
+
+
+#### #23 CPU Temp and Mqtt values
+
+* Show the CPU Temp directly in Webpage. Also add the value to MQTT sending
+
+  
+
+#### #22 Direct hint to the different neural network files in the other repositories
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/644
+
+  
+
+#### #21 Extended "CheckDigitalConsistency" Logik
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/590
+
+  
+
+#### #20 Deep sleep and push mode
+
+* Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post.
+
+  
+
+#### #19 Extended log informations
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/580
+
+  
+
+#### #18 Document WLAN-strength in web page
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/563
+
+
+
+#### #17 Direct InfluxDB connection
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/534
+* Direct interface to a InfluxDB data base
+* Integrate InfluxDB interface in firmware
+* Adapt html web page for configuration
+
+
+#### #16 Serial Communication
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/512
+* Send the readout value via RX/TX interface with a dedicated TAG
+* Make dedicated communication FlowModule
+* Modification of RX/TX communication
+* Configuration interfache
+
+
+#### #15 Calibration for FishEye image
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/507
+
+1.  The development of such a correction algorithm with the libraries, that are available for the ESP32 environment.
+2. New module for integration of the flow into the image processing flow.
+3. Extension of the configuration (config.ini) and html-pages
+4. Parameter adjustment and testing for every different fish-eye module
+5. Maintenance for further updates / modules, ...
+
+
+
+#### #14 Backup and restore option for configuration
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/459
+
+* Implement a zip file compression for store and restore
+
+* Update the html to handle it
+
+  
+
+#### #13 Manage non linear gauge without CNN re-training
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/443
+
+* Implement a look up table for non linear analog meters
+
+  
+
 #### #12 Less reboots due to memory leakage
 
 * Issue: #414 & #425  #430

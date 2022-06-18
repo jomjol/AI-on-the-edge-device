@@ -3,7 +3,15 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
+
 #include "Helper.h"
 
 static const char *TAG = "log";

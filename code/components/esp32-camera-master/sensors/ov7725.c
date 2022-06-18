@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "sccb.h"
+#include "xclk.h"
 #include "ov7725.h"
 #include "ov7725_regs.h"
 #include "freertos/FreeRTOS.h"
@@ -58,10 +59,10 @@ static const uint8_t default_regs[][2] = {
     {COM8,          0xF0},
     {COM6,          0xC5},
     {COM9,          0x11},
-    {COM10,         COM10_VSYNC_NEG | COM10_PCLK_MASK}, //Invert VSYNC and MASK PCLK
+    {COM10,         COM10_VSYNC_NEG | COM10_PCLK_FREE}, //Invert VSYNC and MASK PCLK
     {BDBASE,        0x7F},
     {DBSTEP,        0x03},
-    {AEW,           0x96},
+    {AEW,           0x75},
     {AEB,           0x64},
     {VPT,           0xA1},
     {EXHCL,         0x00},
@@ -493,13 +494,30 @@ static int set_gainceiling_dummy(sensor_t *sensor, gainceiling_t val){ return -1
 static int set_res_raw(sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning){return -1;}
 static int _set_pll(sensor_t *sensor, int bypass, int multiplier, int sys_div, int root_2x, int pre_div, int seld5, int pclk_manual, int pclk_div){return -1;}
 
-esp_err_t xclk_timer_conf(int ledc_timer, int xclk_freq_hz);
 static int set_xclk(sensor_t *sensor, int timer, int xclk)
 {
     int ret = 0;
     sensor->xclk_freq_hz = xclk * 1000000U;
     ret = xclk_timer_conf(timer, sensor->xclk_freq_hz);
     return ret;
+}
+
+int ov7725_detect(int slv_addr, sensor_id_t *id)
+{
+    if (OV7725_SCCB_ADDR == slv_addr) {
+        SCCB_Write(slv_addr, 0xFF, 0x01);//bank sensor
+        uint16_t PID = SCCB_Read(slv_addr, 0x0A);
+        if (OV7725_PID == PID) {
+            id->PID = PID;
+            id->VER = SCCB_Read(slv_addr, REG_VER);
+            id->MIDL = SCCB_Read(slv_addr, REG_MIDL);
+            id->MIDH = SCCB_Read(slv_addr, REG_MIDH);
+            return PID;
+        } else {
+            ESP_LOGI(TAG, "Mismatch PID=0x%x", PID);
+        }
+    }
+    return 0;
 }
 
 int ov7725_init(sensor_t *sensor)

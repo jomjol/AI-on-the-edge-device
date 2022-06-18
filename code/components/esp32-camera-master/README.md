@@ -1,8 +1,30 @@
 # ESP32 Camera Driver
 
+[![Build examples](https://github.com/espressif/esp32-camera/actions/workflows/build.yml/badge.svg)](https://github.com/espressif/esp32-camera/actions/workflows/build.yml)
 ## General Information
 
-This repository hosts ESP32 compatible driver for OV2640, OV3660, OV5640, OV7670 and OV7725 image sensors. Additionally it provides a few tools, which allow converting the captured frame data to the more common BMP and JPEG formats.
+This repository hosts ESP32 series Soc compatible driver for image sensors. Additionally it provides a few tools, which allow converting the captured frame data to the more common BMP and JPEG formats.
+
+### Supported Soc
+
+- ESP32
+- ESP32-S2
+- ESP32-S3
+
+### Supported Sensor
+
+| model   | max resolution | color type | output format                                                | Len Size |
+| ------- | -------------- | ---------- | ------------------------------------------------------------ | -------- |
+| OV2640  | 1600 x 1200    | color      | YUV(422/420)/YCbCr422<br>RGB565/555<br>8-bit compressed data<br>8/10-bit Raw RGB data | 1/4"     |
+| OV3660  | 2048 x 1536    | color      | raw RGB data<br/>RGB565/555/444<br/>CCIR656<br/>YCbCr422<br/>compression | 1/5"     |
+| OV5640  | 2592 x 1944    | color      | RAW RGB<br/>RGB565/555/444<br/>CCIR656<br/>YUV422/420<br/>YCbCr422<br/>compression | 1/4"     |
+| OV7670  | 640 x 480      | color      | Raw Bayer RGB<br/>Processed Bayer RGB<br>YUV/YCbCr422<br>GRB422<br>RGB565/555 | 1/6"     |
+| OV7725  | 640 x 480      | color      | Raw RGB<br/>GRB 422<br/>RGB565/555/444<br/>YCbCr 422         | 1/4"     |
+| NT99141 | 1280 x 720     | color      | YCbCr 422<br/>RGB565/555/444<br/>Raw<br/>CCIR656<br/>JPEG compression | 1/4"     |
+| GC032A  | 640 x 480      | color      | YUV/YCbCr422<br/>RAW Bayer<br/>RGB565                        | 1/10"    |
+| GC0308  | 640 x 480      | color      | YUV/YCbCr422<br/>RAW Bayer<br/>RGB565                        | 1/6.5"   |
+| GC2145  | 1600 x 1200    | color      | YUV/YCbCr422<br/>RAW Bayer<br/>RGB565                        | 1/5"     |
+| BF3005  | 640 x 480      | color      | YUV/YCbCr422<br/>RAW Bayer<br/>RGB565                        | 1/4"     |
 
 ## Important to Remember
 
@@ -17,7 +39,7 @@ This repository hosts ESP32 compatible driver for OV2640, OV3660, OV5640, OV7670
 ### Using esp-idf
 
 - Clone or download and extract the repository to the components folder of your ESP-IDF project
-- Enable PSRAM in `menuconfig`
+- Enable PSRAM in `menuconfig` (also set Flash and PSRAM frequiencies to 80MHz)
 - Include `esp_camera.h` in your code
 
 ### Using PlatformIO
@@ -75,17 +97,6 @@ However with a bit of patience and experimenting you'll figure the Kconfig out. 
 
 If you miss-skip-ignore this critical step the camera module will compile but camera logic inside the library will be 'empty' because the Kconfig sets the proper #ifdef statements during the build process to initialize the selected cameras.  It's very not optional! 
 
-### Kconfig options
-
-| config                            | description                                                                                                                                                  | default                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
-| CONFIG_OV2640_SUPPORT             | Support for OV2640 camera                                                                                                                                    | enabled                        |
-| CONFIG_OV7725_SUPPORT             | Support for OV7725 camera                                                                                                                                    | disabled                       |
-| CONFIG_OV3660_SUPPORT             | Support for OV3660 camera                                                                                                                                    | enabled                        |
-| CONFIG_OV5640_SUPPORT             | Support for OV5640 camera                                                                                                                                    | enabled                        |
-| CONFIG_SCCB_HARDWARE_I2C          | Enable this option if you want to use hardware I2C to control the camera. Disable this option to use software I2C.                                           | enabled                        |
-| CONFIG_SCCB_HARDWARE_I2C_PORT     | I2C peripheral to use for SCCB. Can be I2C0 and I2C1.                                                                                                        | CONFIG_SCCB_HARDWARE_I2C_PORT1 |
-| CONFIG_CAMERA_TASK_PINNED_TO_CORE | Pin the camera handle task to a certain core(0/1). It can also be done automatically choosing NO_AFFINITY. Can be CAMERA_CORE0, CAMERA_CORE1 or NO_AFFINITY. | CONFIG_CAMERA_CORE0            |
 
 ## Examples
 
@@ -132,8 +143,7 @@ static camera_config_t camera_config = {
     .pin_href = CAM_PIN_HREF,
     .pin_pclk = CAM_PIN_PCLK,
 
-    //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,
+    .xclk_freq_hz = 20000000,//EXPERIMENTAL: Set to 16MHz on ESP32-S2 or ESP32-S3 to enable EDMA mode
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
@@ -141,7 +151,8 @@ static camera_config_t camera_config = {
     .frame_size = FRAMESIZE_UXGA,//QQVGA-QXGA Do not use sizes above QVGA when not JPEG
 
     .jpeg_quality = 12, //0-63 lower number means higher quality
-    .fb_count = 1 //if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_count = 1, //if more than one, i2s runs in continuous mode. Use only with JPEG
+    .grab_mode = CAMERA_GRAB_WHEN_EMPTY//CAMERA_GRAB_LATEST. Sets when buffers should be filled
 };
 
 esp_err_t camera_init(){

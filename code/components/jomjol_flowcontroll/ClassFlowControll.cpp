@@ -6,7 +6,15 @@
 #include "freertos/task.h"
 
 #include <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <dirent.h>
+#ifdef __cplusplus
+}
+#endif
+
 #include "ClassLogFile.h"
 #include "time_sntp.h"
 #include "Helper.h"
@@ -33,8 +41,6 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
         _classname = "ClassFlowAlignment";
     }
     if ((_stepname.compare(0, 7, "[Digits") == 0) || (_stepname.compare(0, 8, ";[Digits") == 0)) {
-//    if ((_stepname.compare("[Digits]") == 0) || (_stepname.compare(";[Digits]") == 0)){
-//        printf("Digits!!!\n");
         _classname = "ClassFlowCNNGeneral";
     }
     if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
@@ -321,7 +327,7 @@ string ClassFlowControll::getReadoutAll(int _type)
             out = out + (*numbers)[i]->name + "\t";
             switch (_type) {
                 case READOUT_TYPE_VALUE:
-                    out = out + (*numbers)[i]->ReturnValueNoError;
+                    out = out + (*numbers)[i]->ReturnValue;
                     break;
                 case READOUT_TYPE_PREVALUE:
                     if (flowpostprocessing->PreValueUse)
@@ -637,10 +643,17 @@ string ClassFlowControll::getJSON()
     {
         json += "\"" + (*NUMBERS)[i]->name + "\":\n";
         json += "  {\n";
-        json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValueNoError          + ",\n";
+        if ((*NUMBERS)[i]->ReturnValue.length() > 0)
+            json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValue          + ",\n";
+        else
+            json += "    \"value\": \"\",\n";
         json += "    \"raw\": \""        + (*NUMBERS)[i]->ReturnRawValue              + "\",\n";
         json += "    \"error\": \""     + (*NUMBERS)[i]->ErrorMessageText             + "\",\n";
-        json += "    \"rate\": "      + std::to_string((*NUMBERS)[i]->FlowRateAct)  + ",\n";
+        if ((*NUMBERS)[i]->ReturnRateValue.length() > 0)
+            json += "    \"rate\": "      + (*NUMBERS)[i]->ReturnRateValue                + ",\n";
+        else
+            json += "    \"rate\": \"\",\n";
+
         json += "    \"timestamp\": \"" + (*NUMBERS)[i]->timeStamp                    + "\"\n";
         if ((i+1) < (*NUMBERS).size())
             json += "  },\n";

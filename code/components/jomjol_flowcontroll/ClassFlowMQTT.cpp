@@ -1,6 +1,7 @@
 #include <sstream>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
+#include "connect_wlan.h"
 
 #include "time_sntp.h"
 #include "interface_mqtt.h"
@@ -110,9 +111,12 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+    printf("Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
     if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
-    {
+    { 
+        printf("InitMQTTInit\n");
         mainerrortopic = maintopic + "/connection";
+        printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
         MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
         MQTTPublish(mainerrortopic, "connected");
         MQTTenable = true;
@@ -135,6 +139,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     std::string result;
     std::string resulterror = "";
+    std::string resultraw = "";
     std::string resultrate = "";
     std::string resulttimestamp = "";
     string zw = "";
@@ -152,15 +157,22 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
     MQTTPublish(zw, freeheapmem);
 
+    zw = maintopic + "/" + "wifiRSSI";
+    char rssi[11];
+    sprintf(rssi, "%d", get_WIFI_RSSI());
+    MQTTPublish(zw, rssi);
+
+
     if (flowpostprocessing)
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
-            result =  (*NUMBERS)[i]->ReturnValueNoError;
+            result =  (*NUMBERS)[i]->ReturnValue;
+            resultraw =  (*NUMBERS)[i]->ReturnRawValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
-            resultrate = std::to_string((*NUMBERS)[i]->FlowRateAct);
+            resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
             namenumber = (*NUMBERS)[i]->name;
@@ -169,22 +181,40 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-            zw = namenumber + "value";    
-            MQTTPublish(zw, result);
+            zw = namenumber + "value"; 
+            if (result.length() > 0)   
+                MQTTPublish(zw, result);
 
-            zw = namenumber + "error";    
-            MQTTPublish(zw, resulterror, 1);
+            zw = namenumber + "error"; 
+            if (resulterror.length() > 0)  
+                MQTTPublish(zw, resulterror, 1);
 
-            zw = namenumber + "rate";    
-            MQTTPublish(zw, resultrate);
+            zw = namenumber + "rate"; 
+            if (resultrate.length() > 0)   
+                MQTTPublish(zw, resultrate);
+
+            zw = namenumber + "raw"; 
+            if (resultraw.length() > 0)   
+                MQTTPublish(zw, resultraw);
 
             zw = namenumber + "timestamp";
-            MQTTPublish(zw, resulttimestamp);
+            if (resulttimestamp.length() > 0)
+                MQTTPublish(zw, resulttimestamp);
 
 
-            std::string json="{\"value\":"+result;
-            json += ",\"error\":\""+resulterror;
-            json += "\",\"rate\":"+resultrate;
+            std::string json = "";
+            
+            if (result.length() > 0)
+                json += "{\"value\":"+result;
+            else
+                json += "{\"value\":\"\"";
+
+            json += ",\"raw\":\""+resultraw;
+            json += "\",\"error\":\""+resulterror;
+            if (resultrate.length() > 0)
+                json += "\",\"rate\":"+resultrate;
+            else
+                json += "\",\"rate\":\"\"";
             json += ",\"timestamp\":\""+resulttimestamp+"\"}";
 
             zw = namenumber + "json";
