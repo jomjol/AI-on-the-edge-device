@@ -9,7 +9,7 @@ enum t_CNNType {
     AutoDetect,
     Analogue,
     Digital,
-    DigitalHyprid,
+//    DigitalHyprid,
     DigitalHyprid10,
     DoubleHyprid10,
     Digital100,

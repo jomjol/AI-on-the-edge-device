@@ -65,12 +65,12 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     }
 
-    if ((CNNType == DoubleHyprid10))
+    if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
     {
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         if (zahl >= 0)       // NaN?
         {
-            if (_extendedResolution)
+            if (_extendedResolution)            // ist nur gesetzt, falls es die erste Ziffer ist (kein Analog vorher!)
             {
                 int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
                 int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
@@ -109,7 +109,8 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     }
 
-    if ((CNNType == DigitalHyprid || CNNType == Digital100))
+/*
+    if (CNNType == Digital100)
     {
         int zif_akt = -1;
 
@@ -152,7 +153,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         }
         return result;
     }
-
+*/
 
     return result;
 }
@@ -160,8 +161,10 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger)
 {
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
 
-    if (zahl_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
+
+    if (eval_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
     {
         if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
             return ((int) round(zahl) + 10) % 10;
@@ -169,6 +172,32 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
             return ((int) trunc(zahl) + 10) % 10;
     }
 
+    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger <= 9.5))
+    {
+        // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-0.5) --> zahl wird gerundet
+        return ((int) round(zahl) + 10) % 10;
+    }  
+    else
+    {
+        if (eval_vorgaenger <= 1)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+        {
+            if (ergebnis_nachkomma > 5)
+                return (ergebnis_vorkomma + 1) % 10;
+            else
+                return ergebnis_vorkomma;
+        }
+        else // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
+        {
+            if (ergebnis_nachkomma > 5)
+                return ergebnis_vorkomma;
+            else
+                return (ergebnis_vorkomma - 1 + 10) % 10;
+        }
+    }
+
+    return -1;
+
+/*
     if (zahl_vorgaenger > 9.2)              // Ziffernwechsel beginnt
     {
         if (eval_vorgaenger == 0)           // Wechsel hat schon stattgefunden
@@ -195,6 +224,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
         return ((int) round(zahl) + 10) % 10;
 
     return ((int) trunc(zahl) + 10) % 10;
+*/
 }
 
 
@@ -267,11 +297,11 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->logfileRetentionInDays = std::stoi(zerlegt[1]);
         }
-        if ((toUpper(zerlegt[0]) == "MODELTYPE") && (zerlegt.size() > 1))
-        {
-            if (toUpper(zerlegt[1]) == "DIGITHYPRID")
-                CNNType = DigitalHyprid;
-        }
+//        if ((toUpper(zerlegt[0]) == "MODELTYPE") && (zerlegt.size() > 1))
+//        {
+//            if (toUpper(zerlegt[1]) == "DIGITHYPRID")
+//                CNNType = DigitalHyprid;
+//        }
 
         if ((toUpper(zerlegt[0]) == "MODEL") && (zerlegt.size() > 1))
         {
@@ -282,12 +312,6 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             CNNGoodThreshold = std::stof(zerlegt[1]);
         }
-/*        if ((toUpper(zerlegt[0]) == "MODELINPUTSIZE") && (zerlegt.size() > 2))
-        {
-            this->modelxsize = std::stoi(zerlegt[1]);
-            this->modelysize = std::stoi(zerlegt[2]);
-        }
-*/
         if (zerlegt.size() >= 5)
         {
             general* _analog = GetGENERAL(zerlegt[0], true);
@@ -519,10 +543,10 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 CNNType = DigitalHyprid10;
                 printf("TFlite-Type set to DigitalHyprid10\n");
                 break;
-            case 22:
-                CNNType = DigitalHyprid;
-                printf("TFlite-Type set to DigitalHyprid\n");
-                break;
+//            case 22:
+//                CNNType = DigitalHyprid;
+//                printf("TFlite-Type set to DigitalHyprid\n");
+//                break;
              case 100:
                 CNNType = Digital100;
                 printf("TFlite-Type set to Digital\n");
@@ -600,6 +624,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             }
                         }
                     } break;
+/*
                 case DigitalHyprid:
                     {
                         int _num, _nachkomma;
@@ -638,6 +663,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             }
                         }
                     } break;
+*/
                 case DigitalHyprid10:
                     {
                         int _num, _nachkomma;
@@ -687,7 +713,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         _num = tflite->GetOutClassification(0, 9);
                         _numplus = (_num + 1) % 10;
-                        _numminus = (_num - 1) % 10;
+                        _numminus = (_num - 1 + 10) % 10;
 
                         _val = tflite->GetOutputValue(_num);
                         _valplus = tflite->GetOutputValue(_numplus);
@@ -695,7 +721,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         float result = _num;
 
-                        if (_valplus > _numminus)
+                        if (_valplus > _valminus)
                         {
                             result = result + _valplus / (_valplus + _val);
                             _fit = _val + _valplus;
@@ -710,6 +736,13 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             result = result - 10;
                         if (result < 0)
                             result = result + 10;
+
+                        string zw = "_num (p, m): " + to_string(_num) + " " + to_string(_numplus) + " " + to_string(_numminus);
+                        zw = zw + " _val (p, m): " + to_string(_val) + " " + to_string(_valplus) + " " + to_string(_valminus);
+                        zw = zw + " result: " + to_string(result) + " _fit: " + to_string(_fit);
+                        printf("details cnn: %s\n", zw.c_str());
+                        LogFile.WriteToFile(zw);
+
 
                         _result_save_file = result;
 
@@ -748,9 +781,36 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     break;
                 case Digital100:
                     {
+                        int _num;
+                        float _fit;
+                        float _result_save_file;
                         
-                        GENERAL[_ana]->ROI[i]->result_float  = (float)tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image) /10.0;
-                        printf("Result General(Digit)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
+                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
+                        tflite->Invoke();
+    
+                        _num = tflite->GetOutClassification();
+                        _fit = tflite->GetOutputValue(_num);
+
+                        GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
+
+ 
+                        _result_save_file = GENERAL[_ana]->ROI[i]->result_float;
+
+                        if (_fit < CNNGoodThreshold)
+                        {
+                            GENERAL[_ana]->ROI[i]->isReject = true;
+                            GENERAL[_ana]->ROI[i]->result_float = -1;
+                            _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
+                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
+                            printf("Value Rejected due to Threshold (Fit: %f, Threshold: %f\n", _fit, CNNGoodThreshold);
+                            LogFile.WriteToFile(zw);
+                        }
+                        else
+                        {
+                            GENERAL[_ana]->ROI[i]->isReject = false;
+                        }
+
+                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
 
                         if (isLogImage)
                         {
@@ -758,13 +818,14 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             if (isLogImageSelect)
                             {
                                 if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                                    LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                             }
                             else
                             {
-                                LogImage(logPath, _imagename, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                                LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                             }
                         }
+
                     } break;
             
                 default:

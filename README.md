@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-05-09)
+##### Rolling (2022-06-18)
+
+- Internal update (Neural Network Algo)
+
+Rolling (2022-05-09)
 
 - Bug Fix: absolute value always had value "0"
 
