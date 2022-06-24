@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = true;
+bool debugdetailgeneral = false;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -167,7 +167,6 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
 {
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
-    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid parameter: " + std::to_string(zahl) + ", " + std::to_string(zahl_vorgaenger) + ", " + std::to_string(eval_vorgaenger));
 
 
     if (eval_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
@@ -194,8 +193,6 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
         }
         else // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
         {
-            if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid kein Nulldurchgang: " + std::to_string(ergebnis_vorkomma) + ", " + std::to_string(ergebnis_nachkomma));
-
             if (ergebnis_nachkomma > 5)
                 return ergebnis_vorkomma;
             else
