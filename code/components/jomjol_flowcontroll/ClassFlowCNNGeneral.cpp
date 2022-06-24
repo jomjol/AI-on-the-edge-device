@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = false;
+bool debugdetailgeneral = true;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -31,6 +31,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
 string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev)
 {
     string result = "";    
+
     if (GENERAL[_analog]->ROI.size() == 0)
         return result;
 
@@ -67,6 +68,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
     if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
     {
+
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         if (zahl >= 0)       // NaN?
         {
@@ -77,12 +79,15 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
                 result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
                 prev = ergebnis_vorkomma;
+
+
             }
             else
             {
                 prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
 //                prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 result = std::to_string(prev);
+
             }
         }
         else
@@ -162,6 +167,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
 {
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid parameter: " + std::to_string(zahl) + ", " + std::to_string(zahl_vorgaenger) + ", " + std::to_string(eval_vorgaenger));
 
 
     if (eval_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
@@ -188,6 +194,8 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
         }
         else // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
         {
+            if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid kein Nulldurchgang: " + std::to_string(ergebnis_vorkomma) + ", " + std::to_string(ergebnis_nachkomma));
+
             if (ergebnis_nachkomma > 5)
                 return ergebnis_vorkomma;
             else
@@ -238,17 +246,21 @@ int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
     if (ziffer_vorgaenger == -1)
         return ergebnis_vorkomma % 10;
 
+    // Ist die aktuelle Stelle schon umgesprungen und die Vorstelle noch nicht?
+    // Akt.: 2.1, Vorstelle = 0.9 => 1.9
     ergebnis_rating = ergebnis_nachkomma - ziffer_vorgaenger;
-    if (ergebnis_nachkomma >= 5)
+    // Keine Ahnung was der Code macht. Bei Übergang Analog zu Digital verursacht er 
+    // eine -1 auf der kleinsten Digitalstelle.
+    /*if (ergebnis_nachkomma >= 5)
         ergebnis_rating-=5;
     else
-        ergebnis_rating+=5;
+        ergebnis_rating+=5;*/
     ergebnis = (int) round(zahl);
     if (ergebnis_rating < 0)
         ergebnis-=1;
     if (ergebnis == -1)
         ergebnis+=10;
-
+    
     ergebnis = (ergebnis + 10) % 10;
     return ergebnis;
 }
