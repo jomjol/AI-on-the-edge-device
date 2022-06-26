@@ -27,12 +27,19 @@ namespace tflite {
 namespace {
 
 struct SqueezeContext {
-  SqueezeContext(TfLiteContext* context, TfLiteNode* node)
-      : params(reinterpret_cast<TfLiteSqueezeParams*>(node->builtin_data)),
-        input(GetInput(context, node, 0)),
-        output(GetOutput(context, node, 0)) {}
+  SqueezeContext(TfLiteContext* context, TfLiteNode* node) {
+    params = reinterpret_cast<TfLiteSqueezeParams*>(node->builtin_data);
+    micro_context = GetMicroContext(context);
+    input = micro_context->AllocateTempInputTensor(node, 0);
+    output = micro_context->AllocateTempOutputTensor(node, 0);
+  }
+  ~SqueezeContext() {
+    micro_context->DeallocateTempTfLiteTensor(input);
+    micro_context->DeallocateTempTfLiteTensor(output);
+  }
+  MicroContext* micro_context;
   TfLiteSqueezeParams* params;
-  const TfLiteTensor* const input;
+  TfLiteTensor* input;
   TfLiteTensor* output;
 };
 
@@ -80,18 +87,24 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 }
 
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
-  SqueezeContext op_context(context, node);
+  const TfLiteEvalTensor* input = tflite::micro::GetEvalInput(context, node, 0);
 
-  if (op_context.input->type == kTfLiteString) {
+  if (input->type == kTfLiteString) {
     TF_LITE_KERNEL_LOG(context, "Type %s (%d) not supported.",
-                       TfLiteTypeGetName(op_context.input->type),
-                       op_context.input->type);
+                       TfLiteTypeGetName(input->type), input->type);
     return kTfLiteError;
   }
 
-  TF_LITE_ENSURE_EQ(context, op_context.input->bytes, op_context.output->bytes);
-  memcpy(op_context.output->data.raw, op_context.input->data.raw,
-         op_context.input->bytes);
+  TfLiteEvalTensor* output = tflite::micro::GetEvalOutput(context, node, 0);
+  size_t input_byte_size;
+  size_t output_byte_size;
+  TF_LITE_ENSURE_OK(context,
+                    TfLiteEvalTensorByteLength(input, &input_byte_size));
+  TF_LITE_ENSURE_OK(context,
+                    TfLiteEvalTensorByteLength(output, &output_byte_size));
+
+  TF_LITE_ENSURE_EQ(context, input_byte_size, output_byte_size);
+  memcpy(output->data.raw, input->data.raw, input_byte_size);
   return kTfLiteOk;
 }
 

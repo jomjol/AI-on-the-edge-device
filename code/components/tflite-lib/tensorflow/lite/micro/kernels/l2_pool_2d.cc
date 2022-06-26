@@ -36,15 +36,18 @@ constexpr int kTensorShapeRank = 4;
 enum { kBatchRank = 0, kHeightRank, kWidthRank, kChannelRank };
 
 TfLiteStatus L2Prepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
+
   auto* params = static_cast<TfLitePoolParams*>(node->builtin_data);
 
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
-  TfLiteTensor* output;
-  TF_LITE_ENSURE_OK(context,
-                    GetOutputSafe(context, node, kOutputTensor, &output));
-  const TfLiteTensor* input;
-  TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, kInputTensor, &input));
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
+  TF_LITE_ENSURE(context, output != nullptr);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kInputTensor);
+  TF_LITE_ENSURE(context, input != nullptr);
   TF_LITE_ENSURE_EQ(context, NumDimensions(input), kTensorShapeRank);
   TF_LITE_ENSURE_EQ(context, NumDimensions(output), kTensorShapeRank);
   TF_LITE_ENSURE_TYPES_EQ(context, input->type, output->type);
@@ -81,6 +84,9 @@ TfLiteStatus L2Prepare(TfLiteContext* context, TfLiteNode* node) {
   output->dims->data[kHeightRank] = out_height;
   output->dims->data[kWidthRank] = out_width;
   output->dims->data[kChannelRank] = channels_out;
+
+  micro_context->DeallocateTempTfLiteTensor(output);
+  micro_context->DeallocateTempTfLiteTensor(input);
 
   return kTfLiteOk;
 }

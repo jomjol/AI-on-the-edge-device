@@ -157,6 +157,13 @@ const Model* GetSimpleStatefulModel();
 // Returns a flatbuffer model with "if" and two subgraphs.
 const Model* GetSimpleModelWithSubgraphsAndIf();
 
+// Returns a flatbuffer model with "while" and three subgraphs.
+const Model* GetSimpleModelWithSubgraphsAndWhile();
+
+// Returns a flatbuffer model with "if" and two subgraphs and the input tensor 1
+// of "if" subgraph overlaps with the input tensor 2 of subgraph 1.
+const Model* GetModelWithIfAndSubgraphInputTensorOverlap();
+
 // Returns a flatbuffer model with null subgraph/operator inputs and outputs.
 const Model* GetSimpleModelWithNullInputsAndOutputs();
 

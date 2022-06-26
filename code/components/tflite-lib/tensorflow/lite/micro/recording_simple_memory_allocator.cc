@@ -39,8 +39,8 @@ RecordingSimpleMemoryAllocator* RecordingSimpleMemoryAllocator::Create(
       RecordingSimpleMemoryAllocator(error_reporter, buffer_head, buffer_size);
 
   uint8_t* allocator_buffer =
-      tmp.AllocateFromTail(sizeof(RecordingSimpleMemoryAllocator),
-                           alignof(RecordingSimpleMemoryAllocator));
+      tmp.AllocatePersistentBuffer(sizeof(RecordingSimpleMemoryAllocator),
+                                   alignof(RecordingSimpleMemoryAllocator));
   // Use the default copy constructor to populate internal states.
   return new (allocator_buffer) RecordingSimpleMemoryAllocator(tmp);
 }
@@ -57,11 +57,11 @@ size_t RecordingSimpleMemoryAllocator::GetAllocatedCount() const {
   return alloc_count_;
 }
 
-TfLiteStatus RecordingSimpleMemoryAllocator::SetHeadBufferSize(
-    size_t size, size_t alignment) {
+TfLiteStatus RecordingSimpleMemoryAllocator::ResizeBuffer(
+    uint8_t* resizable_buf, size_t size, size_t alignment) {
   const uint8_t* previous_head = head();
   TfLiteStatus status =
-      SimpleMemoryAllocator::SetHeadBufferSize(size, alignment);
+      SimpleMemoryAllocator::ResizeBuffer(resizable_buf, size, alignment);
   if (status == kTfLiteOk) {
     used_bytes_ += head() - previous_head;
     requested_head_bytes_ = size;
@@ -69,10 +69,11 @@ TfLiteStatus RecordingSimpleMemoryAllocator::SetHeadBufferSize(
   return status;
 }
 
-uint8_t* RecordingSimpleMemoryAllocator::AllocateFromTail(size_t size,
-                                                          size_t alignment) {
+uint8_t* RecordingSimpleMemoryAllocator::AllocatePersistentBuffer(
+    size_t size, size_t alignment) {
   const uint8_t* previous_tail = tail();
-  uint8_t* result = SimpleMemoryAllocator::AllocateFromTail(size, alignment);
+  uint8_t* result =
+      SimpleMemoryAllocator::AllocatePersistentBuffer(size, alignment);
   if (result != nullptr) {
     used_bytes_ += previous_tail - tail();
     requested_tail_bytes_ += size;

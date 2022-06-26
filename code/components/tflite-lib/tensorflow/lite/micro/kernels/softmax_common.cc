@@ -20,6 +20,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/kernels/op_macros.h"
 #include "tensorflow/lite/micro/kernels/softmax.h"
+#include "tensorflow/lite/micro/micro_context.h"
 
 namespace tflite {
 
@@ -90,12 +91,14 @@ void* SoftmaxInit(TfLiteContext* context, const char* buffer, size_t length) {
 }
 
 TfLiteStatus SoftmaxPrepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
+
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
-  const TfLiteTensor* input = GetInput(context, node, 0);
+  TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, 0);
   TF_LITE_ENSURE(context, input != nullptr);
   TF_LITE_ENSURE(context, NumDimensions(input) >= 1);
-  TfLiteTensor* output = GetOutput(context, node, 0);
+  TfLiteTensor* output = micro_context->AllocateTempOutputTensor(node, 0);
   TF_LITE_ENSURE(context, output != nullptr);
 
   TF_LITE_ENSURE(context, node->user_data != nullptr);
@@ -136,7 +139,12 @@ TfLiteStatus SoftmaxPrepare(TfLiteContext* context, TfLiteNode* node) {
   }
 
   auto* params = static_cast<TfLiteSoftmaxParams*>(node->builtin_data);
-  return CalculateSoftmaxParams(context, input, output, params, op_data);
+  auto ret_val =
+      CalculateSoftmaxParams(context, input, output, params, op_data);
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(output);
+  return ret_val;
 }
 
 }  // namespace tflite

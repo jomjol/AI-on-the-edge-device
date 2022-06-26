@@ -11,11 +11,22 @@
 
 ____
 
-#### #25 Use Homie Spec for Mqtt binding
+#### #27 Use Homie Spec for Mqtt binding
 
 * Use the standardized Home Protocol for the Mqtt binding 
 * https://homieiot.github.io/
 
+
+=======
+#### #26 Changes behaviour for "N" replacement
+
+* in case the higher digits has already increased by minium 1 - don't set the "N" to the last value, but to "0"
+* https://github.com/jomjol/AI-on-the-edge-device/issues/792
+
+
+#### #25 Trigger Measurement via MQTT
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/727
 
 
 #### #24 Show Mqtt state directly in Webserver
@@ -55,9 +66,9 @@ ____
 
   
 
-#### #18 Document WLAN-strength in web page
+#### ~~#18 Document WLAN-strength in web page~~
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/563
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/563~~
 
 
 
@@ -108,9 +119,9 @@ ____
 
   
 
-#### #12 Less reboots due to memory leakage
+#### ~~#12 Less reboots due to memory leakage~~
 
-* Issue: #414 & #425  #430
+* ~~Issue: #414 & #425  #430~~
 
   
 

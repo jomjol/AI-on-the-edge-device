@@ -18,6 +18,7 @@ limitations under the License.
 
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
+#include "tensorflow/lite/micro/fake_micro_context.h"
 #include "tensorflow/lite/micro/mock_micro_graph.h"
 #include "tensorflow/lite/micro/simple_memory_allocator.h"
 
@@ -50,40 +51,22 @@ class KernelRunner {
   // to stub out MicroGraph methods and track invocations on each subgraph.
   MockMicroGraph* GetMockGraph() { return &mock_micro_graph_; }
 
- protected:
-  static TfLiteTensor* GetTensor(const struct TfLiteContext* context,
-                                 int tensor_index);
-  static TfLiteEvalTensor* GetEvalTensor(const struct TfLiteContext* context,
-                                         int tensor_index);
-  static void* AllocatePersistentBuffer(TfLiteContext* context, size_t bytes);
-  static TfLiteStatus RequestScratchBufferInArena(TfLiteContext* context,
-                                                  size_t bytes,
-                                                  int* buffer_index);
-  static void* GetScratchBuffer(TfLiteContext* context, int buffer_index);
-  static void ReportOpError(struct TfLiteContext* context, const char* format,
-                            ...);
-  // This method matches GetExecutionPlan from TfLiteContext since TFLM reuses
-  // this method to get the MicroGraph from an operator context.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  static TfLiteStatus GetGraph(struct TfLiteContext* context,
-                               TfLiteIntArray** args);
+  // Returns true if all temp buffer in tests are deallocated.
+  // TODO(b/209453859): move this function to private after deallocation checks
+  // are enabled for all kernel tests.
+  bool ValidateTempBufferDeallocated();
 
  private:
-  static constexpr int kNumScratchBuffers_ = 12;
-
   static constexpr int kKernelRunnerBufferSize_ = 10000;
   static uint8_t kKernelRunnerBuffer_[kKernelRunnerBufferSize_];
 
-  SimpleMemoryAllocator* allocator_ = nullptr;
-  const TfLiteRegistration& registration_;
-  TfLiteTensor* tensors_ = nullptr;
-  MockMicroGraph mock_micro_graph_;
-
   TfLiteContext context_ = {};
   TfLiteNode node_ = {};
+  const TfLiteRegistration& registration_;
 
-  int scratch_buffer_count_ = 0;
-  uint8_t* scratch_buffers_[kNumScratchBuffers_];
+  SimpleMemoryAllocator* allocator_;
+  MockMicroGraph mock_micro_graph_;
+  FakeMicroContext fake_micro_context_;
 };
 
 }  // namespace micro

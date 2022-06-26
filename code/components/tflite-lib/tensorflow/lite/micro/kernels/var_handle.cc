@@ -46,14 +46,10 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   const auto* params =
       reinterpret_cast<const TfLiteVarHandleParams*>(node->builtin_data);
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
-  MicroResourceVariables* resources = graph_info->GetResourceVariables();
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  MicroGraph& graph_info = micro_context->graph();
+
+  MicroResourceVariables* resources = graph_info.GetResourceVariables();
   if (resources == nullptr) {
     MicroPrintf(
         "VAR_HANDLE requires resource variables. Please create "

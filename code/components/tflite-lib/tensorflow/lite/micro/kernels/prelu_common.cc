@@ -84,14 +84,22 @@ TfLiteStatus PreluPrepare(TfLiteContext* context, TfLiteNode* node) {
   TFLITE_DCHECK(node->user_data != nullptr);
   PreluParams* params = static_cast<PreluParams*>(node->user_data);
 
-  const TfLiteTensor* input = GetInput(context, node, 0);
+  MicroContext* micro_context = GetMicroContext(context);
+
+  TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, 0);
   TF_LITE_ENSURE(context, input != nullptr);
-  const TfLiteTensor* alpha = GetInput(context, node, 1);
+  TfLiteTensor* alpha = micro_context->AllocateTempInputTensor(node, 1);
   TF_LITE_ENSURE(context, alpha != nullptr);
-  TfLiteTensor* output = GetOutput(context, node, 0);
+  TfLiteTensor* output = micro_context->AllocateTempOutputTensor(node, 0);
   TF_LITE_ENSURE(context, output != nullptr);
 
-  return CalculatePreluParams(input, alpha, output, params);
+  TF_LITE_ENSURE_OK(context,
+                    CalculatePreluParams(input, alpha, output, params));
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(alpha);
+  micro_context->DeallocateTempTfLiteTensor(output);
+  return kTfLiteOk;
 }
 
 }  // namespace tflite

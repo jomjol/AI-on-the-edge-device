@@ -51,7 +51,8 @@ MicroInterpreter::MicroInterpreter(const Model* model,
       tensors_allocated_(false),
       initialization_status_(kTfLiteError),
       input_tensors_(nullptr),
-      output_tensors_(nullptr) {
+      output_tensors_(nullptr),
+      micro_context_(&allocator_, model_, &graph_) {
   Init(profiler);
 }
 
@@ -69,7 +70,8 @@ MicroInterpreter::MicroInterpreter(const Model* model,
       tensors_allocated_(false),
       initialization_status_(kTfLiteError),
       input_tensors_(nullptr),
-      output_tensors_(nullptr) {
+      output_tensors_(nullptr),
+      micro_context_(&allocator_, model_, &graph_) {
   Init(profiler);
 }
 
@@ -80,12 +82,10 @@ MicroInterpreter::~MicroInterpreter() {
 }
 
 void MicroInterpreter::Init(MicroProfiler* profiler) {
-  context_.impl_ = static_cast<void*>(this);
-  context_.ReportError = ReportOpError;
-  context_.GetTensor = GetTensor;
-  context_.ReportError = ReportOpError;
-  context_.GetTensor = GetTensor;
-  context_.GetEvalTensor = GetEvalTensor;
+  context_.impl_ = static_cast<void*>(&micro_context_);
+  context_.ReportError = MicroContextReportOpError;
+  context_.GetTensor = MicroContextGetTensor;
+  context_.GetEvalTensor = MicroContextGetEvalTensor;
   context_.profiler = profiler;
 
   initialization_status_ = kTfLiteOk;
@@ -200,18 +200,18 @@ TfLiteStatus MicroInterpreter::AllocateTensors() {
   TF_LITE_ENSURE_STATUS(PrepareNodeAndRegistrationDataFromFlatbuffer());
 
   // Only allow AllocatePersistentBuffer in Init stage.
-  context_.AllocatePersistentBuffer = AllocatePersistentBuffer;
+  context_.AllocatePersistentBuffer = MicroContextAllocatePersistentBuffer;
   context_.RequestScratchBufferInArena = nullptr;
   context_.GetScratchBuffer = nullptr;
-  context_.GetExecutionPlan = GetGraph;
   context_.GetExternalContext = nullptr;
   TF_LITE_ENSURE_STATUS(graph_.InitSubgraphs());
 
   // Both AllocatePersistentBuffer and RequestScratchBufferInArena is
   // available in Prepare stage.
-  context_.RequestScratchBufferInArena = RequestScratchBufferInArena;
-  // GetExternalContext become available in Prepare stage.
-  context_.GetExternalContext = GetExternalContext;
+  context_.RequestScratchBufferInArena =
+      MicroContextRequestScratchBufferInArena;
+  // external_context become available in Prepare stage.
+  context_.GetExternalContext = MicroContextGetExternalContext;
 
   TF_LITE_ENSURE_STATUS(graph_.PrepareSubgraphs());
 
@@ -219,11 +219,13 @@ TfLiteStatus MicroInterpreter::AllocateTensors() {
   // allowed. Kernels can only fetch scratch buffers via GetScratchBuffer.
   context_.AllocatePersistentBuffer = nullptr;
   context_.RequestScratchBufferInArena = nullptr;
-  context_.GetScratchBuffer = GetScratchBuffer;
+  context_.GetScratchBuffer = MicroContextGetScratchBuffer;
 
   TF_LITE_ENSURE_OK(&context_, allocator_.FinishModelAllocation(
                                    model_, graph_.GetAllocations(),
                                    &scratch_buffer_handles_));
+
+  micro_context_.SetScratchBufferHandles(scratch_buffer_handles_);
 
   // TODO(b/162311891): Drop these allocations when the interpreter supports
   // handling buffers from TfLiteEvalTensor.
@@ -320,97 +322,9 @@ TfLiteStatus MicroInterpreter::ResetVariableTensors() {
   return graph_.ResetVariableTensors();
 }
 
-void* MicroInterpreter::AllocatePersistentBuffer(TfLiteContext* ctx,
-                                                 size_t bytes) {
-  return reinterpret_cast<MicroInterpreter*>(ctx->impl_)
-      ->allocator_.AllocatePersistentBuffer(bytes);
-}
-
-TfLiteStatus MicroInterpreter::RequestScratchBufferInArena(TfLiteContext* ctx,
-                                                           size_t bytes,
-                                                           int* buffer_idx) {
-  MicroInterpreter* interpreter =
-      reinterpret_cast<MicroInterpreter*>(ctx->impl_);
-  return interpreter->allocator_.RequestScratchBufferInArena(
-      bytes, interpreter->graph_.GetCurrentSubgraphIndex(), buffer_idx);
-}
-
-void* MicroInterpreter::GetScratchBuffer(TfLiteContext* ctx, int buffer_idx) {
-  MicroInterpreter* interpreter =
-      reinterpret_cast<MicroInterpreter*>(ctx->impl_);
-  ScratchBufferHandle* handle =
-      interpreter->scratch_buffer_handles_ + buffer_idx;
-  return handle->data;
-}
-
-void MicroInterpreter::ReportOpError(struct TfLiteContext* context,
-                                     const char* format, ...) {
-#ifndef TF_LITE_STRIP_ERROR_STRINGS
-  MicroInterpreter* interpreter =
-      static_cast<MicroInterpreter*>(context->impl_);
-  va_list args;
-  va_start(args, format);
-  TF_LITE_REPORT_ERROR(interpreter->error_reporter_, format, args);
-  va_end(args);
-#endif
-}
-
-TfLiteTensor* MicroInterpreter::GetTensor(const struct TfLiteContext* context,
-                                          int tensor_idx) {
-  MicroInterpreter* interpreter =
-      static_cast<MicroInterpreter*>(context->impl_);
-  return interpreter->allocator_.AllocateTempTfLiteTensor(
-      interpreter->model_, interpreter->graph_.GetAllocations(), tensor_idx,
-      interpreter->get_subgraph_index());
-}
-
-TfLiteEvalTensor* MicroInterpreter::GetEvalTensor(
-    const struct TfLiteContext* context, int tensor_idx) {
-  MicroInterpreter* interpreter =
-      reinterpret_cast<MicroInterpreter*>(context->impl_);
-  return &interpreter->graph_
-              .GetAllocations()[interpreter->get_subgraph_index()]
-              .tensors[tensor_idx];
-}
-
-TfLiteStatus MicroInterpreter::GetGraph(struct TfLiteContext* context,
-                                        TfLiteIntArray** args) {
-  MicroInterpreter* interpreter =
-      reinterpret_cast<MicroInterpreter*>(context->impl_);
-  *args = reinterpret_cast<TfLiteIntArray*>(&interpreter->graph_);
-  return kTfLiteOk;
-}
-
 TfLiteStatus MicroInterpreter::SetMicroExternalContext(
     void* external_context_payload) {
-  if (external_context_payload == nullptr ||
-      external_context_payload_ != nullptr) {
-    MicroPrintf(
-        "Attempting to set external context to %x but it was %x already",
-        external_context_payload, external_context_payload_);
-    return kTfLiteError;
-  }
-
-  external_context_payload_ = external_context_payload;
-  return kTfLiteOk;
-}
-
-void* MicroInterpreter::GetMicroExternalContext() {
-  return external_context_payload_;
-}
-
-// This callback is an implementation for TfLiteContext::GetExternalContext
-// interface.
-TfLiteExternalContext* MicroInterpreter::GetExternalContext(
-    TfLiteContext* context, TfLiteExternalContextType unused) {
-  // TODO(b/205754757): TfLiteExternalContextType is unused in TFLM. This
-  // function is only called by the framework as a way to conform to existing
-  // interface. Users should use GetMicroExternalContext api in kernel_util.h to
-  // get context and shall not directly use this function.
-  MicroInterpreter* interpreter =
-      reinterpret_cast<MicroInterpreter*>(context->impl_);
-  return reinterpret_cast<TfLiteExternalContext*>(
-      interpreter->GetMicroExternalContext());
+  return micro_context_.set_external_context(external_context_payload);
 }
 
 }  // namespace tflite

@@ -23,6 +23,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
+#include "tensorflow/lite/micro/micro_context.h"
 #include "tensorflow/lite/micro/micro_graph.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
@@ -50,16 +51,11 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE(context, NumInputs(node) == 0);
   TF_LITE_ENSURE(context, NumOutputs(node) == 0);
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  MicroGraph& graph_info = micro_context->graph();
 
   TF_LITE_ENSURE(context,
-                 op_data->init_subgraph_index < graph_info->NumSubgraphs());
+                 op_data->init_subgraph_index < graph_info.NumSubgraphs());
 
   return kTfLiteOk;
 }
@@ -72,16 +68,11 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
     return kTfLiteOk;
   }
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  MicroGraph& graph_info = micro_context->graph();
 
   TF_LITE_ENSURE_OK(context,
-                    graph_info->InvokeSubgraph(op_data->init_subgraph_index));
+                    graph_info.InvokeSubgraph(op_data->init_subgraph_index));
 
   op_data->has_run = true;
 

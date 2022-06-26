@@ -7,6 +7,7 @@ struct roi {
     int posx, posy, deltax, deltay;
     float result_float;
     int result_klasse;
+    bool isReject;
     string name;
     CImageBasis *image, *image_org;
 };
@@ -36,9 +37,10 @@ struct NumberPost {
     float PreValue;             // letzter Wert, der gut ausgelesen wurde
     float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
     string ReturnRateValue;      // RückgabewertRate
+    string ReturnChangeAbsolute;      // RückgabewertRate
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
     string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-    string ReturnPreValue;  // korrigierter Rückgabewert ohne Fehlermeldung
+    string ReturnPreValue;      // korrigierter Rückgabewert ohne Fehlermeldung
     string ErrorMessageText;        // Fehlermeldung bei Consistency Check
     int AnzahlAnalog;
     int AnzahlDigital;

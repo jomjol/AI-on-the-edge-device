@@ -73,7 +73,7 @@ li.dropdown {
 
 <body style="font-family: arial">
 
-<h1>Configure Watermeter</h1>
+<h1 id="id_title">Configure Watermeter</h1>
 
 <ul>
 	<li aria-current="page"><a href="index.html">Main Page</a>	
@@ -97,5 +97,41 @@ li.dropdown {
 <div class="h_iframe">
 	 <iframe width="1020px" height="650px" name="maincontent" id ="maincontent" src="edit_config_param.html" title="fileserver"></iframe> 
 </div>
+<script type="text/javascript" src="./gethost.js"></script> 
+
+<script type="text/javascript">
+	var basepath = "http://192.168.178.22";
+
+
+function LoadHostname() {
+	_basepath = getbasepath(); 
+  
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener('load', function(event) {
+	  if (xhttp.status >= 200 && xhttp.status < 300) {
+		  hostname = xhttp.responseText;
+      document.title = "Configure - " + hostname;
+		  document.getElementById("id_title").innerHTML  = "Configure - " + hostname;
+	  } else {
+		 console.warn(request.statusText, request.responseText);
+	  }
+	 });
+
+//     var xhttp = new XMLHttpRequest();
+	 try {
+		  url = _basepath + '/version?type=Hostname';     
+		  xhttp.open("GET", url, true);
+		  xhttp.send();
+
+	 }
+	 catch (error)
+	 {
+//               alert("Loading Hostname failed");
+	 }
+  }
+
+  LoadHostname();
+
+</script>
 </body>
 </html>

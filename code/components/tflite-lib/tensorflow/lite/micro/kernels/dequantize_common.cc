@@ -33,10 +33,12 @@ TfLiteStatus DequantizePrepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
+  MicroContext* micro_context = GetMicroContext(context);
+
   // TODO(b/140515557): Add cached dequant to improve hybrid model performance.
-  const TfLiteTensor* input = GetInput(context, node, 0);
+  TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, 0);
   TF_LITE_ENSURE(context, input != nullptr);
-  TfLiteTensor* output = GetOutput(context, node, 0);
+  TfLiteTensor* output = micro_context->AllocateTempOutputTensor(node, 0);
   TF_LITE_ENSURE(context, output != nullptr);
 
   TF_LITE_ENSURE(context,
@@ -54,6 +56,10 @@ TfLiteStatus DequantizePrepare(TfLiteContext* context, TfLiteNode* node) {
   data->quantization_params.zero_point = input->params.zero_point;
   data->quantization_params.scale = static_cast<double>(input->params.scale);
   data->output_zero_point = output->params.zero_point;
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(output);
+
   return kTfLiteOk;
 }
 

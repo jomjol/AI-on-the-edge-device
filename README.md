@@ -52,9 +52,41 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-06-18)
+
+- Internal update (Neural Network Algo)
+
+Rolling (2022-05-09)
+
+- Bug Fix: absolute value always had value "0"
+
+Rolling (2022-04-26)
+
+- Extended MQTT with absolute Change (in addition to rate)
+- Internal optimization, removal of modelfile from `config.ini` (is now read out of the cnn file directly)
+
+- TFMicro/Lite: Update (espressif Verision 20220417)
+- ESP-IDF: Update to 4.3.0
+
+Rolling (2022-04-17)
+
+- Internal preparation for new neural network type (digits with subdigit values)
+
+Rolling (2022-04-15)
+
+- IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
+
+Rolling (2022-03-22)
+
+- Bug Fix: no time with fixed IP 
+
+Rolling (2022-03-20)
+
+- MQTT: implemented "Retain Flag" - not tested in detail yet 
+
 ##### 10.5.2 - Stability Increase (2022-02-22)
 
-- **NEW 10.5.2:** Bug Fix: wrong `firmware.bin` (no rate update)
+- NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
 - NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
 - MQTT: changed wifi naming to "wifiRSSI"
 - HTML: check selectable values for consistency
