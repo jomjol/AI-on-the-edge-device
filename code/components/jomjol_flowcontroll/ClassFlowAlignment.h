@@ -16,6 +16,7 @@ protected:
     float initalrotate;
     bool initialmirror;
     bool initialflip;
+    bool use_antialiasing;
     RefInfo References[2];
     int anz_ref;
     string namerawimage;
