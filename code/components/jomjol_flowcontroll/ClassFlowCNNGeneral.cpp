@@ -34,13 +34,15 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
     if (GENERAL[_analog]->ROI.size() == 0)
         return result;
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout _analog=" + std::to_string(_analog) + ", _extendedResolution=" + std::to_string(_extendedResolution) + ", prev=" + std::to_string(prev));
 
     if (CNNType == Analogue)
     {
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
-
+        
         prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout(analog) zahl=" + std::to_string(zahl) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
         result = std::to_string(prev);
 
         if (_extendedResolution && (CNNType != Digital))
@@ -79,15 +81,17 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
                 result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
                 prev = ergebnis_vorkomma;
-
+                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout(dig100-ext) ergebnis_vorkomma=" + std::to_string(ergebnis_vorkomma) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
+        
 
             }
             else
             {
-                prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
-//                prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
+//                prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
+                prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 result = std::to_string(prev);
-
+                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout(dig100)  prev=" + std::to_string(prev));
+        
             }
         }
         else
@@ -239,6 +243,7 @@ int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
     int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
     int ergebnis, ergebnis_rating;
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEval erg_v=" + std::to_string(ergebnis_vorkomma) + ", erg_n=" + std::to_string(ergebnis_nachkomma) + ", ziff_v=" + std::to_string(ziffer_vorgaenger));
 
     if (ziffer_vorgaenger == -1)
         return ergebnis_vorkomma % 10;
@@ -246,12 +251,11 @@ int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
     // Ist die aktuelle Stelle schon umgesprungen und die Vorstelle noch nicht?
     // Akt.: 2.1, Vorstelle = 0.9 => 1.9
     ergebnis_rating = ergebnis_nachkomma - ziffer_vorgaenger;
-    // Keine Ahnung was der Code macht. Bei Übergang Analog zu Digital verursacht er 
-    // eine -1 auf der kleinsten Digitalstelle.
-    /*if (ergebnis_nachkomma >= 5)
+    
+    if (ergebnis_nachkomma >= 5)
         ergebnis_rating-=5;
     else
-        ergebnis_rating+=5;*/
+        ergebnis_rating+=5;
     ergebnis = (int) round(zahl);
     if (ergebnis_rating < 0)
         ergebnis-=1;
