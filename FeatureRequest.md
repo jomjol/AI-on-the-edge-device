@@ -11,6 +11,13 @@
 
 ____
 
+#### #27 Use Homie Spec for Mqtt binding
+
+* Use the standardized Home Protocol for the Mqtt binding 
+* https://homieiot.github.io/
+
+
+=======
 #### #26 Changes behaviour for "N" replacement
 
 * in case the higher digits has already increased by minium 1 - don't set the "N" to the last value, but to "0"
@@ -21,7 +28,6 @@ ____
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/727
 
-  
 
 #### #24 Show Mqtt state directly in Webserver
 
