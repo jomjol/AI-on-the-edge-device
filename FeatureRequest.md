@@ -11,6 +11,13 @@
 
 ____
 
+#### #25 Use Homie Spec for Mqtt binding
+
+* Use the standardized Home Protocol for the Mqtt binding 
+* https://homieiot.github.io/
+
+
+
 #### #24 Show Mqtt state directly in Webserver
 
 * Show MQTT log in Web page. E.g. connection established or failed to connect...
