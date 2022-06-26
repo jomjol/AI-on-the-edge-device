@@ -52,7 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-06-18)
+##### Rolling (2022-06-26)
+
+- Internal update (Neural Network Algo)
+
+Rolling (2022-06-18)
 
 - Internal update (Neural Network Algo)
 
