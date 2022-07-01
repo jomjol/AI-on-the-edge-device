@@ -52,6 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-07-01)
+
+- Updated analog neural network file (`ana1000s2.tflite`)
+- Updated digital neural network file (`dig1400s2q.tflite`)
+
 ##### Rolling (2022-06-26)
 
 - Internal update (Neural Network Algo)
