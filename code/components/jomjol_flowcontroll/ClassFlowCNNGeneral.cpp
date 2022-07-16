@@ -756,7 +756,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             _fit = _val + _valminus;
 
                         }
-                        if (result > 10)
+                        if (result >= 10)
                             result = result - 10;
                         if (result < 0)
                             result = result + 10;

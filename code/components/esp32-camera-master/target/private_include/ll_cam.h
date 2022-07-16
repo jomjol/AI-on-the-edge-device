@@ -116,8 +116,14 @@ typedef struct {
     //for RGB/YUV modes
     uint16_t width;
     uint16_t height;
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+    float in_bytes_per_pixel;
+    float fb_bytes_per_pixel;
+    camera_conv_mode_t conv_mode;
+#else 
     uint8_t in_bytes_per_pixel;
     uint8_t fb_bytes_per_pixel;
+#endif
     uint32_t fb_size;
 
     cam_state_t state;

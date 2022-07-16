@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/recording_simple_memory_allocator.h"
+#include "tensorflow/lite/micro/arena_allocator/recording_simple_memory_allocator.h"
 
 #include <new>
 

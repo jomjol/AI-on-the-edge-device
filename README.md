@@ -52,6 +52,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-07-16)
+
+- TFMicro/Lite: Update (espressif Version 20220716)
+- Updated esp32cam (v20220716)
+- Integrated new analog classificational CNN (from @haverland)
+- Bugfix: Postprocessing
+
 ##### Rolling (2022-07-01)
 
 - Updated analog neural network file (`ana1000s2.tflite`)
@@ -74,7 +81,7 @@ Rolling (2022-04-26)
 - Extended MQTT with absolute Change (in addition to rate)
 - Internal optimization, removal of modelfile from `config.ini` (is now read out of the cnn file directly)
 
-- TFMicro/Lite: Update (espressif Verision 20220417)
+- TFMicro/Lite: Update (espressif Version 20220417)
 - ESP-IDF: Update to 4.3.0
 
 Rolling (2022-04-17)

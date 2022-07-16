@@ -21,10 +21,15 @@
 #include "xclk.h"
 #include "cam_hal.h"
 
+#if (ESP_IDF_VERSION_MAJOR >= 4) && (ESP_IDF_VERSION_MINOR >= 3)
+#include "esp_rom_gpio.h"
+#endif
+
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #define GPIO_PIN_INTR_POSEDGE GPIO_INTR_POSEDGE
 #define GPIO_PIN_INTR_NEGEDGE GPIO_INTR_NEGEDGE
-#define gpio_matrix_in(a,b,c) gpio_iomux_in(a,b)
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define ets_delay_us(a) esp_rom_delay_us(a)
 #endif
 
 static const char *TAG = "s2 ll_cam";
@@ -70,7 +75,7 @@ static void IRAM_ATTR ll_cam_dma_isr(void *arg)
     }
 }
 
-bool ll_cam_stop(cam_obj_t *cam)
+bool IRAM_ATTR ll_cam_stop(cam_obj_t *cam)
 {
     I2S0.conf.rx_start = 0;
 

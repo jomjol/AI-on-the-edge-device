@@ -3,10 +3,9 @@
 
 #include <stdint.h>
 
-#define REG_DLY 0xffff
-#define REGLIST_TAIL 0x0000 /* Array end token */
+#define REG_DLY 0xff
 
-static const uint16_t gc0308_sensor_default_regs[][2] = {
+static const uint8_t gc0308_sensor_default_regs[][2] = {
     {0xfe, 0x00},
     {0xec, 0x20},
     {0x05, 0x00},
@@ -239,7 +238,21 @@ static const uint16_t gc0308_sensor_default_regs[][2] = {
     {0x65, 0xd3},
     {0x66, 0x60},
     {0xfe, 0x00},
-    {REGLIST_TAIL, 0x00},
+
+    {0x01, 0x32},   //frame setting                            
+	{0x02, 0x0c},                                  
+	{0x0f, 0x01},                                                                                                                     
+	{0xe2, 0x00},  
+	{0xe3, 0x78},                                                             
+	{0xe4, 0x00},      
+	{0xe5, 0xfe},  
+	{0xe6, 0x01},  
+	{0xe7, 0xe0},  
+	{0xe8, 0x01},  
+	{0xe9, 0xe0},  
+	{0xea, 0x01},  
+	{0xeb, 0xe0},
+	{0xfe, 0x00},
 };
 
 #endif

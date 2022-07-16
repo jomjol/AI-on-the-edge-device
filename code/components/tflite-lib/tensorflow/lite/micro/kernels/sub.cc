@@ -162,14 +162,7 @@ TfLiteStatus SubEval(TfLiteContext* context, TfLiteNode* node) {
 }
 
 TfLiteRegistration Register_SUB() {
-  return {/*init=*/SubInit,
-          /*free=*/nullptr,
-          /*prepare=*/SubPrepare,
-          /*invoke=*/SubEval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(SubInit, SubPrepare, SubEval);
 }
 
 }  // namespace tflite

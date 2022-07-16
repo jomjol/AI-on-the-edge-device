@@ -80,6 +80,16 @@ TfLiteTensor* MicroContext::AllocateTempOutputTensor(const TfLiteNode* node,
   return AllocateTempTfLiteTensor(tensor_index);
 }
 
+TfLiteTensor* MicroContext::AllocateTempIntermediateTensor(
+    const TfLiteNode* node, int index) {
+  const int tensor_index = GetTensorIndex(index, node->intermediates->size,
+                                          node->intermediates->data);
+  if (tensor_index < 0) {
+    return nullptr;
+  }
+  return AllocateTempTfLiteTensor(tensor_index);
+}
+
 void MicroContext::DeallocateTempTfLiteTensor(TfLiteTensor* tensor) {
   return allocator_.DeallocateTempTfLiteTensor(tensor);
 }

@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <stdint.h>
-
+#include <esp_nn_defs.h>
 #include <common_functions.h>
 
-int esp_nn_get_depthwise_conv_scratch_size_ansi(const uint16_t input_wd,
-                                                const uint16_t input_ht,
-                                                const uint16_t channels,
-                                                const uint16_t ch_mult,
-                                                const uint16_t filter_wd,
-                                                const uint16_t filter_ht)
+int esp_nn_get_depthwise_conv_scratch_size_ansi(const data_dims_t *input_dims,
+                                                const data_dims_t *filter_dims,
+                                                const data_dims_t *output_dims,
+                                                const dw_conv_params_t *conv_params)
 {
     return 0;
 }
@@ -31,29 +28,35 @@ void esp_nn_set_depthwise_conv_scratch_buf_ansi(const void *buf)
 
 }
 
-void esp_nn_depthwise_conv_s8_ansi(const int8_t *input_data,
-                                   const uint16_t input_wd,
-                                   const uint16_t input_ht,
-                                   const uint16_t channels,
-                                   const int32_t input_offset,
-                                   const uint16_t pad_wd,
-                                   const uint16_t pad_ht,
-                                   const uint16_t stride_wd,
-                                   const uint16_t stride_ht,
-                                   const uint16_t ch_mult,
+void esp_nn_depthwise_conv_s8_ansi(const data_dims_t *input_dims,
+                                   const int8_t *input_data,
+                                   const data_dims_t *filter_dims,
                                    const int8_t *filter_data,
-                                   const uint16_t filter_wd,
-                                   const uint16_t filter_ht,
                                    const int32_t *bias,
+                                   const data_dims_t *output_dims,
                                    int8_t *out_data,
-                                   const uint16_t out_wd,
-                                   const uint16_t out_ht,
-                                   const int32_t out_offset,
-                                   const int32_t *out_shift,
-                                   const int32_t *out_mult,
-                                   const int32_t activation_min,
-                                   const int32_t activation_max)
+                                   const dw_conv_params_t *conv_params,
+                                   const quant_data_t *quant_data)
 {
+    const uint16_t input_wd = input_dims->width;
+    const uint16_t input_ht = input_dims->height;
+    const uint16_t channels = input_dims->channels;
+    const int32_t input_offset = conv_params->in_offset;
+    const int32_t out_offset = conv_params->out_offset;
+    const uint16_t pad_wd = conv_params->padding.width;
+    const uint16_t pad_ht = conv_params->padding.height;
+    const uint16_t stride_wd = conv_params->stride.width;
+    const uint16_t stride_ht = conv_params->stride.height;
+    const uint16_t filter_wd = filter_dims->width;
+    const uint16_t filter_ht = filter_dims->height;
+    const uint16_t out_wd = output_dims->width;
+    const uint16_t out_ht = output_dims->height;
+    const int32_t *out_shift = quant_data->shift;
+    const int32_t *out_mult = quant_data->mult;
+    const int32_t activation_min = conv_params->activation.min;
+    const int32_t activation_max = conv_params->activation.max;
+    const uint16_t ch_mult = conv_params->ch_mult;
+
     int out_idx = 0;
     for (int out_y = 0; out_y < out_ht; out_y++) { //height loop
         const int16_t base_y = (out_y * stride_ht) - pad_ht;
