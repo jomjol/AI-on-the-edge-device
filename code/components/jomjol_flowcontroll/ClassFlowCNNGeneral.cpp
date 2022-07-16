@@ -36,7 +36,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout _analog=" + std::to_string(_analog) + ", _extendedResolution=" + std::to_string(_extendedResolution) + ", prev=" + std::to_string(prev));
 
-    if (CNNType == Analogue)
+    if (CNNType == Analogue || CNNType == Analogue100)
     {
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
@@ -490,7 +490,7 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
 
 void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw)
 {
-    if (CNNType == Analogue)
+    if (CNNType == Analogue || CNNType == Analogue100)
     {
         int r = 0;
         int g = 255;
@@ -561,8 +561,13 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
 //                printf("TFlite-Type set to DigitalHyprid\n");
 //                break;
              case 100:
-                CNNType = Digital100;
-                printf("TFlite-Type set to Digital\n");
+                if (modelxsize==32 && modelysize == 32) {
+                    CNNType = Analogue100;
+                    printf("TFlite-Type set to Analogue100\n");
+                } else {
+                    CNNType = Digital100;
+                    printf("TFlite-Type set to Digital\n");
+                }
                 break;
             default:
                 printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
@@ -617,6 +622,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         if (isLogImage)
                             LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;
+
                 case Digital:
                     {
                         GENERAL[_ana]->ROI[i]->result_klasse = 0;
@@ -793,6 +799,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     }
                     break;
                 case Digital100:
+                case Analogue100:
                     {
                         int _num;
                         float _fit;
