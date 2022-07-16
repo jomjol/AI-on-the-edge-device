@@ -36,6 +36,21 @@ int ValidateTensorIndexing(const TfLiteContext* context, int index,
 
 }  // namespace
 
+TfLiteRegistration RegisterOp(
+    void* (*init)(TfLiteContext* context, const char* buffer, size_t length),
+    TfLiteStatus (*prepare)(TfLiteContext* context, TfLiteNode* node),
+    TfLiteStatus (*invoke)(TfLiteContext* context, TfLiteNode* node)) {
+  return {/*init=*/init,
+          /*free=*/nullptr,
+          /*prepare=*/prepare,
+          /*invoke=*/invoke,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0,
+          /*registration_external=*/nullptr};
+}
+
 // Returns a mutable tensor for a given input index. is_variable must be checked
 // during prepare when the full TfLiteTensor is available.
 TfLiteEvalTensor* GetMutableEvalInput(const TfLiteContext* context,

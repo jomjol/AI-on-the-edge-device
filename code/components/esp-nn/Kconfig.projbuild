@@ -6,8 +6,8 @@ choice NN_OPTIMIZATIONS
    help
       Use ANSI-C versions for verification and debug purpose.
       Optimisations are automatically picked up for a chipset.
-      For ESP32-S3, assembly Optimisations are selected.
-      For ESP32, just the ANSI C versions are selected for now.
+      For ESP32-S3, assembly optimisations are selected.
+      For other platforms(viz., ESP32, ESP32-C3), generic optimisations are used.
 
 config NN_ANSI_C
    bool "ANSI C"
@@ -17,8 +17,8 @@ config NN_OPTIMIZED
    bool "Optimized versions"
    help
       Optimisations are automatically picked up for a chipset.
-      For ESP32-S3, assembly Optimisations are selected.
-      For ESP32, just the ANSI C versions are selected for now.
+      For ESP32-S3, assembly optimisations are selected.
+      For other platforms(viz., ESP32, ESP32-C3), generic optimisations are used.
 endchoice
 
 config NN_OPTIMIZATIONS

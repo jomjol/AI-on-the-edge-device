@@ -195,14 +195,8 @@ TfLiteStatus TanhEval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace activations
 
 TfLiteRegistration Register_TANH() {
-  return {/*init=*/activations::TanhInit,
-          /*free=*/nullptr,
-          /*prepare=*/activations::TanhPrepare,
-          /*invoke=*/activations::TanhEval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(
+      activations::TanhInit, activations::TanhPrepare, activations::TanhEval);
 }
 }  // namespace micro
 }  // namespace ops

@@ -7,7 +7,8 @@ The library contains optimised NN (Neural Network) functions for various Espress
 
 * Supported ESP chipsets include:
    * ESP32-S3 (Assembly versions optimised to benefit from vector instructions of ESP32-S3)
-   * ESP32 (ANSI C versions)
+   * ESP32 (Generic optimisations)
+   * ESP32-C3 (Generic optimisations)
 
 ## Performance
 
@@ -39,8 +40,8 @@ The library contains optimised NN (Neural Network) functions for various Espress
      * Optimized versions
      * ANSI C
 
-  * Default selection is for `Optimized versions`. For ESP32-S3, assembly versions are automatically selected, whereas for ESP32,  ANSI-C versions are selected by default.
-  * For debugging purposes, you may want to select `ANSI C`
+  * Default selection is for `Optimized versions`. For ESP32-S3, assembly versions are automatically selected, whereas for other chipsets (viz., ESP32, ESP32-C3), generic optimisations are selected.
+  * For debugging purposes, you may want to select `ANSI C` reference versions.
 
 
 ## Contributing

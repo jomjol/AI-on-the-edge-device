@@ -97,6 +97,16 @@ TfLiteStatus TestConvQuantizedPerChannel(
     float output_scale, int output_zero_point, TfLiteConvParams* conv_params,
     TfLiteRegistration registration, int16_t* output_data);
 
+TfLiteStatus TestConvQuantizedPerChannel(
+    int* input_dims_data, const float* input_data, int16_t* input_quantized,
+    float input_scale, int input_zero_point, int* filter_dims_data,
+    const float* filter_data, int8_t* filter_data_quantized,
+    int* bias_dims_data, const float* bias_data, int32_t* bias_data_quantized,
+    float* bias_scales, int* bias_zero_points, int* output_dims_data,
+    const float* expected_output_data, int16_t* expected_output_data_quantized,
+    float output_scale, int output_zero_point, TfLiteConvParams* conv_params,
+    TfLiteRegistration registration, int16_t* output_data);
+
 }  // namespace testing
 }  // namespace tflite
 

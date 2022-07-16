@@ -13,28 +13,27 @@
 // limitations under the License.
 
 /**
- * @file        Header definitions to include for esp_nn optimized functions for
- *              the ESP32 platform.
- *              We are hooking up just the C versions for now.
- *              The file hence is exactly same as `esp_nn_ansi_c.h`
+ * @file        Header definitions to include for esp_nn generic optimisations
+ *              For functions which not having optimisations, _ansi versions are picked.
  */
 
 #pragma once
 
+#include "esp_nn_defs.h"
 #include "esp_nn_ansi_headers.h"
 
 #define esp_nn_add_elementwise_s8 esp_nn_add_elementwise_s8_ansi
 #define esp_nn_mul_elementwise_s8 esp_nn_mul_elementwise_s8_ansi
 
-#define esp_nn_depthwise_conv_s8 esp_nn_depthwise_conv_s8_ansi
+#define esp_nn_depthwise_conv_s8 esp_nn_depthwise_conv_s8_opt
 
-#define esp_nn_conv_s8 esp_nn_conv_s8_ansi
+#define esp_nn_conv_s8 esp_nn_conv_s8_opt
 
-#define esp_nn_get_conv_scratch_size esp_nn_get_conv_scratch_size_ansi
-#define esp_nn_set_conv_scratch_buf esp_nn_set_conv_scratch_buf_ansi
+#define esp_nn_get_conv_scratch_size esp_nn_get_conv_scratch_size_opt
+#define esp_nn_set_conv_scratch_buf esp_nn_set_conv_scratch_buf_opt
 
-#define esp_nn_get_depthwise_conv_scratch_size esp_nn_get_depthwise_conv_scratch_size_ansi
-#define esp_nn_set_depthwise_conv_scratch_buf esp_nn_set_depthwise_conv_scratch_buf_ansi
+#define esp_nn_get_depthwise_conv_scratch_size esp_nn_get_depthwise_conv_scratch_size_opt
+#define esp_nn_set_depthwise_conv_scratch_buf esp_nn_set_depthwise_conv_scratch_buf_opt
 
 #define esp_nn_relu6_s8 esp_nn_relu6_s8_ansi
 

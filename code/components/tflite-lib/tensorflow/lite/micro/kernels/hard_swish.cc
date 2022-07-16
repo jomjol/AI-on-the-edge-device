@@ -68,14 +68,8 @@ TfLiteStatus HardSwishEval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_HARD_SWISH() {
-  return {/*init=*/HardSwishInit,
-          /*free=*/nullptr,
-          /*prepare=*/tflite::HardSwishPrepare,
-          /*invoke=*/HardSwishEval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(HardSwishInit, tflite::HardSwishPrepare,
+                                   HardSwishEval);
 }
 
 }  // namespace tflite

@@ -148,12 +148,12 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     TF_LITE_ENSURE(context, input != nullptr);
     int num_dimensions = NumDimensions(input);
 
-    if (num_dimensions > 4) {
+    if (num_dimensions > RuntimeShape::kMaxSmallSize) {
       TF_LITE_KERNEL_LOG(
           context,
-          "Op Concatenation does not currently support num dimensions >4 "
+          "Op Concatenation does not currently support num dimensions > %d "
           "Tensor has %d dimensions.",
-          num_dimensions);
+          RuntimeShape::kMaxSmallSize, num_dimensions);
       return kTfLiteError;
     }
     micro_context->DeallocateTempTfLiteTensor(input);
@@ -252,14 +252,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace concatenation
 
 TfLiteRegistration Register_CONCATENATION() {
-  return {/*init=*/concatenation::Init,
-          /*free=*/nullptr,
-          /*prepare=*/concatenation::Prepare,
-          /*invoke=*/concatenation::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(concatenation::Init, concatenation::Prepare,
+                                   concatenation::Eval);
 }
 
 }  // namespace micro

@@ -13,16 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
-#define TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
+#ifndef TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_SIMPLE_MEMORY_ALLOCATOR_H_
+#define TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_SIMPLE_MEMORY_ALLOCATOR_H_
 
 #include <cstddef>
 #include <cstdint>
 
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/error_reporter.h"
+#include "tensorflow/lite/micro/arena_allocator/ibuffer_allocator.h"
 #include "tensorflow/lite/micro/compatibility.h"
-#include "tensorflow/lite/micro/ibuffer_allocator.h"
 
 namespace tflite {
 
@@ -147,4 +147,4 @@ class SimpleMemoryAllocator : public INonPersistentBufferAllocator,
 
 }  // namespace tflite
 
-#endif  // TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
+#endif  // TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_SIMPLE_MEMORY_ALLOCATOR_H_

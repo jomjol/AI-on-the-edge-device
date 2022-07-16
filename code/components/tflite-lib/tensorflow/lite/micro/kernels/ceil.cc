@@ -67,14 +67,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace ceil
 
 TfLiteRegistration Register_CEIL() {
-  return {/*init=*/nullptr,
-          /*free=*/nullptr,
-          /*prepare=*/ceil::Prepare,
-          /*invoke=*/ceil::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(nullptr, ceil::Prepare, ceil::Eval);
 }
 
 }  // namespace micro
