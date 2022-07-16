@@ -181,7 +181,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
             return ((int) trunc(zahl) + 10) % 10;
     }
 
-    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger <= 9.5))
+    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.5))
     {
         // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-0.5) --> zahl wird gerundet
         return ((int) round(zahl) + 10) % 10;
@@ -197,7 +197,9 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
         }
         else // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
         {
-            if (ergebnis_nachkomma > 5)
+            // hier auf 4 reduziert, da erst ab Vorgänder 9 anfängt umzustellen. Bei 9.5 Vorgänger kann die aktuelle
+            // Zahl noch x.4 - x.5 sein.
+            if (ergebnis_nachkomma >= 4)
                 return ergebnis_vorkomma;
             else
                 return (ergebnis_vorkomma - 1 + 10) % 10;
@@ -239,10 +241,11 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
 
 
 int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
-{
+{   
     int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
-    int ergebnis, ergebnis_rating;
+    int ergebnis;
+    float ergebnis_rating;
     if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEval erg_v=" + std::to_string(ergebnis_vorkomma) + ", erg_n=" + std::to_string(ergebnis_nachkomma) + ", ziff_v=" + std::to_string(ziffer_vorgaenger));
 
     if (ziffer_vorgaenger == -1)
@@ -250,10 +253,12 @@ int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
 
     // Ist die aktuelle Stelle schon umgesprungen und die Vorstelle noch nicht?
     // Akt.: 2.1, Vorstelle = 0.9 => 1.9
+    // Problem sind mehrere Rundungen 
+    // Bsp. zahl=4.5, Vorgänger= 9.6 (ziffer_vorgaenger=0)
+    // Tritt nur auf bei Übergang von analog auf digit
     ergebnis_rating = ergebnis_nachkomma - ziffer_vorgaenger;
-    
     if (ergebnis_nachkomma >= 5)
-        ergebnis_rating-=5;
+        ergebnis_rating-=5.1;
     else
         ergebnis_rating+=5;
     ergebnis = (int) round(zahl);
