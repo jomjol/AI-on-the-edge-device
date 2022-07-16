@@ -41,6 +41,9 @@ void test_ZeigerEval()
     // the 4.4 (digital100) is not above 5  and the previous digit (analog) too (9.3)
     TEST_ASSERT_EQUAL(4, undertest.ZeigerEval(4.4, 9));
 
+    // the 4.5 (digital100) is not above 5  and the previous digit (analog) too (9.6)
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEval(4.5, 0));    
+
 }
 
 /**
@@ -76,6 +79,14 @@ void test_ZeigerEvalHybrid() {
 
     // the 5.7 with previous and the previous >=9.5 should trunc to 5
     TEST_ASSERT_EQUAL(5, undertest.ZeigerEvalHybrid(5.7, 9.6, 9));
+
+    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.6)
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.6, 0));    
+
+    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.6)
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.6, 9));    
+    // the 4.4 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.5, 9));    
 
 }
 
