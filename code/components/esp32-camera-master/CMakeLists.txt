@@ -1,5 +1,29 @@
+# get IDF version for comparison
+set(idf_version "${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}")
+
+# set conversion sources
+set(COMPONENT_SRCS
+  conversions/yuv.c
+  conversions/to_jpg.cpp
+  conversions/to_bmp.c
+  conversions/jpge.cpp
+  conversions/esp_jpg_decode.c
+  )
+
+set(COMPONENT_PRIV_INCLUDEDIRS
+  conversions/private_include
+  )
+
+set(COMPONENT_ADD_INCLUDEDIRS
+  driver/include
+  conversions/include
+  )
+
+set(COMPONENT_REQUIRES driver)
+
+# set driver sources only for supported platforms
 if(IDF_TARGET STREQUAL "esp32" OR IDF_TARGET STREQUAL "esp32s2" OR IDF_TARGET STREQUAL "esp32s3")
-  set(COMPONENT_SRCS
+  list(APPEND COMPONENT_SRCS
     driver/esp_camera.c
     driver/cam_hal.c
     driver/sccb.c
@@ -14,22 +38,14 @@ if(IDF_TARGET STREQUAL "esp32" OR IDF_TARGET STREQUAL "esp32s2" OR IDF_TARGET ST
     sensors/gc2145.c
     sensors/gc032a.c
     sensors/bf3005.c
-    conversions/yuv.c
-    conversions/to_jpg.cpp
-    conversions/to_bmp.c
-    conversions/jpge.cpp
-    conversions/esp_jpg_decode.c
+    sensors/bf20a6.c
+    sensors/sc101iot.c
+    sensors/sc030iot.c
     )
 
-  set(COMPONENT_ADD_INCLUDEDIRS
-    driver/include
-    conversions/include
-    )
-
-  set(COMPONENT_PRIV_INCLUDEDIRS
+  list(APPEND COMPONENT_PRIV_INCLUDEDIRS
     driver/private_include
     sensors/private_include
-    conversions/private_include
     target/private_include
     )
 
@@ -58,8 +74,13 @@ if(IDF_TARGET STREQUAL "esp32" OR IDF_TARGET STREQUAL "esp32s2" OR IDF_TARGET ST
       )
   endif()
 
-  set(COMPONENT_REQUIRES driver)
   set(COMPONENT_PRIV_REQUIRES freertos nvs_flash)
 
-  register_component()
+  set(min_version_for_esp_timer "4.2")
+  if (idf_version VERSION_GREATER_EQUAL min_version_for_esp_timer)
+    list(APPEND COMPONENT_PRIV_REQUIRES esp_timer)
+  endif()
+
 endif()
+
+register_component()

@@ -29,7 +29,12 @@ namespace jpge {
         if(b){
             return b;
         }
+    // check if SPIRAM is enabled and allocate on SPIRAM if allocatable
+#if (CONFIG_SPIRAM_SUPPORT && (CONFIG_SPIRAM_USE_CAPS_ALLOC || CONFIG_SPIRAM_USE_MALLOC))
         return heap_caps_malloc(nSize, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+#else
+        return NULL;
+#endif
     }
     static inline void jpge_free(void *p) { free(p); }
 

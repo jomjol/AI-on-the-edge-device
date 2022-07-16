@@ -52,6 +52,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### Rolling (2022-07-16)
+
+- Updated esp32cam
+- Integrated new analog classificational CNN (from @haverland)
+
 ##### Rolling (2022-07-01)
 
 - Updated analog neural network file (`ana1000s2.tflite`)

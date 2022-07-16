@@ -10,12 +10,10 @@ jobs:
       - uses: actions/checkout@master
         with:
           submodules: "recursive"
-
       - name: Upload component to the component registry
         uses: espressif/github-actions/upload_components@master
         with:
           name: "esp32-camera"
-          version: "git"
           namespace: "espressif"
-          service_url: ${{ secrets.IDF_COMPONENT_API_URL }}
+          version: ${{ github.ref_name }}
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
