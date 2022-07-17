@@ -52,53 +52,27 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### Rolling (2022-07-16)
-
-- TFMicro/Lite: Update (espressif Version 20220716)
-- Updated esp32cam (v20220716)
-- Integrated new analog classificational CNN (from @haverland)
-- Bugfix: Postprocessing
-
-##### Rolling (2022-07-01)
-
-- Updated analog neural network file (`ana1000s2.tflite`)
-- Updated digital neural network file (`dig1400s2q.tflite`)
-
-##### Rolling (2022-06-26)
-
-- Internal update (Neural Network Algo)
-
-Rolling (2022-06-18)
-
-- Internal update (Neural Network Algo)
-
-Rolling (2022-05-09)
-
-- Bug Fix: absolute value always had value "0"
-
-Rolling (2022-04-26)
-
-- Extended MQTT with absolute Change (in addition to rate)
-- Internal optimization, removal of modelfile from `config.ini` (is now read out of the cnn file directly)
-
-- TFMicro/Lite: Update (espressif Version 20220417)
-- ESP-IDF: Update to 4.3.0
-
-Rolling (2022-04-17)
-
-- Internal preparation for new neural network type (digits with subdigit values)
-
-Rolling (2022-04-15)
+##### 10.6.0 - Stability Increase (2022-07-17)
 
 - IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
 
-Rolling (2022-03-22)
+- MQTT: implemented "Retain Flag" and extend with absolute Change (in addition to rate)
 
-- Bug Fix: no time with fixed IP 
+- `config.ini`: removal of modelsize (readout from tflite)
 
-Rolling (2022-03-20)
+- Updated analog neural network file (`ana1000s2.tflite`) & digital neural network file (`dig1400s2q.tflite`)
 
-- MQTT: implemented "Retain Flag" - not tested in detail yet 
+- TFMicro/Lite: Update (espressif Version 20220716)
+
+- Updated esp32cam (v20220716)
+
+- ESP-IDF: Update to 4.4
+
+- Internal update (CNN algorithm optimizations, reparation for new neural network type)
+
+- Bug Fix: no time with fixed IP, Postprocessing, MQTT
+
+  
 
 ##### 10.5.2 - Stability Increase (2022-02-22)
 
