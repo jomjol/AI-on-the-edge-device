@@ -162,6 +162,7 @@ function init(){
 function doUpdate() {
 	if (confirm("Are you sure to update the firmware?")) {
 		var stringota = "/ota?file=firmware.bin";
+        document.getElementById("doUpdate").disabled = true;
         
         var xhttp = new XMLHttpRequest();
 	
@@ -188,6 +189,8 @@ function doUpdate() {
 function doUpdatehtml() {
 	if (confirm("Are you sure to update the /html content?")) {
 		var stringota = "/ota?task=unziphtml";
+        document.getElementById("doUpdatehtml").disabled = true;
+
         
         var xhttp = new XMLHttpRequest();
 	

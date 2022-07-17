@@ -19,6 +19,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     initalrotate = 0;
     anz_ref = 0;
     initialmirror = false;
+    use_antialiasing = false;
     initialflip = false;
     SaveAllFiles = false;
     namerawimage =  "/sdcard/img_tmp/raw.jpg";
@@ -94,7 +95,12 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(zerlegt[0]) == "SEARCHFIELDY") && (zerlegt.size() > 1))
         {
             suchey = std::stod(zerlegt[1]);
-        }               
+        }   
+        if ((toUpper(zerlegt[0]) == "ANTIALIASING") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                use_antialiasing = true;
+        }   
         if ((zerlegt.size() == 3) && (anz_ref < 2))
         {
             References[anz_ref].image_file = FormatFileName("/sdcard" + zerlegt[0]);
@@ -175,7 +181,10 @@ bool ClassFlowAlignment::doFlow(string time)
  
     if ((initalrotate != 0) || initialflip)
     {
-        rt.Rotate(initalrotate);
+        if (use_antialiasing)
+            rt.RotateAntiAliasing(initalrotate);
+        else
+            rt.Rotate(initalrotate);
         if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
     }
 

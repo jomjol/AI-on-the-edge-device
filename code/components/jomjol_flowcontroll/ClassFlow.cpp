@@ -19,7 +19,6 @@ void ClassFlow::SetInitialParameter(void)
 std::vector<string> ClassFlow::ZerlegeZeile(std::string input, std::string delimiter)
 {
 	std::vector<string> Output;
-//	std::string delimiter = " =,";
 
 	input = trim(input, delimiter);
 	size_t pos = findDelimiterPos(input, delimiter);

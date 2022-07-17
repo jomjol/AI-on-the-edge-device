@@ -8,9 +8,12 @@
 enum t_CNNType {
     AutoDetect,
     Analogue,
+    Analogue100,
     Digital,
-    DigitalHyprid,
+//    DigitalHyprid,
     DigitalHyprid10,
+    DoubleHyprid10,
+    Digital100,
     None
  };
 
@@ -20,9 +23,10 @@ class ClassFlowCNNGeneral :
 protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
+    float CNNGoodThreshold;
 
     string cnnmodelfile;
-    int modelxsize, modelysize;
+    int modelxsize, modelysize, modelchannel;
     bool isLogImageSelect;
     string LogImageSelect;
     ClassFlowAlignment* flowpostalignment;
@@ -37,6 +41,8 @@ protected:
     bool doNeuralNetwork(string time); 
     bool doAlignAndCut(string time);
 
+    bool getNetworkParameter();
+
 public:
     ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype = AutoDetect);
 
@@ -44,7 +50,7 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution);   
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1);   
 
     void DrawROI(CImageBasis *_zw); 
 

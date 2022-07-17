@@ -21,6 +21,10 @@
 #include "tjpgd.h"
 #elif CONFIG_IDF_TARGET_ESP32S3
 #include "esp32s3/rom/tjpgd.h"
+#elif CONFIG_IDF_TARGET_ESP32C3
+#include "esp32c3/rom/tjpgd.h"
+#elif CONFIG_IDF_TARGET_ESP32H2
+#include "esp32h2/rom/tjpgd.h"
 #else
 #error Target CONFIG_IDF_TARGET is not supported
 #endif
@@ -57,7 +61,7 @@ static const char * jd_errors[] = {
     "Not supported JPEG standard"
 };
 
-static uint32_t _jpg_write(JDEC *decoder, void *bitmap, JRECT *rect)
+static unsigned int _jpg_write(JDEC *decoder, void *bitmap, JRECT *rect)
 {
     uint16_t x = rect->left;
     uint16_t y = rect->top;
@@ -73,7 +77,7 @@ static uint32_t _jpg_write(JDEC *decoder, void *bitmap, JRECT *rect)
     return 0;
 }
 
-static uint32_t _jpg_read(JDEC *decoder, uint8_t *buf, uint32_t len)
+static unsigned int _jpg_read(JDEC *decoder, uint8_t *buf, unsigned int len)
 {
     esp_jpg_decoder_t * jpeg = (esp_jpg_decoder_t *)decoder->device;
     if (jpeg->len && len > (jpeg->len - jpeg->index)) {

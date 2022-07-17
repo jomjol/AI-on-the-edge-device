@@ -103,17 +103,7 @@ bool Init_NVS_SDCard()
         }
         return false;
     }
-
-    // Card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
-
-
-	// Init the GPIO
-    // Flash ausschalten
-    
-    // gpio_pad_select_gpio(FLASH_GPIO);
-    // gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
-    // gpio_set_level(FLASH_GPIO, 0);   
 
     return true;
 }
@@ -149,9 +139,7 @@ extern "C" void app_main(void)
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("nach init camera: sleep for : %ldms\n", (long) xDelay);
-//    LogFile.WriteToFile("Startsequence 06");      
     vTaskDelay( xDelay );   
-//    LogFile.WriteToFile("Startsequence 07");  
 
 
     if (!Init_NVS_SDCard())
@@ -186,9 +174,7 @@ extern "C" void app_main(void)
 
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("main: sleep for : %ldms\n", (long) xDelay);
-//    LogFile.WriteToFile("Startsequence 06");      
     vTaskDelay( xDelay );   
-//    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
     setBootTime();
     LogFile.WriteToFile("=============================================================================================");
@@ -196,23 +182,18 @@ extern "C" void app_main(void)
     LogFile.WriteToFile("=============================================================================================");
     LogFile.SwitchOnOff(false);
 
-
-
-
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     printf("time %s\n", zw.c_str());    
-
-
 
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
-                    std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
-                    _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
-                    printf(_zws.c_str());
-                    LogFile.SwitchOnOff(true);
-                    LogFile.WriteToFile(_zws);
-                    LogFile.SwitchOnOff(false);
+        std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+        _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+        printf(_zws.c_str());
+        LogFile.SwitchOnOff(true);
+        LogFile.WriteToFile(_zws);
+        LogFile.SwitchOnOff(false);
     } else {
         if (cam != ESP_OK) {
                 ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "

@@ -124,6 +124,14 @@ TfLiteStatus MicroResourceVariables::Assign(int id,
   return kTfLiteOk;
 }
 
+TfLiteStatus MicroResourceVariables::ResetAll() {
+  for (int i = 0; i < num_resource_variables_; i++) {
+    MicroResourceVariable variable = resource_variables_[i];
+    memset(variable.resource_buffer, 0, variable.bytes);
+  }
+  return kTfLiteOk;
+}
+
 int MicroResourceVariables::FindId(const char* container,
                                    const char* shared_name) {
   for (int i = 0; i < num_resource_variables_; i++) {

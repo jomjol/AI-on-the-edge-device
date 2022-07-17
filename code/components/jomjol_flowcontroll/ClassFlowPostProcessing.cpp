@@ -15,6 +15,42 @@
 #define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
 
 
+std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, std::string _lineend)
+{
+    std::string json="{" + _lineend;
+
+    for (int i = 0; i < NUMBERS.size(); ++i)
+    {
+        json += "\"" + NUMBERS[i]->name + "\":"  + _lineend;
+        json += "  {"  + _lineend;
+
+        if (_id.length() > 0)
+            json += "    \"ID\": \"" + _id + "\","  + _lineend;
+        if (_mac.length() > 0)
+            json += "    \"MAC\": \"" + _mac + "\","  + _lineend;
+
+        if (NUMBERS[i]->ReturnValue.length() > 0)
+            json += "    \"value\": \""      + NUMBERS[i]->ReturnValue          + "\"," + _lineend;
+        else
+            json += "    \"value\": \"\","  + _lineend;
+        json += "    \"raw\": \""        + NUMBERS[i]->ReturnRawValue              + "\","  + _lineend;
+        json += "    \"error\": \""     + NUMBERS[i]->ErrorMessageText             + "\","  + _lineend;
+        if (NUMBERS[i]->ReturnRateValue.length() > 0)
+            json += "    \"rate\": "      + NUMBERS[i]->ReturnRateValue                + ","  + _lineend;
+        else
+            json += "    \"rate\": \"\","  + _lineend;
+
+        json += "    \"timestamp\": \"" + NUMBERS[i]->timeStamp                    + "\""  + _lineend;
+        if ((i+1) < NUMBERS.size())
+            json += "  }," + _lineend;
+        else
+            json += "  }" + _lineend;
+    }
+    json += "}";
+
+    return json;
+}
+
 string ClassFlowPostProcessing::GetPreValue(std::string _number)
 {
     std::string result;
@@ -41,6 +77,8 @@ void ClassFlowPostProcessing::SetPreValue(float zw, string _numbers, bool _exter
         if (NUMBERS[j]->name == _numbers)
         {
             NUMBERS[j]->PreValue = zw;
+            NUMBERS[j]->ReturnPreValue = std::to_string(zw);
+            NUMBERS[j]->PreValueOkay = true;
             if (_extern)
             {
                 time(&(NUMBERS[j]->lastvalue));
@@ -505,7 +543,6 @@ void ClassFlowPostProcessing::InitNUMBERS()
 
         _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-//        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
         _number->ReturnPreValue = "";
         _number->PreValueOkay = false;
@@ -524,7 +561,6 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->Value = 0;                // letzer ausgelesener Wert, inkl. Korrekturen
         _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
         _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-//        _number->ReturnValueNoError = "";  // korrigierter Rückgabewert ohne Fehlermeldung
         _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
 
         _number->Nachkomma = _number->AnzahlAnalog;
@@ -612,18 +648,29 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         UpdateNachkommaDecimalShift();
 
+        int previous_value = -1;
+
+        if (NUMBERS[j]->analog_roi)
+        {
+            NUMBERS[j]->ReturnRawValue = flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution); 
+            if (NUMBERS[j]->ReturnRawValue.length() > 0)
+            {
+                char zw = NUMBERS[j]->ReturnRawValue[0];
+                if (zw >= 48 && zw <=57)
+                    previous_value = zw - 48;
+            }
+        }
+
+        if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
+            NUMBERS[j]->ReturnRawValue = "." + NUMBERS[j]->ReturnRawValue;
+
         if (NUMBERS[j]->digit_roi)
         {
             if (NUMBERS[j]->analog_roi) 
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false);
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value) + NUMBERS[j]->ReturnRawValue;
             else
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution);        // Extended Resolution nur falls es keine analogen Ziffern gibt
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
-        if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
-            NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + ".";
-
-        if (NUMBERS[j]->analog_roi)
-            NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnRawValue + flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution); 
 
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
 
@@ -675,7 +722,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay)
         {
-            float _ratedifference;                                                   
+            float _ratedifference;  
             if (NUMBERS[j]->RateType == RateChange)
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             else
@@ -691,6 +738,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
         }
 
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
         NUMBERS[j]->lastvalue = imagetime;
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;

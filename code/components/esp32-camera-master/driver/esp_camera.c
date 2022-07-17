@@ -57,6 +57,15 @@
 #if CONFIG_BF3005_SUPPORT
 #include "bf3005.h"
 #endif
+#if CONFIG_BF20A6_SUPPORT
+#include "bf20a6.h"
+#endif
+#if CONFIG_SC101IOT_SUPPORT
+#include "sc101iot.h"
+#endif
+#if CONFIG_SC030IOT_SUPPORT
+#include "sc030iot.h"
+#endif
 
 #if defined(ARDUINO_ARCH_ESP32) && defined(CONFIG_ARDUHAL_ESP_LOG)
 #include "esp32-hal-log.h"
@@ -118,6 +127,15 @@ static const sensor_func_t g_sensors[] = {
 #endif
 #if CONFIG_BF3005_SUPPORT
     {bf3005_detect, bf3005_init},
+#endif
+#if CONFIG_BF20A6_SUPPORT
+    {bf20a6_detect, bf20a6_init},
+#endif
+#if CONFIG_SC101IOT_SUPPORT
+    {sc101iot_detect, sc101iot_init},
+#endif
+#if CONFIG_SC030IOT_SUPPORT
+    {sc030iot_detect, sc030iot_init},
 #endif
 };
 
@@ -218,6 +236,23 @@ static esp_err_t camera_probe(const camera_config_t *config, camera_model_t *out
     return ESP_OK;
 }
 
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+static pixformat_t get_output_data_format(camera_conv_mode_t conv_mode)
+{
+    pixformat_t format = PIXFORMAT_RGB565;
+    switch (conv_mode) {
+    case YUV422_TO_YUV420:
+        format = PIXFORMAT_YUV420;
+        break;
+    case YUV422_TO_RGB565: // default format is RGB565
+    default:
+        break;
+    }
+    ESP_LOGD(TAG, "Convert to %d format enabled", format);
+    return format;
+}
+#endif
+
 esp_err_t esp_camera_init(const camera_config_t *config)
 {
     esp_err_t err;
@@ -256,6 +291,7 @@ esp_err_t esp_camera_init(const camera_config_t *config)
 
     s_state->sensor.status.framesize = frame_size;
     s_state->sensor.pixformat = pix_format;
+
     ESP_LOGD(TAG, "Setting frame size to %dx%d", resolution[frame_size].width, resolution[frame_size].height);
     if (s_state->sensor.set_framesize(&s_state->sensor, frame_size) != 0) {
         ESP_LOGE(TAG, "Failed to set frame size");
@@ -263,6 +299,11 @@ esp_err_t esp_camera_init(const camera_config_t *config)
         goto fail;
     }
     s_state->sensor.set_pixformat(&s_state->sensor, pix_format);
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+    if(config->conv_mode) {
+        s_state->sensor.pixformat = get_output_data_format(config->conv_mode); // If conversion enabled, change the out data format by conversion mode
+    }
+#endif
 
     if (s_state->sensor.id.PID == OV2640_PID) {
         s_state->sensor.set_gainceiling(&s_state->sensor, GAINCEILING_2X);

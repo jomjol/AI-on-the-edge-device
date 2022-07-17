@@ -11,6 +11,22 @@
 
 ____
 
+#### #27 Use Homie Spec for Mqtt binding
+
+* Use the standardized Home Protocol for the Mqtt binding 
+* https://homieiot.github.io/
+
+#### #26 Changes behaviour for "N" replacement
+
+* in case the higher digits has already increased by minium 1 - don't set the "N" to the last value, but to "0"
+* https://github.com/jomjol/AI-on-the-edge-device/issues/792
+
+
+#### #25 Trigger Measurement via MQTT
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/727
+
+
 #### #24 Show Mqtt state directly in Webserver
 
 * Show MQTT log in Web page. E.g. connection established or failed to connect...
@@ -48,18 +64,15 @@ ____
 
   
 
-#### #18 Document WLAN-strength in web page
+#### ~~#18 Document WLAN-strength in web page~~
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/563
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/563~~
 
 
 
-#### #17 Direct InfluxDB connection
+#### ~~#17 Direct InfluxDB connection~~
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/534
-* Direct interface to a InfluxDB data base
-* Integrate InfluxDB interface in firmware
-* Adapt html web page for configuration
+* ~~Done in v10.6.0~~
 
 
 #### #16 Serial Communication
@@ -101,9 +114,9 @@ ____
 
   
 
-#### #12 Less reboots due to memory leakage
+#### ~~#12 Less reboots due to memory leakage~~
 
-* Issue: #414 & #425  #430
+* ~~Issue: #414 & #425  #430~~
 
   
 

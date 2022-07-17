@@ -27,12 +27,12 @@ MockMicroGraph::MockMicroGraph(SimpleMemoryAllocator* allocator)
       free_count_(0) {
   memset(invoke_counts_, 0, sizeof(invoke_counts_));
   mock_tensor_ =
-      reinterpret_cast<TfLiteEvalTensor*>(allocator_->AllocateFromTail(
+      reinterpret_cast<TfLiteEvalTensor*>(allocator_->AllocatePersistentBuffer(
           sizeof(TfLiteEvalTensor), alignof(TfLiteEvalTensor)));
   int* dims_array = reinterpret_cast<int*>(
-      allocator_->AllocateFromTail(3 * sizeof(int), alignof(int)));
+      allocator_->AllocatePersistentBuffer(3 * sizeof(int), alignof(int)));
   float* data_array = reinterpret_cast<float*>(
-      allocator_->AllocateFromTail(2 * sizeof(float), alignof(float)));
+      allocator_->AllocatePersistentBuffer(2 * sizeof(float), alignof(float)));
   int dims[] = {2, 1, 2};
   memcpy(dims_array, dims, 3 * sizeof(int));
   mock_tensor_->dims = testing::IntArrayFromInts(dims_array);

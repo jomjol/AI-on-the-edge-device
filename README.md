@@ -52,9 +52,31 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
+##### 10.6.0 - Stability Increase (2022-07-17)
+
+- IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
+
+- MQTT: implemented "Retain Flag" and extend with absolute Change (in addition to rate)
+
+- `config.ini`: removal of modelsize (readout from tflite)
+
+- Updated analog neural network file (`ana1000s2.tflite`) & digital neural network file (`dig1400s2q.tflite`)
+
+- TFMicro/Lite: Update (espressif Version 20220716)
+
+- Updated esp32cam (v20220716)
+
+- ESP-IDF: Update to 4.4
+
+- Internal update (CNN algorithm optimizations, reparation for new neural network type)
+
+- Bug Fix: no time with fixed IP, Postprocessing, MQTT
+
+  
+
 ##### 10.5.2 - Stability Increase (2022-02-22)
 
-- **NEW 10.5.2:** Bug Fix: wrong `firmware.bin` (no rate update)
+- NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
 - NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
 - MQTT: changed wifi naming to "wifiRSSI"
 - HTML: check selectable values for consistency

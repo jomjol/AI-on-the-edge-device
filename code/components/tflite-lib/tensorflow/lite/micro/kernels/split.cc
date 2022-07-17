@@ -69,7 +69,8 @@ TfLiteStatus SplitImpl(TfLiteContext* context, TfLiteNode* node,
 }
 
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
-  const TfLiteTensor* axis = GetInput(context, node, 0);
+  MicroContext* micro_context = GetMicroContext(context);
+  TfLiteTensor* axis = micro_context->AllocateTempInputTensor(node, 0);
   TF_LITE_ENSURE(context, axis != nullptr);
 
   // Dynamic output tensors are needed if axis tensor is not constant.
@@ -77,6 +78,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   // constant axis tensor for now.
   TF_LITE_ENSURE_MSG(context, IsConstantTensor(axis),
                      "Non constant axis tensor not supported");
+
+  micro_context->DeallocateTempTfLiteTensor(axis);
   return kTfLiteOk;
 }
 
@@ -117,14 +120,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace split
 
 TfLiteRegistration Register_SPLIT() {
-  return {/*init=*/nullptr,
-          /*free=*/nullptr,
-          /*prepare=*/split::Prepare,
-          /*invoke=*/split::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(nullptr, split::Prepare, split::Eval);
 }
 
 }  // namespace micro

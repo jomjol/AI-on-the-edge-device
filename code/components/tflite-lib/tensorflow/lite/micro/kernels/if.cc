@@ -23,6 +23,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
+#include "tensorflow/lite/micro/micro_context.h"
 #include "tensorflow/lite/micro/micro_graph.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
@@ -50,10 +51,14 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE(context, node->inputs->size > 0);
 
   // The first input is the condition.
-  const TfLiteTensor* cond;
-  TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, 0, &cond));
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  TfLiteTensor* cond = micro_context->AllocateTempInputTensor(node, 0);
+
+  TF_LITE_ENSURE(context, cond != nullptr);
   TF_LITE_ENSURE_EQ(context, cond->type, kTfLiteBool);
   TF_LITE_ENSURE_EQ(context, NumElements(cond), 1);
+
+  micro_context->DeallocateTempTfLiteTensor(cond);
 
   // The first input of the node is the condition. The rest of inputs are
   // passed to the branch subgraphs. Therefore, the number of subgraph inputs
@@ -61,25 +66,18 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   size_t num_inputs = node->inputs->size - 1;
   size_t num_outputs = node->outputs->size;
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
+  MicroGraph& graph_info = micro_context->graph();
 
   TF_LITE_ENSURE(context,
-                 op_data->then_subgraph_index < graph_info->NumSubgraphs());
+                 op_data->then_subgraph_index < graph_info.NumSubgraphs());
   TF_LITE_ENSURE(context,
-                 op_data->else_subgraph_index < graph_info->NumSubgraphs());
+                 op_data->else_subgraph_index < graph_info.NumSubgraphs());
 
-  TF_LITE_ENSURE_EQ(
-      context, num_inputs,
-      graph_info->NumSubgraphInputs(op_data->then_subgraph_index));
+  TF_LITE_ENSURE_EQ(context, num_inputs,
+                    graph_info.NumSubgraphInputs(op_data->then_subgraph_index));
   TF_LITE_ENSURE_EQ(
       context, num_outputs,
-      graph_info->NumSubgraphOutputs(op_data->then_subgraph_index));
+      graph_info.NumSubgraphOutputs(op_data->then_subgraph_index));
 
   return kTfLiteOk;
 }
@@ -87,80 +85,37 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   const OpData* op_data = reinterpret_cast<OpData*>(node->user_data);
 
-  const TfLiteTensor* cond;
-  TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, 0, &cond));
+  tflite::MicroContext* micro_context = tflite::GetMicroContext(context);
+  TfLiteTensor* cond = micro_context->AllocateTempInputTensor(node, 0);
+
+  TF_LITE_ENSURE(context, cond != nullptr);
   bool cond_value = cond->data.b[0];
+  micro_context->DeallocateTempTfLiteTensor(cond);
 
-  // Casting to TfliteIntArray is required since we are re-using
-  // GetExecutionPlan from TfLiteContext. On TFLM this method returns a
-  // MicroGraph.
-  // TODO(b/188226309): Design a cleaner way to get a graph from kernel context.
-  MicroGraph* graph_info;
-  context->GetExecutionPlan(context,
-                            reinterpret_cast<TfLiteIntArray**>(&graph_info));
-
-  // Currently we copy the input / output between the subgraphs. This isn't
-  // optimized yet.
+  MicroGraph* graph_info = &micro_context->graph();
+  // Currently we copy the input / output between the subgraphs.
   int active_branch_subgraph_index =
       cond_value ? op_data->then_subgraph_index : op_data->else_subgraph_index;
 
-  for (size_t i = 0;
-       i < graph_info->NumSubgraphInputs(active_branch_subgraph_index); ++i) {
-    const TfLiteEvalTensor* input =
-        tflite::micro::GetEvalInput(context, node, i + 1);
-
-    TfLiteEvalTensor* subgraph_input =
-        graph_info->GetSubgraphInput(active_branch_subgraph_index, i);
-
-    // These checks must occur in Eval since TfLiteEvalTensors are not available
-    // during Prepare.
-    size_t input_bytes;
-    size_t subgraph_input_bytes;
-    TF_LITE_ENSURE_OK(context, TfLiteEvalTensorByteLength(input, &input_bytes));
-    TF_LITE_ENSURE_OK(context, TfLiteEvalTensorByteLength(
-                                   subgraph_input, &subgraph_input_bytes));
-    TF_LITE_ENSURE_TYPES_EQ(context, input->type, subgraph_input->type);
-    TF_LITE_ENSURE_EQ(context, input_bytes, subgraph_input_bytes);
-    memcpy(subgraph_input->data.raw, input->data.raw, input_bytes);
-  }
+  TF_LITE_ENSURE_OK(context,
+                    tflite::micro::CopyOpInputsToSubgraphInputs(
+                        context, node, graph_info, active_branch_subgraph_index,
+                        /*first_tensor_idx=*/1));
 
   TF_LITE_ENSURE_OK(context,
                     graph_info->InvokeSubgraph(active_branch_subgraph_index));
 
-  for (size_t i = 0;
-       i < graph_info->NumSubgraphOutputs(active_branch_subgraph_index); ++i) {
-    const TfLiteEvalTensor* output =
-        tflite::micro::GetEvalOutput(context, node, i);
+  TF_LITE_ENSURE_OK(
+      context, tflite::micro::CopySubgraphOutputsToOpOutputs(
+                   context, node, graph_info, active_branch_subgraph_index));
 
-    TfLiteEvalTensor* subgraph_output =
-        graph_info->GetSubgraphOutput(active_branch_subgraph_index, i);
-
-    // These checks must occur in Eval since TfLiteEvalTensors are not available
-    // during Prepare.
-    size_t output_bytes;
-    size_t subgraph_output_bytes;
-    TF_LITE_ENSURE_OK(context,
-                      TfLiteEvalTensorByteLength(output, &output_bytes));
-    TF_LITE_ENSURE_OK(context, TfLiteEvalTensorByteLength(
-                                   subgraph_output, &subgraph_output_bytes));
-    TF_LITE_ENSURE_TYPES_EQ(context, output->type, subgraph_output->type);
-    TF_LITE_ENSURE_EQ(context, output_bytes, subgraph_output_bytes);
-    memcpy(output->data.raw, subgraph_output->data.raw, output_bytes);
-  }
   return kTfLiteOk;
 }
 
 }  // namespace.
 
 TfLiteRegistration Register_IF() {
-  return {/*init=*/Init,
-          /*free=*/nullptr,
-          /*prepare=*/Prepare,
-          /*invoke=*/Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(Init, Prepare, Eval);
 }
 
 }  // namespace tflite

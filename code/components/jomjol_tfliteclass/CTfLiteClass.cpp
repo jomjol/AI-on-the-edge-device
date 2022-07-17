@@ -87,6 +87,19 @@ void CTfLiteClass::GetInputDimension(bool silent = false)
   }
 }
 
+int CTfLiteClass::ReadInputDimenstion(int _dim)
+{
+  if (_dim == 0)
+    return im_width;
+  if (_dim == 1)
+    return im_height;
+  if (_dim == 2)
+    return im_channel;
+
+  return -1;
+}
+
+
 
 int CTfLiteClass::GetAnzOutPut(bool silent)
 {
