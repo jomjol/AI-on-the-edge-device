@@ -16,8 +16,6 @@ ____
 * Use the standardized Home Protocol for the Mqtt binding 
 * https://homieiot.github.io/
 
-
-=======
 #### #26 Changes behaviour for "N" replacement
 
 * in case the higher digits has already increased by minium 1 - don't set the "N" to the last value, but to "0"
@@ -72,12 +70,9 @@ ____
 
 
 
-#### #17 Direct InfluxDB connection
+#### ~~#17 Direct InfluxDB connection~~
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/534
-* Direct interface to a InfluxDB data base
-* Integrate InfluxDB interface in firmware
-* Adapt html web page for configuration
+* ~~Done in v10.6.0~~
 
 
 #### #16 Serial Communication
