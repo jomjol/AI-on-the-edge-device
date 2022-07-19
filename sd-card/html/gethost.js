@@ -7,7 +7,7 @@ function gethost_Version(){
 function getbasepath(){
     var host = window.location.hostname;
     if (((host == "127.0.0.1") || (host == "localhost") || (host == "")) 
-//       && ((window.location.port == "80") || (window.location.port == ""))
+       && ((window.location.port == "80") || (window.location.port == ""))
        )
     
     {
