@@ -36,6 +36,7 @@ protected:
 
     int ZeigerEval(float zahl, int ziffer_vorgaenger);
     int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
+    int ZeigerEvalDigital(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
 
 
     bool doNeuralNetwork(string time); 

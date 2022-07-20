@@ -105,7 +105,13 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         {
             if (GENERAL[_analog]->ROI[i]->result_float >= 0)
             {
-                prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                // Digital Modelle haben nur x.0 und benötigen eine andere Prüfung bei Nullübergang
+                if (CNNType != Digital){
+                    prev = ZeigerEvalDigital(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                
+                } else {
+                    prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                }
                 result = std::to_string(prev) + result;
 
             }
@@ -167,6 +173,46 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 */
 
     return result;
+}
+
+int ClassFlowCNNGeneral::ZeigerEvalDigital(float zahl, float zahl_vorgaenger, int eval_vorgaenger)
+{
+    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+
+    if (zahl_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
+    {
+        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+            return ((int) round(zahl) + 10) % 10;
+        else
+            return ((int) trunc(zahl) + 10) % 10;
+    }
+
+    if (zahl_vorgaenger > 9.2)              // Ziffernwechsel beginnt
+    {
+        if (eval_vorgaenger == 0)           // Wechsel hat schon stattgefunden
+        {
+            return ((int) round(zahl) + 10) % 10;      // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
+        }
+        else
+        {
+            if (zahl_vorgaenger <= 9.5)     // Wechsel startet gerade, aber beginnt erst
+            {
+                if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+                    return ((int) round(zahl) + 10) % 10;
+                else
+                    return ((int) trunc(zahl) + 10) % 10;
+            }
+            else
+            {
+                return ((int) trunc(zahl) + 10) % 10;   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
+            }
+        }
+    }
+
+    if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+        return ((int) round(zahl) + 10) % 10;
+
+    return ((int) trunc(zahl) + 10) % 10;
 }
 
 int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger)

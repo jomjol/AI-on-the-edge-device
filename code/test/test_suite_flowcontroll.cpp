@@ -11,6 +11,7 @@ extern "C" void app_main()
 
   RUN_TEST(test_ZeigerEval);
   RUN_TEST(test_ZeigerEvalHybrid);
+  RUN_TEST(test_ZeigerEvalDigital);
   
   UNITY_END();
 }

@@ -5,6 +5,7 @@ class UnderTest : public ClassFlowCNNGeneral {
     public:
     using ClassFlowCNNGeneral::ZeigerEval;
     using ClassFlowCNNGeneral::ZeigerEvalHybrid;
+    using ClassFlowCNNGeneral::ZeigerEvalDigital;
     using ClassFlowCNNGeneral::ClassFlowCNNGeneral;
     
 };
@@ -43,6 +44,12 @@ void test_ZeigerEval()
 
     // the 4.5 (digital100) is not above 5  and the previous digit (analog) too (9.6)
     TEST_ASSERT_EQUAL(4, undertest.ZeigerEval(4.5, 0));    
+
+    // the 5.5 (digital100) is not above 6  and the previous digit (analog) not over Zero (9.7)
+    TEST_ASSERT_EQUAL(5, undertest.ZeigerEval(5.5, 9));   
+  
+    // the 5.0 (digital100)  and the previous digit (analog) not over Zero (9.5). The transition is not completed
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEval(5.0, 9));   
 
 }
 
@@ -84,9 +91,24 @@ void test_ZeigerEvalHybrid() {
     TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.6, 0));    
 
     // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.6)
-    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.6, 9));    
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.6, 9));   
+
+    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.5, 9));   
+    //56.95797 
     // the 4.4 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
-    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.5, 9));    
+    TEST_ASSERT_EQUAL(5, undertest.ZeigerEvalHybrid(5.5, 9.7, 9));   
+
+    // the 5.0 (digital100)  and the previous digit (analog) not over Zero (9.5). The transition is not completed
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(5.0, 9.7, 9));   
 
 }
 
+
+void test_ZeigerEvalDigital() {
+    UnderTest undertest = UnderTest(nullptr, Digital);
+
+     // the 4.4 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
+    TEST_ASSERT_EQUAL(5, undertest.ZeigerEvalDigital(5.0, 9.7, 9));   
+ 
+}
