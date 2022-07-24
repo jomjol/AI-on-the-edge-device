@@ -96,7 +96,7 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
         printf("File: %s\t", _filename.c_str());
 
         _fileext = _filename;
-        pos = _fileext.find(".");
+        pos = _fileext.find_last_of(".");
         if (pos != std::string::npos)
             _fileext = _fileext.erase(0, pos + 1);
 

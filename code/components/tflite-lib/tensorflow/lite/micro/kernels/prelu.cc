@@ -69,7 +69,14 @@ TfLiteStatus PreluEval(TfLiteContext* context, TfLiteNode* node) {
 }
 
 TfLiteRegistration Register_PRELU() {
-  return tflite::micro::RegisterOp(PreluInit, PreluPrepare, PreluEval);
+  return {/*init=*/PreluInit,
+          /*free=*/nullptr,
+          /*prepare=*/PreluPrepare,
+          /*invoke=*/PreluEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

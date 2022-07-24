@@ -61,7 +61,14 @@ TfLiteStatus MulEval(TfLiteContext* context, TfLiteNode* node) {
 }
 
 TfLiteRegistration Register_MUL() {
-  return tflite::micro::RegisterOp(MulInit, MulPrepare, MulEval);
+  return {/*init=*/MulInit,
+          /*free=*/nullptr,
+          /*prepare=*/MulPrepare,
+          /*invoke=*/MulEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

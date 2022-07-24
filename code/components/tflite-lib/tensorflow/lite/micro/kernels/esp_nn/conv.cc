@@ -112,24 +112,9 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 
 #if ESP_NN
   if (input->type == kTfLiteInt8) {
-    data_dims_t input_dims =  {
-                                .width = input_width, .height = input_height,
-                                .channels = input->dims->data[3], 1
-                              };
-    data_dims_t output_dims = {
-                                .width = output_width, .height = output_height,
-                                .channels = output->dims->data[3], 1
-                              };
-    data_dims_t filter_dims = {.width = filter_width, .height = filter_height, 0, 0};
-    conv_params_t conv_params = {
-                                  .in_offset = 0, .out_offset = 0,
-                                  .stride = {params.stride_width, params.stride_height},
-                                  .padding = {data->op_data.padding.width, data->op_data.padding.height},
-                                  .dilation = {0, 0}, .activation = {-128, 127}
-                                };
-
     int scratch_buf_size = esp_nn_get_conv_scratch_size(
-        &input_dims, &filter_dims, &output_dims, &conv_params);
+        input_width, input_height, input->dims->data[3],
+        output->dims->data[3], filter_width, filter_height);
     if (scratch_buf_size > 0) {
       TF_LITE_ENSURE_STATUS(context->RequestScratchBufferInArena(
         context, scratch_buf_size, &data->buffer_idx));
@@ -206,33 +191,18 @@ inline void EvalQuantizedPerChannel(
     const int input_size = input_width * input_height * input_depth;
     const int output_size = output_width * output_height * output_depth;
 
-    data_dims_t input_dims =  {
-                                .width = input_width, .height = input_height,
-                                .channels = input_depth, 1
-                              };
-    data_dims_t output_dims = {
-                                .width = output_width, .height = output_height,
-                                .channels = output_depth, 1
-                              };
-    data_dims_t filter_dims = {.width = filter_width, .height = filter_height, 0, 0};
-    conv_params_t conv_params = {
-                                  .in_offset = input_offset, .out_offset = output_offset,
-                                  .stride = {stride_width, stride_height},
-                                  .padding = {pad_width, pad_height},
-                                  .dilation = {0, 0},
-                                  .activation = {activation_min, activation_max}
-                                };
-    quant_data_t quant_data = {
-                                .shift = data.op_data.per_channel_output_shift,
-                                .mult = data.op_data.per_channel_output_multiplier
-                              };
-
     for (int i_batch = 0; i_batch < batch_size; i_batch++) {
-      esp_nn_conv_s8(&input_dims, input_data + i_batch * input_size,
-                     &filter_dims, tflite::micro::GetTensorData<int8_t>(filter),
+      esp_nn_conv_s8(input_data + i_batch * input_size,
+                     input_width, input_height, input_depth, input_offset,
+                     pad_width, pad_height, stride_width, stride_height,
+                     tflite::micro::GetTensorData<int8_t>(filter),
+                     filter_width, filter_height,
                      tflite::micro::GetTensorData<int32_t>(bias),
-                     &output_dims, output_data + i_batch * output_size,
-                     &conv_params, &quant_data);
+                     output_data + i_batch * output_size,
+                     output_width, output_height, output_depth, output_offset,
+                     data.op_data.per_channel_output_shift,
+                     data.op_data.per_channel_output_multiplier,
+                     activation_min, activation_max);
     }
   } else {
     reference_integer_ops::ConvPerChannel(
@@ -329,16 +299,21 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
                          TfLiteTypeGetName(input->type), input->type);
       return kTfLiteError;
   }
-  long long time_this_instance = esp_timer_get_time() - start_time;
-  conv_total_time += time_this_instance;
-  //printf("time this instance: %llu\n", time_this_instance / 1000);
+  conv_total_time += esp_timer_get_time() - start_time;
   return kTfLiteOk;
 }
 
 }  // namespace
 
 TfLiteRegistration Register_CONV_2D() {
-  return tflite::micro::RegisterOp(Init, Prepare, Eval);
+  return {/*init=*/Init,
+          /*free=*/nullptr,
+          /*prepare=*/Prepare,
+          /*invoke=*/Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

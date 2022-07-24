@@ -115,17 +115,29 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace maximum_minimum
 
 TfLiteRegistration Register_MAXIMUM() {
-  return tflite::micro::RegisterOp(
-      nullptr, nullptr,
-      maximum_minimum::Eval<maximum_minimum::kReference,
-                            maximum_minimum::MaximumOp>);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/nullptr,
+          /*invoke=*/
+          maximum_minimum::Eval<maximum_minimum::kReference,
+                                maximum_minimum::MaximumOp>,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_MINIMUM() {
-  return tflite::micro::RegisterOp(
-      nullptr, nullptr,
-      maximum_minimum::Eval<maximum_minimum::kReference,
-                            maximum_minimum::MinimumOp>);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/nullptr,
+          /*invoke=*/
+          maximum_minimum::Eval<maximum_minimum::kReference,
+                                maximum_minimum::MinimumOp>,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace micro

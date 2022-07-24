@@ -113,6 +113,8 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             {
                 prev = -1;
                 result = "N" + result;
+                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout(result_float<0 /'N')  result_float=" + std::to_string(GENERAL[_analog]->ROI[i]->result_float));
+        
             }
         }
         return result;
@@ -205,7 +207,8 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
                 return (ergebnis_vorkomma - 1 + 10) % 10;
         }
     }
-
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid(return -1)  zahl=" + std::to_string(zahl) 
+                        + ", zahl_vorgaenger=" + std::to_string(zahl_vorgaenger) + ", eval_vorgaenger=" + std::to_string(eval_vorgaenger));
     return -1;
 
 /*
@@ -575,6 +578,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 }
                 break;
             default:
+                LogFile.WriteToFile("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
                 printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
         }
     }

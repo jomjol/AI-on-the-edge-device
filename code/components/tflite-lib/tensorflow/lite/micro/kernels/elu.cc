@@ -146,7 +146,14 @@ TfLiteStatus EluEval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_ELU() {
-  return tflite::micro::RegisterOp(EluInit, EluPrepare, EluEval);
+  return {/*init=*/EluInit,
+          /*free=*/nullptr,
+          /*prepare=*/EluPrepare,
+          /*invoke=*/EluEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

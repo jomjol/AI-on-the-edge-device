@@ -116,8 +116,14 @@ TfLiteStatus BroadcastToEval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_BROADCAST_TO() {
-  return tflite::micro::RegisterOp(nullptr, BroadcastToPrepare,
-                                   BroadcastToEval);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/BroadcastToPrepare,
+          /*invoke=*/BroadcastToEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

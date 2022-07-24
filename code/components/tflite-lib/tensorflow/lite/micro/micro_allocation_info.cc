@@ -16,10 +16,8 @@ limitations under the License.
 
 #include "tensorflow/lite/c/c_api_types.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
-#include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
 #include "tensorflow/lite/micro/memory_planner/greedy_memory_planner.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 
@@ -150,30 +148,6 @@ TfLiteStatus AllocationInfoBuilder::FreeAllocationInfo() {
   return kTfLiteOk;
 }
 
-TfLiteStatus AllocationInfoBuilder::ValidateSubgraph(
-    const SubGraph* subgraph, TfLiteEvalTensor* eval_tensors) {
-  uint32_t operators_size = NumSubgraphOperators(subgraph);
-
-  for (uint32_t i = 0; i < operators_size; i++) {
-    const auto op = subgraph->operators()->Get(i);
-    for (size_t n = 0;
-         op->intermediates() != nullptr && n < op->intermediates()->size();
-         n++) {
-      const int tensor_index = op->intermediates()->Get(n);
-      size_t tensor_size = -1;
-      TF_LITE_ENSURE_STATUS(TfLiteEvalTensorByteLength(
-          &eval_tensors[tensor_index], &tensor_size));
-      if (tensor_size != 0) {
-        MicroPrintf(
-            "Does not support intermediate tensor with non-zero size: %d",
-            tensor_size);
-        return kTfLiteError;
-      }
-    }
-  }
-  return kTfLiteOk;
-}
-
 TfLiteStatus AllocationInfoBuilder::InitializeAllocationInfo(
     const int32_t* offline_offsets, SubgraphAllocations* allocations) {
   AllocationInfo* allocation_info = info_.allocation_info;
@@ -184,10 +158,6 @@ TfLiteStatus AllocationInfoBuilder::InitializeAllocationInfo(
     TfLiteEvalTensor* eval_tensors = allocations[subgraph_idx].tensors;
     AllocationInfo* subgraph_allocation_info =
         &allocation_info[info_.subgraph_offsets[subgraph_idx]];
-
-    // Ensure constraints are met.
-    TF_LITE_ENSURE_STATUS(ValidateSubgraph(subgraph, eval_tensors));
-
     for (size_t i = 0; i < subgraph->tensors()->size(); ++i) {
       AllocationInfo* current = &subgraph_allocation_info[i];
       current->output_ptr = &(eval_tensors[i].data.data);
@@ -197,10 +167,8 @@ TfLiteStatus AllocationInfoBuilder::InitializeAllocationInfo(
 
       current->first_created = kUninitializedLifetime;
       current->last_used = kUninitializedLifetime;
-      current->needs_allocating =
-          (eval_tensors[i].data.data == nullptr) &&
-          (!subgraph->tensors()->Get(i)->is_variable()) &&
-          (current->bytes != 0);
+      current->needs_allocating = (eval_tensors[i].data.data == nullptr) &&
+                                  (!subgraph->tensors()->Get(i)->is_variable());
       if (offline_offsets) {
         current->offline_offset = offline_offsets[i];
       } else {
@@ -213,8 +181,8 @@ TfLiteStatus AllocationInfoBuilder::InitializeAllocationInfo(
       &allocation_info[info_.scratch_offset];
   for (size_t i = 0; i < info_.scratch_buffer_count; i++) {
     AllocationInfo* current = &scratch_allocation_info[i];
-    current->first_created = kUninitializedLifetime;
-    current->last_used = kUninitializedLifetime;
+    current->first_created = -1;
+    current->last_used = -1;
     current->needs_allocating = true;
     current->offline_offset = kOnlinePlannedBuffer;
   }

@@ -110,7 +110,14 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace reshape
 
 TfLiteRegistration Register_RESHAPE() {
-  return tflite::micro::RegisterOp(nullptr, reshape::Prepare, reshape::Eval);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/reshape::Prepare,
+          /*invoke=*/reshape::Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace micro

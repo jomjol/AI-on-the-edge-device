@@ -1,4 +1,4 @@
-/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -81,24 +81,6 @@ inline TfLiteRegistration Register_FULLY_CONNECTED_INT8() {
 }
 
 #endif
-
-#if defined(CMSIS_NN)
-// Returns a TfLiteRegistration struct for kernel variant that only supports
-// int16.
-TfLiteRegistration Register_FULLY_CONNECTED_INT16();
-
-#else
-// Note that while this block gets used for both reference and optimized kernels
-// that do not have any specialized implementations, the only goal here is to
-// define fallback implementation that allow reference kernels to still be used
-// from applications that call a more specific kernel variant.
-
-inline TfLiteRegistration Register_FULLY_CONNECTED_INT16() {
-  return Register_FULLY_CONNECTED();
-}
-
-#endif
-
 }  // namespace tflite
 
 #endif  // TENSORFLOW_LITE_MICRO_KERNELS_FULLY_CONNECTED_H_

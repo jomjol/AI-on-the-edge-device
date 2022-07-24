@@ -100,7 +100,14 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_SVDF() {
-  return tflite::micro::RegisterOp(Init, PrepareSvdf, Eval);
+  return {/*init=*/Init,
+          /*free=*/nullptr,
+          /*prepare=*/PrepareSvdf,
+          /*invoke=*/Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

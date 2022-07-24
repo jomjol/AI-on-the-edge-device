@@ -38,7 +38,7 @@ table {
 
 	<table>
 	  <tr>
-		<td><input class="button" type="button" value="Show Actual Reference" onclick="showReference()"></td>	  
+		<td><input class="button" type="button" value="Show Actual Reference" onclick="showReference(param)"></td>	  
 		<td><input class="button" type="button" value="Create New Reference" onclick="loadRawImage()"></td>
 		<td><input class="button" type="submit" id="take" onclick="doTake()" value="Take Image"></td>
 	  </tr> 
@@ -252,7 +252,7 @@ table {
                 SaveConfigToServer(basepath);    
 
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
-                showReference();
+                showReference(param);
                 UpdatePage();
                 alert("Reference is updated!");
             }
