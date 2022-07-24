@@ -34,8 +34,14 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
 }  // namespace
 
 TfLiteRegistration Register_QUANTIZE() {
-  return tflite::micro::RegisterOp(Init, PrepareQuantizeReference,
-                                   EvalQuantizeReference);
+  return {/*init=*/Init,
+          /*free=*/nullptr,
+          /*prepare=*/PrepareQuantizeReference,
+          /*invoke=*/EvalQuantizeReference,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

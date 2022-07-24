@@ -21,14 +21,14 @@ namespace tflite {
 
 // These functions should be implemented by each target platform, and provide an
 // accurate tick count along with how many ticks there are per second.
-uint32_t ticks_per_second();
+int32_t ticks_per_second();
 
 // Return time in ticks.  The meaning of a tick varies per platform.
-uint32_t GetCurrentTimeTicks();
+int32_t GetCurrentTimeTicks();
 
-inline uint32_t TicksToMs(int32_t ticks) {
-  return static_cast<uint32_t>(1000.0f * static_cast<float>(ticks) /
-                               static_cast<float>(ticks_per_second()));
+inline int32_t TicksToMs(int32_t ticks) {
+  return static_cast<int32_t>(1000.0f * static_cast<float>(ticks) /
+                              static_cast<float>(ticks_per_second()));
 }
 
 }  // namespace tflite

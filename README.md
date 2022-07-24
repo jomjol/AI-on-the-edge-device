@@ -52,7 +52,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 
 
-##### 10.6.0 - Stability Increase (2022-07-17)
+
+##### 10.6.1 - Stability Increase (2022-07-24)
+
+- **NEW 10.6.1**: Revoke esp32cam & tflite update
+
+- **NEW 10.6.1**: Bug Fix: tflite-filename with ".", HTML spelling error
 
 - IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
 

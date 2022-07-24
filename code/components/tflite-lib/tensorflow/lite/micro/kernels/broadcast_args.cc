@@ -84,8 +84,14 @@ TfLiteStatus BroadcastArgsEval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_BROADCAST_ARGS() {
-  return tflite::micro::RegisterOp(nullptr, BroadcastArgsPrepare,
-                                   BroadcastArgsEval);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/BroadcastArgsPrepare,
+          /*invoke=*/BroadcastArgsEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

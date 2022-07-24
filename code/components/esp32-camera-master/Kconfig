@@ -69,45 +69,6 @@ menu "Camera configuration"
         help
             Enable this option if you want to use the BF3005.
             Disable this option to save memory.
-            
-    config BF20A6_SUPPORT
-        bool "Support BF20A6(BYD20A6) VGA"
-        default y
-        help
-            Enable this option if you want to use the BF20A6.
-            Disable this option to save memory.
-
-    config SC101IOT_SUPPORT
-        bool "Support SC101IOT HD"
-        default n
-        help
-            Enable this option if you want to use the SC101IOT.
-            Disable this option to save memory.
-
-    choice SC101_REGS_SELECT
-        prompt "SC101iot default regs"
-        default SC101IOT_720P_15FPS_ENABLED
-        depends on SC101IOT_SUPPORT
-        help
-            Currently SC010iot has several register sets available.
-            Select the one that matches your needs.
-
-        config SC101IOT_720P_15FPS_ENABLED
-            bool "xclk20M_720p_15fps"
-        help
-            Select this option means that when xclk is 20M, the frame rate is 15fps at 720p resolution.
-        config SC101IOT_VGA_25FPS_ENABLED
-            bool "xclk20M_VGA_25fps"
-        help
-            Select this option means that when xclk is 20M, the frame rate is 25fps at VGA resolution.
-    endchoice
-
-    config SC030IOT_SUPPORT
-        bool "Support SC030IOT VGA"
-        default y
-        help
-            Enable this option if you want to use the SC030IOT.
-            Disable this option to save memory.
 
     choice SCCB_HARDWARE_I2C_PORT
         bool "I2C peripheral to use for SCCB"
@@ -164,24 +125,5 @@ menu "Camera configuration"
         help
             Maximum value of DMA buffer
             Larger values may fail to allocate due to insufficient contiguous memory blocks, and smaller value may cause DMA interrupt to be too frequent
-    
-    config CAMERA_CONVERTER_ENABLED
-        bool "Enable camera RGB/YUV converter"
-        depends on IDF_TARGET_ESP32S3
-        default n
-        help
-            Enable this option if you want to use RGB565/YUV422/YUV420/YUV411 format conversion.
 
-    choice CAMERA_CONV_PROTOCOL
-        bool "Camera converter protocol"
-        depends on CAMERA_CONVERTER_ENABLED
-        default LCD_CAM_CONV_BT601_ENABLED
-        help
-            Supports format conversion under both BT601 and BT709 standards.
-
-        config LCD_CAM_CONV_BT601_ENABLED
-            bool "BT601"
-        config LCD_CAM_CONV_BT709_ENABLED
-            bool "BT709"
-    endchoice
 endmenu

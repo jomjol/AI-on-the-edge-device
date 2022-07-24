@@ -114,7 +114,14 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace.
 
 TfLiteRegistration Register_SPACE_TO_BATCH_ND() {
-  return tflite::micro::RegisterOp(Init, Prepare, Eval);
+  return {/*init=*/Init,
+          /*free=*/nullptr,
+          /*prepare=*/Prepare,
+          /*invoke=*/Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

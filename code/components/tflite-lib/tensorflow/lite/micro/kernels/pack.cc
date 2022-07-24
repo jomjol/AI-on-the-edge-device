@@ -108,7 +108,14 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace pack
 
 TfLiteRegistration Register_PACK() {
-  return tflite::micro::RegisterOp(nullptr, nullptr, pack::Eval);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/nullptr,
+          /*invoke=*/pack::Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace micro

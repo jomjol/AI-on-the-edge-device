@@ -24,7 +24,6 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/kernels/op_macros.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_utils.h"
 
 namespace tflite {
@@ -61,8 +60,8 @@ TfLiteStatus ReluEval(TfLiteContext* context, TfLiteNode* node) {
       return kTfLiteOk;
     }
     default: {
-      MicroPrintf("Only float32 is supported currently, got %s",
-                  TfLiteTypeGetName(input->type));
+      TF_LITE_KERNEL_LOG(context, "Only float32 is supported currently, got %s",
+                         TfLiteTypeGetName(input->type));
       return kTfLiteError;
     }
   }
@@ -100,8 +99,8 @@ TfLiteStatus Relu6Eval(TfLiteContext* context, TfLiteNode* node) {
       return kTfLiteOk;
     }
     default: {
-      MicroPrintf("Only float32 is supported currently, got %s",
-                  TfLiteTypeGetName(input->type));
+      TF_LITE_KERNEL_LOG(context, "Only float32 is supported currently, got %s",
+                         TfLiteTypeGetName(input->type));
       return kTfLiteError;
     }
   }
@@ -110,11 +109,25 @@ TfLiteStatus Relu6Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_RELU() {
-  return tflite::micro::RegisterOp(ReluInit, ReluPrepare, ReluEval);
+  return {/*init=*/ReluInit,
+          /*free=*/nullptr,
+          /*prepare=*/ReluPrepare,
+          /*invoke=*/ReluEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_RELU6() {
-  return tflite::micro::RegisterOp(Relu6Init, Relu6Prepare, Relu6Eval);
+  return {/*init=*/Relu6Init,
+          /*free=*/nullptr,
+          /*prepare=*/Relu6Prepare,
+          /*invoke=*/Relu6Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

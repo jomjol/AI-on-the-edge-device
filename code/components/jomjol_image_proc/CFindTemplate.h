@@ -20,7 +20,7 @@ struct RefInfo {
     int fastalg_max = -1;
     float fastalg_SAD = -1;
     float fastalg_SAD_criteria = -1;
-    int alignment_algo = 0;             // 0 = "Default" (nur R-Kanal), 1 = "HighAccurity" (RGB-Kanal), 2 = "Fast" (1.x RGB, dann isSimilar)
+    int alignment_algo = 0;             // 0 = "Default" (nur R-Kanal), 1 = "HighAccuracy" (RGB-Kanal), 2 = "Fast" (1.x RGB, dann isSimilar)
 };
 
 

@@ -208,7 +208,14 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_ADD_N() {
-  return tflite::micro::RegisterOp(nullptr, Prepare, Eval);
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/Prepare,
+          /*invoke=*/Eval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

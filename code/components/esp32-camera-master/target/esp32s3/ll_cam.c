@@ -22,15 +22,10 @@
 #include "soc/gdma_reg.h"
 #include "ll_cam.h"
 #include "cam_hal.h"
-#include "esp_rom_gpio.h"
 
 #if (ESP_IDF_VERSION_MAJOR >= 5)
-#include "soc/gpio_sig_map.h"
-#include "soc/gpio_periph.h"
-#include "soc/io_mux_reg.h"
-#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
-#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
-#define ets_delay_us(a) esp_rom_delay_us(a)
+#define gpio_matrix_in(a,b,c) gpio_iomux_in(a,b)
+#define gpio_matrix_out(a,b,c,d) gpio_iomux_out(a,b,c)
 #endif
 
 static const char *TAG = "s3 ll_cam";
@@ -79,7 +74,7 @@ static void IRAM_ATTR ll_cam_dma_isr(void *arg)
     }
 }
 
-bool IRAM_ATTR ll_cam_stop(cam_obj_t *cam)
+bool ll_cam_stop(cam_obj_t *cam)
 {
     if (cam->jpeg_mode || !cam->psram_mode) {
         GDMA.channel[cam->dma_num].in.int_ena.in_suc_eof = 0;
@@ -175,7 +170,6 @@ static esp_err_t ll_cam_dma_init(cam_obj_t *cam)
     }
 
     GDMA.channel[cam->dma_num].in.conf1.in_check_owner = 0;
-    // GDMA.channel[cam->dma_num].in.conf1.in_ext_mem_bk_size = 2;
 
     GDMA.channel[cam->dma_num].in.peri_sel.sel = 5;
     //GDMA.channel[cam->dma_num].in.pri.rx_pri = 1;//rx prio 0-15
@@ -184,52 +178,8 @@ static esp_err_t ll_cam_dma_init(cam_obj_t *cam)
     return ESP_OK;
 }
 
-#if CONFIG_CAMERA_CONVERTER_ENABLED
-static esp_err_t ll_cam_converter_config(cam_obj_t *cam, const camera_config_t *config)
-{
-    esp_err_t ret = ESP_OK;
-
-    switch (config->conv_mode) {
-    case YUV422_TO_YUV420:
-        if (config->pixel_format != PIXFORMAT_YUV422) {
-            ret = ESP_FAIL;
-        } else {
-            ESP_LOGI(TAG, "YUV422 to YUV420 mode");
-            LCD_CAM.cam_rgb_yuv.cam_conv_yuv2yuv_mode = 1;
-            LCD_CAM.cam_rgb_yuv.cam_conv_yuv_mode = 0;
-            LCD_CAM.cam_rgb_yuv.cam_conv_trans_mode = 1;
-        }
-        break;
-    case YUV422_TO_RGB565:
-        if (config->pixel_format != PIXFORMAT_YUV422) {
-            ret = ESP_FAIL;
-        } else {
-            ESP_LOGI(TAG, "YUV422 to RGB565 mode");
-            LCD_CAM.cam_rgb_yuv.cam_conv_yuv2yuv_mode = 3;
-            LCD_CAM.cam_rgb_yuv.cam_conv_yuv_mode = 0;
-            LCD_CAM.cam_rgb_yuv.cam_conv_trans_mode = 0;
-        }
-        break;
-    default:
-        break;
-    }
-#if CONFIG_LCD_CAM_CONV_BT709_ENABLED
-    LCD_CAM.cam_rgb_yuv.cam_conv_protocol_mode = 1;
-#else
-    LCD_CAM.cam_rgb_yuv.cam_conv_protocol_mode = 0;
-#endif
-    LCD_CAM.cam_rgb_yuv.cam_conv_data_out_mode = 0;
-    LCD_CAM.cam_rgb_yuv.cam_conv_data_in_mode = 0;
-    LCD_CAM.cam_rgb_yuv.cam_conv_mode_8bits_on = 1;
-    LCD_CAM.cam_rgb_yuv.cam_conv_bypass = 1;
-    cam->conv_mode = config->conv_mode;
-    return ret;
-}
-#endif
-
 esp_err_t ll_cam_config(cam_obj_t *cam, const camera_config_t *config)
 {
-    esp_err_t ret = ESP_OK;
     if (REG_GET_BIT(SYSTEM_PERIP_CLK_EN1_REG, SYSTEM_LCD_CAM_CLK_EN) == 0) {
         REG_CLR_BIT(SYSTEM_PERIP_CLK_EN1_REG, SYSTEM_LCD_CAM_CLK_EN);
         REG_SET_BIT(SYSTEM_PERIP_CLK_EN1_REG, SYSTEM_LCD_CAM_CLK_EN);
@@ -265,21 +215,15 @@ esp_err_t ll_cam_config(cam_obj_t *cam, const camera_config_t *config)
 
     LCD_CAM.cam_rgb_yuv.val = 0;
 
-#if CONFIG_CAMERA_CONVERTER_ENABLED
-    if (config->conv_mode) {
-        ret = ll_cam_converter_config(cam, config);
-        if(ret != ESP_OK) {
-            return ret;
-        }
-    }
-#endif
-
     LCD_CAM.cam_ctrl.cam_update = 1;
     LCD_CAM.cam_ctrl1.cam_start = 1;
 
-    ret = ll_cam_dma_init(cam);
+    esp_err_t err = ll_cam_dma_init(cam);
+    if(err != ESP_OK) {
+        return err;
+    }
     
-    return ret;
+    return ESP_OK;
 }
 
 void ll_cam_vsync_intr_enable(cam_obj_t *cam, bool en)
@@ -473,7 +417,6 @@ size_t IRAM_ATTR ll_cam_memcpy(cam_obj_t *cam, uint8_t *out, const uint8_t *in, 
         }
         return len / 2;
     }
-    
 
     // just memcpy
     memcpy(out, in, len);
@@ -490,22 +433,8 @@ esp_err_t ll_cam_set_sample_mode(cam_obj_t *cam, pixformat_t pix_format, uint32_
         }
         cam->fb_bytes_per_pixel = 1;       // frame buffer stores Y8
     } else if (pix_format == PIXFORMAT_YUV422 || pix_format == PIXFORMAT_RGB565) {
-#if CONFIG_CAMERA_CONVERTER_ENABLED
-        switch (cam->conv_mode) {
-        case YUV422_TO_YUV420:
-            cam->in_bytes_per_pixel = 1.5;       // for DMA receive
-            cam->fb_bytes_per_pixel = 1.5;       // frame buffer stores YUV420
-            break;
-        case YUV422_TO_RGB565:
-        default:
-            cam->in_bytes_per_pixel = 2;       // for DMA receive
+            cam->in_bytes_per_pixel = 2;       // camera sends YU/YV
             cam->fb_bytes_per_pixel = 2;       // frame buffer stores YU/YV/RGB565
-            break;
-        }
-#else 
-        cam->in_bytes_per_pixel = 2;       // for DMA receive
-        cam->fb_bytes_per_pixel = 2;       // frame buffer stores YU/YV/RGB565
-#endif
     } else if (pix_format == PIXFORMAT_JPEG) {
         cam->in_bytes_per_pixel = 1;
         cam->fb_bytes_per_pixel = 1;

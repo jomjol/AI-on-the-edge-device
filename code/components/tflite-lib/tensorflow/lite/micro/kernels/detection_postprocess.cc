@@ -149,6 +149,8 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
   return op_data;
 }
 
+void Free(TfLiteContext* context, void* buffer) {}
+
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   auto* op_data = static_cast<OpData*>(node->user_data);
 
@@ -800,7 +802,14 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration* Register_DETECTION_POSTPROCESS() {
-  static TfLiteRegistration r = tflite::micro::RegisterOp(Init, Prepare, Eval);
+  static TfLiteRegistration r = {/*init=*/Init,
+                                 /*free=*/Free,
+                                 /*prepare=*/Prepare,
+                                 /*invoke=*/Eval,
+                                 /*profiling_string=*/nullptr,
+                                 /*builtin_code=*/0,
+                                 /*custom_name=*/nullptr,
+                                 /*version=*/0};
   return &r;
 }
 

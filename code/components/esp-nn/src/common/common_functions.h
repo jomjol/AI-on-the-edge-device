@@ -41,52 +41,8 @@
 
 __NN_FORCE_INLINE__ int32_t esp_nn_clz32(uint32_t in)
 {
-#if CONFIG_IDF_TARGET_ARCH_XTENSA
     __asm__ volatile("nsau %0, %0" : "+r" (in));
     return in;
-#elif defined(__GNUC__)
-    return __builtin_clz(in);
-#else
-    int32_t count = 32;
-    uint32_t x = in, y = in >> 16;
-    if (y != 0) {
-        count -= 16;
-        x = y;
-    }
-    y = x >> 8;
-    if (y != 0) {
-        count -= 8;
-        x = y;
-    }
-    y = x >> 4;
-    if (y != 0) {
-        count -= 4;
-        x = y;
-    }
-    y = x >> 2;
-    if (y != 0) {
-        count -= 2;
-        x = y;
-    }
-    y = x >> 1;
-    if (y != 0) {
-        return count - 2;
-    }
-    return count - x;
-#endif
-}
-
-/**
- * Signed saturate a 32 bit value to 8 bits keeping output in 32 bit variable.
- */
-__NN_FORCE_INLINE__ int32_t esp_nn_saturate8(int32_t in)
-{
-#if CONFIG_IDF_TARGET_ARCH_XTENSA
-    __asm__ volatile("clamps %0, %0, 7" : "+a"(in));
-    return in;
-#else
-    return max(INT8_MIN, min(in, INT8_MAX));
-#endif
 }
 
 __NN_FORCE_INLINE__ int32_t esp_nn_pick_sat_high32_of64(int64_t val64)
@@ -94,6 +50,15 @@ __NN_FORCE_INLINE__ int32_t esp_nn_pick_sat_high32_of64(int64_t val64)
     int32_t sign = (int32_t) (val64 >> 63);
     int32_t to_add = sign & ((1ul << 31) - 1);
     return (int32_t) ((int64_t) (val64 + to_add) >> 31);
+}
+
+/**
+ * Signed saturate a 32 bit value to 8 bits keeping output in 32 bit variable.
+ */
+__NN_FORCE_INLINE__ int32_t esp_nn_saturate8(int32_t in)
+{
+    __asm__ volatile("clamps %0, %0, 7" : "+a"(in));
+    return in;
 }
 
 __NN_FORCE_INLINE__ int32_t esp_nn_sat_round_doubling_high_mul(int32_t in0, int32_t in1)
@@ -179,7 +144,7 @@ static void esp_nn_aligned_s8_pad_with_value(const int8_t *src, int8_t *dst,
                                              const uint16_t pad_ht)
 {
     /* memset with pad_val */
-    memset(dst, pad_val, ((input_wd + 2 * pad_wd) * (input_ht + 2 * pad_ht)) * channels);
+    memset(dst, pad_val, ((input_wd + 2 * pad_wd) * (input_ht + 2 * pad_ht)) * channels * 2);
     dst += (pad_wd + input_wd + pad_wd) * channels;
 
     for (int i = 0; i < input_ht; i++) {
@@ -191,6 +156,7 @@ static void esp_nn_aligned_s8_pad_with_value(const int8_t *src, int8_t *dst,
     }
 }
 
+#if 0
 static void esp_nn_aligned_s8_pad_end_with_value(const int8_t *src, int8_t *dst,
                                                  const uint16_t input_wd,
                                                  const uint16_t input_ht,
@@ -203,16 +169,13 @@ static void esp_nn_aligned_s8_pad_end_with_value(const int8_t *src, int8_t *dst,
         for (int j = 0; j < input_wd * channels; j++) {
             *dst++ = *src++;
         }
-        if (pad_wd) {
-            memset(dst, pad_val, pad_wd * channels);
-            dst += pad_wd * channels;
-        }
+        memset(dst, pad_val, pad_wd * channels);
+        dst += pad_wd * channels;
     }
     /* pad end `pad_ht` lines at end */
-    if (pad_ht) {
-        memset(dst, pad_val, (input_wd + pad_wd) * pad_ht * channels);
-    }
+    memset(dst, pad_val, (input_wd + pad_wd) * pad_ht * channels);
 }
+#endif
 
 /**
  * @brief       convert 8 bit input data to 16 bit

@@ -34,11 +34,29 @@ TfLiteStatus LogicalAndEval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace
 
 TfLiteRegistration Register_LOGICAL_OR() {
-  return tflite::micro::RegisterOp(nullptr, nullptr, LogicalOrEval);
+  // Init, Free, Prepare, Eval are satisfying the Interface required by
+  // TfLiteRegistration.
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/nullptr,
+          /*invoke=*/LogicalOrEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_LOGICAL_AND() {
-  return tflite::micro::RegisterOp(nullptr, nullptr, LogicalAndEval);
+  // Init, Free, Prepare, Eval are satisfying the Interface required by
+  // TfLiteRegistration.
+  return {/*init=*/nullptr,
+          /*free=*/nullptr,
+          /*prepare=*/nullptr,
+          /*invoke=*/LogicalAndEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite
