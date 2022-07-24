@@ -583,33 +583,69 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace comparisons
 
 TfLiteRegistration Register_EQUAL() {
-  return tflite::micro::RegisterOp(comparisons::Init, comparisons::Prepare,
-                                   comparisons::EqualEval);
+  return {/*init=*/comparisons::Init,
+          /*free=*/nullptr,
+          /*prepare=*/comparisons::Prepare,
+          /*invoke=*/comparisons::EqualEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_NOT_EQUAL() {
-  return tflite::micro::RegisterOp(comparisons::Init, comparisons::Prepare,
-                                   comparisons::NotEqualEval);
+  return {/*init=*/comparisons::Init,
+          /*free=*/nullptr,
+          /*prepare=*/comparisons::Prepare,
+          /*invoke=*/comparisons::NotEqualEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_GREATER() {
-  return tflite::micro::RegisterOp(comparisons::Init, comparisons::Prepare,
-                                   comparisons::GreaterEval);
+  return {/*init=*/comparisons::Init,
+          /*free=*/nullptr,
+          /*prepare=*/comparisons::Prepare,
+          /*invoke=*/comparisons::GreaterEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_GREATER_EQUAL() {
-  return tflite::micro::RegisterOp(comparisons::Init, comparisons::Prepare,
-                                   comparisons::GreaterEqualEval);
+  return {/*init=*/comparisons::Init,
+          /*free=*/nullptr,
+          /*prepare=*/comparisons::Prepare,
+          /*invoke=*/comparisons::GreaterEqualEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_LESS() {
-  return tflite::micro::RegisterOp(comparisons::Init, comparisons::Prepare,
-                                   comparisons::LessEval);
+  return {/*init=*/comparisons::Init,
+          /*free=*/nullptr,
+          /*prepare=*/comparisons::Prepare,
+          /*invoke=*/comparisons::LessEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_LESS_EQUAL() {
-  return tflite::micro::RegisterOp(comparisons::Init, comparisons::Prepare,
-                                   comparisons::LessEqualEval);
+  return {/*init=*/comparisons::Init,
+          /*free=*/nullptr,
+          /*prepare=*/comparisons::Prepare,
+          /*invoke=*/comparisons::LessEqualEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace micro

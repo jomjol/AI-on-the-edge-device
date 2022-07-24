@@ -88,8 +88,14 @@ TfLiteStatus LeakyReluEval(TfLiteContext* context, TfLiteNode* node) {
 }
 
 TfLiteRegistration Register_LEAKY_RELU() {
-  return tflite::micro::RegisterOp(LeakyReluInit, LeakyReluPrepare,
-                                   LeakyReluEval);
+  return {/*init=*/LeakyReluInit,
+          /*free=*/nullptr,
+          /*prepare=*/LeakyReluPrepare,
+          /*invoke=*/LeakyReluEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite

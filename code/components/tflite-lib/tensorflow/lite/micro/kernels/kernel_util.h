@@ -27,11 +27,6 @@ limitations under the License.
 namespace tflite {
 namespace micro {
 
-TfLiteRegistration RegisterOp(
-    void* (*init)(TfLiteContext* context, const char* buffer, size_t length),
-    TfLiteStatus (*prepare)(TfLiteContext* context, TfLiteNode* node),
-    TfLiteStatus (*invoke)(TfLiteContext* context, TfLiteNode* node));
-
 // Returns a mutable tensor for a given input index. is_variable must be checked
 // during prepare when the full TfLiteTensor is available.
 TfLiteEvalTensor* GetMutableEvalInput(const TfLiteContext* context,
@@ -45,31 +40,17 @@ const TfLiteEvalTensor* GetEvalInput(const TfLiteContext* context,
 TfLiteEvalTensor* GetEvalOutput(const TfLiteContext* context,
                                 const TfLiteNode* node, int index);
 
-// Returns data for a TfLiteEvalTensor struct that are expected to exist.
+// Returns data for a TfLiteEvalTensor struct.
 template <typename T>
 T* GetTensorData(TfLiteEvalTensor* tensor) {
-  TFLITE_DCHECK(tensor != nullptr);
-  return reinterpret_cast<T*>(tensor->data.raw);
+  return tensor != nullptr ? reinterpret_cast<T*>(tensor->data.raw) : nullptr;
 }
 
-// Returns const data for a TfLiteEvalTensor struct that are expected to exist.
+// Returns const data for a TfLiteEvalTensor struct.
 template <typename T>
 const T* GetTensorData(const TfLiteEvalTensor* tensor) {
   TFLITE_DCHECK(tensor != nullptr);
   return reinterpret_cast<const T*>(tensor->data.raw);
-}
-
-// Returns data for a TfLiteEvalTensor struct that could be null.
-template <typename T>
-T* GetOptionalTensorData(TfLiteEvalTensor* tensor) {
-  return tensor == nullptr ? nullptr : reinterpret_cast<T*>(tensor->data.raw);
-}
-
-// Returns const data for a TfLiteEvalTensor struct that could be null.
-template <typename T>
-const T* GetOptionalTensorData(const TfLiteEvalTensor* tensor) {
-  return tensor == nullptr ? nullptr
-                           : reinterpret_cast<const T*>(tensor->data.raw);
 }
 
 // Returns the shape of a TfLiteEvalTensor struct.

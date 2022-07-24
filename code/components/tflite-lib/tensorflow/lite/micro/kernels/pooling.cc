@@ -88,11 +88,25 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
 }  // namespace
 
 TfLiteRegistration Register_AVERAGE_POOL_2D() {
-  return tflite::micro::RegisterOp(Init, PoolingPrepare, AverageEval);
+  return {/*init=*/Init,
+          /*free=*/nullptr,
+          /*prepare=*/PoolingPrepare,
+          /*invoke=*/AverageEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 TfLiteRegistration Register_MAX_POOL_2D() {
-  return tflite::micro::RegisterOp(Init, PoolingPrepare, MaxEval);
+  return {/*init=*/Init,
+          /*free=*/nullptr,
+          /*prepare=*/PoolingPrepare,
+          /*invoke=*/MaxEval,
+          /*profiling_string=*/nullptr,
+          /*builtin_code=*/0,
+          /*custom_name=*/nullptr,
+          /*version=*/0};
 }
 
 }  // namespace tflite
