@@ -50,7 +50,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### 10.6.2
 
+- ignore hidden files in model selection (configuration page) 
 
 
 ##### 10.6.1 - Stability Increase (2022-07-24)
