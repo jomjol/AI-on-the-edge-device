@@ -95,6 +95,11 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
         _filename = std::string(entry->d_name);
         printf("File: %s\t", _filename.c_str());
 
+        // ignore all files with starting dot (hidden files)
+        if (_filename.rfind(".", 0) == 0) {
+            continue;
+        }
+
         _fileext = _filename;
         pos = _fileext.find_last_of(".");
         if (pos != std::string::npos)
