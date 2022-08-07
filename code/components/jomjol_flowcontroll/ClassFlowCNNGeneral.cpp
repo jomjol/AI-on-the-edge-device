@@ -811,34 +811,21 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                 case Analogue100:
                     {
                         int _num;
-                        float _fit;
                         float _result_save_file;
                         
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
     
                         _num = tflite->GetOutClassification();
-                        _fit = tflite->GetOutputValue(_num);
-
+                        
                         GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
 
  
                         _result_save_file = GENERAL[_ana]->ROI[i]->result_float;
 
-                        if (_fit < CNNGoodThreshold)
-                        {
-                            GENERAL[_ana]->ROI[i]->isReject = true;
-                            GENERAL[_ana]->ROI[i]->result_float = -1;
-                            _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
-                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
-                            printf("Value Rejected due to Threshold (Fit: %f, Threshold: %f\n", _fit, CNNGoodThreshold);
-                            LogFile.WriteToFile(zw);
-                        }
-                        else
-                        {
-                            GENERAL[_ana]->ROI[i]->isReject = false;
-                        }
-
+                        
+                        GENERAL[_ana]->ROI[i]->isReject = false;
+                        
                         printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
 
                         if (isLogImage)
