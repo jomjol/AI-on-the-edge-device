@@ -314,6 +314,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         
         std::vector<HTMLInfo*> htmlinfodig;
         htmlinfodig = tfliteflow.GetAllDigital();  
+
         for (int i = 0; i < htmlinfodig.size(); ++i)
         {
             if (tfliteflow.GetTypeDigital() == Digital)

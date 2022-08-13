@@ -1866,6 +1866,7 @@ function UpdateInput() {
 	document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
 	document.getElementById("Category_GPIO_enabled").checked = category["GPIO"]["enabled"];
+	document.getElementById("Category_InfluxDB_enabled").checked = category["InfluxDB"]["enabled"];
 	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
@@ -2058,6 +2059,9 @@ function UpdateAfterCategoryCheck() {
 	category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
+	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
+	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
+
 	UpdateInput();
 	UpdateInputIndividual();
 }
