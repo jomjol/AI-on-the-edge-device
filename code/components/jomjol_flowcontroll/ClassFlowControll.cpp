@@ -586,6 +586,8 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
         {
             std::vector<HTMLInfo*> htmlinfo;
             htmlinfo = GetAllDigital();
+            printf("After getClassFlowControll::GetAllDigital\n");
+
             for (int i = 0; i < htmlinfo.size(); ++i)
             {
                 if (_fn == htmlinfo[i]->filename)

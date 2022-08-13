@@ -760,7 +760,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             _fit = _val + _valminus;
 
                         }
-                        if (result >= 10)
+                        if (result > 10)
                             result = result - 10;
                         if (result < 0)
                             result = result + 10;
@@ -872,11 +872,14 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
+            printf("Image: %d\n", (int) GENERAL[_ana]->ROI[i]->image);
+            if (GENERAL[_ana]->ROI[i]->image)
+            {
                 if (GENERAL[_ana]->name == "default")
                     GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
                 else
                     GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
-
+            }
 
             HTMLInfo *zw = new HTMLInfo;
             if (GENERAL[_ana]->name == "default")
