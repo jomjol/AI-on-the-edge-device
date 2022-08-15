@@ -40,7 +40,9 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### 11.0.0 - Intermediate Digits
+##### 11.0.1 - Intermediate Digits
+
+- **NEW v11.0.1**: Bug Fix InfluxDB configuration (only update of html.zip necessary)
 
 - Implementation of new CNN types to detect intermediate values of digits with rolling numbers
 
