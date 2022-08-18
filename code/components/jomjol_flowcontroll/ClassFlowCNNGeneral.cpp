@@ -106,8 +106,10 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             if (GENERAL[_analog]->ROI[i]->result_float >= 0)
             {
                 prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout#ZeigerEvalHybrid()= " + std::to_string(prev));
                 result = std::to_string(prev) + result;
-
+                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout#result= " + result);
+                
             }
             else
             {
@@ -171,6 +173,8 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
 int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger)
 {
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid( " + std::to_string(zahl) + ", " + std::to_string(zahl_vorgaenger) + ", " + std::to_string(eval_vorgaenger) + ")");
+                
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
 
@@ -183,7 +187,9 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
             return ((int) trunc(zahl) + 10) % 10;
     }
 
-    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.5))
+    // 9.0, da bei getReadout() prev als int übergeben wird (9 statt 9.5)
+    // tritt bei der ersten ziffer von digit auf, wenn analog davor (2. Aufruf von getReadout)
+    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.0))
     {
         // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-0.5) --> zahl wird gerundet
         return ((int) round(zahl) + 10) % 10;

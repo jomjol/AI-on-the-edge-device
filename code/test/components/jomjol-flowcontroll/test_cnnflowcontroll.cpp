@@ -85,7 +85,7 @@ void test_ZeigerEvalHybrid() {
 
     // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.6)
     TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.6, 9));    
-    // the 4.4 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
+    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
     TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.5, 9.5, 9));    
 
     // 59.96889 - Pre: 58.94888
@@ -93,6 +93,10 @@ void test_ZeigerEvalHybrid() {
     // the 4.4 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
     TEST_ASSERT_EQUAL(8, undertest.ZeigerEvalHybrid(8.6, 9.8, 9));    
 
+    // pre = 9.9 (0.0 raw)
+    // zahl = 1.8
+    TEST_ASSERT_EQUAL(1, undertest.ZeigerEvalHybrid(1.8, 9.0, 9));    
+ 
     // issue #879 vorgaenger is -1, zahl = 6.7
     //TEST_ASSERT_EQUAL(7, undertest.ZeigerEvalHybrid(6.7, -1.0, -1));    
 
