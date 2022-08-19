@@ -760,7 +760,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             _fit = _val + _valminus;
 
                         }
-                        if (result >= 10)
+                        if (result > 10)
                             result = result - 10;
                         if (result < 0)
                             result = result + 10;
@@ -811,34 +811,21 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                 case Analogue100:
                     {
                         int _num;
-                        float _fit;
                         float _result_save_file;
                         
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
     
                         _num = tflite->GetOutClassification();
-                        _fit = tflite->GetOutputValue(_num);
-
+                        
                         GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
 
  
                         _result_save_file = GENERAL[_ana]->ROI[i]->result_float;
 
-                        if (_fit < CNNGoodThreshold)
-                        {
-                            GENERAL[_ana]->ROI[i]->isReject = true;
-                            GENERAL[_ana]->ROI[i]->result_float = -1;
-                            _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
-                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
-                            printf("Value Rejected due to Threshold (Fit: %f, Threshold: %f\n", _fit, CNNGoodThreshold);
-                            LogFile.WriteToFile(zw);
-                        }
-                        else
-                        {
-                            GENERAL[_ana]->ROI[i]->isReject = false;
-                        }
-
+                        
+                        GENERAL[_ana]->ROI[i]->isReject = false;
+                        
                         printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
 
                         if (isLogImage)
@@ -885,11 +872,14 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
+            printf("Image: %d\n", (int) GENERAL[_ana]->ROI[i]->image);
+            if (GENERAL[_ana]->ROI[i]->image)
+            {
                 if (GENERAL[_ana]->name == "default")
                     GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
                 else
                     GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
-
+            }
 
             HTMLInfo *zw = new HTMLInfo;
             if (GENERAL[_ana]->name == "default")
