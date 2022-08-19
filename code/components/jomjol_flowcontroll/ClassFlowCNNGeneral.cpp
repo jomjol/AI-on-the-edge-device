@@ -192,7 +192,10 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
     if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.0))
     {
         // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-0.5) --> zahl wird gerundet
-        return ((int) round(zahl) + 10) % 10;
+        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+            return ((int) round(zahl) + 10) % 10;
+        else
+            return ((int) trunc(zahl) + 10) % 10;
     }  
     else
     {
