@@ -65,8 +65,8 @@ void test_ZeigerEvalHybrid() {
     // the 5.8 and no previous should round up to 6
     TEST_ASSERT_EQUAL(6, undertest.ZeigerEvalHybrid(5.8, 0, -1));
 
-    // the 5.7 with previous and the previous between 0.3-0.7 should round up to 6
-    TEST_ASSERT_EQUAL(6, undertest.ZeigerEvalHybrid(5.7, 0.7, 1));
+    // the 5.7 with previous and the previous between 0.3-0.5 should round up to 6
+    TEST_ASSERT_EQUAL(6, undertest.ZeigerEvalHybrid(5.7, 0.4, 1));
 
     // the 5.3 with previous and the previous between 0.3-0.7 should round down to 5
     TEST_ASSERT_EQUAL(5, undertest.ZeigerEvalHybrid(5.3, 0.7, 1));
@@ -97,6 +97,12 @@ void test_ZeigerEvalHybrid() {
     // zahl = 1.8
     TEST_ASSERT_EQUAL(1, undertest.ZeigerEvalHybrid(1.8, 9.0, 9));    
  
+    // if a digit have an early transition and the pointer is < 9.0 
+    // prev (pointer) = 6.2, but on digital readout = 6.0 (prev is int parameter)
+    // zahl = 4.6
+    TEST_ASSERT_EQUAL(4, undertest.ZeigerEvalHybrid(4.6, 6.0, 6));    
+ 
+    
     // issue #879 vorgaenger is -1, zahl = 6.7
     //TEST_ASSERT_EQUAL(7, undertest.ZeigerEvalHybrid(6.7, -1.0, -1));    
 
