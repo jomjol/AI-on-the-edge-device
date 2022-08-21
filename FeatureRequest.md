@@ -55,7 +55,8 @@ ____
 #### #20 Deep sleep and push mode
 
 * Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post.
-
+* Support ESP-NOW to reduce the overhead of connecting to wifi and mqtt 
+* the above should enable battery powered applications
   
 
 #### #19 Extended log informations
