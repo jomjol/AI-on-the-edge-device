@@ -11,6 +11,15 @@
 
 ____
 
+#### #29 Add favicon and use the hostname for the website
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/927
+
+#### #28 Improved error handling for ROIs
+
+* In case a ROI is out of the image, there is no error message, but a non sense image is used
+* Implement a error message for wrong configuratioin of ROI
+
 #### #27 Use Homie Spec for Mqtt binding
 
 * Use the standardized Home Protocol for the Mqtt binding 
