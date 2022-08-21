@@ -17,3 +17,4 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 code/edgeAI.code-workspace
+.DS_Store
