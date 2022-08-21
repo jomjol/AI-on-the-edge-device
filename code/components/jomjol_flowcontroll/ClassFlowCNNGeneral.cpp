@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = false;
+bool debugdetailgeneral = true;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -28,7 +28,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     flowpostalignment = _flowalign;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev)
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _vorgaengerAnalog)
 {
     string result = "";    
 
@@ -41,7 +41,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
         
-        prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
+        prev = ZeigerEvalAnalogNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
         if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout(analog) zahl=" + std::to_string(zahl) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
         result = std::to_string(prev);
 
@@ -50,7 +50,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i)
         {
-            prev = ZeigerEval(GENERAL[_analog]->ROI[i]->result_float, prev);
+            prev = ZeigerEvalAnalogNeu(GENERAL[_analog]->ROI[i]->result_float, prev);
             result = std::to_string(prev) + result;
         }
         return result;
@@ -88,7 +88,10 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             else
             {
 //                prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
-                prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
+                if (_vorgaengerAnalog >= 0)
+                    prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _vorgaengerAnalog, prev, true);
+                else
+                    prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 result = std::to_string(prev);
                 if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout(dig100)  prev=" + std::to_string(prev));
         
@@ -105,8 +108,8 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         {
             if (GENERAL[_analog]->ROI[i]->result_float >= 0)
             {
-                prev = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
-                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout#ZeigerEvalHybrid()= " + std::to_string(prev));
+                prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout#ZeigerEvalHybridNeu()= " + std::to_string(prev));
                 result = std::to_string(prev) + result;
                 if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::getReadout#result= " + result);
                 
@@ -122,51 +125,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     }
 
-/*
-    if (CNNType == Digital100)
-    {
-        int zif_akt = -1;
-
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
-        if (zahl >= 0)       // NaN?
-        {
-            if (_extendedResolution)
-            {
-                int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-                int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
-
-                result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
-                zif_akt = ergebnis_vorkomma;
-            }
-            else
-            {
-                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, -1, -1);
-                result = std::to_string(zif_akt);
-            }
-        }
-        else
-        {
-            result = "N";
-            if (_extendedResolution && (CNNType != Digital))
-                result = "NN";
-        }
-
-        for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i)
-        {
-            if (GENERAL[_analog]->ROI[i]->result_float >= 0)
-            {
-                zif_akt = ZeigerEvalHybrid(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, zif_akt);
-                result = std::to_string(zif_akt) + result;
-            }
-            else
-            {
-                zif_akt = -1;
-                result = "N" + result;
-            }
-        }
-        return result;
-    }
-*/
 
     return result;
 }
@@ -189,7 +147,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
 
     // 9.0, da bei getReadout() prev als int übergeben wird (9 statt 9.5)
     // tritt bei der ersten ziffer von digit auf, wenn analog davor (2. Aufruf von getReadout)
-    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.0))
+    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.5))
     {
         // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-0.5) --> zahl wird gerundet
         if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
@@ -220,36 +178,123 @@ int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int
                         + ", zahl_vorgaenger=" + std::to_string(zahl_vorgaenger) + ", eval_vorgaenger=" + std::to_string(eval_vorgaenger));
     return -1;
 
-/*
-    if (zahl_vorgaenger > 9.2)              // Ziffernwechsel beginnt
-    {
-        if (eval_vorgaenger == 0)           // Wechsel hat schon stattgefunden
-        {
-            return ((int) round(zahl) + 10) % 10;      // Annahme, dass die neue Zahl schon in der Nähe des Ziels ist
-        }
-        else
-        {
-            if (zahl_vorgaenger <= 9.5)     // Wechsel startet gerade, aber beginnt erst
-            {
-                if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-                    return ((int) round(zahl) + 10) % 10;
-                else
-                    return ((int) trunc(zahl) + 10) % 10;
-            }
-            else
-            {
-                return ((int) trunc(zahl) + 10) % 10;   // Wechsel schon weiter fortgeschritten, d.h. über 2 als Nachkomma
-            }
-        }
-    }
-
-    if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-        return ((int) round(zahl) + 10) % 10;
-
-    return ((int) trunc(zahl) + 10) % 10;
-*/
 }
 
+int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger)
+{
+    int result;
+    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
+    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
+
+    if (eval_vorgaenger < 0)
+    {
+        if ((ergebnis_nachkomma <= DigitalUnschaerfe * 10) || (ergebnis_nachkomma >= DigitalUnschaerfe * 10))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+            result = (int) (round(zahl) + 10) % 10;
+        else
+            result = (int) ((int) trunc(zahl) + 10) % 10;
+
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        return result;
+    }
+
+    if (AnalogerVorgaenger)
+    {
+        if (zahl_vorgaenger <= DigitalAnalogerVorgaengerUebergangsbereich) // Nulldurchgang hat stattgefunden
+        {
+            result = (int) ((int) round(zahl) + 10) % 10;
+            if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Nulldurchgang stattgefunden = " + std::to_string(result) +
+                                                        " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+            return result;
+        }
+
+        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+            result = ((int) round(zahl) + 10) % 10;
+        else
+            result = ((int) trunc(zahl) + 10) % 10;
+
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Nulldurchgang NICHT stattgefunden = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        return result;
+    }
+
+    if ((zahl_vorgaenger >= DigitalUebergangsbereichVorgaenger ) && (zahl_vorgaenger <= (10.0 - DigitalUebergangsbereichVorgaenger)))
+    {
+        // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-DigitalUebergangsbereichVorgaenger) --> zahl wird gerundet
+        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+            result = ((int) round(zahl) + 10) % 10;
+        else
+            result = ((int) trunc(zahl) + 10) % 10;
+
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, kein Ziffernwechsel, da Vorkomma weit genug weg = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        return result;
+    }  
+
+    if (eval_vorgaenger <= 1)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+    {
+        if (ergebnis_nachkomma > 5)
+            result =  (ergebnis_vorkomma + 1) % 10;
+        else
+            result =  ergebnis_vorkomma;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, Nulldurchgang hat stattgefunden = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        return result;
+    }
+
+    // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
+    // hier auf 4 reduziert, da erst ab Vorgänder 9 anfängt umzustellen. Bei 9.5 Vorgänger kann die aktuelle
+    // Zahl noch x.4 - x.5 sein.
+    if (ergebnis_nachkomma >= 4)
+        result =  ergebnis_vorkomma;
+    else
+        result =  (ergebnis_vorkomma - 1 + 10) % 10;
+
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +
+                                                " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+    return result;
+}
+
+
+int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
+{
+    float zahl_min, zahl_max;
+    int result;
+
+    if (ziffer_vorgaenger == -1)
+    {
+        result = (int) floor(zahl);
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+        return result;
+    }
+
+    zahl_min = zahl - AnalogFehler / 10.0;
+    zahl_max = zahl + AnalogFehler / 10.0;
+
+    if ((int) floor(zahl_max) - (int) floor(zahl_min) != 0)
+    {
+        if (ziffer_vorgaenger <= AnalogFehler)
+        {
+            result = ((int) floor(zahl_max) + 10) % 10;
+            if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach oben - Ergebnis = " + std::to_string(result) +
+                                                        " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+            return result;
+        }
+        result = ((int) floor(zahl_min) + 10) % 10;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach unten - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+        return result;
+    }
+    
+
+    result = ((int) floor(zahl) + 10) % 10;
+    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - Zahl eindeutig, keine Korrektur notwendig - Ergebnis = " + std::to_string(result) +
+                                                " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+
+    return result;
+
+}
 
 
 int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)

@@ -24,6 +24,10 @@ protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
+    float AnalogFehler = 3.0;
+    float DigitalUnschaerfe = 0.2;
+    float DigitalAnalogerVorgaengerUebergangsbereich = 2;
+    float DigitalUebergangsbereichVorgaenger = 0.7;
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;
@@ -36,6 +40,9 @@ protected:
 
     int ZeigerEval(float zahl, int ziffer_vorgaenger);
     int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
+    int ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger);
+    int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false);
+
 
 
     bool doNeuralNetwork(string time); 
@@ -50,7 +57,7 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1);   
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _vorgaengerAnalog = -1);   
 
     void DrawROI(CImageBasis *_zw); 
 

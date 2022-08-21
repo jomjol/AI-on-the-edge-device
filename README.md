@@ -40,6 +40,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-21)
+
+- New and improved consistency check (especially with analog and digital counters mixed)
+- Bug Fix: digital counter algo
+
 ##### 11.1.0 - Intermediate Digits
 
 - Updated postprocessing algorithm (fix from @haverland)
