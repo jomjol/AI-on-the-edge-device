@@ -83,7 +83,7 @@ void test_ZeigerEvalHybrid() {
 
     // pre = 9.9 (0.0 raw)
     // zahl = 1.8
-    TEST_ASSERT_EQUAL(1, undertest.ZeigerEvalHybrid(1.8, 9.0, 9));    
+    TEST_ASSERT_EQUAL(2, undertest.ZeigerEvalHybrid(1.8, 9.0, 9));    
  
     // if a digit have an early transition and the pointer is < 9.0 
     // prev (pointer) = 6.2, but on digital readout = 6.0 (prev is int parameter)

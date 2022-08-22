@@ -238,8 +238,9 @@ void ClassFlowPostProcessing::SavePreValue()
 
         _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
         printf("Write PreValue Zeile: %s\n", _zw.c_str());
-
-        fputs(_zw.c_str(), pFile);
+        if (pFile) {
+            fputs(_zw.c_str(), pFile);
+        }
     }
 
     UpdatePreValueINI = false;
@@ -568,8 +569,10 @@ void ClassFlowPostProcessing::InitNUMBERS()
         NUMBERS.push_back(_number);
     }
 
-    for (int i = 0; i < NUMBERS.size(); ++i)
+    for (int i = 0; i < NUMBERS.size(); ++i) {
         printf("Number %s, Anz DIG: %d, Anz ANA %d\n", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigital, NUMBERS[i]->AnzahlAnalog);
+    }
+
 }
 
 string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
@@ -667,7 +670,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (NUMBERS[j]->digit_roi)
         {
             if (NUMBERS[j]->analog_roi) 
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, previous_value) + NUMBERS[j]->ReturnRawValue;
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float) + NUMBERS[j]->ReturnRawValue;
             else
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
