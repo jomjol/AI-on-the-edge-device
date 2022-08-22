@@ -40,6 +40,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### 11.1.0 - Intermediate Digits
+
+- Updated postprocessing algorithm (fix from @haverland)
+
 ##### 11.0.1 - Intermediate Digits
 
 - **NEW v11.0.1**: Bug Fix InfluxDB configuration (only update of html.zip necessary)
