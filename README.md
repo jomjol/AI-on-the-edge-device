@@ -40,16 +40,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2022-08-21)
+##### 11.1.1 - Intermediate Digits (2022-08-22)
 
 - New and improved consistency check (especially with analog and digital counters mixed)
-- Bug Fix: digital counter algo
+- Bug Fix: digital counter algorithm
 
-##### 11.1.0 - Intermediate Digits
-
-- Updated postprocessing algorithm (fix from @haverland)
-
-##### 11.0.1 - Intermediate Digits
+##### 11.0.1 - Intermediate Digits (2022-08-18)
 
 - **NEW v11.0.1**: Bug Fix InfluxDB configuration (only update of html.zip necessary)
 
