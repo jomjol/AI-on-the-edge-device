@@ -1,7 +1,7 @@
 #include <unity.h>
 #include <ClassFlowCNNGeneral.h>
 
-class UnderTest : public ClassFlowCNNGeneral {
+class UnderTestCNN : public ClassFlowCNNGeneral {
     public:
     using ClassFlowCNNGeneral::ZeigerEval;
     using ClassFlowCNNGeneral::ZeigerEvalHybrid;
@@ -10,25 +10,13 @@ class UnderTest : public ClassFlowCNNGeneral {
 };
 
 
-void setUp(void)
-{
-  // set stuff up here
-}
-
-void tearDown(void)
-{
-  // clean stuff up here
-}
-
-
-
 /**
  * @brief test if all combinations of digit 
  * evaluation are running correctly
  */
 void test_ZeigerEval() 
 {
-    UnderTest undertest = UnderTest(nullptr, Digital100);
+    UnderTestCNN undertest = UnderTestCNN(nullptr, Digital100);
 
     // the 5.2 is already above 5.0 and the previous digit too (3)
     int result = undertest.ZeigerEval(5.2, 3);
@@ -51,7 +39,7 @@ void test_ZeigerEval()
  * evaluation are running correctly
  */
 void test_ZeigerEvalHybrid() {
-    UnderTest undertest = UnderTest(nullptr, Digital100);
+    UnderTestCNN undertest = UnderTestCNN(nullptr, Digital100);
 
     // the 5.2 and no previous should round down
     TEST_ASSERT_EQUAL(5, undertest.ZeigerEvalHybrid(5.2, 0, -1));
