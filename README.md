@@ -40,6 +40,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-22)
+
+- Added favicon and system name (thanks to @**[caco3](https://github.com/caco3)**)
+- Updated version of the consistency check (handover from analog to digital)
+
 ##### 11.1.1 - Intermediate Digits (2022-08-22)
 
 - New and improved consistency check (especially with analog and digital counters mixed)

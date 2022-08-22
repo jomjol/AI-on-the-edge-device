@@ -200,6 +200,11 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
 
     if (AnalogerVorgaenger)
     {
+        result = ZeigerEvalAnalogNeu(zahl, eval_vorgaenger);
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        return result;
+/*        
         if (zahl_vorgaenger <= DigitalAnalogerVorgaengerUebergangsbereich) // Nulldurchgang hat stattgefunden
         {
             result = (int) ((int) round(zahl) + 10) % 10;
@@ -216,6 +221,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
         if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Nulldurchgang NICHT stattgefunden = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
+*/
     }
 
     if ((zahl_vorgaenger >= DigitalUebergangsbereichVorgaenger ) && (zahl_vorgaenger <= (10.0 - DigitalUebergangsbereichVorgaenger)))
