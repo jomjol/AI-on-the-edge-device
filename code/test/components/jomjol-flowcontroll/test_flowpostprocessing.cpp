@@ -79,6 +79,16 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
   
+        /*
+         * https://github.com/jomjol/AI-on-the-edge-device/issues/921
+         * 
+         * Das Ergebnis sollte "376529.6" sein. Bzw. 16.98 ohne Extended true
+         */
+        digits = { 2.9, 7.0, 6.8, 9.9, 8.0, 3.9};
+        analogs = { 9.7};
+        expected = "377083.9";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
 }
 
