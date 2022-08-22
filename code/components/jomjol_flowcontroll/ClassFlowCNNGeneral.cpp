@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = true;
+bool debugdetailgeneral = false;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
