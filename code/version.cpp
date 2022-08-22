@@ -1,4 +1,4 @@
-const char* GIT_REV="7315f9a+";
-const char* GIT_TAG="";
-const char* GIT_BRANCH="analogtodig_as_float";
-const char* BUILD_TIME="2022-08-21 15:32";
+const char* GIT_REV="c9a879d";
+const char* GIT_TAG="v11.1.0";
+const char* GIT_BRANCH="rolling";
+const char* BUILD_TIME="2022-08-21 19:46";

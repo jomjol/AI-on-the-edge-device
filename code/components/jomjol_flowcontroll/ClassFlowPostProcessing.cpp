@@ -667,7 +667,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (NUMBERS[j]->digit_roi)
         {
             if (NUMBERS[j]->analog_roi) 
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value) + NUMBERS[j]->ReturnRawValue;
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, previous_value) + NUMBERS[j]->ReturnRawValue;
             else
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
