@@ -40,6 +40,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-24)
+
+- Added automated filtering of tflite-file in the graphical configuration (thanks to @**[caco3](https://github.com/caco3)**)
+
 ##### Rolling (2022-08-22)
 
 - Added favicon and system name (thanks to @**[caco3](https://github.com/caco3)**)
