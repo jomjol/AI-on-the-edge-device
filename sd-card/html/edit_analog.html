@@ -116,11 +116,12 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td rowspan="2"><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
+		<td rowspan="1"><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
 		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
+		<td rowspan="1"><label for="CCW"> Counter-Clockwise Rotation: </label><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" checked tabindex=6></td>
 	  </tr>
 	</table>			 
 </div>	 
@@ -146,6 +147,7 @@ th, td {
             ROIInfo,
             enhanceCon = false;
             lockAR = true;
+			CCW = false;
             basepath = "http://192.168.178.26";
 
 
@@ -204,9 +206,9 @@ function newROI(){
     var _roinew = prompt("Please enter name of new ROI", "name");
 
     if (ROIInfo.length > 0)
-        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"]);
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"],ROIInfo[aktindex]["CCW"]);
     else
-        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30);
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30, 0);
 
     if (erg != "")
         alert(erg);
@@ -232,6 +234,10 @@ function moveNext(){
 
 function changelockAR(){
     lockAR = document.getElementById("lockAR").checked;
+}
+
+function changeCCW(){
+    CCW = document.getElementById("CCW").checked;
 }
 
 function ChangeSelection(){
@@ -315,6 +321,7 @@ function UpdateROIs(){
     }  
     
     document.getElementById("lockAR").checked = lockAR;
+    document.getElementById("CCW").checked = CCW;
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  

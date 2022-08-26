@@ -197,9 +197,9 @@ function newROI() {
     var _roinew = prompt("Please enter name of new ROI", "name");
 
     if (ROIInfo.length > 0)
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"]);
+        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
     else
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, 30, 51);
+        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, 30, 51, 0);
 
     if (erg != "")
         alert(erg);
