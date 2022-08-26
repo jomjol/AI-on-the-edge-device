@@ -25,8 +25,10 @@ protected:
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
     float AnalogFehler = 3.0;
+    float AnalogToDigtalFehler = 0.8;
     float DigitalUnschaerfe = 0.2;
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
+    float DigitalUebergangsbereichVorgaengerAnalogToDigit = 2;
     float DigitalUebergangsbereichVorgaenger = 0.7;
 
     string cnnmodelfile;
@@ -38,9 +40,10 @@ protected:
     bool SaveAllFiles;   
 //    bool extendedResolution;
 
-    int ZeigerEval(float zahl, int ziffer_vorgaenger);
-    int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
+//    int ZeigerEval(float zahl, int ziffer_vorgaenger);
+//    int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
     int ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger);
+    int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger);
     int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false);
 
 

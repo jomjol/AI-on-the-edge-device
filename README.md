@@ -40,6 +40,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-26)
+
+- Updated consistency algorithm
+
 ##### Rolling (2022-08-24)
 
 - Added automated filtering of tflite-file in the graphical configuration (thanks to @**[caco3](https://github.com/caco3)**)

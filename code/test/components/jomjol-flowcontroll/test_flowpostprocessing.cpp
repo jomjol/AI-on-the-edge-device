@@ -90,6 +90,24 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
+
+        digits = { 1.1, 9.0, 4.0};
+        analogs = { 6.1, 2.6, 6.25, 9.7};
+        expected = "194.6259";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        digits = { 1.1, 9.0, 4.0};
+        analogs = { 8.1, 2.6, 6.25, 9.7};
+        expected = "194.8259";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        digits = { 1.1, 9.0, 4.0};
+        analogs = { 9.1, 2.6, 6.25, 9.7};
+        expected = "193.9259";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 }
 
 

@@ -83,8 +83,8 @@ extern "C" void app_main()
   Init_NVS_SDCard();
   UNITY_BEGIN();
 
-  RUN_TEST(test_ZeigerEval);
-  RUN_TEST(test_ZeigerEvalHybrid);
+//  RUN_TEST(test_ZeigerEval);
+//  RUN_TEST(test_ZeigerEvalHybrid);
   RUN_TEST(test_doFlow);
   
   UNITY_END();
