@@ -40,6 +40,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-27)
+
+- Updated consistency algorithm & test cases
+- Improved Reboot Dialog (thanks to @**[caco3](https://github.com/caco3)**)
+
 ##### Rolling (2022-08-26)
 
 - Updated consistency algorithm

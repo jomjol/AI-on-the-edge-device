@@ -27,9 +27,10 @@ protected:
     float AnalogFehler = 3.0;
     float AnalogToDigtalFehler = 0.8;
     float DigitalUnschaerfe = 0.2;
+    int DigitalBand = 3;
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
     float DigitalUebergangsbereichVorgaengerAnalogToDigit = 2;
-    float DigitalUebergangsbereichVorgaenger = 0.7;
+    float DigitalUebergangsbereichVorgaenger = 0.9;
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;

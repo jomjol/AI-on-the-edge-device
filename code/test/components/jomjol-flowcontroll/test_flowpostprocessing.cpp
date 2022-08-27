@@ -138,14 +138,14 @@ void test_doFlow() {
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942
-        digits = { 0.0, 9.9, 6.8, 3.7, 0.8, 6.9, 8.7};
+        digits = { 0.0, 9.9, 6.8, 9.9, 3.7, 0.8, 6.9, 8.7};
         analogs = {        };
-        expected = "73179";
+        expected = "704179";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1228343319
-        digits = { 0.0, 7.0, 1.1, 4.7, 3.7, 5.9, 9.0, 2.7};
+        digits = { 9.9, 6.8, 1.1, 4.7, 2.7, 6.0, 9.0, 2.8};  // changed 3.7 --> 2.7 (see picture in issue)
         analogs = {        };
         expected = "7153693";
         result = process_doFlow(analogs, digits);
