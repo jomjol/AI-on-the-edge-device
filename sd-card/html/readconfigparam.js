@@ -236,9 +236,9 @@ function ParseConfigParamAll(_aktline, _catname){
           let [isCom, input] = isCommented(_input);
           var linesplit = ZerlegeZeile(input);
           ParamExtractValueAll(param, linesplit, _catname, _aktline, isCom);
-          if (!isCom && (linesplit.length == 5) && (_catname == 'Digits'))
+          if (!isCom && (linesplit.length == 6) && (_catname == 'Digits'))
                ExtractROIs(input, "digit");
-          if (!isCom && (linesplit.length == 5) && (_catname == 'Analog'))
+          if (!isCom && (linesplit.length == 6) && (_catname == 'Analog'))
                ExtractROIs(input, "analog");
           if (!isCom && (linesplit.length == 3) && (_catname == 'Alignment'))
           {
