@@ -205,9 +205,9 @@ function newROI(){
     var _roinew = prompt("Please enter name of new ROI", "name");
 
     if (ROIInfo.length > 0)
-        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], ROIInfo[aktindex]["CCW"]);
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], ROIInfo[aktindex]["CCW"]=="true");
     else
-        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30, 0);
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30, false);
 
     if (erg != "")
         alert(erg);
@@ -332,7 +332,7 @@ function UpdateROIs(_sel){
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
     document.getElementById("refdx").value = ROIInfo[aktindex]["dx"];  
     document.getElementById("refdy").value = ROIInfo[aktindex]["dy"];  
-    document.getElementById("CCW").checked = ROIInfo[aktindex]["CCW"];
+    document.getElementById("CCW").checked = ROIInfo[aktindex]["CCW"] == "true";
 
     rect.startX = ROIInfo[aktindex]["x"];
     rect.startY = ROIInfo[aktindex]["y"];
