@@ -170,6 +170,9 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     sprintf(rssi, "%d", get_WIFI_RSSI());
     MQTTPublish(zw, rssi, SetRetainFlag);
 
+    zw = maintopic + "/" + "CPUtemp";
+    std::string cputemp = std::to_string(temperatureRead());
+    MQTTPublish(zw, cputemp, SetRetainFlag);
 
     if (flowpostprocessing)
     {
