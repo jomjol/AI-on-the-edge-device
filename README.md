@@ -40,23 +40,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2022-08-27)
+##### 11.2.0 - Intermediate Digits (2022-08-28)
 
-- Updated consistency algorithm & test cases
-- Improved Reboot Dialog (thanks to @**[caco3](https://github.com/caco3)**)
-
-##### Rolling (2022-08-26)
-
-- Updated consistency algorithm
-
-##### Rolling (2022-08-24)
+- Updated Tensorflow / TFlite to newest tflite (version as of 2022-07-27)
+- Updated analog neural network file (`ana-cont_11.3.0_s2.tflite` - default, `ana-class100_0120_s1_q.tflite`)
+- Updated digital neural network file (`dig-cont_0570_s3.tflite` - default, `dig-class100_0120_s2_q.tflite`)
 
 - Added automated filtering of tflite-file in the graphical configuration (thanks to @**[caco3](https://github.com/caco3)**)
-
-##### Rolling (2022-08-22)
-
-- Added favicon and system name (thanks to @**[caco3](https://github.com/caco3)**)
-- Updated version of the consistency check (handover from analog to digital)
+- Updated consistency algorithm & test cases
+- HTML: added favicon and system name, Improved reboot dialog  (thanks to @**[caco3](https://github.com/caco3)**)
 
 ##### 11.1.1 - Intermediate Digits (2022-08-22)
 

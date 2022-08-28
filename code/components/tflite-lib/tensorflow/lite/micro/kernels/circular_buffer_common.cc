@@ -39,13 +39,12 @@ const int kCircularBufferCyclesMaxIndex = 0;  // 'cycles_max'
 const TfLiteStatus kTfLiteAbort = static_cast<TfLiteStatus>(-9);
 
 TfLiteStatus CircularBufferPrepare(TfLiteContext* context, TfLiteNode* node) {
+  MicroContext* micro_context = GetMicroContext(context);
 
-  MicroContext * micro_context = GetMicroContext(context);
-
-   TfLiteTensor* input =
-    micro_context->  AllocateTempInputTensor(node, kCircularBufferInputTensor);
-  TfLiteTensor* output =
-      micro_context-> AllocateTempOutputTensor(node, kCircularBufferOutputTensor);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kCircularBufferInputTensor);
+  TfLiteTensor* output = micro_context->AllocateTempOutputTensor(
+      node, kCircularBufferOutputTensor);
 
   TFLITE_DCHECK(node->user_data != nullptr);
   OpDataCircularBuffer* op_data =

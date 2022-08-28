@@ -15,6 +15,7 @@
 #pragma once
 
 #if defined(CONFIG_NN_OPTIMIZED)
+// select apt optimisations
 #ifdef CONFIG_IDF_TARGET_ESP32S3
 #define ARCH_ESP32_S3 1
 #endif
@@ -31,12 +32,11 @@ extern "C" {
 #include "esp_nn_ansi_headers.h"
 
 #if defined(CONFIG_NN_OPTIMIZED)
-#ifdef ARCH_ESP32_S3
+#if defined(ARCH_ESP32_S3)
 #include "esp_nn_esp32s3.h"
-#endif
-#ifdef ARCH_ESP32
-#include "esp_nn_esp32.h"
-#endif
+#else // for other platforms use generic optimisations
+#include "esp_nn_generic_opt.h"
+#endif // #if defined(ARCH_ESP32_S3)
 #else
 #include "esp_nn_ansi_c.h"
 #endif

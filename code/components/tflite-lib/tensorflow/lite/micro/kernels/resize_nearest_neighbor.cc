@@ -117,14 +117,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace resize_nearest_neighbor
 
 TfLiteRegistration Register_RESIZE_NEAREST_NEIGHBOR() {
-  return {/*init=*/nullptr,
-          /*free=*/nullptr,
-          /*prepare=*/resize_nearest_neighbor::Prepare,
-          /*invoke=*/resize_nearest_neighbor::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(nullptr, resize_nearest_neighbor::Prepare,
+                                   resize_nearest_neighbor::Eval);
 }
 
 }  // namespace micro

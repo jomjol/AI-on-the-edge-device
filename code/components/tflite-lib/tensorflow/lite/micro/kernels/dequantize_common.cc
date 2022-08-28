@@ -41,8 +41,9 @@ TfLiteStatus DequantizePrepare(TfLiteContext* context, TfLiteNode* node) {
   TfLiteTensor* output = micro_context->AllocateTempOutputTensor(node, 0);
   TF_LITE_ENSURE(context, output != nullptr);
 
-  TF_LITE_ENSURE(context,
-                 input->type == kTfLiteInt8 || input->type == kTfLiteInt16);
+  TF_LITE_ENSURE(context, input->type == kTfLiteInt8 ||
+                              input->type == kTfLiteInt16 ||
+                              input->type == kTfLiteUInt8);
   TF_LITE_ENSURE(context, output->type == kTfLiteFloat32);
 
   if (output->type == kTfLiteInt32) {

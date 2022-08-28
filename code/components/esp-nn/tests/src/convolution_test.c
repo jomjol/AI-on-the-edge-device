@@ -22,8 +22,9 @@
 #include "test_utils.h"
 
 #if CONFIG_IDF_CMAKE
+#if (CONFIG_SPIRAM_SUPPORT && (CONFIG_SPIRAM_USE_CAPS_ALLOC || CONFIG_SPIRAM_USE_MALLOC))
 #define IDF_HEAP_CAPS 1
-
+#endif
 #if IDF_HEAP_CAPS
 #include "esp_heap_caps.h"
 #endif
@@ -44,8 +45,8 @@ void esp_nn_depthwise_conv_s8_test()
     uint16_t filter_ht, filter_wd, ch_mult;
     uint16_t pad_wd, pad_ht, stride_wd, stride_ht;
 
-    // run for 10 iterations
-    for (int itr = 0; itr < 10; itr++) {
+    // run for 15 iterations
+    for (int itr = 0; itr < 15; itr++) {
         /* prepare data */
         switch (itr) {
         case 0: // (ch_mult 1, (channels % 16) = 0), filter (3,3), pad (0,0)
@@ -144,22 +145,52 @@ void esp_nn_depthwise_conv_s8_test()
             stride_wd = 2;
             stride_ht = 2;
             break;
-        default:
-            input_wd = 4;
-            input_ht = 4;
+        case 8: // same as case 7, with large parameters
+            input_wd = 58;
+            input_ht = 58;
             filter_ht = 3;
             filter_wd = 3;
-            ch_mult = 4;
-            channels = 4;
-            pad_wd = 1;
-            pad_ht = 1;
-            stride_wd = 1;
-            stride_ht = 1;
+            ch_mult = 1;
+            channels = 128;
+            pad_wd = 0;
+            pad_ht = 0;
+            stride_wd = 2;
+            stride_ht = 2;
+            break;
+        case 9: // (ch_mult 1, (channels % 16) = 0), filter (3,3), pad (0,0)  stride (2,2)
+            input_wd = 6;
+            input_ht = 6;
+            filter_ht = 3;
+            filter_wd = 3;
+            ch_mult = 1;
+            channels = 16;
+            pad_wd = 0;
+            pad_ht = 0;
+            stride_wd = 2;
+            stride_ht = 2;
+            break;
+        default:
+            input_wd = 6;
+            input_ht = 6;
+            filter_ht = 3;
+            filter_wd = 3;
+            ch_mult = 1;
+            channels = 16;
+            stride_wd = rand() % 2 + 1;
+            stride_ht = stride_wd;
+            pad_wd = stride_wd == 1 ? 0 : rand() % 2;
+            pad_ht = pad_wd;
+            printf("stride(%d), pad (%d)\t", stride_wd, pad_wd);
             break;
         }
 
         uint16_t out_wd = (input_wd - filter_wd + 1) / stride_wd;
         uint16_t out_ht = (input_ht - filter_ht + 1) / stride_ht;
+        if (itr == 9) {
+            // expect the function to handle this gracefully
+            out_wd += 1;
+            out_ht += 1;
+        }
         int in_size = input_wd * input_ht * channels;
         int out_size = out_wd * out_ht * channels * ch_mult;
         int filter_size = filter_wd * filter_ht * channels * ch_mult + 4;
@@ -210,9 +241,16 @@ void esp_nn_depthwise_conv_s8_test()
             out_mult[i] = 0x7eb0e200 + rand() % 50;
         }
 
-        int scratch_buf_size = esp_nn_get_depthwise_conv_scratch_size(input_wd, input_ht,
-                                                                    channels, ch_mult,
-                                                                    filter_wd, filter_ht);
+        data_dims_t input_dims = {.width = input_wd, .height = input_ht, .channels = channels, 1};
+        data_dims_t output_dims = {.width = out_wd, .height = out_ht, .channels = channels * ch_mult, 1};
+        data_dims_t filter_dims = {.width = filter_wd, .height = filter_ht, 0, 0};
+        dw_conv_params_t conv_params = {.in_offset = input_offset, .out_offset = out_offset, .ch_mult = ch_mult,
+                                        .stride = {stride_wd, stride_ht}, .padding = {pad_wd, pad_ht},
+                                        .dilation = {0, 0}, .activation = {activation_min, activation_max}};
+        quant_data_t quant_data = {.shift = out_shift, .mult = out_mult};
+
+        int scratch_buf_size = esp_nn_get_depthwise_conv_scratch_size(&input_dims, &filter_dims,
+                                                                      &output_dims, &conv_params);
         if (scratch_buf_size > 0) {
 #if IDF_HEAP_CAPS
             scratch_buf = heap_caps_malloc(scratch_buf_size + 32, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -234,11 +272,8 @@ void esp_nn_depthwise_conv_s8_test()
         }
 
         /* C function */
-        esp_nn_depthwise_conv_s8_ansi(input, input_wd, input_ht, channels, input_offset,
-                                    pad_wd, pad_ht, stride_wd, stride_ht, ch_mult,
-                                    filter_data + 4, filter_wd, filter_ht,
-                                    bias + 1, out_data_c, out_wd, out_ht, out_offset, out_shift,
-                                    out_mult, activation_min, activation_max);
+        esp_nn_depthwise_conv_s8_ansi(&input_dims, input, &filter_dims, filter_data + 4,
+                                      bias + 1, &output_dims, out_data_c, &conv_params, &quant_data);
 
         if (itr == 0) {
             profile_c_end();
@@ -246,11 +281,8 @@ void esp_nn_depthwise_conv_s8_test()
         }
 
         /* Optimized function */
-        esp_nn_depthwise_conv_s8(input, input_wd, input_ht, channels, input_offset,
-                                pad_wd, pad_ht, stride_wd, stride_ht, ch_mult,
-                                filter_data + 4, filter_wd, filter_ht,
-                                bias + 1, out_data_opt, out_wd, out_ht, out_offset, out_shift,
-                                out_mult, activation_min, activation_max);
+        esp_nn_depthwise_conv_s8(&input_dims, input, &filter_dims, filter_data + 4,
+                                 bias + 1, &output_dims, out_data_opt, &conv_params, &quant_data);
 
         if (itr == 0) {
             /* disable profiler */
@@ -479,8 +511,16 @@ void esp_nn_conv_s8_test()
             out_mult[i] = 0x7f67f4f8 + rand() % 50;
         }
 
-        int scratch_buf_size = esp_nn_get_conv_scratch_size(in_wd, in_ht, in_channels,
-                                                            out_channels, filter_wd, filter_ht);
+        data_dims_t input_dims = {.width = in_wd, .height = in_ht, .channels = in_channels, 1};
+        data_dims_t output_dims = {.width = out_wd, .height = out_ht, .channels = out_channels, 1};
+        data_dims_t filter_dims = {.width = filter_wd, .height = filter_ht, 0, 0};
+        conv_params_t conv_params = {.in_offset = input_offset, .out_offset = out_offset,
+                                    .stride = {stride_wd, stride_ht}, .padding = {pad_wd, pad_ht},
+                                    .dilation = {0, 0}, .activation = {activation_min, activation_max}};
+        quant_data_t quant_data = {.shift = out_shift, .mult = out_mult};
+
+        int scratch_buf_size = esp_nn_get_conv_scratch_size(&input_dims, &filter_dims,
+                                                            &output_dims, &conv_params);
         if (scratch_buf_size > 0) {
 #if IDF_HEAP_CAPS
             void *scratch_buf = heap_caps_malloc(scratch_buf_size + 32, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -502,11 +542,8 @@ void esp_nn_conv_s8_test()
         }
 
         /* C function */
-        esp_nn_conv_s8_ansi(input, in_wd, in_ht, in_channels, input_offset,
-                            pad_wd, pad_ht, stride_wd, stride_ht,
-                            filter_data + 2, filter_wd, filter_ht, bias,
-                            out_data_c, out_wd, out_ht, out_channels, out_offset, out_shift,
-                            out_mult, activation_min, activation_max);
+        esp_nn_conv_s8_ansi(&input_dims, input, &filter_dims, filter_data + 2,
+                            bias, &output_dims, out_data_c, &conv_params, &quant_data);
 
         if (itr == 0) {
             profile_c_end();
@@ -514,11 +551,8 @@ void esp_nn_conv_s8_test()
         }
 
         /* Optimized function */
-        esp_nn_conv_s8(input, in_wd, in_ht, in_channels, input_offset,
-                    pad_wd, pad_ht, stride_wd, stride_ht,
-                    filter_data + 2, filter_wd, filter_ht, bias,
-                    out_data_opt, out_wd, out_ht, out_channels, out_offset, out_shift,
-                    out_mult, activation_min, activation_max);
+        esp_nn_conv_s8(&input_dims, input, &filter_dims, filter_data + 2,
+                       bias, &output_dims, out_data_opt, &conv_params, &quant_data);
 
         if (itr == 0) {
             /* disable profiler */

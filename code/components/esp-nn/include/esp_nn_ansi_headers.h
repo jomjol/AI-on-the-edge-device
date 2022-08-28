@@ -18,8 +18,7 @@
  * @file        Header definitions to include for esp_nn reference functions
  */
 
-#include <stdint.h>
-
+#include "esp_nn_defs.h"
 /************************** Basic math functions ****************************/
 
 /**
@@ -81,28 +80,15 @@ void esp_nn_mul_elementwise_s8_ansi(const int8_t *input1_data,
  *              optimization notes: Though input_offset is int32 type,
  *              offset values are contained in 8 bits [-128, 127]
  */
-void esp_nn_depthwise_conv_s8_ansi(const int8_t *input_data,
-                                   const uint16_t input_wd,
-                                   const uint16_t input_ht,
-                                   const uint16_t channels,
-                                   const int32_t input_offset,
-                                   const uint16_t pad_wd,
-                                   const uint16_t pad_ht,
-                                   const uint16_t stride_wd,
-                                   const uint16_t stride_ht,
-                                   const uint16_t ch_mult,
+void esp_nn_depthwise_conv_s8_ansi(const data_dims_t *input_dims,
+                                   const int8_t *input_data,
+                                   const data_dims_t *filter_dims,
                                    const int8_t *filter_data,
-                                   const uint16_t filter_wd,
-                                   const uint16_t filter_ht,
                                    const int32_t *bias,
+                                   const data_dims_t *output_dims,
                                    int8_t *out_data,
-                                   const uint16_t out_wd,
-                                   const uint16_t out_ht,
-                                   const int32_t out_offset,
-                                   const int32_t *out_shift,
-                                   const int32_t *out_mult,
-                                   const int32_t activation_min,
-                                   const int32_t activation_max);
+                                   const dw_conv_params_t *conv_params,
+                                   const quant_data_t *quant_data);
 
 /**
  * @brief       2d-convolution channelwise
@@ -112,43 +98,26 @@ void esp_nn_depthwise_conv_s8_ansi(const int8_t *input_data,
  *              inputs type: int8_t, output: int8_t
  *              input offsets: although int32_t, they are contained in 8 bits [-128, 127]
  */
-void esp_nn_conv_s8_ansi(const int8_t *input_data,
-                         const uint16_t input_wd,
-                         const uint16_t input_ht,
-                         const uint16_t in_channels,
-                         const int32_t input_offset,
-                         const uint16_t pad_wd,
-                         const uint16_t pad_ht,
-                         const uint16_t stride_wd,
-                         const uint16_t stride_ht,
+void esp_nn_conv_s8_ansi(const data_dims_t *input_dims,
+                         const int8_t *input_data,
+                         const data_dims_t *filter_dims,
                          const int8_t *filter_data,
-                         const uint16_t filter_wd,
-                         const uint16_t filter_ht,
                          const int32_t *bias,
+                         const data_dims_t *output_dims,
                          int8_t *out_data,
-                         const uint16_t out_wd,
-                         const uint16_t out_ht,
-                         const uint16_t out_channels,
-                         const int32_t out_offset,
-                         const int32_t *out_shift,
-                         const int32_t *out_mult,
-                         const int32_t activation_min,
-                         const int32_t activation_max);
+                         const conv_params_t *conv_params,
+                         const quant_data_t *quant_data);
 
-int esp_nn_get_conv_scratch_size_ansi(const uint16_t input_wd,
-                                      const uint16_t input_ht,
-                                      const uint16_t in_ch,
-                                      const uint16_t out_ch,
-                                      const uint16_t filter_wd,
-                                      const uint16_t filter_ht);
+int esp_nn_get_conv_scratch_size_ansi(const data_dims_t *input_dims,
+                                      const data_dims_t *filter_dims,
+                                      const data_dims_t *output_dims,
+                                      const conv_params_t *conv_params);
 void esp_nn_set_conv_scratch_buf_ansi(const void *buf);
 
-int esp_nn_get_depthwise_conv_scratch_size_ansi(const uint16_t input_wd,
-                                                const uint16_t input_ht,
-                                                const uint16_t channels,
-                                                const uint16_t ch_mult,
-                                                const uint16_t filter_wd,
-                                                const uint16_t filter_ht);
+int esp_nn_get_depthwise_conv_scratch_size_ansi(const data_dims_t *input_dims,
+                                                const data_dims_t *filter_dims,
+                                                const data_dims_t *output_dims,
+                                                const dw_conv_params_t *conv_params);
 void esp_nn_set_depthwise_conv_scratch_buf_ansi(const void *buf);
 
 /************************** Activation functions *****************************/
@@ -252,9 +221,6 @@ int32_t esp_nn_get_softmax_scratch_size_opt(const int32_t width, const int32_t h
  */
 void esp_nn_set_softmax_scratch_buf_ansi(void *buffer);
 
-/* ANSI C function to be hooked up when optimised version needed */
-void esp_nn_set_softmax_scratch_buf_opt(void *buffer);
-
 /**
  * @brief       reference softmax function
  *
@@ -267,6 +233,66 @@ void esp_nn_softmax_s8_ansi(const int8_t *input_data,
                             const int32_t shift,
                             const int32_t diff_min,
                             int8_t *output_data);
+
+
+//////////////////////////// Generic optimisations /////////////////////////////
+
+/************************** Convolution functions *****************************/
+
+/**
+ * @brief       2d-convolution channelwise optimized version
+ *
+ * @note        operation: result += (input + offset) * filter
+ *
+ *              inputs type: int8_t, output: int8_t
+ *              input offsets: although int32_t, they are contained in 8 bits [-128, 127]
+ */
+void esp_nn_conv_s8_opt(const data_dims_t *input_dims,
+                        const int8_t *input_data,
+                        const data_dims_t *filter_dims,
+                        const int8_t *filter_data,
+                        const int32_t *bias,
+                        const data_dims_t *output_dims,
+                        int8_t *out_data,
+                        const conv_params_t *conv_params,
+                        const quant_data_t *quant_data);
+
+/**
+ * @brief       depthwise convolution per channel optimized version
+ *
+ * @note        inputs type: int8_t, output: int8_t
+ *              Version used in tflite is per channel.
+ *              This version follows the same footsprints.
+ *              Meaning, it has per out_channel shift and multiplier for
+ *              requantization
+ *
+ *              optimization notes: Though input_offset is int32 type,
+ *              offset values are contained in 8 bits [-128, 127]
+ */
+void esp_nn_depthwise_conv_s8_opt(const data_dims_t *input_dims,
+                                  const int8_t *input_data,
+                                  const data_dims_t *filter_dims,
+                                  const int8_t *filter_data,
+                                  const int32_t *bias,
+                                  const data_dims_t *output_dims,
+                                  int8_t *out_data,
+                                  const dw_conv_params_t *conv_params,
+                                  const quant_data_t *quant_data);
+
+int esp_nn_get_conv_scratch_size_opt(const data_dims_t *input_dims,
+                                     const data_dims_t *filter_dims,
+                                     const data_dims_t *output_dims,
+                                     const conv_params_t *conv_params);
+void esp_nn_set_conv_scratch_buf_opt(const void *buf);
+
+int esp_nn_get_depthwise_conv_scratch_size_opt(const data_dims_t *input_dims,
+                                               const data_dims_t *filter_dims,
+                                               const data_dims_t *output_dims,
+                                               const dw_conv_params_t *conv_params);
+void esp_nn_set_depthwise_conv_scratch_buf_opt(const void *buf);
+
+/* ANSI C function to be hooked up when optimised version needed */
+void esp_nn_set_softmax_scratch_buf_opt(void *buffer);
 
 /**
  * @brief       optimised version of softmax function

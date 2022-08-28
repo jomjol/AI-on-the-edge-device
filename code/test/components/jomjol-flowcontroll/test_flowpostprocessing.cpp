@@ -150,6 +150,14 @@ void test_doFlow() {
         expected = "7153693";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+
+        // Analoger Übergang Zähler Jomjolcom/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1228343319
+        digits = { 1.0, 9.0, 4.3};  // changed 3.7 --> 2.7 (see picture in issue)
+        analogs = { 8.9, 0.7, 8.9, 9.4 };
+        expected = "194.9089";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 }
 
 

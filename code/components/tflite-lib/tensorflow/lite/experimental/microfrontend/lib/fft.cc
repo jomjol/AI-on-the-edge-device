@@ -13,10 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 #include "tensorflow/lite/experimental/microfrontend/lib/fft.h"
-#include "tensorflow/lite/experimental/microfrontend/lib/kiss_fft_int16.h"
 
 #include <string.h>
 
+#include "tensorflow/lite/experimental/microfrontend/lib/kiss_fft_int16.h"
 
 void FftCompute(struct FftState* state, const int16_t* input,
                 int input_scale_shift) {
@@ -37,9 +37,9 @@ void FftCompute(struct FftState* state, const int16_t* input,
 
   // Apply the FFT.
   kissfft_fixed16::kiss_fftr(
-    reinterpret_cast<kissfft_fixed16::kiss_fftr_cfg>(state->scratch),
-    state->input,
-    reinterpret_cast<kissfft_fixed16::kiss_fft_cpx*>(state->output));
+      reinterpret_cast<kissfft_fixed16::kiss_fftr_cfg>(state->scratch),
+      state->input,
+      reinterpret_cast<kissfft_fixed16::kiss_fft_cpx*>(state->output));
 }
 
 void FftInit(struct FftState* state) {

@@ -26,6 +26,9 @@ limitations under the License.
 #include "tensorflow/lite/core/api/op_resolver.h"
 #include "tensorflow/lite/core/api/tensor_utils.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
+#include "tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.h"
+#include "tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.h"
+#include "tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.h"
 #include "tensorflow/lite/micro/compatibility.h"
 #include "tensorflow/lite/micro/flatbuffer_utils.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
@@ -34,7 +37,6 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_allocation_info.h"
 #include "tensorflow/lite/micro/micro_arena_constants.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
-#include "tensorflow/lite/micro/simple_memory_allocator.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/schema/schema_utils.h"
 
@@ -114,6 +116,48 @@ TfLiteStatus CommitPlan(ErrorReporter* error_reporter,
     }
   }
   return kTfLiteOk;
+}
+
+IPersistentBufferAllocator* CreatePersistentArenaAllocator(uint8_t* buffer_head,
+                                                           size_t buffer_size) {
+  // Align the actually used area by the tail because persistent buffer grows
+  // from the bottom to top.
+  uint8_t* aligned_buffer_tail =
+      AlignPointerDown(buffer_head + buffer_size, MicroArenaBufferAlignment());
+  size_t aligned_buffer_size = aligned_buffer_tail - buffer_head;
+  PersistentArenaBufferAllocator tmp =
+      PersistentArenaBufferAllocator(buffer_head, aligned_buffer_size);
+
+  // Allocate enough bytes from the buffer to create a
+  // SingleArenaBufferAllocator. The new instance will use the current adjusted
+  // tail buffer from the tmp allocator instance.
+  uint8_t* allocator_buffer =
+      tmp.AllocatePersistentBuffer(sizeof(PersistentArenaBufferAllocator),
+                                   alignof(PersistentArenaBufferAllocator));
+  // Use the default copy constructor to populate internal states.
+  return new (allocator_buffer) PersistentArenaBufferAllocator(tmp);
+}
+
+// NonPersistentBufferAllocator instance is created in the persistent buffer
+// because it has to be persistent to keep track of the non-persistent buffer
+// information.
+INonPersistentBufferAllocator* CreateNonPersistentArenaAllocator(
+    uint8_t* buffer_head, size_t buffer_size,
+    IPersistentBufferAllocator* persistent_buffer_allocator) {
+  uint8_t* allocator_buffer =
+      persistent_buffer_allocator->AllocatePersistentBuffer(
+          sizeof(NonPersistentArenaBufferAllocator),
+          alignof(NonPersistentArenaBufferAllocator));
+  // Align the actually used area by the head because persistent buffer grows
+  // from the head to bottom.
+  uint8_t* aligned_buffer_head =
+      AlignPointerUp(buffer_head, MicroArenaBufferAlignment());
+  size_t aligned_buffer_size = buffer_head + buffer_size - aligned_buffer_head;
+
+  INonPersistentBufferAllocator* non_persistent_buffer_allocator =
+      new (allocator_buffer) NonPersistentArenaBufferAllocator(
+          aligned_buffer_head, aligned_buffer_size);
+  return non_persistent_buffer_allocator;
 }
 
 }  // namespace
@@ -302,8 +346,8 @@ size_t MicroAllocator::GetDefaultTailUsage(bool is_memory_planner_given) {
   // TODO(b/208703041): a template version of AlignSizeUp to make expression
   // shorter.
   size_t total_size =
-      AlignSizeUp(sizeof(SimpleMemoryAllocator),
-                  alignof(SimpleMemoryAllocator)) +
+      AlignSizeUp(sizeof(SingleArenaBufferAllocator),
+                  alignof(SingleArenaBufferAllocator)) +
       AlignSizeUp(sizeof(MicroAllocator), alignof(MicroAllocator)) +
       AlignSizeUp(sizeof(MicroBuiltinDataAllocator),
                   alignof(MicroBuiltinDataAllocator)) +
@@ -315,11 +359,21 @@ size_t MicroAllocator::GetDefaultTailUsage(bool is_memory_planner_given) {
   return total_size;
 }
 
-MicroAllocator::MicroAllocator(SimpleMemoryAllocator* memory_allocator,
+MicroAllocator::MicroAllocator(SingleArenaBufferAllocator* memory_allocator,
                                MicroMemoryPlanner* memory_planner,
                                ErrorReporter* error_reporter)
     : non_persistent_buffer_allocator_(memory_allocator),
       persistent_buffer_allocator_(memory_allocator),
+      memory_planner_(memory_planner),
+      error_reporter_(error_reporter),
+      model_is_allocating_(false) {}
+
+MicroAllocator::MicroAllocator(
+    IPersistentBufferAllocator* persistent_buffer_allocator,
+    INonPersistentBufferAllocator* non_persistent_buffer_allocator,
+    MicroMemoryPlanner* memory_planner, ErrorReporter* error_reporter)
+    : non_persistent_buffer_allocator_(non_persistent_buffer_allocator),
+      persistent_buffer_allocator_(persistent_buffer_allocator),
       memory_planner_(memory_planner),
       error_reporter_(error_reporter),
       model_is_allocating_(false) {}
@@ -332,8 +386,9 @@ MicroAllocator* MicroAllocator::Create(uint8_t* tensor_arena, size_t arena_size,
   uint8_t* aligned_arena =
       AlignPointerUp(tensor_arena, MicroArenaBufferAlignment());
   size_t aligned_arena_size = tensor_arena + arena_size - aligned_arena;
-  SimpleMemoryAllocator* memory_allocator = SimpleMemoryAllocator::Create(
-      error_reporter, aligned_arena, aligned_arena_size);
+  SingleArenaBufferAllocator* memory_allocator =
+      SingleArenaBufferAllocator::Create(error_reporter, aligned_arena,
+                                         aligned_arena_size);
 
   return Create(memory_allocator, memory_planner, error_reporter);
 }
@@ -343,8 +398,9 @@ MicroAllocator* MicroAllocator::Create(uint8_t* tensor_arena, size_t arena_size,
   uint8_t* aligned_arena =
       AlignPointerUp(tensor_arena, MicroArenaBufferAlignment());
   size_t aligned_arena_size = tensor_arena + arena_size - aligned_arena;
-  SimpleMemoryAllocator* memory_allocator = SimpleMemoryAllocator::Create(
-      error_reporter, aligned_arena, aligned_arena_size);
+  SingleArenaBufferAllocator* memory_allocator =
+      SingleArenaBufferAllocator::Create(error_reporter, aligned_arena,
+                                         aligned_arena_size);
 
   // By default create GreedyMemoryPlanner.
   // If a different MemoryPlanner is needed, use the other api.
@@ -356,17 +412,50 @@ MicroAllocator* MicroAllocator::Create(uint8_t* tensor_arena, size_t arena_size,
   return Create(memory_allocator, memory_planner, error_reporter);
 }
 
-MicroAllocator* MicroAllocator::Create(SimpleMemoryAllocator* memory_allocator,
-                                       MicroMemoryPlanner* memory_planner,
-                                       ErrorReporter* error_reporter) {
+MicroAllocator* MicroAllocator::Create(
+    SingleArenaBufferAllocator* memory_allocator,
+    MicroMemoryPlanner* memory_planner, ErrorReporter* error_reporter) {
   TFLITE_DCHECK(memory_allocator != nullptr);
   TFLITE_DCHECK(error_reporter != nullptr);
   TFLITE_DCHECK(memory_planner != nullptr);
 
   uint8_t* allocator_buffer = memory_allocator->AllocatePersistentBuffer(
       sizeof(MicroAllocator), alignof(MicroAllocator));
-  MicroAllocator* allocator = new (allocator_buffer)
-      MicroAllocator(memory_allocator, memory_planner, error_reporter);
+  MicroAllocator* allocator = new (allocator_buffer) MicroAllocator(
+      memory_allocator, memory_allocator, memory_planner, error_reporter);
+  return allocator;
+}
+
+MicroAllocator* MicroAllocator::Create(uint8_t* persistent_tensor_arena,
+                                       size_t persistent_arena_size,
+                                       uint8_t* non_persistent_tensor_arena,
+                                       size_t non_persistent_arena_size,
+                                       ErrorReporter* error_reporter) {
+  TFLITE_DCHECK(persistent_tensor_arena != nullptr);
+  TFLITE_DCHECK(non_persistent_tensor_arena != nullptr);
+  TFLITE_DCHECK(persistent_tensor_arena != non_persistent_tensor_arena);
+  TFLITE_DCHECK(error_reporter != nullptr);
+
+  IPersistentBufferAllocator* persistent_buffer_allocator =
+      CreatePersistentArenaAllocator(persistent_tensor_arena,
+                                     persistent_arena_size);
+  INonPersistentBufferAllocator* non_persistent_buffer_allocator =
+      CreateNonPersistentArenaAllocator(non_persistent_tensor_arena,
+                                        non_persistent_arena_size,
+                                        persistent_buffer_allocator);
+
+  uint8_t* memory_planner_buffer =
+      persistent_buffer_allocator->AllocatePersistentBuffer(
+          sizeof(GreedyMemoryPlanner), alignof(GreedyMemoryPlanner));
+  GreedyMemoryPlanner* memory_planner =
+      new (memory_planner_buffer) GreedyMemoryPlanner();
+
+  uint8_t* micro_allocator_buffer =
+      persistent_buffer_allocator->AllocatePersistentBuffer(
+          sizeof(MicroAllocator), alignof(MicroAllocator));
+  MicroAllocator* allocator = new (micro_allocator_buffer) MicroAllocator(
+      persistent_buffer_allocator, non_persistent_buffer_allocator,
+      memory_planner, error_reporter);
   return allocator;
 }
 

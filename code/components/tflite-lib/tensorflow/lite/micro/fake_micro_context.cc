@@ -16,10 +16,10 @@ limitations under the License.
 #include "tensorflow/lite/micro/fake_micro_context.h"
 
 #include "tensorflow/lite/kernels/internal/compatibility.h"
+#include "tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.h"
 #include "tensorflow/lite/micro/micro_allocator.h"
 #include "tensorflow/lite/micro/micro_arena_constants.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
-#include "tensorflow/lite/micro/simple_memory_allocator.h"
 
 namespace tflite {
 namespace {
@@ -30,7 +30,7 @@ static uint8_t dummy_tensor_arena[KDummyTensorArenaSize];
 }  // namespace
 
 FakeMicroContext::FakeMicroContext(TfLiteTensor* tensors,
-                                   SimpleMemoryAllocator* allocator,
+                                   SingleArenaBufferAllocator* allocator,
                                    MicroGraph* micro_graph)
     : MicroContext(
           MicroAllocator::Create(dummy_tensor_arena, KDummyTensorArenaSize,
@@ -67,10 +67,10 @@ TfLiteEvalTensor* FakeMicroContext::GetEvalTensor(int tensor_index) {
 }
 
 void* FakeMicroContext::AllocatePersistentBuffer(size_t bytes) {
-  // FakeMicroContext use SimpleMemoryAllocator, which does not automatically
-  // apply the buffer alignment like MicroAllocator.
-  // The buffer alignment is potentially wasteful but allows the
-  // fake_micro_context to work correctly with optimized kernels.
+  // FakeMicroContext use SingleArenaBufferAllocator, which does not
+  // automatically apply the buffer alignment like MicroAllocator. The buffer
+  // alignment is potentially wasteful but allows the fake_micro_context to work
+  // correctly with optimized kernels.
   return allocator_->AllocatePersistentBuffer(bytes,
                                               MicroArenaBufferAlignment());
 }

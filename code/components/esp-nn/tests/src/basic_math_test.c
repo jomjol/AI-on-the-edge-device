@@ -23,7 +23,9 @@
 #include "test_utils.h"
 
 #if CONFIG_IDF_CMAKE
+#if (CONFIG_SPIRAM_SUPPORT && (CONFIG_SPIRAM_USE_CAPS_ALLOC || CONFIG_SPIRAM_USE_MALLOC))
 #define IDF_HEAP_CAPS 1
+#endif
 
 #if IDF_HEAP_CAPS
 #include "esp_heap_caps.h"
@@ -138,6 +140,11 @@ void esp_nn_add_elementwise_s8_test()
         out_c_orig = out_data_c;
         out_opt_orig = out_data_opt;
 #endif
+        if (input1_orig == NULL || input2_orig == NULL || out_c_orig == NULL ||
+                out_opt_orig == NULL) {
+            printf(ANSI_COLOR_RED"%s error allocating buffers\n"ANSI_COLOR_RESET, __FUNCTION__);
+            goto elementwise_add_test_cleanup;
+        }
 
         for (int i = 0; i < size; ++i) {
             input1[i] = rand() % 256 - 128;
@@ -194,10 +201,10 @@ elementwise_add_test_cleanup:
         if (input2_orig) {
             free(input2_orig);
         }
-        if (out_data_c) {
+        if (out_c_orig) {
             free(out_c_orig);
         }
-        if (out_data_opt) {
+        if (out_opt_orig) {
             free(out_opt_orig);
         }
     }
@@ -282,6 +289,11 @@ void esp_nn_mul_elementwise_s8_test()
         out_c_orig = out_data_c;
         out_opt_orig = out_data_opt;
 #endif
+        if (input1_orig == NULL || input2_orig == NULL || out_c_orig == NULL ||
+                out_opt_orig == NULL) {
+            printf(ANSI_COLOR_RED"%s error allocating buffers\n"ANSI_COLOR_RESET, __FUNCTION__);
+            goto elementwise_mult_test_cleanup;
+        }
 
         for (int i = 0; i < size; ++i) {
             input1[i] = rand() % 256 - 128;
@@ -333,10 +345,10 @@ elementwise_mult_test_cleanup:
         if (input2_orig) {
             free(input2_orig);
         }
-        if (out_data_c) {
+        if (out_c_orig) {
             free(out_c_orig);
         }
-        if (out_data_opt) {
+        if (out_opt_orig) {
             free(out_opt_orig);
         }
     }
