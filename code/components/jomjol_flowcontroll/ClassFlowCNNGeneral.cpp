@@ -681,12 +681,12 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
                         float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
-						
-						if(GENERAL[_ana]->ROI[i]->CCW)
-						    GENERAL[_ana]->ROI[i]->result_float = 10 - (result * 10);						
-						else
-						    GENERAL[_ana]->ROI[i]->result_float = result * 10;
-						
+                              
+                        if(GENERAL[_ana]->ROI[i]->CCW)
+                            GENERAL[_ana]->ROI[i]->result_float = 10 - (result * 10);
+                        else
+                            GENERAL[_ana]->ROI[i]->result_float = result * 10;
+                              
                         printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
                         if (isLogImage)
                             LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
@@ -878,10 +878,10 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     
                         _num = tflite->GetOutClassification();
                         
-						if(GENERAL[_ana]->ROI[i]->CCW)
-						    GENERAL[_ana]->ROI[i]->result_float = 10 - ((float)_num / 10.0);						
-						else
-						    GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
+                        if(GENERAL[_ana]->ROI[i]->CCW)
+                            GENERAL[_ana]->ROI[i]->result_float = 10 - ((float)_num / 10.0);                              
+                        else
+                            GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
 
                         _result_save_file = GENERAL[_ana]->ROI[i]->result_float;
 
@@ -889,7 +889,6 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         GENERAL[_ana]->ROI[i]->isReject = false;
                         
                         printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
-                        //printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
 
                         if (isLogImage)
                         {

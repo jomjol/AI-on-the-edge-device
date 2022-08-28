@@ -600,7 +600,7 @@ esp_err_t handler_cputemp(httpd_req_t *req)
     const char* resp_str;
     char cputemp[20];
     
-    sprintf(resp_str, "CPU Temp: %4.1f°C", temperatureRead());
+    sprintf(cputemp, "CPU Temp: %4.1f°C", temperatureRead());
 
     resp_str = cputemp;
 
