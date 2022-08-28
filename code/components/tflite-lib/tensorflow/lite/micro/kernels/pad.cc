@@ -223,26 +223,12 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace pad
 
 TfLiteRegistration Register_PAD() {
-  return {/*init=*/pad::Init,
-          /*free=*/nullptr,
-          /*prepare=*/pad::Prepare,
-          /*invoke=*/pad::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(pad::Init, pad::Prepare, pad::Eval);
 }
 
 // Also register Pad as PadV2.
 TfLiteRegistration Register_PADV2() {
-  return {/*init=*/pad::Init,
-          /*free=*/nullptr,
-          /*prepare=*/pad::Prepare,
-          /*invoke=*/pad::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(pad::Init, pad::Prepare, pad::Eval);
 }
 
 }  // namespace micro

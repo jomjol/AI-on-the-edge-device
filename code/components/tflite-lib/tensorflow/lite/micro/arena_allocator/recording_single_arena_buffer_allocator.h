@@ -13,28 +13,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef TENSORFLOW_LITE_MICRO_RECORDING_SIMPLE_MEMORY_ALLOCATOR_H_
-#define TENSORFLOW_LITE_MICRO_RECORDING_SIMPLE_MEMORY_ALLOCATOR_H_
+#ifndef TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_RECORDING_SINGLE_ARENA_BUFFER_ALLOCATOR_H_
+#define TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_RECORDING_SINGLE_ARENA_BUFFER_ALLOCATOR_H_
 
+#include "tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.h"
 #include "tensorflow/lite/micro/compatibility.h"
-#include "tensorflow/lite/micro/simple_memory_allocator.h"
 
 namespace tflite {
 
-// Utility class used to log allocations of a SimpleMemoryAllocator. Should only
-// be used in debug/evaluation settings or unit tests to evaluate allocation
-// usage.
-class RecordingSimpleMemoryAllocator : public SimpleMemoryAllocator {
+// Utility class used to log allocations of a SingleArenaBufferAllocator. Should
+// only be used in debug/evaluation settings or unit tests to evaluate
+// allocation usage.
+class RecordingSingleArenaBufferAllocator : public SingleArenaBufferAllocator {
  public:
-  RecordingSimpleMemoryAllocator(ErrorReporter* error_reporter,
-                                 uint8_t* buffer_head, size_t buffer_size);
+  RecordingSingleArenaBufferAllocator(ErrorReporter* error_reporter,
+                                      uint8_t* buffer_head, size_t buffer_size);
   // TODO(b/157615197): Cleanup constructors/destructor and use factory
   // functions.
-  ~RecordingSimpleMemoryAllocator() override;
+  ~RecordingSingleArenaBufferAllocator() override;
 
-  static RecordingSimpleMemoryAllocator* Create(ErrorReporter* error_reporter,
-                                                uint8_t* buffer_head,
-                                                size_t buffer_size);
+  static RecordingSingleArenaBufferAllocator* Create(
+      ErrorReporter* error_reporter, uint8_t* buffer_head, size_t buffer_size);
 
   // Returns the number of bytes requested from the head or tail.
   size_t GetRequestedBytes() const;
@@ -62,4 +61,4 @@ class RecordingSimpleMemoryAllocator : public SimpleMemoryAllocator {
 
 }  // namespace tflite
 
-#endif  // TENSORFLOW_LITE_MICRO_RECORDING_SIMPLE_MEMORY_ALLOCATOR_H_
+#endif  // TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_RECORDING_SINGLE_ARENA_BUFFER_ALLOCATOR_H_

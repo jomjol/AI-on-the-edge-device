@@ -79,7 +79,85 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
   
+        /*
+         * https://github.com/jomjol/AI-on-the-edge-device/issues/921
+         * 
+         * Das Ergebnis sollte "376529.6" sein. Bzw. 16.98 ohne Extended true
+         */
+        digits = { 2.9, 7.0, 6.8, 9.9, 8.0, 3.9};
+        analogs = { 9.7};
+        expected = "377083.9";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
+
+        digits = { 1.1, 9.0, 4.0};
+        analogs = { 6.1, 2.6, 6.25, 9.7};
+        expected = "194.6259";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        digits = { 1.1, 9.0, 4.0};
+        analogs = { 8.1, 2.6, 6.25, 9.7};
+        expected = "194.8259";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        digits = { 1.1, 9.0, 4.0};
+        analogs = { 9.1, 2.6, 6.25, 9.7};
+        expected = "193.9259";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // https://github.com/jomjol/AI-on-the-edge-device/discussions/950
+        digits = { 1.0, 9.0, 9.0};
+        analogs = { 7.1, 4.8, 8.3};
+        expected = "199.748";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/948
+        digits = { 1.0, 9.0, 9.0};
+        analogs = { 7.1, 4.8, 8.3};
+        expected = "199.748";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+       
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
+        digits = { 0.0, 2.9, 3.0, 2.9, 3.5, 9.5};
+        analogs = {        };
+        expected = "33330";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
+        digits = { 9.9, 2.8, 2.9, 2.9, 3.7, 9.7};
+        analogs = {        };
+        expected = "33340";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/942
+        digits = { 0.0, 9.9, 6.8, 9.9, 3.7, 0.8, 6.9, 8.7};
+        analogs = {        };
+        expected = "704179";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1228343319
+        digits = { 9.9, 6.8, 1.1, 4.7, 2.7, 6.0, 9.0, 2.8};  // changed 3.7 --> 2.7 (see picture in issue)
+        analogs = {        };
+        expected = "7153693";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+
+        // Analoger Übergang Zähler Jomjolcom/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1228343319
+        digits = { 1.0, 9.0, 4.3};  // changed 3.7 --> 2.7 (see picture in issue)
+        analogs = { 8.9, 0.7, 8.9, 9.4 };
+        expected = "194.9089";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 }
 
 

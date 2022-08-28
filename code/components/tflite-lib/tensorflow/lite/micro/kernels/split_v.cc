@@ -121,14 +121,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace split_v
 
 TfLiteRegistration Register_SPLIT_V() {
-  return {/*init=*/nullptr,
-          /*free=*/nullptr,
-          /*prepare=*/split_v::Prepare,
-          /*invoke=*/split_v::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(nullptr, split_v::Prepare, split_v::Eval);
 }
 
 }  // namespace micro

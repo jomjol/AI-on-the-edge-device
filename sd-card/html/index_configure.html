@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="data:,">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>jomjol - AI on the edge</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,7 +73,12 @@ li.dropdown {
 
 <body style="font-family: arial">
 
-<h1 id="id_title">Configure Watermeter</h1>
+<table style="border: none">
+  <tr><td style="padding-right: 10px;"><img src="favicon.ico"></td>
+    <td><h1 id="id_title"> Digitizer - Configure</h1>
+        <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
+    </td></tr>
+</table>
 
 <ul>
 	<li aria-current="page"><a href="index.html">Main Page</a>	
@@ -110,7 +115,7 @@ function LoadHostname() {
 	xhttp.addEventListener('load', function(event) {
 	  if (xhttp.status >= 200 && xhttp.status < 300) {
 		  hostname = xhttp.responseText;
-      document.title = "Configure - " + hostname;
+      document.title = hostname + " - Configure";
 		  document.getElementById("id_title").innerHTML  = "Configure - " + hostname;
 	  } else {
 		 console.warn(request.statusText, request.responseText);

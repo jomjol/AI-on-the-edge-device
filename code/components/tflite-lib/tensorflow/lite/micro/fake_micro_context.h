@@ -23,7 +23,7 @@ namespace tflite {
 // A fake of MicroContext for kernel util tests.
 class FakeMicroContext : public MicroContext {
  public:
-  FakeMicroContext(TfLiteTensor* tensors, SimpleMemoryAllocator* allocator,
+  FakeMicroContext(TfLiteTensor* tensors, SingleArenaBufferAllocator* allocator,
                    MicroGraph* micro_graph);
 
   void* AllocatePersistentBuffer(size_t bytes) override;
@@ -46,7 +46,7 @@ class FakeMicroContext : public MicroContext {
   TfLiteTensor* tensors_;
   int allocated_tensor_count_ = 0;
 
-  SimpleMemoryAllocator* allocator_;
+  SingleArenaBufferAllocator* allocator_;
 
   TF_LITE_REMOVE_VIRTUAL_DELETE
 };

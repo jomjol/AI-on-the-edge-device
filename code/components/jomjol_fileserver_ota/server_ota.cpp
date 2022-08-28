@@ -416,6 +416,8 @@ void task_reboot(void *pvParameter)
 }
 
 void doReboot(){
+    LogFile.SwitchOnOff(true);
+    LogFile.WriteToFile("Reboot triggert by Software (5s).");
     ESP_LOGI(TAGPARTOTA, "Reboot in 5sec");
     LogFile.WriteToFile("Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
@@ -435,7 +437,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "!!! System will restart within 5 sec!!!";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{window.location.replace('/wasserzaehler_roi.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();

@@ -31,4 +31,3 @@ namespace kissfft_fixed16 {
 #undef KISS_FFT_H
 
 #endif  // TENSORFLOW_LITE_EXPERIMENTAL_MICROFRONTEND_LIB_KISS_FFT_INT16_H_
-

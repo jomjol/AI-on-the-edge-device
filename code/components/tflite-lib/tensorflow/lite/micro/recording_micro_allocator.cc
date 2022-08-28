@@ -17,34 +17,34 @@ limitations under the License.
 
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
+#include "tensorflow/lite/micro/arena_allocator/recording_single_arena_buffer_allocator.h"
 #include "tensorflow/lite/micro/compatibility.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
 #include "tensorflow/lite/micro/memory_planner/greedy_memory_planner.h"
 #include "tensorflow/lite/micro/micro_allocator.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
-#include "tensorflow/lite/micro/recording_simple_memory_allocator.h"
 
 namespace tflite {
 
 size_t RecordingMicroAllocator::GetDefaultTailUsage() {
   // RecordingMicroAllocator inherits from MicroAllocator and its tail usage is
-  // similar with MicroAllocator with SimpleMemoryAllocator and MicroAllocator
-  // being replaced.
+  // similar with MicroAllocator with SingleArenaBufferAllocator and
+  // MicroAllocator being replaced.
   // TODO(b/208703041): a template version of AlignSizeUp to make expression
   // shorter.
   return MicroAllocator::GetDefaultTailUsage(
              /*is_memory_planner_given=*/false) +
-         AlignSizeUp(sizeof(RecordingSimpleMemoryAllocator),
-                     alignof(RecordingSimpleMemoryAllocator)) -
-         AlignSizeUp(sizeof(SimpleMemoryAllocator),
-                     alignof(SimpleMemoryAllocator)) +
+         AlignSizeUp(sizeof(RecordingSingleArenaBufferAllocator),
+                     alignof(RecordingSingleArenaBufferAllocator)) -
+         AlignSizeUp(sizeof(SingleArenaBufferAllocator),
+                     alignof(SingleArenaBufferAllocator)) +
          AlignSizeUp(sizeof(RecordingMicroAllocator),
                      alignof(RecordingMicroAllocator)) -
          AlignSizeUp(sizeof(MicroAllocator), alignof(MicroAllocator));
 }
 
 RecordingMicroAllocator::RecordingMicroAllocator(
-    RecordingSimpleMemoryAllocator* recording_memory_allocator,
+    RecordingSingleArenaBufferAllocator* recording_memory_allocator,
     MicroMemoryPlanner* memory_planner, ErrorReporter* error_reporter)
     : MicroAllocator(recording_memory_allocator, memory_planner,
                      error_reporter),
@@ -54,9 +54,9 @@ RecordingMicroAllocator* RecordingMicroAllocator::Create(
     uint8_t* tensor_arena, size_t arena_size, ErrorReporter* error_reporter) {
   TFLITE_DCHECK(error_reporter != nullptr);
 
-  RecordingSimpleMemoryAllocator* simple_memory_allocator =
-      RecordingSimpleMemoryAllocator::Create(error_reporter, tensor_arena,
-                                             arena_size);
+  RecordingSingleArenaBufferAllocator* simple_memory_allocator =
+      RecordingSingleArenaBufferAllocator::Create(error_reporter, tensor_arena,
+                                                  arena_size);
   TFLITE_DCHECK(simple_memory_allocator != nullptr);
 
   uint8_t* memory_planner_buffer =
@@ -96,7 +96,7 @@ RecordedAllocation RecordingMicroAllocator::GetRecordedAllocation(
   return RecordedAllocation();
 }
 
-const RecordingSimpleMemoryAllocator*
+const RecordingSingleArenaBufferAllocator*
 RecordingMicroAllocator::GetSimpleMemoryAllocator() const {
   return recording_memory_allocator_;
 }
@@ -167,15 +167,15 @@ TfLiteStatus RecordingMicroAllocator::AllocateNodeAndRegistrations(
        subgraph_idx++) {
     RecordAllocationUsage(allocations,
                           recorded_node_and_registration_array_data_);
-    // The allocation count in SimpleMemoryAllocator will only be 1. To provide
-    // better logging, decrement by 1 and add in the actual number of operators
-    // used in the graph:
-    // The allocation for this recording will always be 1. This is because the
-    // parent class mallocs one large allocation for the number of nodes in the
-    // graph (e.g. sizeof(NodeAndRegistration) * num_nodes).
-    // To prevent extra overhead and potential for fragmentation, manually
-    // adjust the accounting by decrementing by 1 and adding the actual number
-    // of nodes used in the graph:
+    // The allocation count in SingleArenaBufferAllocator will only be 1. To
+    // provide better logging, decrement by 1 and add in the actual number of
+    // operators used in the graph: The allocation for this recording will
+    // always be 1. This is because the parent class mallocs one large
+    // allocation for the number of nodes in the graph (e.g.
+    // sizeof(NodeAndRegistration) * num_nodes). To prevent extra overhead and
+    // potential for fragmentation, manually adjust the accounting by
+    // decrementing by 1 and adding the actual number of nodes used in the
+    // graph:
     recorded_node_and_registration_array_data_.count +=
         model->subgraphs()->Get(subgraph_idx)->operators()->size() - 1;
   }

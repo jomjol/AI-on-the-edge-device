@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 310.39999 310.39999"
+   xml:space="preserve"
+   sodipodi:docname="watermeter.svg"
+   width="310.39999"
+   height="310.39999"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"><metadata
+   id="metadata151"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs149"><inkscape:perspective
+     sodipodi:type="inkscape:persp3d"
+     inkscape:vp_x="0 : 155.2 : 1"
+     inkscape:vp_y="0 : 1000 : 0"
+     inkscape:vp_z="310.39999 : 155.2 : 1"
+     inkscape:persp3d-origin="155.2 : 103.46666 : 1"
+     id="perspective1295" /><linearGradient
+     id="linearGradient888"
+     inkscape:swatch="solid"><stop
+       style="stop-color:#ff0000;stop-opacity:1;"
+       offset="0"
+       id="stop886" /></linearGradient></defs><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1003"
+   id="namedview147"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:zoom="0.31481804"
+   inkscape:cx="-1332.5158"
+   inkscape:cy="-481.23036"
+   inkscape:window-x="0"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1"
+   inkscape:pagecheckerboard="0"
+   showguides="true"
+   inkscape:guide-bbox="true"
+   inkscape:snap-text-baseline="false" />
+
+
+<circle
+   style="fill:#000000;fill-opacity:1"
+   cx="155.2"
+   cy="155.2"
+   r="155.2"
+   id="circle6"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+<circle
+   style="fill:#999999"
+   cx="155.2"
+   cy="155.2"
+   id="circle8"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"
+   r="141.60001" />
+<path
+   style="fill:#ff0000;fill-opacity:1"
+   d="m 240.8,122 h -14 c -3.2,0 -5.6,-2.4 -5.6,-5.6 V 87.999997 c 0,-3.2 2.4,-5.6 5.6,-5.6 h 14 c 3.2,0 5.6,2.4 5.6,5.6 V 116.4 c -0.4,3.2 -2.8,5.6 -5.6,5.6 z"
+   id="path10"
+   inkscape:connector-curvature="0"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+<path
+   style="fill:#000000;fill-opacity:1"
+   d="m 209.2,122 h -14 c -3.2,0 -5.6,-2.4 -5.6,-5.6 V 87.999997 c 0,-3.2 2.4,-5.6 5.6,-5.6 h 14 c 3.2,0 5.6,2.4 5.6,5.6 V 116.4 c 0,3.2 -2.4,5.6 -5.6,5.6 z"
+   id="path14"
+   inkscape:connector-curvature="0"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+<path
+   style="fill:#000002;fill-opacity:1"
+   d="m 178,122 h -14 c -3.2,0 -5.6,-2.4 -5.6,-5.6 V 87.999997 c 0,-3.2 2.4,-5.6 5.6,-5.6 h 14 c 3.2,0 5.6,2.4 5.6,5.6 V 116.4 c -0.4,3.2 -2.8,5.6 -5.6,5.6 z"
+   id="path18"
+   inkscape:connector-curvature="0"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+<path
+   style="fill:#000000;fill-opacity:1"
+   d="m 146.8,122 h -14 c -3.2,0 -5.6,-2.4 -5.6,-5.6 V 87.999997 c 0,-3.2 2.4,-5.6 5.6,-5.6 h 14 c 3.2,0 5.6,2.4 5.6,5.6 V 116.4 c -0.4,3.2 -2.8,5.6 -5.6,5.6 z"
+   id="path22"
+   inkscape:connector-curvature="0"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+<path
+   style="fill:#000003;fill-opacity:1"
+   d="m 115.2,122 h -14 c -3.2,0 -5.6,-2.4 -5.6,-5.6 V 87.999997 c 0,-3.2 2.4,-5.6 5.6,-5.6 h 14 c 3.2,0 5.6,2.4 5.6,5.6 V 116.4 c 0,3.2 -2.4,5.6 -5.6,5.6 z"
+   id="path26"
+   inkscape:connector-curvature="0"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+<path
+   style="fill:#000000;fill-opacity:1"
+   d="M 84,122 H 70 c -3.2,0 -5.6,-2.4 -5.6,-5.6 V 87.999997 c 0,-3.2 2.4,-5.6 5.6,-5.6 h 14 c 3.2,0 5.6,2.4 5.6,5.6 V 116.4 c -0.4,3.2 -2.8,5.6 -5.6,5.6 z"
+   id="path30"
+   inkscape:connector-curvature="0"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<g
+   id="g116"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g118"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g120"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g122"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g124"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g126"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g128"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g130"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g132"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g134"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g136"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g138"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g140"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g142"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<g
+   id="g144"
+   transform="translate(-98.8,-98.800003)"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001">
+</g>
+<rect
+   style="fill:none;fill-opacity:1;stroke:#0c0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill"
+   id="rect958"
+   width="222.78813"
+   height="51.122875"
+   x="44.665253"
+   y="76.849152"
+   rx="10"
+   ry="10"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" />
+
+
+<g
+   id="g2493"
+   transform="matrix(-0.44400058,-1.0430452,1.0430452,-0.44400058,-85.63466,328.03956)"
+   style="stroke-width:0.882135"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><path
+     style="fill:#e6e9ee;stroke-width:0.882135"
+     d="m 72.8,202.4 v 0 c -16,0 -29.2,-13.2 -29.2,-29.2 v 0 c 0,-16 13.2,-29.2 29.2,-29.2 v 0 c 16,0 29.2,13.2 29.2,29.2 v 0 c 0,16.4 -13.2,29.2 -29.2,29.2 z"
+     id="path44"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,198.4 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 6 c 0,0.8 -0.4,1.2 -1.2,1.2 z"
+     id="path46"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,156.8 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 5.6 c 0,0.8 -0.4,1.6 -1.2,1.6 z"
+     id="path48"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 54.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.4,1.2 -1.2,1.2 z"
+     id="path50"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 96.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.8,1.2 -1.2,1.2 z"
+     id="path52"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 56,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path54"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 85.6,162 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path56"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 60,162 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path58"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path60"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 82,196.8 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path62"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 66,158 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path64"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 50.8,183.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 z"
+     id="path66"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,167.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 c -0.4,0 -0.4,0 -0.4,0 z"
+     id="path68"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 63.6,196.8 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path70"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 79.6,158 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path72"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="M 56,167.6 H 55.6 L 50,165.2 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.4,0.8 -1.2,0.8 z"
+     id="path74"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 94.8,183.6 h -0.4 l -5.6,-2.4 C 88,180.8 88,180 88,179.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.8,0.8 -1.2,0.8 z"
+     id="path76"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#ff0000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,180.4 v 0 c -4,0 -6.8,-3.2 -6.8,-6.8 v 0 c 0,-4 3.2,-6.8 6.8,-6.8 v 0 c 4,0 6.8,3.2 6.8,6.8 v 0 c 0,3.6 -2.8,6.8 -6.8,6.8 z"
+     id="path78"
+     inkscape:connector-curvature="0" /><path
+     id="rect1441"
+     style="opacity:1;fill:#ff0000;stroke-width:2.21715"
+     d="m 72.801641,150.78759 v 0 l 5.635295,19.11133 h -11.27059 z"
+     sodipodi:nodetypes="ccccc" /></g><g
+   id="g2493-1"
+   transform="matrix(-1.0365525,-0.458954,0.458954,-1.0365525,191.69502,452.08902)"
+   inkscape:transform-center-x="-0.13984455"
+   inkscape:transform-center-y="1.3468756"
+   style="stroke-width:0.882135"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><path
+     style="fill:#e6e9ee;stroke-width:0.882135"
+     d="m 72.8,202.4 v 0 c -16,0 -29.2,-13.2 -29.2,-29.2 v 0 c 0,-16 13.2,-29.2 29.2,-29.2 v 0 c 16,0 29.2,13.2 29.2,29.2 v 0 c 0,16.4 -13.2,29.2 -29.2,29.2 z"
+     id="path44-8"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,198.4 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 6 c 0,0.8 -0.4,1.2 -1.2,1.2 z"
+     id="path46-79"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,156.8 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 5.6 c 0,0.8 -0.4,1.6 -1.2,1.6 z"
+     id="path48-2"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 54.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.4,1.2 -1.2,1.2 z"
+     id="path50-0"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 96.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.8,1.2 -1.2,1.2 z"
+     id="path52-2"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 56,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path54-3"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 85.6,162 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path56-7"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 60,162 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path58-5"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path60-9"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 82,196.8 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path62-22"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 66,158 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path64-8"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 50.8,183.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 z"
+     id="path66-9"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,167.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 c -0.4,0 -0.4,0 -0.4,0 z"
+     id="path68-7"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 63.6,196.8 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path70-36"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 79.6,158 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path72-1"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="M 56,167.6 H 55.6 L 50,165.2 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.4,0.8 -1.2,0.8 z"
+     id="path74-2"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 94.8,183.6 h -0.4 l -5.6,-2.4 C 88,180.8 88,180 88,179.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.8,0.8 -1.2,0.8 z"
+     id="path76-9"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#ff0000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,180.4 v 0 c -4,0 -6.8,-3.2 -6.8,-6.8 v 0 c 0,-4 3.2,-6.8 6.8,-6.8 v 0 c 4,0 6.8,3.2 6.8,6.8 v 0 c 0,3.6 -2.8,6.8 -6.8,6.8 z"
+     id="path78-3"
+     inkscape:connector-curvature="0" /><path
+     id="rect1441-1"
+     style="opacity:1;fill:#ff0000;stroke-width:2.21715"
+     d="m 72.801641,150.78759 v 0 l 5.635295,19.11133 h -11.27059 z"
+     sodipodi:nodetypes="ccccc" /></g><g
+   id="g2493-9"
+   transform="matrix(1.1065407,0.24626723,-0.24626723,1.1065407,81.269684,28.240985)"
+   style="stroke-width:0.882135"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><path
+     style="fill:#e6e9ee;stroke-width:0.882135"
+     d="m 72.8,202.4 v 0 c -16,0 -29.2,-13.2 -29.2,-29.2 v 0 c 0,-16 13.2,-29.2 29.2,-29.2 v 0 c 16,0 29.2,13.2 29.2,29.2 v 0 c 0,16.4 -13.2,29.2 -29.2,29.2 z"
+     id="path44-4"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,198.4 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 6 c 0,0.8 -0.4,1.2 -1.2,1.2 z"
+     id="path46-78"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,156.8 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 5.6 c 0,0.8 -0.4,1.6 -1.2,1.6 z"
+     id="path48-4"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 54.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.4,1.2 -1.2,1.2 z"
+     id="path50-5"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 96.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.8,1.2 -1.2,1.2 z"
+     id="path52-0"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 56,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path54-36"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 85.6,162 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path56-1"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 60,162 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path58-0"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path60-6"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 82,196.8 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path62-3"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 66,158 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path64-2"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 50.8,183.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 z"
+     id="path66-06"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,167.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 c -0.4,0 -0.4,0 -0.4,0 z"
+     id="path68-1"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 63.6,196.8 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path70-5"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 79.6,158 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path72-5"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="M 56,167.6 H 55.6 L 50,165.2 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.4,0.8 -1.2,0.8 z"
+     id="path74-4"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 94.8,183.6 h -0.4 l -5.6,-2.4 C 88,180.8 88,180 88,179.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.8,0.8 -1.2,0.8 z"
+     id="path76-7"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#ff0000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,180.4 v 0 c -4,0 -6.8,-3.2 -6.8,-6.8 v 0 c 0,-4 3.2,-6.8 6.8,-6.8 v 0 c 4,0 6.8,3.2 6.8,6.8 v 0 c 0,3.6 -2.8,6.8 -6.8,6.8 z"
+     id="path78-6"
+     inkscape:connector-curvature="0" /><path
+     id="rect1441-5"
+     style="opacity:1;fill:#ff0000;stroke-width:2.21715"
+     d="m 72.801641,150.78759 v 0 l 5.635295,19.11133 h -11.27059 z"
+     sodipodi:nodetypes="ccccc" /></g><g
+   id="g2493-3"
+   transform="matrix(0.81724208,0.78561769,-0.78561769,0.81724208,322.48101,-24.488096)"
+   style="stroke-width:0.882135"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><path
+     style="fill:#e6e9ee;stroke-width:0.882135"
+     d="m 72.8,202.4 v 0 c -16,0 -29.2,-13.2 -29.2,-29.2 v 0 c 0,-16 13.2,-29.2 29.2,-29.2 v 0 c 16,0 29.2,13.2 29.2,29.2 v 0 c 0,16.4 -13.2,29.2 -29.2,29.2 z"
+     id="path44-6"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,198.4 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 6 c 0,0.8 -0.4,1.2 -1.2,1.2 z"
+     id="path46-7"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,156.8 c -0.8,0 -1.2,-0.4 -1.2,-1.2 v -6 c 0,-0.8 0.4,-1.2 1.2,-1.2 0.8,0 1.2,0.4 1.2,1.2 v 5.6 c 0,0.8 -0.4,1.6 -1.2,1.6 z"
+     id="path48-5"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 54.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.4,1.2 -1.2,1.2 z"
+     id="path50-3"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 96.8,174.8 h -6 c -0.8,0 -1.2,-0.4 -1.2,-1.2 0,-0.8 0.4,-1.2 1.2,-1.2 h 6 c 0.8,0 1.2,0.4 1.2,1.2 0,0.4 -0.8,1.2 -1.2,1.2 z"
+     id="path52-5"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 56,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path54-6"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 85.6,162 c -0.4,0 -0.8,0 -0.8,-0.4 -0.4,-0.4 -0.4,-1.2 0,-1.6 l 4,-4 c 0.4,-0.4 1.2,-0.4 1.6,0 0.4,0.4 0.4,1.2 0,1.6 l -4,4 c -0.4,0 -0.4,0.4 -0.8,0.4 z"
+     id="path56-2"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 60,162 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path58-9"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,191.6 c -0.4,0 -0.8,0 -0.8,-0.4 l -4,-4 c -0.4,-0.4 -0.4,-1.2 0,-1.6 0.4,-0.4 1.2,-0.4 1.6,0 l 4,4 c 0.4,0.4 0.4,1.2 0,1.6 0,0 -0.4,0.4 -0.8,0.4 z"
+     id="path60-1"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 82,196.8 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path62-2"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 66,158 c -0.4,0 -0.8,-0.4 -1.2,-0.8 l -2.4,-5.6 c -0.4,-0.8 0,-1.2 0.8,-1.6 0.8,-0.4 1.2,0 1.6,0.8 l 2.4,5.6 c 0.4,0.8 0,1.2 -0.8,1.6 0,0 -0.4,0 -0.4,0 z"
+     id="path64-7"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 50.8,183.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 z"
+     id="path66-0"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 89.6,167.6 c -0.4,0 -0.8,-0.4 -1.2,-0.8 -0.4,-0.8 0,-1.2 0.8,-1.6 l 5.6,-2.4 c 0.8,-0.4 1.2,0 1.6,0.8 0.4,0.8 0,1.2 -0.8,1.6 l -5.6,2.4 c -0.4,0 -0.4,0 -0.4,0 z"
+     id="path68-9"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 63.6,196.8 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path70-3"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 79.6,158 h -0.4 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 l 2.4,-5.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 0.8,0.4 0.8,1.2 0.8,1.6 l -2.4,5.6 c 0,0.4 -0.8,0.8 -1.2,0.8 z"
+     id="path72-6"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="M 56,167.6 H 55.6 L 50,165.2 c -0.8,-0.4 -0.8,-1.2 -0.8,-1.6 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.4,0.8 -1.2,0.8 z"
+     id="path74-0"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#000000;fill-opacity:1;stroke-width:0.882135"
+     d="m 94.8,183.6 h -0.4 l -5.6,-2.4 C 88,180.8 88,180 88,179.6 c 0.4,-0.8 1.2,-0.8 1.6,-0.8 l 5.6,2.4 c 0.8,0.4 0.8,1.2 0.8,1.6 0,0.8 -0.8,0.8 -1.2,0.8 z"
+     id="path76-6"
+     inkscape:connector-curvature="0" /><path
+     style="fill:#ff0000;fill-opacity:1;stroke-width:0.882135"
+     d="m 72.8,180.4 v 0 c -4,0 -6.8,-3.2 -6.8,-6.8 v 0 c 0,-4 3.2,-6.8 6.8,-6.8 v 0 c 4,0 6.8,3.2 6.8,6.8 v 0 c 0,3.6 -2.8,6.8 -6.8,6.8 z"
+     id="path78-2"
+     inkscape:connector-curvature="0" /><path
+     id="rect1441-6"
+     style="opacity:1;fill:#ff0000;stroke-width:2.21715"
+     d="m 72.801641,150.78759 v 0 l 5.635295,19.11133 h -11.27059 z"
+     sodipodi:nodetypes="ccccc" /></g><text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:33.3333px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   x="67.090721"
+   y="114.12241"
+   id="text1475"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><tspan
+     sodipodi:role="line"
+     id="tspan1473"
+     x="67.090721"
+     y="114.12241"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;font-family:Sans;-inkscape-font-specification:'Sans Bold';fill:#ffffff">5</tspan></text><text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:33.3333px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   x="99.090721"
+   y="114.12241"
+   id="text7150"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><tspan
+     sodipodi:role="line"
+     id="tspan7148"
+     x="99.090721"
+     y="114.12241"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;font-family:Sans;-inkscape-font-specification:'Sans Bold';fill:#ffffff">2</tspan></text><text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:33.3333px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   x="131.09073"
+   y="114.12241"
+   id="text7154"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><tspan
+     sodipodi:role="line"
+     id="tspan7152"
+     x="131.09073"
+     y="114.12241"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;font-family:Sans;-inkscape-font-specification:'Sans Bold';fill:#ffffff">0</tspan></text><text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:33.3333px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   x="161.09073"
+   y="114.12241"
+   id="text7158"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><tspan
+     sodipodi:role="line"
+     id="tspan7156"
+     x="161.09073"
+     y="114.12241"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;font-family:Sans;-inkscape-font-specification:'Sans Bold';fill:#ffffff">3</tspan></text><text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:33.3333px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   x="193.09073"
+   y="114.12241"
+   id="text7400"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><tspan
+     sodipodi:role="line"
+     id="tspan7398"
+     x="193.09073"
+     y="114.12241"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;font-family:Sans;-inkscape-font-specification:'Sans Bold';fill:#ffffff">0</tspan></text><text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:33.3333px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   x="225.09073"
+   y="114.12241"
+   id="text7404"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001"><tspan
+     sodipodi:role="line"
+     id="tspan7402"
+     x="225.09073"
+     y="114.12241"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;font-family:Sans;-inkscape-font-specification:'Sans Bold';fill:#ffffff">1</tspan></text><rect
+   style="fill:none;stroke:#1f00ea;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="rect18406"
+   width="23.916084"
+   height="39.886673"
+   x="222.59164"
+   y="81.731308"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" /><rect
+   style="fill:none;stroke:#1f00ea;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="rect20467"
+   width="23.916084"
+   height="39.886673"
+   x="190.59164"
+   y="81.731308"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" /><rect
+   style="fill:none;stroke:#1f00ea;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="rect20469"
+   width="23.916084"
+   height="39.886673"
+   x="158.59164"
+   y="81.731308"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" /><circle
+   style="fill:none;stroke:#02ea00;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="path20619"
+   cx="245.87659"
+   cy="173.6358"
+   r="35.34029"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" /><circle
+   style="fill:none;stroke:#02ea00;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="path20619-5"
+   cx="195.75063"
+   cy="239.26401"
+   r="35.34029"
+   inkscape:export-filename="/home/gruinelli/temp/AI-on-the-edge-device/images/icon/favicon.ico"
+   inkscape:export-xdpi="19.790001"
+   inkscape:export-ydpi="19.790001" /></svg>
