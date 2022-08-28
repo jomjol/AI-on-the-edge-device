@@ -21,6 +21,7 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+#include "connect_wlan.h"
 
 #define DEBUG_DETAIL_ON       
 
@@ -590,6 +591,55 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     return ESP_OK;
 };
 
+esp_err_t handler_cputemp(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_cputemp - Start");       
+#endif
+
+    const char* resp_str;
+    char cputemp[20];
+    
+    sprintf(resp_str, "CPU Temp: %4.1f°C", temperatureRead());
+
+    resp_str = cputemp;
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, resp_str, strlen(resp_str));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_cputemp - End");       
+#endif
+
+    return ESP_OK;
+};
+
+esp_err_t handler_rssi(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_rssi - Start");       
+#endif
+
+    const char* resp_str;
+    char rssi[20];
+
+    sprintf(rssi, "RSSI: %idBm", get_WIFI_RSSI());
+
+    resp_str = rssi;
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, resp_str, strlen(resp_str));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_rssi - End");       
+#endif
+
+    return ESP_OK;
+};
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
@@ -643,7 +693,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     httpd_resp_send_chunk(req, NULL, 0);      
 
 #ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_prevalue - Start");       
+    LogFile.WriteHeapInfo("handler_prevalue - End");       
 #endif
 
     return ESP_OK;
@@ -766,6 +816,16 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
     
+    camuri.uri       = "/cputemp.html";
+    camuri.handler   = handler_cputemp;
+    camuri.user_ctx  = (void*) "Light Off"; 
+    httpd_register_uri_handler(server, &camuri);  
+
+    camuri.uri       = "/rssi.html";
+    camuri.handler   = handler_rssi;
+    camuri.user_ctx  = (void*) "Light Off"; 
+    httpd_register_uri_handler(server, &camuri);  
+
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;
     camuri.user_ctx  = (void*) "EditFlow"; 
