@@ -40,6 +40,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-30)
+
+- Added Backup Option, improved update page (many thanks to @**[caco3](https://github.com/caco3)**)
+
 ##### 11.2.0 - Intermediate Digits (2022-08-28)
 
 - Updated Tensorflow / TFlite to newest tflite (version as of 2022-07-27)
