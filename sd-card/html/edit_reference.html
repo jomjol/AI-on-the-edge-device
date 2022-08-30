@@ -35,6 +35,7 @@ table {
 
 <body style="font-family: arial; padding: 0px 10px;">
     <h2>Create Reference out of Raw Image</h2>
+    <p><b>Note: After saving a new Reference Image, make sure to update the Alignment Marks and the ROI's and reboot once!</b></p>
 
 	<table>
 	  <tr>
@@ -85,6 +86,9 @@ table {
 		</tr>			
 		<tr>		
 			<td><input class="button" type="button" id="updatereferenceimage" value="Update Reference Image" onclick="SaveReference()"></td>
+		</tr>		
+		<tr>		
+			<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved Reference</button></td>
 		</tr>
 	</table>
 
@@ -102,6 +106,16 @@ table {
             basepath = "http://192.168.178.26";   
             isActReference = false;
             param;
+            
+        function doReboot() {
+            if (confirm("Are you sure you want to reboot? Did you save the config?")) {
+                    var stringota = "/reboot";
+                    window.location = stringota;
+                    window.location.href = stringota;
+                    window.location.assign(stringota);
+                    window.location.replace(stringota);
+            }
+        }
 
         function doTake(){ 
             var xhttp = new XMLHttpRequest();
