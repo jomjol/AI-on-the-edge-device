@@ -19,22 +19,31 @@
 </table>
 
 <ul>
-	<li aria-current="page"><a href="index.html">Main Page</a>	
-	<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_config_param.html';">Configuration</a></li>
+    <li aria-current="page"><a href="index.html">Main Page</a>	
+    <li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_config_param.html';">Configuration</a></li>
     <li class="dropdown">
-		<a href="javascript:void(0)" class="dropbtn">Alignment</a>
-		<div class="dropdown-content">
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a>
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a>
-		</div>
-	</li>
+	<a href="javascript:void(0)" class="dropbtn">Alignment</a>
+	<div class="dropdown-content">
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a>
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a>
+	</div>
+    </li>
     <li class="dropdown">
-		<a href="javascript:void(0)" class="dropbtn">Regions Of Interest (ROI)</a>
-		<div class="dropdown-content">
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a>
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a>
-		</div> 
-	</li>		
+	<a href="javascript:void(0)" class="dropbtn">Regions Of Interest (ROI)</a>
+	<div class="dropdown-content">
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a>
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a>
+	</div> 
+    </li>
+    <li class="dropdown">
+	<a href="javascript:void(0)" class="dropbtn">System</a>
+	<div class="dropdown-content">
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log/message/?readonly=true';">Log Viewer</a>      
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/info.html';">Info</a>      
+	</div> 
+    </li>
 </ul>
 
 <iframe name="maincontent" class="iframe" id="maincontent" src="edit_config_param.html"></iframe>
