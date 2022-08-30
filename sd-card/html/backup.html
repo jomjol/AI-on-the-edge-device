@@ -30,7 +30,7 @@ input[type=number] {
 
 <body style="font-family: arial; padding: 0px 10px;">
 <h2>Backup Configuration</h2>
-<p>With the following action the config folder on the SD-card gets zipped and provided as a download.</p>
+<p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
 
 <table border="0">
     </tr>
@@ -44,8 +44,7 @@ input[type=number] {
 </table>
 <hr>
 <h2>Restore Configuration</h2>
-<p>Not implemented yet.<br>
-But you can use the <a href="/fileserver/config" target="_self">File Server</a> to upload individual files.</p>
+<p>Use the <a href="/fileserver/config/" target="_self">File Server</a> to upload individual files.</p>
 </body>
 
 
@@ -54,15 +53,19 @@ But you can use the <a href="/fileserver/config" target="_self">File Server</a> 
 <script>
 
 function doBackup() {  
-
     document.getElementById("progress").innerHTML = "Creating backup...";
     
     // Get hostname
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "/version?type=Hostname", false);
-    xhttp.send();
-    
-    hostname = xhttp.responseText;
+    try {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/version?type=Hostname", false);
+        xhttp.send();
+        hostname = xhttp.responseText;
+    }
+    catch(err) {
+        alert("Failed to fetch hostname: " + err.message);
+        return;
+    }
     
     // get date/time
     var dateTime = new Date().toJSON().slice(0,10) + "_" + new Date().toJSON().slice(11,19).replaceAll(":", "-");
@@ -71,12 +74,17 @@ function doBackup() {
     console.log(zipFilename);
 
     // Get files list
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "/fileserver/config/", false);
-    xhttp.send();
-    
-    var parser = new DOMParser();
-    var content = parser.parseFromString(xhttp.responseText, 'text/html');
+    try {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/fileserver/config/", false);
+        xhttp.send();
+        
+        var parser = new DOMParser();
+        var content = parser.parseFromString(xhttp.responseText, 'text/html');    }
+    catch(err) {
+        alert("Failed to fetch files list: " + err.message);
+        return;
+    }
     
     const list = content.querySelectorAll("a");
     
@@ -88,7 +96,13 @@ function doBackup() {
     }
     
     // Pack as zip and download
-    saveZip(zipFilename, urls);
+    try {
+        saveZip(zipFilename, urls);
+        }
+    catch(err) {
+        alert("Failed to zip files: " + err.message);
+        return;
+    }
 }
 
 
@@ -122,6 +136,5 @@ const saveZip = (filename, urls) => {
 };
 
 </script>
-
 
 </html>
