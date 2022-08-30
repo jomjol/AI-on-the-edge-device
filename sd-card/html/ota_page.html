@@ -30,7 +30,6 @@ input[type=number] {
 
 <body style="font-family: arial; padding: 0px 10px;">
 <h3>It is strongly recommended to update firmware and content of /html directory on SD-card at the same time!</h3>
-<hr>
 <h2>1. Firmware Update</h2>
 <table class="fixed" border="0">
     <tr>
@@ -42,9 +41,6 @@ input[type=number] {
                     </td>
                     <td colspan="2">
                         <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
-                    </td>
-                    <td rowspan="2" style="padding-left:50px">
-                        <button class="button" id="doUpdate" type="button" onclick="doUpdate()">Flash the firmware<br>(Takes about 60s)</button>
                     </td>
                 </tr>
                 <tr>
@@ -61,8 +57,22 @@ input[type=number] {
             </table>
         </td>
     </tr>
+	<tr>
+		<td>
+            <table border="0">
+                <tr>
+                    <td style="width: 230px">
+                        <button class="button" id="doUpdate" type="button" onclick="doUpdate()">Flash the firmware</button>
+                    </td>
+					<td>
+						(Takes about 60s)
+					</td>
+                </tr>
+            </table>		
+		</td>
+	</tr>
 </table>
-<hr>
+
 <h2>2. Update "/html" directory</h2>
 <table class="fixed" border="0">
     <tr>
@@ -74,9 +84,6 @@ input[type=number] {
                     </td>
                     <td colspan="2">
                         <input id="newfilehtml" type="file" onchange="setpathhtml()" style="width:100%;">
-                    </td>
-                    <td rowspan="2" style="padding-left:50px">
-			<button class="button" id="doUpdatehtml" type="button" onclick="doUpdatehtml()">Update "/html" directory</button>
                     </td>
                 </tr>
                 <tr>
@@ -93,11 +100,20 @@ input[type=number] {
             </table>
         </td>
     </tr>
+	<tr>
+		<td>
+			<button class="button" id="doUpdatehtml" type="button" onclick="doUpdatehtml()">Update "/html" directory</button>
+		</td>
+	</tr>
 </table>
-<hr>
 <h2>3. Reboot</h2>
+<table class="fixed" border="0">
+	<tr>
+		<td>
 			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
-<hr>
+		</td>
+	</tr>
+</table>
 <h2>4. Upload neural network definition (tfl/tflite file)</h2>
 <table class="fixed" border="0">
     <tr>
@@ -125,8 +141,7 @@ input[type=number] {
             </table>
         </td>
     </tr>
-    The file must be activated!
-    Use the <a href="index_configure.html" target="_parent">Config Page</a> or do it manually in the config.ini file.
+    The file must be activated in the config.ini file.
 </table>
 
 
