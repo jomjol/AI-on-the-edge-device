@@ -40,6 +40,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-08-31)
+
+- WebUI improvements (many thanks to @**[caco3](https://github.com/caco3)**)
+
 ##### Rolling (2022-08-30)
 
 - Added Backup Option, improved update page (many thanks to @**[caco3](https://github.com/caco3)**)
