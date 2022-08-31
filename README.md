@@ -42,6 +42,17 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ##### Rolling (2022-08-31)
 
+- **ATTENTION**: 
+  - first update the 'firmware.bin' and ensure that the new version is running
+
+  - Only afterwards update the 'html.zip'
+  
+  - Otherwise the downwards compatibility of the new counter clockwise feature is not given and you end in a reboot loop, that needs manual flashing!
+  
+- Implements Counter Clockwise Analog Pointers  (many thanks to **[adellafave](https://github.com/adellafave)**)
+  - you can activate it via check box in the graphical configuration
+
+- HTML: adds CPU Temp , RSSI to status (many thanks to **[adellafave](https://github.com/adellafave)**)
 - WebUI improvements (many thanks to @**[caco3](https://github.com/caco3)**)
 
 ##### Rolling (2022-08-30)

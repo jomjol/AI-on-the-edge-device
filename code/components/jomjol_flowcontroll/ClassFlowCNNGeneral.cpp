@@ -439,7 +439,11 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
-            neuroi->CCW = toUpper(zerlegt[5]) == "TRUE";
+            neuroi->CCW = false;
+            if (zerlegt.size() >= 6)
+            {
+                neuroi->CCW = toUpper(zerlegt[5]) == "TRUE";
+            }
             neuroi->result_float = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;

@@ -254,7 +254,10 @@ function changeCCW(){
     ROIInfo = getROIInfo("analog", _number);
     aktindex = parseInt(document.getElementById("index").value);
 
-    ROIInfo[aktindex]["CCW"] = document.getElementById("CCW").checked;
+    if (document.getElementById("CCW").checked)
+        ROIInfo[aktindex]["CCW"] = "true";
+    else
+        ROIInfo[aktindex]["CCW"] = "false";
 	UpdateROIs();
 }
 

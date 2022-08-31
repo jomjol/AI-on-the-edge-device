@@ -86,8 +86,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "CNNGoodThreshold", 1); 
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
-//     ParamAddValue(param, catname, "ModelInputSize", 2); 
-         
 
      var catname = "Analog";
      category[catname] = new Object(); 
@@ -97,7 +95,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Model");
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
-//     ParamAddValue(param, catname, "ModelInputSize", 2);
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 
@@ -236,9 +233,9 @@ function ParseConfigParamAll(_aktline, _catname){
           let [isCom, input] = isCommented(_input);
           var linesplit = ZerlegeZeile(input);
           ParamExtractValueAll(param, linesplit, _catname, _aktline, isCom);
-          if (!isCom && (linesplit.length == 6) && (_catname == 'Digits'))
+          if (!isCom && (linesplit.length >= 5) && (_catname == 'Digits'))
                ExtractROIs(input, "digit");
-          if (!isCom && (linesplit.length == 6) && (_catname == 'Analog'))
+          if (!isCom && (linesplit.length >= 5) && (_catname == 'Analog'))
                ExtractROIs(input, "analog");
           if (!isCom && (linesplit.length == 3) && (_catname == 'Alignment'))
           {
@@ -486,7 +483,9 @@ function ExtractROIs(_aktline, _type){
      abc["dx"] = linesplit[3];
      abc["dy"] = linesplit[4];
      abc["ar"] = parseFloat(linesplit[3]) / parseFloat(linesplit[4]);
-     abc["CCW"] = linesplit[5];
+     abc["CCW"] = "false";
+     if (linesplit.length >= 6)
+          abc["CCW"] = linesplit[5];
 }
 
 

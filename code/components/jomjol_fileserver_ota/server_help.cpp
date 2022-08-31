@@ -43,6 +43,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     }
 
     ESP_LOGI(TAG, "Sending file : %s ...", filename.c_str());
+//    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     set_content_type_from_file(req, filename.c_str());
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
