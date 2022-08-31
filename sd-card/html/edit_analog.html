@@ -129,6 +129,9 @@ th, td {
 	  <tr>
 		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=7></td>
 	  </tr>  
+	  <tr>
+                <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
+	  </tr>  
     </table>	
 
 
@@ -147,8 +150,17 @@ th, td {
             enhanceCon = false;
             lockAR = true;
             basepath = "http://192.168.178.26";
-
-
+    
+function doReboot() {
+    if (confirm("Are you sure you want to reboot? Did you save the config?")) {
+            var stringota = "/reboot";
+            window.location = stringota;
+            window.location.href = stringota;
+            window.location.assign(stringota);
+            window.location.replace(stringota);
+    }
+}
+    
 function EnDisableAnalog() {
         isEnabled = document.getElementById("Category_Analog_enabled").checked;
 
