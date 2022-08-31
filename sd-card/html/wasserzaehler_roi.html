@@ -20,7 +20,7 @@
 
 <table class="tg">
   <tr>
-    <td class="tg-1" rowspan="9"><div id="img"></div></td>
+    <td class="tg-1" rowspan="9" style="vertical-align: top"><div id="img"></div></td>
     <th class="th">Value:</th>
   </tr>	
   <tr>	
@@ -57,6 +57,8 @@
     <td class="tg-3">
 	<div id="timestamp" ></div>	
 	<div id="statusflow" ></div>	
+	<div id="cputemp" ></div>	
+	<div id="rssi" ></div>	
 	</td>	
   </tr>    
 </table>
@@ -83,6 +85,8 @@ function addZero(i) {
 	$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	loadStatus();
+	loadCPUTemp();
+	loadRSSI();
 	refresh();
 	});
 
@@ -94,10 +98,10 @@ function refresh() {
 	var h = addZero(d.getHours());
 	var m = addZero(d.getMinutes());
 	var s = addZero(d.getSeconds());	
+	
 	// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp
 	$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'"max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
-	loadStatus();
 	init();
 	  refresh();
 	}, 300000);
@@ -120,6 +124,32 @@ function refresh() {
 		xhttp.send();		
 	}
 
+	function loadCPUTemp() {
+		url = basepath + '/cputemp.html';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				$('#cputemp').html(_rsp);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();		
+	}
+
+	function loadRSSI() {
+		url = basepath + '/rssi.html';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				$('#rssi').html(_rsp);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();		
+	}
+		
 	function loadValue(_type, _div, _style) {
 		url = basepath + '/wasserzaehler.html?all=true&type=' + _type;     
 		var xhttp = new XMLHttpRequest();
@@ -167,6 +197,8 @@ function refresh() {
 		loadValue("prevalue", "prevalue");
 		loadValue("error", "error", "font-size:8px");
 		loadStatus();
+		loadCPUTemp();
+		loadRSSI();
 	}
 
 	init();

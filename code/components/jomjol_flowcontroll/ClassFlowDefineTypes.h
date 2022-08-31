@@ -7,7 +7,7 @@ struct roi {
     int posx, posy, deltax, deltay;
     float result_float;
     int result_klasse;
-    bool isReject;
+    bool isReject, CCW;
     string name;
     CImageBasis *image, *image_org;
 };
