@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = false;
+bool debugdetailgeneral = true;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -201,7 +201,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
     if (AnalogerVorgaenger)
     {
 //        result = ZeigerEvalAnalogToDigitNeu(zahl, eval_vorgaenger);
-        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger);
+        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger, eval_vorgaenger);
         if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
@@ -245,7 +245,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
 }
 
 
-int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger)
+int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger)
 {
     int result;
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
@@ -272,7 +272,8 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
         return result;
     }  
 
-    if (ziffer_vorgaenger <= 1)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+    if (ziffer_vorgaenger <= 1 && eval_vorgaenger<9)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+        // aber Sonderfall ziffer_vorgaeger = 0.1 vor_vorgaenger 9.9 => eval_vorgaenger ist 9, damit hat Nulldurchgang nicht stattgefunden.
     {
         if (ergebnis_nachkomma > 5)
             result =  (ergebnis_vorkomma + 1) % 10;
