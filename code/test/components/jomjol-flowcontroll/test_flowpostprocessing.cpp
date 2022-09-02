@@ -49,7 +49,7 @@ void test_doFlow() {
         /*
          * https://github.com/jomjol/AI-on-the-edge-device/issues/921
          * 
-         * Das Ergebnis sollte "376529.6" sein. Bzw. 16.98 ohne Extended true
+         * Das Ergebnis sollte "376529.6" sein. 
          */
         digits = { 3.0, 7.0, 6.0, 5.0, 2.5, 9.6};
         analogs = { 6.4};
