@@ -157,8 +157,8 @@ bool ClassFlowMQTT::doFlow(string zwtime)
         else { // Failed
             return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
         }
+        LogFile.WriteToFile("MQTT is now enabled");
     }
-    LogFile.WriteToFile("MQTT enabled");
 
     std::string result;
     std::string resulterror = "";
