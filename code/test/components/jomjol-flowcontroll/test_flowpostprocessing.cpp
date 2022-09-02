@@ -166,6 +166,15 @@ void test_doFlow() {
         expected = "377988.4";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // Fehler bei V11.2.0
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1233149877
+        digits = { 0.0, 0.0, 7.0, 8.9};  // 79.9999(6) als falsches Ergebnis
+        analogs = { 0.1, 0.1, 0.1, 9.6};
+        expected = "78.9999";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
 }
 
 
