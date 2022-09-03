@@ -6,6 +6,7 @@
 #include "time_sntp.h"
 #include "interface_mqtt.h"
 #include "ClassFlowPostProcessing.h"
+#include "ClassLogFile.h"
 
 #include <time.h>
 
@@ -125,8 +126,12 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         mainerrortopic = maintopic + "/connection";
         printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
         MQTTInit(uri, clientname, user, password, mainerrortopic, 60); 
-        MQTTPublish(mainerrortopic, "connected", SetRetainFlag);
-        MQTTenable = true;
+        if (MQTTPublish(mainerrortopic, "connected", SetRetainFlag)) {
+            MQTTenable = true;
+        }
+        else {
+            MQTTenable = true;
+        }
     }
    
     return true;
@@ -141,8 +146,19 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
-    if (!MQTTenable)
-        return true;
+    if (!MQTTenable) {
+        LogFile.WriteToFile("MQTT not enabled!");
+
+        // Try again to init it
+        MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, 60); 
+        if (MQTTPublish(mainerrortopic, "connected", SetRetainFlag)) {
+            MQTTenable = true;
+        }
+        else { // Failed
+            return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
+        }
+        LogFile.WriteToFile("MQTT is now enabled");
+    }
 
     std::string result;
     std::string resulterror = "";
@@ -153,7 +169,12 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    MQTTPublish(mainerrortopic, "connected");
+    if (MQTTPublish(mainerrortopic, "connected")) {
+        MQTTenable = true;
+    }
+    else { // Failed, skip other topics
+        return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
+    }
     
     zw = maintopic + "/" + "uptime";
     char uptimeStr[11];
