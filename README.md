@@ -40,6 +40,17 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-03)
+
+- MQTT: improved handling based on the work of @**[caco3](https://github.com/caco3)** ([#971](https://github.com/jomjol/AI-on-the-edge-device/pull/971))
+
+##### Rolling (2022-09-02)
+
+- MQTT: extended logging and automated reconnect
+- HTML: explanation for MQTT keys
+- Improved post processing algo
+- Bug fix: update algorithm
+
 ##### Rolling (2022-08-31)
 
 - **ATTENTION**: 

@@ -101,10 +101,22 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
+
 void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _LWTContext, int _keepalive){
     std::string _zwmessage = "connection lost";
 
     int _lzw = _zwmessage.length();
+
+/*    LWTContext = _LWTContext;
+
+    mqtt_cfg.uri = _mqttURI.c_str();
+    mqtt_cfg.client_id = _clientid.c_str();
+    mqtt_cfg.lwt_topic = _LWTContext.c_str();
+    mqtt_cfg.lwt_msg = _zwmessage.c_str();
+    mqtt_cfg.lwt_retain = 1;
+    mqtt_cfg.lwt_msg_len = _lzw;
+    mqtt_cfg.keepalive = _keepalive;
+*/
 
     esp_mqtt_client_config_t mqtt_cfg = {
         .uri = _mqttURI.c_str(),
@@ -142,7 +154,42 @@ void MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
         LogFile.WriteToFile("MQTT - Could not Init client!");
     }
 
+
 }
+
+/*
+void MQTTReConnect(){
+    std::string _zwmessage = "connection lost";
+    int _lzw = _zwmessage.length();
+
+>>>>>>> Stashed changes
+    client = esp_mqtt_client_init(&mqtt_cfg);
+    if (client)
+    {
+        if (esp_mqtt_client_register_event(client, esp_mmqtt_ID, mqtt_event_handler, client) != ESP_OK)
+            LogFile.WriteToFile("MQTT - Could not register event!");
+        if (esp_mqtt_client_start(client) != ESP_OK)
+            LogFile.WriteToFile("MQTT - Could not start client!");
+
+<<<<<<< Updated upstream
+        if(MQTTPublish(_LWTContext, "", 1)) {
+            LogFile.WriteToFile("MQTT - Client init successful");
+        }
+=======
+        if (mqtt_connected)
+            MQTTPublish(LWTContext, "", 1);
+        else
+            LogFile.WriteToFile("Problem with (Re)Connection not successful!");
+
+>>>>>>> Stashed changes
+    }
+    else
+    {
+        LogFile.WriteToFile("MQTT - Could not Init client!");
+    }
+
+}
+*/
 
 void MQTTdestroy() {
     if (client != NULL) {
