@@ -175,6 +175,14 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
+        // Fehler bei V11.2.0 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1236119370
+        digits = { 3.1, 9.1, 5.7};  // 9.1 führt zu falscher Erkennung eines unvollständigen Übergangs
+        analogs = { 8.8, 6.1, 3.0, 2.0};
+        expected = "395.8632";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
 }
 
 
