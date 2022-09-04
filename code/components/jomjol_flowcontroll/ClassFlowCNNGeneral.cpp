@@ -340,38 +340,6 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
 
 }
 
-/*
-int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
-{   
-    int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
-    int ergebnis;
-    float ergebnis_rating;
-    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEval erg_v=" + std::to_string(ergebnis_vorkomma) + ", erg_n=" + std::to_string(ergebnis_nachkomma) + ", ziff_v=" + std::to_string(ziffer_vorgaenger));
-
-    if (ziffer_vorgaenger == -1)
-        return ergebnis_vorkomma % 10;
-
-    // Ist die aktuelle Stelle schon umgesprungen und die Vorstelle noch nicht?
-    // Akt.: 2.1, Vorstelle = 0.9 => 1.9
-    // Problem sind mehrere Rundungen 
-    // Bsp. zahl=4.5, Vorgänger= 9.6 (ziffer_vorgaenger=0)
-    // Tritt nur auf bei Übergang von analog auf digit
-    ergebnis_rating = ergebnis_nachkomma - ziffer_vorgaenger;
-    if (ergebnis_nachkomma >= 5)
-        ergebnis_rating-=5.1;
-    else
-        ergebnis_rating+=5;
-    ergebnis = (int) round(zahl);
-    if (ergebnis_rating < 0)
-        ergebnis-=1;
-    if (ergebnis == -1)
-        ergebnis+=10;
-    
-    ergebnis = (ergebnis + 10) % 10;
-    return ergebnis;
-}
-*/
 
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
@@ -417,11 +385,6 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->logfileRetentionInDays = std::stoi(zerlegt[1]);
         }
-//        if ((toUpper(zerlegt[0]) == "MODELTYPE") && (zerlegt.size() > 1))
-//        {
-//            if (toUpper(zerlegt[1]) == "DIGITHYPRID")
-//                CNNType = DigitalHyprid;
-//        }
 
         if ((toUpper(zerlegt[0]) == "MODEL") && (zerlegt.size() > 1))
         {
@@ -664,10 +627,11 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 CNNType = Digital;
                 printf("TFlite-Type set to Digital\n");
                 break;
-            case 20:
+/*            case 20:
                 CNNType = DigitalHyprid10;
                 printf("TFlite-Type set to DigitalHyprid10\n");
                 break;
+*/
 //            case 22:
 //                CNNType = DigitalHyprid;
 //                printf("TFlite-Type set to DigitalHyprid\n");
@@ -801,6 +765,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         }
                     } break;
 */
+/*
                 case DigitalHyprid10:
                     {
                         int _num, _nachkomma;
@@ -836,6 +801,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             }
                         }
                     } break;
+*/
 
                 case DoubleHyprid10:
                     {
@@ -869,7 +835,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             _fit = _val + _valminus;
 
                         }
-                        if (result > 10)
+                        if (result >= 10)
                             result = result - 10;
                         if (result < 0)
                             result = result + 10;
