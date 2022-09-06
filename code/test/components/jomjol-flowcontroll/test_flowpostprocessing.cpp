@@ -5,7 +5,7 @@
 #include <ClassFlowMakeImage.h>
 
 void setUpClassFlowPostprocessing(void);
-string process_doFlow(std::vector<float> analog, std::vector<float> digits);
+string process_doFlow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType = Digital100);
 
 ClassFlowCNNGeneral* _analog;
 ClassFlowCNNGeneral* _digit;
@@ -183,11 +183,19 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
+        // Fehler bei V11.2.0 
+        // https://github.com/jomjol/AI-on-the-edge-device/discussions/950#discussion-4338615
+        digits = { 1.0, 9.0, 9.0};  // Übergang wurde um 1 erhöht (200, statt 199)
+        analogs = { 7.1, 4.8, 8.3};
+        expected = "199.748";
+        result = process_doFlow(analogs, digits, Digital);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
 }
 
 
 
-void setUpClassFlowPostprocessing(void)
+void setUpClassFlowPostprocessing(t_CNNType digType, t_CNNType anaType)
 {
     
     // wird im doFlow verwendet
@@ -195,18 +203,18 @@ void setUpClassFlowPostprocessing(void)
     FlowControll.push_back(flowmakeimage);
 
     // Die Modeltypen werden gesetzt, da keine Modelle verwendet werden.
-    _analog = new ClassFlowCNNGeneral(nullptr, Analogue100);
+    _analog = new ClassFlowCNNGeneral(nullptr, anaType);
     
-    _digit =  new ClassFlowCNNGeneral(nullptr, Digital100);
+    _digit =  new ClassFlowCNNGeneral(nullptr, digType);
 
     undertestPost = new UnderTestPost(&FlowControll, _analog, _digit);
   
 }
 
 
-std::string process_doFlow(std::vector<float> analog, std::vector<float> digits) {
+std::string process_doFlow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType) {
     // setup the classundertest
-    setUpClassFlowPostprocessing();
+    setUpClassFlowPostprocessing(digType, Analogue100);
 
     printf("SetupClassFlowPostprocessing completed.\n");
 
@@ -219,6 +227,7 @@ std::string process_doFlow(std::vector<float> analog, std::vector<float> digits)
             roi* digitROI = new roi();
             string name = "digit_" + std::to_string(i);
             digitROI->name = name;
+            digitROI->result_klasse = (int) digits[i];
             digitROI->result_float = digits[i];
             gen_digit->ROI.push_back(digitROI);
         }
