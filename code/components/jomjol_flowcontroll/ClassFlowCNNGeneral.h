@@ -37,12 +37,9 @@ protected:
     bool isLogImageSelect;
     string LogImageSelect;
     ClassFlowAlignment* flowpostalignment;
-//    ClassFlowPostProcessing *flowpostprocessing = NULL;
-    bool SaveAllFiles;   
-//    bool extendedResolution;
 
-//    int ZeigerEval(float zahl, int ziffer_vorgaenger);
-//    int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
+    bool SaveAllFiles;   
+
     int ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger);
     int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger);
     int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false);
