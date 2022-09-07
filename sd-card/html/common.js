@@ -9,7 +9,7 @@ function LoadHostname() {
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
             hostname = xhttp.responseText;
-                document.title = hostname + " - jomjol - AI on the edge";
+                document.title = hostname + " - AI on the edge";
                 document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
         } 
         else {
