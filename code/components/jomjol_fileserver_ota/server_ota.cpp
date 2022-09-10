@@ -308,7 +308,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-            printf("task is found"); printf(_valuechar); printf("\n"); 
+            printf("task is found: "); printf(_valuechar); printf("\n"); 
             _task = std::string(_valuechar);
         }
 
@@ -340,7 +340,8 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
         if ((filetype == "TFLITE") || (filetype == "TFL"))
         {
-            std::string out = "/sdcard/firmware/" + getFileFullFileName(fn);
+            std::string out = "/sdcard/config/" + getFileFullFileName(fn);
+            DeleteFile(out);
             CopyFile(fn, out);
             DeleteFile(fn);
 
@@ -355,13 +356,13 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         {
             std::string in, out, outbin, zw, retfirmware;
 
-            in = "/sdcard/firmware/html.zip";
+//            in = "/sdcard/firmware/html.zip";
             out = "/sdcard/html";
             outbin = "/sdcard/firmware";
 
-            delete_all_in_directory(out);
+//            delete_all_in_directory(out);
 
-            retfirmware = unzip_new(in, out+"/", outbin+"/");
+            retfirmware = unzip_new(fn, out+"/", outbin+"/");
 
             if (retfirmware.length() > 0)
             {

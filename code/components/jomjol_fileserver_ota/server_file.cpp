@@ -769,8 +769,9 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             {
                 zw = _target_zip + zw;
             }
-                
+
             printf("Filename to extract: %s", zw.c_str());
+            DeleteFile(zw);
             FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
@@ -934,15 +935,4 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     };
     httpd_register_uri_handler(server, &file_delete);
 
-
-    /* URI handler for getting tflite files from server */
-/*
-    httpd_uri_t file_tflite = {
-        .uri       = "/tflite",   // Match all URIs of type /delete/path/to/file
-        .method    = HTTP_GET,
-        .handler   = get_tflite_file_handler,
-        .user_ctx  = server_data    // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_tflite);
-*/
 }

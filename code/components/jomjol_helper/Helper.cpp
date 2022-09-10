@@ -213,6 +213,14 @@ void DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
 	/* Delete file */
+	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		printf("DeleteFile: File %s existiert nicht!\n", fn.c_str());
+		return;
+	}
+	fclose(fpSourceFile);
+
 	unlink(fn.c_str());    
 }
 
@@ -250,17 +258,20 @@ void CopyFile(string input, string output)
 	// Close The Files
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
+	printf("File copied: %s to %s", input.c_str(), output.c_str());
 }
 
 string getFileFullFileName(string filename)
 {
-	size_t lastpos = filename.find_last_of("/", 0);
+	size_t lastpos = filename.find_last_of('/');
 
 	if (lastpos == string::npos)
 		return "";
 
+	printf("Last position: %d\n", lastpos);
+
 	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
-	zw = toUpper(zw);
+//	zw = toUpper(zw);
 
 	return zw;
 }
