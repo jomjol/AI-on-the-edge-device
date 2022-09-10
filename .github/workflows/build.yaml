@@ -42,6 +42,3 @@ jobs:
       with:
         name: web-interface__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}
         path: ./sd-card/html/*
-
-# TODO:
-#  - set build in version (firmware and web interface) based on branch/commit
