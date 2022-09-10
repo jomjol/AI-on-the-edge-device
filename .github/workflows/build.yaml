@@ -27,6 +27,9 @@ jobs:
       id: vars
       run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
+    - name: Set Versions
+      run: echo "${{ github.ref_name }} / ${{ steps.vars.outputs.sha_short }}" > "sd-card/html/version.txt"
+
     - name: Build Firmware
 #      run: touch firmware.bin # Testing
       run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}.bin
