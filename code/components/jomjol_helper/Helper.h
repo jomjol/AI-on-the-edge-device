@@ -21,6 +21,7 @@ bool ctype_space(const char c, string adddelimiter);
 
 string getFileType(string filename);
 string getFileFullFileName(string filename);
+string getDirectory(string filename);
 
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);

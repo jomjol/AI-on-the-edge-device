@@ -706,7 +706,7 @@ void delete_all_in_directory(std::string _directory)
     closedir(dir);
 }
 
-std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin)
+std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main)
 {
     int i, sort_iter;
     mz_bool status;
@@ -760,14 +760,24 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
             // Save to File.
             zw = std::string(archive_filename);
-            if (toUpper(getFileType(zw)) == "BIN")
+            if (toUpper(zw) == "FIRMWARE.BIN")
             {
                 zw = _target_bin + zw;
                 ret = zw;
             }
             else
             {
-                zw = _target_zip + zw;
+                std::string _dir = getDirectory(zw);
+
+                if (_dir.length() > 0)
+                {
+                    zw = _main + zw;
+                }
+                else
+                {
+                    zw = _target_zip + zw;
+                }
+
             }
 
             printf("Filename to extract: %s", zw.c_str());

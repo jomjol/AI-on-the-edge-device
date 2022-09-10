@@ -268,11 +268,23 @@ string getFileFullFileName(string filename)
 	if (lastpos == string::npos)
 		return "";
 
-	printf("Last position: %d\n", lastpos);
+//	printf("Last position: %d\n", lastpos);
 
 	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
-//	zw = toUpper(zw);
 
+	return zw;
+}
+
+string getDirectory(string filename)
+{
+	size_t lastpos = filename.find('/');
+
+	if (lastpos == string::npos)
+		return "";
+
+//	printf("Directory: %d\n", lastpos);
+
+	string zw = filename.substr(0, lastpos - 1);
 	return zw;
 }
 
