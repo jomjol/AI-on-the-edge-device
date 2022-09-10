@@ -25,7 +25,7 @@ jobs:
 
     - name: Build Firmware
 #      run: touch firmware.bin # Testing
-      run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}.bin
+      run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}.bin; ll -h ../firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}.bin
 
     - name: Set outputs
       id: vars
