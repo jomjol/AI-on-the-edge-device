@@ -52,7 +52,7 @@ jobs:
     - name: Prepare combined zip
       run: cp ./code/.pio/build/esp32cam/firmware.bin ./sd-card/html/
 
-    - name: Upload Combined zip file
+    - name: Upload combined zip file
       uses: actions/upload-artifact@v3
       with:
         name: update__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})
