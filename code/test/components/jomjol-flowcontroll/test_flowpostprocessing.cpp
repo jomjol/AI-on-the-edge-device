@@ -191,6 +191,15 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
+        // Fehler bei Rolling (2002-09-09)
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1242730397
+        digits = { 3.0, 2.0, 2.0, 8.0, 9.0, 4.0, 1.7, 9.8};  // falscher Wert 32290.420
+        analogs = { };
+        expected = "32289420";
+        result = process_doFlow(analogs, digits);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+
 }
 
 
