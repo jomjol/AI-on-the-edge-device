@@ -209,6 +209,13 @@ size_t findDelimiterPos(string input, string delimiter)
 	return pos;
 }
 
+void DeleteFile(string fn)
+{
+//	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
+	/* Delete file */
+	unlink(fn.c_str());    
+}
+
 
 void CopyFile(string input, string output)
 {
@@ -245,15 +252,30 @@ void CopyFile(string input, string output)
 	fclose(fpTargetFile);
 }
 
+string getFileFullFileName(string filename)
+{
+	size_t lastpos = filename.find_last_of("/", 0);
+
+	if (lastpos == string::npos)
+		return "";
+
+	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
+	zw = toUpper(zw);
+
+	return zw;
+}
 
 string getFileType(string filename)
 {
-	int lastpos = filename.find(".", 0);
-	int neu_pos;
+	size_t lastpos = filename.find(".", 0);
+	size_t neu_pos;
 	while ((neu_pos = filename.find(".", lastpos + 1)) > -1)
 	{
 		lastpos = neu_pos;
 	}
+
+	if (lastpos == string::npos)
+		return "";
 
 	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
 	zw = toUpper(zw);

@@ -40,6 +40,12 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-10)
+
+- Internal preparations for improved update mechanism
+- Additional testcases (**[haverland](https://github.com/haverland)**)
+- HTML: Updates / improvements  (**[caco3](https://github.com/caco3)**)
+
 ##### Rolling (2022-09-04)
 
 - Improved Reboot (**[caco3](https://github.com/caco3)**)

@@ -207,24 +207,6 @@ static void print_sha256 (const uint8_t *image_hash, const char *label)
 
 static bool diagnostic(void)
 {
-/*
-    gpio_config_t io_conf;
-    io_conf.intr_type    = (gpio_int_type_t) GPIO_PIN_INTR_DISABLE;
-    io_conf.mode         = GPIO_MODE_INPUT;
-    io_conf.pin_bit_mask = (1ULL << CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    io_conf.pull_up_en   = GPIO_PULLUP_ENABLE;
-    gpio_config(&io_conf);
-
-    ESP_LOGI(TAGPARTOTA, "Diagnostics (5 sec)...");
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-
-    bool diagnostic_is_ok = gpio_get_level(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
-
-    gpio_reset_pin(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
-
-    return diagnostic_is_ok;
-*/
     return true;
 }
 
@@ -343,6 +325,91 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         }
 
     };
+
+    if (_task.compare("update") == 0)
+    {
+        std::string filetype = toUpper(getFileType(fn));
+        if (filetype.length() == 0)
+        {
+            std::string zw = "Update failed - no file specified (zip, bin, tfl, tlite)";
+            httpd_resp_sendstr_chunk(req, zw.c_str());
+            httpd_resp_sendstr_chunk(req, NULL);  
+            return ESP_OK;        
+        }
+
+
+        if ((filetype == "TFLITE") || (filetype == "TFL"))
+        {
+            std::string out = "/sdcard/firmware/" + getFileFullFileName(fn);
+            CopyFile(fn, out);
+            DeleteFile(fn);
+
+            const char*  resp_str = "Neural Network File copied.";
+            httpd_resp_sendstr_chunk(req, resp_str);
+            httpd_resp_sendstr_chunk(req, NULL);  
+            return ESP_OK;
+        }
+
+
+        if (filetype == "ZIP")
+        {
+            std::string in, out, outbin, zw, retfirmware;
+
+            in = "/sdcard/firmware/html.zip";
+            out = "/sdcard/html";
+            outbin = "/sdcard/firmware";
+
+            delete_all_in_directory(out);
+
+            retfirmware = unzip_new(in, out+"/", outbin+"/");
+
+            if (retfirmware.length() > 0)
+            {
+                filetype = "BIN";
+                fn = retfirmware;
+                zw = "HTML Update Successfull!<br><br>Additioal firmware found in ZIP file.\n";
+                httpd_resp_sendstr_chunk(req, zw.c_str());
+            }
+            else
+            {
+                zw = "HTML Update Successfull!<br><br>No reboot necessary.\n";
+                httpd_resp_sendstr_chunk(req, zw.c_str());
+                httpd_resp_sendstr_chunk(req, NULL);  
+                return ESP_OK;        
+            }
+        }
+
+
+        if (filetype == "BIN")
+        {
+            const char* resp_str;    
+            KillTFliteTasks();
+            gpio_handler_deinit();
+            if (ota_update_task(fn))
+            {
+                resp_str = "Firmware Update Successfull!<br><br>You can restart now.";
+            }
+            else
+            {
+                resp_str = "Error during Firmware Update!!!<br><br>Please check output of console.";
+            }
+
+            httpd_resp_send(req, resp_str, strlen(resp_str));  
+
+            #ifdef DEBUG_DETAIL_ON 
+                LogFile.WriteHeapInfo("handler_ota_update - Done");    
+            #endif
+
+            return ESP_OK;
+        }
+
+
+        std::string zw = "Update failed - no valid file specified (zip, bin, tfl, tlite)";
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
 
     if (_task.compare("unziphtml") == 0)
     {

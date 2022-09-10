@@ -120,16 +120,6 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
 }
 
 
-/* Handler to redirect incoming GET request for /index.html to /
- * This can be overridden by uploading file with same name */
-// static esp_err_t index_html_get_handler(httpd_req_t *req)
-// {
-//     httpd_resp_set_status(req, "307 Temporary Redirect");
-//     httpd_resp_set_hdr(req, "Location", "/");
-//     httpd_resp_send(req, NULL, 0);  // Response body can be empty
-//     return ESP_OK;
-// }
-
 /* Send HTTP response with a run-time generated html consisting of
  * a list of all files and folders under the requested path.
  * In case of SPIFFS this returns empty list when path is any
@@ -714,6 +704,90 @@ void delete_all_in_directory(std::string _directory)
         };
     }
     closedir(dir);
+}
+
+std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin)
+{
+    int i, sort_iter;
+    mz_bool status;
+    size_t uncomp_size;
+    mz_zip_archive zip_archive;
+    void* p;
+    char archive_filename[64];
+    std::string zw, ret = "";
+//    static const char* s_Test_archive_filename = "testhtml.zip";
+
+    printf("miniz.c version: %s\n", MZ_VERSION);
+    printf("Zipfile: %s\n", _in_zip_file.c_str());
+    printf("Target Dir ZIP: %s\n", _target_zip.c_str());
+    printf("Target Dir BIN: %s\n", _target_bin.c_str());
+
+    // Now try to open the archive.
+    memset(&zip_archive, 0, sizeof(zip_archive));
+    status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), 0);
+    if (!status)
+    {
+        printf("mz_zip_reader_init_file() failed!\n");
+        return ret;
+    }
+
+    // Get and print information about each file in the archive.
+    int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
+    for (sort_iter = 0; sort_iter < 2; sort_iter++)
+    {
+        memset(&zip_archive, 0, sizeof(zip_archive));
+        status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);
+        if (!status)
+        {
+            printf("mz_zip_reader_init_file() failed!\n");
+            return ret;
+        }
+
+        for (i = 0; i < numberoffiles; i++)
+        {
+            mz_zip_archive_file_stat file_stat;
+            mz_zip_reader_file_stat(&zip_archive, i, &file_stat);
+            sprintf(archive_filename, file_stat.m_filename);
+ 
+            // Try to extract all the files to the heap.
+            p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
+            if (!p)
+            {
+                printf("mz_zip_reader_extract_file_to_heap() failed!\n");
+                mz_zip_reader_end(&zip_archive);
+                return ret;
+            }
+
+            // Save to File.
+            zw = std::string(archive_filename);
+            if (toUpper(getFileType(zw)) == "BIN")
+            {
+                zw = _target_bin + zw;
+                ret = zw;
+            }
+            else
+            {
+                zw = _target_zip + zw;
+            }
+                
+            printf("Filename to extract: %s", zw.c_str());
+            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
+            fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
+            fclose(fpTargetFile);
+
+            printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
+            //            printf("File data: \"%s\"\n", (const char*)p);
+
+            // We're done.
+            mz_free(p);
+        }
+
+        // Close the archive, freeing any resources it was using
+        mz_zip_reader_end(&zip_archive);
+    }
+
+    printf("Success.\n");
+    return ret;
 }
 
 void unzip(std::string _in_zip_file, std::string _target_directory){
