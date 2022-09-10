@@ -1,0 +1,47 @@
+name: Build and Pack
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Cache PlatformIO
+      uses: actions/cache@v2
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade platformio
+
+    - name: Build Firmware
+#      run: touch firmware.bin # Testing
+      run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../
+
+    - name: Set outputs
+      id: vars
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+    - name: Upload Firmware Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}
+        path: firmware.bin
+
+    - name: Upload Web interface Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: web-interface__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}
+        path: ./sd-card/html/*
+
+# TODO:
+#  - set build in version (firmware and web interface) based on branch/commit
