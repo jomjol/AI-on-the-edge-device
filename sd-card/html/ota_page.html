@@ -29,7 +29,8 @@ input[type=number] {
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<h3>It is strongly recommended to update firmware and content of /html directory on SD-card at the same time!</h3>
+Check at <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>https://github.com/jomjol/AI-on-the-edge-device/releases</a> to see if there is an update available.
+<h3>It is strongly recommended to update firmware and web interface (stored separately in the html directory on SD-card) at the same time!</h3>
 <hr>
 <h2>1. Firmware Update</h2>
 <table class="fixed" border="0">
@@ -38,7 +39,7 @@ input[type=number] {
             <table border="0">
                 <tr>
                     <td style="width: 230px">
-                        <label for="newfile">Select the firmware file:</label>
+                        <label for="newfile">Select the firmware file (firmware.bin):</label>
                     </td>
                     <td colspan="2">
                         <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
@@ -52,7 +53,7 @@ input[type=number] {
                         <label for="filepath">Set path on server:</label>
                     </td>
                     <td>
-                        <input id="filepath" type="text" style="width:100%;" readonly>
+                        <input id="filepath" type="text" style="width:100%; border: 0" readonly>
                     </td>
                     <td>
                         <button id="upload" type="button" onclick="upload()">Upload</button>
@@ -62,21 +63,20 @@ input[type=number] {
         </td>
     </tr>
 </table>
-<hr>
-<h2>2. Update "/html" directory</h2>
+<h2>2. Web Interface Update</h2>
 <table class="fixed" border="0">
     <tr>
         <td>
             <table border="0">
                 <tr>
                     <td style="width: 230px">
-                        <label for="newfilehtml">Select the zipped /html content:</label>
+                        <label for="newfilehtml">Select the Web Interface file (html.zip):</label>
                     </td>
                     <td colspan="2">
                         <input id="newfilehtml" type="file" onchange="setpathhtml()" style="width:100%;">
                     </td>
                     <td rowspan="2" style="padding-left:50px">
-			<button class="button" id="doUpdatehtml" type="button" onclick="doUpdatehtml()">Update "/html" directory</button>
+			<button class="button" id="doUpdatehtml" type="button" onclick="doUpdatehtml()">Update Web Interface</button>
                     </td>
                 </tr>
                 <tr>
@@ -84,7 +84,7 @@ input[type=number] {
                         <label for="filepathhtml">Set path on server:</label>
                     </td>
                     <td>
-                        <input id="filepathhtml" type="text" style="width:100%;" readonly>
+                        <input id="filepathhtml" type="text" style="width:100%; border: 0" readonly>
                     </td>
                     <td>
                         <button id="uploadhtml" type="button" onclick="uploadhtml()">Upload</button>
@@ -94,11 +94,11 @@ input[type=number] {
         </td>
     </tr>
 </table>
-<hr>
 <h2>3. Reboot</h2>
 			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
 <hr>
-<h2>4. Upload neural network definition (tfl/tflite file)</h2>
+<h2>Upload Neural Network Definition (tfl/tflite file)</h2>
+<b>The file must be set active afterwards on the <a href="index_configure.html" target="_parent">Config</a> page</b>!
 <table class="fixed" border="0">
     <tr>
         <td>
@@ -116,7 +116,7 @@ input[type=number] {
                         <label for="filepathtfl">Set path on server</label>
                     </td>
                     <td>
-                        <input id="filepathtfl" type="text" style="width:100%;" readonly>
+                        <input id="filepathtfl" type="text" style="width:100%; border: 0" readonly>
                     </td>
                     <td>
                         <button id="uploadtfl" type="button" onclick="uploadtfl()" disabled>Upload</button>
@@ -125,8 +125,6 @@ input[type=number] {
             </table>
         </td>
     </tr>
-    The file must be activated!
-    Use the <a href="index_configure.html" target="_parent">Config Page</a> or do it manually in the config.ini file.
 </table>
 
 
