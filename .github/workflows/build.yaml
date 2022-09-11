@@ -43,15 +43,20 @@ jobs:
         name: firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})
         path: firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_\(${{ steps.vars.outputs.sha_short }}\).bin
 
+    - name: Prepare html zip
+      run: |
+        mkdir -p dist
+        cp -r ./sd-card/html ./dist/
+        
     - name: Upload Web interface Artifact
       uses: actions/upload-artifact@v3
       with:
         name: html__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})
-        path: ./sd-card/html
+        path: ./dist/*
 
     - name: Prepare combined zip
       run: |
-        mkdir dist
+        mkdir -p dist
         cp ./code/.pio/build/esp32cam/firmware.bin dist/firmware.bin
         cp -r ./sd-card/html ./dist/
 
