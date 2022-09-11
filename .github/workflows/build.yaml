@@ -34,8 +34,8 @@ jobs:
       run: echo "${{ steps.vars.outputs.date_time }}, ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})" > "sd-card/html/version.txt"
 
     - name: Build Firmware
-      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin; touch firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_\(${{ steps.vars.outputs.sha_short }}\).bin # Testing
-#      run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_\(${{ steps.vars.outputs.sha_short }}\).bin
+#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin; touch firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_\(${{ steps.vars.outputs.sha_short }}\).bin # Testing
+      run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_\(${{ steps.vars.outputs.sha_short }}\).bin
 
     - name: Upload Firmware artifact
       uses: actions/upload-artifact@v3
