@@ -65,3 +65,15 @@ jobs:
       with:
         name: update__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})
         path: ./dist/*
+
+
+    - name: Prepare combined zip incl. CNN
+      run: |
+        mkdir -p dist
+        cp -r ./sd-card/config ./dist/
+
+    - name: Upload combined zip artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: update_incl_cnn__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})
+        path: ./dist/*
