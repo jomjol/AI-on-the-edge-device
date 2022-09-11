@@ -53,10 +53,10 @@ jobs:
       run: |
         mkdir dist
         cp ./code/.pio/build/esp32cam/firmware.bin dist/firmware.bin
-        cp ./sd-card/html ./dist/
+        cp -r ./sd-card/html ./dist/
 
     - name: Upload combined zip file
       uses: actions/upload-artifact@v3
       with:
         name: update__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})
-        path: ./sd-card/html/*
+        path: ./dist/*
