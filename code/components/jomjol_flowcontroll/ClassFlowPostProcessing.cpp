@@ -818,7 +818,7 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, i
     return NUMBERS[_number]->ReturnValue;
 }
 
-string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
+string ClassFlowPostProcessing::RundeOutput(double _in, int _anzNachkomma){
     std::stringstream stream;
     int _zw = _in;    
 //    printf("AnzNachkomma: %d\n", _anzNachkomma);
