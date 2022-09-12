@@ -34,7 +34,7 @@ protected:
 
     string ErsetzteN(string, float _prevalue);
     float checkDigitConsistency(float input, int _decilamshift, bool _isanalog, float _preValue);
-    string RundeOutput(float _in, int _anzNachkomma);
+    string RundeOutput(double _in, int _anzNachkomma);
 
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
