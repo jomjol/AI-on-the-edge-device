@@ -698,7 +698,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
             NUMBERS[j]->ReturnValue.erase(0, 1);
 
-        NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
+        NUMBERS[j]->Value = std::stod(NUMBERS[j]->ReturnValue);
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency)
         {
