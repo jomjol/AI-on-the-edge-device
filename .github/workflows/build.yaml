@@ -10,18 +10,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Cache PlatformIO
-      uses: actions/cache@v2
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    #- name: Cache PlatformIO
+      #uses: actions/cache@v2
+      #with:
+        #path: ~/.platformio
+        #key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade platformio
+    #- name: Set up Python
+      #uses: actions/setup-python@v2
+    #- name: Install PlatformIO
+      #run: |
+        #python -m pip install --upgrade pip
+        #pip install --upgrade platformio
 
     - name: Set outputs
       id: vars
@@ -30,6 +30,7 @@ jobs:
         echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
         echo "::set-output name=date_time_filename::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d_%H-%M-%S')"
         echo "::set-output name=version_string::${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        echo "Version String: ${{ steps.vars.outputs.version_string }}"
 
 
     - name: Set Version used in HTML Info page
