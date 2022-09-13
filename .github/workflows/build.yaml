@@ -95,8 +95,9 @@ jobs:
 
     - name: Prepare update.zip artifact (Firmware + Web UI + CNN)
       run: |
-        cp -f ./sd-card/config/*.tfl ./dist/
-        cp -f ./sd-card/config/*.tflite ./dist/
+        mkdir ./sd-card/config/
+        cp ./sd-card/config/*.tfl ./dist/config/ 2>/dev/null
+        cp ./sd-card/config/*.tflite ./dist/config/ 2>/dev/null
 
     - name: Upload update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
