@@ -10,38 +10,97 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Cache PlatformIO
-      uses: actions/cache@v2
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    #- name: Cache PlatformIO
+      #uses: actions/cache@v2
+      #with:
+        #path: ~/.platformio
+        #key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade platformio
+    #- name: Set up Python
+      #uses: actions/setup-python@v2
+    #- name: Install PlatformIO
+      #run: |
+        #python -m pip install --upgrade pip
+        #pip install --upgrade platformio
 
-    - name: Set outputs
+    - name: Set Variables
       id: vars
-      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
+        echo "::set-output name=date_time_filename::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d_%H-%M-%S')"
+        #echo "::set-output name=version_string::${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        #echo "Version String: ${{ steps.vars.outputs.version_string }}"
 
-    - name: Set Versions
-      run: echo "${{ github.ref_name }} / ${{ steps.vars.outputs.sha_short }}" > "sd-card/html/version.txt"
+
+    - name: Set Version used in HTML Info page
+      run: echo "${{ steps.vars.outputs.date_time }}, ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})" > "sd-card/html/version.txt"
+
 
     - name: Build Firmware
-#      run: touch firmware.bin # Testing
-      run: cd code; platformio run --environment esp32cam; cp .pio/build/esp32cam/firmware.bin ../firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}.bin
+#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
+      run: cd code; platformio run --environment esp32cam
 
-    - name: Upload Firmware Artifact
+
+
+    # Old OTA concept
+    # firmware__*.zip needs to be unpacked before attaching to the release!
+    # The bin filename can contain versioning.
+    - name: Rename firmware file to contain versioning (old ota)
+      run: |
+        mkdir -p ./dist_old_ota
+        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
+        ls -l ./dist_old_ota
+
+    - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}
-        path: firmware__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}.bin
+        name: "firmware__extract_before_upload__only_needed_for_migration_from_11.2.0"
+        path: ./dist_old_ota/*
 
-    - name: Upload Web interface Artifact
+    - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: web-interface__${{ github.ref_name }}__${{ steps.vars.outputs.sha_short }}
+        name: "html__only_needed_for_migration_from_11.2.0__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./sd-card/html/*
+
+
+
+    # New OTA concept
+    # update__version.zip file with following content:
+    #  - /firmware.bin
+    #  - (optional) /html/*
+    #  - (optional) /config/*.tfl        
+    - name: Prepare update.zip artifact
+      run: |
+        mkdir -p ./dist
+        cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
+
+    - name: Upload update.zip Artifact (Firmware only)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "update_firmware_only__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./dist/*
+        
+
+    - name: Prepare update.zip artifact (Firmware + Web UI)
+      run: cp -r ./sd-card/html ./dist/
+
+    - name: Upload update.zip artifact (Firmware + Web UI)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "update_firmware+web_ui__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./dist/*
+        
+
+    - name: Prepare update.zip artifact (Firmware + Web UI + CNN)
+      run: |
+        mkdir ./dist/config/
+        cp ./sd-card/config/*.tfl ./dist/config/ 2>/dev/null || true
+        cp ./sd-card/config/*.tflite ./dist/config/ 2>/dev/null || true
+
+    - name: Upload update.zip artifact (Firmware + Web UI + CNN)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "update_firmware+web_ui+cnn__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./dist/*
