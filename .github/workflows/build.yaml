@@ -86,7 +86,7 @@ jobs:
     - name: Prepare update.zip artifact (Firmware + Web UI)
       run: cp -r ./sd-card/html ./dist/
 
-    - name: Upload combined zip artifact
+    - name: Upload update.zip artifact (Firmware + Web UI)
       uses: actions/upload-artifact@v3
       with:
         name: "update_firmware+web_ui__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
@@ -95,8 +95,8 @@ jobs:
 
     - name: Prepare update.zip artifact (Firmware + Web UI + CNN)
       run: |
-        cp -r ./sd-card/config/*.tfl ./dist/
-        cp -r ./sd-card/config/*.tflite ./dist/
+        cp -f ./sd-card/config/*.tfl ./dist/
+        cp -f ./sd-card/config/*.tflite ./dist/
 
     - name: Upload update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
