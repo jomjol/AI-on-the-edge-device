@@ -10,18 +10,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    #- name: Cache PlatformIO
-      #uses: actions/cache@v2
-      #with:
-        #path: ~/.platformio
-        #key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Cache PlatformIO
+      uses: actions/cache@v2
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
-    #- name: Set up Python
-      #uses: actions/setup-python@v2
-    #- name: Install PlatformIO
-      #run: |
-        #python -m pip install --upgrade pip
-        #pip install --upgrade platformio
+    - name: Set up Python
+      uses: actions/setup-python@v2
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade platformio
 
     - name: Set Variables
       id: vars
