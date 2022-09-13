@@ -55,7 +55,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: "firmware__extract_before_upload__only_needed_for_migration_from_11.2.0__"
-        path: "./dist_old_ota/firmware__only_needed_for_migration_from_11.2.0__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        path: "./dist_old_ota/firmware__only_needed_for_migration_from_11.2.0__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
 
     - name: Upload Web interface Artifact (old OTA concept)
       uses: actions/upload-artifact@v3
