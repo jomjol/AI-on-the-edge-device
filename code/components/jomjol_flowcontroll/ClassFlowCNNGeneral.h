@@ -30,7 +30,7 @@ protected:
     int DigitalBand = 3;
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
     float DigitalUebergangsbereichVorgaengerAnalogToDigit = 1; // war vorher 2
-    float DigitalUebergangsbereichVorgaenger = 0.9;
+    float DigitalUebergangsbereichVorgaenger = 0.7; // 9.3 - 0.7
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;

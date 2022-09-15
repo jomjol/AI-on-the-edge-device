@@ -232,9 +232,9 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
     }
 
     // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
-    // alles <=x.6 kann als aktuelle Zahl gelten im Übergang. Bei 9.5 Vorgänger kann die aktuelle
+    // alles >=x.4 kann als aktuelle Zahl gelten im Übergang. Bei 9.5 Vorgänger kann die aktuelle
     // Zahl noch x.6 - x.7 sein. 
-    if (ergebnis_nachkomma <= 6)
+    if (ergebnis_nachkomma >= 4)
         result =  ergebnis_vorkomma;
     else
         result =  (ergebnis_vorkomma - 1 + 10) % 10;

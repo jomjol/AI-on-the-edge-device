@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include "time_sntp.h"
+//#define SERIAL_DEBUG // testing debug on serial enabled
 
 
 #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S"
@@ -663,7 +664,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     previous_value = zw - 48;
             }
         }
-
+        #ifdef SERIAL_DEBUG
+            printf("After analog->getReadout: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+        #endif
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = "." + NUMBERS[j]->ReturnRawValue;
 
@@ -674,16 +677,22 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             else
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
-
+        #ifdef SERIAL_DEBUG
+            printf("After digital->getReadout: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+        #endif
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
 
-        printf("ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());  
-
+        #ifdef SERIAL_DEBUG
+            printf("After ShiftDecimal: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+        #endif
 
         if (IgnoreLeadingNaN)               
             while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N'))
                 NUMBERS[j]->ReturnRawValue.erase(0, 1);
 
+        #ifdef SERIAL_DEBUG
+            printf("After IgnoreLeadingNaN: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+        #endif
         NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnRawValue;
 
         if (findDelimiterPos(NUMBERS[j]->ReturnValue, "N") != std::string::npos)
@@ -693,18 +702,27 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             else
                 continue; // es gibt keinen Zahl, da noch ein N vorhanden ist.
         }
-
+        #ifdef SERIAL_DEBUG
+            printf("After findDelimiterPos: ReturnValue %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+        #endif
         // Lösche führende Nullen (außer es ist nur noch einen 0)
         while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
             NUMBERS[j]->ReturnValue.erase(0, 1);
-
+        #ifdef SERIAL_DEBUG
+            printf("After removeLeadingZeros: ReturnValue %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+        #endif
         NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
+        #ifdef SERIAL_DEBUG
+            printf("After setting the Value: Value %f and as double is %f\n", NUMBERS[j]->Value, std::stod(NUMBERS[j]->ReturnValue));  
+        #endif
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency)
         {
             NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
         }
-
+        #ifdef SERIAL_DEBUG
+            printf("After checkDigitIncreaseConsistency: Value %f\n", NUMBERS[j]->Value);  
+        #endif
 
 
         if (!NUMBERS[j]->AllowNegativeRates)
@@ -717,7 +735,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 continue;
             }
         }
-
+        #ifdef SERIAL_DEBUG
+            printf("After AllowNegativeRates: Value %f\n", NUMBERS[j]->Value);  
+        #endif
         double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
         difference /= 60;  
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
@@ -740,7 +760,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 continue;
             }
         }
-
+        #ifdef SERIAL_DEBUG
+           printf("After MaxRateCheck: Value %f\n", NUMBERS[j]->Value);  
+        #endif
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
         NUMBERS[j]->lastvalue = imagetime;
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
@@ -885,8 +907,14 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
     {
         pot++;
     }
+    #ifdef SERIAL_DEBUG
+        printf("checkDigitConsistency: pot=%d, decimalshift=%d\n", pot, _decilamshift);
+    #endif
     pot_max = ((int) log10(input)) + 1;
-
+    float not_checked_input = floorf(input * pow(10, pot)) / pow(10, pot);
+    #ifdef SERIAL_DEBUG
+        printf("checkDigitConsistency: not_checked_input=%f\n", not_checked_input);
+    #endif
     while (pot <= pot_max)
     {
         zw = input / pow(10, pot-1);
@@ -915,11 +943,13 @@ float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamsh
                 input = input + ((float) (1)) * pow(10, pot);   // addiere 1 an der Stelle
             }
         }
-
+        #ifdef SERIAL_DEBUG
+            printf("checkDigitConsistency: input=%f", input);
+        #endif
         pot++;
     }
 
-    return input;
+    return not_checked_input + input;
 }
 
 string ClassFlowPostProcessing::getReadoutRate(int _number)
