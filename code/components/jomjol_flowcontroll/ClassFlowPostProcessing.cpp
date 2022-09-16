@@ -69,7 +69,7 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     return result;
 }
 
-void ClassFlowPostProcessing::SetPreValue(float zw, string _numbers, bool _extern)
+void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _extern)
 {
     printf("SetPrevalue: %f, %s\n", zw, _numbers.c_str());
     for (int j = 0; j < NUMBERS.size(); ++j)
@@ -127,7 +127,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
             {
                 if (NUMBERS[j]->name == name)
                 {
-                    NUMBERS[j]->PreValue = stof(zwvalue.c_str());
+                    NUMBERS[j]->PreValue = stod(zwvalue.c_str());
                     NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // SIcherheitshalber 1 Stelle mehr, da ggf. Exgtended Resolution an ist (wird erst beim ersten Durchlauf gesetzt)
 
                     time_t tStart;
@@ -178,7 +178,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         fclose(pFile);
         printf("%s", zw);
         zwvalue = trim(std::string(zw));
-        NUMBERS[0]->PreValue = stof(zwvalue.c_str());
+        NUMBERS[0]->PreValue = stod(zwvalue.c_str());
 
         time_t tStart;
         int yy, month, dd, hh, mm, ss;
@@ -711,15 +711,26 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             printf("After removeLeadingZeros: ReturnValue %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
         #endif
-        NUMBERS[j]->Value = std::stof(NUMBERS[j]->ReturnValue);
+        NUMBERS[j]->Value = std::stod(NUMBERS[j]->ReturnValue);
         #ifdef SERIAL_DEBUG
             printf("After setting the Value: Value %f and as double is %f\n", NUMBERS[j]->Value, std::stod(NUMBERS[j]->ReturnValue));  
         #endif
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency)
         {
-            NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
+            if (flowDigit)
+            {
+                if (flowDigit->getCNNType() != Digital)
+                    printf("checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digital Classification)\n"); 
+                else 
+                    NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
+            }
+            else
+            {
+                printf("checkDigitIncreaseConsistency = true - no digital numbers defined!\n"); 
+            }
         }
+
         #ifdef SERIAL_DEBUG
             printf("After checkDigitIncreaseConsistency: Value %f\n", NUMBERS[j]->Value);  
         #endif
@@ -745,7 +756,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay)
         {
-            float _ratedifference;  
+            double _ratedifference;  
             if (NUMBERS[j]->RateType == RateChange)
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             else
@@ -840,7 +851,7 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, i
     return NUMBERS[_number]->ReturnValue;
 }
 
-string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
+string ClassFlowPostProcessing::RundeOutput(double _in, int _anzNachkomma){
     std::stringstream stream;
     int _zw = _in;    
 //    printf("AnzNachkomma: %d\n", _anzNachkomma);
@@ -864,7 +875,7 @@ string ClassFlowPostProcessing::RundeOutput(float _in, int _anzNachkomma){
 }
 
 
-string ClassFlowPostProcessing::ErsetzteN(string input, float _prevalue)
+string ClassFlowPostProcessing::ErsetzteN(string input, double _prevalue)
 {
     int posN, posPunkt;
     int pot, ziffer;
@@ -895,7 +906,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input, float _prevalue)
     return input;
 }
 
-float ClassFlowPostProcessing::checkDigitConsistency(float input, int _decilamshift, bool _isanalog, float _preValue){
+float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue){
     int aktdigit, olddigit;
     int aktdigit_before, olddigit_before;
     int pot, pot_max;

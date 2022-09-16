@@ -40,6 +40,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-16)
+
+- Increase precission for more than 6-7 digits (based on idea of **[stefanbode](https://github.com/stefanbode)**)
+- HTML: bug fix in case of https access (**[PLCHome](https://github.com/PLCHome)**)
+
 ##### Rolling (2022-09-10)
 
 - Internal preparations for improved update mechanism

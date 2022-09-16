@@ -831,6 +831,11 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "EditFlow"; 
     httpd_register_uri_handler(server, &camuri);     
 
+    camuri.uri       = "/value.html";
+    camuri.handler   = handler_wasserzaehler;
+    camuri.user_ctx  = (void*) "Value"; 
+    httpd_register_uri_handler(server, &camuri);  
+
     camuri.uri       = "/wasserzaehler.html";
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
