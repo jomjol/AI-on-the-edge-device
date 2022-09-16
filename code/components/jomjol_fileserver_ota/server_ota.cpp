@@ -50,6 +50,8 @@ static char ota_write_data[BUFFSIZE + 1] = { 0 };
 #define OTA_URL_SIZE 256
 static const char *TAGPARTOTA = "server_ota";
 
+esp_err_t handler_reboot(httpd_req_t *req);
+
 
 static void infinite_loop(void)
 {
@@ -388,7 +390,10 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             gpio_handler_deinit();
             if (ota_update_task(fn))
             {
-                resp_str = "Firmware Update Successfull!<br><br>You can restart now.";
+//                resp_str = "rebooting - Firmware Update Successfull!<br><br>You can restart now.";
+//                httpd_resp_send(req, resp_str, strlen(resp_str));  
+//                httpd_resp_sendstr_chunk(req, NULL);  
+                return handler_reboot(req);                
             }
             else
             {
@@ -439,6 +444,8 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             unlink(fn.c_str());
         }
         /* Respond with an empty chunk to signal HTTP response completion */
+        std::string zw = "file deleted!\n";
+        httpd_resp_sendstr_chunk(req, zw.c_str());
         httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
     }

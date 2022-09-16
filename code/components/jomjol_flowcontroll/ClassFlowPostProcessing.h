@@ -32,9 +32,9 @@ protected:
     bool LoadPreValue(void);
     string ShiftDecimal(string in, int _decShift);
 
-    string ErsetzteN(string, float _prevalue);
-    float checkDigitConsistency(float input, int _decilamshift, bool _isanalog, float _preValue);
-    string RundeOutput(float _in, int _anzNachkomma);
+    string ErsetzteN(string, double _prevalue);
+    float checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
+    string RundeOutput(double _in, int _anzNachkomma);
 
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
@@ -58,7 +58,7 @@ public:
     string getReadoutTimeStamp(int _number = 0);
     void SavePreValue();
     string GetPreValue(std::string _number = "");
-    void SetPreValue(float zw, string _numbers, bool _extern = false);
+    void SetPreValue(double zw, string _numbers, bool _extern = false);
 
     std::string GetJSON(std::string _id = "", std::string _mac = "", std::string _lineend = "\n");
 

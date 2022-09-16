@@ -10,7 +10,6 @@ enum t_CNNType {
     Analogue,
     Analogue100,
     Digital,
-//    DigitalHyprid,
     DigitalHyprid10,
     DoubleHyprid10,
     Digital100,
