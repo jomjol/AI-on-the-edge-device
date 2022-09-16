@@ -20,7 +20,7 @@ function getbasepath(){
     }
     else
     {
-        host = "http://" + host;
+        host = window.location.protocol + "//" + host;
         if (window.location.port != "") {
             host = host + ":" + window.location.port;
         }
