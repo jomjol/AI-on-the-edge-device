@@ -51,7 +51,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
   
 
 
-- **NEW v11.3.1**: corrected corupted asset `firmware.bin`
+- **NEW v11.3.1**: corrected corrupted asset `firmware.bin`
 - Increased precision (more than 6-7 digits)
 - Implements Counter Clockwise Analog Pointers
 - Improved post processing algorithm
