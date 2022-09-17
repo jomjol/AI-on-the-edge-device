@@ -10,7 +10,6 @@ enum t_CNNType {
     Analogue,
     Analogue100,
     Digital,
-//    DigitalHyprid,
     DigitalHyprid10,
     DoubleHyprid10,
     Digital100,
@@ -30,21 +29,18 @@ protected:
     int DigitalBand = 3;
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
     float DigitalUebergangsbereichVorgaengerAnalogToDigit = 1; // war vorher 2
-    float DigitalUebergangsbereichVorgaenger = 0.9;
+    float DigitalUebergangsbereichVorgaenger = 0.7; // 9.3 - 0.7
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;
     bool isLogImageSelect;
     string LogImageSelect;
     ClassFlowAlignment* flowpostalignment;
-//    ClassFlowPostProcessing *flowpostprocessing = NULL;
-    bool SaveAllFiles;   
-//    bool extendedResolution;
 
-//    int ZeigerEval(float zahl, int ziffer_vorgaenger);
-//    int ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger);
+    bool SaveAllFiles;   
+
     int ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger);
-    int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger);
+    int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger);
     int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false);
 
 

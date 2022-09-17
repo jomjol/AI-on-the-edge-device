@@ -43,6 +43,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     }
 
     ESP_LOGI(TAG, "Sending file : %s ...", filename.c_str());
+//    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     set_content_type_from_file(req, filename.c_str());
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
@@ -120,6 +121,8 @@ esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filename)
         return httpd_resp_set_type(req, "image/x-icon");
     } else if (IS_FILE_EXT(filename, ".js")) {
         return httpd_resp_set_type(req, "text/javascript");
+    } else if (IS_FILE_EXT(filename, ".css")) {
+        return httpd_resp_set_type(req, "text/css");
     }
     /* This is a limited set only */
     /* For any other type always set as plain text */

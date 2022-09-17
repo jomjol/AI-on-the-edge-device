@@ -7,7 +7,7 @@ struct roi {
     int posx, posy, deltax, deltay;
     float result_float;
     int result_klasse;
-    bool isReject;
+    bool isReject, CCW;
     string name;
     CImageBasis *image, *image_org;
 };
@@ -33,9 +33,9 @@ struct NumberPost {
     bool checkDigitIncreaseConsistency;
     time_t lastvalue;
     string timeStamp;
-    float FlowRateAct;          // m3 / min
-    float PreValue;             // letzter Wert, der gut ausgelesen wurde
-    float Value;                // letzer ausgelesener Wert, inkl. Korrekturen
+    double FlowRateAct;          // m3 / min
+    double PreValue;             // letzter Wert, der gut ausgelesen wurde
+    double Value;                // letzer ausgelesener Wert, inkl. Korrekturen
     string ReturnRateValue;      // RückgabewertRate
     string ReturnChangeAbsolute;      // RückgabewertRate
     string ReturnRawValue;      // Rohwert (mit N & führenden 0)    

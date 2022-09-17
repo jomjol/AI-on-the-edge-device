@@ -10,6 +10,7 @@ std::string FormatFileName(std::string input);
 void FindReplace(std::string& line, std::string& oldString, std::string& newString);
 
 void CopyFile(string input, string output);
+void DeleteFile(string fn);
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1);
 
@@ -19,6 +20,8 @@ string trim(string istring, string adddelimiter = "");
 bool ctype_space(const char c, string adddelimiter);
 
 string getFileType(string filename);
+string getFileFullFileName(string filename);
+string getDirectory(string filename);
 
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);

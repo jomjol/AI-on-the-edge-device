@@ -86,8 +86,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "CNNGoodThreshold", 1); 
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
-//     ParamAddValue(param, catname, "ModelInputSize", 2); 
-         
 
      var catname = "Analog";
      category[catname] = new Object(); 
@@ -97,7 +95,6 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Model");
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
-//     ParamAddValue(param, catname, "ModelInputSize", 2);
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 
@@ -236,9 +233,9 @@ function ParseConfigParamAll(_aktline, _catname){
           let [isCom, input] = isCommented(_input);
           var linesplit = ZerlegeZeile(input);
           ParamExtractValueAll(param, linesplit, _catname, _aktline, isCom);
-          if (!isCom && (linesplit.length == 5) && (_catname == 'Digits'))
+          if (!isCom && (linesplit.length >= 5) && (_catname == 'Digits'))
                ExtractROIs(input, "digit");
-          if (!isCom && (linesplit.length == 5) && (_catname == 'Analog'))
+          if (!isCom && (linesplit.length >= 5) && (_catname == 'Analog'))
                ExtractROIs(input, "analog");
           if (!isCom && (linesplit.length == 3) && (_catname == 'Alignment'))
           {
@@ -398,6 +395,7 @@ function WriteConfigININew()
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["y"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["dx"];
                               text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["dy"];
+                              text = text + " " + NUMBERS[_roi]["digit"][_roiddet]["CCW"];
                               config_split.push(text);
                          }
                     }
@@ -416,6 +414,7 @@ function WriteConfigININew()
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["y"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["dx"];
                               text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["dy"];
+                              text = text + " " + NUMBERS[_roi]["analog"][_roiddet]["CCW"];
                               config_split.push(text);
                          }
                     }
@@ -484,6 +483,9 @@ function ExtractROIs(_aktline, _type){
      abc["dx"] = linesplit[3];
      abc["dy"] = linesplit[4];
      abc["ar"] = parseFloat(linesplit[3]) / parseFloat(linesplit[4]);
+     abc["CCW"] = "false";
+     if (linesplit.length >= 6)
+          abc["CCW"] = linesplit[5];
 }
 
 
@@ -712,7 +714,7 @@ function DeleteNUMBER(_delte){
      return "";
 }
 
-function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy){
+function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
      _indexnumber = -1;
      for (j = 0; j < NUMBERS.length; ++j)
           if (NUMBERS[j]["name"] == _number)
@@ -735,6 +737,7 @@ function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy){
      _ret["dx"] = _dx;
      _ret["dy"] = _dy;
      _ret["ar"] = _dx / _dy;
+     _ret["CCW"] = _CCW;
 
      NUMBERS[_indexnumber][_type].splice(_pos+1, 0, _ret);
 

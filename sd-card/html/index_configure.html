@@ -2,76 +2,117 @@
 <html>
 <head>
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-<title>jomjol - AI on the edge</title>
+<title>AI on the edge</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
+<!-- <link rel="stylesheet" href="style.css" type="text/css" > -->
 <style>
-.h_iframe iframe {width:995px;height:765px;}
-.h_iframe {width:995px;height:765px;}
+/* Older Firmware versions (11.2.0 and older) do not support css files, therefore we need to keep it integrated for now! */
+body, html {
+    width: 100%; 
+    height: 100%; 
+    min-height: 800px;
+    margin: 0px 0px 0px 2px; 
+    padding: 0; 
+    font-family: arial;
+    width: fit-content;
+}
 
-h1 {font-size: 2em; margin-block-end: 0.3em;}
-h2 {font-size: 1.5em;margin-block-start: 0.3em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+.main {
+    display: flex; 
+    width: 100%; 
+    height: 100%; 
+    flex-direction: column; 
+    overflow: hidden;
+}
+
+.iframe {
+    flex-grow: 1;
+    margin: 5px 7px 4px 0px; 
+    padding: 0; 
+    border: 2px solid black;
+}
+
+h1 {
+    font-size: 2em; 
+    margin-block-end: 0.3em;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin-block-start: 0.3em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+p {
+    font-size: 1em;
+}
 
 ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #333;
-  width:1000px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    width:1000px;
 }
 
 li {
-  float: left;
-  font-family: arial;
-  font-size: 18px;
+    float: left;
+    font-family: arial;
+    font-size: 18px;
 }
 
 li a, .dropbtn {
-  display: inline-block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
 }
 
 li a:hover, .dropdown:hover .dropbtn {
-  background-color: red;
+    background-color: red;
 }
 
 li.dropdown {
-  display: inline-block;
+    display: inline-block;
 }
 
 .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  font-family: arial;
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    font-family: arial;
 }
 
 .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
 }
 
-.dropdown-content a:hover {background-color: #f1f1f1;}
+.dropdown-content a:hover {
+    color: white;
+    background-color: red;
+}
 
 .dropdown:hover .dropdown-content {
-  display: block;
-}
+    display: block;
+} 
 </style>
+</head>
 
-<body style="font-family: arial">
+<body>
+<div class="main">
 
 <table style="border: none">
   <tr><td style="padding-right: 10px;"><img src="favicon.ico"></td>
@@ -81,62 +122,44 @@ li.dropdown {
 </table>
 
 <ul>
-	<li aria-current="page"><a href="index.html">Main Page</a>	
-	<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_config_param.html';">Configuration</a></li>
+    <li aria-current="page"><a href="index.html">Main Page</a>	
+    <li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_config_param.html';">Configuration</a></li>
     <li class="dropdown">
-		<a href="javascript:void(0)" class="dropbtn">Alignment</a>
-		<div class="dropdown-content">
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a>
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a>
-		</div>
-	</li>
+	<a href="javascript:void(0)" class="dropbtn">Alignment</a>
+	<div class="dropdown-content">
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a>
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a>
+	</div>
+    </li>
     <li class="dropdown">
-		<a href="javascript:void(0)" class="dropbtn">Regions Of Interest (ROI)</a>
-		<div class="dropdown-content">
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a>
-			<a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a>
-		</div> 
-	</li>		
+	<a href="javascript:void(0)" class="dropbtn">Regions Of Interest (ROI)</a>
+	<div class="dropdown-content">
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a>
+		<a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a>
+	</div> 
+    </li>
+    <li class="dropdown">
+	<a href="javascript:void(0)" class="dropbtn">System</a>
+	<div class="dropdown-content">
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/backup.html';">Backup/Restore</a>
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/ota_page.html';">OTA Update</a>
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/fileserver/log/message/?readonly=true';">Log Viewer</a>      
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/reboot_page.html';">Reboot</a>
+	    <a href="#"onclick="document.getElementById('maincontent').src = '/info.html';">Info</a>      
+	</div> 
+    </li>
 </ul>
-<p>
-<div class="h_iframe">
-	 <iframe width="1020px" height="650px" name="maincontent" id ="maincontent" src="edit_config_param.html" title="fileserver"></iframe> 
-</div>
-<script type="text/javascript" src="./gethost.js"></script> 
+
+<iframe name="maincontent" class="iframe" id="maincontent" src="edit_config_param.html"></iframe>
+
+<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="gethost.js"></script>
 
 <script type="text/javascript">
-	var basepath = "http://192.168.178.22";
-
-
-function LoadHostname() {
-	_basepath = getbasepath(); 
-  
-	var xhttp = new XMLHttpRequest();
-	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		  hostname = xhttp.responseText;
-      document.title = hostname + " - Configure";
-		  document.getElementById("id_title").innerHTML  = "Configure - " + hostname;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
-
-//     var xhttp = new XMLHttpRequest();
-	 try {
-		  url = _basepath + '/version?type=Hostname';     
-		  xhttp.open("GET", url, true);
-		  xhttp.send();
-
-	 }
-	 catch (error)
-	 {
-//               alert("Loading Hostname failed");
-	 }
-  }
-
   LoadHostname();
-
 </script>
+
+</div>
+
 </body>
 </html>
