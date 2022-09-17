@@ -66,6 +66,8 @@ ____
 * Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post.
 * Support ESP-NOW to reduce the overhead of connecting to wifi and mqtt 
 * the above should enable battery powered applications
+
+* An other way to set deep sleep would be to enable it in a specific period (at night).
   
 
 #### #19 Extended log informations
