@@ -116,18 +116,22 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td rowspan="2"><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
+		<td rowspan="1"><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
 		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
+		<td rowspan="1"><label for="CCW"> Counter-Clockwise Rotation: </label><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" unchecked tabindex=7></td>
 	  </tr>
 	</table>			 
 </div>	 
 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=7></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=8></td>
+	  </tr>  
+	  <tr>
+                <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
 	  </tr>  
     </table>	
 
@@ -147,8 +151,17 @@ th, td {
             enhanceCon = false;
             lockAR = true;
             basepath = "http://192.168.178.26";
-
-
+    
+function doReboot() {
+    if (confirm("Are you sure you want to reboot? Did you save the config?")) {
+            var stringota = "/reboot";
+            window.location = stringota;
+            window.location.href = stringota;
+            window.location.assign(stringota);
+            window.location.replace(stringota);
+    }
+}
+    
 function EnDisableAnalog() {
         isEnabled = document.getElementById("Category_Analog_enabled").checked;
 
@@ -204,9 +217,9 @@ function newROI(){
     var _roinew = prompt("Please enter name of new ROI", "name");
 
     if (ROIInfo.length > 0)
-        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"]);
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], ROIInfo[aktindex]["CCW"]=="true");
     else
-        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30);
+        erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30, false);
 
     if (erg != "")
         alert(erg);
@@ -234,6 +247,20 @@ function changelockAR(){
     lockAR = document.getElementById("lockAR").checked;
 }
 
+function changeCCW(){
+    var sel = document.getElementById("Numbers_value1");
+    var _number = sel.options[sel.selectedIndex].text;
+
+    ROIInfo = getROIInfo("analog", _number);
+    aktindex = parseInt(document.getElementById("index").value);
+
+    if (document.getElementById("CCW").checked)
+        ROIInfo[aktindex]["CCW"] = "true";
+    else
+        ROIInfo[aktindex]["CCW"] = "false";
+	UpdateROIs();
+}
+
 function ChangeSelection(){
     aktindex = parseInt(document.getElementById("index").value);
 //    lockAR = true;
@@ -249,7 +276,7 @@ function SaveToConfig(){
 }
 
 
-function UpdateROIs(){
+function UpdateROIs(_sel){
     document.getElementById("Category_Analog_enabled").checked = true;
     var sel = document.getElementById("Numbers_value1");
     var _number = sel.options[sel.selectedIndex].text;
@@ -320,6 +347,8 @@ function UpdateROIs(){
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
     document.getElementById("refdx").value = ROIInfo[aktindex]["dx"];  
     document.getElementById("refdy").value = ROIInfo[aktindex]["dy"];  
+    document.getElementById("CCW").checked = ROIInfo[aktindex]["CCW"] == "true";
+
     rect.startX = ROIInfo[aktindex]["x"];
     rect.startY = ROIInfo[aktindex]["y"];
     rect.w = ROIInfo[aktindex]["dx"];

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>OTA Update</title>
+<meta charset="utf-8">
+
+<style>
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em;}
+h3 {font-size: 1.2em;} 
+p {font-size: 1em;}
+
+input[type=number] {
+	width: 138px;
+	padding: 10px 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	font-size: 16px; 
+}
+
+.button {
+	padding: 10px 20px;
+    width: 211px;
+	font-size: 16px;
+}
+</style>
+
+</head>
+
+<body style="font-family: arial; padding: 0px 10px;">
+Check at <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>https://github.com/jomjol/AI-on-the-edge-device/releases</a> to see if there is an update available.
+<h3>It is strongly recommended to update firmware and web interface (stored separately in the html directory on SD-card) at the same time!</h3>
+<hr>
+<h2>Update</h2>
+<table class="fixed" border="0">
+    <tr>
+        <td>
+            <table border="0">
+                <tr>
+                    <td style="width: 230px">
+                        <label for="newfile">Select the update file (update.zip, firmware.bin, html.zip, *.tfl/tflite):</label>
+                    </td>
+                    <td colspan="2">
+                        <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
+                    </td>
+                    <td rowspan="2" style="padding-left:50px">
+                        <button class="button" id="doUpdate" type="button" onclick="doUpdate()">Flash the firmware<br>(Takes about 60s)</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="filepath">Selected upload file:</label>
+                    </td>
+                    <td>
+                        <input id="filepath" type="text" style="width:100%; border: 0" readonly>
+                    </td>
+                    <td>
+                        <button id="upload" type="button" onclick="upload()">Upload</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<h2>Reboot</h2>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
+<hr>
+
+<script type="text/javascript" src="./gethost.js"></script> 
+
+
+<script language="JavaScript">
+
+var basepath = "http://192.168.178.26";
+
+
+function init(){
+    basepath = getbasepath();
+
+    document.getElementById("reboot").disabled = true;
+    document.getElementById("upload").disabled = true;
+    document.getElementById("doUpdate").disabled = true;
+}
+
+function doUpdate() {
+	if (confirm("Are you sure to update the firmware?")) {
+		var stringota = "/ota?file=firmware.bin";
+        document.getElementById("doUpdate").disabled = true;
+        
+        var xhttp = new XMLHttpRequest();
+	
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4) {
+                if (xhttp.status == 200) {
+                    document.getElementById("reboot").disabled = false;
+                    alert("Flash successfull - Reboot necessary to make changes active.");
+                    /* keine Reaktion, damit sich das Dokument nicht ändert */
+                } else if (xhttp.status == 0) {
+                    alert("Server closed the connection abruptly!");
+                    UpdatePage();
+                } else {
+                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    UpdatePage();
+                }
+            }
+        };
+        xhttp.open("GET", stringota, true);
+        xhttp.send();        
+	}
+}
+
+
+function doReboot() {
+	if (confirm("Are you sure you want to reboot the ESP32?")) {
+		var stringota = "/reboot";
+		window.location = stringota;
+		window.location.href = stringota;
+		window.location.assign(stringota);
+		window.location.replace(stringota);
+	}
+}
+
+function setpath() {
+    var nameneu = document.getElementById("newfile").value;
+    nameneu = nameneu.split(/[\\\/]/).pop();
+    document.getElementById("filepath").value = nameneu;
+    document.getElementById("upload").disabled = false;
+}
+
+
+function upload() {
+	var xhttp = new XMLHttpRequest();
+
+    var filePath = document.getElementById("filepath").value;
+    var upload_path = "/upload/firmware/" + filePath;
+    var fileInput = document.getElementById("newfile").files;
+
+	/* first delete the old firmware */	
+	xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4) {
+			if (xhttp.status == 200) {
+				/* keine Reaktion, damit sich das Dokument nicht ändert */
+			} else if (xhttp.status == 0) {
+				alert("Server closed the connection abruptly!");
+				UpdatePage();
+			} else {
+				alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				UpdatePage();
+			}
+		}
+	};
+    var _toDo = basepath + "/ota?delete=" + filePath;
+	xhttp.open("GET", _toDo, false);
+	xhttp.send();
+	/* ----------------------------- */
+	
+
+    /* Max size of an individual file. Make sure this
+     * value is same as that set in file_server.c */
+    var MAX_FILE_SIZE = 6000*1024;
+    var MAX_FILE_SIZE_STR = "6MB";
+
+    if (fileInput.length == 0) {
+        alert("No file selected!");
+    } else if (filePath.length == 0) {
+        alert("File path on server is not set!");
+    } else if (filePath.indexOf(' ') >= 0) {
+        alert("File path on server cannot have spaces!");
+    } else if (filePath[filePath.length-1] == '/') {
+        alert("File name not specified after path!");
+    } else if (fileInput[0].size > MAX_FILE_SIZE) {
+        alert("File size must be less than " + MAX_FILE_SIZE_STR + "!");
+    } else {
+        document.getElementById("newfile").disabled = true;
+        document.getElementById("filepath").disabled = true;
+        document.getElementById("upload").disabled = true;
+		
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4) {
+                if (xhttp.status == 200) {
+					alert("Upload successfull!")
+//                    document.reload();
+                    document.getElementById("reboot").disabled = false;
+                    document.getElementById("doUpdate").disabled = false;
+                } else if (xhttp.status == 0) {
+                    alert("Server closed the connection abruptly!");
+                    UpdatePage();
+                } else {
+                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    UpdatePage();
+                }
+            }
+        };
+		
+
+        var file = fileInput[0];
+        xhttp.open("POST", upload_path, true);
+        xhttp.send(file);
+    }
+}
+
+init();
+
+</script>
+</body>
+</html>

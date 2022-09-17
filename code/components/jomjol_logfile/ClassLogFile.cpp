@@ -129,6 +129,7 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
     std::string logpath = logroot + "/" + buffer; 
     
     WriteToDedicatedFile(logpath, info, _time);
+    printf((info + "\n").c_str());
 }
 
 std::string ClassLogFile::GetCurrentFileName()

@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = false;
+bool debugdetailgeneral = true;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -201,7 +201,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
     if (AnalogerVorgaenger)
     {
 //        result = ZeigerEvalAnalogToDigitNeu(zahl, eval_vorgaenger);
-        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger);
+        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger, eval_vorgaenger);
         if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
@@ -232,20 +232,20 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
     }
 
     // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
-    // hier auf 4 reduziert, da erst ab Vorgänder 9 anfängt umzustellen. Bei 9.5 Vorgänger kann die aktuelle
-    // Zahl noch x.4 - x.5 sein.
+    // alles >=x.4 kann als aktuelle Zahl gelten im Übergang. Bei 9.5 Vorgänger kann die aktuelle
+    // Zahl noch x.6 - x.7 sein. 
     if (ergebnis_nachkomma >= 4)
         result =  ergebnis_vorkomma;
     else
         result =  (ergebnis_vorkomma - 1 + 10) % 10;
 
     if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +
-                                                " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+                                                " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe) + " ergebnis_nachkomma = " + std::to_string(ergebnis_nachkomma));
     return result;
 }
 
 
-int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger)
+int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger)
 {
     int result;
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
@@ -272,7 +272,8 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
         return result;
     }  
 
-    if (ziffer_vorgaenger <= 1)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+    if (ziffer_vorgaenger <= 1 && eval_vorgaenger<9)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+        // aber Sonderfall ziffer_vorgaeger = 0.1 vor_vorgaenger 9.9 => eval_vorgaenger ist 9, damit hat Nulldurchgang nicht stattgefunden.
     {
         if (ergebnis_nachkomma > 5)
             result =  (ergebnis_vorkomma + 1) % 10;
@@ -339,38 +340,6 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
 
 }
 
-/*
-int ClassFlowCNNGeneral::ZeigerEval(float zahl, int ziffer_vorgaenger)
-{   
-    int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
-    int ergebnis;
-    float ergebnis_rating;
-    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEval erg_v=" + std::to_string(ergebnis_vorkomma) + ", erg_n=" + std::to_string(ergebnis_nachkomma) + ", ziff_v=" + std::to_string(ziffer_vorgaenger));
-
-    if (ziffer_vorgaenger == -1)
-        return ergebnis_vorkomma % 10;
-
-    // Ist die aktuelle Stelle schon umgesprungen und die Vorstelle noch nicht?
-    // Akt.: 2.1, Vorstelle = 0.9 => 1.9
-    // Problem sind mehrere Rundungen 
-    // Bsp. zahl=4.5, Vorgänger= 9.6 (ziffer_vorgaenger=0)
-    // Tritt nur auf bei Übergang von analog auf digit
-    ergebnis_rating = ergebnis_nachkomma - ziffer_vorgaenger;
-    if (ergebnis_nachkomma >= 5)
-        ergebnis_rating-=5.1;
-    else
-        ergebnis_rating+=5;
-    ergebnis = (int) round(zahl);
-    if (ergebnis_rating < 0)
-        ergebnis-=1;
-    if (ergebnis == -1)
-        ergebnis+=10;
-    
-    ergebnis = (ergebnis + 10) % 10;
-    return ergebnis;
-}
-*/
 
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
@@ -416,11 +385,6 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->logfileRetentionInDays = std::stoi(zerlegt[1]);
         }
-//        if ((toUpper(zerlegt[0]) == "MODELTYPE") && (zerlegt.size() > 1))
-//        {
-//            if (toUpper(zerlegt[1]) == "DIGITHYPRID")
-//                CNNType = DigitalHyprid;
-//        }
 
         if ((toUpper(zerlegt[0]) == "MODEL") && (zerlegt.size() > 1))
         {
@@ -439,6 +403,11 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->posy = std::stoi(zerlegt[2]);
             neuroi->deltax = std::stoi(zerlegt[3]);
             neuroi->deltay = std::stoi(zerlegt[4]);
+            neuroi->CCW = false;
+            if (zerlegt.size() >= 6)
+            {
+                neuroi->CCW = toUpper(zerlegt[5]) == "TRUE";
+            }
             neuroi->result_float = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;
@@ -511,7 +480,7 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
 
     _ret->ROI.push_back(neuroi);
 
-    printf("GetGENERAL - GENERAL %s - roi %s\n", _analog.c_str(), _roi.c_str());
+    printf("GetGENERAL - GENERAL %s - roi %s - CCW: %d\n", _analog.c_str(), _roi.c_str(), neuroi->CCW);
 
     return _ret;
 }
@@ -658,10 +627,11 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 CNNType = Digital;
                 printf("TFlite-Type set to Digital\n");
                 break;
-            case 20:
+/*            case 20:
                 CNNType = DigitalHyprid10;
                 printf("TFlite-Type set to DigitalHyprid10\n");
                 break;
+*/
 //            case 22:
 //                CNNType = DigitalHyprid;
 //                printf("TFlite-Type set to DigitalHyprid\n");
@@ -724,8 +694,13 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
                         float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
-                        GENERAL[_ana]->ROI[i]->result_float = result * 10;
-                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                              
+                        if(GENERAL[_ana]->ROI[i]->CCW)
+                            GENERAL[_ana]->ROI[i]->result_float = 10 - (result * 10);
+                        else
+                            GENERAL[_ana]->ROI[i]->result_float = result * 10;
+                              
+                        printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
                         if (isLogImage)
                             LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;
@@ -790,6 +765,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         }
                     } break;
 */
+/*
                 case DigitalHyprid10:
                     {
                         int _num, _nachkomma;
@@ -825,6 +801,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             }
                         }
                     } break;
+*/
 
                 case DoubleHyprid10:
                     {
@@ -858,7 +835,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             _fit = _val + _valminus;
 
                         }
-                        if (result > 10)
+                        if (result >= 10)
                             result = result - 10;
                         if (result < 0)
                             result = result + 10;
@@ -916,15 +893,17 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     
                         _num = tflite->GetOutClassification();
                         
-                        GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
+                        if(GENERAL[_ana]->ROI[i]->CCW)
+                            GENERAL[_ana]->ROI[i]->result_float = 10 - ((float)_num / 10.0);                              
+                        else
+                            GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
 
- 
                         _result_save_file = GENERAL[_ana]->ROI[i]->result_float;
 
                         
                         GENERAL[_ana]->ROI[i]->isReject = false;
                         
-                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
 
                         if (isLogImage)
                         {

@@ -40,6 +40,27 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### 11.3.0 - Intermediate Digits (2022-09-17)
+
+- **ATTENTION**: 
+  - first update the 'firmware.bin' and ensure that the new version is running
+
+  - Only afterwards update the 'html.zip'
+  
+  - Otherwise the downwards compatibility of the new counter clockwise feature is not given and you end in a reboot loop, that needs manual flashing!
+  
+
+
+- Increased precision (more than 6-7 digits)
+- Implements Counter Clockwise Analog Pointers
+- Improved post processing algorithm
+- Debugging: intensive use of testcases
+- MQTT: improved handling, extended logging, automated reconnect
+- HTML: Backup Option for Configuration
+- HTML: Improved Reboot
+- HTML: Update WebUI (Reboot, Infos, CPU Temp, RSSI)
+- This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/haverland)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
+
 ##### 11.2.0 - Intermediate Digits (2022-08-28)
 
 - Updated Tensorflow / TFlite to newest tflite (version as of 2022-07-27)
