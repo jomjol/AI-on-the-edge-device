@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="data:,">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>Edit Config</title>
 <meta charset="utf-8">
 
@@ -295,7 +295,7 @@ textarea {
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Path to CNN model file for image recognition
+				Path to CNN model file for image recognition. Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Neural-Network-Types" target="_blank">documentation</a> for details.
 			</td>
 		</tr>
 		
@@ -371,7 +371,7 @@ textarea {
 				<select id="Analog_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;"> Path to CNN model file for image recognition</td>
+			<td style="font-size: 80%;"> Path to CNN model file for image recognition. Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Neural-Network-Types" target="_blank">documentation</a> for details.</td>
 		</tr>
 		<tr>
 			<td width="20px"  style="padding-left: 40px;">
@@ -611,8 +611,12 @@ textarea {
 				<input type="text" id="MQTT_MainTopic_value1">
 			</td>
 			<td style="font-size: 80%;">
-				MQTT main topic, under which the counters are published. The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMETER <br>
-				where parameters are: value, rate, timestamp, error<br>
+				MQTT main topic, under which the counters are published. <br>
+				The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMETER where
+				<ul>
+					<li> VALUE_NAME is the name of the value (a meter might have more than one value) as defined during analog and digital ROI configuration (defaults to "main")</li>
+					<li> and PARAMETERS are: value, rate, timestamp, error</li>
+				</ul>
 				The general connection status can be found in MAINTOPIC/CONNECTION
 			</td>
 		</tr>
@@ -1939,26 +1943,42 @@ function WriteModelFiles()
 {
 	list_tflite = getTFLITEList();
 
-    var _index1 = document.getElementById("Digits_Model_value1");
-    var _index2 = document.getElementById("Analog_Model_value1");
-    while (_index1.length)
-        _index1.remove(0);
-	while (_index2.length)
-        _index2.remove(0);
+    var _indexDig = document.getElementById("Digits_Model_value1");
+    var _indexAna = document.getElementById("Analog_Model_value1");
+    while (_indexDig.length)
+        _indexDig.remove(0);
+	while (_indexAna.length)
+        _indexAna.remove(0);
 
     for (var i = 0; i < list_tflite.length; ++i){
-        var option1 = document.createElement("option");
-        var option2 = document.createElement("option");
-        option1.text = list_tflite[i];
-        option1.value = list_tflite[i];
-        option2.text = list_tflite[i];
-        option2.value = list_tflite[i];
-        _index1.add(option1);
-        _index2.add(option2);
+        var optionDig = document.createElement("option");
+        var optionAna = document.createElement("option");
+        
+        var text = list_tflite[i].replace("/config/", "");
+        
+        if (list_tflite[i].includes("/dig-")) { // Its a digital file, only show in the digital list box
+	    optionDig.text = text;
+	    optionDig.value = list_tflite[i];
+	    _indexDig.add(optionDig);
         }
+        else if (list_tflite[i].includes("/ana-")) { // Its a digital file, only show in the analog list box
+	    optionAna.text = text;
+	    optionAna.value = list_tflite[i];
+	    _indexAna.add(optionAna);
+        }
+        else { // all other files, show in both list boxes
+	    optionDig.text = text;
+	    optionDig.value = list_tflite[i];
+	    _indexDig.add(optionDig);
+	    
+	    optionAna.text = text;
+	    optionAna.value = list_tflite[i];
+	    _indexAna.add(optionAna);
+        }
+    }
 
-	WriteParameter(param, category, "Analog", "Model", false);		
-	WriteParameter(param, category, "Digits", "Model", false);		
+    WriteParameter(param, category, "Analog", "Model", false);		
+    WriteParameter(param, category, "Digits", "Model", false);		
 }
 
 function ReadParameterAll()

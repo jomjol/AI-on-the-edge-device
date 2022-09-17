@@ -1,4 +1,4 @@
-/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -48,6 +48,32 @@ TfLiteStatus CalculateOpDataDepthwiseConv(
     const TfLiteType data_type, OpDataConv* data);
 
 TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node);
+
+// This is the most generic TfLiteRegistration. The actual supported types may
+// still be target dependent. The only requirement is that every implementation
+// (reference or optimized) must define this function.
+TfLiteRegistration Register_DEPTHWISE_CONV_2D();
+
+#if defined(CMSIS_NN)
+// Returns a TfLiteRegistration struct for kernel variant that only supports
+// int8 activations and int8 weights and uses the latency optimized
+// implementations.
+TfLiteRegistration Register_DEPTHWISE_CONV_2D_INT8();
+
+// Returns a TfLiteRegistration struct for kernel variant that only supports
+// int16 activations and int8 weights and uses the latency optimized
+// implementations.
+TfLiteRegistration Register_DEPTHWISE_CONV_2D_INT16();
+
+#else
+inline TfLiteRegistration Register_DEPTHWISE_CONV_2D_INT8() {
+  return Register_DEPTHWISE_CONV_2D();
+}
+
+inline TfLiteRegistration Register_DEPTHWISE_CONV_2D_INT16() {
+  return Register_DEPTHWISE_CONV_2D();
+}
+#endif
 
 }  // namespace tflite
 

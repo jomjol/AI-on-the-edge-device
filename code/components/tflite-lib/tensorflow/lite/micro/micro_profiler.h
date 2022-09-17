@@ -51,7 +51,7 @@ class MicroProfiler {
   // Returns the sum of the ticks taken across all the events. This number
   // is only meaningful if all of the events are disjoint (the end time of
   // event[i] <= start time of event[i+1]).
-  int32_t GetTotalTicks() const;
+  uint32_t GetTotalTicks() const;
 
   // Prints the profiling information of each of the events in human readable
   // form.
@@ -68,8 +68,8 @@ class MicroProfiler {
   static constexpr int kMaxEvents = 1024;
 
   const char* tags_[kMaxEvents];
-  int32_t start_ticks_[kMaxEvents];
-  int32_t end_ticks_[kMaxEvents];
+  uint32_t start_ticks_[kMaxEvents];
+  uint32_t end_ticks_[kMaxEvents];
   int num_events_ = 0;
 
   TF_LITE_REMOVE_VIRTUAL_DELETE;

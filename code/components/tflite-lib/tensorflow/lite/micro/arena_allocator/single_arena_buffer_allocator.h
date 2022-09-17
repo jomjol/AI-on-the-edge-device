@@ -13,37 +13,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
-#define TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
+#ifndef TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_SINGLE_ARENA_BUFFER_ALLOCATOR_H_
+#define TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_SINGLE_ARENA_BUFFER_ALLOCATOR_H_
 
 #include <cstddef>
 #include <cstdint>
 
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/error_reporter.h"
+#include "tensorflow/lite/micro/arena_allocator/ibuffer_allocator.h"
 #include "tensorflow/lite/micro/compatibility.h"
-#include "tensorflow/lite/micro/ibuffer_allocator.h"
 
 namespace tflite {
 
 // TODO(petewarden): This allocator never frees up or reuses  any memory, even
 // though we have enough information about lifetimes of the tensors to do so.
 // This makes it pretty wasteful, so we should use a more intelligent method.
-class SimpleMemoryAllocator : public INonPersistentBufferAllocator,
-                              public IPersistentBufferAllocator {
+class SingleArenaBufferAllocator : public INonPersistentBufferAllocator,
+                                   public IPersistentBufferAllocator {
  public:
   // TODO(b/157615197): Cleanup constructors/destructor and use factory
   // functions.
-  SimpleMemoryAllocator(ErrorReporter* error_reporter, uint8_t* buffer_head,
-                        uint8_t* buffer_tail);
-  SimpleMemoryAllocator(ErrorReporter* error_reporter, uint8_t* buffer,
-                        size_t buffer_size);
-  virtual ~SimpleMemoryAllocator();
+  SingleArenaBufferAllocator(ErrorReporter* error_reporter,
+                             uint8_t* buffer_head, uint8_t* buffer_tail);
+  SingleArenaBufferAllocator(ErrorReporter* error_reporter, uint8_t* buffer,
+                             size_t buffer_size);
+  virtual ~SingleArenaBufferAllocator();
 
-  // Creates a new SimpleMemoryAllocator from a given buffer head and size.
-  static SimpleMemoryAllocator* Create(ErrorReporter* error_reporter,
-                                       uint8_t* buffer_head,
-                                       size_t buffer_size);
+  // Creates a new SingleArenaBufferAllocator from a given buffer head and size.
+  static SingleArenaBufferAllocator* Create(ErrorReporter* error_reporter,
+                                            uint8_t* buffer_head,
+                                            size_t buffer_size);
 
   // Resizes a buffer that is previously returned by the
   // AllocateResizableBuffer. In current implementation, it Adjusts the head
@@ -126,7 +126,9 @@ class SimpleMemoryAllocator : public INonPersistentBufferAllocator,
  private:
   size_t GetBufferSize() const;
 
+#if !defined(TF_LITE_STRIP_ERROR_STRINGS)
   ErrorReporter* error_reporter_;
+#endif
   uint8_t* buffer_head_;
   uint8_t* buffer_tail_;
   uint8_t* head_;
@@ -147,4 +149,4 @@ class SimpleMemoryAllocator : public INonPersistentBufferAllocator,
 
 }  // namespace tflite
 
-#endif  // TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
+#endif  // TENSORFLOW_LITE_MICRO_ARENA_ALLOCATOR_SINGLE_ARENA_BUFFER_ALLOCATOR_H_

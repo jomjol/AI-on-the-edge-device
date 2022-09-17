@@ -67,8 +67,13 @@ class AllocationInfoBuilder {
                         INonPersistentBufferAllocator* non_persistent_allocator,
                         ErrorReporter* reporter)
       : model_(model),
-        non_persistent_allocator_(non_persistent_allocator),
-        reporter_(reporter) {}
+        non_persistent_allocator_(non_persistent_allocator)
+#if !defined(TF_LITE_STRIP_ERROR_STRINGS)
+        ,
+        reporter_(reporter)
+#endif
+  {
+  }
 
   // Check if model contains offline planned buffer offsets.
   //  - If there's no metadata available, offline_planner_offsets is not set
@@ -128,9 +133,15 @@ class AllocationInfoBuilder {
   // count monotonically increases through the lifetime marking process.
   void UpdateLastUsed(AllocationInfo* current, int allocation_scope_count);
 
+  // Validate if a subgraph satisfies assumptions.
+  TfLiteStatus ValidateSubgraph(const SubGraph* subgraph,
+                                TfLiteEvalTensor* eval_tensors);
+
   const tflite::Model* model_ = nullptr;
   INonPersistentBufferAllocator* non_persistent_allocator_ = nullptr;
+#if !defined(TF_LITE_STRIP_ERROR_STRINGS)
   ErrorReporter* reporter_ = nullptr;
+#endif
 
   GraphAllocationInfo info_;
   int allocation_scope_count_ = 0;

@@ -50,6 +50,8 @@ static char ota_write_data[BUFFSIZE + 1] = { 0 };
 #define OTA_URL_SIZE 256
 static const char *TAGPARTOTA = "server_ota";
 
+esp_err_t handler_reboot(httpd_req_t *req);
+
 
 static void infinite_loop(void)
 {
@@ -207,24 +209,6 @@ static void print_sha256 (const uint8_t *image_hash, const char *label)
 
 static bool diagnostic(void)
 {
-/*
-    gpio_config_t io_conf;
-    io_conf.intr_type    = (gpio_int_type_t) GPIO_PIN_INTR_DISABLE;
-    io_conf.mode         = GPIO_MODE_INPUT;
-    io_conf.pin_bit_mask = (1ULL << CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    io_conf.pull_up_en   = GPIO_PULLUP_ENABLE;
-    gpio_config(&io_conf);
-
-    ESP_LOGI(TAGPARTOTA, "Diagnostics (5 sec)...");
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-
-    bool diagnostic_is_ok = gpio_get_level(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
-
-    gpio_reset_pin(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
-
-    return diagnostic_is_ok;
-*/
     return true;
 }
 
@@ -326,7 +310,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-            printf("task is found"); printf(_valuechar); printf("\n"); 
+            printf("task is found: "); printf(_valuechar); printf("\n"); 
             _task = std::string(_valuechar);
         }
 
@@ -344,16 +328,105 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     };
 
+    if (_task.compare("update") == 0)
+    {
+        std::string filetype = toUpper(getFileType(fn));
+        if (filetype.length() == 0)
+        {
+            std::string zw = "Update failed - no file specified (zip, bin, tfl, tlite)";
+            httpd_resp_sendstr_chunk(req, zw.c_str());
+            httpd_resp_sendstr_chunk(req, NULL);  
+            return ESP_OK;        
+        }
+
+
+        if ((filetype == "TFLITE") || (filetype == "TFL"))
+        {
+            std::string out = "/sdcard/config/" + getFileFullFileName(fn);
+            DeleteFile(out);
+            CopyFile(fn, out);
+            DeleteFile(fn);
+
+            const char*  resp_str = "Neural Network File copied.";
+            httpd_resp_sendstr_chunk(req, resp_str);
+            httpd_resp_sendstr_chunk(req, NULL);  
+            return ESP_OK;
+        }
+
+
+        if (filetype == "ZIP")
+        {
+            std::string in, out, outbin, zw, retfirmware;
+
+//            in = "/sdcard/firmware/html.zip";
+            out = "/sdcard/html";
+            outbin = "/sdcard/firmware";
+
+//            delete_all_in_directory(out);
+
+            retfirmware = unzip_new(fn, out+"/", outbin+"/");
+
+            if (retfirmware.length() > 0)
+            {
+                filetype = "BIN";
+                fn = retfirmware;
+                zw = "HTML Update Successfull!<br><br>Additioal firmware found in ZIP file.\n";
+                httpd_resp_sendstr_chunk(req, zw.c_str());
+            }
+            else
+            {
+                zw = "HTML Update Successfull!<br><br>No reboot necessary.\n";
+                httpd_resp_sendstr_chunk(req, zw.c_str());
+                httpd_resp_sendstr_chunk(req, NULL);  
+                return ESP_OK;        
+            }
+        }
+
+
+        if (filetype == "BIN")
+        {
+            const char* resp_str;    
+            KillTFliteTasks();
+            gpio_handler_deinit();
+            if (ota_update_task(fn))
+            {
+//                resp_str = "rebooting - Firmware Update Successfull!<br><br>You can restart now.";
+//                httpd_resp_send(req, resp_str, strlen(resp_str));  
+//                httpd_resp_sendstr_chunk(req, NULL);  
+                return handler_reboot(req);                
+            }
+            else
+            {
+                resp_str = "Error during Firmware Update!!!<br><br>Please check output of console.";
+            }
+
+            httpd_resp_send(req, resp_str, strlen(resp_str));  
+
+            #ifdef DEBUG_DETAIL_ON 
+                LogFile.WriteHeapInfo("handler_ota_update - Done");    
+            #endif
+
+            return ESP_OK;
+        }
+
+
+        std::string zw = "Update failed - no valid file specified (zip, bin, tfl, tlite)";
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+
     if (_task.compare("unziphtml") == 0)
     {
         std::string in, out, zw;
 
         in = "/sdcard/firmware/html.zip";
-        out = "/sdcard/html/";
+        out = "/sdcard/html";
 
         delete_all_in_directory(out);
 
-        unzip(in, out);
+        unzip(in, out+"/");
         zw = "HTML Update Successfull!<br><br>No reboot necessary";
         httpd_resp_sendstr_chunk(req, zw.c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
@@ -371,6 +444,8 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             unlink(fn.c_str());
         }
         /* Respond with an empty chunk to signal HTTP response completion */
+        std::string zw = "file deleted!\n";
+        httpd_resp_sendstr_chunk(req, zw.c_str());
         httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
     }
@@ -416,6 +491,8 @@ void task_reboot(void *pvParameter)
 }
 
 void doReboot(){
+    LogFile.SwitchOnOff(true);
+    LogFile.WriteToFile("Reboot triggert by Software (5s).");
     ESP_LOGI(TAGPARTOTA, "Reboot in 5sec");
     LogFile.WriteToFile("Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
@@ -435,7 +512,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "!!! System will restart within 5 sec!!!";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload after around 25s.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();

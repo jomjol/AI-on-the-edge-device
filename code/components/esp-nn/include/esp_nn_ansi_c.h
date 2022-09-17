@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "esp_nn_defs.h"
 #include "esp_nn_ansi_headers.h"
 
 #define esp_nn_add_elementwise_s8 esp_nn_add_elementwise_s8_ansi

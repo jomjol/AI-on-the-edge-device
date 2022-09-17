@@ -28,7 +28,7 @@ namespace tflite {
 // validation of control flow operators.
 class MockMicroGraph : public MicroGraph {
  public:
-  explicit MockMicroGraph(SimpleMemoryAllocator* allocator);
+  explicit MockMicroGraph(SingleArenaBufferAllocator* allocator);
   TfLiteStatus InvokeSubgraph(int subgraph_idx) override;
   TfLiteStatus ResetVariableTensors() override;
   size_t NumSubgraphInputs(int subgraph_idx) override;
@@ -46,7 +46,7 @@ class MockMicroGraph : public MicroGraph {
 
  private:
   static constexpr int kMaxSubgraphs = 10;
-  SimpleMemoryAllocator* allocator_;
+  SingleArenaBufferAllocator* allocator_;
   TfLiteEvalTensor* mock_tensor_;
   int init_count_;
   int prepare_count_;

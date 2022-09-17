@@ -209,6 +209,21 @@ size_t findDelimiterPos(string input, string delimiter)
 	return pos;
 }
 
+void DeleteFile(string fn)
+{
+//	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
+	/* Delete file */
+	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		printf("DeleteFile: File %s existiert nicht!\n", fn.c_str());
+		return;
+	}
+	fclose(fpSourceFile);
+
+	unlink(fn.c_str());    
+}
+
 
 void CopyFile(string input, string output)
 {
@@ -243,17 +258,47 @@ void CopyFile(string input, string output)
 	// Close The Files
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
+	printf("File copied: %s to %s", input.c_str(), output.c_str());
 }
 
+string getFileFullFileName(string filename)
+{
+	size_t lastpos = filename.find_last_of('/');
+
+	if (lastpos == string::npos)
+		return "";
+
+//	printf("Last position: %d\n", lastpos);
+
+	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
+
+	return zw;
+}
+
+string getDirectory(string filename)
+{
+	size_t lastpos = filename.find('/');
+
+	if (lastpos == string::npos)
+		return "";
+
+//	printf("Directory: %d\n", lastpos);
+
+	string zw = filename.substr(0, lastpos - 1);
+	return zw;
+}
 
 string getFileType(string filename)
 {
-	int lastpos = filename.find(".", 0);
-	int neu_pos;
+	size_t lastpos = filename.find(".", 0);
+	size_t neu_pos;
 	while ((neu_pos = filename.find(".", lastpos + 1)) > -1)
 	{
 		lastpos = neu_pos;
 	}
+
+	if (lastpos == string::npos)
+		return "";
 
 	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
 	zw = toUpper(zw);

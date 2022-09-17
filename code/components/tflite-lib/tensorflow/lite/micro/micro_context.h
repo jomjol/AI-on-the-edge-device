@@ -73,6 +73,13 @@ class MicroContext {
   virtual TfLiteTensor* AllocateTempOutputTensor(const TfLiteNode* node,
                                                  int index);
 
+  // Returns a temporary TfLiteTensor struct for the specified intermediate
+  // tensor of a given mode. This is the recommended API over the deprecated
+  // GetIntermediates/GetIntermediatesSafe to get a temp intermediate tensor.
+  // The returned tensor shall be freed via calling DeallocateTempTfLiteTensor.
+  virtual TfLiteTensor* AllocateTempIntermediateTensor(const TfLiteNode* node,
+                                                       int index);
+
   // Deallocates a temp TfLiteTensor.
   // Virtual so that it can be faked for kernel tests.
   virtual void DeallocateTempTfLiteTensor(TfLiteTensor* tensor);

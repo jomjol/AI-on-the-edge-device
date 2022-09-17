@@ -13,9 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 #include "tensorflow/lite/experimental/microfrontend/lib/fft_util.h"
-#include "tensorflow/lite/experimental/microfrontend/lib/kiss_fft_int16.h"
 
 #include <stdio.h>
+
+#include "tensorflow/lite/experimental/microfrontend/lib/kiss_fft_int16.h"
 
 int FftPopulateState(struct FftState* state, size_t input_size) {
   state->input_size = input_size;
