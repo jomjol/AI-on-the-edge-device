@@ -40,34 +40,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### Rolling (2022-09-16)
-
-- Increase precission for more than 6-7 digits (based on idea of **[stefanbode](https://github.com/stefanbode)**)
-- HTML: bug fix in case of https access (**[PLCHome](https://github.com/PLCHome)**)
-
-##### Rolling (2022-09-10)
-
-- Internal preparations for improved update mechanism
-- Additional testcases (**[haverland](https://github.com/haverland)**)
-- HTML: Updates / improvements  (**[caco3](https://github.com/caco3)**)
-
-##### Rolling (2022-09-04)
-
-- Improved Reboot (**[caco3](https://github.com/caco3)**)
-- HTML: Bug fix
-
-##### Rolling (2022-09-03)
-
-- MQTT: improved handling based on the work of @**[caco3](https://github.com/caco3)** ([#971](https://github.com/jomjol/AI-on-the-edge-device/pull/971))
-
-##### Rolling (2022-09-02)
-
-- MQTT: extended logging and automated reconnect
-- HTML: explanation for MQTT keys
-- Improved post processing algo
-- Bug fix: update algorithm
-
-##### Rolling (2022-08-31)
+##### 11.3.0 - Intermediate Digits (2022-09-17)
 
 - **ATTENTION**: 
   - first update the 'firmware.bin' and ensure that the new version is running
@@ -76,15 +49,17 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
   
   - Otherwise the downwards compatibility of the new counter clockwise feature is not given and you end in a reboot loop, that needs manual flashing!
   
-- Implements Counter Clockwise Analog Pointers  (many thanks to **[adellafave](https://github.com/adellafave)**)
-  - you can activate it via check box in the graphical configuration
 
-- HTML: adds CPU Temp , RSSI to status (many thanks to **[adellafave](https://github.com/adellafave)**)
-- WebUI improvements (many thanks to @**[caco3](https://github.com/caco3)**)
 
-##### Rolling (2022-08-30)
-
-- Added Backup Option, improved update page (many thanks to @**[caco3](https://github.com/caco3)**)
+- Increased precision (more than 6-7 digits)
+- Implements Counter Clockwise Analog Pointers
+- Improved post processing algorithm
+- Debugging: intensive use of testcases
+- MQTT: improved handling, extended logging, automated reconnect
+- HTML: Backup Option for Configuration
+- HTML: Improved Reboot
+- HTML: Update WebUI (Reboot, Infos, CPU Temp, RSSI)
+- This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/haverland)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
 
 ##### 11.2.0 - Intermediate Digits (2022-08-28)
 
