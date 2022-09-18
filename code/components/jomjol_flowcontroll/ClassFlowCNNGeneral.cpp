@@ -127,59 +127,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
-/*
-int ClassFlowCNNGeneral::ZeigerEvalHybrid(float zahl, float zahl_vorgaenger, int eval_vorgaenger)
-{
-    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid( " + std::to_string(zahl) + ", " + std::to_string(zahl_vorgaenger) + ", " + std::to_string(eval_vorgaenger) + ")");
-                
-    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
-
-
-    if (eval_vorgaenger < 0)                // keine Vorzahl vorhanden !!! --> Runde die Zahl
-    {
-        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            return ((int) round(zahl) + 10) % 10;
-        else
-            return ((int) trunc(zahl) + 10) % 10;
-    }
-
-    // 9.0, da bei getReadout() prev als int übergeben wird (9 statt 9.5)
-    // tritt bei der ersten ziffer von digit auf, wenn analog davor (2. Aufruf von getReadout)
-    if ((zahl_vorgaenger >= 0.5 ) && (zahl_vorgaenger < 9.5))
-    {
-        // kein Ziffernwechsel, da Vorkomma weit genug weg ist (0+/-0.5) --> zahl wird gerundet
-        if ((ergebnis_nachkomma <= 2) || (ergebnis_nachkomma >= 8))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            return ((int) round(zahl) + 10) % 10;
-        else
-            return ((int) trunc(zahl) + 10) % 10;
-    }  
-    else
-    {
-        if (eval_vorgaenger <= 1)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
-        {
-            if (ergebnis_nachkomma > 5)
-                return (ergebnis_vorkomma + 1) % 10;
-            else
-                return ergebnis_vorkomma;
-        }
-        else // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
-        {
-            // hier auf 4 reduziert, da erst ab Vorgänder 9 anfängt umzustellen. Bei 9.5 Vorgänger kann die aktuelle
-            // Zahl noch x.4 - x.5 sein.
-            if (ergebnis_nachkomma >= 4)
-                return ergebnis_vorkomma;
-            else
-                return (ergebnis_vorkomma - 1 + 10) % 10;
-        }
-    }
-    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybrid(return -1)  zahl=" + std::to_string(zahl) 
-                        + ", zahl_vorgaenger=" + std::to_string(zahl_vorgaenger) + ", eval_vorgaenger=" + std::to_string(eval_vorgaenger));
-    return -1;
-
-}
-*/
-
 int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger)
 {
     int result;
@@ -220,23 +167,33 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
         return result;
     }  
 
-    if (eval_vorgaenger <= 1)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+    if (eval_vorgaenger <= 1)  // Nulldurchgang beim Vorgänger hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
     {
+        // Wir nehmen einfach an, dass das aktuelle Digit nach dem Nulldurchgang des Vorgängers
+        // mindestens zur Hälfte (x.5) durchlaufen hat
         if (ergebnis_nachkomma > 5)
+            // Das akt. digit hat noch keinen Nulldurchgang, aber der Vorgänger schon.
             result =  (ergebnis_vorkomma + 1) % 10;
         else
+            // Akt. digit und Vorgänger haben Nulldurchgang
             result =  ergebnis_vorkomma;
         if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, Nulldurchgang hat stattgefunden = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
     }
 
-    // bleibt nur >= 9.5 --> noch kein Nulldurchgang --> 2.8 --> 2, und 3.1 --> 2
-    // alles >=x.4 kann als aktuelle Zahl gelten im Übergang. Bei 9.5 Vorgänger kann die aktuelle
+    
+    // bleibt nur >= 9.x --> noch kein Nulldurchgang --> 2.8 --> 2, 
+    // und ab 9.7(DigitalUebergangsbereichVorlauf) 3.1 --> 2
+    // alles >=x.4 kann als aktuelle Zahl gelten im Übergang. Bei 9.x Vorgänger kann die aktuelle
     // Zahl noch x.6 - x.7 sein. 
-    if (ergebnis_nachkomma >= 4)
+    // Vorlauf (else - Zweig) passiert nicht bereits ab 9.
+    if (DigitalUebergangsbereichVorlauf>=zahl_vorgaenger || ergebnis_nachkomma >= 4)
+        // aktuelles digit hat genauso wie das Vorgängerdigit noch keinen Nulldurchgang. 
         result =  ergebnis_vorkomma;
     else
+        // aktuelles digit läuft dem kleineren digit (9.x) vor. Also schon >=x.0 während das vorherige Digit noch
+        // keinen Nulldurchgang hat. Daher wird um 1 reduziert.
         result =  (ergebnis_vorkomma - 1 + 10) % 10;
 
     if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +

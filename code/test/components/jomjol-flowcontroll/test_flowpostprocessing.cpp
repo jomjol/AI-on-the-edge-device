@@ -269,12 +269,6 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
-
-        // checkConsistency=true
-        // checkConsistency NOT working correctly
-        //result = process_doFlow(analogs, digits, Digital100, true, false, -3);
-        //TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
-
         // extendResolution=true
         result = process_doFlow(analogs, digits, Digital100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
@@ -285,23 +279,30 @@ void test_doFlow() {
         analogs = { 9.0, 2.5, 2.9, 7.2};
         expected = "269.9227";
         expected_extended= "269.92272";
-        // Float Value reduziert die Genauigkeit hier. Korrekt wäre
-        // expected_extended= "269.92272";
-
-        // checkConsistency=true
+        
+        // extendResolution=true
         result = process_doFlow(analogs, digits, Digital100, false, false);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
-
-        // checkConsistency=true
-        // checkConsistency NOT working correctly
-        //result = process_doFlow(analogs, digits, Digital100, true, false, -3);
-        //TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
-
-
-        // checkConsistency=true und extendResolution=true
+        // checkConsistency=false und extendResolution=true
         result = process_doFlow(analogs, digits, Digital100, false, true);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+       // Fehler bei V11.3.1 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1028#issuecomment-1250239481
+        digits = { 1.1, 6.0, 9.1, 3.0, 5.3, 9.4};  // 169.3493 als falsches Ergebnis
+        analogs = { 3.5};
+        expected = "169.3593";
+        expected_extended= "169.35935";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
 
 }
 

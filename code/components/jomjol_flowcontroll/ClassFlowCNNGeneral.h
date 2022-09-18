@@ -30,6 +30,7 @@ protected:
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
     float DigitalUebergangsbereichVorgaengerAnalogToDigit = 1; // war vorher 2
     float DigitalUebergangsbereichVorgaenger = 0.7; // 9.3 - 0.7
+    float DigitalUebergangsbereichVorlauf = 9.7; // Vorlauf-Nulldurchgang passiert erst ab ca. 9.7
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;
