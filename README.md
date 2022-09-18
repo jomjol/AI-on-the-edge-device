@@ -40,6 +40,10 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-18)
+
+- Updated PostProcessing with respect to `CheckDigitIncreaseConsistency`
+
 ##### 11.3.1 - Intermediate Digits (2022-09-17)
 
 - **ATTENTION**: 
