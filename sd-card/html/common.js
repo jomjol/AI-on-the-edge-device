@@ -29,3 +29,28 @@ function LoadHostname() {
 //               alert("Loading Hostname failed");
     }
 }
+
+
+function LoadVersion() {
+    _basepath = getbasepath(); 
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.addEventListener('load', function(event) {
+        if (xhttp.status >= 200 && xhttp.status < 300) {
+            version = xhttp.responseText;
+            document.getElementById("Version").innerHTML  = version;
+        } 
+        else {
+                console.warn(request.statusText, request.responseText);
+        }
+    });
+
+    try {
+            url = _basepath + '/version?type=GitBaseBranch';     
+            xhttp.open("GET", url, true);
+            xhttp.send();
+
+    }
+    catch (error)
+    {}
+}

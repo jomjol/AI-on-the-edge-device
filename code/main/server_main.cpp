@@ -80,10 +80,11 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
-    // No longer used
     if (_task.compare("GitBaseBranch") == 0)
     {
-        httpd_resp_sendstr_chunk(req, "");
+        string buf = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
+            "', Revision: " + std::string(GIT_REV);
+        httpd_resp_sendstr_chunk(req, buf.c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
