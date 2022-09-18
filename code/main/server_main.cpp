@@ -80,9 +80,10 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
+    // No longer used
     if (_task.compare("GitBaseBranch") == 0)
     {
-        httpd_resp_sendstr_chunk(req, git_base_branch());
+        httpd_resp_sendstr_chunk(req, "");
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
@@ -285,7 +286,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     std::string gitversion = libfive_git_version();
     std::string buildtime = build_time();
     std::string gitbranch = libfive_git_branch();
-    std::string gitbasebranch = git_base_branch();
+    std::string gittag = libfive_git_version();
+    std::string gitrevision = libfive_git_revision();
     std::string htmlversion = getHTMLversion();
     char freeheapmem[11];
     sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
@@ -300,7 +302,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
                 \"firmware\" : \"" + gitversion + "\",\
                 \"buildtime\" : \"" + buildtime + "\",\
                 \"gitbranch\" : \"" + gitbranch + "\",\
-                \"gitbasebranch\" : \"" + gitbasebranch + "\",\
+                \"gittag\" : \"" + gittag + "\",\
+                \"gitrevision\" : \"" + gitrevision + "\",\
                 \"html\" : \"" + htmlversion + "\",\
                 \"cputemp\" : \"" + cputemp + "\",\
                 \"hostname\" : \"" + hostname + "\",\

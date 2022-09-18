@@ -16,15 +16,6 @@ extern "C"
 #include "Helper.h"
 #include <fstream>
 
-// todo remove
-const char* GIT_BASE_BRANCH = "master - v11.3.0 - 2022-09-16";
-
-
-const char* git_base_branch(void)
-{
-    return GIT_BASE_BRANCH;
-}
-
 
 const char* build_time(void)
 {
