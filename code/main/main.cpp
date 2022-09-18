@@ -29,6 +29,11 @@
 #include "server_camera.h"
 #include "Helper.h"
 
+extern const char* GIT_TAG;
+extern const char* GIT_REV;
+extern const char* GIT_BRANCH;
+extern const char* BUILD_TIME;
+
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
 
@@ -133,6 +138,12 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
+    string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
+            "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
+
+    printf("=============================================================================================\n");
+    printf("%s\n", versionFormated.c_str());
+    printf("=============================================================================================\n");
 
     PowerResetCamera();
     esp_err_t cam = Camera.InitCam();
@@ -179,7 +190,8 @@ extern "C" void app_main(void)
     setBootTime();
     LogFile.WriteToFile("=============================================================================================");
     LogFile.WriteToFile("=================================== Main Started ============================================");
-    LogFile.WriteToFile("=============================================================================================");
+    LogFile.WriteToFile("=============================================================================================");    
+    LogFile.WriteToFile(versionFormated);
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
