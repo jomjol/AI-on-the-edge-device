@@ -1,27 +1,57 @@
-# AI-on-the-edge-device
+# Welcome to the AI-on-the-edge-device
+Artificial intelligence based systems have been established in our every days live. Just think of speech or image recognition. Most of the systems relay on either powerful processors or a direct connection to the cloud for doing the calculations up there. With the increasing power of modern processors the AI systems are coming closer to the end user - which is usually called **edge computing**.
+Here this edge computing is brought into a practical oriented example, where a AI network is implemented on a ESP32 device so: **AI on the edge**.
 
-This is an example of Artificial Intelligence (AI) calculations on a very cheap hardware.
+This projects allows you to digitalize your **analoge** water, gas, power and other meters using cheap and easily available hardware.
 
-### Details on **function**, **installation** and **configuration** can be found on the **[Wiki Page](https://github.com/jomjol/AI-on-the-edge-device/wiki)**
+All you need is an [ESP32 board with a supported camera](wiki/Hardware-Compatibility) and a bit of a practical hand.
+
+<img src="images/esp32-cam.png" width="200">
+
+## Key features
+- **Small** and **cheap** device (3x4.5x2 cm³, < 10 EUR)
+- camera and illumination integrated
+- Web surface for administration and control
+- OTA-Interface to update directly through the web interface
+- API for easy integration
+- Inline Image processing (feature detection, alignment, ROI extraction)
+- Tensorflow Lite (TFlite) integration - including easy to use wrapper
+
+## Workflow
+The device takes a photo of your meter at a defined interval. It then extracts the Regions of Interest (ROI's) out of it and runs them through an artificial inteligence. As a result, you get the digitalized value of your meter.
+
+There are several options what to do with that value. Either send it to a MQTT broker, write it to an InfluxDb or simply provide it throug a REST API.
+
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/idea.jpg" width="600"> 
+
+## Impressions
+### AI-on-the-edge-device on a Water Meter
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
+
+### Web Interface (Water Meter)
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
+
+### AI-on-the-edge-device on a Electrical Power Meter
+<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
+
+
+## Setup
+There is a growing [wiki](wiki) which provides you with a lot of information.
+Head there to get a start, set it up and configure it.
+
+## Download
+The latest available version is available on the [Releases page](releases).
+
+Initially you will have to flash it through an USB connection. Later an update is possible directly over the Air (OTA).
+
+### Casing
 
 A 3d-printable housing can be found here:
   - https://www.thingiverse.com/thing:4573481 (Water Meter)
   - https://www.thingiverse.com/thing:5028229 (Power Meter)
   - https://www.thingiverse.com/thing:4571627 (ESP32-Cam housing only)
 
-<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
-
-<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
-
-<img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
-
-
-
-
 ## Donate
-
-------
-
 If you would like to support the developer with a cup of coffee you can do that via [Paypal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
 
 <form action="https://www.paypal.com/donate" method="post" target="_top">
@@ -33,9 +63,7 @@ If you have any technical topics, you can file a issue in this repository.
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25"> 
 
-
-------
-## Change log
+## Changelog
 **General remark:** Besides the file `firmware.bin`, typically the content of `/html` will need to be updated!
 
 ------
@@ -99,20 +127,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 - Bug Fix: InfluxDB enabling in grahic configuration
 
-  
-
 ## Tools
 
 * Logfile downloader and combiner (Thx to [reserve85](https://github.com/reserve85))
   * Files see ['/tools/logfile-tool'](tbd), How-to see [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader)
 
-
-
 ## Additional Ideas
-
 There are some ideas and feature requests which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)
-
-
 
 ------
 
