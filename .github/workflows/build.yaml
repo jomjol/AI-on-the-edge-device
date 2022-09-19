@@ -43,6 +43,11 @@ jobs:
 
     - name: Copy to firmware folder
       run: |
+        # discard changes on version.txt and version.cpp
+        git checkout -- sd-card/html/version.txt
+        git checkout -- code/version.cpp
+        git checkout -- code/main/version.cpp
+        # copy builds to firmware folder for committing in next step
         cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
@@ -54,7 +59,7 @@ jobs:
       with:
         default_author: github_actions
 
-
+ 
     # Old OTA concept
     # firmware__*.zip needs to be unpacked before attaching to the release!
     # The bin filename can contain versioning.
