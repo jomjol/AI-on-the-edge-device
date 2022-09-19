@@ -47,7 +47,7 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
         cd sd-card
-        zip -r ../firmware/html.zip html 
+        zip -r ../firmware/html.zip sd-card/html 
 
     - name: Push builds to repository
       uses: EndBug/add-and-commit@v9
