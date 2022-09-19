@@ -41,7 +41,7 @@ There is a growing [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) 
 Head there to get a start, set it up and configure it.
 
 ## Download
-The latest available version is available on the [Releases page](releases).
+The latest available version is available on the [Releases page](https://github.com/jomjol/AI-on-the-edge-device/releases).
 
 Initially you will have to flash it through an USB connection. Later an update is possible directly over the Air (OTA).
 
