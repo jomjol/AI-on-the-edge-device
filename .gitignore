@@ -5,6 +5,7 @@
 /sd-card/htm./.vscode/
 /code/build
 /sd-card/html/debug/
+/firmware/
 
 CMakeLists.txt.user
 CMakeCache.txt

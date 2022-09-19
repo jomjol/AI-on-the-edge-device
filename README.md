@@ -40,6 +40,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-19)
+
+- Integrated version info better into the html (main page, logfile)
+- Updated autobuild
+- Remove `/firmware` from GitHub. 
+  - If you want to get the latest firmware and html files, please download from the automated build action.
+
 ##### Rolling (2022-09-18)
 
 - Updated PostProcessing with respect to `CheckDigitIncreaseConsistency`

@@ -158,8 +158,8 @@ function upload() {
 
     /* Max size of an individual file. Make sure this
      * value is same as that set in file_server.c */
-    var MAX_FILE_SIZE = 6000*1024;
-    var MAX_FILE_SIZE_STR = "6MB";
+    var MAX_FILE_SIZE = 8000*1024;
+    var MAX_FILE_SIZE_STR = "8MB";
 
     if (fileInput.length == 0) {
         alert("No file selected!");
@@ -179,7 +179,7 @@ function upload() {
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4) {
                 if (xhttp.status == 200) {
-					alert("Upload successfull!")
+//					alert("Upload successfull!")
 //                    document.reload();
                     document.getElementById("reboot").disabled = false;
                     document.getElementById("doUpdate").disabled = false;
@@ -195,9 +195,36 @@ function upload() {
 		
 
         var file = fileInput[0];
-        xhttp.open("POST", upload_path, true);
+        xhttp.open("POST", upload_path, false);
         xhttp.send(file);
     }
+
+    alert("Start processing!");
+
+	var xhttp = new XMLHttpRequest();
+	/* first delete the old firmware */	
+	xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4) {
+			if (xhttp.status == 200) {
+                alert("Processing done!\n" + xhttp.responseText);
+				/* keine Reaktion, damit sich das Dokument nicht ändert */
+			} else if (xhttp.status == 0) {
+				alert("Server closed the connection abruptly!");
+				UpdatePage();
+			} else {
+				alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				UpdatePage();
+			}
+		}
+	};
+    var _toDo = basepath + "/ota?task=update&file=" + filePath;
+	xhttp.open("GET", _toDo, false);
+	xhttp.send();
+	/* ----------------------------- */
+
+
+
+
 }
 
 init();

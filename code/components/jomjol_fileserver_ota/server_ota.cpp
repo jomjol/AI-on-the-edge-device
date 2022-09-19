@@ -302,7 +302,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     char _valuechar[30];    
     std::string fn = "/sdcard/firmware/";
     bool _file_del = false;
-    std::string _task;
+    std::string _task = "";
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
@@ -419,6 +419,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     if (_task.compare("unziphtml") == 0)
     {
+        printf("Task unziphmtl\n");
         std::string in, out, zw;
 
         in = "/sdcard/firmware/html.zip";
@@ -428,24 +429,30 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
         unzip(in, out+"/");
         zw = "HTML Update Successfull!<br><br>No reboot necessary";
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
 
-
-
     if (_file_del)
     {
+        printf("Delete !! _file_del: %s\n", fn.c_str());
         struct stat file_stat;
-        if (stat(fn.c_str(), &file_stat) != -1) {
+        int _result = stat(fn.c_str(), &file_stat);
+        printf("Ergebnis %d\n", _result);
+        if (_result == 0) {
             printf("Deleting file : %s", fn.c_str());
             /* Delete file */
             unlink(fn.c_str());
         }
+        else
+        {
+            printf("File does not exist: %s\n", fn.c_str());
+        }
         /* Respond with an empty chunk to signal HTTP response completion */
-        std::string zw = "file deleted!\n";
-        httpd_resp_sendstr_chunk(req, zw.c_str());
+        std::string zw = "file deleted\n";
+        printf((zw + "\n").c_str());
+        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
         httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
     }
