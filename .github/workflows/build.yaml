@@ -41,18 +41,6 @@ jobs:
 #      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
-    - name: Copy artifacts to firmware folder
-      run: |
-        cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
-        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
-        cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
-        cd sd_card
-        zip -r ../firmware/html.zip sd_card/html 
-
-    - name: Push builds to repository
-      uses: EndBug/add-and-commit@v9
-        with:
-          default_author: github_actions
 
 
     # Old OTA concept
@@ -116,10 +104,3 @@ jobs:
       with:
         name: "update_firmware+web_ui+cnn__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
-    
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: './dist/${{matrix.OUT_FILE_NAME}}'   
-
