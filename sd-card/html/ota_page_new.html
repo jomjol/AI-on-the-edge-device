@@ -35,36 +35,29 @@ Check at <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" targ
 <h2>Update</h2>
 <table class="fixed" border="0">
     <tr>
-        <td>
-            <table border="0">
-                <tr>
-                    <td style="width: 230px">
-                        <label for="newfile">Select the update file (update.zip, firmware.bin, html.zip, *.tfl/tflite):</label>
-                    </td>
-                    <td colspan="2">
-                        <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
-                    </td>
-                    <td rowspan="2" style="padding-left:50px">
-                        <button class="button" id="doUpdate" type="button" onclick="doUpdate()">Flash the firmware<br>(Takes about 60s)</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="filepath">Selected upload file:</label>
-                    </td>
-                    <td>
-                        <input id="filepath" type="text" style="width:100%; border: 0" readonly>
-                    </td>
-                    <td>
-                        <button id="upload" type="button" onclick="upload()">Upload</button>
-                    </td>
-                </tr>
-            </table>
-        </td>
+        <p>
+            <label for="newfile">Select the update file (update.zip, firmware.bin, html.zip, *.tfl/tflite):</label>
+        </p>
+        
+    </tr>
+    <tr>
+        <p>
+            <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
+        </p>
+    </tr>
+    <tr>
+        <p>
+            <button class="button" id="doUpdate" type="button" onclick="upload()">Do upload and update<br>(incl. reboot - if needed)</button>
+        </p>
+    </tr>
+    <tr>
+        <p>
+            <h3><div id="status">Status: idle</div></h3>
+        </p>
     </tr>
 </table>
 <h2>Reboot</h2>
-			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Manual reboot</button>
 <hr>
 
 <script type="text/javascript" src="./gethost.js"></script> 
@@ -79,7 +72,6 @@ function init(){
     basepath = getbasepath();
 
     document.getElementById("reboot").disabled = true;
-    document.getElementById("upload").disabled = true;
     document.getElementById("doUpdate").disabled = true;
 }
 
@@ -124,15 +116,16 @@ function doReboot() {
 function setpath() {
     var nameneu = document.getElementById("newfile").value;
     nameneu = nameneu.split(/[\\\/]/).pop();
-    document.getElementById("filepath").value = nameneu;
-    document.getElementById("upload").disabled = false;
+    document.getElementById("doUpdate").disabled = false;
+    document.getElementById("status").innerText = "Status: file selected";
 }
 
 
 function upload() {
 	var xhttp = new XMLHttpRequest();
 
-    var filePath = document.getElementById("filepath").value;
+    var nameneu = document.getElementById("newfile").value;
+    filePath = nameneu.split(/[\\\/]/).pop();
     var upload_path = "/upload/firmware/" + filePath;
     var fileInput = document.getElementById("newfile").files;
 
@@ -196,18 +189,29 @@ function upload() {
 
         var file = fileInput[0];
         xhttp.open("POST", upload_path, false);
+        document.getElementById("status").innerText = "Status: uploading";
         xhttp.send(file);
     }
 
-    alert("Start processing!");
+    document.getElementById("status").innerText = "Status: processing on ESP32";
 
 	var xhttp = new XMLHttpRequest();
 	/* first delete the old firmware */	
 	xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4) {
 			if (xhttp.status == 200) {
-                alert("Processing done!\n" + xhttp.responseText);
-				/* keine Reaktion, damit sich das Dokument nicht ändert */
+                if (xhttp.responseText == "reboot")
+                {
+                    var stringota = "/reboot_action.html";
+            		window.location = stringota;
+		            window.location.href = stringota;
+		            window.location.assign(stringota);
+		            window.location.replace(stringota);
+                }
+                else
+                {
+                    alert("Processing done!\n\n" + xhttp.responseText);
+                }
 			} else if (xhttp.status == 0) {
 				alert("Server closed the connection abruptly!");
 				UpdatePage();
