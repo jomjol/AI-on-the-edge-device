@@ -4,7 +4,7 @@ Here this edge computing is brought into a practical oriented example, where a A
 
 This projects allows you to digitalize your **analoge** water, gas, power and other meters using cheap and easily available hardware.
 
-All you need is an [ESP32 board with a supported camera](wiki/Hardware-Compatibility) and a bit of a practical hand.
+All you need is an [ESP32 board with a supported camera](https://github.com/jomjol/AI-on-the-edge-device/wiki/Hardware-Compatibility) and a bit of a practical hand.
 
 <img src="images/esp32-cam.png" width="200">
 
@@ -36,7 +36,8 @@ There are several options what to do with that value. Either send it to a MQTT b
 
 
 ## Setup
-There is a growing [wiki](wiki) which provides you with a lot of information.
+There is a growing [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) which provides you with a lot of information.
+
 Head there to get a start, set it up and configure it.
 
 ## Download
