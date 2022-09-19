@@ -46,8 +46,8 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
-        cd sd_card
-        zip -r ../firmware/html.zip sd_card/html 
+        cd sd-card
+        zip -r ../firmware/html.zip sd-card/html 
 
     - name: Push builds to repository
       uses: EndBug/add-and-commit@v9
@@ -121,5 +121,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: './dist/${{matrix.OUT_FILE_NAME}}'   
+        files: './firmware/*'   
 
