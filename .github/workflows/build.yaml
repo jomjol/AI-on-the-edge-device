@@ -41,7 +41,7 @@ jobs:
 #      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
-    - name: Copy to firmware folder
+    - name: Copy artifacts to firmware folder
       run: |
         # discard changes on version.txt and version.cpp
         git checkout -- sd-card/html/version.txt
