@@ -34,8 +34,8 @@ jobs:
 
 
     - name: Build Firmware
-      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
-#      run: cd code; platformio run --environment esp32cam
+#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
+      run: cd code; platformio run --environment esp32cam
 
 
 
