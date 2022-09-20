@@ -114,6 +114,8 @@ jobs:
         cd sd-card
         rm -f ../firmware/html.zip
         zip -r ../firmware/html.zip html
+        cd ../dist
+        zip -r ../firmware/update.zip .
         
     # extract the version used in next step
     - id: get_version
@@ -147,7 +149,7 @@ jobs:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
           firmware/*   
-          dist/*.zip
+          
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling
     - name: Commit changes and push changes
