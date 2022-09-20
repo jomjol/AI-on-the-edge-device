@@ -147,7 +147,7 @@ jobs:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
           firmware/*   
-          dist/*
+          dist/*.zip
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling
     - name: Commit changes and push changes

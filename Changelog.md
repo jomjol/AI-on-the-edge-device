@@ -4,7 +4,11 @@
 
 - auto release creation
 
-## [10.6.2] - Stability Increase (2022-07-24)
+## [10.6.2] - (2022-07-24)
+
+Stability Increase 
+
+### Added
 
 - **NEW 10.6.2**: ignore hidden files in model selection (configuration page) 
 
@@ -32,7 +36,10 @@
 
   
 
-## [10.5.2] - Stability Increase (2022-02-22)
+## [10.5.2] - (2022-02-22)
+Stability Increase 
+
+### Changed
 
 - NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
 - NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
@@ -41,9 +48,10 @@
 - Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
 - Bug Fix: corrected error in "Check Consistency Increase"
 
+## [10.4.0] - (2022-02-12)
+Stability Increase
 
-
-## [10.4.0] - Stability Increase (2022-02-12)
+### Changed
 
 - Graphical configuration: select available neural network files (*.tfl, *.tflite) from drop down menu
 - OTA-update: add option to upload tfl / tflite files to the correct location (`/config/`)
@@ -55,7 +63,10 @@
 
 
 
-## [10.3.0] - Stability Increase (2022-01-29)
+## [10.3.0] - (2022-01-29)
+
+Stability Increase 
+### Changed
 
 - Implemented LED flash dimming (`LEDIntensity`). 
   Remark: as auto illumination in the camera is used, this is rather for energy saving. It will not help reducing reflections
@@ -66,12 +77,14 @@
 
 **ATTENTION:  The new ESP32 camera hardware driver is much more stable on newer OV2640 versions (no or much less reboots) but seems to be not fully compatible with older versions.**
 
-* If you have problem with stalled systems you can try the following
+If you have problem with stalled systems you can try the following
   - Update the parameter `ImageQuality` to `12` instead of current value `5` (manually in the `config.ini`)
 
   - If this is not helping, you might need to update your hardware or stay with version 9.2
 
-## [10.2.0] - Stability Increase (2022-01-14)
+## [10.2.0] - (2022-01-14)
+Stability Increase 
+### Changed
 
 - Due to the updated camera driver, the image looks different and a new setup might be needed
 
@@ -84,8 +97,9 @@
 
   
 
-## [10.1.1] - Stability Increase (2022-01-12)
-
+## [10.1.1] - (2022-01-12)
+ Stability Increase
+### Changed
 - Bug Fix MQTT problem
 - Issue:
   - Changing from v9.x to 10.x the MQTT-parameter "Topic" was renamed into "MainTopic" to address multiple number meters. This renaming should have been done automatically in the background within the graphical configuration, but was not working. Instead the parameter "Topic" was deleted and "MainTopic" was set to disabled and "undefined".
@@ -95,7 +109,10 @@
   - If old `config.ini` not available: reset the parameter "MainTopic" within the `config.ini` manually
   - Reboot
 
-## [10.1.0] - Stability Increase (2022-01-09)
+## [10.1.0] -  (2022-01-09)
+Stability Increase
+
+### Changed
 
 - Reduce ESP32 frequency to 160MHz
 
@@ -108,8 +125,10 @@
 - Increased web-server buffers
 - bug fix: compiler compatibility
 
-## [10.0.2] - Stability Increase (2022-01-01)
+## [10.0.2] - (2022-01-01)
 
+Stability Increase 
+### Changed
 - NEW v10.0.2: Corrected JSON error
 
 - Updated compiler toolchain to ESP-IDF 4.3
@@ -128,8 +147,10 @@
 
   
 
-## [9.2.0] - External Illumination (2021-12-02)
+## [9.2.0] -  (2021-12-02)
+External Illumination
 
+### Changed
 - Direct JSON access: ``http://IP-ADRESS/json`` 
 - Error message in log file in case camera error during startup
 - Upgrade analog CNN to v9.1.0
@@ -138,6 +159,7 @@
 
 ## [9.1.1] - External Illumination (2021-11-16)
 
+### Changed
 - NEW 9.1.1 bug fix: LED implemenetation
 - External LEDs: change control mode (resolve bug with more than 2 LEDs)
 - Additional info into log file
@@ -145,31 +167,34 @@
 
 ## [9.0.0] - External Illumination (2021-10-23)
 
-* Implementation of external illumination to adjust positioning, brightness and color of the illumination now set individually
-  * Technical details can be found in the wiki: https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED
+### Changed
+- Implementation of external illumination to adjust positioning, brightness and color of the illumination now set individually
+  - Technical details can be found in the wiki: https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED
     <img src="https://raw.githubusercontent.com/jomjol/ai-on-the-edge-device/master/images/intern_vs_external.jpg" width="500">
-* New housing published for external LEDs and small clearing: https://www.thingiverse.com/thing:5028229
+- New housing published for external LEDs and small clearing: https://www.thingiverse.com/thing:5028229
 
 
 
 ## [8.5.0] - Multi Meter Support (2021-10-07)
 
-* Upgrade digital CNN to v13.1.0 (added new images)
-* bug fix: wlan password with space, double digit output
+### Changed
+- Upgrade digital CNN to v13.1.0 (added new images)
+- bug fix: wlan password with space, double digit output
 
 ## [8.4.0] - Multi Meter Support (2021-09-25)
 
-* License change (remove MIT license, remark see below)
+### Changed
+- License change (remove MIT license, remark see below)
 
-* html: show hostname in title and main page
+- html: show hostname in title and main page
 
-* configuration: 
+- configuration: 
 
-  * moved setting `ExtendedResolution` to individual number settings
-  * New parameter `IgnoreLeadingNaN` (delete leading NaN's specifically)
-  * **ATTENTION**: update of the `config.ini` needed (open, adjust `ExtendedResolution`, save)
+  - moved setting `ExtendedResolution` to individual number settings
+  - New parameter `IgnoreLeadingNaN` (delete leading NaN's specifically)
+  - **ATTENTION**: update of the `config.ini` needed (open, adjust `ExtendedResolution`, save)
 
-* Bug fixing (html, images of recognized numbers)
+- Bug fixing (html, images of recognized numbers)
 
   
  **ATTENTION: LICENSE CHANGE - removal of MIT License.** 
@@ -182,6 +207,8 @@
 
 ## [8.3.0] - Multi Meter Support (2021-09-12)
 
+### Changed
+
 * Upgrade digital CNN to v12.1.0 (added new images)
 * Dedicated NaN handling, internal refactoring (CNN-Handling)
 * HTML: confirmation after config.ini update
@@ -189,12 +216,14 @@
 
 ## [8.2.0] - Multi Meter Support (2021-08-24)
 
+### Changed
 * Improve server responsiveness
 * Flow status and prevalue status in overview
 * Improved prevalue handling 
 
 ## [8.1.0] - Multi Meter Support (2021-08-12)
 
+### Changed
 * GPIO: using the general mqtt main topic for GPIO
 
 * Upgrade digital CNN to v12.0.0  (added new images)
@@ -203,6 +232,7 @@
 
 ## [8.0.5] - Multi Meter Support (2021-08-01)
 
+### Changed
 * NEW 8.0.5: bug fix: saving prevalue
 * NEW 8.0.4: bug fix: load config.ini after upgrade
 * NEW 8.0.3: bug fix: reboot during `config.ini` handling, html error
@@ -218,6 +248,7 @@
 
 ## [7.1.2] MQTT-Update - (2021-06-17)
 
+### Changed
 * NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
 
 * NEW: 7.1.1: bug fix wlan password with "="  (again)
@@ -234,6 +265,7 @@
 
 ## [7.0.1] MQTT-Update - (2021-05-13)
 
+### Changed
 * NEW: 7.0.1: bug fix wlan password with "=" 
 
 * Upgrade digital CNN to v8.5.0  (added new images)
@@ -246,6 +278,7 @@
 
 ## [6.7.2] Image Processing in Memory - (2021-05-01)
 
+### Changed
 * NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)
 
 * NEW 6.7.1: Improved stability of camera (back to v6.6.1) - remove black strips and areas
@@ -261,28 +294,31 @@
 
 ## [6.6.1] Image Processing in Memory - (2021-04-05)
 
+### Changed
 * NEW 6.6.1: failed SD card initialization indicated by fast blinking LED at startup
 * Improved SD-card handling (increase compatibility with more type of cards)
 
 ## [6.5.0] Image Processing in Memory - (2021-03-25)
 
+### Changed
 * Upgrade digital CNN to v8.2.0  (added new type of digits)
 * Supporting alignment structures in ROI definition
 * Bug fixing: definition of  hostname in `config.ini`
 
 ## [6.4.0] Image Processing in Memory - (2021-03-20)
-
+### Changed
 * Additional alignment marks for settings the ROIs (analog and digit)
 * Upgrade analog CNN to v7.0.0 (added new type of pointer)
 
 ## [6.3.1] Image Processing in Memory - (2021-03-16)
-
+### Changed
 * NEW: 6.3.1: bug fixing in initial edit reference image and `config.ini` (Spelling error in `InitialRotate`)
 * Initial setup mode: bug fixing, error correction
 * Bug-fixing
 
 ## [6.2.2] Image Processing in Memory - (2021-03-10)
 
+### Changed
 * NEW 6.2.2: bug fixing
 * NEW 6.2.1: Changed brightness and contrast to default if not enabled (resolves to bright images)
 * Determination of fixed illumination settings during startup - speed up of 5s in each run
@@ -298,6 +334,7 @@
 
 ## [6.1.0] Image Processing in Memory - (2021-01-20)
 
+### Changed
 * Disabling of analog / digital counters in configuration 
 * Improved Alignment Algorithm (`AlignmentAlgo`  = `Default`,  `Accurate` , `Fast`)
 * Analog counters: `ExtendedResolution` (last digit is extended by sub comma value of CNN)
@@ -307,6 +344,7 @@
 
 ## [6.0.0] Image Processing in Memory - (2021-01-02)
 
+### Changed
 * **Major change**: image processing fully in memory - no need of SD card buffer anymore
 
   * Need to limit camera resolution to VGA (due to memory limits)
@@ -322,6 +360,7 @@
 
 ## [5.0.0] Setup Modus - (2020-12-06)
 
+### Changed
 * Implementation of initial setup modus for fresh installation
 
 * Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
@@ -330,11 +369,13 @@
 
 ## [4.1.1] Configuration editor - (2020-12-02)
 
+### Changed
 * Bug fixing: internal improvement of file handling (reduce not responding)
 
 
 ## [4.1.0] Configuration editor - (2020-11-30)
 
+### Changed
 * Implementation of configuration editor (including basic and expert mode)
 
 * Adjustable time zone to adjust to local time setting (incl. daylight saving time)
@@ -351,6 +392,7 @@
 
 ## [4.0.0] Tflite Core - (2020-11-15)
 
+### Changed
 * Implementation of rolling log-files
 
 * Update Tflite-Core to master@20201108 (v2.4)
@@ -361,13 +403,16 @@
 
 ## [3.1.0] MQTT-Client - (2020-10-26)
 
-* Update digital CNN to v6.5.0 and HTML (Info to hostname, IP, ssid)
+
+### Changed
+- Update digital CNN to v6.5.0 and HTML (Info to hostname, IP, ssid)
 
 * New implementation of "checkDigitConsistency" also for digits
 * MQTT-Adapter: user and password for sign in MQTT-Broker
 
 ## [3.0.0] MQTT-Client  (2020-10-14)
 
+### Changed
 * Implementation of MQTT Client
 * Improved Version Control
 * bug-fixing
@@ -376,17 +421,20 @@
 
 ## [2.2.1] Version Control  (2020-09-27)
 
-* Bug-Fixing (hostname in wlan.ini and error handling inside flow)
+### Changed
+- Bug-Fixing (hostname in wlan.ini and error handling inside flow)
 
 
 ## [2.2.0| Version Control  (2020-09-27)
 
+### Changed
 * Integrated automated versioning system (menu: SYSTEM --> INFO)
 * Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
 
 
 ## [2.1.0] Decimal Shift, Chrome & Edge  (2020-09-25)
 
+### Changed
 * Implementation of Decimal Shift
 
 * Update default CNN for digits to v6.4.0
@@ -404,6 +452,7 @@
 
 ## [2.0.0] Layout update  (2020-09-12)
 
+### Changed
   * Update to **new and modern layout**
   * Support for Chrome improved
   * Improved robustness: improved error handling in auto flow reduces spontaneous reboots
@@ -417,12 +466,14 @@
 
 ## [1.1.3] (2020-09-09)
 
+### Changed
 * **Bug in configuration of analog ROIs corrected** - correction in v.1.0.2 did not work properly
 * Improved update page for the web server (`/html` can be updated via a zip-file, which is provided in `/firmware/html.zip`)
 * Improved Chrome support
 
 ## [1.1.0] (2020-09-06)
 
+### Changed
 * Implementation of "delete complete directory"
   **Attention: beside the `firmware.bin`, also the content of `/html` needs to be updated!**
 
@@ -430,16 +481,19 @@
 
 ## [1.0.2] (2020-09-06)
 
+### Changed
 * Bug in configuration of analog ROIs corrected
 * minor bug correction
 
 ## [1.0.1] (2020-09-05)
 
+### Changed
 * preValue.ini Bug corrected
 * minor bug correction
 
 ## [1.0.0] (2020-09-04)
 
+### Changed
 * **First usable version** - compatible to previous project (https://github.com/jomjol/water-meter-system-complete)
 * NEW: 
   * no docker container for CNN calculation necessary
@@ -447,4 +501,6 @@
 
 ## [0.1.0] (2020-08-07)
 
+### Changed
 * Initial Version
+
