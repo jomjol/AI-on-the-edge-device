@@ -55,13 +55,13 @@ jobs:
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "firmware__extract_before_upload__only_needed_for_migration_from_11.2.0"
+        name: "firmware__extract_before_upload__only_needed_for_migration_from_11.3.1"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "html__only_needed_for_migration_from_11.2.0__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "html__only_needed_for_migration_from_11.3.1__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./sd-card/html/*
 
 
