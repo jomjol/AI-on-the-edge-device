@@ -2,447 +2,422 @@
 
 ## [Unreleased]
 
+## [v11.3.5] - 2022-09-20
+
 ## [10.6.2] - Stability Increase (2022-07-24)
 
-- **NEW 10.6.2**: ignore hidden files in model selection (configuration page) 
+-   **NEW 10.6.2**: ignore hidden files in model selection (configuration page) 
 
-- **NEW 10.6.1**: Revoke esp32cam & tflite update
+-   **NEW 10.6.1**: Revoke esp32cam & tflite update
 
-- **NEW 10.6.1**: Bug Fix: tflite-filename with ".", HTML spelling error
+-   **NEW 10.6.1**: Bug Fix: tflite-filename with ".", HTML spelling error
 
-- IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
+-   IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
 
-- MQTT: implemented "Retain Flag" and extend with absolute Change (in addition to rate)
+-   MQTT: implemented "Retain Flag" and extend with absolute Change (in addition to rate)
 
-- `config.ini`: removal of modelsize (readout from tflite)
+-   `config.ini`: removal of modelsize (readout from tflite)
 
-- Updated analog neural network file (`ana1000s2.tflite`) & digital neural network file (`dig1400s2q.tflite`)
+-   Updated analog neural network file (`ana1000s2.tflite`) & digital neural network file (`dig1400s2q.tflite`)
 
-- TFMicro/Lite: Update (espressif Version 20220716)
+-   TFMicro/Lite: Update (espressif Version 20220716)
 
-- Updated esp32cam (v20220716)
+-   Updated esp32cam (v20220716)
 
-- ESP-IDF: Update to 4.4
+-   ESP-IDF: Update to 4.4
 
-- Internal update (CNN algorithm optimizations, reparation for new neural network type)
+-   Internal update (CNN algorithm optimizations, reparation for new neural network type)
 
-- Bug Fix: no time with fixed IP, Postprocessing, MQTT
-
-  
+-   Bug Fix: no time with fixed IP, Postprocessing, MQTT
 
 ## [10.5.2] - Stability Increase (2022-02-22)
 
-- NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
-- NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
-- MQTT: changed wifi naming to "wifiRSSI"
-- HTML: check selectable values for consistency
-- Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
-- Bug Fix: corrected error in "Check Consistency Increase"
-
-
+-   NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
+-   NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed 
+-   MQTT: changed wifi naming to "wifiRSSI"
+-   HTML: check selectable values for consistency
+-   Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
+-   Bug Fix: corrected error in "Check Consistency Increase"
 
 ## [10.4.0] - Stability Increase (2022-02-12)
 
-- Graphical configuration: select available neural network files (*.tfl, *.tflite) from drop down menu
-- OTA-update: add option to upload tfl / tflite files to the correct location (`/config/`)
-  - In the future the new files will also be copied to the `firmware` directory of the repository
-- Added Wifi RSSI to MQTT information
-- Updated analog neural network file (`ana-s3-q-20220105.tflite`)
-- Updated digital neural network file (`dig-s1-q-20220102.tflite`)
-- Updated build environment to `Espressif 3.5.0`
-
-
+-   Graphical configuration: select available neural network files (_.tfl, _.tflite) from drop down menu
+-   OTA-update: add option to upload tfl / tflite files to the correct location (`/config/`)
+    -   In the future the new files will also be copied to the `firmware` directory of the repository
+-   Added Wifi RSSI to MQTT information
+-   Updated analog neural network file (`ana-s3-q-20220105.tflite`)
+-   Updated digital neural network file (`dig-s1-q-20220102.tflite`)
+-   Updated build environment to `Espressif 3.5.0`
 
 ## [10.3.0] - Stability Increase (2022-01-29)
 
-- Implemented LED flash dimming (`LEDIntensity`). 
-  Remark: as auto illumination in the camera is used, this is rather for energy saving. It will not help reducing reflections
-- Additional camera parameters: saturation, contrast (although not too much impact yet)
-- Some readings will have removable "N"s that can not be removed automatically and are handled with an "error" --> no return value in the field "value" anymore (still reported back via field "raw value")
-- Updated esp32 camera hardware driver
-- Bug fix: MQTT, HTML improvements
+-   Implemented LED flash dimming (`LEDIntensity`). 
+    Remark: as auto illumination in the camera is used, this is rather for energy saving. It will not help reducing reflections
+-   Additional camera parameters: saturation, contrast (although not too much impact yet)
+-   Some readings will have removable "N"s that can not be removed automatically and are handled with an "error" --> no return value in the field "value" anymore (still reported back via field "raw value")
+-   Updated esp32 camera hardware driver
+-   Bug fix: MQTT, HTML improvements
 
 **ATTENTION:  The new ESP32 camera hardware driver is much more stable on newer OV2640 versions (no or much less reboots) but seems to be not fully compatible with older versions.**
 
-* If you have problem with stalled systems you can try the following
-  - Update the parameter `ImageQuality` to `12` instead of current value `5` (manually in the `config.ini`)
+-   If you have problem with stalled systems you can try the following
 
-  - If this is not helping, you might need to update your hardware or stay with version 9.2
+    -   Update the parameter `ImageQuality` to `12` instead of current value `5` (manually in the `config.ini`)
+
+    -   If this is not helping, you might need to update your hardware or stay with version 9.2
 
 ## [10.2.0] - Stability Increase (2022-01-14)
 
-- Due to the updated camera driver, the image looks different and a new setup might be needed
+-   Due to the updated camera driver, the image looks different and a new setup might be needed
 
-  - Update reference image
-  - Update Alignment marks
+    -   Update reference image
+    -   Update Alignment marks
 
-- Reduce reboot due to camera problems
+-   Reduce reboot due to camera problems
 
-- Update esp32-camera to new version (master as of 2022-01-09)
-
-  
+-   Update esp32-camera to new version (master as of 2022-01-09)
 
 ## [10.1.1] - Stability Increase (2022-01-12)
 
-- Bug Fix MQTT problem
-- Issue:
-  - Changing from v9.x to 10.x the MQTT-parameter "Topic" was renamed into "MainTopic" to address multiple number meters. This renaming should have been done automatically in the background within the graphical configuration, but was not working. Instead the parameter "Topic" was deleted and "MainTopic" was set to disabled and "undefined".
-- ToDo
-  - Update the `html.zip`
-  - If old `config.ini` available: copy it to `/config`, open the graphical configuration and save it again.
-  - If old `config.ini` not available: reset the parameter "MainTopic" within the `config.ini` manually
-  - Reboot
+-   Bug Fix MQTT problem
+-   Issue:
+    -   Changing from v9.x to 10.x the MQTT-parameter "Topic" was renamed into "MainTopic" to address multiple number meters. This renaming should have been done automatically in the background within the graphical configuration, but was not working. Instead the parameter "Topic" was deleted and "MainTopic" was set to disabled and "undefined".
+-   ToDo
+    -   Update the `html.zip`
+    -   If old `config.ini` available: copy it to `/config`, open the graphical configuration and save it again.
+    -   If old `config.ini` not available: reset the parameter "MainTopic" within the `config.ini` manually
+    -   Reboot
 
 ## [10.1.0] - Stability Increase (2022-01-09)
 
-- Reduce ESP32 frequency to 160MHz
+-   Reduce ESP32 frequency to 160MHz
 
-- Update tflite (new source: https://github.com/espressif/tflite-micro-esp-examples)
+-   Update tflite (new source: <https://github.com/espressif/tflite-micro-esp-examples>)
 
-- Update analog neural network (ana-s3-q-20220105.tflite)
+-   Update analog neural network (ana-s3-q-20220105.tflite)
 
-- Update digital neural network (dig-s1-q-20220102.tflite)
+-   Update digital neural network (dig-s1-q-20220102.tflite)
 
-- Increased web-server buffers
-- bug fix: compiler compatibility
+-   Increased web-server buffers
+
+-   bug fix: compiler compatibility
 
 ## [10.0.2] - Stability Increase (2022-01-01)
 
-- NEW v10.0.2: Corrected JSON error
+-   NEW v10.0.2: Corrected JSON error
 
-- Updated compiler toolchain to ESP-IDF 4.3
+-   Updated compiler toolchain to ESP-IDF 4.3
 
-- Removal of memory leak
+-   Removal of memory leak
 
-- Improved error handling during startup (check PSRAM and camera with remark in logfile)
+-   Improved error handling during startup (check PSRAM and camera with remark in logfile)
 
-- MQTT: implemented raw value additionally, removal of regex contrain
+-   MQTT: implemented raw value additionally, removal of regex contrain
 
-- Normalized Parameter ``MaxRateValue``  to "change per minute" 
+-   Normalized Parameter `MaxRateValue`  to "change per minute" 
 
-- HTML: improved input handling
+-   HTML: improved input handling
 
-- Corrected error handling: in case of error the old value, rate, timestamp are not transmitted any more
-
-  
+-   Corrected error handling: in case of error the old value, rate, timestamp are not transmitted any more
 
 ## [9.2.0] - External Illumination (2021-12-02)
 
-- Direct JSON access: ``http://IP-ADRESS/json`` 
-- Error message in log file in case camera error during startup
-- Upgrade analog CNN to v9.1.0
-- Upgrade digital CNN to v13.3.0 (added new images)
-- html: support of different ports
+-   Direct JSON access: `http://IP-ADRESS/json` 
+-   Error message in log file in case camera error during startup
+-   Upgrade analog CNN to v9.1.0
+-   Upgrade digital CNN to v13.3.0 (added new images)
+-   html: support of different ports
 
 ## [9.1.1] - External Illumination (2021-11-16)
 
-- NEW 9.1.1 bug fix: LED implemenetation
-- External LEDs: change control mode (resolve bug with more than 2 LEDs)
-- Additional info into log file
-- Bug fix: decimal shift, html, log file
+-   NEW 9.1.1 bug fix: LED implemenetation
+-   External LEDs: change control mode (resolve bug with more than 2 LEDs)
+-   Additional info into log file
+-   Bug fix: decimal shift, html, log file
 
 ## [9.0.0] - External Illumination (2021-10-23)
 
-* Implementation of external illumination to adjust positioning, brightness and color of the illumination now set individually
-  * Technical details can be found in the wiki: https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED
-    <img src="https://raw.githubusercontent.com/jomjol/ai-on-the-edge-device/master/images/intern_vs_external.jpg" width="500">
-* New housing published for external LEDs and small clearing: https://www.thingiverse.com/thing:5028229
-
-
+-   Implementation of external illumination to adjust positioning, brightness and color of the illumination now set individually
+    -   Technical details can be found in the wiki: <https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED>
+        <img src="https://raw.githubusercontent.com/jomjol/ai-on-the-edge-device/master/images/intern_vs_external.jpg" width="500">
+-   New housing published for external LEDs and small clearing: <https://www.thingiverse.com/thing:5028229>
 
 ## [8.5.0] - Multi Meter Support (2021-10-07)
 
-* Upgrade digital CNN to v13.1.0 (added new images)
-* bug fix: wlan password with space, double digit output
+-   Upgrade digital CNN to v13.1.0 (added new images)
+-   bug fix: wlan password with space, double digit output
 
 ## [8.4.0] - Multi Meter Support (2021-09-25)
 
-* License change (remove MIT license, remark see below)
+-   License change (remove MIT license, remark see below)
 
-* html: show hostname in title and main page
+-   html: show hostname in title and main page
 
-* configuration: 
+-   configuration: 
 
-  * moved setting `ExtendedResolution` to individual number settings
-  * New parameter `IgnoreLeadingNaN` (delete leading NaN's specifically)
-  * **ATTENTION**: update of the `config.ini` needed (open, adjust `ExtendedResolution`, save)
+    -   moved setting `ExtendedResolution` to individual number settings
+    -   New parameter `IgnoreLeadingNaN` (delete leading NaN's specifically)
+    -   **ATTENTION**: update of the `config.ini` needed (open, adjust `ExtendedResolution`, save)
 
-* Bug fixing (html, images of recognized numbers)
+-   Bug fixing (html, images of recognized numbers)
 
-  
- **ATTENTION: LICENSE CHANGE - removal of MIT License.** 
-
-- Currently no licence published - copyright belongs to author
-- If you are interested in a commercial usage or dedicated versions please contact the developer
-  - no limits to private usage
+    **ATTENTION: LICENSE CHANGE - removal of MIT License.** 
 
 
+-   Currently no licence published - copyright belongs to author
+-   If you are interested in a commercial usage or dedicated versions please contact the developer
+    -   no limits to private usage
 
 ## [8.3.0] - Multi Meter Support (2021-09-12)
 
-* Upgrade digital CNN to v12.1.0 (added new images)
-* Dedicated NaN handling, internal refactoring (CNN-Handling)
-* HTML: confirmation after config.ini update
-* Bug fixing
+-   Upgrade digital CNN to v12.1.0 (added new images)
+-   Dedicated NaN handling, internal refactoring (CNN-Handling)
+-   HTML: confirmation after config.ini update
+-   Bug fixing
 
 ## [8.2.0] - Multi Meter Support (2021-08-24)
 
-* Improve server responsiveness
-* Flow status and prevalue status in overview
-* Improved prevalue handling 
+-   Improve server responsiveness
+-   Flow status and prevalue status in overview
+-   Improved prevalue handling 
 
 ## [8.1.0] - Multi Meter Support (2021-08-12)
 
-* GPIO: using the general mqtt main topic for GPIO
+-   GPIO: using the general mqtt main topic for GPIO
 
-* Upgrade digital CNN to v12.0.0  (added new images)
-* Update tfmicro to new master (2021-08-07)
-* Bug fix: remove text in mqtt value, remove connect limit in wlan reconnet
+-   Upgrade digital CNN to v12.0.0  (added new images)
+
+-   Update tfmicro to new master (2021-08-07)
+
+-   Bug fix: remove text in mqtt value, remove connect limit in wlan reconnet
 
 ## [8.0.5] - Multi Meter Support (2021-08-01)
 
-* NEW 8.0.5: bug fix: saving prevalue
-* NEW 8.0.4: bug fix: load config.ini after upgrade
-* NEW 8.0.3: bug fix: reboot during `config.ini` handling, html error
-* NEW 8.0.2: saving roundes prevalue, bug fix html server
-* NEW 8.0.1: bug fix: html handling of parameter `FixedExposure` and `ImageSize`
-* Dual / multi meter support (more than 1 number to be recognized)
-  This is implemented with the feature "number" on the ROI definition as well as selected options
-* MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
-* Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and fully functional yet
-* Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
+-   NEW 8.0.5: bug fix: saving prevalue
+-   NEW 8.0.4: bug fix: load config.ini after upgrade
+-   NEW 8.0.3: bug fix: reboot during `config.ini` handling, html error
+-   NEW 8.0.2: saving roundes prevalue, bug fix html server
+-   NEW 8.0.1: bug fix: html handling of parameter `FixedExposure` and `ImageSize`
+-   Dual / multi meter support (more than 1 number to be recognized)
+    This is implemented with the feature "number" on the ROI definition as well as selected options
+-   MQTT: standardization of the naming - including new topics (`json`,  `freeMem `, `uptime`)c
+-   Preparation for extended GPIO support (thanks to Zwerk2k) - not tested and fully functional yet
+-   Bug fixing: html server, memory leak, MQTT connect, hostname, turn of flash LED
 
 <span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span> 
 
 ## [7.1.2] MQTT-Update - (2021-06-17)
 
-* NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
+-   NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
 
-* NEW: 7.1.1: bug fix wlan password with "="  (again)
+-   NEW: 7.1.1: bug fix wlan password with "="  (again)
 
-* MQTT error message: changes "no error", send retain flag
+-   MQTT error message: changes "no error", send retain flag
 
-* Update wlan handling to esp-idf 4.1
+-   Update wlan handling to esp-idf 4.1
 
-* Upgrade digital CNN to v8.7.0  (added new images)
+-   Upgrade digital CNN to v8.7.0  (added new images)
 
-* Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
-
-  
+-   Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
 
 ## [7.0.1] MQTT-Update - (2021-05-13)
 
-* NEW: 7.0.1: bug fix wlan password with "=" 
+-   NEW: 7.0.1: bug fix wlan password with "=" 
 
-* Upgrade digital CNN to v8.5.0  (added new images)
+-   Upgrade digital CNN to v8.5.0  (added new images)
 
-* New MQTT topics: flow rate (units/minute), time stamp (last correct read readout)
+-   New MQTT topics: flow rate (units/minute), time stamp (last correct read readout)
 
-* Update MQTT/Error topic to " " in case no error (instead of empty string)
+-   Update MQTT/Error topic to " " in case no error (instead of empty string)
 
-* Portrait or landscape image orientation in rotated image (avoid cropping)
+-   Portrait or landscape image orientation in rotated image (avoid cropping)
 
 ## [6.7.2] Image Processing in Memory - (2021-05-01)
 
-* NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)
+-   NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)
 
-* NEW 6.7.1: Improved stability of camera (back to v6.6.1) - remove black strips and areas
+-   NEW 6.7.1: Improved stability of camera (back to v6.6.1) - remove black strips and areas
 
-* Upgrade digital CNN to v8.3.0  (added new type of digits)
+-   Upgrade digital CNN to v8.3.0  (added new type of digits)
 
-* Internal update: TFlite (v2.5), esp32cam, startup sequence
+-   Internal update: TFlite (v2.5), esp32cam, startup sequence
 
-* Rollback to espressif v2.1.0, as v3.2.0 shows unstable reboot
+-   Rollback to espressif v2.1.0, as v3.2.0 shows unstable reboot
 
-* Bugfix: WLan-passwords, reset of hostname
-
+-   Bugfix: WLan-passwords, reset of hostname
 
 ## [6.6.1] Image Processing in Memory - (2021-04-05)
 
-* NEW 6.6.1: failed SD card initialization indicated by fast blinking LED at startup
-* Improved SD-card handling (increase compatibility with more type of cards)
+-   NEW 6.6.1: failed SD card initialization indicated by fast blinking LED at startup
+-   Improved SD-card handling (increase compatibility with more type of cards)
 
 ## [6.5.0] Image Processing in Memory - (2021-03-25)
 
-* Upgrade digital CNN to v8.2.0  (added new type of digits)
-* Supporting alignment structures in ROI definition
-* Bug fixing: definition of  hostname in `config.ini`
+-   Upgrade digital CNN to v8.2.0  (added new type of digits)
+-   Supporting alignment structures in ROI definition
+-   Bug fixing: definition of  hostname in `config.ini`
 
 ## [6.4.0] Image Processing in Memory - (2021-03-20)
 
-* Additional alignment marks for settings the ROIs (analog and digit)
-* Upgrade analog CNN to v7.0.0 (added new type of pointer)
+-   Additional alignment marks for settings the ROIs (analog and digit)
+-   Upgrade analog CNN to v7.0.0 (added new type of pointer)
 
 ## [6.3.1] Image Processing in Memory - (2021-03-16)
 
-* NEW: 6.3.1: bug fixing in initial edit reference image and `config.ini` (Spelling error in `InitialRotate`)
-* Initial setup mode: bug fixing, error correction
-* Bug-fixing
+-   NEW: 6.3.1: bug fixing in initial edit reference image and `config.ini` (Spelling error in `InitialRotate`)
+-   Initial setup mode: bug fixing, error correction
+-   Bug-fixing
 
 ## [6.2.2] Image Processing in Memory - (2021-03-10)
 
-* NEW 6.2.2: bug fixing
-* NEW 6.2.1: Changed brightness and contrast to default if not enabled (resolves to bright images)
-* Determination of fixed illumination settings during startup - speed up of 5s in each run
-* Update digital CNN to v8.1.1 (additional digital images trained)
-* Extended error message in MQTT error message
+-   NEW 6.2.2: bug fixing
+-   NEW 6.2.1: Changed brightness and contrast to default if not enabled (resolves to bright images)
+-   Determination of fixed illumination settings during startup - speed up of 5s in each run
+-   Update digital CNN to v8.1.1 (additional digital images trained)
+-   Extended error message in MQTT error message
 
 
-* Image brightness is now adjustable 
+-   Image brightness is now adjustable 
 
 
-* Bug fixing: minor topics 
-
+-   Bug fixing: minor topics 
 
 ## [6.1.0] Image Processing in Memory - (2021-01-20)
 
-* Disabling of analog / digital counters in configuration 
-* Improved Alignment Algorithm (`AlignmentAlgo`  = `Default`,  `Accurate` , `Fast`)
-* Analog counters: `ExtendedResolution` (last digit is extended by sub comma value of CNN)
-* `config.ini`: additional parameter `hostname`  (additional to wlan.ini)
-* Switching of GPIO12/13 via http-interface: `/GPIO?GPIO=12&Status=high/low`
-* Bug fixing: html configuration page, wlan password ("=" now possible)
+-   Disabling of analog / digital counters in configuration 
+-   Improved Alignment Algorithm (`AlignmentAlgo`  = `Default`,  `Accurate` , `Fast`)
+-   Analog counters: `ExtendedResolution` (last digit is extended by sub comma value of CNN)
+-   `config.ini`: additional parameter `hostname`  (additional to wlan.ini)
+-   Switching of GPIO12/13 via http-interface: `/GPIO?GPIO=12&Status=high/low`
+-   Bug fixing: html configuration page, wlan password ("=" now possible)
 
 ## [6.0.0] Image Processing in Memory - (2021-01-02)
 
-* **Major change**: image processing fully in memory - no need of SD card buffer anymore
+-   **Major change**: image processing fully in memory - no need of SD card buffer anymore
 
-  * Need to limit camera resolution to VGA (due to memory limits)
-* MQTT: Last Will Testament (LWT) implemented: "connection lost" in case of connection lost to `TopicError`
-* Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
-* Update digital CNN to v7.2.1 (additional digital images trained) 
-* Setting of arbitrary time server in `config.ini`
-* Option for fixed IP-, DNS-Settings in `wlan.ini`
-* Increased stability (internal image and camera handling)
-* Bug fixing: edit digits, handling PreValue, html-bugs
-
-
+    -   Need to limit camera resolution to VGA (due to memory limits)
+-   MQTT: Last Will Testament (LWT) implemented: "connection lost" in case of connection lost to `TopicError`
+-   Disabled `CheckDigitIncreaseConsistency` in default configuration - must now be explicit enabled if needed
+-   Update digital CNN to v7.2.1 (additional digital images trained) 
+-   Setting of arbitrary time server in `config.ini`
+-   Option for fixed IP-, DNS-Settings in `wlan.ini`
+-   Increased stability (internal image and camera handling)
+-   Bug fixing: edit digits, handling PreValue, html-bugs
 
 ## [5.0.0] Setup Modus - (2020-12-06)
 
-* Implementation of initial setup modus for fresh installation
+-   Implementation of initial setup modus for fresh installation
 
-* Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
-
-  
+-   Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
 
 ## [4.1.1] Configuration editor - (2020-12-02)
 
-* Bug fixing: internal improvement of file handling (reduce not responding)
-
+-   Bug fixing: internal improvement of file handling (reduce not responding)
 
 ## [4.1.0] Configuration editor - (2020-11-30)
 
-* Implementation of configuration editor (including basic and expert mode)
+-   Implementation of configuration editor (including basic and expert mode)
 
-* Adjustable time zone to adjust to local time setting (incl. daylight saving time)
+-   Adjustable time zone to adjust to local time setting (incl. daylight saving time)
 
-* MQTT: additional topic for error reporting
+-   MQTT: additional topic for error reporting
 
-* standardized access to current logfile via `http://IP-ADRESS/logfileact`
+-   standardized access to current logfile via `http://IP-ADRESS/logfileact`
 
-* Update digital CNN to v7.2.0, analog CNN to 6.3.0
+-   Update digital CNN to v7.2.0, analog CNN to 6.3.0
 
-* Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
-
-
+-   Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
 
 ## [4.0.0] Tflite Core - (2020-11-15)
 
-* Implementation of rolling log-files
+-   Implementation of rolling log-files
 
-* Update Tflite-Core to master@20201108 (v2.4)
+-   Update Tflite-Core to master@20201108 (v2.4)
 
-* Bug-fixing for reducing reboots
-
-  
+-   Bug-fixing for reducing reboots
 
 ## [3.1.0] MQTT-Client - (2020-10-26)
 
-* Update digital CNN to v6.5.0 and HTML (Info to hostname, IP, ssid)
+-   Update digital CNN to v6.5.0 and HTML (Info to hostname, IP, ssid)
 
-* New implementation of "checkDigitConsistency" also for digits
-* MQTT-Adapter: user and password for sign in MQTT-Broker
+-   New implementation of "checkDigitConsistency" also for digits
+
+-   MQTT-Adapter: user and password for sign in MQTT-Broker
 
 ## [3.0.0] MQTT-Client  (2020-10-14)
 
-* Implementation of MQTT Client
-* Improved Version Control
-* bug-fixing
-
-
+-   Implementation of MQTT Client
+-   Improved Version Control
+-   bug-fixing
 
 ## [2.2.1] Version Control  (2020-09-27)
 
-* Bug-Fixing (hostname in wlan.ini and error handling inside flow)
+-   Bug-Fixing (hostname in wlan.ini and error handling inside flow)
 
+## \[2.2.0| Version Control  (2020-09-27)
 
-## [2.2.0| Version Control  (2020-09-27)
-
-* Integrated automated versioning system (menu: SYSTEM --> INFO)
-* Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
-
+-   Integrated automated versioning system (menu: SYSTEM --> INFO)
+-   Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
 
 ## [2.1.0] Decimal Shift, Chrome & Edge  (2020-09-25)
 
-* Implementation of Decimal Shift
+-   Implementation of Decimal Shift
 
-* Update default CNN for digits to v6.4.0
+-   Update default CNN for digits to v6.4.0
 
-* Improvement HTML
+-   Improvement HTML
 
-* Support for Chrome and Edge
+-   Support for Chrome and Edge
 
-* Reduce logging to minimum - extended logging on demand
+-   Reduce logging to minimum - extended logging on demand
 
-* Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")`
+-   Implementation of hostname in wlan.ini (`hostname = "HOSTNAME")`
 
-* Bug fixing, code corrections
-
+-   Bug fixing, code corrections
 
 ## [2.0.0] Layout update  (2020-09-12)
 
-  * Update to **new and modern layout**
-  * Support for Chrome improved
-  * Improved robustness: improved error handling in auto flow reduces spontaneous reboots
-  * File server: Option for "DELETE ALL"
-  * WLan: support of spaces in SSID and password
-  * Reference Image: Option for mirror image, option for image update on the fly
-  * additional parameter in `wasserzaehler.html?noerror=true`  to suppress an potential error message
-  * bug fixing
+-   Update to **new and modern layout**
+-   Support for Chrome improved
+-   Improved robustness: improved error handling in auto flow reduces spontaneous reboots
+-   File server: Option for "DELETE ALL"
+-   WLan: support of spaces in SSID and password
+-   Reference Image: Option for mirror image, option for image update on the fly
+-   additional parameter in `wasserzaehler.html?noerror=true`  to suppress an potential error message
+-   bug fixing
 
+## [1.1.3](2020-09-09)
 
+-   **Bug in configuration of analog ROIs corrected** - correction in v.1.0.2 did not work properly
+-   Improved update page for the web server (`/html` can be updated via a zip-file, which is provided in `/firmware/html.zip`)
+-   Improved Chrome support
 
-## [1.1.3] (2020-09-09)
+## [1.1.0](2020-09-06)
 
-* **Bug in configuration of analog ROIs corrected** - correction in v.1.0.2 did not work properly
-* Improved update page for the web server (`/html` can be updated via a zip-file, which is provided in `/firmware/html.zip`)
-* Improved Chrome support
+-   Implementation of "delete complete directory"
+    **Attention: beside the `firmware.bin`, also the content of `/html` needs to be updated!**
 
-## [1.1.0] (2020-09-06)
+## [1.0.2](2020-09-06)
 
-* Implementation of "delete complete directory"
-  **Attention: beside the `firmware.bin`, also the content of `/html` needs to be updated!**
+-   Bug in configuration of analog ROIs corrected
+-   minor bug correction
 
+## [1.0.1](2020-09-05)
 
+-   preValue.ini Bug corrected
+-   minor bug correction
 
-## [1.0.2] (2020-09-06)
+## [1.0.0](2020-09-04)
 
-* Bug in configuration of analog ROIs corrected
-* minor bug correction
+-   **First usable version** - compatible to previous project (<https://github.com/jomjol/water-meter-system-complete>)
+-   NEW: 
+    -   no docker container for CNN calculation necessary
+    -   web based configuration editor on board
 
-## [1.0.1] (2020-09-05)
+## [0.1.0](2020-08-07)
 
-* preValue.ini Bug corrected
-* minor bug correction
+-   Initial Version
 
-## [1.0.0] (2020-09-04)
+[Unreleased]: https://github.com/haverland/AI-on-the-edge-device/compare/v11.3.5...HEAD
 
-* **First usable version** - compatible to previous project (https://github.com/jomjol/water-meter-system-complete)
-* NEW: 
-  * no docker container for CNN calculation necessary
-  * web based configuration editor on board
-
-## [0.1.0] (2020-08-07)
-
-* Initial Version
+[v11.3.5]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...v11.3.5
