@@ -40,7 +40,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
-##### 11.3.0 - Intermediate Digits (2022-09-17)
+##### 11.3.1 - Intermediate Digits (2022-09-17)
 
 - **ATTENTION**: 
   - first update the 'firmware.bin' and ensure that the new version is running
@@ -51,6 +51,7 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
   
 
 
+- **NEW v11.3.1**: corrected corrupted asset `firmware.bin`
 - Increased precision (more than 6-7 digits)
 - Implements Counter Clockwise Analog Pointers
 - Improved post processing algorithm
