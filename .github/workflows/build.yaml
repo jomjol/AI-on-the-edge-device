@@ -23,8 +23,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
-#      run: cd code; platformio run --environment esp32cam
+#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
+      run: cd code; platformio run --environment esp32cam
 
     - name: Store firmware in cache
       uses: actions/cache@v3
