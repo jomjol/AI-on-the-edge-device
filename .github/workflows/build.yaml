@@ -4,7 +4,6 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -23,21 +22,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
 
+    - name: Build Firmware
+      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
+#      run: cd code; platformio run --environment esp32cam
+
+
+  pack-for-OTA-v1:
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: Set Variables
       id: vars
       run: |
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-        #echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
-        #echo "::set-output name=date_time_filename::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d_%H-%M-%S')"
-        #echo "::set-output name=version_string::${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-        #echo "Version String: ${{ steps.vars.outputs.version_string }}"
-
-
-    - name: Build Firmware
-#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
-      run: cd code; platformio run --environment esp32cam
-
-
 
     # Old OTA concept
     # firmware__*.zip needs to be unpacked before attaching to the release!
@@ -62,6 +59,15 @@ jobs:
 
 
 
+  pack-for-OTA-v2:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
