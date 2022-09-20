@@ -30,7 +30,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./code/.pio/build/esp32cam/firmware.bin
-        key: ${{ hashFiles('./code/.pio/build/esp32cam/firmware.bin') }}
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
 
   pack-for-OTA-v1:
@@ -47,7 +47,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./code/.pio/build/esp32cam/firmware.bin
-        key: ${{ hashFiles('./code/.pio/build/esp32cam/firmware.bin') }}
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
         
     - name: Set Variables
       id: vars
@@ -90,7 +90,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./code/.pio/build/esp32cam/firmware.bin
-        key: ${{ hashFiles('./code/.pio/build/esp32cam/firmware.bin') }}
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
         
     - name: Set Variables
       id: vars
