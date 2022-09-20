@@ -29,7 +29,7 @@ jobs:
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
         echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
         echo "::set-output name=date_time_filename::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d_%H-%M-%S')"
-        #echo "::set-output name=version_string::${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        #echo "::set-output name=version_string::${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         #echo "Version String: ${{ steps.vars.outputs.version_string }}"
 
 
@@ -49,19 +49,19 @@ jobs:
     - name: Rename firmware file to contain versioning (old ota)
       run: |
         mkdir -p ./dist_old_ota
-        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
+        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
         ls -l ./dist_old_ota
 
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "firmware__extract_before_upload__only_needed_for_migration_from_11.3.1"
+        name: "firmware_${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})__extract_before_upload__only_needed_for_migration_from_11.3.1"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "html__only_needed_for_migration_from_11.3.1__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "html_${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})__only_needed_for_migration_from_11.3.1"
         path: ./sd-card/html/*
 
 
@@ -79,7 +79,7 @@ jobs:
     - name: Upload update.zip Artifact (Firmware only)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware_only__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update_firmware_only__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
         
 
@@ -89,7 +89,7 @@ jobs:
     - name: Upload update.zip artifact (Firmware + Web UI)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware+web_ui__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update_firmware+web_ui__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
         
 
@@ -102,5 +102,5 @@ jobs:
     - name: Upload update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware+web_ui+cnn__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update_firmware+web_ui+cnn__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
