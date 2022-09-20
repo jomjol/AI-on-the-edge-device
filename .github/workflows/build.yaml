@@ -12,7 +12,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
     - name: Cache PlatformIO
       uses: actions/cache@v2
