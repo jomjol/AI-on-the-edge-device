@@ -34,8 +34,8 @@ jobs:
 
 
     - name: Build Firmware
-#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
-      run: cd code; platformio run --environment esp32cam
+      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
+#      run: cd code; platformio run --environment esp32cam
 
 
 
@@ -51,13 +51,13 @@ jobs:
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "firmware_${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})__extract_before_upload__only_needed_for_migration_from_11.3.1"
+        name: "firmware__[${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})]__extract_before_upload__only_needed_for_migration_from_11.3.1"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "html_${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})__only_needed_for_migration_from_11.3.1"
+        name: "html__[${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})]__only_needed_for_migration_from_11.3.1"
         path: ./sd-card/html/*
 
 
@@ -75,7 +75,7 @@ jobs:
     - name: Upload update.zip Artifact (Firmware only)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware_only__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update_firmware_only__[${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})]"
         path: ./dist/*
         
 
@@ -85,7 +85,7 @@ jobs:
     - name: Upload update.zip artifact (Firmware + Web UI)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware+web_ui__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update_firmware+web_ui__[${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})]"
         path: ./dist/*
         
 
@@ -98,5 +98,5 @@ jobs:
     - name: Upload update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware+web_ui+cnn__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update_firmware+web_ui+cnn__[${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})]"
         path: ./dist/*
