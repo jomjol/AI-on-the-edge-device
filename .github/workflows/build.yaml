@@ -18,7 +18,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+        key: ${{ runner.os }}-${{ GITHUB_RUN_ID }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -37,7 +37,7 @@ jobs:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
           ./sd-card/html/version.txt
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+        key: ${{ runner.os }}-${{ GITHUB_RUN_ID }}
 
 
   pack-for-OTA-v1:
@@ -101,7 +101,7 @@ jobs:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
           ./sd-card/html/version.txt
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+        key: ${{ runner.os }}-${{ GITHUB_RUN_ID }}
         
     - name: Set Variables
       id: vars
