@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    
     - name: Cache PlatformIO
       uses: actions/cache@v2
       with:
@@ -38,11 +38,9 @@ jobs:
 
 
     - name: Build Firmware
-#      run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
+      #run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin; touch ./code/.pio/build/esp32cam/bootloader.bin; touch ./code/.pio/build/esp32cam/partitions.bin # Testing
       run: cd code; platformio run --environment esp32cam
-
-
-
+    
     # Old OTA concept
     # firmware__*.zip needs to be unpacked before attaching to the release!
     # The bin filename can contain versioning.
@@ -104,3 +102,63 @@ jobs:
       with:
         name: "update_firmware+web_ui+cnn__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
+
+    # creates old style binaries for fresh installation (backward compatible to wiki)
+    - name: Copy artifacts to firmware folder
+      run: |
+        mkdir -p firmware
+        # copy builds to firmware folder for committing in next step
+        cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
+        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
+        cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
+        cd sd-card
+        rm -f ../firmware/html.zip
+        zip -r ../firmware/html.zip html
+        cd ../dist
+        zip -r ../firmware/update.zip .
+        
+    # extract the version used in next step
+    - id: get_version
+      if: startsWith(github.ref, 'refs/tags/') 
+      uses: battila7/get-version-action@v2
+
+    # the changelog [unreleased] will now be changed to the release version
+    - name: Update changelog
+      uses: thomaseizinger/keep-a-changelog-new-release@v1
+      if: startsWith(github.ref, 'refs/tags/') 
+      with:
+        changelogPath: Changelog.md
+        version: ${{ steps.get_version.outputs.version-without-v }}
+            
+    # the release notes will be extracted from changelog 
+    - name: Extract release notes
+      id: extract-release-notes
+      if: startsWith(github.ref, 'refs/tags/') 
+      uses: ffurrer2/extract-release-notes@v1
+      with:
+          changelog_file: Changelog.md
+          
+
+    # Releases should only be created on master by tagging the last commit.
+    # all artifacts in firmware folder pushed to the release
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        name:  ${{ steps.get_version.outputs.version-without-v }}
+        body: ${{ steps.extract-release-notes.outputs.release_notes }}
+        files: |
+          firmware/*   
+          
+
+    # Commit&Push Changelog to master branch. Must be manually merged back to rolling
+    - name: Commit changes and push changes
+      if: startsWith(github.ref, 'refs/tags/') 
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add Changelog.md
+        git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
+        git push origin HEAD:master
+
+
