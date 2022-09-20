@@ -26,8 +26,17 @@ jobs:
       run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin # Testing
 #      run: cd code; platformio run --environment esp32cam
 
+    - name: Store firmware in cache
+      uses: actions/cache@v3
+      with:
+        path: ./code/.pio/build/esp32cam/firmware.bin
+        key: my-cache-key
+
 
   pack-for-OTA-v1:
+    # Old OTA concept
+    # firmware__*.zip needs to be unpacked before attaching to the release!
+    # The bin filename can contain versioning.
     runs-on: ubuntu-latest
     needs: build
     
@@ -37,9 +46,14 @@ jobs:
       run: |
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
-    # Old OTA concept
-    # firmware__*.zip needs to be unpacked before attaching to the release!
-    # The bin filename can contain versioning.
+    - uses: actions/checkout@v2
+    
+    - name: Get firmware from cache
+      uses: actions/cache@v3
+      with:
+        path: ./code/.pio/build/esp32cam/firmware.bin
+        key: my-cache-key
+        
     - name: Rename firmware file to contain versioning (old ota)
       run: |
         mkdir -p ./dist_old_ota
@@ -61,20 +75,28 @@ jobs:
 
 
   pack-for-OTA-v2:
-    runs-on: ubuntu-latest
-    needs: build
-    
-    steps:
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-        
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
     #  - (optional) /html/*
-    #  - (optional) /config/*.tfl        
+    #  - (optional) /config/*.tfl   
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Get firmware from cache
+      uses: actions/cache@v3
+      with:
+        path: ./code/.pio/build/esp32cam/firmware.bin
+        key: my-cache-key
+        
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+             
     - name: Prepare update.zip artifact
       run: |
         mkdir -p ./dist
