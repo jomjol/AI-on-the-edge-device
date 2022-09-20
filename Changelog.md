@@ -1,6 +1,8 @@
-# Versions
+# Changelog
 
 ## [Unreleased]
+
+- auto release creation
 
 ## [10.6.2] - Stability Increase (2022-07-24)
 

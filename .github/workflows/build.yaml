@@ -126,7 +126,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/') 
       with:
         changelogPath: Changelog.md
-        version: ${{ steps.get_version.outputs.version }}
+        version: ${{ steps.get_version.outputs.version-without-v }}
             
     # the release notes will be extracted from changelog 
     - name: Extract release notes
@@ -143,10 +143,11 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
+        name:  ${{ steps.get_version.outputs.version-without-v }}
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
-          './firmware/*'   
-          './dist/*'
+          firmware/*   
+          dist/*
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling
     - name: Commit changes and push changes
