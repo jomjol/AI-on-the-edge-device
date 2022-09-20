@@ -27,14 +27,10 @@ jobs:
       id: vars
       run: |
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
+        #echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
         #echo "::set-output name=date_time_filename::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d_%H-%M-%S')"
         #echo "::set-output name=version_string::${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         #echo "Version String: ${{ steps.vars.outputs.version_string }}"
-
-
-    - name: Set Version used in HTML Info page
-      run: echo "${{ steps.vars.outputs.date_time }}, ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})" > "sd-card/html/version.txt"
 
 
     - name: Build Firmware
