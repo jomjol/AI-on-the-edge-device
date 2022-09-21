@@ -154,7 +154,6 @@ p {
     padding:0px;
     width:160px;
     color: black;
-    background-color: blue;
 }
 
 .menu li:hover li a{
@@ -171,7 +170,6 @@ p {
     padding:0px 10px 0px 15px;
     text-align:left;
     width:160px;
-/*     background-color: blue; */
 }
 
 .menu li ul a:hover, 
@@ -193,7 +191,6 @@ p {
     color:#ffffff;
     text-decoration:none;
     color:white;
-    background-color: green;
     width:160px;
 }
 
