@@ -48,7 +48,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 
     if (!ImageBasis)            // die Funktion Bilder aufnehmen existiert nicht --> muss erst erzeugt werden NUR ZU TESTZWECKEN
     {
-        if (AlignmentExtendedDebugging) printf("CImageBasis musste erzeugt werden\n");
+        if (AlignmentExtendedDebugging) printf("CImageBasis had to be created\n");
         ImageBasis = new CImageBasis(namerawimage);
     }
 }

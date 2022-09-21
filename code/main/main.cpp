@@ -138,7 +138,7 @@ extern "C" void app_main(void)
     esp_err_t cam = Camera.InitCam();
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("nach init camera: sleep for : %ldms\n", (long) xDelay);
+    printf("After camera initialization: sleep for : %ldms\n", (long) xDelay);
     vTaskDelay( xDelay );   
 
 
@@ -188,8 +188,8 @@ extern "C" void app_main(void)
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
-        std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
-        _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+        std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+        _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
         printf(_zws.c_str());
         LogFile.SwitchOnOff(true);
         LogFile.WriteToFile(_zws);

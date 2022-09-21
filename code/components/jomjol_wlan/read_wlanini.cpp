@@ -248,7 +248,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     fclose(pFile);
 
-    printf("*** Update hostname done ***\n");
+    printf("*** Hostname update done ***\n");
 
     return true;
 }

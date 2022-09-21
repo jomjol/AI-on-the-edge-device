@@ -178,7 +178,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     }
 
     if (filetosend == "/sdcard/html/index.html" && isSetupModusActive()) {
-        printf("System ist im Setupmodus --> index.html --> setup.html");
+        printf("System is in setup mode --> index.html --> setup.html");
         filetosend = "/sdcard/html/setup.html";
     }
 

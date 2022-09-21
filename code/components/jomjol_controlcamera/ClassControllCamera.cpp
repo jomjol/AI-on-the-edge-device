@@ -266,7 +266,7 @@ void CCamera::EnableAutoExposure(int flashdauer)
         LogFile.SwitchOnOff(true);
         LogFile.WriteToFile("Camera Capture Failed (Procedure 'EnableAutoExposure') --> Reboot"
                 "Check that your camera module is working and connected properly.");
-        doReboot();
+        //doReboot();
     }
     esp_camera_fb_return(fb);        
 
@@ -316,7 +316,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LightOnOff(false);
 
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Camera is not working anymore (CCamera::CaptureToBasisImage) - most propably hardware problem (instablility, ...). "
+        LogFile.WriteToFile("Camera is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
                 "System will reboot.");
         doReboot();
 
@@ -327,9 +327,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     zwischenspeicher = (uint8_t*) malloc(_size);
     if (!zwischenspeicher)
     {
-        ESP_LOGE(TAGCAMERACLASS, "Nicht ausreichend Speicherplatz für Bild in Funktion CaptureToBasisImage()");
+        ESP_LOGE(TAGCAMERACLASS, "Insufficient memory space for image in function CaptureToBasisImage()");
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Nicht ausreichend Speicherplatz für Bild in Funktion CaptureToBasisImage()");
+        LogFile.WriteToFile("Insufficient memory space for image in function CaptureToBasisImage()");
     }
     for (int i = 0; i < _size; ++i)
         *(zwischenspeicher + i) = *(fb->buf + i);
@@ -416,7 +416,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LogFile.SwitchOnOff(true);
         LogFile.WriteToFile("Camera Capture Failed (CCamera::CaptureToFile) --> Reboot"
                 "Check that your camera module is working and connected properly.");
-        doReboot();
+        //doReboot();
 
         return ESP_FAIL;
     }

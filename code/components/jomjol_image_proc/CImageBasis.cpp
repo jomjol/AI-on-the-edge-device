@@ -146,7 +146,7 @@ bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
     int gr = height * width * channels;
     if (gr != _size)            // Größe passt nicht
     {
-        printf("Kann Bild nicht von Speicher kopierte - Größen passen nicht zusammen: soll %d, ist %d\n", _size, gr);
+        printf("Cannot copy image from memory - sizes do not match: should be %d, but is %d\n", _size, gr);
         return false;
     }
 
@@ -392,7 +392,7 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     int anz = 1;
     while (!rgb_image && (anz < _anzrepeat))    
     {
-	    printf("Create Image from Copy - Speicher ist voll - Versuche es erneut: %d.\n", anz);
+	    printf("Create Image from Copy - Memory is full - try again: %d.\n", anz);
         rgb_image = (unsigned char*) malloc(memsize);
         anz++;
     }
@@ -401,7 +401,7 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     if (!rgb_image)
     {
         printf(getESPHeapInfo().c_str());
-        printf("\nKein freier Speicher mehr!!!! Benötigt: %d %d %d %d\n", width, height, channels, memsize);
+        printf("\nNo more free memory!! Needed: %d %d %d %d\n", width, height, channels, memsize);
         RGBImageRelease();
         return;
     }
@@ -425,7 +425,7 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
     if (!rgb_image)
     {
         printf(getESPHeapInfo().c_str());
-        printf("\nKein freier Speicher mehr!!!! Benötigt: %d %d %d %d\n", width, height, channels, memsize);
+        printf("\nNo more free memory!! Needed: %d %d %d %d\n", width, height, channels, memsize);
         return;
     }
 }
@@ -543,7 +543,7 @@ void CImageBasis::Resize(int _new_dx, int _new_dy, CImageBasis *_target)
 {
     if ((_target->height != _new_dy) || (_target->width != _new_dx) || (_target->channels != channels))
     {
-        printf("CImageBasis::Resize - Targetbildgröße passt nicht !!!!!!!!!");
+        printf("CImageBasis::Resize - Target image size does not fit !!");
         return;
     }
 
