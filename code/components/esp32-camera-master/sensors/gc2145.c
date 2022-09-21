@@ -166,7 +166,7 @@ static int set_pixformat(sensor_t *sensor, pixformat_t pixformat)
         ret = set_reg_bits(sensor->slv_addr, P0_OUTPUT_FORMAT, 0, 0x1f, 2); //yuv422
         break;
     default:
-        ESP_LOGW(TAG, "unsupported format");
+        ESP_LOGW(TAG, "unsupport format");
         ret = -1;
         break;
     }
@@ -339,7 +339,7 @@ static int get_reg(sensor_t *sensor, int reg, int mask)
 {
     int ret = 0;
     if (mask > 0xFF) {
-        ESP_LOGE(TAG, "mask should not be more than 0xff");
+        ESP_LOGE(TAG, "mask should not more than 0xff");
     } else {
         ret = read_reg(sensor->slv_addr, reg);
     }
@@ -353,7 +353,7 @@ static int set_reg(sensor_t *sensor, int reg, int mask, int value)
 {
     int ret = 0;
     if (mask > 0xFF) {
-        ESP_LOGE(TAG, "mask should not be more than 0xff");
+        ESP_LOGE(TAG, "mask should not more than 0xff");
     } else {
         ret = read_reg(sensor->slv_addr, reg);
     }

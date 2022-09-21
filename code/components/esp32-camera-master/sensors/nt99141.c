@@ -468,14 +468,14 @@ static int set_lenc_dsp(sensor_t *sensor, int enable)
 
 static int get_agc_gain(sensor_t *sensor)
 {
-    ESP_LOGD(TAG, "get_agc_gain cannot be configured now");
+    ESP_LOGD(TAG, "get_agc_gain can not be configured at present");
     return 0;
 }
 
 //real gain
 static int set_agc_gain(sensor_t *sensor, int gain)
 {
-    ESP_LOGD(TAG, "set_agc_gain cannot be configured now");
+    ESP_LOGD(TAG, "set_agc_gain can not be configured at present");
     // ESP_LOGD(TAG, "GAIN = %d\n", gain);
     int cnt = gain / 2;
 
@@ -515,13 +515,13 @@ static int set_agc_gain(sensor_t *sensor, int gain)
 
 static int get_aec_value(sensor_t *sensor)
 {
-    ESP_LOGD(TAG, "get_aec_value can not be configured now");
+    ESP_LOGD(TAG, "get_aec_value can not be configured at present");
     return 0;
 }
 
 static int set_aec_value(sensor_t *sensor, int value)
 {
-    ESP_LOGD(TAG, "set_aec_value cannot be configured now");
+    ESP_LOGD(TAG, "set_aec_value can not be configured at present");
     int ret = 0;
     // ESP_LOGD(TAG, " set_aec_value to: %d", value);
     ret = write_reg_bits(sensor->slv_addr, 0x3012, 0x00, (value >> 8) & 0xff);
@@ -537,7 +537,7 @@ static int set_aec_value(sensor_t *sensor, int value)
 
 static int set_ae_level(sensor_t *sensor, int level)
 {
-    ESP_LOGD(TAG, "set_ae_level cannot be configured now");
+    ESP_LOGD(TAG, "set_ae_level can not be configured at present");
     int ret = 0;
 
     if (level < 0) {
@@ -814,7 +814,7 @@ static int set_sharpness(sensor_t *sensor, int level)
 
 static int set_gainceiling(sensor_t *sensor, gainceiling_t level)
 {
-    ESP_LOGD(TAG, "set_gainceiling cannot be configured now");
+    ESP_LOGD(TAG, "set_gainceiling can not be configured at present");
     return 0;
 }
 
@@ -826,7 +826,7 @@ static int get_denoise(sensor_t *sensor)
 
 static int set_denoise(sensor_t *sensor, int level)
 {
-    ESP_LOGD(TAG, "set_denoise cannot be configured now");
+    ESP_LOGD(TAG, "set_denoise can not be configured at present");
     return 0;
 }
 

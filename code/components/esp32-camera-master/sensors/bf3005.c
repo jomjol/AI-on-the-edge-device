@@ -399,7 +399,7 @@ static int set_awb_gain_dsp(sensor_t *sensor, int value)
     int ret = 0;
     ret = SCCB_Write(sensor->slv_addr, 0xa6, value);
     if (ret == 0) {
-        ESP_LOGD(TAG, "Set awb gain threshold to: %d", value);
+        ESP_LOGD(TAG, "Set awb gain threthold to: %d", value);
         sensor->status.awb_gain = value;
     }
     return ret;
