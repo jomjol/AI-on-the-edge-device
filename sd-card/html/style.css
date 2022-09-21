@@ -18,7 +18,7 @@ body, html {
 
 .iframe {
     flex-grow: 1;
-    margin: 5px 7px 4px 0px; 
+    margin: 5px 0px 4px 0px; 
     padding: 0; 
     border: 2px solid black;
 }
@@ -41,60 +41,200 @@ p {
     font-size: 1em;
 }
 
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+
+/* Menus */
+.menu{
+    margin:0px;
+    padding:0px;
+    font-size:18px;
+    font-weight:normal;
+}
+
+.menu ul{
+    height:50px;
+    list-style:none;
     background-color: #333;
-    width:1000px;
-}
-
-li {
-    float: left;
-    font-family: arial;
-    font-size: 18px;
-}
-
-li a, .dropbtn {
-    display: inline-block;
-    color: white;
-    text-align: center;
     padding: 14px 16px;
-    text-decoration: none;
 }
 
-li a:hover, .dropdown:hover .dropbtn {
-    background-color: red;
+.menu li{
+    float:left;
+    padding:0px;
 }
-
-li.dropdown {
+    
+.menu li a{
+    color:white;
+/*     display:block; */
     display: inline-block;
+/*     font-weight:normal; */
+    line-height:50px;
+    margin:0px;
+    padding:0px 25px;
+    text-align:center;
+    text-decoration:none;
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    font-family: arial;
+.menu ul {
+  height: 50px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
+.menu li {
+  float: left;
+  padding: 0px;
 }
 
-.dropdown-content a:hover {
-    color: white;
+.menu li a {
+  color: white;
+  display: block;
+  font-weight: normal;
+  line-height: 50px;
+  margin: 0px;
+  padding: 0px 25px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.menu li a:hover, .menu ul li:hover a{
+    color:white;
     background-color: red;
+    
+    display: inline-block;
+/*     height: 50px; */
+    text-decoration:none;
+/*     overflow: hidden; */
+    
+/*     display: block; */
+    margin:0px;
+    padding:0px 25px;
+    
+/*    line-height:50px;
+    font-size: 18px;
+    margin:0px;
+    padding:0px 25px;*/
 }
 
-.dropdown:hover .dropdown-content {
+.menu li ul{
+    background: white;
+    display:none;
+    height:auto;
+    padding:0px;
+    margin:0px;
+    border:0px;
+    position:absolute;
+    width: 210px; /*160px + 50px; */
+/*     z-index:200; */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+    
+.menu li:hover ul{
+    display:block;
+}
+    
+.menu li li {
+    display:block;
+    float:none;
+    margin:0px;
+    padding:0px;
+    width:160px;
+    color: black;
+    background-color: blue;
+}
+
+.menu li:hover li a{
+    background:none;
+    color: black;
+    background-color: white;
+}
+
+.menu li ul a{
+    display:block;
+    height:50px;
+    font-style:normal;
+    margin:0px;
+    padding:0px 10px 0px 15px;
+    text-align:left;
+    width:160px;
+}
+
+.menu li ul a:hover, 
+.menu li ul li:hover, 
+.menu li ul li ul a:hover,
+.menu li ul li ul li:hover{
+    border:0px;
+    color:#ffffff;
+    text-decoration:none;
+    color:white;
+    background-color: red;
+    width:160px;
+}
+
+.menu li ul li ul li ul a:hover,
+.menu li ul li ul li ul li:hover
+{
+    border:0px;
+    color:#ffffff;
+    text-decoration:none;
+    color:white;
+    background-color: green;
+    width:160px;
+}
+
+.menu p{
+    clear:left;
+    color: green;
+}  
+
+.menu ul li ul li { 
+    position: relative;
+}
+
+.menu ul li ul li ul, .menu ul li:hover ul li ul {
+    display: none;
+    margin-left:50px;
+}
+
+.menu ul li ul li:hover ul {
     display: block;
-} 
+    position: absolute;
+    left: 100%;
+    top: 0;
+}
+
+.menu ul li ul li:hover ul li a { 
+    color: black; 
+}
+
+.menu ul li ul li:hover ul li a:hover { 
+    color: black; 
+}
+
+
+/* Sub-Menu Arrows */
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    color: white;
+}
+
+.right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    position: absolute;
+    right: -40px;
+    top: 20px;
+    width:0px;
+    height:0px;
+}
+
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    border-bottom: solid white;
+    border-right: solid white;
+    margin: 0px 0px 2px 5px;
+}
