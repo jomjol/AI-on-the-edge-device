@@ -142,7 +142,7 @@ p {
 /*     z-index:200; */
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }
-    
+
 .menu li:hover ul{
     display:block;
 }
@@ -153,7 +153,6 @@ p {
     margin:0px;
     padding:0px;
     width:160px;
-    color: black;
 }
 
 .menu li:hover li a{
@@ -172,26 +171,31 @@ p {
     width:160px;
 }
 
+.menu li:hover li a{
+    background:none;
+}
+
 .menu li ul a:hover, 
 .menu li ul li:hover, 
 .menu li ul li ul a:hover,
 .menu li ul li ul li:hover{
     border:0px;
-    color:#ffffff;
     text-decoration:none;
     color:white;
     background-color: red;
     width:160px;
+/*     margin: 0; */
 }
 
 .menu li ul li ul li ul a:hover,
 .menu li ul li ul li ul li:hover
 {
     border:0px;
-    color:#ffffff;
     text-decoration:none;
     color:white;
     width:160px;
+/*     width:260px; */
+/*     margin: 0; */
 }
 
 .menu p{
@@ -223,7 +227,7 @@ p {
     color: black; 
 }
 
-
+/*
 .arrow {
   border: solid black;
   border-width: 0 3px 3px 0;
@@ -249,5 +253,4 @@ p {
   border-bottom: solid white;
   border-right: solid white;
   margin: 0px 0px 2px 5px;
-  
-}
+}*/
