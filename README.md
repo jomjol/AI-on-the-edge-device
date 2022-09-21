@@ -69,6 +69,13 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-21)
+
+- New update mechanism: 
+  - handling of all files (zip, tfl, tflite, bin) within in one updload
+  - status (upload, processing, ...) displayed
+  - auto suggestion for reboot (or not in case of web ui update only)
+
 ##### Rolling (2022-09-19)
 
 - Integrated version info better into the html (main page, logfile)

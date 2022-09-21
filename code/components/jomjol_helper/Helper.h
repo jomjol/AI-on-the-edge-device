@@ -11,6 +11,8 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
 
 void CopyFile(string input, string output);
 void DeleteFile(string fn);
+void RenameFile(string from, string to);
+
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1);
 

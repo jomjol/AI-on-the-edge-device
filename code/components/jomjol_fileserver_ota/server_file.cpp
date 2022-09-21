@@ -52,6 +52,7 @@ extern "C" {
 #define MAX_FILE_SIZE   (2000*1024) // 200 KB
 #define MAX_FILE_SIZE_STR "2000KB"
 
+
 /* Scratch buffer size */
 #define SCRATCH_BUFSIZE  8192 
 
@@ -71,6 +72,9 @@ static const char *TAG_FILESERVER = "file_server";
 #include <dirent.h>
 
 using namespace std;
+
+string SUFFIX_ZW = "_0xge";
+
 
 esp_err_t get_tflite_file_handler(httpd_req_t *req)
 {
@@ -780,11 +784,19 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
             }
 
-            printf("Filename to extract: %s", zw.c_str());
-            DeleteFile(zw);
-            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
+            string filename_zw = zw + SUFFIX_ZW;
+
+            printf("Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+
+            // extrahieren in zwischendatei
+            DeleteFile(filename_zw);
+            FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
+
+            DeleteFile(zw);
+            RenameFile(filename_zw, zw);
+            DeleteFile(filename_zw);
 
             printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
             //            printf("File data: \"%s\"\n", (const char*)p);

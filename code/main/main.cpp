@@ -87,7 +87,7 @@ bool Init_NVS_SDCard()
     // formatted in case when mounting fails.
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 5,
+        .max_files = 7,                         // anstatt 5 (2022-09-21)
         .allocation_unit_size = 16 * 1024
     };
 

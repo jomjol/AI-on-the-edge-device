@@ -358,11 +358,8 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         {
             std::string in, out, outbin, zw, retfirmware;
 
-//            in = "/sdcard/firmware/html.zip";
             out = "/sdcard/html";
             outbin = "/sdcard/firmware";
-
-//            delete_all_in_directory(out);
 
             retfirmware = unzip_new(fn, out+"/", outbin+"/");
 
@@ -370,12 +367,10 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             {
                 filetype = "BIN";
                 fn = retfirmware;
-                zw = "HTML Update Successfull!<br><br>Additioal firmware found in ZIP file.\n";
-                httpd_resp_sendstr_chunk(req, zw.c_str());
             }
             else
             {
-                zw = "HTML Update Successfull!<br><br>No reboot necessary.\n";
+                zw = "HTML Update Successfull! No reboot necessary.\n";
                 httpd_resp_sendstr_chunk(req, zw.c_str());
                 httpd_resp_sendstr_chunk(req, NULL);  
                 return ESP_OK;        
@@ -385,21 +380,20 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
         if (filetype == "BIN")
         {
-            const char* resp_str;    
+            const char* resp_str; 
+
             KillTFliteTasks();
             gpio_handler_deinit();
             if (ota_update_task(fn))
             {
-//                resp_str = "rebooting - Firmware Update Successfull!<br><br>You can restart now.";
-//                httpd_resp_send(req, resp_str, strlen(resp_str));  
-//                httpd_resp_sendstr_chunk(req, NULL);  
-                return handler_reboot(req);                
-            }
-            else
-            {
-                resp_str = "Error during Firmware Update!!!<br><br>Please check output of console.";
+                std::string zw = "reboot\n";
+                httpd_resp_sendstr_chunk(req, zw.c_str());
+                httpd_resp_sendstr_chunk(req, NULL);  
+                printf("Send reboot\n");
+                return ESP_OK;                
             }
 
+            resp_str = "Error during Firmware Update!!!\nPlease check output of console.";
             httpd_resp_send(req, resp_str, strlen(resp_str));  
 
             #ifdef DEBUG_DETAIL_ON 
@@ -428,7 +422,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         delete_all_in_directory(out);
 
         unzip(in, out+"/");
-        zw = "HTML Update Successfull!<br><br>No reboot necessary";
+        zw = "HTML Update Successfull!\nNo reboot necessary";
         httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        

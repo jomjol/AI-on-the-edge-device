@@ -209,6 +209,23 @@ size_t findDelimiterPos(string input, string delimiter)
 	return pos;
 }
 
+
+void RenameFile(string from, string to)
+{
+//	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
+	/* Delete file */
+	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		printf("DeleteFile: File %s existiert nicht!\n", from.c_str());
+		return;
+	}
+	fclose(fpSourceFile);
+
+	rename(from.c_str(), to.c_str());
+}
+
+
 void DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
