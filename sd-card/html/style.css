@@ -20,7 +20,7 @@ body, html {
     flex-grow: 1;
     margin: 5px 0px 4px 0px; 
     padding: 0; 
-    border: 2px solid black;
+    border: 2px solid #333; /* black */
 }
 
 h1 {
@@ -43,50 +43,20 @@ p {
 
 
 
-.menu{
-    margin:0px;
-    padding:0px;
-    font-size:18px;
-    font-weight:normal;
-/*     color:#6D6D6D;         */
-/*   height: 50px; */
-}
-
-.menu ul{
-    height:50px;
-    list-style:none;
-    background-color: #333;
-/*     color: white; */
-    padding: 14px 16px;
-}
-
-.menu li{
-    float:left;
-    padding:0px;
-}
-    
-.menu li a{
-    color:white;
-/*     display:block; */
-    display: inline-block;
-/*     font-weight:normal; */
-    line-height:50px;
-/*     font-size: 18px; */
-    margin:0px;
-    padding:0px 25px;
-    text-align:center;
-    text-decoration:none;
-}
 
 
-/*.menu {
+
+
+
+.menu {
   margin: 0px;
   padding: 0px;
-  font-family: "Times New Roman";
-  font-size: 14px;
+  font-family: "Arial";
+  font-size: 18px;
   font-weight: bold;
-  color: #6D6D6D;
-}*/
+  width: 1008qpx;
+  background: #333; /* black */
+}
 
 .menu ul {
   height: 50px;
@@ -100,8 +70,10 @@ p {
   padding: 0px;
 }
 
+/* Top Menu */
 .menu li a {
   color: white;
+  background: #333; /* black */
   display: block;
   font-weight: normal;
   line-height: 50px;
@@ -111,125 +83,103 @@ p {
   text-decoration: none;
 }
 
-.menu li a:hover, .menu ul li:hover a{
-    color:white;
-    background-color: red;
-    
-    display: inline-block;
-/*     height: 50px; */
-    text-decoration:none;
-/*     overflow: hidden; */
-    
-/*     display: block; */
-    margin:0px;
-    padding:0px 25px;
-    
-/*    line-height:50px;
-    font-size: 18px;
-    margin:0px;
-    padding:0px 25px;*/
+/* Selected top menu, 1th submenu */
+.menu li a:hover,
+.menu ul li:hover a {
+  background: red;
+  color: white;
+  text-decoration: none;
 }
 
-.menu li ul{
-    background: white;
-    display:none;
-    height:auto;
-    padding:0px;
-    margin:0px;
-    border:0px;
-    position:absolute;
-    width: 210px; /*160px + 50px; */
-/*     z-index:200; */
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+.menu li ul {
+  background: #f9f9f9; /* light gray */
+  display: none;
+  height: auto;
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  position: absolute;
+  width: 210px;
+  z-index: 200;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }
 
-.menu li:hover ul{
-    display:block;
+.menu li:hover ul {
+  display: block;
+
 }
-    
+
 .menu li li {
-    display:block;
-    float:none;
-    margin:0px;
-    padding:0px;
-    width:160px;
+  display: block;
+  float: none;
+  margin: 0px;
+  padding: 0px;
+  width: 210px;
 }
 
-.menu li:hover li a{
-    background:none;
-    color: black;
-    background-color: #f1f1f1;
+/* 1th menu */
+.menu li:hover li a {
+  background: #f9f9f9; /* light gray */
+  color: #333; /* black */
 }
 
-.menu li ul a{
-    display:block;
-    height:50px;
-    font-style:normal;
-    margin:0px;
-    padding:0px 10px 0px 15px;
-    text-align:left;
-    width:160px;
+.menu li ul a {
+  display: block;
+  height: 50px;
+/*   font-style: normal; */
+  margin: 0px;
+  padding: 0px 10px 0px 15px;
+  text-align: left;
 }
 
-.menu li:hover li a{
-    background:none;
+/* Selected 1th menu */
+.menu li ul a:hover,
+.menu li ul li:hover a {
+  background: red;
+  border: 0px;
+  color: white;
+  text-decoration: none;
 }
 
-.menu li ul a:hover, 
-.menu li ul li:hover, 
-.menu li ul li ul a:hover,
-.menu li ul li ul li:hover{
-    border:0px;
-    text-decoration:none;
-    color:white;
-    background-color: red;
-    width:160px;
-/*     margin: 0; */
+.menu p {
+  clear: left;
 }
 
-.menu li ul li ul li ul a:hover,
-.menu li ul li ul li ul li:hover
-{
-    border:0px;
-    text-decoration:none;
-    color:white;
-    width:160px;
-/*     width:260px; */
-/*     margin: 0; */
+.menu ul li ul li {
+  position: relative;
 }
 
-.menu p{
-    clear:left;
-    color: green;
-}  
-
-.menu ul li ul li { 
-    position: relative;
-}
-
-.menu ul li ul li ul, .menu ul li:hover ul li ul {
-    display: none;
-    margin-left:50px;
+.menu ul li ul li ul,
+.menu ul li:hover ul li ul {
+  display: none;
 }
 
 .menu ul li ul li:hover ul {
-    display: block;
-    position: absolute;
-    left: 100%;
-    top: 0;
+  display: block;
+  position: absolute;
+  left: 100%;
+  top: 0;
 }
 
-.menu ul li ul li:hover ul li a { 
-    color: black; 
+.menu ul li ul li:hover ul li a {
+  color: #333; /* black */
+  background: #eeeeee; /*light gray */
 }
 
-.menu ul li ul li:hover ul li a:hover { 
-    color: black; 
+.menu ul li ul li:hover ul li a:hover {
+  background: red;
+  color: white;
 }
 
-/*
+
+
+
+
+
+
+
 .arrow {
-  border: solid black;
+  border: solid #333; /* black */
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
@@ -241,7 +191,7 @@ p {
   -webkit-transform: rotate(-45deg);
   
   position: absolute;
-  right: -40px;
+  right: 10px;
   top: 20px;     
   width:0px; 
   height:0px; 
@@ -253,4 +203,4 @@ p {
   border-bottom: solid white;
   border-right: solid white;
   margin: 0px 0px 2px 5px;
-}*/
+}
