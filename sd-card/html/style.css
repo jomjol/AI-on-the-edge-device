@@ -160,7 +160,7 @@ p {
 .menu li:hover li a{
     background:none;
     color: black;
-    background-color: white;
+    background-color: #f1f1f1;
 }
 
 .menu li ul a{
