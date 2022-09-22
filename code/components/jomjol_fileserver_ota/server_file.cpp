@@ -418,7 +418,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     /* Close file after sending complete */
     fclose(fd);
-    ESP_LOGI(TAG_FILESERVER, "File sending complete");
+    ESP_LOGI(TAG_FILESERVER, "File successfully sent");
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);
@@ -680,7 +680,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
     httpd_resp_set_hdr(req, "Location", directory.c_str());
-    httpd_resp_sendstr(req, "File deleted successfully");
+    httpd_resp_sendstr(req, "File successfully deleted");
     return ESP_OK;
 }
 

@@ -359,21 +359,21 @@ std::string process_doFlow(std::vector<float> analog, std::vector<float> digits,
             gen_analog->ROI.push_back(anaROI);
         }
     }
-    printf("Setup ROIs completed.\n");
+    printf("Setting up of ROIs completed.\n");
 
     undertestPost->InitNUMBERS();
     if (checkConsistency) {
         printf("checkConsistency=true\n");
         std::vector<NumberPost*>* NUMBERS = undertestPost->GetNumbers();    
         for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
-            printf("Set checkConsistency on number: %d\n", _n);
+            printf("Setting checkConsistency on number: %d\n", _n);
             (*NUMBERS)[_n]->checkDigitIncreaseConsistency = true;
         }
     }
     if (extendedResolution ) {
        std::vector<NumberPost*>* NUMBERS = undertestPost->GetNumbers();    
         for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
-            printf("Set extendedResolution on number: %d\n", _n);
+            printf("Setting extendedResolution on number: %d\n", _n);
             (*NUMBERS)[_n]->isExtendedResolution = true;
         }
 
@@ -381,7 +381,7 @@ std::string process_doFlow(std::vector<float> analog, std::vector<float> digits,
     if (decimal_shift!=0) {
         std::vector<NumberPost*>* NUMBERS = undertestPost->GetNumbers();    
         for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
-            printf("Set decimalshif on number: %d to %d\n", _n, decimal_shift);
+            printf("Setting decimal shift on number: %d to %d\n", _n, decimal_shift);
             (*NUMBERS)[_n]->DecimalShift = decimal_shift;
             (*NUMBERS)[_n]->DecimalShiftInitial = decimal_shift;   
         }       

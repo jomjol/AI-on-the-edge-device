@@ -147,7 +147,7 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
 
     if ((_target->height != dy) || (_target->width != dx) || (_target->channels != channels))
     {
-        printf("CAlignAndCutImage::CutAndSave - Bildgröße passt nicht !!!!!!!!!");
+        printf("CAlignAndCutImage::CutAndSave - Image size does not match !!");
         return;
     }
 

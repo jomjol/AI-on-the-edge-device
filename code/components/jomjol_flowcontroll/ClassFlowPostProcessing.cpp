@@ -109,7 +109,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         return false;
 
     fgets(zw, 1024, pFile);
-    printf("Read Zeile Prevalue.ini: %s", zw);
+    printf("Read line Prevalue.ini: %s", zw);
     zwtime = trim(std::string(zw));
     if (zwtime.length() == 0)
         return false;
@@ -160,7 +160,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 _done = true;
             else
             {
-                printf("Read Zeile Prevalue.ini: %s", zw);
+                printf("Read line Prevalue.ini: %s", zw);
                 zerlegt = HelperZerlegeZeile(trim(std::string(zw)), "\t");
                 if (zerlegt.size() > 1)
                 {

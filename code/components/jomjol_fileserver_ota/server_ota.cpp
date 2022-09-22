@@ -80,7 +80,7 @@ static bool ota_update_task(std::string fn)
     if (configured != running) {
         ESP_LOGW(TAGPARTOTA, "Configured OTA boot partition at offset 0x%08x, but running from offset 0x%08x",
                  configured->address, running->address);
-        ESP_LOGW(TAGPARTOTA, "(This can happen if either the OTA boot data or preferred boot image become corrupted somehow.)");
+        ESP_LOGW(TAGPARTOTA, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
     }
     ESP_LOGI(TAGPARTOTA, "Running partition type %d subtype %d (offset 0x%08x)",
              running->type, running->subtype, running->address);
@@ -461,7 +461,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     }
     else
     {
-        resp_str = "Error during Firmware Update!!!<br><br>Please check output of console.";
+        resp_str = "Error during Firmware Update!!!<br><br>Please check console output.";
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
@@ -493,7 +493,7 @@ void task_reboot(void *pvParameter)
 
 void doReboot(){
     LogFile.SwitchOnOff(true);
-    LogFile.WriteToFile("Reboot triggert by Software (5s).");
+    LogFile.WriteToFile("Reboot triggered by Software (5s).");
     ESP_LOGI(TAGPARTOTA, "Reboot in 5sec");
     LogFile.WriteToFile("Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
@@ -513,7 +513,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
     LogFile.WriteToFile("handler_reboot");
     ESP_LOGI(TAGPARTOTA, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload after around 25s.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in about 25s.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();

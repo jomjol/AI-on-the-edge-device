@@ -227,7 +227,7 @@ void GpioHandler::init()
         clear();
         delete gpioMap;
         gpioMap = NULL;
-        ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted, handler is disabled");
+        ESP_LOGI(TAG_SERVERGPIO, "GPIO init completed, handler is disabled");
         return;
     }
 
@@ -249,7 +249,7 @@ void GpioHandler::init()
         }
     }
 
-    ESP_LOGI(TAG_SERVERGPIO, "GPIO init comleted, is enabled");
+    ESP_LOGI(TAG_SERVERGPIO, "GPIO init completed, is enabled");
 }
 
 void GpioHandler::taskHandler() {
@@ -502,7 +502,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
     gpio_num_t gpio_num = resolvePinNr(gpionum);
     if (gpio_num == GPIO_NUM_NC)
     {
-        std::string zw = "GPIO" + std::to_string(gpionum) + " not support - only 12 & 13 free";
+        std::string zw = "GPIO" + std::to_string(gpionum) + " unsupported - only 12 & 13 free";
             httpd_resp_sendstr_chunk(req, zw.c_str());
             httpd_resp_sendstr_chunk(req, NULL);          
             return ESP_OK;

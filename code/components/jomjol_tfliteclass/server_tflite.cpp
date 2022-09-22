@@ -171,7 +171,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
 
     if (flowisrunning)
     {
-        const char* resp_str = "doFlow läuft bereits und kann nicht nochmal gestartet werden";
+        const char* resp_str = "doFlow is already running and cannot be started again";
         httpd_resp_send(req, resp_str, strlen(resp_str));       
         return 2;
     }
@@ -179,7 +179,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
     {
         xTaskCreate(&blink_task_doFlow, "blink_doFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandleblink_task_doFlow);
     }
-    const char* resp_str = "doFlow gestartet - dauert ca. 60 Sekunden";
+    const char* resp_str = "doFlow started - takes about 60 seconds";
     httpd_resp_send(req, resp_str, strlen(resp_str));  
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);       
@@ -724,13 +724,13 @@ void task_autodoFlow(void *pvParameter)
         if (flowisrunning)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("Autoflow: doFLow laeuft bereits!\n");
+            printf("Autoflow: doFlow is already running!\n");
 #endif
         }
         else
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("Autoflow: doFLow wird gestartet\n");
+            printf("Autoflow: doFlow is started\n");
 #endif
             flowisrunning = true;
             doflow();

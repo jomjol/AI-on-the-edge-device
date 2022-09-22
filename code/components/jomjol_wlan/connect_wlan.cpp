@@ -63,7 +63,7 @@ std::string* getSSID()
 
 void task_doBlink(void *pvParameter)
 {
-    ESP_LOGI("BLINK", "Blinken - start");
+    ESP_LOGI("BLINK", "Flash - start");
     while (BlinkIsRunning)
     {
 //        ESP_LOGI("BLINK", "Blinken - wait");
@@ -91,7 +91,7 @@ void task_doBlink(void *pvParameter)
     if (BlinkOff)
         gpio_set_level(BLINK_GPIO, 1);
 
-    ESP_LOGI("BLINK", "Blinken - done");
+    ESP_LOGI("BLINK", "Flash - done");
     BlinkIsRunning = false;
 
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
@@ -117,11 +117,11 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 //        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
             esp_wifi_connect();
             s_retry_num++;
-            ESP_LOGI(TAG, "retry to connect to the AP");
+            ESP_LOGI(TAG, "retrying connection to the AP");
 //        } else {
 //            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
 //        }
-        ESP_LOGI(TAG,"connect to the AP fail");
+        ESP_LOGI(TAG,"connection to the AP failed");
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
@@ -247,10 +247,10 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */
     if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
+        ESP_LOGI(TAG, "connected to ap SSID: %s, password:%s",
                  _ssid, _password);
     } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
+        ESP_LOGI(TAG, "Failed to connect to SSID: %s, password:%s",
                  _ssid, _password);
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
