@@ -107,6 +107,7 @@ function loadPrevalue(_basepath) {
           xhttp.send();
           response = xhttp.responseText;
           document.getElementById("prevalue").innerHTML=response;
+          document.getElementById("myInput").value=response;
      }
      catch (error)
      {
