@@ -12,6 +12,22 @@
 <script type="text/javascript" src="readconfigcommon.js"></script>
 <script type="text/javascript" src="readconfigparam.js"></script>
 
+<script>
+    async function loadPage(page) {
+        document.getElementById('maincontent').src = page;
+
+        [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
+            el.style.visibility = 'hidden';
+        });
+
+        await new Promise(r => setTimeout(r, 100));
+
+        [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
+            el.style.visibility = 'visible';
+        });
+    }
+</script>
+
 </head>
 
 <body>
@@ -26,35 +42,35 @@
 
 <div class="menu">
   <ul>
-    <li><a href="#"onclick="document.getElementById('maincontent').src = 'wasserzaehler_roi.html';">Overview</a></li>
+    <li><a href="#" onclick="loadPage('wasserzaehler_roi.html');">Overview</a></li>
     <li><a>Settings <i class="arrow down"></i></a>
-      <ul>
-	<li><a href="#"onclick="document.getElementById('maincontent').src = 'prevalue_set.html';">Set Previous Value</a></li>
-	<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_config_param.html';">Configuration</a></li>
-	<li><a>Alignment <i class="arrow right"></i></a>
-	    <ul>
-		<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_reference.html';">Reference Image</a></li>
-		<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_alignment.html';">Alignment Marks</a></li>
-	    </ul>
-	</li>
-	<li><a><strong>R</strong>egions <strong>O</strong>f <strong>I</strong>nterest <i class="arrow right"></i></a>
-	    <ul>
-		<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_digits.html';">Digital ROIs</a></li>
-		<li><a href="#"onclick="document.getElementById('maincontent').src = 'edit_analog.html';">Analog ROIs</a></li>
-	    </ul>
+      <ul class="submenu">
+        <li><a href="#" onclick="loadPage('prevalue_set.html');">Set Previous Value</a></li>
+        <li><a href="#" onclick="loadPage('edit_config_param.html');">Configuration</a></li>
+        <li><a>Alignment <i class="arrow right"></i></a>
+            <ul>
+                <li><a href="#" onclick="loadPage('edit_reference.html');">Reference Image</a></li>
+                <li><a href="#" onclick="loadPage('edit_alignment.html');">Alignment Marks</a></li>
+            </ul>
+        </li>
+        <li><a><strong>R</strong>egions <strong>O</strong>f <strong>I</strong>nterest <i class="arrow right"></i></a>
+            <ul>
+                <li><a href="#" onclick="loadPage('edit_digits.html');">Digital ROIs</a></li>
+                <li><a href="#" onclick="loadPage('edit_analog.html');">Analog ROIs</a></li>
+            </ul>
         </li>
       </ul>
 
-    <li><a href="#"onclick="document.getElementById('maincontent').src = 'wasserzaehler.html?full';">Recognition</a></li>
-    <li><a href="#"onclick="document.getElementById('maincontent').src = 'fileserver/';">File Server</a></li>
+    <li><a href="#" onclick="loadPage('wasserzaehler.html?full');">Recognition</a></li>
+    <li><a href="#" onclick="loadPage('fileserver/');">File Server</a></li>
     <li><a>System <i class="arrow down"></i></a>
-	<ul>
-  	    <li><a href="#"onclick="document.getElementById('maincontent').src = 'backup.html';">Backup/Restore</a></li>
-	    <li><a href="#"onclick="document.getElementById('maincontent').src = 'ota_page.html';">OTA Update</a></li>
-	    <li><a href="#"onclick="document.getElementById('maincontent').src = 'fileserver/log/message/?readonly=true';">Log Viewer</a></li>   
-	    <li><a href="#"onclick="document.getElementById('maincontent').src = 'reboot_page.html';">Reboot</a></li>
-	    <li><a href="#"onclick="document.getElementById('maincontent').src = 'info.html';">Info</a></li>
-	</ul>
+        <ul class="submenu">
+            <li><a href="#" onclick="loadPage('backup.html');">Backup/Restore</a></li>
+            <li><a href="#" onclick="loadPage('ota_page.html');">OTA Update</a></li>
+            <li><a href="#" onclick="loadPage('fileserver/log/message/?readonly=true');">Log Viewer</a></li>
+            <li><a href="#" onclick="loadPage('reboot_page.html');">Reboot</a></li>
+            <li><a href="#" onclick="loadPage('info.html');">Info</a></li>
+        </ul>
     </li>
   </ul>
 </div>
