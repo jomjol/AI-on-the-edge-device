@@ -19,9 +19,9 @@
         [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
             el.style.visibility = 'hidden';
         });
+    }
 
-        await new Promise(r => setTimeout(r, 100));
-
+    function resetMenu() {
         [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
             el.style.visibility = 'visible';
         });
@@ -40,7 +40,7 @@
     </td></tr>
 </table>
 
-<div class="menu">
+<div class="menu" onmouseover="resetMenu()">
   <ul>
     <li><a href="#" onclick="loadPage('wasserzaehler_roi.html');">Overview</a></li>
     <li><a>Settings <i class="arrow down"></i></a>
