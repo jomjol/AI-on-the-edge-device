@@ -1,3 +1,6 @@
 [submodule "code/components/esp32-camera-master"]
 	path = code/components/esp32-camera-master
 	url = https://github.com/espressif/esp32-camera.git
+[submodule "code/components/esp-nn"]
+	path = code/components/esp-nn
+	url = https://github.com/espressif/esp-nn.git
