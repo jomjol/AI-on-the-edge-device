@@ -8,8 +8,8 @@ git checkout rolling
 git submodule update --init
 ```
 
-
 ## Build and Flash within terminal
+See further down to build it within an IDE.
 ### Compile
 ```
 cd code
