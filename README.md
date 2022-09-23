@@ -52,6 +52,9 @@ A 3d-printable housing can be found here:
   - https://www.thingiverse.com/thing:5028229 (Power Meter)
   - https://www.thingiverse.com/thing:4571627 (ESP32-Cam housing only)
 
+## Build it yourself
+See [Build Instructions](code/README.md)
+
 ## Donate
 If you would like to support the developer with a cup of coffee you can do that via [Paypal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
 
