@@ -149,11 +149,6 @@ CONFIG_NN_OPTIMIZATIONS=1
 # end of ESP-NN
 
 #
-# ESP-NN
-#
-# end of ESP-NN
-
-#
 # Compiler options
 #
 # CONFIG_COMPILER_OPTIMIZATION_DEFAULT is not set
@@ -1249,11 +1244,6 @@ CONFIG_CAMERA_CORE0=y
 # CONFIG_CAMERA_CORE1 is not set
 # CONFIG_CAMERA_NO_AFFINITY is not set
 CONFIG_CAMERA_DMA_BUFFER_SIZE_MAX=32768
-# end of Camera configuration
-
-#
-# Camera configuration
-#
 # end of Camera configuration
 # end of Component config
 
