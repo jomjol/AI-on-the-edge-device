@@ -1,5 +1,0 @@
-
-#
-# esp-nn
-#
-CONFIG_NN_ESP32=y
