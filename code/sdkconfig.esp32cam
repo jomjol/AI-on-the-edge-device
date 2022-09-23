@@ -149,6 +149,11 @@ CONFIG_NN_OPTIMIZATIONS=1
 # end of ESP-NN
 
 #
+# ESP-NN
+#
+# end of ESP-NN
+
+#
 # Compiler options
 #
 # CONFIG_COMPILER_OPTIMIZATION_DEFAULT is not set
