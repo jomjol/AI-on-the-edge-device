@@ -194,13 +194,13 @@ jobs:
         zip -r ../firmware/html.zip html
         mkdir ../dist
         cd ../dist
-        zip -r ../firmware/full.zip . -i .
+#        zip -r ../firmware/full.zip . -i .
 
     - name: Upload full.zip artifact (Firmware + Bootloader + Partitions + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
         name: "full__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./firmware/full.zip
+        path: ./firmware
 
         
     # extract the version used in next step
