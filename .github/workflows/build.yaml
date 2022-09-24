@@ -191,10 +191,10 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
         cd sd-card
         rm -f ../firmware/html.zip
+        rm -f ../firmware/README.md
         zip -r ../firmware/html.zip html
         mkdir ../dist
         cd ../dist
-#        zip -r ../firmware/full.zip . -i .
 
     - name: Upload full.zip artifact (Firmware + Bootloader + Partitions + Web UI + CNN)
       uses: actions/upload-artifact@v3
