@@ -84,8 +84,8 @@ jobs:
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "firmware__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})__(extract_before_upload__only_needed_for_migration_from_11.3.1)"
-#        name: "firmware__(extract_before_upload)__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
+#        name: "firmware__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})__(extract_before_upload__only_needed_for_migration_from_11.3.1)"
+        name: "firmware__(extract_before_upload)__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
