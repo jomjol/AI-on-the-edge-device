@@ -1,12 +1,9 @@
 [submodule "code/components/esp32-camera-master"]
 	path = code/components/esp32-camera-master
 	url = https://github.com/espressif/esp32-camera.git
-<<<<<<< HEAD
-=======
 [submodule "code/components/esp-nn"]
 	path = code/components/esp-nn
 	url = https://github.com/espressif/esp-nn.git
 [submodule "code/components/tflite-micro-esp-examples"]
 	path = code/components/tflite-micro-esp-examples
 	url = https://github.com/espressif/tflite-micro-esp-examples.git
->>>>>>> added tflite-lib (resp. tflite-micro-esp-examples) again as submodule (master)
