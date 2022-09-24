@@ -3,15 +3,22 @@ name: Build and Pack
 on: [push]
 
 jobs:
+#########################################################################################
+## Build Firmware
+#########################################################################################
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-    
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
     - name: Cache PlatformIO
       uses: actions/cache@v2
       with:
@@ -25,72 +32,120 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
 
+    - name: Build Firmware
+#      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      run: cd code; platformio run --environment esp32cam
+
+    - name: Store generated files in cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
+
+
+
+#########################################################################################
+## Pack for old OTA (v1)
+#########################################################################################
+  pack-for-OTA-v1:
+    # Old OTA concept
+    # firmware__*.zip needs to be unpacked before attaching to the release!
+    # The bin filename can contain versioning.
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
+
     - name: Set Variables
       id: vars
       run: |
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-        echo "::set-output name=date_time::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d %H:%M:%S')"
-        echo "::set-output name=date_time_filename::$(git log -1 --format="%at" | xargs -I{} date -d @{} '+%Y-%m-%d_%H-%M-%S')"
-        #echo "::set-output name=version_string::${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-        #echo "Version String: ${{ steps.vars.outputs.version_string }}"
 
-
-    - name: Set Version used in HTML Info page
-      run: echo "${{ steps.vars.outputs.date_time }}, ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})" > "sd-card/html/version.txt"
-
-
-    - name: Build Firmware
-      #run: mkdir -p ./code/.pio/build/esp32cam/; touch ./code/.pio/build/esp32cam/firmware.bin; touch ./code/.pio/build/esp32cam/bootloader.bin; touch ./code/.pio/build/esp32cam/partitions.bin # Testing
-      run: cd code; platformio run --environment esp32cam
-    
-    # Old OTA concept
-    # firmware__*.zip needs to be unpacked before attaching to the release!
-    # The bin filename can contain versioning.
     - name: Rename firmware file to contain versioning (old ota)
       run: |
         mkdir -p ./dist_old_ota
-        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
-        ls -l ./dist_old_ota
+        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
 
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "firmware__extract_before_upload__only_needed_for_migration_from_11.2.0"
+        name: "firmware__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})__(extract_before_upload__only_needed_for_migration_from_11.3.1)"
+#        name: "firmware__(extract_before_upload)__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "html__only_needed_for_migration_from_11.2.0__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "html__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./sd-card/html/*
 
 
 
+#########################################################################################
+## Pack for new OTA (v2)
+#########################################################################################
+  pack-for-OTA-v2:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
     #  - (optional) /html/*
-    #  - (optional) /config/*.tfl        
+    #  - (optional) /config/*.tfl
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
     - name: Prepare update.zip artifact
       run: |
         mkdir -p ./dist
         cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
 
-    - name: Upload update.zip Artifact (Firmware only)
-      uses: actions/upload-artifact@v3
-      with:
-        name: "update_firmware_only__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./dist/*
+#    - name: Upload update.zip Artifact (Firmware only)
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: "update_firmware_only__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+#        path: ./dist/*
         
 
-    - name: Prepare update.zip artifact (Firmware + Web UI)
-      run: cp -r ./sd-card/html ./dist/
-
-    - name: Upload update.zip artifact (Firmware + Web UI)
-      uses: actions/upload-artifact@v3
-      with:
-        name: "update_firmware+web_ui__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./dist/*
+#    - name: Prepare update.zip artifact (Firmware + Web UI)
+#      run: cp -r ./sd-card/html ./dist/
+#
+#    - name: Upload update.zip artifact (Firmware + Web UI)
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: "update_firmware+webinterface__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+#        path: ./dist/*
         
 
     - name: Prepare update.zip artifact (Firmware + Web UI + CNN)
@@ -102,11 +157,33 @@ jobs:
     - name: Upload update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
-        name: "update_firmware+web_ui+cnn__${{ steps.vars.outputs.date_time_filename }}__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
 
+
+
+#########################################################################################
+## Pack for a fresh install (USB flashing)
+#########################################################################################
+  pack-for-fresh-install:
     # creates old style binaries for fresh installation (backward compatible to wiki)
-    - name: Copy artifacts to firmware folder
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
+
+    - name: Copy artifacts to firmware folder and create initial_esp32_setup.zip
       run: |
         mkdir -p firmware
         # copy builds to firmware folder for committing in next step
@@ -115,9 +192,17 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
         cd sd-card
         rm -f ../firmware/html.zip
+        rm -f ../firmware/README.md
         zip -r ../firmware/html.zip html
+        mkdir ../dist
         cd ../dist
-        zip -r ../firmware/update.zip .
+
+    - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI + CNN)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "initial_esp32_setup__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./firmware
+
         
     # extract the version used in next step
     - id: get_version
@@ -162,5 +247,3 @@ jobs:
         git add Changelog.md
         git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
         git push origin HEAD:master
-
-
