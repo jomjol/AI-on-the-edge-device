@@ -181,6 +181,11 @@ jobs:
           ./sd-card/html/version.txt
         key: ${{ github.run_number }}
 
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
     - name: Copy artifacts to firmware folder and create initial_esp32_setup.zip
       run: |
         mkdir -p firmware
