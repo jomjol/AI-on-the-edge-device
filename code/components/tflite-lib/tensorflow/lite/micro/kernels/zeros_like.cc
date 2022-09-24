@@ -70,10 +70,10 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       resetZeros(tflite::micro::GetTensorData<float>(output), flat_size);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "ZerosLike only currently supports int64, int32, "
-                         "and float32, got %d.",
-                         input->type);
+      MicroPrintf(
+          "ZerosLike only currently supports int64, int32, "
+          "and float32, got %d.",
+          input->type);
       return kTfLiteError;
   }
   return kTfLiteOk;

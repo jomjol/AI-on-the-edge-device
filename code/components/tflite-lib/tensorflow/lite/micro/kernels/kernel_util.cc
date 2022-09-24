@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 namespace micro {
@@ -39,9 +40,10 @@ int ValidateTensorIndexing(const TfLiteContext* context, int index,
 TfLiteRegistration RegisterOp(
     void* (*init)(TfLiteContext* context, const char* buffer, size_t length),
     TfLiteStatus (*prepare)(TfLiteContext* context, TfLiteNode* node),
-    TfLiteStatus (*invoke)(TfLiteContext* context, TfLiteNode* node)) {
+    TfLiteStatus (*invoke)(TfLiteContext* context, TfLiteNode* node),
+    void (*free)(TfLiteContext* context, void* buffer)) {
   return {/*init=*/init,
-          /*free=*/nullptr,
+          /*free=*/free,
           /*prepare=*/prepare,
           /*invoke=*/invoke,
           /*profiling_string=*/nullptr,
@@ -158,6 +160,46 @@ TfLiteStatus CopyOpInputsToOpOutputs(TfLiteContext* context, TfLiteNode* node) {
     memcpy(output->data.raw, input->data.raw, bytes);
   }
   return kTfLiteOk;
+}
+
+//  Args:
+//    1. int8_t tensor_data - int8_t buffer of unknown size who's data you'd
+//    like
+//  to print
+//    2. int n_btyes -  a small int representing number of bytes you want to
+//    print
+//  to debug output. It should always be <= tensor_data's size.
+//    3. prefix - optional message you'd like to print before printing bytes
+//
+//  Purpose:
+//    Function takes in paramaters above and prints n_bytes bytes from the
+//  tensor_data buffer. This can be use to debug  the output of a model and it's
+//  op.
+
+void PrintNBytes(const int8_t* tensor_data, int n_bytes, const char* prefix) {
+  if (prefix != nullptr) {
+    MicroPrintf("%s", prefix);
+  }
+
+  for (int i = 0; i < n_bytes; ++i) {
+    MicroPrintf(" %x", tensor_data[i]);
+  }
+  MicroPrintf("\n");
+}
+
+// same as the PrintNBytes above but the buffer needs to be extracted out of the
+// TfLiteEvalTensor*
+void PrintNBytes(const TfLiteEvalTensor* tensor, int n_bytes,
+                 const char* prefix) {
+  const int8_t* tensor_data = tflite::micro::GetTensorData<int8_t>(tensor);
+  PrintNBytes(tensor_data, n_bytes, prefix);
+}
+
+// same as the PrintNBytes above but the buffer needs to be extracted out of the
+// TfLiteEvalTensor*
+void PrintNBytes(const TfLiteTensor* tensor, int n_bytes, const char* prefix) {
+  const int8_t* tensor_data = tflite::GetTensorData<int8_t>(tensor);
+  PrintNBytes(tensor_data, n_bytes, prefix);
 }
 
 TfLiteStatus CopyOpInputsToSubgraphInputs(TfLiteContext* context,

@@ -125,9 +125,8 @@ TfLiteStatus L2Eval(TfLiteContext* context, TfLiteNode* node) {
       L2EvalFloat(*params, *input, &op_params, output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "L2_POOL_2D only supports float32 currently, got %s.",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("L2_POOL_2D only supports float32 currently, got %s.",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
   }
   return kTfLiteOk;

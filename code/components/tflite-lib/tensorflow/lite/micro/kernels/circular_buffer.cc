@@ -90,7 +90,7 @@ TfLiteStatus CircularBufferEval(TfLiteContext* context, TfLiteNode* node) {
     EvalInt8(tflite::micro::GetTensorData<int8_t>(input), num_slots, depth,
              tflite::micro::GetTensorData<int8_t>(output));
   } else {
-    TF_LITE_KERNEL_LOG(context, "Type %s (%d) not supported.",
+    MicroPrintf("Type %s (%d) not supported.",
                        TfLiteTypeGetName(input->type), input->type);
     return kTfLiteError;
   }

@@ -1,4 +1,4 @@
-/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "tensorflow/lite/c/builtin_op_data.h"
 #include "tensorflow/lite/c/common.h"
+#include "tensorflow/lite/micro/kernels/micro_ops.h"
 
 namespace tflite {
 
@@ -66,6 +67,19 @@ void MaxPoolingEvalQuantized(TfLiteContext* context, TfLiteNode* node,
                              const TfLiteEvalTensor* input,
                              TfLiteEvalTensor* output);
 
+#if defined(CMSIS_NN)
+TfLiteRegistration Register_AVERAGE_POOL_2D_INT8();
+
+TfLiteRegistration Register_MAX_POOL_2D_INT8();
+#else
+inline TfLiteRegistration Register_AVERAGE_POOL_2D_INT8() {
+  return tflite::Register_AVERAGE_POOL_2D();
+}
+
+inline TfLiteRegistration Register_MAX_POOL_2D_INT8() {
+  return tflite::Register_MAX_POOL_2D();
+}
+#endif
 }  // namespace tflite
 
 #endif  // TENSORFLOW_LITE_MICRO_KERNELS_POOLING_H_

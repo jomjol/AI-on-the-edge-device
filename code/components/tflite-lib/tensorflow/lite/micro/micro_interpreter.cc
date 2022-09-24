@@ -317,7 +317,17 @@ TfLiteTensor* MicroInterpreter::output(size_t index) {
   }
   return output_tensors_[index];
 }
+// Repurposing free subgraphs to reset state for some ops for now
+// will reset api is made. See b/220940833#comment25 for more context.
+TfLiteStatus MicroInterpreter::Reset() {
+  TfLiteStatus status = graph_.FreeSubgraphs();
+  if (status != kTfLiteOk) {
+    return status;
+  }
+  return graph_.ResetVariableTensors();
+}
 
+// TODO: remove this API completely in favor of MicroInterpreter::Reset
 TfLiteStatus MicroInterpreter::ResetVariableTensors() {
   return graph_.ResetVariableTensors();
 }

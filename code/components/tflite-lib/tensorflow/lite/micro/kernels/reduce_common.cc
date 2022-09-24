@@ -28,7 +28,7 @@ limitations under the License.
 
 namespace tflite {
 
-const int kMaxNumberOfAxis = 4;
+const int kMaxNumberOfAxis = 5;
 const int kMaxNumberOfReducedAxis = 2;
 
 TfLiteStatus PrepareSimple(TfLiteContext* context, TfLiteNode* node,

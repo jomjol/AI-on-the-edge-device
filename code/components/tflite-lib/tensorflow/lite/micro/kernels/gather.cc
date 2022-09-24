@@ -118,9 +118,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     case kTfLiteInt32:
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "Positions of type '%s' are not supported by gather.",
-                         TfLiteTypeGetName(coords->type));
+      MicroPrintf("Positions of type '%s' are not supported by gather.",
+                  TfLiteTypeGetName(coords->type));
       return kTfLiteError;
       break;
   }
@@ -134,8 +133,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     case kTfLiteInt8:
       break;
     default:
-      TF_LITE_KERNEL_LOG(context, "Type '%s' is not supported by gather.",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("Type '%s' is not supported by gather.",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
       break;
   }
@@ -207,8 +206,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
         return Gather<int8_t, int32_t>(params, input, coords, output);
         break;
       default:
-        TF_LITE_KERNEL_LOG(context, "Type '%s' is not supported by gather.",
-                           TfLiteTypeGetName(input->type));
+        MicroPrintf("Type '%s' is not supported by gather.",
+                    TfLiteTypeGetName(input->type));
         return kTfLiteError;
         break;
     }

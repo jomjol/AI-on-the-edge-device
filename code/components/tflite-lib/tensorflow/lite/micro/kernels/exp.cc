@@ -19,6 +19,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 namespace {
@@ -63,8 +64,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
                        static_cast<size_t>(flat_size),
                        tflite::micro::GetTensorData<float>(output));
   } else {
-    TF_LITE_KERNEL_LOG(context, "Type %s (%d) currently not supported by Exp.",
-                       TfLiteTypeGetName(input->type), input->type);
+    MicroPrintf("Type %s (%d) currently not supported by Exp.",
+                TfLiteTypeGetName(input->type), input->type);
     return kTfLiteError;
   }
   return kTfLiteOk;

@@ -6,6 +6,7 @@
 #include "unity.h"
 #include <mbedtls/base64.h>
 #include "esp_log.h"
+#include "driver/i2c.h"
 
 #include "esp_camera.h"
 
@@ -105,11 +106,16 @@
 
 #endif
 
+#define I2C_MASTER_SCL_IO           4      /*!< GPIO number used for I2C master clock */
+#define I2C_MASTER_SDA_IO           5      /*!< GPIO number used for I2C master data  */
+#define I2C_MASTER_NUM              0      /*!< I2C master i2c port number, the number of i2c peripheral interfaces available will depend on the chip */
+#define I2C_MASTER_FREQ_HZ          100000 /*!< I2C master clock frequency */
+
 static const char *TAG = "test camera";
 
 typedef void (*decode_func_t)(uint8_t *jpegbuffer, uint32_t size, uint8_t *outbuffer);
 
-static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, framesize_t frame_size, uint8_t fb_count)
+static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, framesize_t frame_size, uint8_t fb_count, int sccb_sda_gpio_num, int sccb_port)
 {
     framesize_t size_bak = frame_size;
     if (PIXFORMAT_JPEG == pixel_format && FRAMESIZE_SVGA > frame_size) {
@@ -119,8 +125,9 @@ static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, fr
         .pin_pwdn = PWDN_GPIO_NUM,
         .pin_reset = RESET_GPIO_NUM,
         .pin_xclk = XCLK_GPIO_NUM,
-        .pin_sscb_sda = SIOD_GPIO_NUM,
-        .pin_sscb_scl = SIOC_GPIO_NUM,
+        .pin_sccb_sda = sccb_sda_gpio_num, // If pin_sccb_sda is -1, sccb will use the already initialized i2c port specified by `sccb_i2c_port`.
+        .pin_sccb_scl = SIOC_GPIO_NUM,
+        .sccb_i2c_port = sccb_port,
 
         .pin_d7 = Y9_GPIO_NUM,
         .pin_d6 = Y8_GPIO_NUM,
@@ -226,7 +233,7 @@ static void camera_performance_test(uint32_t xclk_freq, uint32_t pic_num)
 {
     esp_err_t ret = ESP_OK;
     //detect sensor information
-    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_RGB565, FRAMESIZE_QVGA, 2));
+    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_RGB565, FRAMESIZE_QVGA, 2, SIOD_GPIO_NUM, -1));
     sensor_t *s = esp_camera_sensor_get();
     camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
     TEST_ASSERT_NOT_NULL(info);
@@ -249,7 +256,7 @@ static void camera_performance_test(uint32_t xclk_freq, uint32_t pic_num)
     for (; format_s <= format_e; format_s++) {
         for (size_t i = 0; i <= max_size; i++) {
             ESP_LOGI(TAG, "\n\n===> Testing format:%s resolution: %d x %d <===", get_cam_format_name(*format_s), resolution[i].width, resolution[i].height);
-            ret = init_camera(xclk_freq, *format_s, i, 2);
+            ret = init_camera(xclk_freq, *format_s, i, 2, SIOD_GPIO_NUM, -1);
             vTaskDelay(100 / portTICK_RATE_MS);
             if (ESP_OK != ret) {
                 ESP_LOGW(TAG, "Testing init failed :-(, skip this item");
@@ -276,7 +283,7 @@ static void camera_performance_test(uint32_t xclk_freq, uint32_t pic_num)
 TEST_CASE("Camera driver init, deinit test", "[camera]")
 {
     uint64_t t1 = esp_timer_get_time();
-    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_RGB565, FRAMESIZE_QVGA, 2));
+    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_RGB565, FRAMESIZE_QVGA, 2, SIOD_GPIO_NUM, -1));
     uint64_t t2 = esp_timer_get_time();
     ESP_LOGI(TAG, "Camera init time %llu ms", (t2 - t1) / 1000);
 
@@ -285,7 +292,7 @@ TEST_CASE("Camera driver init, deinit test", "[camera]")
 
 TEST_CASE("Camera driver take RGB565 picture test", "[camera]")
 {
-    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_RGB565, FRAMESIZE_QVGA, 2));
+    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_RGB565, FRAMESIZE_QVGA, 2, SIOD_GPIO_NUM, -1));
     vTaskDelay(500 / portTICK_RATE_MS);
     ESP_LOGI(TAG, "Taking picture...");
     camera_fb_t *pic = esp_camera_fb_get();
@@ -301,7 +308,7 @@ TEST_CASE("Camera driver take RGB565 picture test", "[camera]")
 
 TEST_CASE("Camera driver take YUV422 picture test", "[camera]")
 {
-    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_YUV422, FRAMESIZE_QVGA, 2));
+    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_YUV422, FRAMESIZE_QVGA, 2, SIOD_GPIO_NUM, -1));
     vTaskDelay(500 / portTICK_RATE_MS);
     ESP_LOGI(TAG, "Taking picture...");
     camera_fb_t *pic = esp_camera_fb_get();
@@ -317,7 +324,7 @@ TEST_CASE("Camera driver take YUV422 picture test", "[camera]")
 
 TEST_CASE("Camera driver take JPEG picture test", "[camera]")
 {
-    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_JPEG, FRAMESIZE_QVGA, 2));
+    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_JPEG, FRAMESIZE_QVGA, 2, SIOD_GPIO_NUM, -1));
     vTaskDelay(500 / portTICK_RATE_MS);
     ESP_LOGI(TAG, "Taking picture...");
     camera_fb_t *pic = esp_camera_fb_get();
@@ -484,6 +491,25 @@ static void img_jpeg_decode_test(uint16_t pic_index, uint16_t lib_index)
     jpg_decode_test(lib_index, DECODE_RGB565, imgs[pic_index].buf, imgs[pic_index].length, imgs[pic_index].w, imgs[pic_index].h, 16);
 }
 
+/**
+ * @brief i2c master initialization
+ */
+static esp_err_t i2c_master_init(int i2c_port)
+{
+    i2c_config_t conf = {
+        .mode = I2C_MODE_MASTER,
+        .sda_io_num = I2C_MASTER_SDA_IO,
+        .scl_io_num = I2C_MASTER_SCL_IO,
+        .sda_pullup_en = GPIO_PULLUP_ENABLE,
+        .scl_pullup_en = GPIO_PULLUP_ENABLE,
+        .master.clk_speed = I2C_MASTER_FREQ_HZ,
+    };
+
+    i2c_param_config(i2c_port, &conf);
+
+    return i2c_driver_install(i2c_port, conf.mode, 0, 0, 0);
+}
+
 TEST_CASE("Conversions image 227x149 jpeg decode test", "[camera]")
 {
     img_jpeg_decode_test(0, 0);
@@ -497,4 +523,13 @@ TEST_CASE("Conversions image 320x240 jpeg decode test", "[camera]")
 TEST_CASE("Conversions image 480x320 jpeg decode test", "[camera]")
 {
     img_jpeg_decode_test(2, 0);
+}
+
+TEST_CASE("Camera driver uses an i2c port initialized by other devices test", "[camera]")
+{
+    TEST_ESP_OK(i2c_master_init(I2C_MASTER_NUM));
+    TEST_ESP_OK(init_camera(20000000, PIXFORMAT_JPEG, FRAMESIZE_QVGA, 2, -1, I2C_MASTER_NUM));
+    vTaskDelay(500 / portTICK_RATE_MS);
+    TEST_ESP_OK(esp_camera_deinit());
+    TEST_ESP_OK(i2c_driver_delete(I2C_MASTER_NUM));
 }

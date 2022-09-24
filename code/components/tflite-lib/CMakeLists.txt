@@ -51,18 +51,28 @@ set(lib_srcs
           "${tflite_dir}/kernels/internal/quantization_util.cc"
           "${tflite_dir}/schema/schema_utils.cc")
 
+set(priv_req esp-nn)
+
+# include component requirements which were introduced after IDF version 4.1
+if("${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}" VERSION_GREATER "4.1")
+    list(APPEND priv_req esp_timer driver)
+endif()
+
 idf_component_register(
             SRCS "${lib_srcs}"
             INCLUDE_DIRS "." "third_party/gemmlowp"
                          "third_party/flatbuffers/include"
                          "third_party/ruy"
                          "third_party/kissfft"
-            REQUIRES "esp-nn")
+            REQUIRES ${pub_req}
+            PRIV_REQUIRES ${priv_req})
 
 # Reduce the level of paranoia to be able to compile TF sources
 target_compile_options(${COMPONENT_LIB} PRIVATE
   -Wno-maybe-uninitialized
   -Wno-missing-field-initializers
+  -Wno-error=sign-compare
+  -Wno-error=double-promotion
   -DESP_NN # enables ESP-NN optimizations by Espressif
   -Wno-type-limits)
 

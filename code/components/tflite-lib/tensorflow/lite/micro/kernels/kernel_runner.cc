@@ -106,5 +106,17 @@ TfLiteStatus KernelRunner::Invoke() {
   return kTfLiteOk;
 }
 
+TfLiteStatus KernelRunner::Free() {
+  tflite::micro::ClearBufferApi(&context_);
+  context_.GetScratchBuffer = MicroContextGetScratchBuffer;
+
+  if (registration_.free == nullptr) {
+    MicroPrintf("TfLiteRegistration missing free function pointer!");
+    return kTfLiteError;
+  }
+
+  registration_.free(&context_, node_.user_data);
+  return kTfLiteOk;
+}
 }  // namespace micro
 }  // namespace tflite

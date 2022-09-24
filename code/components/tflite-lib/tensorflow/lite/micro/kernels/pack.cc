@@ -95,8 +95,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
                                data->axis);
     }
     default: {
-      TF_LITE_KERNEL_LOG(context, "Type '%s' is not supported by pack.",
-                         TfLiteTypeGetName(output->type));
+      MicroPrintf("Type '%s' is not supported by pack.",
+                  TfLiteTypeGetName(output->type));
       return kTfLiteError;
     }
   }

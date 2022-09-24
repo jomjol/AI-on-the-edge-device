@@ -21,7 +21,6 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/kernels/op_macros.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 namespace ops {
@@ -55,7 +54,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   output->type = input->type;
 
   if (!IsConstantTensor(size)) {
-    TF_LITE_KERNEL_LOG(context, "Dynamic tensors are unsupported in tfmicro.");
+    MicroPrintf("Dynamic tensors are unsupported in tfmicro.");
     return kTfLiteError;
   }
 

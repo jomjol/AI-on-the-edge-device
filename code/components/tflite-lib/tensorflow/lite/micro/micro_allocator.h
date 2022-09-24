@@ -54,7 +54,7 @@ TfLiteStatus InitializeTfLiteTensorFromFlatbuffer(
 // of a sequential, array of ScratchBufferHandle allocations in the tail
 // section. These allocations are indexed by the request API defined in the
 // TfLiteContext struct.
-typedef struct {
+struct ScratchBufferRequest {
   // Number of bytes required by the buffer. The actual allocated size might be
   // greater than `bytes` due to buffer alignment.
   size_t bytes;
@@ -63,29 +63,29 @@ typedef struct {
   // have `before` = node_idx and `after` = node_idx.
   int node_idx;
   int subgraph_idx;
-} ScratchBufferRequest;
+};
 
 }  // namespace internal
 
-typedef struct {
+struct NodeAndRegistration {
   TfLiteNode node;
   const TfLiteRegistration* registration;
-} NodeAndRegistration;
+};
 
 // Holds a pointer to a buffer for a scratch buffer requested by a kernel during
 // the model prepare stage. This struct is allocated in-place and allows for
 // quick pointer-indexed lookup for speed during model inference.
-typedef struct {
+struct ScratchBufferHandle {
   // Pointer to location of the scratch buffer:
   uint8_t* data;
-} ScratchBufferHandle;
+};
 
 // Stores all per-subgraph allocations. This includes the node and registration
-// array, tensor list and scratch buffer handles for each subgraph.
-typedef struct {
+// array, and tensor list for each subgraph.
+struct SubgraphAllocations {
   NodeAndRegistration* node_and_registrations;
   TfLiteEvalTensor* tensors;
-} SubgraphAllocations;
+};
 
 // Allocator responsible for allocating memory for all intermediate tensors
 // necessary to invoke a model.

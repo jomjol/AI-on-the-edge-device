@@ -47,9 +47,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     case kTfLiteInt8:
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "Params of type '%s' are not supported by gather_nd.",
-                         TfLiteTypeGetName(params->type));
+      MicroPrintf("Params of type '%s' are not supported by gather_nd.",
+                  TfLiteTypeGetName(params->type));
       return kTfLiteError;
       break;
   }
@@ -57,9 +56,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     case kTfLiteInt32:
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "Indices of type '%s' are not supported by gather_nd.",
-                         TfLiteTypeGetName(indices->type));
+      MicroPrintf("Indices of type '%s' are not supported by gather_nd.",
+                  TfLiteTypeGetName(indices->type));
       return kTfLiteError;
   }
 
@@ -67,22 +65,20 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   const int indices_rank = NumDimensions(indices);
   const int indices_nd = SizeOfDimension(indices, indices_rank - 1);
   if (params_rank < 1) {
-    TF_LITE_KERNEL_LOG(context, "Params must be at least a vector.");
+    MicroPrintf("Params must be at least a vector.");
     return kTfLiteError;
   }
   if (indices_rank < 1) {
-    TF_LITE_KERNEL_LOG(context, "Indices must be at least a vector.");
+    MicroPrintf("Indices must be at least a vector.");
     return kTfLiteError;
   }
   if (indices_nd > params_rank) {
-    TF_LITE_KERNEL_LOG(
-        context, "Index innermost dimension length must be <= params rank.");
+    MicroPrintf("Index innermost dimension length must be <= params rank.");
     return kTfLiteError;
   }
   if (indices_nd > MAX_INDICES_ND) {
-    TF_LITE_KERNEL_LOG(context,
-                       "Index innermost dimension length must not exceed %d.",
-                       MAX_INDICES_ND);
+    MicroPrintf("Index innermost dimension length must not exceed %d.",
+                MAX_INDICES_ND);
     return kTfLiteError;
   }
 
@@ -171,13 +167,12 @@ TfLiteStatus EvalGatherNd(TfLiteContext* context,
       status = GatherNd<int8_t, IndicesT>(params, indices, output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "Params type '%s' are not supported by gather_nd.",
-                         TfLiteTypeGetName(params->type));
+      MicroPrintf("Params type '%s' are not supported by gather_nd.",
+                  TfLiteTypeGetName(params->type));
       return kTfLiteError;
   }
   if (status != kTfLiteOk) {
-    TF_LITE_KERNEL_LOG(context, "gather_nd index out of bounds");
+    MicroPrintf("gather_nd index out of bounds");
   }
   return status;
 }
@@ -195,9 +190,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       return EvalGatherNd<int32_t>(context, params, indices, output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context,
-                         "Indices of type '%s' are not supported by gather_nd.",
-                         TfLiteTypeGetName(indices->type));
+      MicroPrintf("Indices of type '%s' are not supported by gather_nd.",
+                  TfLiteTypeGetName(indices->type));
       return kTfLiteError;
   }
 }

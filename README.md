@@ -69,6 +69,15 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 
 ------
 
+##### Rolling (2022-09-24)
+
+- Updated menue 
+- Update tflite, esp32-cam-master, esp-nn (as of today 20220924) 
+
+##### Rolling (2022-09-21)
+
+- Spelling corrections (**[cristianmitran](https://github.com/cristianmitran)**) 
+
 ##### Rolling (2022-09-21)
 
 - New update mechanism: 

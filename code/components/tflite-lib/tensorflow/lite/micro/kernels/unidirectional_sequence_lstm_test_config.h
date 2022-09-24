@@ -24,7 +24,7 @@ namespace testing {
 // kernel is reconciled with reference kernel
 #if !defined(XTENSA)
 
-typedef struct LstmIntegerTestConfig {
+struct LstmIntegerTestConfig {
   const int n_batch;
   const int n_input;
   const int n_cell;
@@ -100,9 +100,9 @@ typedef struct LstmIntegerTestConfig {
 
   bool asymmetric_quantize_inputs;
   const float ranges[25][2];
-} LstmIntegerTestConfig;
+};
 
-typedef struct LstmFloatTestConfig {
+struct LstmFloatTestConfig {
   const int n_batch;
   const int n_input;
   const int n_cell;
@@ -153,9 +153,9 @@ typedef struct LstmFloatTestConfig {
   float* output;
   const float* expected_output_original;
   float* expected_output;
-} LstmFloatTestConfig;
+};
 
-typedef struct LstmWeightQuantizationBuffers {
+struct LstmWeightQuantizationBuffers {
   int8_t* lstm_i2i_quant;
   float* lstm_i2i_scale;
   int* lstm_i2i_zp;
@@ -215,7 +215,7 @@ typedef struct LstmWeightQuantizationBuffers {
   float* lstm_proj_w_scale;
   int* lstm_proj_w_zp;
   TfLiteAffineQuantization* lstm_proj_w_qparam;
-} LstmWeightQuantizationBuffers;
+};
 
 extern LstmIntegerTestConfig lstm_integer_no_peephole_config;
 

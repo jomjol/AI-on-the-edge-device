@@ -1,4 +1,4 @@
-/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -60,6 +60,15 @@ void EvalMulFloatReference(TfLiteContext* context, TfLiteNode* node,
                            const TfLiteEvalTensor* input2,
                            TfLiteEvalTensor* output);
 
+// Generic must define registration function.
+TfLiteRegistration Register_MUL();
+
+#if defined(CMSIS_NN)
+TfLiteRegistration Register_MUL_INT8();
+#else
+// Fallback registration
+inline TfLiteRegistration Register_MUL_INT8() { return Register_MUL(); }
+#endif
 }  // namespace tflite
 
 #endif  // TENSORFLOW_LITE_MICRO_KERNELS_MUL_H_

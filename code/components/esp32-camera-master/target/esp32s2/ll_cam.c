@@ -21,10 +21,15 @@
 #include "xclk.h"
 #include "cam_hal.h"
 
+#if (ESP_IDF_VERSION_MAJOR >= 4) && (ESP_IDF_VERSION_MINOR >= 3)
+#include "esp_rom_gpio.h"
+#endif
+
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #define GPIO_PIN_INTR_POSEDGE GPIO_INTR_POSEDGE
 #define GPIO_PIN_INTR_NEGEDGE GPIO_INTR_NEGEDGE
-#define gpio_matrix_in(a,b,c) gpio_iomux_in(a,b)
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define ets_delay_us(a) esp_rom_delay_us(a)
 #endif
 
 static const char *TAG = "s2 ll_cam";
@@ -70,7 +75,7 @@ static void IRAM_ATTR ll_cam_dma_isr(void *arg)
     }
 }
 
-bool ll_cam_stop(cam_obj_t *cam)
+bool IRAM_ATTR ll_cam_stop(cam_obj_t *cam)
 {
     I2S0.conf.rx_start = 0;
 
@@ -119,7 +124,7 @@ bool ll_cam_start(cam_obj_t *cam, int frame_pos)
     } else {
         I2S0.in_link.addr = ((uint32_t)&cam->frames[frame_pos].dma[0]) & 0xfffff;
     }
-    
+
     I2S0.in_link.start = 1;
     I2S0.conf.rx_start = 1;
     return true;
@@ -299,8 +304,8 @@ static bool ll_cam_calc_rgb_dma(cam_obj_t *cam){
         }
     }
 
-    ESP_LOGI(TAG, "node_size: %4u, nodes_per_line: %u, lines_per_node: %u", 
-            node_size * cam->dma_bytes_per_item, nodes_per_line, lines_per_node);
+    ESP_LOGI(TAG, "node_size: %4u, nodes_per_line: %u, lines_per_node: %u",
+            (unsigned) (node_size * cam->dma_bytes_per_item), nodes_per_line, lines_per_node);
 
     cam->dma_node_buffer_size = node_size * cam->dma_bytes_per_item;
 
@@ -332,9 +337,10 @@ static bool ll_cam_calc_rgb_dma(cam_obj_t *cam){
         size_t dma_buffer_max = 2 * dma_half_buffer_max;
         size_t dma_buffer_size = dma_buffer_max;
         dma_buffer_size =(dma_buffer_max / dma_half_buffer) * dma_half_buffer;
-        
-        ESP_LOGI(TAG, "dma_half_buffer_min: %5u, dma_half_buffer: %5u, lines_per_half_buffer: %2u, dma_buffer_size: %5u", 
-                dma_half_buffer_min * cam->dma_bytes_per_item, dma_half_buffer * cam->dma_bytes_per_item, lines_per_half_buffer, dma_buffer_size * cam->dma_bytes_per_item);
+
+        ESP_LOGI(TAG, "dma_half_buffer_min: %5u, dma_half_buffer: %5u, lines_per_half_buffer: %2u, dma_buffer_size: %5u",
+                (unsigned) (dma_half_buffer_min * cam->dma_bytes_per_item), (unsigned) (dma_half_buffer * cam->dma_bytes_per_item),
+                (unsigned) lines_per_half_buffer, (unsigned) (dma_buffer_size * cam->dma_bytes_per_item));
 
         cam->dma_buffer_size = dma_buffer_size * cam->dma_bytes_per_item;
         cam->dma_half_buffer_size = dma_half_buffer * cam->dma_bytes_per_item;

@@ -31,7 +31,7 @@ limitations under the License.
 #include "tensorflow/lite/portable_type_to_tflitetype.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
-// Copied from tensorflow/lite/version.h to avoid a dependency chain into
+/// Copied from tensorflow/lite/version.h to avoid a dependency chain into
 // tensorflow/core.
 #define TFLITE_SCHEMA_VERSION (3)
 
@@ -116,6 +116,11 @@ class MicroInterpreter {
     return nullptr;
   }
 
+  // Reset the state to be what you would expect when the interpreter is first
+  // created. i.e. after Init and Prepare is called for the very first time.
+  TfLiteStatus Reset();
+
+  // TODO(b/244457206): remove this in favor of Reset()
   // Reset all variable tensors to the default value.
   TfLiteStatus ResetVariableTensors();
 

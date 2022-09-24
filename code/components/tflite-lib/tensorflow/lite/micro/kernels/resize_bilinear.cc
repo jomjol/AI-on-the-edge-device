@@ -55,8 +55,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   auto* params =
       reinterpret_cast<TfLiteResizeBilinearParams*>(node->builtin_data);
   if (params->half_pixel_centers && params->align_corners) {
-    TF_LITE_KERNEL_LOG(
-        context, "If half_pixel_centers is True, align_corners must be False.");
+    MicroPrintf("If half_pixel_centers is True, align_corners must be False.");
     return kTfLiteError;
   }
 
@@ -100,8 +99,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
         tflite::micro::GetTensorShape(output),
         tflite::micro::GetTensorData<int8_t>(output));
   } else {
-    TF_LITE_KERNEL_LOG(context, "Output type is %d, requires float or int8.",
-                       output->type);
+    MicroPrintf("Output type is %d, requires float or int8.", output->type);
     return kTfLiteError;
   }
 

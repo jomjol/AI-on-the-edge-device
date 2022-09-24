@@ -106,8 +106,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
     GetBeginAndSizeVectors<int64_t>(input->dims->size, begin, size,
                                     op_params.begin, op_params.size);
   } else {
-    TF_LITE_KERNEL_LOG(context, "Begin tensor type %s (%d) not supported.",
-                       TfLiteTypeGetName(input->type), input->type);
+    MicroPrintf("Begin tensor type %s (%d) not supported.",
+                TfLiteTypeGetName(input->type), input->type);
     return kTfLiteError;
   }
 

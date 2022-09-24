@@ -101,7 +101,7 @@ typedef struct {
     QueueHandle_t frame_buffer_queue;
     TaskHandle_t task_handle;
     intr_handle_t cam_intr_handle;
-	
+
     uint8_t dma_num;//ESP32-S3
     intr_handle_t dma_intr_handle;//ESP32-S3
 
@@ -116,8 +116,14 @@ typedef struct {
     //for RGB/YUV modes
     uint16_t width;
     uint16_t height;
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+    float in_bytes_per_pixel;
+    float fb_bytes_per_pixel;
+    camera_conv_mode_t conv_mode;
+#else
     uint8_t in_bytes_per_pixel;
     uint8_t fb_bytes_per_pixel;
+#endif
     uint32_t fb_size;
 
     cam_state_t state;
@@ -134,7 +140,7 @@ esp_err_t ll_cam_init_isr(cam_obj_t *cam);
 void ll_cam_do_vsync(cam_obj_t *cam);
 uint8_t ll_cam_get_dma_align(cam_obj_t *cam);
 bool ll_cam_dma_sizes(cam_obj_t *cam);
-size_t IRAM_ATTR ll_cam_memcpy(cam_obj_t *cam, uint8_t *out, const uint8_t *in, size_t len);
+size_t ll_cam_memcpy(cam_obj_t *cam, uint8_t *out, const uint8_t *in, size_t len);
 esp_err_t ll_cam_set_sample_mode(cam_obj_t *cam, pixformat_t pix_format, uint32_t xclk_freq_hz, uint16_t sensor_pid);
 
 // implemented in cam_hal

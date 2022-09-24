@@ -21,19 +21,6 @@
 #include "esp_jpg_decode.h"
 
 #include "esp_system.h"
-#if ESP_IDF_VERSION_MAJOR >= 4 // IDF 4+
-#if CONFIG_IDF_TARGET_ESP32 // ESP32/PICO-D4
-#include "esp32/spiram.h"
-#elif CONFIG_IDF_TARGET_ESP32S2
-#include "esp32s2/spiram.h"
-#elif CONFIG_IDF_TARGET_ESP32S3
-#include "esp32s3/spiram.h"
-#else 
-#error Target CONFIG_IDF_TARGET is not supported
-#endif
-#else // ESP32 Before IDF 4.0
-#include "esp_spiram.h"
-#endif
 
 #if defined(ARDUINO_ARCH_ESP32) && defined(CONFIG_ARDUHAL_ESP_LOG)
 #include "esp32-hal-log.h"
@@ -72,7 +59,12 @@ typedef struct {
 
 static void *_malloc(size_t size)
 {
+    // check if SPIRAM is enabled and allocate on SPIRAM if allocatable
+#if (CONFIG_SPIRAM_SUPPORT && (CONFIG_SPIRAM_USE_CAPS_ALLOC || CONFIG_SPIRAM_USE_MALLOC))
     return heap_caps_malloc(size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+#endif
+    // try allocating in internal memory
+    return malloc(size);
 }
 
 //output buffer and image width
@@ -168,7 +160,7 @@ static bool _rgb565_write(void * arg, uint16_t x, uint16_t y, uint16_t w, uint16
 }
 
 //input buffer
-static uint32_t _jpg_read(void * arg, size_t index, uint8_t *buf, size_t len)
+static unsigned int _jpg_read(void * arg, size_t index, uint8_t *buf, size_t len)
 {
     rgb_jpg_decoder * jpeg = (rgb_jpg_decoder *)arg;
     if(buf) {
@@ -310,7 +302,13 @@ bool fmt2bmp(uint8_t *src, size_t src_len, uint16_t width, uint16_t height, pixf
     *out_len = 0;
 
     int pix_count = width*height;
-    size_t out_size = (pix_count * 3) + BMP_HEADER_LEN;
+
+    // With BMP, 8-bit greyscale requires a palette.
+    // For a 640x480 image though, that's a savings
+    // over going RGB-24.
+    int bpp = (format == PIXFORMAT_GRAYSCALE) ? 1 : 3;
+    int palette_size = (format == PIXFORMAT_GRAYSCALE) ? 4 * 256 : 0;
+    size_t out_size = (pix_count * bpp) + BMP_HEADER_LEN + palette_size;
     uint8_t * out_buf = (uint8_t *)_malloc(out_size);
     if(!out_buf) {
         ESP_LOGE(TAG, "_malloc failed! %u", out_size);
@@ -322,45 +320,51 @@ bool fmt2bmp(uint8_t *src, size_t src_len, uint16_t width, uint16_t height, pixf
     bmp_header_t * bitmap  = (bmp_header_t*)&out_buf[2];
     bitmap->reserved = 0;
     bitmap->filesize = out_size;
-    bitmap->fileoffset_to_pixelarray = BMP_HEADER_LEN;
+    bitmap->fileoffset_to_pixelarray = BMP_HEADER_LEN + palette_size;
     bitmap->dibheadersize = 40;
     bitmap->width = width;
     bitmap->height = -height;//set negative for top to bottom
     bitmap->planes = 1;
-    bitmap->bitsperpixel = 24;
+    bitmap->bitsperpixel = bpp * 8;
     bitmap->compression = 0;
-    bitmap->imagesize = pix_count * 3;
+    bitmap->imagesize = pix_count * bpp;
     bitmap->ypixelpermeter = 0x0B13 ; //2835 , 72 DPI
     bitmap->xpixelpermeter = 0x0B13 ; //2835 , 72 DPI
     bitmap->numcolorspallette = 0;
     bitmap->mostimpcolor = 0;
 
-    uint8_t * rgb_buf = out_buf + BMP_HEADER_LEN;
+    uint8_t * palette_buf = out_buf + BMP_HEADER_LEN;
+    uint8_t * pix_buf = palette_buf + palette_size;
     uint8_t * src_buf = src;
 
+    if (palette_size > 0) {
+        // Grayscale palette
+        for (int i = 0; i < 256; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                *palette_buf = i;
+                palette_buf++;
+            }
+            // Reserved / alpha channel.
+            *palette_buf = 0;
+            palette_buf++;
+        }
+    }
 
     //convert data to RGB888
     if(format == PIXFORMAT_RGB888) {
-        memcpy(rgb_buf, src_buf, pix_count*3);
+        memcpy(pix_buf, src_buf, pix_count*3);
     } else if(format == PIXFORMAT_RGB565) {
         int i;
         uint8_t hb, lb;
         for(i=0; i<pix_count; i++) {
             hb = *src_buf++;
             lb = *src_buf++;
-            *rgb_buf++ = (lb & 0x1F) << 3;
-            *rgb_buf++ = (hb & 0x07) << 5 | (lb & 0xE0) >> 3;
-            *rgb_buf++ = hb & 0xF8;
+            *pix_buf++ = (lb & 0x1F) << 3;
+            *pix_buf++ = (hb & 0x07) << 5 | (lb & 0xE0) >> 3;
+            *pix_buf++ = hb & 0xF8;
         }
     } else if(format == PIXFORMAT_GRAYSCALE) {
-        int i;
-        uint8_t b;
-        for(i=0; i<pix_count; i++) {
-            b = *src_buf++;
-            *rgb_buf++ = b;
-            *rgb_buf++ = b;
-            *rgb_buf++ = b;
-        }
+        memcpy(pix_buf, src_buf, pix_count);
     } else if(format == PIXFORMAT_YUV422) {
         int i, maxi = pix_count / 2;
         uint8_t y0, y1, u, v;
@@ -372,14 +376,14 @@ bool fmt2bmp(uint8_t *src, size_t src_len, uint16_t width, uint16_t height, pixf
             v = *src_buf++;
 
             yuv2rgb(y0, u, v, &r, &g, &b);
-            *rgb_buf++ = b;
-            *rgb_buf++ = g;
-            *rgb_buf++ = r;
+            *pix_buf++ = b;
+            *pix_buf++ = g;
+            *pix_buf++ = r;
 
             yuv2rgb(y1, u, v, &r, &g, &b);
-            *rgb_buf++ = b;
-            *rgb_buf++ = g;
-            *rgb_buf++ = r;
+            *pix_buf++ = b;
+            *pix_buf++ = g;
+            *pix_buf++ = r;
         }
     }
     *out = out_buf;

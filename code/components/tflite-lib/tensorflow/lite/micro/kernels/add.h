@@ -1,4 +1,4 @@
-/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -59,6 +59,19 @@ TfLiteStatus CalculateOpDataAdd(TfLiteContext* context, TfLiteAddParams* params,
 
 TfLiteStatus AddPrepare(TfLiteContext* context, TfLiteNode* node);
 
+// Generic must define registration function.
+TfLiteRegistration Register_ADD();
+
+#if defined(CMSIS_NN)
+TfLiteRegistration Register_ADD_INT8();
+
+TfLiteRegistration Register_ADD_INT16();
+#else
+// Fallback registration
+inline TfLiteRegistration Register_ADD_INT8() { return Register_ADD(); }
+
+inline TfLiteRegistration Register_ADD_INT16() { return Register_ADD(); }
+#endif
 }  // namespace tflite
 
 #endif  // TENSORFLOW_LITE_MICRO_KERNELS_ADD_H_

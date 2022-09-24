@@ -74,7 +74,7 @@ TfLiteStatus EvalFloorDiv(TfLiteContext* context,
   // Validate the denominator.
   for (int i = 0; i < tflite::ElementCount(*input2->dims); ++i) {
     if (std::equal_to<T>()(denominator_data[i], 0)) {
-      TF_LITE_KERNEL_LOG(context, "Division by 0");
+      MicroPrintf("Division by 0");
       return kTfLiteError;
     }
   }
@@ -113,8 +113,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       return EvalFloorDiv<float>(context, input1, input2, output);
     }
     default: {
-      TF_LITE_KERNEL_LOG(context, "Type '%s' is not supported by FLOOR_DIV.",
-                         TfLiteTypeGetName(input1->type));
+      MicroPrintf("Type '%s' is not supported by FLOOR_DIV.",
+                  TfLiteTypeGetName(input1->type));
       return kTfLiteError;
     }
   }

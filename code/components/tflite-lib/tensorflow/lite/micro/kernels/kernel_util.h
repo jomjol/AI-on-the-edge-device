@@ -21,8 +21,10 @@ limitations under the License.
 #include "tensorflow/lite/c/builtin_op_data.h"
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
+#include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "tensorflow/lite/kernels/internal/types.h"
 #include "tensorflow/lite/micro/micro_context.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 namespace tflite {
 namespace micro {
@@ -30,7 +32,20 @@ namespace micro {
 TfLiteRegistration RegisterOp(
     void* (*init)(TfLiteContext* context, const char* buffer, size_t length),
     TfLiteStatus (*prepare)(TfLiteContext* context, TfLiteNode* node),
-    TfLiteStatus (*invoke)(TfLiteContext* context, TfLiteNode* node));
+    TfLiteStatus (*invoke)(TfLiteContext* context, TfLiteNode* node),
+    void (*free)(TfLiteContext* context, void* buffer) = nullptr);
+
+// Prints out n bytes in a int8_t buffer as hex
+void PrintNBytes(const int8_t* tensor_data, int n_bytes,
+                 const char* prefix = nullptr);
+
+// Prints out the the n bytes in a TfLiteEvalTensor as hex
+void PrintNBytes(const TfLiteEvalTensor* tensor, int n_bytes,
+                 const char* prefix = nullptr);
+
+// Prints out the the n bytes in a TfLiteTensor as hex
+void PrintNBytes(const TfLiteTensor* tensor, int n_bytes,
+                 const char* prefix = nullptr);
 
 // Returns a mutable tensor for a given input index. is_variable must be checked
 // during prepare when the full TfLiteTensor is available.

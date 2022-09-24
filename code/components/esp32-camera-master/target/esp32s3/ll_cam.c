@@ -22,10 +22,15 @@
 #include "soc/gdma_reg.h"
 #include "ll_cam.h"
 #include "cam_hal.h"
+#include "esp_rom_gpio.h"
 
 #if (ESP_IDF_VERSION_MAJOR >= 5)
-#define gpio_matrix_in(a,b,c) gpio_iomux_in(a,b)
-#define gpio_matrix_out(a,b,c,d) gpio_iomux_out(a,b,c)
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
 #endif
 
 static const char *TAG = "s3 ll_cam";
@@ -74,7 +79,7 @@ static void IRAM_ATTR ll_cam_dma_isr(void *arg)
     }
 }
 
-bool ll_cam_stop(cam_obj_t *cam)
+bool IRAM_ATTR ll_cam_stop(cam_obj_t *cam)
 {
     if (cam->jpeg_mode || !cam->psram_mode) {
         GDMA.channel[cam->dma_num].in.int_ena.in_suc_eof = 0;
@@ -170,6 +175,7 @@ static esp_err_t ll_cam_dma_init(cam_obj_t *cam)
     }
 
     GDMA.channel[cam->dma_num].in.conf1.in_check_owner = 0;
+    // GDMA.channel[cam->dma_num].in.conf1.in_ext_mem_bk_size = 2;
 
     GDMA.channel[cam->dma_num].in.peri_sel.sel = 5;
     //GDMA.channel[cam->dma_num].in.pri.rx_pri = 1;//rx prio 0-15
@@ -178,8 +184,57 @@ static esp_err_t ll_cam_dma_init(cam_obj_t *cam)
     return ESP_OK;
 }
 
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+static esp_err_t ll_cam_converter_config(cam_obj_t *cam, const camera_config_t *config)
+{
+    esp_err_t ret = ESP_OK;
+
+    switch (config->conv_mode) {
+    case YUV422_TO_YUV420:
+        if (config->pixel_format != PIXFORMAT_YUV422) {
+            ret = ESP_FAIL;
+        } else {
+            ESP_LOGI(TAG, "YUV422 to YUV420 mode");
+            LCD_CAM.cam_rgb_yuv.cam_conv_yuv2yuv_mode = 1;
+            LCD_CAM.cam_rgb_yuv.cam_conv_yuv_mode = 0;
+            LCD_CAM.cam_rgb_yuv.cam_conv_trans_mode = 1;
+        }
+        break;
+    case YUV422_TO_RGB565:
+        if (config->pixel_format != PIXFORMAT_YUV422) {
+            ret = ESP_FAIL;
+        } else {
+            ESP_LOGI(TAG, "YUV422 to RGB565 mode");
+            LCD_CAM.cam_rgb_yuv.cam_conv_yuv2yuv_mode = 3;
+            LCD_CAM.cam_rgb_yuv.cam_conv_yuv_mode = 0;
+            LCD_CAM.cam_rgb_yuv.cam_conv_trans_mode = 0;
+        }
+        break;
+    default:
+        break;
+    }
+#if CONFIG_LCD_CAM_CONV_BT709_ENABLED
+    LCD_CAM.cam_rgb_yuv.cam_conv_protocol_mode = 1;
+#else
+    LCD_CAM.cam_rgb_yuv.cam_conv_protocol_mode = 0;
+#endif
+#if CONFIG_LCD_CAM_CONV_FULL_RANGE_ENABLED
+    LCD_CAM.cam_rgb_yuv.cam_conv_data_out_mode = 1;
+    LCD_CAM.cam_rgb_yuv.cam_conv_data_in_mode = 1;
+#else
+    LCD_CAM.cam_rgb_yuv.cam_conv_data_out_mode = 0;
+    LCD_CAM.cam_rgb_yuv.cam_conv_data_in_mode = 0;
+#endif
+    LCD_CAM.cam_rgb_yuv.cam_conv_mode_8bits_on = 1;
+    LCD_CAM.cam_rgb_yuv.cam_conv_bypass = 1;
+    cam->conv_mode = config->conv_mode;
+    return ret;
+}
+#endif
+
 esp_err_t ll_cam_config(cam_obj_t *cam, const camera_config_t *config)
 {
+    esp_err_t ret = ESP_OK;
     if (REG_GET_BIT(SYSTEM_PERIP_CLK_EN1_REG, SYSTEM_LCD_CAM_CLK_EN) == 0) {
         REG_CLR_BIT(SYSTEM_PERIP_CLK_EN1_REG, SYSTEM_LCD_CAM_CLK_EN);
         REG_SET_BIT(SYSTEM_PERIP_CLK_EN1_REG, SYSTEM_LCD_CAM_CLK_EN);
@@ -188,7 +243,7 @@ esp_err_t ll_cam_config(cam_obj_t *cam, const camera_config_t *config)
     }
 
     LCD_CAM.cam_ctrl.val = 0;
-    
+
     LCD_CAM.cam_ctrl.cam_clkm_div_b = 0;
     LCD_CAM.cam_ctrl.cam_clkm_div_a = 0;
     LCD_CAM.cam_ctrl.cam_clkm_div_num = 160000000 / config->xclk_freq_hz;
@@ -215,15 +270,21 @@ esp_err_t ll_cam_config(cam_obj_t *cam, const camera_config_t *config)
 
     LCD_CAM.cam_rgb_yuv.val = 0;
 
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+    if (config->conv_mode) {
+        ret = ll_cam_converter_config(cam, config);
+        if(ret != ESP_OK) {
+            return ret;
+        }
+    }
+#endif
+
     LCD_CAM.cam_ctrl.cam_update = 1;
     LCD_CAM.cam_ctrl1.cam_start = 1;
 
-    esp_err_t err = ll_cam_dma_init(cam);
-    if(err != ESP_OK) {
-        return err;
-    }
-    
-    return ESP_OK;
+    ret = ll_cam_dma_init(cam);
+
+    return ret;
 }
 
 void ll_cam_vsync_intr_enable(cam_obj_t *cam, bool en)
@@ -262,11 +323,12 @@ esp_err_t ll_cam_set_pin(cam_obj_t *cam, const camera_config_t *config)
         gpio_set_pull_mode(data_pins[i], GPIO_FLOATING);
         gpio_matrix_in(data_pins[i], CAM_DATA_IN0_IDX + i, false);
     }
-
-    PIN_FUNC_SELECT(GPIO_PIN_MUX_REG[config->pin_xclk], PIN_FUNC_GPIO);
-    gpio_set_direction(config->pin_xclk, GPIO_MODE_OUTPUT);
-    gpio_set_pull_mode(config->pin_xclk, GPIO_FLOATING);
-    gpio_matrix_out(config->pin_xclk, CAM_CLK_IDX, false, false);
+    if (config->pin_xclk >= 0) { 
+        PIN_FUNC_SELECT(GPIO_PIN_MUX_REG[config->pin_xclk], PIN_FUNC_GPIO);
+        gpio_set_direction(config->pin_xclk, GPIO_MODE_OUTPUT);
+        gpio_set_pull_mode(config->pin_xclk, GPIO_FLOATING);
+        gpio_matrix_out(config->pin_xclk, CAM_CLK_IDX, false, false);
+    }
 
     return ESP_OK;
 }
@@ -338,8 +400,8 @@ static bool ll_cam_calc_rgb_dma(cam_obj_t *cam){
         }
     }
 
-    ESP_LOGI(TAG, "node_size: %4u, nodes_per_line: %u, lines_per_node: %u", 
-            node_size * cam->dma_bytes_per_item, nodes_per_line, lines_per_node);
+    ESP_LOGI(TAG, "node_size: %4u, nodes_per_line: %u, lines_per_node: %u",
+            (unsigned) (node_size * cam->dma_bytes_per_item), (unsigned) nodes_per_line, (unsigned) lines_per_node);
 
     cam->dma_node_buffer_size = node_size * cam->dma_bytes_per_item;
 
@@ -371,9 +433,10 @@ static bool ll_cam_calc_rgb_dma(cam_obj_t *cam){
     if (!cam->psram_mode) {
         dma_buffer_size =(dma_buffer_max / dma_half_buffer) * dma_half_buffer;
     }
-    
-    ESP_LOGI(TAG, "dma_half_buffer_min: %5u, dma_half_buffer: %5u, lines_per_half_buffer: %2u, dma_buffer_size: %5u", 
-            dma_half_buffer_min * cam->dma_bytes_per_item, dma_half_buffer * cam->dma_bytes_per_item, lines_per_half_buffer, dma_buffer_size * cam->dma_bytes_per_item);
+
+    ESP_LOGI(TAG, "dma_half_buffer_min: %5u, dma_half_buffer: %5u, lines_per_half_buffer: %2u, dma_buffer_size: %5u",
+            (unsigned) (dma_half_buffer_min * cam->dma_bytes_per_item), (unsigned) (dma_half_buffer * cam->dma_bytes_per_item),
+            (unsigned) lines_per_half_buffer, (unsigned) (dma_buffer_size * cam->dma_bytes_per_item));
 
     cam->dma_buffer_size = dma_buffer_size * cam->dma_bytes_per_item;
     cam->dma_half_buffer_size = dma_half_buffer * cam->dma_bytes_per_item;
@@ -382,7 +445,7 @@ static bool ll_cam_calc_rgb_dma(cam_obj_t *cam){
 }
 
 bool ll_cam_dma_sizes(cam_obj_t *cam)
-{    
+{
     cam->dma_bytes_per_item = 1;
     if (cam->jpeg_mode) {
         if (cam->psram_mode) {
@@ -433,8 +496,22 @@ esp_err_t ll_cam_set_sample_mode(cam_obj_t *cam, pixformat_t pix_format, uint32_
         }
         cam->fb_bytes_per_pixel = 1;       // frame buffer stores Y8
     } else if (pix_format == PIXFORMAT_YUV422 || pix_format == PIXFORMAT_RGB565) {
-            cam->in_bytes_per_pixel = 2;       // camera sends YU/YV
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+        switch (cam->conv_mode) {
+        case YUV422_TO_YUV420:
+            cam->in_bytes_per_pixel = 1.5;       // for DMA receive
+            cam->fb_bytes_per_pixel = 1.5;       // frame buffer stores YUV420
+            break;
+        case YUV422_TO_RGB565:
+        default:
+            cam->in_bytes_per_pixel = 2;       // for DMA receive
             cam->fb_bytes_per_pixel = 2;       // frame buffer stores YU/YV/RGB565
+            break;
+        }
+#else
+        cam->in_bytes_per_pixel = 2;       // for DMA receive
+        cam->fb_bytes_per_pixel = 2;       // frame buffer stores YU/YV/RGB565
+#endif
     } else if (pix_format == PIXFORMAT_JPEG) {
         cam->in_bytes_per_pixel = 1;
         cam->fb_bytes_per_pixel = 1;

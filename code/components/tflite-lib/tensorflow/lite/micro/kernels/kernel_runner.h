@@ -48,6 +48,11 @@ class KernelRunner {
   // passed into the constructor of this class.
   TfLiteStatus Invoke();
 
+  // Calls Free on a given TfLiteRegistration pointer(if it's implemented).
+  // After successful Free, kTfLiteOk status will be returned. If Free is not
+  // implemented for a given kernel kTfLiteError will be returned.
+  TfLiteStatus Free();
+
   // Returns a pointer to the internal MockMicroGraph which KernelRunner uses
   // to stub out MicroGraph methods and track invocations on each subgraph.
   MockMicroGraph* GetMockGraph() { return &mock_micro_graph_; }

@@ -42,7 +42,8 @@ static const DRAM_ATTR uint16_t sensor_default_regs[][2] = {
     {ISP_CONTROL_01, 0x83}, // turn color matrix, awb and SDE
 
     //sys reset
-    {0x3000, 0x00},
+    {0x3000, 0x20}, // reset MCU
+    {REG_DLY, 10}, // delay 10ms
     {0x3002, 0x1c},
 
     //clock enable

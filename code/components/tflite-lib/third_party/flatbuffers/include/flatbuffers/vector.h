@@ -19,6 +19,7 @@
 
 #include "flatbuffers/base.h"
 #include "flatbuffers/buffer.h"
+#include "flatbuffers/stl_emulation.h"
 
 namespace flatbuffers {
 
@@ -324,6 +325,24 @@ FLATBUFFERS_CONSTEXPR_CPP11 flatbuffers::span<const uint8_t> make_bytes_span(
   static_assert(Vector<U>::scalar_tag::value,
                 "wrong type U, only LE-scalar, or byte types are allowed");
   return span<const uint8_t>(vec.Data(), vec.size() * sizeof(U));
+}
+
+// Convenient helper functions to get a span of any vector, regardless
+// of whether it is null or not (the field is not set).
+template<class U>
+FLATBUFFERS_CONSTEXPR_CPP11 flatbuffers::span<U> make_span(Vector<U> *ptr)
+    FLATBUFFERS_NOEXCEPT {
+  static_assert(Vector<U>::is_span_observable,
+                "wrong type U, only LE-scalar, or byte types are allowed");
+  return ptr ? make_span(*ptr) : span<U>();
+}
+
+template<class U>
+FLATBUFFERS_CONSTEXPR_CPP11 flatbuffers::span<const U> make_span(
+    const Vector<U> *ptr) FLATBUFFERS_NOEXCEPT {
+  static_assert(Vector<U>::is_span_observable,
+                "wrong type U, only LE-scalar, or byte types are allowed");
+  return ptr ? make_span(*ptr) : span<const U>();
 }
 
 // Represent a vector much like the template above, but in this case we

@@ -163,10 +163,12 @@ TfLiteStatus RecordingMicroAllocator::AllocateNodeAndRegistrations(
 
   TfLiteStatus status =
       MicroAllocator::AllocateNodeAndRegistrations(model, subgraph_allocations);
+
+  RecordAllocationUsage(allocations,
+                        recorded_node_and_registration_array_data_);
+
   for (size_t subgraph_idx = 0; subgraph_idx < model->subgraphs()->size();
        subgraph_idx++) {
-    RecordAllocationUsage(allocations,
-                          recorded_node_and_registration_array_data_);
     // The allocation count in SingleArenaBufferAllocator will only be 1. To
     // provide better logging, decrement by 1 and add in the actual number of
     // operators used in the graph: The allocation for this recording will
@@ -176,8 +178,12 @@ TfLiteStatus RecordingMicroAllocator::AllocateNodeAndRegistrations(
     // potential for fragmentation, manually adjust the accounting by
     // decrementing by 1 and adding the actual number of nodes used in the
     // graph:
-    recorded_node_and_registration_array_data_.count +=
-        model->subgraphs()->Get(subgraph_idx)->operators()->size() - 1;
+    if (model->subgraphs()->Get(subgraph_idx)->operators()) {
+      recorded_node_and_registration_array_data_.count +=
+          model->subgraphs()->Get(subgraph_idx)->operators()->size() - 1;
+    } else {
+      recorded_node_and_registration_array_data_.count -= 1;
+    }
   }
   return status;
 }
@@ -188,9 +194,11 @@ TfLiteStatus RecordingMicroAllocator::AllocateTfLiteEvalTensors(
 
   TfLiteStatus status =
       MicroAllocator::AllocateTfLiteEvalTensors(model, subgraph_allocations);
+
+  RecordAllocationUsage(allocations, recorded_tflite_eval_tensor_data_);
+
   for (size_t subgraph_idx = 0; subgraph_idx < model->subgraphs()->size();
        subgraph_idx++) {
-    RecordAllocationUsage(allocations, recorded_tflite_eval_tensor_data_);
     // The allocation for this recording will always be 1. This is because the
     // parent class mallocs one large allocation for the number of tensors in
     // the graph (e.g. sizeof(TfLiteEvalTensor) * num_tensors). To prevent extra

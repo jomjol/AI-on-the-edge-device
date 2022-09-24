@@ -126,8 +126,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
         tflite::micro::GetTensorData<int8_t>(input),
         tflite::micro::GetTensorData<int8_t>(output));
   } else {
-    TF_LITE_KERNEL_LOG(context, "Output type is %s, requires float.",
-                       TfLiteTypeGetName(output->type));
+    MicroPrintf("Output type is %s, requires float.",
+                TfLiteTypeGetName(output->type));
     return kTfLiteError;
   }
 

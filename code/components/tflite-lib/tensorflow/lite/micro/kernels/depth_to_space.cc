@@ -124,9 +124,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
                                   tflite::micro::GetTensorData<int8_t>(output));
       break;
     default:
-      TF_LITE_KERNEL_LOG(
-          context, "DEPTH_TO_SPACE only supports FLOAT32 and INT8, got %s.",
-          TfLiteTypeGetName(output->type));
+      MicroPrintf("DEPTH_TO_SPACE only supports FLOAT32 and INT8, got %s.",
+                  TfLiteTypeGetName(output->type));
       return kTfLiteError;
   }
 

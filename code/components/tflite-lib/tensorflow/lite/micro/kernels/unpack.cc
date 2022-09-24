@@ -91,8 +91,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       return UnpackImpl<int8_t>(context, node, input, data->num, data->axis);
     }
     default: {
-      TF_LITE_KERNEL_LOG(context, "Type '%s' is not supported by unpack.",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("Type '%s' is not supported by unpack.",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
     }
   }
