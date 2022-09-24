@@ -33,8 +33,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-#      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
-      run: cd code; platformio run --environment esp32cam
+      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+#      run: cd code; platformio run --environment esp32cam
 
     - name: Store generated files in cache
       uses: actions/cache@v3
@@ -182,7 +182,7 @@ jobs:
           ./sd-card/html/version.txt
         key: ${{ github.run_number }}
 
-    - name: Copy artifacts to firmware folder
+    - name: Copy artifacts to firmware folder and create full.zip
       run: |
         mkdir -p firmware
         # copy builds to firmware folder for committing in next step
@@ -195,6 +195,13 @@ jobs:
         mkdir ../dist
         cd ../dist
         zip -r ../firmware/full.zip . -i .
+
+    - name: Upload full.zip artifact (Firmware + Bootloader + Partitions + Web UI + CNN)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "full__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./firmware/full.zip
+
         
     # extract the version used in next step
     - id: get_version
