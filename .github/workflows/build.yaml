@@ -33,8 +33,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-#      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
-      run: cd code; platformio run --environment esp32cam
+      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+#      run: cd code; platformio run --environment esp32cam
 
     - name: Store generated files in cache
       uses: actions/cache@v3
@@ -137,24 +137,22 @@ jobs:
 #        name: "update_firmware_only__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
 #        path: ./dist/*
         
+    - name: Add Web UI to dist
+      run: cp -r ./sd-card/html ./dist/
 
-#    - name: Prepare update.zip artifact (Firmware + Web UI)
-#      run: cp -r ./sd-card/html ./dist/
-#
 #    - name: Upload update.zip artifact (Firmware + Web UI)
 #      uses: actions/upload-artifact@v3
 #      with:
 #        name: "update_firmware+webinterface__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
 #        path: ./dist/*
         
-
-    - name: Prepare update.zip artifact (Firmware + Web UI + CNN)
+    - name: Add CNN to dist
       run: |
         mkdir ./dist/config/
         cp ./sd-card/config/*.tfl ./dist/config/ 2>/dev/null || true
         cp ./sd-card/config/*.tflite ./dist/config/ 2>/dev/null || true
 
-    - name: Upload update.zip artifact (Firmware + Web UI + CNN)
+    - name: Upload dist as update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
         name: "update__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
