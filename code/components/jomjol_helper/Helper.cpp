@@ -88,8 +88,17 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
+	FILE *pfile;
+
 	printf("open file %s in mode %s\n", nm, _mode);
-	FILE *pfile = fopen(nm, _mode);
+
+	if ((pfile = fopen(nm, _mode)) != NULL) {
+		printf("File %s successfully opened\n", nm);
+	}
+	else {
+		printf("Error: file %s does not exist!\n", nm);
+		return NULL;
+	}
 
 /*
 	if (pfile == NULL)

@@ -99,6 +99,11 @@ static bool ota_update_task(std::string fn)
     int data_read;     
 
     FILE* f = OpenFileAndWait(fn.c_str(), "rb");     // vorher  nur "r"
+
+    if (f == NULL) { // File does not exist
+        return false;
+    }
+
     data_read = fread(ota_write_data, 1, BUFFSIZE, f);
 
     while (data_read > 0) {
@@ -435,7 +440,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         int _result = stat(fn.c_str(), &file_stat);
         printf("Ergebnis %d\n", _result);
         if (_result == 0) {
-            printf("Deleting file : %s", fn.c_str());
+            printf("Deleting file : %s\n", fn.c_str());
             /* Delete file */
             unlink(fn.c_str());
         }
@@ -457,11 +462,11 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     gpio_handler_deinit();
     if (ota_update_task(fn))
     {
-        resp_str = "Firmware Update Successfull!<br><br>You can restart now.";
+        resp_str = "Firmware Update Successfull! You can restart now.";
     }
     else
     {
-        resp_str = "Error during Firmware Update!!!<br><br>Please check console output.";
+        resp_str = "Error during Firmware Update!!! Please check console output.";
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
