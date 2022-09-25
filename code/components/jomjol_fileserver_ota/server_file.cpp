@@ -489,7 +489,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 
     while (remaining > 0) {
 
-        //ESP_LOGI(TAG_FILESERVER, "Remaining size : %d", remaining);
+        ESP_LOGI(TAG_FILESERVER, "Remaining size : %d", remaining);
         /* Receive the file part by part into a buffer */
         if ((received = httpd_req_recv(req, buf, MIN(remaining, SCRATCH_BUFSIZE))) <= 0) {
             if (received == HTTPD_SOCK_ERR_TIMEOUT) {
@@ -752,57 +752,59 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             mz_zip_archive_file_stat file_stat;
             mz_zip_reader_file_stat(&zip_archive, i, &file_stat);
             sprintf(archive_filename, file_stat.m_filename);
- 
+            
+            if (!file_stat.m_is_directory) {
             // Try to extract all the files to the heap.
             p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
-            if (!p)
-            {
-                printf("mz_zip_reader_extract_file_to_heap() failed on file %s\n", archive_filename);
-                mz_zip_reader_end(&zip_archive);
-                return ret;
-            }
-
-            // Save to File.
-            zw = std::string(archive_filename);
-            if (toUpper(zw) == "FIRMWARE.BIN")
-            {
-                zw = _target_bin + zw;
-                ret = zw;
-            }
-            else
-            {
-                std::string _dir = getDirectory(zw);
-
-                if (_dir.length() > 0)
+                if (!p)
                 {
-                    zw = _main + zw;
+                    printf("mz_zip_reader_extract_file_to_heap() failed on file %s\n", archive_filename);
+                    mz_zip_reader_end(&zip_archive);
+                    return ret;
+                }
+            
+                // Save to File.
+                zw = std::string(archive_filename);
+                if (toUpper(zw) == "FIRMWARE.BIN")
+                {
+                    zw = _target_bin + zw;
+                    ret = zw;
                 }
                 else
                 {
-                    zw = _target_zip + zw;
+                    std::string _dir = getDirectory(zw);
+
+                    if (_dir.length() > 0)
+                    {
+                        zw = _main + zw;
+                    }
+                    else
+                    {
+                        zw = _target_zip + zw;
+                    }
+
                 }
+            
+                string filename_zw = zw + SUFFIX_ZW;
 
+                printf("Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+
+                // extrahieren in zwischendatei
+                DeleteFile(filename_zw);
+                FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
+                fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
+                fclose(fpTargetFile);
+
+                DeleteFile(zw);
+                RenameFile(filename_zw, zw);
+                DeleteFile(filename_zw);
+
+                printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
+                //            printf("File data: \"%s\"\n", (const char*)p);
+
+                // We're done.
+                mz_free(p);
             }
-
-            string filename_zw = zw + SUFFIX_ZW;
-
-            printf("Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
-
-            // extrahieren in zwischendatei
-            DeleteFile(filename_zw);
-            FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
-            fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
-            fclose(fpTargetFile);
-
-            DeleteFile(zw);
-            RenameFile(filename_zw, zw);
-            DeleteFile(filename_zw);
-
-            printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
-            //            printf("File data: \"%s\"\n", (const char*)p);
-
-            // We're done.
-            mz_free(p);
         }
 
         // Close the archive, freeing any resources it was using
