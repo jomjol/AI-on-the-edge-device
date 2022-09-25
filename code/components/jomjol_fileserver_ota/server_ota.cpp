@@ -457,11 +457,11 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     gpio_handler_deinit();
     if (ota_update_task(fn))
     {
-        resp_str = "Firmware Update Successfull!<br><br>You can restart now.";
+        resp_str = "Firmware Update Successfull! You can restart now.";
     }
     else
     {
-        resp_str = "Error during Firmware Update!!!<br><br>Please check console output.";
+        resp_str = "Error during Firmware Update!!! Please check console output.";
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
