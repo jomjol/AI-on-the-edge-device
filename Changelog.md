@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [11.4.2] - 2022-09-25
-
 ### Added
 
 -   automatic release creation
