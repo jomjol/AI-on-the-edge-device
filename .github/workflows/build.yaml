@@ -158,6 +158,18 @@ jobs:
         name: "update__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
 
+    - name: Store generated files in cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+          ./dist
+        key: ${{ github.run_number }}-pack-for-OTA-v2
+
+
 
 
 #########################################################################################
@@ -181,72 +193,98 @@ jobs:
           ./sd-card/html/version.txt
         key: ${{ github.run_number }}
 
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+#########################################################################################
+## Prepare and create release
+#########################################################################################
+  release: 
+    runs-on: ubuntu-latest
+    needs: pack-for-OTA-v2
 
-    - name: Copy artifacts to firmware folder and create initial_esp32_setup.zip
-      run: |
-        mkdir -p firmware
-        # copy builds to firmware folder for committing in next step
-        cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
-        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
-        cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
-        cd sd-card
-        rm -f ../firmware/html.zip
-        rm -f ../firmware/README.md
-        zip -r ../firmware/html.zip html
-        mkdir ../dist
-        cd ../dist
+    steps:
+      - uses: actions/checkout@v2
 
-    - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI + CNN)
-      uses: actions/upload-artifact@v3
-      with:
-        name: "initial_esp32_setup__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./firmware
+      - name: Get generated files from cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./code/.pio/build/esp32cam/firmware.bin
+            ./code/.pio/build/esp32cam/partitions.bin
+            ./code/.pio/build/esp32cam/bootloader.bin
+            ./sd-card/html/version.txt
+             ./dist
+          key: ${{ github.run_number }}-pack-for-OTA-v2
 
-        
-    # extract the version used in next step
-    - id: get_version
-      if: startsWith(github.ref, 'refs/tags/') 
-      uses: battila7/get-version-action@v2
+      - name: Set Variables
+        id: vars
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
-    # the changelog [unreleased] will now be changed to the release version
-    - name: Update changelog
-      uses: thomaseizinger/keep-a-changelog-new-release@v1
-      if: startsWith(github.ref, 'refs/tags/') 
-      with:
-        changelogPath: Changelog.md
-        version: ${{ steps.get_version.outputs.version-without-v }}
+
+      - name: Prepare artifacts for release
+        run: |
+          ls -la ./dist
+          mkdir -p firmware
+          rm -rf firmware/*
+          mkdir -p release
+          # copy builds to firmware folder
+          cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
+          cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
+          cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
+          zip -r ./firmware/sd-card.zip sd-card
+          # create a update.zip like "update__rolling"
+          cd ./dist
+          zip -r ../release/update.zip .
+          cd ../firmware
+          zip -r ../release/initial_esp32_setup.zip .
+          
+
+      - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
+        uses: actions/upload-artifact@v3
+        with:
+          name: "initial_esp32_setup__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+          path: ./firmware
+
+          
+      # extract the version used in next step
+      - id: get_version
+        if: startsWith(github.ref, 'refs/tags/') 
+        uses: battila7/get-version-action@v2
+
+      # the changelog [unreleased] will now be changed to the release version
+      - name: Update changelog
+        uses: thomaseizinger/keep-a-changelog-new-release@v1
+        if: startsWith(github.ref, 'refs/tags/') 
+        with:
+          changelogPath: Changelog.md
+          version: ${{ steps.get_version.outputs.version-without-v }}
+              
+      # the release notes will be extracted from changelog 
+      - name: Extract release notes
+        id: extract-release-notes
+        if: startsWith(github.ref, 'refs/tags/') 
+        uses: ffurrer2/extract-release-notes@v1
+        with:
+            changelog_file: Changelog.md
             
-    # the release notes will be extracted from changelog 
-    - name: Extract release notes
-      id: extract-release-notes
-      if: startsWith(github.ref, 'refs/tags/') 
-      uses: ffurrer2/extract-release-notes@v1
-      with:
-          changelog_file: Changelog.md
-          
 
-    # Releases should only be created on master by tagging the last commit.
-    # all artifacts in firmware folder pushed to the release
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        name:  ${{ steps.get_version.outputs.version-without-v }}
-        body: ${{ steps.extract-release-notes.outputs.release_notes }}
-        files: |
-          firmware/*   
-          
+      # Releases should only be created on master by tagging the last commit.
+      # all artifacts in firmware folder pushed to the release
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name:  ${{ steps.get_version.outputs.version-without-v }}
+          body: ${{ steps.extract-release-notes.outputs.release_notes }}
+          files: |
+            release/*   
+            
 
-    # Commit&Push Changelog to master branch. Must be manually merged back to rolling
-    - name: Commit changes and push changes
-      if: startsWith(github.ref, 'refs/tags/') 
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add Changelog.md
-        git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
-        git push origin HEAD:master
+      # Commit&Push Changelog to master branch. Must be manually merged back to rolling
+      - name: Commit changes and push changes
+        if: startsWith(github.ref, 'refs/tags/') 
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add Changelog.md
+          git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
+          git push origin HEAD:master

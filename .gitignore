@@ -7,7 +7,9 @@
 /sd-card/html/debug/
 /firmware/
 version.txt
-
+/dist/
+/dist_release/
+/dist_old_ota
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
