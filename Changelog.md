@@ -5,12 +5,87 @@
 ### Added
 
 -   automatic release creation
--   newest firmware of rolling branch now uploaded to <https://github.com/jomjol/AI-on-the-edge-device/actions>
--   \#1068 new safer and easier update mechanismn. Use only the update.zip of the release for firmware, html and new models. 
+-   newest firmware of rolling branch now uploaded to <https://github.com/jomjol/AI-on-the-edge-device/actions> (developers only)
+- \#1068 New update mechanism: 
+  - handling of all files (zip, tfl, tflite, bin) within in one updload
+  - using the update.zip from release page <https://github.com/jomjol/AI-on-the-edge-device/releases>
+  - status (upload, processing, ...) displayed
+  - auto suggestion for reboot (or not in case of web ui update only)
 
+### Changed
+- Integrated version info better into the html (main page, logfile)
+- Updated menue 
+- Update tflite, esp32-cam-master, esp-nn (as of today 20220924) 
 ### Fixed
 
--   \#1029 wrong change of checkDigitConsistency now working like releases before 11.3.1 
+- \#1029 wrong change of checkDigitConsistency now working like releases before 11.3.1 
+- Spelling corrections (**[cristianmitran](https://github.com/cristianmitran)**) 
+- Integrated version info better into the html (main page, logfile)
+
+
+### Removed
+- Remove `/firmware` from GitHub. 
+  - If you want to get the latest firmware and html files, please download from the automated (build action)[https://github.com/jomjol/AI-on-the-edge-device/actions] or (release page)[https://github.com/jomjol/AI-on-the-edge-device/releases]
+
+## [11.3.1] - (2022-09-17)
+Intermediate Digits
+
+- **ATTENTION**: 
+  - first update the 'firmware.bin' and ensure that the new version is running
+
+  - Only afterwards update the 'html.zip'
+  
+  - Otherwise the downwards compatibility of the new counter clockwise feature is not given and you end in a reboot loop, that needs manual flashing!
+  
+
+
+- **NEW v11.3.1**: corrected corrupted asset `firmware.bin`
+- Increased precision (more than 6-7 digits)
+- Implements Counter Clockwise Analog Pointers
+- Improved post processing algorithm
+- Debugging: intensive use of testcases
+- MQTT: improved handling, extended logging, automated reconnect
+- HTML: Backup Option for Configuration
+- HTML: Improved Reboot
+- HTML: Update WebUI (Reboot, Infos, CPU Temp, RSSI)
+- This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/haverland)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
+
+## [11.2.0] -  (2022-08-28)
+Intermediate Digits
+
+- Updated Tensorflow / TFlite to newest tflite (version as of 2022-07-27)
+- Updated analog neural network file (`ana-cont_11.3.0_s2.tflite` - default, `ana-class100_0120_s1_q.tflite`)
+- Updated digital neural network file (`dig-cont_0570_s3.tflite` - default, `dig-class100_0120_s2_q.tflite`)
+
+- Added automated filtering of tflite-file in the graphical configuration (thanks to @**[caco3](https://github.com/caco3)**)
+- Updated consistency algorithm & test cases
+- HTML: added favicon and system name, Improved reboot dialog  (thanks to @**[caco3](https://github.com/caco3)**)
+
+## [11.1.1] -  (2022-08-22)
+Intermediate Digits
+
+- New and improved consistency check (especially with analog and digital counters mixed)
+- Bug Fix: digital counter algorithm
+
+## [11.0.1] - (2022-08-18)
+Intermediate Digits
+
+- **NEW v11.0.1**: Bug Fix InfluxDB configuration (only update of html.zip necessary)
+
+- Implementation of new CNN types to detect intermediate values of digits with rolling numbers
+
+  - By default the old algo (0, 1, ..., 9, "N") is active (due to the limited types of digits trained so far)
+  - Activation can be done by selection a tflite file with the new trained model in the 'config.ini'
+  - **Details can be found in the [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Neural-Network-Types)** (different types, trained image types, naming convention)
+
+- Updated  neural network files (and adaption to new naming convention)
+
+- Published a tool to download and combine log files - **Thanks to **
+
+  - Files see ['/tools/logfile-tool'](tbd), How-to see [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader)
+
+- Bug Fix: InfluxDB enabling in grahic configuration
+
 
 ## [10.6.2] - (2022-07-24)
 

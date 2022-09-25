@@ -199,9 +199,8 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
         zip -r ./firmware/sd-card.zip sd-card
-        cd ../firmware
-        zip -r ../release/initial_esp32_setup.zip .
-
+        cd ./firmware
+  
     - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v3
       with:
