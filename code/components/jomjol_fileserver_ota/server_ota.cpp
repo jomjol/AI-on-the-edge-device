@@ -99,6 +99,11 @@ static bool ota_update_task(std::string fn)
     int data_read;     
 
     FILE* f = OpenFileAndWait(fn.c_str(), "rb");     // vorher  nur "r"
+
+    if (f == NULL) { // File does not exist
+        return false;
+    }
+
     data_read = fread(ota_write_data, 1, BUFFSIZE, f);
 
     while (data_read > 0) {
