@@ -49,8 +49,8 @@ extern "C" {
 
 /* Max size of an individual file. Make sure this
  * value is same as that set in upload_script.html */
-#define MAX_FILE_SIZE   (2000*1024) // 200 KB
-#define MAX_FILE_SIZE_STR "2000KB"
+#define MAX_FILE_SIZE   (4000*1024) // 4000 KB
+#define MAX_FILE_SIZE_STR "4000KB"
 
 
 /* Scratch buffer size */
