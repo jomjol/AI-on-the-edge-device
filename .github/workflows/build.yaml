@@ -221,27 +221,28 @@ jobs:
 
 
       - name: Prepare artifacts for release
-        if: startsWith(github.ref, 'refs/tags/') 
         run: |
           mkdir -p firmware
-          mkdir -p firmware
+          mkdir -p release
           # copy builds to firmware folder
-          cp -f "./code/.pio/build/esp32cam/firmware.bin" "release/firmware.bin"
-          cp -f "./code/.pio/build/esp32cam/bootloader.bin" "release/bootloader.bin"
-          cp -f "./code/.pio/build/esp32cam/partitions.bin" "release/partitions.bin"
-          rm -rf ./release/*
+          cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
+          cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
+          cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
+          rm -rf ./firmware/*
           cd sd-card
           zip -r ../release/html.zip html
           # create a update.zip like "update__rolling"
           cd ../dist
           zip -r ../release/update.zip .
+          cd ../firmware
+          zip -r ../release/initial_esp32_setup.zip .
           
 
       - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
         uses: actions/upload-artifact@v3
         with:
           name: "initial_esp32_setup__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-          path: ./release
+          path: ./firmware
 
           
       # extract the version used in next step
