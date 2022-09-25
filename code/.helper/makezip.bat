@@ -1,1 +1,1 @@
-powershell Compress-Archive "..\..\sd-card\html\*.*" "..\..\firmware\html.zip"
+powershell Compress-Archive -Path "..\..\sd-card\html\*.*" -DestinationPath "..\..\firmware\html.zip"
