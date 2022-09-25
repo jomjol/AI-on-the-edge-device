@@ -233,7 +233,6 @@ jobs:
           cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
           cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
           cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
-          rm -rf ./firmware/*
           cd sd-card
           zip -r ../release/html.zip html
           # create a update.zip like "update__rolling"
