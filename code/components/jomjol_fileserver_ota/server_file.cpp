@@ -719,12 +719,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
     void* p;
     char archive_filename[64];
     std::string zw, ret = "";
+    std::string directory = "";
 //    static const char* s_Test_archive_filename = "testhtml.zip";
 
     printf("miniz.c version: %s\n", MZ_VERSION);
     printf("Zipfile: %s\n", _in_zip_file.c_str());
     printf("Target Dir ZIP: %s\n", _target_zip.c_str());
     printf("Target Dir BIN: %s\n", _target_bin.c_str());
+    printf("Target Dir main: %s\n", _main.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
@@ -765,6 +767,8 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             
                 // Save to File.
                 zw = std::string(archive_filename);
+                printf("Rohfilename: %s\n", zw.c_str());
+
                 if (toUpper(zw) == "FIRMWARE.BIN")
                 {
                     zw = _target_bin + zw;
