@@ -171,28 +171,6 @@ jobs:
 
 
 
-
-#########################################################################################
-## Pack for a fresh install (USB flashing)
-#########################################################################################
-  pack-for-fresh-install:
-    # creates old style binaries for fresh installation (backward compatible to wiki)
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
-
 #########################################################################################
 ## Prepare and create release
 #########################################################################################
