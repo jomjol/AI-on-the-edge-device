@@ -306,6 +306,9 @@ string getDirectory(string filename)
 	size_t lastpos = filename.find('/');
 
 	if (lastpos == string::npos)
+		lastpos = filename.find('\\');
+
+	if (lastpos == string::npos)
 		return "";
 
 //	printf("Directory: %d\n", lastpos);

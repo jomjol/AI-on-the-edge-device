@@ -4,6 +4,7 @@
 .code-workspace
 /sd-card/htm./.vscode/
 /code/build
+/code/.helper
 /sd-card/html/debug/
 /firmware/
 version.txt
