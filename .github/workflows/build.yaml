@@ -162,12 +162,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
           ./dist
-        key: ${{ github.run_number }}
+        key: ${{ github.run_number }}-dist
 
 
 
@@ -214,6 +210,13 @@ jobs:
             ./dist
           key: ${{ github.run_number }}
 
+      - name: Get generated files from cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./dist
+          key: ${{ github.run_number }}-dist
+
       - name: Set Variables
         id: vars
         run: |
@@ -222,6 +225,7 @@ jobs:
 
       - name: Prepare artifacts for release
         run: |
+          ls -la ./dist
           mkdir -p firmware
           rm -rf firmware/*
           mkdir -p release
