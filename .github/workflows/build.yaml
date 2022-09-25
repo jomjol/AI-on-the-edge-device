@@ -232,7 +232,7 @@ jobs:
           cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
           zip -r ./firmware/sd-card.zip sd-card
           # create a update.zip like "update__rolling"
-          cd ../dist
+          cd ./dist
           zip -r ../release/update.zip .
           cd ../firmware
           zip -r ../release/initial_esp32_setup.zip .

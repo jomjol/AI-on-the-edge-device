@@ -757,7 +757,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
             if (!p)
             {
-                printf("mz_zip_reader_extract_file_to_heap() failed!\n");
+                printf("mz_zip_reader_extract_file_to_heap() failed! File%s\n", archive_filename);
                 mz_zip_reader_end(&zip_archive);
                 return ret;
             }
