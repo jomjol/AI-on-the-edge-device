@@ -181,24 +181,30 @@ jobs:
           ./sd-card/html/version.txt
         key: ${{ github.run_number }}
 
+#########################################################################################
+## Prepare release
+#########################################################################################
+
     - name: Set Variables
       id: vars
       run: |
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
-    - name: Copy artifacts to firmware folder and create initial_esp32_setup.zip
+    - name: Prepare artifacts  for release
+      if: startsWith(github.ref, 'refs/tags/') 
       run: |
-        mkdir -p firmware
-        # copy builds to firmware folder for committing in next step
-        cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
-        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
-        cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
+        mkdir -p release
+        # copy builds to release folder
+        cp -f "./code/.pio/build/esp32cam/firmware.bin" "release/firmware.bin"
+        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "release/bootloader.bin"
+        cp -f "./code/.pio/build/esp32cam/partitions.bin" "release/partitions.bin"
+        rm -rf ./release/*
         cd sd-card
-        rm -f ../firmware/html.zip
-        rm -f ../firmware/README.md
-        zip -r ../firmware/html.zip html
-        mkdir ../dist
+        zip -r ../release/html.zip html
+        # create a update.zip like "update__rolling"
         cd ../dist
+        zip -r ../release/update.zip .
+        
 
     - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI + CNN)
       uses: actions/upload-artifact@v3
@@ -238,7 +244,7 @@ jobs:
         name:  ${{ steps.get_version.outputs.version-without-v }}
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
-          firmware/*   
+          release/*   
           
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling

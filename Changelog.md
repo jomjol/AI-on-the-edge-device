@@ -1,20 +1,15 @@
 # Changelog
 
 ## [Unreleased]
-
-## [11.3.9] - 2022-09-20
-
 ### Added
 
--   auto release creation
-
-### Changed
-
--   something else
+- automatic release creation
+- newest firmware of rolling branch now uploaded to <https://github.com/jomjol/AI-on-the-edge-device/actions>
+- #1068 new safer and easier update mechanismn. Use only the update.zip of the release for firmware, html and new models. 
 
 ### Fixed
 
--   \#924 - fix of the Fix
+- #1029 wrong change of checkDigitConsistency now working like releases before 11.3.1 
 
 ## [10.6.2] - (2022-07-24)
 
