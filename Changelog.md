@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [11.4.3] - 2022-09-25
+
 ### Added
 
 -   automatic release creation
@@ -567,7 +569,9 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/haverland/AI-on-the-edge-device/compare/11.4.2...HEAD
+[Unreleased]: https://github.com/haverland/AI-on-the-edge-device/compare/11.4.3...HEAD
+
+[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.3
 
 [11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.2
 
