@@ -435,7 +435,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         int _result = stat(fn.c_str(), &file_stat);
         printf("Ergebnis %d\n", _result);
         if (_result == 0) {
-            printf("Deleting file : %s", fn.c_str());
+            printf("Deleting file : %s\n", fn.c_str());
             /* Delete file */
             unlink(fn.c_str());
         }
