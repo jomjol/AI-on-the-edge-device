@@ -223,6 +223,7 @@ jobs:
       - name: Prepare artifacts for release
         run: |
           mkdir -p firmware
+          rm -rf firmware/*
           mkdir -p release
           # copy builds to firmware folder
           cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
