@@ -162,10 +162,6 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
           ./dist
         key: ${{ github.run_number }}-pack-for-OTA-v2
 
@@ -230,90 +226,90 @@ jobs:
     needs: [pack-for-OTA-v2, pack-for-fresh-install]
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Get generated files from cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ./code/.pio/build/esp32cam/firmware.bin
-            ./code/.pio/build/esp32cam/partitions.bin
-            ./code/.pio/build/esp32cam/bootloader.bin
-            ./sd-card/html/version.txt
-          key: ${{ github.run_number }}
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
 
-      # import the changes from 
-      - name: Get generated files from cache
-        uses: actions/cache@v3
-        with:
-          path: |
-             ./dist
-          key: ${{ github.run_number }}-pack-for-OTA-v2
+    # import the changes from 
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+            ./dist
+        key: ${{ github.run_number }}-pack-for-OTA-v2
 
-     # import cached artifacts from pack-for-fresh-install
-     - name: Get generated files from cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ./firmware
-          key: ${{ github.run_number }}-pack-for-fresh-install
+    # import cached artifacts from pack-for-fresh-install
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./firmware
+        key: ${{ github.run_number }}-pack-for-fresh-install
 
-      - name: Set Variables
-        id: vars
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
 
-      - name: Prepare artifacts for release
-        run: |
-          mkdir -p release
-          # create a update.zip like "update__rolling"
-          cd ./dist
-          zip -r ../release/update.zip .
-          cd ../firmware
-          zip -r ../release/initial_esp32_setup.zip .
-          
-          
-      # extract the version used in next step
-      - id: get_version
-        if: startsWith(github.ref, 'refs/tags/') 
-        uses: battila7/get-version-action@v2
+    - name: Prepare artifacts for release
+      run: |
+        mkdir -p release
+        # create a update.zip like "update__rolling"
+        cd ./dist
+        zip -r ../release/update.zip .
+        cd ../firmware
+        zip -r ../release/initial_esp32_setup.zip .
+        
+        
+    # extract the version used in next step
+    - id: get_version
+      if: startsWith(github.ref, 'refs/tags/') 
+      uses: battila7/get-version-action@v2
 
-      # the changelog [unreleased] will now be changed to the release version
-      - name: Update changelog
-        uses: thomaseizinger/keep-a-changelog-new-release@v1
-        if: startsWith(github.ref, 'refs/tags/') 
-        with:
-          changelogPath: Changelog.md
-          version: ${{ steps.get_version.outputs.version-without-v }}
-              
-      # the release notes will be extracted from changelog 
-      - name: Extract release notes
-        id: extract-release-notes
-        if: startsWith(github.ref, 'refs/tags/') 
-        uses: ffurrer2/extract-release-notes@v1
-        with:
-            changelog_file: Changelog.md
+    # the changelog [unreleased] will now be changed to the release version
+    - name: Update changelog
+      uses: thomaseizinger/keep-a-changelog-new-release@v1
+      if: startsWith(github.ref, 'refs/tags/') 
+      with:
+        changelogPath: Changelog.md
+        version: ${{ steps.get_version.outputs.version-without-v }}
             
+    # the release notes will be extracted from changelog 
+    - name: Extract release notes
+      id: extract-release-notes
+      if: startsWith(github.ref, 'refs/tags/') 
+      uses: ffurrer2/extract-release-notes@v1
+      with:
+          changelog_file: Changelog.md
+          
 
-      # Releases should only be created on master by tagging the last commit.
-      # all artifacts in firmware folder pushed to the release
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          name:  ${{ steps.get_version.outputs.version-without-v }}
-          body: ${{ steps.extract-release-notes.outputs.release_notes }}
-          files: |
-            release/*   
-            
+    # Releases should only be created on master by tagging the last commit.
+    # all artifacts in firmware folder pushed to the release
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        name:  ${{ steps.get_version.outputs.version-without-v }}
+        body: ${{ steps.extract-release-notes.outputs.release_notes }}
+        files: |
+          release/*   
+          
 
-      # Commit&Push Changelog to master branch. Must be manually merged back to rolling
-      - name: Commit changes and push changes
-        if: startsWith(github.ref, 'refs/tags/') 
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add Changelog.md
-          git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
-          git push origin HEAD:master
+    # Commit&Push Changelog to master branch. Must be manually merged back to rolling
+    - name: Commit changes and push changes
+      if: startsWith(github.ref, 'refs/tags/') 
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add Changelog.md
+        git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
+        git push origin HEAD:master
