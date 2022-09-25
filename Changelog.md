@@ -1,15 +1,18 @@
 # Changelog
 
 ## [Unreleased]
+
+## [11.4.2] - 2022-09-25
+
 ### Added
 
-- automatic release creation
-- newest firmware of rolling branch now uploaded to <https://github.com/jomjol/AI-on-the-edge-device/actions>
-- #1068 new safer and easier update mechanismn. Use only the update.zip of the release for firmware, html and new models. 
+-   automatic release creation
+-   newest firmware of rolling branch now uploaded to <https://github.com/jomjol/AI-on-the-edge-device/actions>
+-   \#1068 new safer and easier update mechanismn. Use only the update.zip of the release for firmware, html and new models. 
 
 ### Fixed
 
-- #1029 wrong change of checkDigitConsistency now working like releases before 11.3.1 
+-   \#1029 wrong change of checkDigitConsistency now working like releases before 11.3.1 
 
 ## [10.6.2] - (2022-07-24)
 
@@ -566,6 +569,8 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/haverland/AI-on-the-edge-device/compare/11.3.9...HEAD
+[Unreleased]: https://github.com/haverland/AI-on-the-edge-device/compare/11.4.2...HEAD
+
+[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.2
 
 [11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.3.9
