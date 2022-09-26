@@ -303,7 +303,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     LogFile.WriteToFile("handler_ota_update");    
     char _query[200];
-    char _filename[30];
+    char _filename[100];
     char _valuechar[30];    
     std::string fn = "/sdcard/firmware/";
     bool _file_del = false;
@@ -319,12 +319,12 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             _task = std::string(_valuechar);
         }
 
-        if (httpd_query_key_value(_query, "file", _filename, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "file", _filename, 100) == ESP_OK)
         {
             fn.append(_filename);
             printf("File: "); printf(fn.c_str()); printf("\n");            
         }
-        if (httpd_query_key_value(_query, "delete", _filename, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "delete", _filename, 100) == ESP_OK)
         {
             fn.append(_filename);
             _file_del = true;
