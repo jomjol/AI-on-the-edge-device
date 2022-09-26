@@ -26,7 +26,7 @@
 
 ### Removed
 - Remove `/firmware` from GitHub. 
-  - If you want to get the latest firmware and html files, please download from the automated (build action)[https://github.com/jomjol/AI-on-the-edge-device/actions] or (release page)[https://github.com/jomjol/AI-on-the-edge-device/releases]
+  - If you want to get the latest firmware and html files, please download from the automated [build action](https://github.com/jomjol/AI-on-the-edge-device/actions) or [release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
 
 ## [11.3.1] - (2022-09-17)
 Intermediate Digits
