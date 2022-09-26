@@ -11,6 +11,7 @@
   - using the update.zip from release page <https://github.com/jomjol/AI-on-the-edge-device/releases>
   - status (upload, processing, ...) displayed
   - auto suggestion for reboot (or not in case of web ui update only)
+  - Best for OTA use Firefox. Chrome works with warnings. Safari stuck in upload.
 
 ### Changed
 - Integrated version info better into the html (main page, logfile)
