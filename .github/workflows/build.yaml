@@ -268,7 +268,9 @@ jobs:
         zip -r ../release/update.zip .
         cd ../firmware
         zip -r ../release/initial_esp32_setup.zip .
-        
+        cd ../sd-card/html
+        zip -r ../../firmware/html-from-11.3.1.zip .
+
         
     # extract the version used in next step
     - id: get_version
@@ -301,7 +303,9 @@ jobs:
         name:  ${{ steps.get_version.outputs.version-without-v }}
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
-          release/*   
+          release/*
+          firmware/firmware.bin
+          firmware/html-from-11.3.1.zip   
           
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling
