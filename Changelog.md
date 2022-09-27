@@ -8,8 +8,7 @@
 
 1. You should update to `11.3.1` before you update to `12.0.0` or later!. All other migration paths are not tested and might need re-installation through USB!
 2. Upload the `firmware.bin` from this release. 
-3. Flash the firmware
-4. **Do NOT reboot**
+3. Flash the firmware **Do NOT reboot, althrough the Web Interface tells you to do so!**
 5. Upload the `html-from-11.3.1.zip` 
 6. Update the Web Interface.
 7. Now you can reboot.
