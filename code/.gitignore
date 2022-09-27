@@ -4,3 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 version.cpp
+sdkconfig.esp32cam

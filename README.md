@@ -40,6 +40,11 @@ There is a growing [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) 
 
 Head there to get a start, set it up and configure it.
 
+There are also a articles in the German Heise magazine "make:" about the setup and the technical background (!not for free!)
+
+*  [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
+* Background [Neural Networks](https://www.heise.de/select/make/2021/6/2126410443385102621), [Training Neural Networks](https://www.heise.de/select/make/2022/1/2134114065999161585) and [Programming on the ESP32](https://www.heise.de/select/make/2022/2/2204010051597422030) 
+
 ## Download
 The latest available version is available on the [Releases page](https://github.com/jomjol/AI-on-the-edge-device/releases).
 
@@ -71,6 +76,11 @@ In other cases you can contact the developer via email: <img src="https://raw.gi
 **General remark:** Besides the file `firmware.bin`, typically the content of `/html` will need to be updated!
 
 ------
+
+##### Rolling (2022-09-27)
+
+- Internal improvements
+- Bug fix: html update page
 
 ##### Rolling (2022-09-24)
 
