@@ -6,12 +6,14 @@
 
 **Make sure to read the instructions below carfully!**.
 
-1. You should update to `11.3.1` before you update to `12.0.0` or later!. All other migration paths are not tested and might need re-installation through USB!
-2. Upload the `firmware.bin` from this release. 
-3. Flash the firmware **Do NOT reboot, althrough the Web Interface tells you to do so!**
-5. Upload the `html-from-11.3.1.zip` 
-6. Update the Web Interface.
-7. Now you can reboot.
+1.) Backup your configuration!
+2.) You should update to 11.3.1 before you update to this release. All other are not tested. 
+    Rolling junger than 11.3.1 can also be used, but no guaranty.
+3.) Upload and update the firmware.bin file from this release. **but do not reboot**
+4.) Upload the html-from-11.3.1.zip in html upload and update the web interface.
+5.) Now you can reboot.
+
+If anything bricks you can use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
