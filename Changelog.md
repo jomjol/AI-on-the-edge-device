@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-The release breaks a few things in ota update. So **read the update from version 11.3.1 carefully**.
+:bangbang: The release breaks a few things in ota update :bangbang:
+
+**Make sure to read the instructions below carfully!**.
 
 1.) Backup your configuration!
 2.) You should update to 11.3.1 before you update to this release. All other are not tested. 
@@ -15,37 +17,36 @@ If anything bricks you can use the initial_esp32_setup.zip ( <https://github.com
 
 ### Added
 
--   automatic release creation
--   newest firmware of rolling branch now uploaded to <https://github.com/jomjol/AI-on-the-edge-device/actions> (developers only)
-- \#1068 New update mechanism: 
-  - handling of all files (zip, tfl, tflite, bin) within in one updload
-  - using the update.zip from release page <https://github.com/jomjol/AI-on-the-edge-device/releases>
-  - status (upload, processing, ...) displayed
-  - auto suggestion for reboot (or not in case of web ui update only)
-  - Best for OTA use Firefox. Chrome works with warnings. Safari stuck in upload.
+- Automatic release creation
+- Newest firmware of rolling branch now automatically build and provided in [Github Actions Output](https://github.com/jomjol/AI-on-the-edge-device/actions) (developers only)
+- [\#1068](https://github.com/jomjol/AI-on-the-edge-device/issues/1068) New update mechanism: 
+  - Handling of all files (`zip`, `tfl`, `tflite`, `bin`) within in one common update interface
+  - Using the `update.zip` from the [Release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
+  - Status (`upload`, `processing`, ...) displayed on Web Interface
+  - Automatical detection and suggestion for reboot where needed (Web Interface uupdates only need a page refresh)
+  - :bangbang: Best for OTA use Firefox. Chrome works with warnings. Safari stuck in upload.
 
 ### Changed
-- Integrated version info better into the html (main page, logfile)
-- Updated menue 
-- Update tflite, esp32-cam-master, esp-nn (as of today 20220924) 
+- Integrated version info better shown on the Info page and in the log
+- Updated menu
+- Update used libraries (`tflite`, `esp32-cam`, `esp-nn`, as of 20220924) 
 ### Fixed
 
-- \#1029 wrong change of checkDigitConsistency now working like releases before 11.3.1 
+- [\#1029](https://github.com/jomjol/AI-on-the-edge-device/issues/1029) wrong change of `checkDigitConsistency` now working like releases before `11.3.1` 
 - Spelling corrections (**[cristianmitran](https://github.com/cristianmitran)**) 
-- Integrated version info better into the html (main page, logfile)
 
 
 ### Removed
-- Remove `/firmware` from GitHub. 
-  - If you want to get the latest firmware and html files, please download from the automated [build action](https://github.com/jomjol/AI-on-the-edge-device/actions) or [release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
+- Remove the folder `/firmware` from GitHub repository. 
+  If you want to get the latest `firmware.bin` and `html.zip` files, please download from the automated [build action](https://github.com/jomjol/AI-on-the-edge-device/actions) or [release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
 
 ## [11.3.1] - (2022-09-17)
 Intermediate Digits
 
 - **ATTENTION**: 
-  - first update the 'firmware.bin' and ensure that the new version is running
+  - first update the `firmware.bin` and ensure that the new version is running
 
-  - Only afterwards update the 'html.zip'
+  - Only afterwards update the `html.zip`
   
   - Otherwise the downwards compatibility of the new counter clockwise feature is not given and you end in a reboot loop, that needs manual flashing!
   
