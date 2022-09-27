@@ -168,6 +168,8 @@ function upload() {
         alert("No file selected!");
     } else if (filePath.length == 0) {
         alert("File path on server is not set!");
+    } else if (filePath.length > 100) {
+        alert("Filename is to long! Max 100 characters.");
     } else if (filePath.indexOf(' ') >= 0) {
         alert("File path on server cannot have spaces!");
     } else if (filePath[filePath.length-1] == '/') {
@@ -199,35 +201,36 @@ function upload() {
         xhttp.open("POST", upload_path, false);
         document.getElementById("status").innerText = "Status: uploading";
         xhttp.send(file);
+    
+
+        document.getElementById("status").innerText = "Status: processing on ESP32";
+
+        var xhttp = new XMLHttpRequest();
+        /* first delete the old firmware */	
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4) {
+                if (xhttp.status == 200) {
+                    if (xhttp.responseText.startsWith("reboot"))
+                    {
+                        doReboot();
+                    }
+                    else
+                    {
+                        alert("Processing done!\n\n" + xhttp.responseText);
+                    }
+                } else if (xhttp.status == 0) {
+                    alert("Server closed the connection abruptly!");
+                    UpdatePage();
+                } else {
+                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    UpdatePage();
+                }
+            }
+        };
+        var _toDo = basepath + "/ota?task=update&file=" + filePath;
+        xhttp.open("GET", _toDo, false);
+        xhttp.send();
     }
-
-    document.getElementById("status").innerText = "Status: processing on ESP32";
-
-	var xhttp = new XMLHttpRequest();
-	/* first delete the old firmware */	
-	xhttp.onreadystatechange = function() {
-		if (xhttp.readyState == 4) {
-			if (xhttp.status == 200) {
-                if (xhttp.responseText.startsWith("reboot"))
-                {
-                    doReboot();
-                }
-                else
-                {
-                    alert("Processing done!\n\n" + xhttp.responseText);
-                }
-			} else if (xhttp.status == 0) {
-				alert("Server closed the connection abruptly!");
-				UpdatePage();
-			} else {
-				alert(xhttp.status + " Error!\n" + xhttp.responseText);
-				UpdatePage();
-			}
-		}
-	};
-    var _toDo = basepath + "/ota?task=update&file=" + filePath;
-	xhttp.open("GET", _toDo, false);
-	xhttp.send();
 	/* ----------------------------- */
 
     document.getElementById("reboot").disabled = false;

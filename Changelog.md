@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+The release breaks a few things in ota update. So **read the update from version 11.3.1 carefully**.
+
+1.) You should update to 11.3.1 before you update to this release. All other are not tested.
+2.) Upload and update the firmware.bin file from this release. **but do not reboot**
+3.) Upload the html-from-11.3.1.zip in html upload and update the web interface.
+4.) Now you can reboot.
 ### Added
 
 -   automatic release creation
@@ -11,6 +17,7 @@
   - using the update.zip from release page <https://github.com/jomjol/AI-on-the-edge-device/releases>
   - status (upload, processing, ...) displayed
   - auto suggestion for reboot (or not in case of web ui update only)
+  - Best for OTA use Firefox. Chrome works with warnings. Safari stuck in upload.
 
 ### Changed
 - Integrated version info better into the html (main page, logfile)
@@ -25,7 +32,7 @@
 
 ### Removed
 - Remove `/firmware` from GitHub. 
-  - If you want to get the latest firmware and html files, please download from the automated (build action)[https://github.com/jomjol/AI-on-the-edge-device/actions] or (release page)[https://github.com/jomjol/AI-on-the-edge-device/releases]
+  - If you want to get the latest firmware and html files, please download from the automated [build action](https://github.com/jomjol/AI-on-the-edge-device/actions) or [release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
 
 ## [11.3.1] - (2022-09-17)
 Intermediate Digits
