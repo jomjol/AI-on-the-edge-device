@@ -18,7 +18,7 @@
 
 - Automatic release creation
 - Newest firmware of rolling branch now automatically build and provided in [Github Actions Output](https://github.com/jomjol/AI-on-the-edge-device/actions) (developers only)
-- New update mechanism: 
+- [\#1068](https://github.com/jomjol/AI-on-the-edge-device/issues/1068) New update mechanism: 
   - Handling of all files (`zip`, `tfl`, `tflite`, `bin`) within in one common update interface
   - Using the `update.zip` from the [Release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
   - Status (`upload`, `processing`, ...) displayed on Web Interface
