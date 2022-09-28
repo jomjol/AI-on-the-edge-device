@@ -12,6 +12,8 @@ Thank you for taking your time to report a bug.
 Before you proceed, please check:
 - Do you use the latest version? See https://github.com/jomjol/AI-on-the-edge-device/releases.
 - Is there already another similar issue? Check for open and closed Issue in https://github.com/jomjol/AI-on-the-edge-device/issues.
+- Are instructions in the readme solving your issue (https://github.com/jomjol/AI-on-the-edge-device/tree/master#readme)?
+- Are instructions in the wiki solving your issue? (https://github.com/jomjol/AI-on-the-edge-device/wiki)?
 
 **Describe the bug**
 A clear and concise description of what the bug is.
