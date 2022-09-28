@@ -193,13 +193,13 @@ function upload() {
     var upload_path = "/upload/firmware/" + filePath;
 
     xhttp.open("POST", upload_path, true);
-    document.getElementById("status").innerText = "Status: Uploading (takes up to 30s)...";
+    document.getElementById("status").innerText = "Status: Uploading (takes up to 60s)...";
     xhttp.send(file);
 }
 
 
 function extract() {
-    document.getElementById("status").innerText = "Status: Processing on ESP32 (takes up to 2 minutes)...";
+    document.getElementById("status").innerText = "Status: Processing on ESP32 (takes up to 3 minutes)...";
 
     var xhttp = new XMLHttpRequest();
     /* first delete the old firmware */	
