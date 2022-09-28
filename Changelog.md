@@ -6,14 +6,16 @@
 
 **Make sure to read the instructions below carfully!**.
 
-1.) Backup your configuration!
-2.) You should update to 11.3.1 before you update to this release. All other are not tested. 
-    Rolling junger than 11.3.1 can also be used, but no guaranty.
-3.) Upload and update the firmware.bin file from this release. **but do not reboot**
-4.) Upload the html-from-11.3.1.zip in html upload and update the web interface.
-5.) Now you can reboot.
+1. Backup your configuration (use the `System > Backup/Restore` page)!
+2. You should update to `11.3.1` before you update to this release. All other migrations are not tested. 
+    Rolling newer than `11.3.1` can also be used, but no guaranty.
+3. Upload and update the `firmware.bin` file from this release. **but do not reboot**
+4. Upload the `html-from-11.3.1.zip` in html upload and update the web interface.
+5. Now you can reboot.
 
-If anything bricks you can use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+If anything bricks you can try to
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
