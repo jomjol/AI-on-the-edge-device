@@ -375,7 +375,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             }
             else
             {
-                zw = "HTML Update Successfull! No reboot necessary.\n";
+                zw = "Web Interface Update Successfull!\nNo reboot necessary.\n";
                 httpd_resp_sendstr_chunk(req, zw.c_str());
                 httpd_resp_sendstr_chunk(req, NULL);  
                 return ESP_OK;        
@@ -409,7 +409,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         }
 
 
-        std::string zw = "Update failed - no valid file specified (zip, bin, tfl, tlite)";
+        std::string zw = "Update failed - no valid file specified (zip, bin, tfl, tlite)!";
         httpd_resp_sendstr_chunk(req, zw.c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
@@ -427,7 +427,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         delete_all_in_directory(out);
 
         unzip(in, out+"/");
-        zw = "HTML Update Successfull!\nNo reboot necessary";
+        zw = "Web Interface Update Successfull!\nNo reboot necessary";
         httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        

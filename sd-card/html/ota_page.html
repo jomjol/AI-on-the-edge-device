@@ -5,6 +5,7 @@
 <title>OTA Update</title>
 <meta charset="utf-8">
 
+<script type="text/javascript" src="./gethost.js"></script> 
 <style>
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em;}
@@ -36,6 +37,7 @@ web interface (<i><span style="font-family:monospace">html__*.zip</span></i>). H
     web interface at the same time!</p>
 <hr>
 <h2>Update</h2>
+<b>Do not reload the page or switch to another page while the update is in progress!</b>
 <table class="fixed" border="0">
     <tr>
         <p>
@@ -54,20 +56,15 @@ web interface (<i><span style="font-family:monospace">html__*.zip</span></i>). H
     </tr>
     <tr>
         <p>
-            <button class="button" id="doUpdate" type="button" onclick="upload()">Do upload and update<br>(incl. reboot - if needed)</button>
+            <button class="button" style="width:300px" id="doUpdate" type="button" onclick="prepareOnServer()">Upload and update<br>(incl. reboot - if needed)</button>
         </p>
     </tr>
     <tr>
         <p>
-            <h3><div id="status">Status: idle</div></h3>
+            <h3><span id="status">Status: idle</span> <span id="progress"></span></h3>
         </p>
     </tr>
 </table>
-<h2>Reboot</h2>
-			<button class="button" id="reboot" type="button" onclick="doReboot()">Manual reboot</button>
-<hr>
-
-<script type="text/javascript" src="./gethost.js"></script> 
 
 
 <script language="JavaScript">
@@ -75,43 +72,24 @@ web interface (<i><span style="font-family:monospace">html__*.zip</span></i>). H
 var basepath = "http://192.168.178.26";
 
 
+/* Max size of an individual file. Make sure this
+* value is same as that set in server_file.c */
+var MAX_FILE_SIZE = 8000*1024;
+var MAX_FILE_SIZE_STR = "8MB";
+
+var action_runtime = 0;
+var progressTimerHandle = null;
+
+
 function init(){
     basepath = getbasepath();
 
-//    document.getElementById("reboot").disabled = true;
     document.getElementById("doUpdate").disabled = true;
 }
 
-function doUpdate() {
-	if (confirm("Are you sure to update the firmware?")) {
-		var stringota = "/ota?file=firmware.bin";
-        document.getElementById("doUpdate").disabled = true;
-        
-        var xhttp = new XMLHttpRequest();
-	
-        xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4) {
-                if (xhttp.status == 200) {
-                    document.getElementById("reboot").disabled = false;
-                    alert("Flash successfull - Reboot necessary to make changes active.");
-                    /* keine Reaktion, damit sich das Dokument nicht ändert */
-                } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
-                    UpdatePage();
-                } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    UpdatePage();
-                }
-            }
-        };
-        xhttp.open("GET", stringota, true);
-        xhttp.send();        
-	}
-}
 
-
-function doReboot() {
-	if (confirm("Are you sure you want to reboot the ESP32?")) {
+function doRebootAfterUpdate() {
+	if (confirm("Update completed!\nThe ESP32 will reboot now!")) {
 		var stringota = "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
@@ -120,126 +98,165 @@ function doReboot() {
 	}
 }
 
+
 function setpath() {
     var nameneu = document.getElementById("newfile").value;
     nameneu = nameneu.split(/[\\\/]/).pop();
     document.getElementById("doUpdate").disabled = false;
-    document.getElementById("status").innerText = "Status: file selected";
+    document.getElementById("status").innerText = "Status: File selected";
 }
 
 
-function upload() {
-    document.getElementById("reboot").disabled = true;
+function prepareOnServer() {
+    var fileInput = document.getElementById("newfile").files;
+    var nameneu = document.getElementById("newfile").value;
+    filePath = nameneu.split(/[\\\/]/).pop();
+
+    if (fileInput.length == 0) {
+        alert("No file selected!");
+        return;
+    } else if (filePath.length == 0) {
+        alert("File path on server is not set!");
+        return;
+    } else if (filePath.length > 100) {
+        alert("Filename is to long! Max 100 characters.");
+        return;
+    } else if (filePath.indexOf(' ') >= 0) {
+        alert("File path on server cannot have spaces!");
+        return;
+    } else if (filePath[filePath.length-1] == '/') {
+        alert("File name not specified after path!");
+        return;
+    } else if (fileInput[0].size > MAX_FILE_SIZE) {
+        alert("File size must be less than " + MAX_FILE_SIZE_STR + "!");
+        return;
+    }
+
+    document.getElementById("status").innerText = "Status: Preparations on ESP32";
     document.getElementById("doUpdate").disabled = true;
 
 	var xhttp = new XMLHttpRequest();
 
     var nameneu = document.getElementById("newfile").value;
     filePath = nameneu.split(/[\\\/]/).pop();
-    var upload_path = "/upload/firmware/" + filePath;
-    var fileInput = document.getElementById("newfile").files;
 
 	/* first delete the old firmware */	
 	xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4) {
+            stopProgressTimer();
 			if (xhttp.status == 200) {
 				/* keine Reaktion, damit sich das Dokument nicht ändert */
+                upload();
 			} else if (xhttp.status == 0) {
 				alert("Server closed the connection abruptly!");
-				UpdatePage();
+                document.getElementById("doUpdate").disabled = false;
 			} else {
 				alert(xhttp.status + " Error!\n" + xhttp.responseText);
-				UpdatePage();
+                document.getElementById("doUpdate").disabled = false;
 			}
 		}
 	};
+
+    startProgressTimer("Server preparations...");
+
     var _toDo = basepath + "/ota?delete=" + filePath;
-	xhttp.open("GET", _toDo, false);
+	xhttp.open("GET", _toDo, true);
 	xhttp.send();
-	/* ----------------------------- */
-	
+}
 
-    /* Max size of an individual file. Make sure this
-     * value is same as that set in server_file.c */
-    var MAX_FILE_SIZE = 8000*1024;
-    var MAX_FILE_SIZE_STR = "8MB";
 
-    if (fileInput.length == 0) {
-        alert("No file selected!");
-    } else if (filePath.length == 0) {
-        alert("File path on server is not set!");
-    } else if (filePath.length > 100) {
-        alert("Filename is to long! Max 100 characters.");
-    } else if (filePath.indexOf(' ') >= 0) {
-        alert("File path on server cannot have spaces!");
-    } else if (filePath[filePath.length-1] == '/') {
-        alert("File name not specified after path!");
-    } else if (fileInput[0].size > MAX_FILE_SIZE) {
-        alert("File size must be less than " + MAX_FILE_SIZE_STR + "!");
-    } else {
-        document.getElementById("newfile").disabled = true;
-		
-        xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4) {
-                if (xhttp.status == 200) {
+function upload() {
+    document.getElementById("newfile").disabled = true;
+    
+	var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == 4) {
+            stopProgressTimer();
+            if (xhttp.status == 200) {
 //					alert("Upload successfull!")
 //                    document.reload();
-                    document.getElementById("reboot").disabled = false;
-                    document.getElementById("doUpdate").disabled = false;
-                } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
-                    UpdatePage();
-                } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    UpdatePage();
-                }
+                extract();
+            } else if (xhttp.status == 0) {
+                alert("Server closed the connection abruptly!");
+                document.getElementById("doUpdate").disabled = false;
+            } else {
+                alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                document.getElementById("doUpdate").disabled = false;
             }
-        };
-		
-
-        var file = fileInput[0];
-        xhttp.open("POST", upload_path, false);
-        document.getElementById("status").innerText = "Status: uploading";
-        xhttp.send(file);
+        }
+    };
     
+    startProgressTimer("Upload");
 
-        document.getElementById("status").innerText = "Status: processing on ESP32";
+    var fileInput = document.getElementById("newfile").files;
+    var file = fileInput[0];
+    var upload_path = "/upload/firmware/" + filePath;
 
-        var xhttp = new XMLHttpRequest();
-        /* first delete the old firmware */	
-        xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4) {
-                if (xhttp.status == 200) {
-                    if (xhttp.responseText.startsWith("reboot"))
-                    {
-                        doReboot();
-                    }
-                    else
-                    {
-                        alert("Processing done!\n\n" + xhttp.responseText);
-                    }
-                } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
-                    UpdatePage();
-                } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                    UpdatePage();
-                }
-            }
-        };
-        var _toDo = basepath + "/ota?task=update&file=" + filePath;
-        xhttp.open("GET", _toDo, false);
-        xhttp.send();
-    }
-	/* ----------------------------- */
-
-    document.getElementById("reboot").disabled = false;
-    document.getElementById("doUpdate").disabled = true;
-    document.getElementById("newfile").disabled = false;
-
-
-
+    xhttp.open("POST", upload_path, true);
+    document.getElementById("status").innerText = "Status: Uploading (takes up to 30s)...";
+    xhttp.send(file);
 }
+
+
+function extract() {
+    document.getElementById("status").innerText = "Status: Processing on ESP32 (takes up to 2 minutes)...";
+
+    var xhttp = new XMLHttpRequest();
+    /* first delete the old firmware */	
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == 4) {
+            stopProgressTimer();
+            if (xhttp.status == 200) {
+                document.getElementById("status").innerText = "Status: Update completed!";
+                document.getElementById("doUpdate").disabled = true;
+                document.getElementById("newfile").disabled = false;
+
+                if (xhttp.responseText.startsWith("reboot"))
+                {
+                    doRebootAfterUpdate();
+                }
+                else
+                {
+                    alert("Processing done!\n\n" + xhttp.responseText);
+                }
+            } else if (xhttp.status == 0) {
+                alert("Server closed the connection abruptly!");
+                UpdatePage();
+            } else {
+                alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                UpdatePage();
+            }
+        }
+    };
+
+    startProgressTimer("Extraction");
+
+
+    var nameneu = document.getElementById("newfile").value;
+    filePath = nameneu.split(/[\\\/]/).pop();
+    var _toDo = basepath + "/ota?task=update&file=" + filePath;
+    xhttp.open("GET", _toDo, true);
+    xhttp.send();
+}
+
+
+function startProgressTimer(step) {     
+    console.log(step + "...");
+    document.getElementById('progress').innerHTML = "(0s)";
+    action_runtime = 0;    
+    progressTimerHandle = setInterval(function() {
+        action_runtime += 1;
+        console.log("Progress: " + action_runtime + "s");  
+        document.getElementById('progress').innerHTML = "(" + action_runtime + "s)";
+    }, 1000);
+}
+
+
+function stopProgressTimer() {            
+    clearInterval(progressTimerHandle);
+    document.getElementById('progress').innerHTML = "";
+}
+
 
 init();
 
