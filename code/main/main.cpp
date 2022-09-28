@@ -34,6 +34,9 @@ extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
 extern const char* BUILD_TIME;
 
+
+#define __HIDE_PASSWORD
+
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
 
@@ -165,7 +168,12 @@ extern "C" void app_main(void)
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
 
     if (ssid != NULL && passwd != NULL)
+#ifdef __HIDE_PASSWORD
+        printf("\nWLan: %s, XXXXXX\n", ssid);
+#else
         printf("\nWLan: %s, %s\n", ssid, passwd);
+#endif        
+
     else
         printf("No SSID and PASSWORD set!!!");
 

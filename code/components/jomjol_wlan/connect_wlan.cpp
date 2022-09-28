@@ -20,6 +20,8 @@
 #include <sstream>
 #include <iostream>
 
+#define __HIDE_PASSWORD
+
 
 
 #define EXAMPLE_ESP_MAXIMUM_RETRY  1000
@@ -247,11 +249,17 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */
     if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID: %s, password:%s",
-                 _ssid, _password);
+#ifdef __HIDE_PASSWORD
+        ESP_LOGI(TAG, "connected to ap SSID: %s, password: XXXXXXX", _ssid);
+#else
+        ESP_LOGI(TAG, "connected to ap SSID: %s, password: %s", _ssid, _password);
+#endif        
     } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID: %s, password:%s",
-                 _ssid, _password);
+#ifdef __HIDE_PASSWORD
+        ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: XXXXXXXX", _ssid);
+#else
+        ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: %s", _ssid, _password);
+#endif        
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }

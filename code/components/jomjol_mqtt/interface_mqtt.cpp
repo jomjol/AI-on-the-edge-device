@@ -5,6 +5,8 @@
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
 
+#define __HIDE_PASSWORD
+
 static const char *TAG_INTERFACEMQTT = "interface_mqtt";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
@@ -21,30 +23,6 @@ esp_mqtt_client_handle_t client = NULL;
 
 bool MQTTPublish(std::string _key, std::string _content, int retained_flag){
   
-  //  if (!client) {
-  //      LogFile.WriteToFile("MQTT - client not initialized!");  
-  //      return false;      
-  //  }
-  //  LogFile.WriteToFile("MQTT - client initialized!");  // Debug
-  //
-  //  if (!mqtt_connected) {
-  //      LogFile.WriteToFile("MQTT - Can not publish, not connected!");
-  //      ESP_LOGW(TAG_INTERFACEMQTT, "Problem with Publish, client=%d, mqtt_connected %d", (int) client, (int) mqtt_connected);
-  //      return false;            
-  //  }
-  //  LogFile.WriteToFile("MQTT - connected!");  // Debug
-
- /*   if (client && mqtt_connected) {
-        LogFile.WriteToFile("MQTT - connected!");  // Debug
-    }
-    else { // init needed
-        if (!MQTTInit(this->uri, this->clientname, this->user, password, mainerrortopic, keepAlive)) // validate{
-        { // Failed
-            return false;
-        }
-    }*/
-
-
     int msg_id;
     std::string zw;
     msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
@@ -147,7 +125,12 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
     if (_user.length() && _password.length()){
         mqtt_cfg.username = _user.c_str();
         mqtt_cfg.password = _password.c_str();
+
+#ifdef __HIDE_PASSWORD
+        ESP_LOGI(TAG_INTERFACEMQTT, "Connect to MQTT: %s, XXXXXXXX", mqtt_cfg.username);
+#else
         ESP_LOGI(TAG_INTERFACEMQTT, "Connect to MQTT: %s, %s", mqtt_cfg.username, mqtt_cfg.password);
+#endif        
     };
 
     MQTTdestroy();

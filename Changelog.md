@@ -34,6 +34,7 @@ If anything bricks you can try to
 - Update used libraries (`tflite`, `esp32-cam`, `esp-nn`, as of 20220924) 
 ### Fixed
 
+- [\#1092](https://github.com/jomjol/AI-on-the-edge-device/issues/1092) censor passwords in log outputs 
 - [\#1029](https://github.com/jomjol/AI-on-the-edge-device/issues/1029) wrong change of `checkDigitConsistency` now working like releases before `11.3.1` 
 - Spelling corrections (**[cristianmitran](https://github.com/cristianmitran)**) 
 
