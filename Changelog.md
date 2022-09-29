@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-Improve **u**ser e**x**perience
+Improve **u**ser e**x**perience 
 
 :bangbang: The release breaks a few things in ota update :bangbang:
 
