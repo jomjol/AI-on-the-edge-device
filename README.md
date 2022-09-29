@@ -73,7 +73,7 @@ If you have any technical topics, you can file a issue in this repository.
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25"> 
 
 ## Changes and History 
-see [Changelog.md]
+See [Changelog](Changelog.md)
 
 ## Tools
 
