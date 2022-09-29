@@ -109,7 +109,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         return false;
 
     fgets(zw, 1024, pFile);
-    printf("Read Zeile Prevalue.ini: %s", zw);
+    printf("Read line Prevalue.ini: %s", zw);
     zwtime = trim(std::string(zw));
     if (zwtime.length() == 0)
         return false;
@@ -160,7 +160,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 _done = true;
             else
             {
-                printf("Read Zeile Prevalue.ini: %s", zw);
+                printf("Read line Prevalue.ini: %s", zw);
                 zerlegt = HelperZerlegeZeile(trim(std::string(zw)), "\t");
                 if (zerlegt.size() > 1)
                 {
@@ -922,7 +922,6 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
         printf("checkDigitConsistency: pot=%d, decimalshift=%d\n", pot, _decilamshift);
     #endif
     pot_max = ((int) log10(input)) + 1;
-    float not_checked_input = floorf(input * pow(10, pot)) / pow(10, pot);
     #ifdef SERIAL_DEBUG
         printf("checkDigitConsistency: not_checked_input=%f\n", not_checked_input);
     #endif
@@ -960,7 +959,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
         pot++;
     }
 
-    return not_checked_input + input;
+    return input;
 }
 
 string ClassFlowPostProcessing::getReadoutRate(int _number)

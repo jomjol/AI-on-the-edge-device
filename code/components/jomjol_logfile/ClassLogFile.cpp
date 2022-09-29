@@ -114,7 +114,7 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
     if (stat(logroot.c_str(), &path_stat) != 0) {
         ESP_LOGI(TAG, "Create log folder: %s", logroot.c_str());
         if (mkdir_r(logroot.c_str(), S_IRWXU) == -1)  {
-            ESP_LOGI(TAG, "Can't create log foolder");
+            ESP_LOGI(TAG, "Can't create log folder");
         }
     }
 */

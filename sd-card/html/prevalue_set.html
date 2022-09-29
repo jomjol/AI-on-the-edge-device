@@ -42,9 +42,6 @@ input[type=number] {
 
 <class id="Numbers_text" style="font-size: 120%; color:black;"><b>Choose Number: </b>
 <select id="Numbers_value1" onchange="numberChanged()">
-	<option value="0" selected>default</option>
-	<option value="1" >NT</option>
-	<option value="2" >HT</option>
 </select>
 </class>
 
@@ -110,6 +107,7 @@ function loadPrevalue(_basepath) {
           xhttp.send();
           response = xhttp.responseText;
           document.getElementById("prevalue").innerHTML=response;
+          document.getElementById("myInput").value=response;
      }
      catch (error)
      {

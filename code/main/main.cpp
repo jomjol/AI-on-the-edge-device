@@ -29,6 +29,14 @@
 #include "server_camera.h"
 #include "Helper.h"
 
+extern const char* GIT_TAG;
+extern const char* GIT_REV;
+extern const char* GIT_BRANCH;
+extern const char* BUILD_TIME;
+
+
+#define __HIDE_PASSWORD
+
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
 
@@ -82,7 +90,7 @@ bool Init_NVS_SDCard()
     // formatted in case when mounting fails.
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 5,
+        .max_files = 7,                         // anstatt 5 (2022-09-21)
         .allocation_unit_size = 16 * 1024
     };
 
@@ -133,12 +141,18 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
+    string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
+            "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
+
+    printf("=============================================================================================\n");
+    printf("%s\n", versionFormated.c_str());
+    printf("=============================================================================================\n");
 
     PowerResetCamera();
     esp_err_t cam = Camera.InitCam();
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("nach init camera: sleep for : %ldms\n", (long) xDelay);
+    printf("After camera initialization: sleep for : %ldms\n", (long) xDelay);
     vTaskDelay( xDelay );   
 
 
@@ -154,7 +168,12 @@ extern "C" void app_main(void)
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
 
     if (ssid != NULL && passwd != NULL)
+#ifdef __HIDE_PASSWORD
+        printf("\nWLan: %s, XXXXXX\n", ssid);
+#else
         printf("\nWLan: %s, %s\n", ssid, passwd);
+#endif        
+
     else
         printf("No SSID and PASSWORD set!!!");
 
@@ -179,7 +198,8 @@ extern "C" void app_main(void)
     setBootTime();
     LogFile.WriteToFile("=============================================================================================");
     LogFile.WriteToFile("=================================== Main Started ============================================");
-    LogFile.WriteToFile("=============================================================================================");
+    LogFile.WriteToFile("=============================================================================================");    
+    LogFile.WriteToFile(versionFormated);
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
@@ -188,8 +208,8 @@ extern "C" void app_main(void)
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
-        std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
-        _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+        std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+        _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
         printf(_zws.c_str());
         LogFile.SwitchOnOff(true);
         LogFile.WriteToFile(_zws);

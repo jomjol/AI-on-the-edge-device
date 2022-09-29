@@ -11,9 +11,9 @@
 
 ____
 
-#### #29 Add favicon and use the hostname for the website
+#### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/927
+~~* https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
 
 #### #28 Improved error handling for ROIs
 
@@ -49,9 +49,9 @@ ____
 
   
 
-#### #22 Direct hint to the different neural network files in the other repositories
+#### ~~#22 Direct hint to the different neural network files in the other repositories~~- implemented >v11.3.1
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/644
+~~* https://github.com/jomjol/AI-on-the-edge-device/issues/644~~
 
   
 
@@ -108,13 +108,13 @@ ____
 
 
 
-#### #14 Backup and restore option for configuration
+#### ~~#14 Backup and restore option for configuration~~- implemented v11.3.1
 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/459
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/459~~
 
-* Implement a zip file compression for store and restore
+* ~~Implement a zip file compression for store and restore~~
 
-* Update the html to handle it
+* ~~Update the html to handle it~~
 
   
 

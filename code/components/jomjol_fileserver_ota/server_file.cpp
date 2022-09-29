@@ -49,11 +49,12 @@ extern "C" {
 
 /* Max size of an individual file. Make sure this
  * value is same as that set in upload_script.html */
-#define MAX_FILE_SIZE   (2000*1024) // 200 KB
-#define MAX_FILE_SIZE_STR "2000KB"
+#define MAX_FILE_SIZE   (8000*1024) // 8 MB
+#define MAX_FILE_SIZE_STR "8MB"
+
 
 /* Scratch buffer size */
-#define SCRATCH_BUFSIZE  8192 
+#define SCRATCH_BUFSIZE  4096 
 
 struct file_server_data {
     /* Base path of file storage */
@@ -71,6 +72,9 @@ static const char *TAG_FILESERVER = "file_server";
 #include <dirent.h>
 
 using namespace std;
+
+string SUFFIX_ZW = "_0xge";
+
 
 esp_err_t get_tflite_file_handler(httpd_req_t *req)
 {
@@ -414,7 +418,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     /* Close file after sending complete */
     fclose(fd);
-    ESP_LOGI(TAG_FILESERVER, "File sending complete");
+    ESP_LOGI(TAG_FILESERVER, "File successfully sent");
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);
@@ -676,7 +680,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
     httpd_resp_set_hdr(req, "Location", directory.c_str());
-    httpd_resp_sendstr(req, "File deleted successfully");
+    httpd_resp_sendstr(req, "File successfully deleted");
     return ESP_OK;
 }
 
@@ -715,12 +719,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
     void* p;
     char archive_filename[64];
     std::string zw, ret = "";
+    std::string directory = "";
 //    static const char* s_Test_archive_filename = "testhtml.zip";
 
     printf("miniz.c version: %s\n", MZ_VERSION);
     printf("Zipfile: %s\n", _in_zip_file.c_str());
     printf("Target Dir ZIP: %s\n", _target_zip.c_str());
     printf("Target Dir BIN: %s\n", _target_bin.c_str());
+    printf("Target Dir main: %s\n", _main.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
@@ -748,49 +754,61 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             mz_zip_archive_file_stat file_stat;
             mz_zip_reader_file_stat(&zip_archive, i, &file_stat);
             sprintf(archive_filename, file_stat.m_filename);
- 
+            
+            if (!file_stat.m_is_directory) {
             // Try to extract all the files to the heap.
             p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
-            if (!p)
-            {
-                printf("mz_zip_reader_extract_file_to_heap() failed!\n");
-                mz_zip_reader_end(&zip_archive);
-                return ret;
-            }
-
-            // Save to File.
-            zw = std::string(archive_filename);
-            if (toUpper(zw) == "FIRMWARE.BIN")
-            {
-                zw = _target_bin + zw;
-                ret = zw;
-            }
-            else
-            {
-                std::string _dir = getDirectory(zw);
-
-                if (_dir.length() > 0)
+                if (!p)
                 {
-                    zw = _main + zw;
+                    printf("mz_zip_reader_extract_file_to_heap() failed on file %s\n", archive_filename);
+                    mz_zip_reader_end(&zip_archive);
+                    return ret;
+                }
+            
+                // Save to File.
+                zw = std::string(archive_filename);
+                printf("Rohfilename: %s\n", zw.c_str());
+
+                if (toUpper(zw) == "FIRMWARE.BIN")
+                {
+                    zw = _target_bin + zw;
+                    ret = zw;
                 }
                 else
                 {
-                    zw = _target_zip + zw;
+                    std::string _dir = getDirectory(zw);
+
+                    if (_dir.length() > 0)
+                    {
+                        zw = _main + zw;
+                    }
+                    else
+                    {
+                        zw = _target_zip + zw;
+                    }
+
                 }
+            
+                string filename_zw = zw + SUFFIX_ZW;
 
+                printf("Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+
+                // extrahieren in zwischendatei
+                DeleteFile(filename_zw);
+                FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
+                fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
+                fclose(fpTargetFile);
+
+                DeleteFile(zw);
+                RenameFile(filename_zw, zw);
+                DeleteFile(filename_zw);
+
+                printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
+                //            printf("File data: \"%s\"\n", (const char*)p);
+
+                // We're done.
+                mz_free(p);
             }
-
-            printf("Filename to extract: %s", zw.c_str());
-            DeleteFile(zw);
-            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
-            fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
-            fclose(fpTargetFile);
-
-            printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
-            //            printf("File data: \"%s\"\n", (const char*)p);
-
-            // We're done.
-            mz_free(p);
         }
 
         // Close the archive, freeing any resources it was using

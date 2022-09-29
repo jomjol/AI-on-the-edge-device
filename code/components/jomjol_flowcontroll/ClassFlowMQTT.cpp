@@ -10,6 +10,8 @@
 
 #include <time.h>
 
+#define __HIDE_PASSWORD
+
 void ClassFlowMQTT::SetInitialParameter(void)
 {
     uri = "";
@@ -117,12 +119,21 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+#ifdef __HIDE_PASSWORD
+    printf("Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
+#else
     printf("Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
+#endif
+
     if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
     { 
         printf("InitMQTTInit\n");
         mainerrortopic = maintopic + "/connection";
+#ifdef __HIDE_PASSWORD
+        printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
+#else
         printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
+#endif
         if (!MQTTInit(uri, clientname, user, password, mainerrortopic, keepAlive))
         { // Failed
             MQTTenable = false;
@@ -179,27 +190,6 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
-  //  if (!MQTTenable) {
-  //      LogFile.WriteToFile("MQTT not enabled!");
-  //
-  //      // Try again to init it
-  //   if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
-  //      { // Failed
-  //          MQTTenable = false;
-  //          return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-  //      } 
-  //
-  //     if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-  //      { // Failed
-  //          MQTTenable = false;
-  //          return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-  //      }
-  //      
-  //      LogFile.WriteToFile("MQTT is now enabled");
-  //      MQTTenable = true;
-  //  }
-
-
     // Try sending mainerrortopic. If it fails, re-run init
     if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
     { // Failed

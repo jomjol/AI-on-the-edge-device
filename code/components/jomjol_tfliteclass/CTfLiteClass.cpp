@@ -138,7 +138,7 @@ void CTfLiteClass::Invoke()
 
 bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
 {
-    std::string zw = "ClassFlowCNNGeneral::doNeuralNetwork nach LoadInputResizeImage: ";
+    std::string zw = "ClassFlowCNNGeneral::doNeuralNetwork after LoadInputResizeImage: ";
 
     unsigned int w = rs->width;
     unsigned int h = rs->height;
@@ -213,7 +213,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
     if (size == -1)
     {
-  		printf("\nFile existiert nicht.\n");
+  		printf("\nFile doesn't exist.\n");
       return NULL;
     }
 
@@ -234,7 +234,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
         fread(result, 1, size, f);
         fclose(f);        
 	  }else {
-		  printf("\nKein freier Speicher vorhanden.\n");
+		  printf("\nNo free memory available.\n");
 	}    
 
 
