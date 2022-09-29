@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+Improve **u**ser e**x**perience
+
 :bangbang: The release breaks a few things in ota update :bangbang:
 
 **Make sure to read the instructions below carfully!**.
