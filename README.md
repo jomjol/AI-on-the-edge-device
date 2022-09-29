@@ -37,20 +37,18 @@ There are several options what to do with that value. Either send it to a MQTT b
 
 ## Setup
 There is a growing [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) which provides you with a lot of information.
-
 Head there to get a start, set it up and configure it.
 
-There are also a articles in the German Heise magazine "make:" about the setup and the technical background (!not for free!)
+There are also a articles in the German Heise magazine "make:" about the setup and the technical background (behind a paywall) : [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
 
-*  [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
-* Background [Neural Networks](https://www.heise.de/select/make/2021/6/2126410443385102621), [Training Neural Networks](https://www.heise.de/select/make/2022/1/2134114065999161585) and [Programming on the ESP32](https://www.heise.de/select/make/2022/2/2204010051597422030) 
+For further background information, head to [Neural Networks](https://www.heise.de/select/make/2021/6/2126410443385102621), [Training Neural Networks](https://www.heise.de/select/make/2022/1/2134114065999161585) and [Programming on the ESP32](https://www.heise.de/select/make/2022/2/2204010051597422030) 
 
 ## Download
 The latest available version is available on the [Releases page](https://github.com/jomjol/AI-on-the-edge-device/releases).
 
 Initially you will have to flash it through an USB connection. Later an update is possible directly over the Air (OTA).
 
-### Casing
+## Casing
 
 A 3d-printable housing can be found here:
   - https://www.thingiverse.com/thing:4573481 (Water Meter)
@@ -68,7 +66,7 @@ If you would like to support the developer with a cup of coffee you can do that 
 <input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
 </form>
-If you have any technical topics, you can file a issue in this repository. 
+If you have any technical topics, you can create an [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues). 
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25"> 
 
