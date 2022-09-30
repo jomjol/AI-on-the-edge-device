@@ -15,7 +15,7 @@
 ### Fixed
 
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
-
+-   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
 ### Removed
 
 -   n.a.

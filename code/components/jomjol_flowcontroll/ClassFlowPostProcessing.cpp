@@ -78,7 +78,7 @@ void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _exte
         if (NUMBERS[j]->name == _numbers)
         {
             NUMBERS[j]->PreValue = zw;
-            NUMBERS[j]->ReturnPreValue = std::to_string(zw);
+            NUMBERS[j]->ReturnPreValue = RundeOutput(zw, NUMBERS[j]->Nachkomma);
             NUMBERS[j]->PreValueOkay = true;
             if (_extern)
             {
