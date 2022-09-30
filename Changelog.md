@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+
+
+### Added
+
+-   n.a.
+
+### Changed
+
+-   n.a.
+
+### Fixed
+
+-   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
+
+### Removed
+
+-   n.a.
+
+
+
 ## [12.0.1] - 2022-09-29
 
 Improve **u**ser e**x**perience 
