@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-
-
 ### Added
 
 -   n.a.
@@ -22,7 +20,7 @@
 
 
 
-## [12.0.1] - 2022-09-29
+## [12.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v12.0.1), 2022-09-29
 
 Improve **u**ser e**x**perience 
 
@@ -38,8 +36,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything bricks you can try to
-1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -69,7 +67,7 @@ If anything bricks you can try to
 -   Remove the folder `/firmware` from GitHub repository. 
     If you want to get the latest `firmware.bin` and `html.zip` files, please download from the automated [build action](https://github.com/jomjol/AI-on-the-edge-device/actions) or [release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
 
-## [11.3.1] - (2022-09-17)
+## [11.3.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.3.1), 2022-09-17
 
 Intermediate Digits
 
@@ -93,7 +91,7 @@ Intermediate Digits
 -   HTML: Update WebUI (Reboot, Infos, CPU Temp, RSSI)
 -   This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/haverland)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
 
-## [11.2.0] -  (2022-08-28)
+## [11.2.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.2.0), 2022-08-28
 
 Intermediate Digits
 
@@ -109,14 +107,14 @@ Intermediate Digits
 
 -   HTML: added favicon and system name, Improved reboot dialog  (thanks to @**[caco3](https://github.com/caco3)**)
 
-## [11.1.1] -  (2022-08-22)
+## [11.1.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.1.1), 2022-08-22
 
 Intermediate Digits
 
 -   New and improved consistency check (especially with analog and digital counters mixed)
 -   Bug Fix: digital counter algorithm
 
-## [11.0.1] - (2022-08-18)
+## [11.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.0.1), 2022-08-18
 
 Intermediate Digits
 
@@ -136,7 +134,7 @@ Intermediate Digits
 
 -   Bug Fix: InfluxDB enabling in grahic configuration
 
-## [10.6.2] - (2022-07-24)
+## [10.6.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.6.2), 2022-07-24
 
 Stability Increase
 
@@ -166,7 +164,7 @@ Stability Increase
 
 -   Bug Fix: no time with fixed IP, Postprocessing, MQTT
 
-## [10.5.2] - (2022-02-22)
+## [10.5.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.5.2), 2022-02-22
 
 Stability Increase
 
@@ -179,7 +177,7 @@ Stability Increase
 -   Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
 -   Bug Fix: corrected error in "Check Consistency Increase"
 
-## [10.4.0] - (2022-02-12)
+## [10.4.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.4.0), 2022-02-12
 
 Stability Increase
 
