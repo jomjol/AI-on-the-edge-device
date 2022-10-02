@@ -11,6 +11,12 @@
 
 ____
 
+#### #30 Support meter clock over
+
+* In case of meter clocking over, that is, reaching its max. value and starting over from 0,
+  accept the new value and calculate correctly the difference.
+  (see line 739 onwards in ClassFlowPostProcessing.cpp)
+
 #### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
 
 ~~* https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
