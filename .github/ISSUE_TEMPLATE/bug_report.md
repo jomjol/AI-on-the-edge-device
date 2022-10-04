@@ -1,31 +1,54 @@
----
 name: Bug report
-about: Create a bug report to help us improve
-title: ''
-labels: ''
-assignees: ''
+description: Create a bug report to help us improve
+body:
 
----
 
-Thank you for taking your time to report a bug.
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking your time to report a bug.
 
-Before you proceed, please check:
-- Do you use the latest version? See https://github.com/jomjol/AI-on-the-edge-device/releases.
-- Is there already another similar issue? Check for open and closed Issue in https://github.com/jomjol/AI-on-the-edge-device/issues.
-- Are instructions in the readme solving your issue (https://github.com/jomjol/AI-on-the-edge-device/tree/master#readme)?
-- Are instructions in the wiki solving your issue? (https://github.com/jomjol/AI-on-the-edge-device/wiki)?
+        Before you proceed, please check:
+        - [ ] Do you use the [latest version](https://github.com/jomjol/AI-on-the-edge-device/releases)?
+        - [ ] Is there already another similar issue? Check for open and closed [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues) and [Discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions).
+        - [ ] Are instructions in the [README](https://github.com/jomjol/AI-on-the-edge-device/tree/master#readme) solving your issue?
+        - [ ] Are instructions in the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) solving your issue?
 
-**Describe the bug**
-A clear and concise description of what the bug is.
 
-**Version**
-Which version are you using? (See menu `System > Info`).
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: The Problem
+      description: A clear and concise description of what the bug is.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
 
-**Additional context**
-Add any other context about the problem here.
+
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Version
+      description: Which version are you using? (See menu `System > Info`).    
+        
+        
+
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+        
+
+
+  - type: textarea
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem.
+
+
+
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
