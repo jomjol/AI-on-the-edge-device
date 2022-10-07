@@ -13,37 +13,43 @@ p {font-size: 1em;}
 
 table {
     border: 0pt;
+    border-collapse: collapse;
+}
+
+
+tr {
+    border-bottom: 1px solid lightgray;
 }
 
 .button {
-	padding: 5px 20px;
+    padding: 5px 20px;
     width: 211px;
-	font-size: 16px;	
+    font-size: 16px;	
 }
 
 textarea {
-	font-size: 14px;
+    font-size: 14px;
 }
 
 .description {
-	color: black;
-	font-size: 80%;
+    color: black;
+    font-size: 80%;
 }
 
 .disabled {
-	color:lightgrey;
+    color:lightgrey;
 }
 
 .smallSelect {
-	width: 30px;
+    width: 30px;
 }
 
 .invalid-input {
-	background-color: #FFAA00;
+    background-color: #FFAA00;
 }
 
 .hidden {
-	display: none;
+    display: none;
 }
 
 
@@ -57,20 +63,6 @@ textarea {
 
 .expert {
     background-color: #ffc5c5;
-}
-
-
-/*th {
-    text-align: left;
-}
-
-tbody tr:nth-child(odd) {
-    background-color: Lightgray;
-}*/
-
-
-tr.border-bottom td {
-    border-bottom: 1pt solid gray;
 }
 
 </style>
@@ -134,7 +126,7 @@ tr.border-bottom td {
 				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
 			</td>
 			<td class="description">
-				Time to keep the raw image (in days -"0" = forever)
+				Time to keep the raw image (in days, resp. "0" = forever)
 			</td>
 		</tr>
 		<tr class="expert" id="ex1">
@@ -339,7 +331,7 @@ tr.border-bottom td {
 				<input type="number" id="Digits_LogfileRetentionInDays_value1" min="0"  step="1">
 			</td>
 			<td style="font-size: 80%;">
-				Time to keep the separated digit images (in days -"0" = forever)
+				Time to keep the separated digit images (in days, resp. "0" = forever)
 			</td>
 		</tr>
 <!--
@@ -388,7 +380,7 @@ tr.border-bottom td {
 				<input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogfileRetentionInDays")' unchecked >
 				<label for=Analog_LogfileRetentionInDays_enabled><class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label></td>
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
-			<td style="font-size: 80%;"> Time to keep the separated digit images (in days -"0" = forever) </td>
+			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
 		</tr>
 
 <!--
@@ -742,7 +734,7 @@ tr.border-bottom td {
 			</td>
 		</tr>
 		<tr>
-			<td style="padding-left: 20px;">
+			<td style="padding-left: 40px;">
 			    <class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
 			</td>
 			<td>
