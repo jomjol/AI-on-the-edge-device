@@ -11,6 +11,10 @@ h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
 h3 {font-size: 1.2em;}
 p {font-size: 1em;}
 
+table {
+    border: 0pt;
+}
+
 .button {
 	padding: 5px 20px;
     width: 211px;
@@ -52,7 +56,7 @@ textarea {
 }
 
 .expert {
-    background-color: lightcoral;
+    background-color: #ffc5c5;
 }
 
 
@@ -63,6 +67,11 @@ textarea {
 tbody tr:nth-child(odd) {
     background-color: Lightgray;
 }*/
+
+
+tr.border-bottom td {
+    border-bottom: 1pt solid gray;
+}
 
 </style>
 
@@ -131,8 +140,6 @@ tbody tr:nth-child(odd) {
 		<tr class="expert" id="ex1">
 			
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
 			</td>
 			<td>
@@ -144,8 +151,6 @@ tbody tr:nth-child(odd) {
 		</tr>
 		<tr class="expert" id="ex2">
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
 			</td>
 			<td>
@@ -158,8 +163,6 @@ tbody tr:nth-child(odd) {
 		</tr>
 		<tr class="expert"  id="ex3">
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_ImageSize_text" style="color:black;">ImageSize</class>
 			</td>
 			<td>
@@ -175,8 +178,6 @@ tbody tr:nth-child(odd) {
 
 		<tr class="expert"  id="LEDIntensity_ex3">
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
 			</td>
 			<td>
@@ -190,8 +191,6 @@ tbody tr:nth-child(odd) {
 
 		<tr class="expert"  id="Brightness_ex3">
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
@@ -204,8 +203,6 @@ tbody tr:nth-child(odd) {
 
 		<tr class="expert"  id="Contrast_ex3">
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
 			</td>
 			<td>
@@ -219,8 +216,6 @@ tbody tr:nth-child(odd) {
 
 		<tr class="expert"  id="Saturation_ex3">
 			<td width="20px" style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
 			</td>
 			<td>
@@ -234,7 +229,7 @@ tbody tr:nth-child(odd) {
 		
 		<tr class="expert"  id="MakeImage_FixedExposure_ex10">
 			<td style="padding-left: 40px;">
-				<label for=><class id="MakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
+				<class id="MakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
 			</td>
 			<td>
 				<select id="MakeImage_FixedExposure_value1">
@@ -253,9 +248,7 @@ tbody tr:nth-child(odd) {
 		</tr> 
 		<tr class="expert"  id="ex6">
 			<td  style="padding-left: 40px;">
-			</td>
-			<td width="200px">
-				<class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
+			    <class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
 			</td>
 			<td>
 				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
@@ -266,8 +259,6 @@ tbody tr:nth-child(odd) {
 		</tr>
 		<tr class="expert"  id="ex8">
 			<td  style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="Alignment_SearchFieldY_text" style="color:black;">SearchFieldY</class>
 			</td>
 			<td>
@@ -355,8 +346,6 @@ tbody tr:nth-child(odd) {
 
 		<tr class="expert"  id="ex9">
 			<td style="padding-left: 40px;">
-			</td>
-			<td>
 				<class id="Digits_ModelInputSize_text" style="color:black;">ModelInputSize</class>
 			</td>
 			<td>
@@ -753,7 +742,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr>
-			<td style="padding-left: 40px;">
+			<td style="padding-left: 20px;">
 			    <class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
 			</td>
 			<td>
@@ -794,8 +783,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span id="GPIO_IO0_text" class="GPIO_IO0 GPIO_item">GPIO 0 use interrupt</span>
 			</td>
 			<td>
@@ -813,8 +801,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
@@ -823,8 +810,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
@@ -833,8 +819,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
@@ -843,8 +828,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO0_value6"></td>
@@ -858,9 +842,7 @@ tbody tr:nth-child(odd) {
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
-			</td>
-			<td>
-				<span id="GPIO_IO1_text" class="GPIO_IO1 GPIO_item">GPIO 1 state</span>
+				<label=GPIO_IO1_enabled><span id="GPIO_IO1_text" class="GPIO_IO1 GPIO_item">GPIO 1 state</span>
 			</td>
 			<td>
 					<select id="GPIO_IO1_value1">
@@ -875,8 +857,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 use interrupt</span>
 			</td>
 			<td>
@@ -894,8 +875,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
@@ -904,8 +884,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
@@ -914,8 +893,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
@@ -924,8 +902,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO1_value6"></td>
@@ -939,9 +916,7 @@ tbody tr:nth-child(odd) {
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
-			</td>
-			<td>
-				<span id="GPIO_IO3_text" class="GPIO_IO3 GPIO_item">GPIO 3 state</span>
+				<label=GPIO_IO3_enabled><span id="GPIO_IO3_text" class="GPIO_IO3 GPIO_item">GPIO 3 state</span>
 			</td>
 			<td>
 				<select id="GPIO_IO3_value1">
@@ -956,8 +931,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 use interrupt</span>
 			</td>
 			<td>
@@ -975,8 +949,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
@@ -985,8 +958,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
@@ -995,8 +967,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
@@ -1005,8 +976,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO3_value6"></td>
@@ -1037,8 +1007,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 use interrupt</span>
 			</td>
 			<td>
@@ -1056,8 +1025,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
@@ -1066,8 +1034,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
@@ -1076,8 +1043,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
@@ -1086,8 +1052,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO4_value6"></td>
@@ -1117,8 +1082,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 use interrupt</span>
 			</td>
 			<td>
@@ -1136,8 +1100,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
@@ -1146,8 +1109,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
@@ -1156,8 +1118,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
@@ -1166,8 +1127,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO12_value6"></td>
@@ -1225,9 +1185,7 @@ tbody tr:nth-child(odd) {
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
-			</td>
-			<td>
-				<span id="GPIO_IO13_text">GPIO 13 state</span>
+				<label=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO 13 state</span>
 			</td>
 			<td>
 					<select id="GPIO_IO13_value1">
@@ -1242,8 +1200,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 use interrupt</span>
 			</td>
 			<td>
@@ -1261,8 +1218,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
@@ -1271,8 +1227,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
@@ -1281,8 +1236,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
@@ -1291,8 +1245,7 @@ tbody tr:nth-child(odd) {
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td style="padding-left: 40px;"></td>
-			<td>
+			<td style="padding-left: 40px;">
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO13_value6"></td>
@@ -1350,9 +1303,8 @@ tbody tr:nth-child(odd) {
 		</tr>
 		<tr class="expert"  id="ex16">
 			<td style="padding-left: 40px;">
-				<input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked ></td>
-			<td>
-				<class id="System_TimeServer_text" style="color:black;">TimeServer</class>
+				<input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked >
+				<label for=System_TimeServer_enabled><class id="System_TimeServer_text" style="color:black;">TimeServer</class></label>
 			</td>
 			<td>
 				<input type="text" id="System_TimeServer_value1">
@@ -1363,13 +1315,11 @@ tbody tr:nth-child(odd) {
 		</tr>
 		<tr class="expert"  id="System_Hostname">
 			<td style="padding-left: 40px;">
-				<td><input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked ></td>
-			<td>
-				<class id="System_Hostname_text" style="color:black;">Hostname</class>
+				<input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked >
+				<label for=System_Hostname_enabled><class id="System_Hostname_text" style="color:black;">Hostname</class></label>
 			</td>
 			<td>
 				<input type="text" id="System_Hostname_value1">
-			</td>
 			<td class="description">
 				Hostname for server - will be transfered to wlan.ini at next startup)
 			</td>
