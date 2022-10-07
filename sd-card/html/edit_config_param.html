@@ -41,6 +41,25 @@ textarea {
 .hidden {
 	display: none;
 }
+
+
+.red {
+    color: red;
+}
+
+.gray {
+    background-color: Lightgray;
+}
+
+
+/*th {
+    text-align: left;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: Lightgray;
+}*/
+
 </style>
 
 </head>
@@ -817,8 +836,8 @@ textarea {
 			</td>
 			<td class="description">
 				GPIO 0 Usable with restrictions.<br> 
-				<span style="color: red">Must be disabled when camera is used.</span><br>
-				<span style="color: red">Pin is used to activate flash mode and must therefore be HIGH when booting.</span>
+				<b>Must be disabled when camera is used.</b><br>
+				<b>Pin is used to activate flash mode and must therefore be HIGH when booting.</b>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -1099,7 +1118,7 @@ textarea {
 			</td>
 			<td class="description">
 				GPIO 4 Usable with restrictions.<br> 
-				<span style="color: red">Pin is used for build-in flash light.</span>
+				<b>Pin is used for build-in flash light.</b>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
