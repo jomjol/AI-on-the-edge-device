@@ -9,6 +9,10 @@
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
 h3 {font-size: 1.2em;}
+h4 {
+  margin-bottom: 0;
+}
+
 p {font-size: 1em;}
 
 table {
@@ -19,6 +23,10 @@ table {
 
 tr {
     border-bottom: 1px solid lightgray;
+}
+
+td {
+    padding: 10px;
 }
 
 .button {
@@ -52,15 +60,6 @@ textarea {
     display: none;
 }
 
-
-.red {
-    color: red;
-}
-
-.gray {
-    background-color: Lightgray;
-}
-
 .expert {
     background-color: #ffc5c5;
 }
@@ -70,20 +69,10 @@ textarea {
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-	<table style="width:100%">
-		<tr>
-			<td>
-				<h2>Config.ini:</h2>
-			</td>
-			<td>
-				<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>
-				<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
-			</td>
-		</tr>
-	</table>
-
-	<br>
-
+	<h2>Configuration</h2>
+	<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
+	<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>	
+	<p></p>
 	<div id = "divall" style="display:none">
 
 	<table>
