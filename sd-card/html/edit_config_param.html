@@ -112,12 +112,12 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogfileRetentionInDays")' unchecked >
 				<label for=MakeImage_LogfileRetentionInDays_enabled><class id="MakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
+				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
@@ -125,7 +125,7 @@ textarea {
 		</tr>
 		<tr class="expert" id="ex1">
 			
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
 			</td>
 			<td>
@@ -136,11 +136,11 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert" id="ex2">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_ImageQuality_value1" size="13"   min="0" max="63">
+				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="0" max="63">
 			</td>
 			<td class="description">
 				Quality index for picture (default = "12" - "0" high ... "63" low) <br>
@@ -148,7 +148,7 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_ImageSize_text" style="color:black;">ImageSize</class>
 			</td>
 			<td>
@@ -163,11 +163,11 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="LEDIntensity_ex3">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_LEDIntensity_value1" size="13"   min="0" max="100">
+				<input type="number" id="MakeImage_LEDIntensity_value1" size="13" min="0" max="100">
 			</td>
 			<td style="font-size: 80%;">
 				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
@@ -176,11 +176,11 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="Brightness_ex3">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Brightness_value1" size="13"   min="-2" max="2">
+				<input type="number" id="MakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Brightness (-2 .. 2 - default = "0")
@@ -188,11 +188,11 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="Contrast_ex3">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Contrast_value1" size="13"   min="-2" max="2">
+				<input type="number" id="MakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Contrast (-2 .. 2 - default = "0") <br>
@@ -201,11 +201,11 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="Saturation_ex3">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Saturation_value1" size="13"   min="-2" max="2">
+				<input type="number" id="MakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Saturation (-2 .. 2 - default = "0") <br>
@@ -233,7 +233,7 @@ textarea {
 			<td colspan="3" style="padding-left: 20px;"><h4>Alignment</h4></td>
 		</tr> 
 		<tr class="expert"  id="ex6">
-			<td  class="indent1">
+			<td class="indent1">
 			    <class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
 			</td>
 			<td>
@@ -244,7 +244,7 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex8">
-			<td  class="indent1">
+			<td class="indent1">
 				<class id="Alignment_SearchFieldY_text" style="color:black;">SearchFieldY</class>
 			</td>
 			<td>
@@ -255,7 +255,7 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
-			<td  class="indent1">
+			<td class="indent1">
 				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
 				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class></label>
 			</td>
@@ -414,7 +414,7 @@ textarea {
 				<label for=PostProcessing_PreValueAgeStartup_enabled><class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">PreValueAgeStartup</class></label>
 			</td>
 			<td>
-				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13"  min="0">
+				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0">
 			</td>
 			<td style="font-size: 80%;">
 				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
@@ -1123,7 +1123,7 @@ textarea {
 		</tr>
 
 		<tr class="GPIO_IO12 GPIO_item" id="wstypeex3">
-			<td width="20px" class="indent1">
+			<td class="indent1">
 				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED-Type</span>
 			</td>
 			<td class="GPIO_IO12 GPIO_item">
@@ -1140,7 +1140,7 @@ textarea {
 		</tr>
 
 		<tr  class="GPIO_IO12 GPIO_item" id="LEDANZex8" >
-			<td  class="indent1">
+			<td class="indent1">
 				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
 			</td>
 			<td>
@@ -1154,7 +1154,7 @@ textarea {
 			<td class="indent1">
 				<span class="GPIO_IO12 GPIO_item"  id="GPIO_LEDColor_text">LED Color</span>
 			</td>
-			<td  class="GPIO_IO12 GPIO_item">
+			<td class="GPIO_IO12 GPIO_item">
 				R <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1" size="12">
 				G <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2" size="12">
 				B <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3" size="12">
@@ -1265,7 +1265,7 @@ textarea {
 				<label for=Debug_LogfileRetentionInDays_enabled><class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
 			</td>
 			<td>
-				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
+				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the log files (in days - "0" = forever)
