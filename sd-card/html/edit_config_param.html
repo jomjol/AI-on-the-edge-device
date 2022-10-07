@@ -90,7 +90,7 @@ tbody tr:nth-child(odd) {
 <!--			<th width="20px"  style="text-align: left;">
 				Enable
 			</th>-->
-			<th  width="250px"  style="text-align: left;">
+			<th  width="300px"  style="text-align: left;">
 				Parameter
 			</th>
 			<th style="text-align: left;">
@@ -576,7 +576,12 @@ tbody tr:nth-child(odd) {
 
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > MQTT</h4></td>
+			<td colspan="3" style="padding-left: 20px;">
+			    <h4>
+				<input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+				<label for=Category_MQTT_enabled>MQTT</label>
+			    </h4>
+			</td>
 		</tr> 		
 		<tr>
 			<td style="padding-left: 40px;">
@@ -661,7 +666,12 @@ tbody tr:nth-child(odd) {
 		</tr>
                                  
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > InfluxDB</h4></td>
+			<td colspan="3" style="padding-left: 20px;">
+			    <h4>
+				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+				<label for=Category_InfluxDB_enabled>InfluxDB</label>
+			    </h4>
+			</td>
 		</tr> 		
 		<tr>
 			<td style="padding-left: 40px;">
@@ -757,8 +767,8 @@ tbody tr:nth-child(odd) {
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
-					GPIO Settings
-					<span class="GPIO_item" > - Enabling GPIO handler, disable by default integrated flash light. Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span>
+				    <label for=Category_GPIO_enabled>GPIO Settings
+					<span class="GPIO_item" > - Enabling GPIO handler, disable by default integrated flash light. Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
 				</h4>	
 			</td>
 		</tr> 	
@@ -1325,7 +1335,7 @@ tbody tr:nth-child(odd) {
 		<tr>
 			<td style="padding-left: 40px;">
 				<input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked >
-				<class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+				<label for=Debug_LogfileRetentionInDays_enabled><class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
 			</td>
 			<td>
 				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
@@ -1340,9 +1350,8 @@ tbody tr:nth-child(odd) {
 		</tr> 	
 		<tr>
 			<td style="padding-left: 40px;">
-				<input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked ></td>
-			<td>
-				<class id="System_TimeZone_text" style="color:black;">TimeZone</class>
+				<input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked >
+				<label for=System_TimeZone_enabled><class id="System_TimeZone_text" style="color:black;">TimeZone</class></label>
 			</td>
 			<td>
 				<input type="text" id="System_TimeZone_value1">
