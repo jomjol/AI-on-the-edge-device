@@ -64,6 +64,7 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
     char *buf = NULL;
     size_t buf_len = 0;
     basic_auth_info_t *basic_auth_info = (basic_auth_info_t *)req->user_ctx;
+    esp_err_t ret = ESP_OK;
 
     buf_len = httpd_req_get_hdr_value_len(req, "Authorization") + 1;
     if (buf_len > 1) {
@@ -94,20 +95,8 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
             httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"Hello\"");
             httpd_resp_send(req, NULL, 0);
         } else {
-            ESP_LOGI(TAG_SERVERMAIN, "Authenticated!");
-            char *basic_auth_resp = NULL;
-            httpd_resp_set_status(req, HTTPD_200);
-            httpd_resp_set_type(req, "application/json");
-            httpd_resp_set_hdr(req, "Connection", "keep-alive");
-            asprintf(&basic_auth_resp, "{\"authenticated\": true,\"user\": \"%s\"}", basic_auth_info->username);
-            if (!basic_auth_resp) {
-                ESP_LOGE(TAG_SERVERMAIN, "No enough memory for basic authorization response");
-                free(auth_credentials);
-                free(buf);
-                return ESP_ERR_NO_MEM;
-            }
-            httpd_resp_send(req, basic_auth_resp, strlen(basic_auth_resp));
-            free(basic_auth_resp);
+            ESP_LOGI(TAG_SERVERMAIN, "Authenticated calling http handler now!");
+            ret=original_handler(req);
         }
         free(auth_credentials);
         free(buf);
@@ -120,7 +109,7 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
         httpd_resp_send(req, NULL, 0);
     }
 
-    return original_handler(req);
+    return ret;
 }
 
 esp_err_t info_get_handler(httpd_req_t *req);
