@@ -15,14 +15,141 @@
 
 #include "server_tflite.h"
 
+#include "esp_tls_crypto.h"
+
+#include <functional>
+
 //#define DEBUG_DETAIL_ON      
-
-
 
 httpd_handle_t server = NULL;   
 std::string starttime = "";
 
 static const char *TAG_SERVERMAIN = "server-main";
+
+typedef struct {
+    const char    *username;
+    const char    *password;
+} basic_auth_info_t;
+
+#define HTTPD_401      "401 UNAUTHORIZED"           /*!< HTTP Response 401 */
+
+static char *http_auth_basic(const char *username, const char *password)
+{
+    int out;
+    char *user_info = NULL;
+    char *digest = NULL;
+    size_t n = 0;
+    asprintf(&user_info, "%s:%s", username, password);
+    if (!user_info) {
+        ESP_LOGE(TAG_SERVERMAIN, "No enough memory for user information");
+        return NULL;
+    }
+    esp_crypto_base64_encode(NULL, 0, &n, (const unsigned char *)user_info, strlen(user_info));
+
+    /* 6: The length of the "Basic " string
+     * n: Number of bytes for a base64 encode format
+     * 1: Number of bytes for a reserved which be used to fill zero
+    */
+    digest = static_cast<char*>(calloc(1, 6 + n + 1));
+    if (digest) {
+        strcpy(digest, "Basic ");
+        esp_crypto_base64_encode((unsigned char *)digest + 6, n, (size_t *)&out, (const unsigned char *)user_info, strlen(user_info));
+    }
+    free(user_info);
+    return digest;
+}
+
+static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler(httpd_req_t *))
+{
+    char *buf = NULL;
+    size_t buf_len = 0;
+    basic_auth_info_t *basic_auth_info = (basic_auth_info_t *)req->user_ctx;
+
+    buf_len = httpd_req_get_hdr_value_len(req, "Authorization") + 1;
+    if (buf_len > 1) {
+        buf = static_cast<char*>(calloc(1, buf_len));
+        if (!buf) {
+            ESP_LOGE(TAG_SERVERMAIN, "No enough memory for basic authorization");
+            return ESP_ERR_NO_MEM;
+        }
+
+        if (httpd_req_get_hdr_value_str(req, "Authorization", buf, buf_len) == ESP_OK) {
+            ESP_LOGI(TAG_SERVERMAIN, "Found header => Authorization: %s", buf);
+        } else {
+            ESP_LOGE(TAG_SERVERMAIN, "No auth value received");
+        }
+
+        char *auth_credentials = http_auth_basic(basic_auth_info->username, basic_auth_info->password);
+        if (!auth_credentials) {
+            ESP_LOGE(TAG_SERVERMAIN, "No enough memory for basic authorization credentials");
+            free(buf);
+            return ESP_ERR_NO_MEM;
+        }
+
+        if (strncmp(auth_credentials, buf, buf_len)) {
+            ESP_LOGE(TAG_SERVERMAIN, "Not authenticated");
+            httpd_resp_set_status(req, HTTPD_401);
+            httpd_resp_set_type(req, "application/json");
+            httpd_resp_set_hdr(req, "Connection", "keep-alive");
+            httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"Hello\"");
+            httpd_resp_send(req, NULL, 0);
+        } else {
+            ESP_LOGI(TAG_SERVERMAIN, "Authenticated!");
+            char *basic_auth_resp = NULL;
+            httpd_resp_set_status(req, HTTPD_200);
+            httpd_resp_set_type(req, "application/json");
+            httpd_resp_set_hdr(req, "Connection", "keep-alive");
+            asprintf(&basic_auth_resp, "{\"authenticated\": true,\"user\": \"%s\"}", basic_auth_info->username);
+            if (!basic_auth_resp) {
+                ESP_LOGE(TAG_SERVERMAIN, "No enough memory for basic authorization response");
+                free(auth_credentials);
+                free(buf);
+                return ESP_ERR_NO_MEM;
+            }
+            httpd_resp_send(req, basic_auth_resp, strlen(basic_auth_resp));
+            free(basic_auth_resp);
+        }
+        free(auth_credentials);
+        free(buf);
+    } else {
+        ESP_LOGE(TAG_SERVERMAIN, "No auth header received");
+        httpd_resp_set_status(req, HTTPD_401);
+        httpd_resp_set_type(req, "application/json");
+        httpd_resp_set_hdr(req, "Connection", "keep-alive");
+        httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"Hello\"");
+        httpd_resp_send(req, NULL, 0);
+    }
+
+    return original_handler(req);
+}
+
+esp_err_t info_get_handler(httpd_req_t *req);
+
+auto handler = [](httpd_req_t *req){ 
+    //handle cb 
+    return basic_auth_request_filter(req, info_get_handler);
+};
+
+#define APPLY_BASIC_AUTH_FILTER(method) [](httpd_req_t *req){ return basic_auth_request_filter(req, method); }
+
+static httpd_uri_t basic_auth = {
+    .uri       = "/basic_auth",
+    .method    = HTTP_GET,
+    .handler   = APPLY_BASIC_AUTH_FILTER(info_get_handler),
+    .user_ctx  = 0,
+};
+
+static void httpd_register_basic_auth(httpd_handle_t server)
+{
+    basic_auth_info_t *basic_auth_info = (basic_auth_info_t *)calloc(1, sizeof(basic_auth_info_t));
+    if (basic_auth_info) {
+        basic_auth_info->username = "test";
+        basic_auth_info->password = "test";
+
+        basic_auth.user_ctx = basic_auth_info;
+        httpd_register_uri_handler(server, &basic_auth);
+    }
+}
 
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
@@ -325,6 +452,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
+    httpd_register_basic_auth(server);
     httpd_uri_t info_get_handle = {
         .uri       = "/version",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
