@@ -17,8 +17,6 @@
 
 #include "esp_tls_crypto.h"
 
-#include <functional>
-
 //#define DEBUG_DETAIL_ON      
 
 httpd_handle_t server = NULL;   
@@ -30,6 +28,8 @@ typedef struct {
     const char    *username;
     const char    *password;
 } basic_auth_info_t;
+
+basic_auth_info_t basic_auth_info = { "test", "test" };
 
 #define HTTPD_401      "401 UNAUTHORIZED"           /*!< HTTP Response 401 */
 
@@ -63,7 +63,6 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
 {
     char *buf = NULL;
     size_t buf_len = 0;
-    basic_auth_info_t *basic_auth_info = (basic_auth_info_t *)req->user_ctx;
     esp_err_t ret = ESP_OK;
 
     buf_len = httpd_req_get_hdr_value_len(req, "Authorization") + 1;
@@ -80,7 +79,7 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
             ESP_LOGE(TAG_SERVERMAIN, "No auth value received");
         }
 
-        char *auth_credentials = http_auth_basic(basic_auth_info->username, basic_auth_info->password);
+        char *auth_credentials = http_auth_basic(basic_auth_info.username, basic_auth_info.password);
         if (!auth_credentials) {
             ESP_LOGE(TAG_SERVERMAIN, "No enough memory for basic authorization credentials");
             free(buf);
@@ -114,31 +113,8 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
 
 esp_err_t info_get_handler(httpd_req_t *req);
 
-auto handler = [](httpd_req_t *req){ 
-    //handle cb 
-    return basic_auth_request_filter(req, info_get_handler);
-};
-
 #define APPLY_BASIC_AUTH_FILTER(method) [](httpd_req_t *req){ return basic_auth_request_filter(req, method); }
 
-static httpd_uri_t basic_auth = {
-    .uri       = "/basic_auth",
-    .method    = HTTP_GET,
-    .handler   = APPLY_BASIC_AUTH_FILTER(info_get_handler),
-    .user_ctx  = 0,
-};
-
-static void httpd_register_basic_auth(httpd_handle_t server)
-{
-    basic_auth_info_t *basic_auth_info = (basic_auth_info_t *)calloc(1, sizeof(basic_auth_info_t));
-    if (basic_auth_info) {
-        basic_auth_info->username = "test";
-        basic_auth_info->password = "test";
-
-        basic_auth.user_ctx = basic_auth_info;
-        httpd_register_uri_handler(server, &basic_auth);
-    }
-}
 
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
@@ -391,10 +367,6 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
     return img_tmp_handler(req);
 }
 
-
-
-
-
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
     const char* resp_str; 
@@ -441,11 +413,10 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
-    httpd_register_basic_auth(server);
     httpd_uri_t info_get_handle = {
         .uri       = "/version",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = info_get_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(info_get_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &info_get_handle);
@@ -453,7 +424,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t sysinfo_handle = {
         .uri       = "/sysinfo",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = sysinfo_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(sysinfo_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &sysinfo_handle);
@@ -461,7 +432,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t starttime_tmp_handle = {
         .uri       = "/starttime",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = starttime_get_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(starttime_get_handler),
         .user_ctx  = NULL    // Pass server data as context
     };
     httpd_register_uri_handler(server, &starttime_tmp_handle);
@@ -470,7 +441,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t img_tmp_handle = {
         .uri       = "/img_tmp/*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = img_tmp_virtual_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(img_tmp_virtual_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &img_tmp_handle);
@@ -479,7 +450,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t main_rest_handle = {
         .uri       = "/*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = hello_main_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(hello_main_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &main_rest_handle);
