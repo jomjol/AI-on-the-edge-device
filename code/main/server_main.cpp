@@ -498,30 +498,3 @@ httpd_handle_t start_webserver(void)
     ESP_LOGI(TAG_SERVERMAIN, "Error starting server!");
     return NULL;
 }
-
-void stop_webserver(httpd_handle_t server)
-{
-    httpd_stop(server);
-}
-
-
-void disconnect_handler(void* arg, esp_event_base_t event_base, 
-                               int32_t event_id, void* event_data)
-{
-    httpd_handle_t* server = (httpd_handle_t*) arg;
-    if (*server) {
-        ESP_LOGI(TAG_SERVERMAIN, "Stopping webserver");
-        stop_webserver(*server);
-        *server = NULL;
-    }
-}
-
-void connect_handler(void* arg, esp_event_base_t event_base, 
-                            int32_t event_id, void* event_data)
-{
-    httpd_handle_t* server = (httpd_handle_t*) arg;
-    if (*server == NULL) {
-        ESP_LOGI(TAG_SERVERMAIN, "Starting webserver");
-        *server = start_webserver();
-    }
-}
