@@ -8,7 +8,7 @@
 
 ### Changed
 
--   n.a.
+-   Updated built environment to `espressif32@v5.2.0`
 
 ### Fixed
 
