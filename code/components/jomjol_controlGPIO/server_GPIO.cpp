@@ -27,7 +27,7 @@
 #include "Helper.h"
 #include "interface_mqtt.h"
 
-#include "server_main.h"
+#include "basic_auth.h"
 
 static const char *TAG_SERVERGPIO = "server_GPIO";
 QueueHandle_t gpio_queue_handle = NULL;

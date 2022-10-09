@@ -17,10 +17,6 @@
 
 extern httpd_handle_t server;
 
-esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler(httpd_req_t *));
-
-#define APPLY_BASIC_AUTH_FILTER(method) [](httpd_req_t *req){ return basic_auth_request_filter(req, method); }
-
 httpd_handle_t start_webserver(void);
 void register_server_main_uri(httpd_handle_t server, const char *base_path);
 

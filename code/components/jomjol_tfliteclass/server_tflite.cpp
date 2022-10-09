@@ -23,7 +23,7 @@
 #include "server_file.h"
 #include "connect_wlan.h"
 
-#include "server_main.h"
+#include "basic_auth.h"
 
 #define DEBUG_DETAIL_ON       
 

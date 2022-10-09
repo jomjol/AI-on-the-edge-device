@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string.h>
 
-
 std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
 {
 	std::vector<string> Output;
@@ -38,7 +37,7 @@ std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter =
 
 
 
-void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns)
+void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, char *&_http_username, char *&_http_password)
 {
     std::string ssid = "";
     std::string passphrase = "";
@@ -46,6 +45,8 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     std::string gw = "";
     std::string netmask = "";
     std::string dns = "";
+    std::string http_username = "";
+    std::string http_password = "";
 
     std::string line = "";
     std::vector<string> zerlegt;
@@ -119,6 +120,19 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
             }
         }
 
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HTTP_USERNAME")){
+            http_username = zerlegt[1];
+            if ((http_username[0] == '"') && (http_username[http_username.length()-1] == '"')){
+                http_username = http_username.substr(1, http_username.length()-2);
+            }
+        }
+
+        if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "HTTP_PASSWORD")){
+            http_password = zerlegt[1];
+            if ((http_password[0] == '"') && (http_password[http_password.length()-1] == '"')){
+                http_password = http_password.substr(1, http_password.length()-2);
+            }
+        }
 
         if (fgets(zw, 1024, pFile) == NULL)
         {
@@ -177,9 +191,23 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     }
     else
         _dns = NULL;
+
+    if (http_username.length() > 0)
+    {
+        _http_username = new char[http_username.length() + 1];
+        strcpy(_http_username, http_username.c_str());
+    }
+    else
+        _http_username = NULL;
+
+    if (http_password.length() > 0)
+    {
+        _http_password = new char[http_password.length() + 1];
+        strcpy(_http_password, http_password.c_str());
+    }
+    else
+        _http_password = NULL;
 }
-
-
 
 
 bool ChangeHostName(std::string fn, std::string _newhostname)
@@ -252,4 +280,3 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     return true;
 }
-

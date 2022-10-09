@@ -43,7 +43,7 @@ extern "C" {
 #include "Helper.h"
 #include "miniz.h"
 
-#include "server_main.h"
+#include "basic_auth.h"
 
 /* Max length a file path can have on storage */
 // #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)

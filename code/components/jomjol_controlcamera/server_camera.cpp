@@ -8,7 +8,7 @@
 
 #include "ClassLogFile.h"
 
-#include "server_main.h"
+#include "basic_auth.h"
 
 #define SCRATCH_BUFSIZE2  8192 
 char scratch2[SCRATCH_BUFSIZE2];

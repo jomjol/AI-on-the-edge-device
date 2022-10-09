@@ -28,6 +28,7 @@
 #include "server_main.h"
 #include "server_camera.h"
 #include "Helper.h"
+#include "basic_auth.h"
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -40,11 +41,9 @@ extern const char* BUILD_TIME;
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
 
-
 #define __SD_USE_ONE_LINE_MODE__
 
 #include "server_GPIO.h"
-
 
 #define BLINK_GPIO GPIO_NUM_33
 
@@ -164,8 +163,8 @@ extern "C" void app_main(void)
 
     CheckOTAUpdate();
 
-    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
+    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL, *http_username = NULL, *http_password = NULL;
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, http_username, http_password);
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
@@ -187,9 +186,15 @@ extern "C" void app_main(void)
     if (dns != NULL)
        printf("DNS IP: %s\n", dns);
 
+#ifdef __HIDE_PASSWORD
+        printf("\nHTTP: %s, XXXXXX\n", http_username);
+#else
+        printf("\nHTTP: %s, %s\n", http_username, http_password);
+#endif        
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns); 
 
+    init_basic_auth(http_username, http_password);
 
     xDelay = 2000 / portTICK_PERIOD_MS;
     printf("main: sleep for : %ldms\n", (long) xDelay);
