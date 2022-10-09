@@ -35,6 +35,8 @@
 
 #include "Helper.h"
 
+#include "server_main.h"
+
 
 // #define DEBUG_DETAIL_ON 
 
@@ -537,13 +539,13 @@ void register_server_ota_sdcard_uri(httpd_handle_t server)
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;
     camuri.uri       = "/ota";
-    camuri.handler   = handler_ota_update;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_ota_update);
     camuri.user_ctx  = (void*) "Do OTA";    
     httpd_register_uri_handler(server, &camuri);
 
     camuri.method    = HTTP_GET;
     camuri.uri       = "/reboot";
-    camuri.handler   = handler_reboot;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_reboot);
     camuri.user_ctx  = (void*) "Reboot";    
     httpd_register_uri_handler(server, &camuri);
 

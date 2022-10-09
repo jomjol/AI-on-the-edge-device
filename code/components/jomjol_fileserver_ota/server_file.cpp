@@ -43,6 +43,8 @@ extern "C" {
 #include "Helper.h"
 #include "miniz.h"
 
+#include "server_main.h"
+
 /* Max length a file path can have on storage */
 // #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
 #define FILE_PATH_MAX (255)
@@ -929,7 +931,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_download = {
         .uri       = "/fileserver*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = download_get_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(download_get_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_download);
@@ -939,7 +941,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_logfileact = {
         .uri       = "/logfileact",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = logfileact_get_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(logfileact_get_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_logfileact);
@@ -949,7 +951,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_upload = {
         .uri       = "/upload/*",   // Match all URIs of type /upload/path/to/file
         .method    = HTTP_POST,
-        .handler   = upload_post_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(upload_post_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_upload);
@@ -958,7 +960,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_delete = {
         .uri       = "/delete/*",   // Match all URIs of type /delete/path/to/file
         .method    = HTTP_POST,
-        .handler   = delete_post_handler,
+        .handler   = APPLY_BASIC_AUTH_FILTER(delete_post_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_delete);

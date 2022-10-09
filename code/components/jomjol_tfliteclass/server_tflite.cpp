@@ -23,6 +23,8 @@
 #include "server_file.h"
 #include "connect_wlan.h"
 
+#include "server_main.h"
+
 #define DEBUG_DETAIL_ON       
 
 
@@ -797,52 +799,52 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.method    = HTTP_GET;
 
     camuri.uri       = "/doinit";
-    camuri.handler   = handler_init;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_init);
     camuri.user_ctx  = (void*) "Light On";    
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/setPreValue.html";
-    camuri.handler   = handler_prevalue;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_prevalue);
     camuri.user_ctx  = (void*) "Prevalue";    
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/doflow";
-    camuri.handler   = handler_doflow;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_doflow);
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/statusflow.html";
-    camuri.handler   = handler_statusflow;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_statusflow);
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
     
     camuri.uri       = "/cputemp.html";
-    camuri.handler   = handler_cputemp;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_cputemp);
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/rssi.html";
-    camuri.handler   = handler_rssi;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_rssi);
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/editflow.html";
-    camuri.handler   = handler_editflow;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_editflow);
     camuri.user_ctx  = (void*) "EditFlow"; 
     httpd_register_uri_handler(server, &camuri);     
 
     camuri.uri       = "/value.html";
-    camuri.handler   = handler_wasserzaehler;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_wasserzaehler);
     camuri.user_ctx  = (void*) "Value"; 
     httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/wasserzaehler.html";
-    camuri.handler   = handler_wasserzaehler;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_wasserzaehler);
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
     httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/json";
-    camuri.handler   = handler_json;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_json);
     camuri.user_ctx  = (void*) "JSON"; 
     httpd_register_uri_handler(server, &camuri);     
 

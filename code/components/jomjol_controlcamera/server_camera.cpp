@@ -8,6 +8,8 @@
 
 #include "ClassLogFile.h"
 
+#include "server_main.h"
+
 #define SCRATCH_BUFSIZE2  8192 
 char scratch2[SCRATCH_BUFSIZE2];
 
@@ -223,27 +225,27 @@ void register_server_camera_uri(httpd_handle_t server)
     camuri.method    = HTTP_GET;
 
     camuri.uri       = "/lighton";
-    camuri.handler   = handler_lightOn;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_lightOn);
     camuri.user_ctx  = (void*) "Light On";    
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/lightoff";
-    camuri.handler   = handler_lightOff;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_lightOff);
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);    
 
     camuri.uri       = "/capture";
-    camuri.handler   = handler_capture;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_capture);
     camuri.user_ctx  = NULL; 
     httpd_register_uri_handler(server, &camuri);      
 
     camuri.uri       = "/capture_with_flashlight";
-    camuri.handler   = handler_capture_with_ligth;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_capture_with_ligth);
     camuri.user_ctx  = NULL; 
     httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/save";
-    camuri.handler   = handler_capture_save_to_file;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(handler_capture_save_to_file);
     camuri.user_ctx  = NULL; 
     httpd_register_uri_handler(server, &camuri);    
 }

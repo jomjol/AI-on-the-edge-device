@@ -59,7 +59,7 @@ static char *http_auth_basic(const char *username, const char *password)
     return digest;
 }
 
-static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler(httpd_req_t *))
+esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler(httpd_req_t *))
 {
     char *buf = NULL;
     size_t buf_len = 0;
@@ -110,11 +110,6 @@ static esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_
 
     return ret;
 }
-
-esp_err_t info_get_handler(httpd_req_t *req);
-
-#define APPLY_BASIC_AUTH_FILTER(method) [](httpd_req_t *req){ return basic_auth_request_filter(req, method); }
-
 
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)

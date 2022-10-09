@@ -27,6 +27,8 @@
 #include "Helper.h"
 #include "interface_mqtt.h"
 
+#include "server_main.h"
+
 static const char *TAG_SERVERGPIO = "server_GPIO";
 QueueHandle_t gpio_queue_handle = NULL;
 
@@ -439,7 +441,7 @@ void GpioHandler::registerGpioUri()
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;
     camuri.uri       = "/GPIO";
-    camuri.handler   = callHandleHttpRequest;
+    camuri.handler   = APPLY_BASIC_AUTH_FILTER(callHandleHttpRequest);
     camuri.user_ctx  = (void*)this;    
     httpd_register_uri_handler(_httpServer, &camuri);
 }
