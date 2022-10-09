@@ -35,6 +35,7 @@ std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, 
         else
             json += "    \"value\": \"\","  + _lineend;
         json += "    \"raw\": \""        + NUMBERS[i]->ReturnRawValue              + "\","  + _lineend;
+        json += "    \"pre\": \""        + NUMBERS[i]->ReturnPreValue              + "\","  + _lineend;
         json += "    \"error\": \""     + NUMBERS[i]->ErrorMessageText             + "\","  + _lineend;
         if (NUMBERS[i]->ReturnRateValue.length() > 0)
             json += "    \"rate\": "      + NUMBERS[i]->ReturnRateValue                + ","  + _lineend;
