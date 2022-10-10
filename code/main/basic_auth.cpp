@@ -12,10 +12,8 @@ typedef struct {
 basic_auth_info_t basic_auth_info = { NULL, NULL };
 
 void init_basic_auth(char *username, char *password) {
-    printf("\nHTTP init: %s, %s\n", username, password);
     basic_auth_info.username = username;
     basic_auth_info.password = password;
-    printf("\nAfter init: %p, %p\n", basic_auth_info.username, basic_auth_info.password);
 }
 
 static char *http_auth_basic(const char *username, const char *password)

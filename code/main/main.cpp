@@ -41,9 +41,11 @@ extern const char* BUILD_TIME;
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
 
+
 #define __SD_USE_ONE_LINE_MODE__
 
 #include "server_GPIO.h"
+
 
 #define BLINK_GPIO GPIO_NUM_33
 
@@ -187,9 +189,11 @@ extern "C" void app_main(void)
        printf("DNS IP: %s\n", dns);
 
 #ifdef __HIDE_PASSWORD
-        printf("\nHTTP: %s, XXXXXX\n", http_username);
+        if (http_username != NULL && http_password != NULL)
+            printf("\nHTTP: %s, XXXXXX\n", http_username);
 #else
-        printf("\nHTTP: %s, %s\n", http_username, http_password);
+        if (http_username != NULL && http_password != NULL)
+            printf("\nHTTP: %s, %s\n", http_username, http_password);
 #endif        
 
     wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns); 
