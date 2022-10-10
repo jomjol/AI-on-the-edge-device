@@ -4,7 +4,7 @@
 
 ### Added
 
--   n.a.
+-   Addes PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
 
 ### Changed
 
