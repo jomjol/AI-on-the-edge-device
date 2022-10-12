@@ -26,7 +26,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
@@ -192,7 +192,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "name=sha_short::$(git rev-parse --short HEAD)"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
     - name: Prepare artifacts for release
       run: |
@@ -262,7 +262,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "name=sha_short::$(git rev-parse --short HEAD)"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
 
     - name: Prepare artifacts for release
