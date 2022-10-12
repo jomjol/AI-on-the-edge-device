@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
 
@@ -20,7 +20,7 @@ jobs:
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
     - name: Cache PlatformIO
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -59,7 +59,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -109,7 +109,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -177,7 +177,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -192,7 +192,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "name=sha_short::$(git rev-parse --short HEAD)"
 
     - name: Prepare artifacts for release
       run: |
@@ -231,7 +231,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -262,7 +262,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "name=sha_short::$(git rev-parse --short HEAD)"
 
 
     - name: Prepare artifacts for release
