@@ -305,7 +305,7 @@ void test_doFlow() {
 
        // Fehler bei V12.0.1 
         // Lokal
-        digits = { 9.8, 9.8, 1.9, 0.9, 0.9, 9.9, 2.9, 4.8};  // 169.3493 als falsches Ergebnis
+        digits = { 9.8, 9.8, 1.9, 0.9, 0.9, 9.9, 2.9, 4.8};  // 211.0355 als falsches Ergebnis
         analogs = { 5.5};
         expected = "211.0345";
         expected_extended= "211.03455";
