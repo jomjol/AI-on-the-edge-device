@@ -303,6 +303,20 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
+       // Fehler bei V12.0.1 
+        // Lokal
+        digits = { 9.8, 9.8, 1.9, 0.9, 0.9, 9.9, 2.9, 4.8};  // 169.3493 als falsches Ergebnis
+        analogs = { 5.5};
+        expected = "211.0345";
+        expected_extended= "211.03455";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 }
 
@@ -388,9 +402,11 @@ std::string process_doFlow(std::vector<float> analog, std::vector<float> digits,
     }
 
     string time;
+ 
     // run test
     TEST_ASSERT_TRUE(undertestPost->doFlow(time));
 
+ 
     return undertestPost->getReadout(0);
 
 }
