@@ -395,6 +395,22 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
+
+        // Fehler bei rolling post V12.0.1 
+        // lokal watermeter1
+        digits = { 0.0, 0.0, 9.0, 1.0};  //91.88174 als falsches Ergebnis
+        analogs = {9.0,  8.0, 1.8, 7.4};
+        expected = "90.8817";
+        expected_extended= "90.88174";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
 }
 
 
