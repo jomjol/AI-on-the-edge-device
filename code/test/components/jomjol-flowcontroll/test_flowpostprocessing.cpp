@@ -363,6 +363,37 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
+        
+        // Fehler bei V12.0.1 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issue-1391153343
+        digits = { 1.0, 4.0, 2.0};  // 142.9269 als falsches Ergebnis
+        analogs = { 9.2, 2.5, 6.8, 9.0};
+        expected = "141.9269";
+        expected_extended= "141.92690";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+
+       // Fehler bei V12.0.1 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1262626388
+        digits = { 1.2, 6.8, 0.0, 0.0, 5.0, 2.8};  //170.05387 als falsches Ergebnis
+        analogs = { 8.7};
+        expected = "170.0528";
+        expected_extended= "170.05287";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 }
 
