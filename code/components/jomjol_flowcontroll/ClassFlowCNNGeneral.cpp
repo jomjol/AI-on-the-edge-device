@@ -10,7 +10,7 @@
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = true;
+bool debugdetailgeneral = false;
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -239,7 +239,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
 
         // Ziffer bleibt bei x.8 oder x.9 "hängen", kommt also nicht richtig auf x.0
         // muss eine Rundung erfolgen
-        if (eval_vorgaenger<8 && ergebnis_nachkomma >= 8)   
+        if (eval_vorgaenger<8 && ergebnis_nachkomma >= 7)   
             result = ((int) round(zahl) + 10) % 10;
         else
             result = ergebnis_vorkomma;
