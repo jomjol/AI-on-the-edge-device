@@ -9,83 +9,65 @@
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
 h3 {font-size: 1.2em;}
-h4 {
-  margin-bottom: 0;
-}
-
 p {font-size: 1em;}
 
-table {
-    border: 0pt;
-    border-collapse: collapse;
-}
-
-
-tr {
-    border-bottom: 1px solid lightgray;
-}
-
-td {
-    padding: 10px;
-}
-
 .button {
-    padding: 5px 20px;
+	padding: 5px 20px;
     width: 211px;
-    font-size: 16px;	
+	font-size: 16px;	
 }
 
 textarea {
-    font-size: 14px;
+	font-size: 14px;
 }
 
 .description {
-    color: black;
-    font-size: 80%;
+	color: black;
+	font-size: 80%;
 }
 
 .disabled {
-    color:lightgrey;
+	color:lightgrey;
 }
 
 .smallSelect {
-    width: 30px;
+	width: 30px;
 }
 
 .invalid-input {
-    background-color: #FFAA00;
+	background-color: #FFAA00;
 }
 
 .hidden {
-    display: none;
+	display: none;
 }
-
-.expert {
-    background-color: #ffc5c5;
-}
-
-.indent1 {
-    padding-left: 40px;
-}
-
-.indent2 {
-    padding-left: 69px;
-}
-
 </style>
 
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-	<h2>Configuration</h2>
-	<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
-	<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>	
-	<p></p>
+	<table style="width:100%">
+		<tr>
+			<td>
+				<h2>Config.ini:</h2>
+			</td>
+			<td>
+				<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>
+				<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
+			</td>
+		</tr>
+	</table>
+
+	<br>
+
 	<div id = "divall" style="display:none">
 
 	<table>
 		<tr>
-			<th  width="350px"  style="text-align: left;">
+			<th width="20px"  style="text-align: left;">
+				Enable
+			</th>
+			<th  width="200px"  style="text-align: left;">
 				Parameter
 			</th>
 			<th style="text-align: left;">
@@ -97,12 +79,14 @@ textarea {
 		</tr>
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>TakeImage</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4>MakeImage</h4></td>
 		</tr> 
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MakeImage_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogImageLocation")' unchecked >
-				<label for=MakeImage_LogImageLocation_enabled><class id="MakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class>
 			</td>
 			<td>
 				<input type="text" name="name" id="MakeImage_LogImageLocation_value1">
@@ -112,20 +96,24 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogfileRetentionInDays")' unchecked >
-				<label for=MakeImage_LogfileRetentionInDays_enabled><class id="MakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+			<td width="20px" style="padding-left: 40px;">
+				<td"><input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogfileRetentionInDays")' unchecked ></td>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
+				<class id="MakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
 			</td>
 			<td class="description">
-				Time to keep the raw image (in days, resp. "0" = forever)
+				Time to keep the raw image (in days -"0" = forever)
 			</td>
 		</tr>
 		<tr class="expert" id="ex1">
 			
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
 			</td>
 			<td>
@@ -136,11 +124,13 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert" id="ex2">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="0" max="63">
+				<input type="number" id="MakeImage_ImageQuality_value1" size="13"   min="0" max="63">
 			</td>
 			<td class="description">
 				Quality index for picture (default = "12" - "0" high ... "63" low) <br>
@@ -148,7 +138,9 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_ImageSize_text" style="color:black;">ImageSize</class>
 			</td>
 			<td>
@@ -163,11 +155,13 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="LEDIntensity_ex3">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_LEDIntensity_value1" size="13" min="0" max="100">
+				<input type="number" id="MakeImage_LEDIntensity_value1" size="13"   min="0" max="100">
 			</td>
 			<td style="font-size: 80%;">
 				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
@@ -176,11 +170,13 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="Brightness_ex3">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Brightness_value1" size="13" min="-2" max="2">
+				<input type="number" id="MakeImage_Brightness_value1" size="13"   min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Brightness (-2 .. 2 - default = "0")
@@ -188,11 +184,13 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="Contrast_ex3">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Contrast_value1" size="13" min="-2" max="2">
+				<input type="number" id="MakeImage_Contrast_value1" size="13"   min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Contrast (-2 .. 2 - default = "0") <br>
@@ -201,11 +199,13 @@ textarea {
 		</tr>
 
 		<tr class="expert"  id="Saturation_ex3">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Saturation_value1" size="13" min="-2" max="2">
+				<input type="number" id="MakeImage_Saturation_value1" size="13"   min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Saturation (-2 .. 2 - default = "0") <br>
@@ -214,7 +214,9 @@ textarea {
 		</tr>
 		
 		<tr class="expert"  id="MakeImage_FixedExposure_ex10">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
 				<class id="MakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
 			</td>
 			<td>
@@ -230,11 +232,13 @@ textarea {
 
 
 		<tr class="expert"  id="ex4">
-			<td colspan="3" style="padding-left: 20px;"><h4>Alignment</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4>Alignment</h4></td>
 		</tr> 
 		<tr class="expert"  id="ex6">
-			<td class="indent1">
-			    <class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
+			<td  width="20px"  style="padding-left: 40px;">
+			</td>
+			<td width="200px">
+				<class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
 			</td>
 			<td>
 				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
@@ -244,7 +248,9 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex8">
-			<td class="indent1">
+			<td  width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="Alignment_SearchFieldY_text" style="color:black;">SearchFieldY</class>
 			</td>
 			<td>
@@ -255,9 +261,11 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
-			<td class="indent1">
+			<td  width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
-				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class></label>
+			</td>
+			<td>
+				<class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class>
 			</td>
 			<td>
 				<select id="Alignment_AlignmentAlgo_value1">
@@ -265,7 +273,7 @@ textarea {
 					<option value="highAccuracy" >HighAccuracy</option>
 					<option value="fast" >Fast</option>
 				</select>
-			</td>
+				</td>
 			<td style="font-size: 80%;">
 				"Default" = use only R-Channel, "HighAccuracy" = use all Channels (RGB, 3x slower), <br> "Fast" (First time RGB, then only check if image is shifted) 
 			</td>
@@ -273,13 +281,13 @@ textarea {
 
 
 		<tr id="Category_Digits_ex4">
-			<td colspan="3" style="padding-left: 20px;">
-				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Digits_enabled>Digits</h4></label>
-			</td>
+			<td colspan="4" style="padding-left: 20px;">
+				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >Digits</h4></td>
 		</tr> 
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
 				<class id="Digits_Model_text" style="color:black;">Model</class>
 			</td>
 			<td>
@@ -292,9 +300,11 @@ textarea {
 		</tr>
 		
 		<tr class="expert"  id="ex91">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Digits_CNNGoodThreshold_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "CNNGoodThreshold")' unchecked >
-				<label for=Digits_CNNGoodThreshold_enabled><class id="Digits_CNNGoodThreshold_text" style="color:black;">CNNGoodThreshold</class></label>
+			</td>
+			<td>
+				<class id="Digits_CNNGoodThreshold_text" style="color:black;">CNNGoodThreshold</class>
 			</td>
 			<td>
 				<input width="40px" type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1">
@@ -305,9 +315,11 @@ textarea {
 		</tr>
 
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Digits_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogImageLocation")' unchecked >
-				<label for=Digits_LogImageLocation_enabled><class id="Digits_LogImageLocation_text" style="color:black;">LogImageLocation</class></label>
+			</td>
+			<td>
+				<class id="Digits_LogImageLocation_text" style="color:black;">LogImageLocation</class>
 			</td>
 			<td>
 				<input type="text" name="name" id="Digits_LogImageLocation_value1">
@@ -317,21 +329,25 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="Digits_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogfileRetentionInDays")' unchecked >
-				<label for=Digits_LogfileRetentionInDays_enabled><class id="Digits_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="Digits_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogfileRetentionInDays")' unchecked ></td>
+			</td>
+			<td>
+				<class id="Digits_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
 			</td>
 			<td>
 				<input type="number" id="Digits_LogfileRetentionInDays_value1" min="0"  step="1">
 			</td>
 			<td style="font-size: 80%;">
-				Time to keep the separated digit images (in days, resp. "0" = forever)
+				Time to keep the separated digit images (in days -"0" = forever)
 			</td>
 		</tr>
 <!--
 
 		<tr class="expert"  id="ex9">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
 				<class id="Digits_ModelInputSize_text" style="color:black;">ModelInputSize</class>
 			</td>
 			<td>
@@ -345,15 +361,12 @@ textarea {
 -->
 
 		<tr id="Category_Analog_ex4">
-			<td colspan="3" style="padding-left: 20px;">
-				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Analog_enabled>Analog</h4></label>
-			</td>
+			<td colspan="4" style="padding-left: 20px;">
+				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > Analog</h4></td>
 		</tr> 
 		<tr>
-			<td class="indent1">
-			    <class id="Analog_Model_text" style="color:black;">Model</class>
-			</td>
+			<td width="20px"  style="padding-left: 40px;"> </td>
+			<td width="200px"> <class id="Analog_Model_text" style="color:black;">Model</class> </td>
 			<td> 
 				<select id="Analog_Model_value1">
 				</select>
@@ -361,26 +374,26 @@ textarea {
 			<td style="font-size: 80%;"> Path to CNN model file for image recognition. Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Choosing-the-Model" target="_blank">documentation</a> for details.</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Analog_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogImageLocation")' unchecked >
-				<label for=Analog_LogImageLocation_enabled><class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class>
-				</label>
 			</td>
+			<td> <class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class> </td>
 			<td> <input type="text" name="name" id="Analog_LogImageLocation_value1"> </td>
 			<td style="font-size: 80%;"> Location to store separated digits for logging </td>
 		</tr>
 		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogfileRetentionInDays")' unchecked >
-				<label for=Analog_LogfileRetentionInDays_enabled><class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label></td>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogfileRetentionInDays")' unchecked ></td>
+			</td>
+			<td> <class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class> </td>
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
-			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
+			<td style="font-size: 80%;"> Time to keep the separated digit images (in days -"0" = forever) </td>
 		</tr>
 
 <!--
 
 		<tr class="expert"  id="ex10">
-			<td class="indent1"> </td>
+			<td width="20px"  style="padding-left: 40px;"> </td>
 			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
 			<td>
 				x: <input type="number" id="Analog_ModelInputSize_value1" class="smallSelect" min="1" step="1">
@@ -391,12 +404,14 @@ textarea {
 -->
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>PostProcessing</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4>PostProcessing</h4></td>
 		</tr> 		
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueUse")' unchecked >
-				<label for=PostProcessing_PreValueUse_enabled><class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class>
 			</td>
 			<td>
 				<select id="PostProcessing_PreValueUse_value1">
@@ -409,21 +424,25 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex11">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
-				<label for=PostProcessing_PreValueAgeStartup_enabled><class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">PreValueAgeStartup</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">PreValueAgeStartup</class>
 			</td>
 			<td>
-				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0">
+				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13"  min="0">
 			</td>
 			<td style="font-size: 80%;">
 				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
-				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class>
 			</td>
 			<td>
 				<select id="PostProcessing_AllowNegativeRates_value1">
@@ -436,9 +455,11 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex12">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
-				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class>
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
@@ -451,9 +472,11 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert" id="ex1dddd">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "CheckDigitIncreaseConsistency")' unchecked >
-				<label for=PostProcessing_CheckDigitIncreaseConsistency_enabled><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class>
 			</td>
 			<td>
 				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
@@ -467,7 +490,7 @@ textarea {
 		</tr>
 
 		<tr>
-			<td class="indent1" colspan="3">
+			<td style="padding-left: 40px;" colspan="4">
 				<br>
 				<b>Postprocessing Individual Parameters: 
                 <select id="Numbers_value1" onchange="numberChanged()">
@@ -478,9 +501,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
-				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class>
 			</td>
 			<td>
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
@@ -490,9 +515,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
-				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class>
 			</td>
 			<td>
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
@@ -502,9 +529,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
-				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class>
 			</td>
 			<td>
 				<select id="PostProcessing_MaxRateType_value1">
@@ -517,9 +546,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ExtendedResolution")' unchecked >
-			<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class>
 			</td>
 			<td>
 				<select id="PostProcessing_ExtendedResolution_value1">
@@ -533,9 +564,11 @@ textarea {
 		</tr>
 		
 		<tr>
-			<td id="ex121" class="indent1">
+			<td id="ex121" width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="PostProcessing_IgnoreLeadingNaN_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "IgnoreLeadingNaN")' unchecked >
-			<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
+			</td>
+			<td  width="200px">
+				<class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class>
 			</td>
 			<td>
 				<select id="PostProcessing_IgnoreLeadingNaN_value1">
@@ -551,17 +584,14 @@ textarea {
 
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;">
-			    <h4>
-				<input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_MQTT_enabled>MQTT</label>
-			    </h4>
-			</td>
+			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > MQTT</h4></td>
 		</tr> 		
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "Uri")' unchecked >
-				<label for=MQTT_Uri_enabled><class id="MQTT_Uri_text" style="color:black;">Uri</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MQTT_Uri_text" style="color:black;">Uri</class>
 			</td>
 			<td>
 				<input type="text" id="MQTT_Uri_value1">
@@ -571,9 +601,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_MainTopic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopic")' unchecked >
-				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">MainTopic</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MQTT_MainTopic_text" style="color:black;">MainTopic</class>
 			</td>
 			<td>
 				<input type="text" id="MQTT_MainTopic_value1">
@@ -589,9 +621,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
-				<label for=MQTT_ClientID_enabled><class id="MQTT_ClientID_text" style="color:black;">ClientID</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MQTT_ClientID_text" style="color:black;">ClientID</class>
 			</td>
 			<td>
 				<input type="text" id="MQTT_ClientID_value1">
@@ -601,9 +635,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "user")' unchecked >
-				<label for=MQTT_user_enabled><class id="MQTT_user_text" style="color:black;">user</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MQTT_user_text" style="color:black;">user</class>
 			</td>
 			<td>
 				<input type="text" id="MQTT_user_value1">
@@ -613,9 +649,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "password")' unchecked >
-				<label for=MQTT_password_enabled><class id="MQTT_password_text" style="color:black;">password</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MQTT_password_text" style="color:black;">password</class>
 			</td>
 			<td>
 				<input type="text" id="MQTT_password_value1">
@@ -625,9 +663,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="MQTT_SetRetainFlag_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "SetRetainFlag")' unchecked >
-				<label for=MQTT_SetRetainFlag_enabled><class id="MQTT_SetRetainFlag_text" style="color:black;">Enable MQTT Retain Flag</class></label>
+			</td>
+			<td  width="200px">
+				<class id="MQTT_SetRetainFlag_text" style="color:black;">Enable MQTT Retain Flag</class>
 			</td>
 			<td>
 				<select id="MQTT_SetRetainFlag_value1">
@@ -641,17 +681,14 @@ textarea {
 		</tr>
                                  
 		<tr>
-			<td colspan="3" style="padding-left: 20px;">
-			    <h4>
-				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDB_enabled>InfluxDB</label>
-			    </h4>
-			</td>
+			<td colspan="4" style="padding-left: 20px;"><h4><input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked > InfluxDB</h4></td>
 		</tr> 		
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
-				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">Uri</class></label>
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_Uri_text" style="color:black;">Uri</class>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_Uri_value1">
@@ -661,9 +698,11 @@ textarea {
 			</td>
 		</tr>
                 <tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="InfluxDB_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Database")' unchecked >
-				<label for=InfluxDB_Database_enabled><class id="InfluxDB_Database_text" style="color:black;">Database</class></label>
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_Database_text" style="color:black;">Database</class>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_Database_value1">
@@ -673,9 +712,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="InfluxDB_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Measurement")' unchecked >
-				<label for=InfluxDB_Measurement_enabled><class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class></label>
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_Measurement_value1">
@@ -685,9 +726,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")' unchecked >
-				<label for=InfluxDB_user_enabled><class id="InfluxDB_user_text" style="color:black;">user</class></label>
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_user_text" style="color:black;">user</class>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_user_value1">
@@ -697,9 +740,11 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="InfluxDB_password_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "password")' unchecked >
-				<label for=InfluxDB_password_enabled><class id="InfluxDB_password_text" style="color:black;">password</class></label>
+			</td>
+			<td  width="200px">
+				<class id="InfluxDB_password_text" style="color:black;">password</class>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_password_value1">
@@ -711,11 +756,13 @@ textarea {
 		
 	
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
 		</tr> 			
 		<tr class="expert"  id="ex13">
-			<td class="indent1">
-			    <class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
+				<class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
 			</td>
 			<td>
 				<select id="AutoTimer_AutoStart_value1">
@@ -728,8 +775,10 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
-			    <class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td  width="200px">
+				<class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
 			</td>
 			<td>
 				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
@@ -740,39 +789,45 @@ textarea {
 		</tr>
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;">
+			<td colspan="4" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
-				    <label for=Category_GPIO_enabled>GPIO Settings
-					<span class="GPIO_Item" > - Enabling GPIO handler, disable by default integrated flash light. Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
+					GPIO Settings
+					<span class="GPIO_item" > - Enabling GPIO handler, disable by default integrated flash light. Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span>
 				</h4>	
 			</td>
 		</tr> 	
 
 		<!------------- GPIO0 begin ------------------>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' unchecked>
-				<label for=GPIO_IO0_enabled><span id="GPIO_IO0_text">GPIO 0 state</span></label>
 			</td>
 			<td>
+				<span id="GPIO_IO0_text">GPIO 0 state</span>
+			</td>
+			<td>
+				<td">
 					<select id="GPIO_IO0_value1">
 						<option value="input">input</option>
 						<option value="input-pullup">input pullup</option>
 						<option value="input-pulldown">input pulldown</option>
 						<option value="output">output</option>
 					</select>
+				</td>
 			</td>
 			<td class="description">
 				GPIO 0 Usable with restrictions.<br> 
-				<b>Must be disabled when camera is used.</b><br>
-				<b>Pin is used to activate flash mode and must therefore be HIGH when booting.</b>
+				<span style="color: red">Must be disabled when camera is used.</span><br>
+				<span style="color: red">Pin is used to activate flash mode and must therefore be HIGH when booting.</span>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span id="GPIO_IO0_text" class="GPIO_IO0 GPIO_item">GPIO 0 use interrupt</span>
 			</td>
 			<td>
+				<td">
 					<select id="GPIO_IO0_value2">
 						<option value="disabled">disabled</option>
 						<option value="rising-edge">rising edge</option>
@@ -782,42 +837,55 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
+			</td>
 			<td class="description">
 				GPIO 0 enable interrupt trigger
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 PWM duty resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
+			<td>
+				<td"><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
+			</td>
 			<td class="description">
 				GPIO 0 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable MQTT</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO0_value4"></td>
+			</td>
 			<td class="description">
 				GPIO 0 enable MQTT publishing/subscribing
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable HTTP</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO0_value5"></td>
+			</td>
 			<td class="description">
 				GPIO 0 enable HTTP write/read
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 name</span>
 			</td>
-			<td><input type="text" id="GPIO_IO0_value6"></td>
+			<td>
+				<td"><input type="text" id="GPIO_IO0_value6"></td>
+			</td>
 			<td class="description">
 				GPIO 0 MQTT topic name (empty = GPIO0). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
@@ -826,72 +894,91 @@ textarea {
 
 		<!------------- GPIO1 begin ------------------>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
-				<label=GPIO_IO1_enabled><span id="GPIO_IO1_text" class="GPIO_IO1 GPIO_item">GPIO 1 state</span>
 			</td>
 			<td>
+				<span id="GPIO_IO1_text" class="GPIO_IO1 GPIO_item">GPIO 1 state</span>
+			</td>
+			<td>
+				<td">
 					<select id="GPIO_IO1_value1">
 						<option value="input">input</option>
 						<option value="input-pullup">input pullup</option>
 						<option value="input-pulldown">input pulldown</option>
 						<option value="output">output</option>
 					</select>
+				</td>
 			</td>
 			<td class="description">
 				GPIO 1 <br><span style="color: blue">Used by default for serial communication as TX pin.<br>Required for seriales monitor.</span>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 use interrupt</span>
 			</td>
 			<td>
-				<select id="GPIO_IO1_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>
+				<td">
+					<select id="GPIO_IO1_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge" disabled>rising edge</option>
+						<option value="falling-edge" disabled>falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
 			</td>
 			<td class="description">
 				GPIO 1 enable interrupt trigger
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 PWM duty resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
+			<td>
+				<td"><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
+			</td>
 			<td class="description">
 				GPIO 1 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable MQTT</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO1_value4"></td>
+			</td>
 			<td class="description">
 				GPIO 1 enable MQTT publishing/subscribing
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable HTTP</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO1_value5"></td>
+			</td>
 			<td class="description">
 				GPIO 1 enable HTTP write/read
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 name</span>
 			</td>
-			<td><input type="text" id="GPIO_IO1_value6"></td>
+			<td>
+				<td"><input type="text" id="GPIO_IO1_value6"></td>
+			</td>
 			<td class="description">
 				GPIO 1 MQTT topic name (empty = GPIO1). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
@@ -900,72 +987,91 @@ textarea {
 
 		<!------------- GPIO3 begin ------------------>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
-				<label=GPIO_IO3_enabled><span id="GPIO_IO3_text" class="GPIO_IO3 GPIO_item">GPIO 3 state</span>
 			</td>
 			<td>
-				<select id="GPIO_IO3_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-				</select>
+				<span id="GPIO_IO3_text" class="GPIO_IO3 GPIO_item">GPIO 3 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO3_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+					</select>
+				</td>
 			</td>
 			<td class="description">
 				GPIO 3 <span style="color: blue">Used by default for serial communication as RX pin.</span>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 use interrupt</span>
 			</td>
 			<td>
-				<select id="GPIO_IO3_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>
+				<td">
+					<select id="GPIO_IO3_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge" disabled>rising edge</option>
+						<option value="falling-edge" disabled>falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
 			</td>
 			<td class="description">
 				GPIO 3 Used by default for serial communication as RX pin.
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 PWM duty resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
+			<td>
+				<td"><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
+			</td>
 			<td class="description">
 				GPIO 3 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable MQTT</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO3_value4"></td>
+			</td>
 			<td class="description">
 				GPIO 3 enable MQTT publishing/subscribing
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable HTTP</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO3_value5"></td>
+			</td>
 			<td class="description">
 				GPIO 3 enable HTTP write/read
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 name</span>
 			</td>
-			<td><input type="text" id="GPIO_IO3_value6"></td>
+			<td>
+				<td"><input type="text" id="GPIO_IO3_value6"></td>
+			</td>
 			<td class="description">
 				GPIO 3 MQTT topic name (empty = GPIO3). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
@@ -974,74 +1080,93 @@ textarea {
 
 		<!------------- GPIO4 begin ------------------>
 		<tr class="GPIO_IO4 GPIO_item">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO4")' unchecked>
-				<label for=GPIO_IO4_enabled><span id="GPIO_IO4_text" class="GPIO_IO4 GPIO_item">GPIO 4 state</span></label>
 			</td>
 			<td>
-				<select id="GPIO_IO4_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-					<option value="built-in-led">built-in led flash light</option>
-				</select>
+				<span id="GPIO_IO4_text" class="GPIO_IO4 GPIO_item">GPIO 4 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO4_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="built-in-led">built-in led flash light</option>
+					</select>
+				</td>
 			</td>
 			<td class="description">
 				GPIO 4 Usable with restrictions.<br> 
-				<b>Pin is used for build-in flash light.</b>
+				<span style="color: red">Pin is used for build-in flash light.</span>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 use interrupt</span>
 			</td>
 			<td>
-				<select id="GPIO_IO4_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge">rising edge</option>
-					<option value="falling-edge">falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
+				<td">
+					<select id="GPIO_IO4_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge">rising edge</option>
+						<option value="falling-edge">falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
 			</td>
 			<td class="description">
 				GPIO 4 enable interrupt trigger
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 PWM duty resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
+			<td>
+				<td"><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
+			</td>
 			<td class="description">
 				GPIO 4 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable MQTT</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO4_value4"></td>
+			</td>
 			<td class="description">
 				GPIO 4 enable MQTT publishing/subscribing
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable HTTP</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO4_value5"></td>
+			</td>
 			<td class="description">
 				GPIO 4 enable HTTP write/read
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 name</span>
 			</td>
-			<td><input type="text" id="GPIO_IO4_value6"></td>
+			<td>
+				<td"><input type="text" id="GPIO_IO4_value6"></td>
+			</td>
 			<td class="description">
 				GPIO 4 MQTT topic name (empty = GPIO4). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
@@ -1050,80 +1175,101 @@ textarea {
 
 		<!------------- GPIO12 begin ------------------>
 		<tr class="GPIO_IO12 GPIO_item">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
-				<label for=GPIO_IO12_enabled><span class="GPIO_IO12 GPIO_item" id="GPIO_IO12_text">GPIO 12 state</span></label>
 			</td>
 			<td>
-				<select id="GPIO_IO12_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
-				</select>
+				<span class="GPIO_IO12 GPIO_item" id="GPIO_IO12_text">GPIO 12 state</span>
+			</td>
+			<td>
+				<td">
+					<select id="GPIO_IO12_value1">
+						<option value="input">input</option>
+						<option value="input-pullup">input pullup</option>
+						<option value="input-pulldown">input pulldown</option>
+						<option value="output">output</option>
+						<option value="external-flash-ws281x">external flash light ws281x controlled</option>
+					</select>
+				</td>
 			</td>
 			<td class="description">
 				GPIO 12 is usable without restrictions
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 use interrupt</span>
 			</td>
 			<td>
-				<select class="GPIO_IO12 GPIO_item" id="GPIO_IO12_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge">rising edge</option>
-					<option value="falling-edge">falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
+				<td>
+					<select class="GPIO_IO12 GPIO_item" id="GPIO_IO12_value2">
+						<option value="disabled">disabled</option>
+						<option value="rising-edge">rising edge</option>
+						<option value="falling-edge">falling edge</option>
+						<option value="rising-and-falling">rising and falling</option>
+						<option value="low-level-trigger">low level trigger</option>
+						<option value="high-level-trigger">high level trigger</option>
+					</select>	
+				</td>
 			</td>
 			<td class="description">
 				GPIO 12 enable interrupt trigger
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 PWM duty resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
+			<td>
+				<td"><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
+			</td>
 			<td class="description">
 				GPIO 12 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable MQTT</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO12_value4"></td>
+			</td>
 			<td class="description">
 				GPIO 12 enable MQTT publishing/subscribing
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable HTTP</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO12_value5"></td>
+			</td>
 			<td class="description">
 				GPIO 12 enable HTTP write/read
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 name</span>
 			</td>
-			<td><input type="text" id="GPIO_IO12_value6"></td>
+			<td>
+				<td"><input type="text" id="GPIO_IO12_value6"></td>
+			</td>
 			<td class="description">
 				GPIO 12 MQTT topic name (empty = GPIO12). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
 		</tr>
 
 		<tr class="GPIO_IO12 GPIO_item" id="wstypeex3">
-			<td class="indent1">
+			<td width="20px" style="padding-left: 40px;">
+			</td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED-Type</span>
 			</td>
 			<td class="GPIO_IO12 GPIO_item">
@@ -1140,7 +1286,9 @@ textarea {
 		</tr>
 
 		<tr  class="GPIO_IO12 GPIO_item" id="LEDANZex8" >
-			<td class="indent1">
+			<td  width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
 			</td>
 			<td>
@@ -1151,10 +1299,12 @@ textarea {
 			</td>
 		</tr>
 		<tr  class="GPIO_IO12 GPIO_item" id="LEDRGBex9">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
+			</td>
+			<td>
 				<span class="GPIO_IO12 GPIO_item"  id="GPIO_LEDColor_text">LED Color</span>
 			</td>
-			<td class="GPIO_IO12 GPIO_item">
+			<td  class="GPIO_IO12 GPIO_item">
 				R <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1" size="12">
 				G <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2" size="12">
 				B <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3" size="12">
@@ -1169,27 +1319,33 @@ textarea {
 
 		<!------------- GPIO13 begin ------------------>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
-				<label=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO 13 state</span>
 			</td>
 			<td>
+				<span id="GPIO_IO13_text">GPIO 13 state</span>
+			</td>
+			<td>
+				<td">
 					<select id="GPIO_IO13_value1">
 						<option value="input">input</option>
 						<option value="input-pullup">input pullup</option>
 						<option value="input-pulldown">input pulldown</option>
 						<option value="output">output</option>
 					</select>
+				</td>
 			</td>
 			<td class="description">
 				GPIO 13 is usable without restrictions
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 use interrupt</span>
 			</td>
 			<td>
+				<td">
 					<select id="GPIO_IO13_value2">
 						<option value="disabled">disabled</option>
 						<option value="rising-edge" disabled>rising edge</option>
@@ -1199,42 +1355,55 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
+			</td>
 			<td class="description">
 				GPIO 13 enable interrupt trigger
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 PWM duty resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
+			<td>
+				<td"><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
+			</td>
 			<td class="description">
 				GPIO 13 LEDC PWM duty resolution in bit
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable MQTT</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO13_value4"></td>
+			</td>
 			<td class="description">
 				GPIO 13 enable MQTT publishing/subscribing
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable HTTP</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
+			<td>
+				<td"><input type="checkbox" id="GPIO_IO13_value5"></td>
+			</td>
 			<td class="description">
 				GPIO 13 enable HTTP write/read
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
-			<td class="indent2">
+			<td width="20px"  style="padding-left: 40px;"></td>
+			<td>
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 name</span>
 			</td>
-			<td><input type="text" id="GPIO_IO13_value6"></td>
+			<td>
+				<td"><input type="text" id="GPIO_IO13_value6"></td>
+			</td>
 			<td class="description">
 				GPIO 13 MQTT topic name (empty = GPIO13). Allowed characters (a-z, A-Z, 0-9, _, -)
 			</td>
@@ -1242,12 +1411,14 @@ textarea {
 		<!------------- GPIO13 end ------------------>
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>Debug</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4>Debug</h4></td>
 		</tr> 		
 		<tr>
-			<td class="indent1">
+			<td width="20px"  style="padding-left: 40px;">
 				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "Logfile")' unchecked >
-				<label for=Debug_Logfile_enabled><class id="Debug_Logfile_text" style="color:black;">Logfile</class></label>
+			</td>
+			<td  width="200px">
+				<class id="Debug_Logfile_text" style="color:black;">Logfile</class>
 			</td>
 			<td>
 				<select id="Debug_Logfile_value1">
@@ -1260,12 +1431,14 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked >
-				<label for=Debug_LogfileRetentionInDays_enabled><class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked ></td>
 			</td>
 			<td>
-				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13" min="0" step="1">
+				<class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13"  min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the log files (in days - "0" = forever)
@@ -1273,12 +1446,14 @@ textarea {
 		</tr>
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>System</h4></td>
+			<td colspan="4" style="padding-left: 20px;"><h4>System</h4></td>
 		</tr> 	
 		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked >
-				<label for=System_TimeZone_enabled><class id="System_TimeZone_text" style="color:black;">TimeZone</class></label>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked ></td>
+			</td>
+			<td>
+				<class id="System_TimeZone_text" style="color:black;">TimeZone</class>
 			</td>
 			<td>
 				<input type="text" id="System_TimeZone_value1">
@@ -1288,9 +1463,11 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
-			<td class="indent1">
-				<input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked >
-				<label for=System_TimeServer_enabled><class id="System_TimeServer_text" style="color:black;">TimeServer</class></label>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked ></td>
+			</td>
+			<td>
+				<class id="System_TimeServer_text" style="color:black;">TimeServer</class>
 			</td>
 			<td>
 				<input type="text" id="System_TimeServer_value1">
@@ -1300,12 +1477,15 @@ textarea {
 			</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">
-			<td class="indent1">
-				<input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked >
-				<label for=System_Hostname_enabled><class id="System_Hostname_text" style="color:black;">Hostname</class></label>
+			<td width="20px"  style="padding-left: 40px;">
+				<td"><input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked ></td>
+			</td>
+			<td>
+				<class id="System_Hostname_text" style="color:black;">Hostname</class>
 			</td>
 			<td>
 				<input type="text" id="System_Hostname_value1">
+			</td>
 			<td class="description">
 				Hostname for server - will be transfered to wlan.ini at next startup)
 			</td>
@@ -1494,7 +1674,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
 			}	
 		}
-		document.getElementById(_cat+"_"+_name+"_text").style="color: gray;"		
+		document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
 		setEnabled(_cat+"_"+_name, false);
 	}
 

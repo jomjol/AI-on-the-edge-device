@@ -189,11 +189,6 @@ jobs:
           ./sd-card/html/version.txt
         key: ${{ github.run_number }}
 
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
     - name: Prepare artifacts for release
       run: |
         mkdir -p firmware

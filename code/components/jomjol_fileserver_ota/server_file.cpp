@@ -769,7 +769,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 zw = std::string(archive_filename);
                 printf("Rohfilename: %s\n", zw.c_str());
 
-                if (getFileType(zw) == "BIN")
+                if (toUpper(zw) == "FIRMWARE.BIN")
                 {
                     zw = _target_bin + zw;
                     ret = zw;

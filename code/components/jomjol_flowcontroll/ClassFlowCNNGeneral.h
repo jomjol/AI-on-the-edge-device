@@ -28,7 +28,7 @@ protected:
     float DigitalUnschaerfe = 0.2;
     int DigitalBand = 3;
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
-    // nicht mehr benötigt float DigitalUebergangsbereichVorgaengerAnalogToDigit = 1; // war vorher 2
+    float DigitalUebergangsbereichVorgaengerAnalogToDigit = 1; // war vorher 2
     float DigitalUebergangsbereichVorgaenger = 0.7; // 9.3 - 0.7
     float DigitalUebergangsbereichVorlauf = 9.7; // Vorlauf-Nulldurchgang passiert erst ab ca. 9.7
 

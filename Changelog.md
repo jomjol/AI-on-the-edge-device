@@ -1,25 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
-### Added
-
--   Addes PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
-
-### Changed
-
--   Updated built environment to `espressif32@v5.2.0`
-
-### Fixed
-
--   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
--   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
-### Removed
-
--   n.a.
-
-
-
 ## [12.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v12.0.1), 2022-09-29
 
 Improve **u**ser e**x**perience 
