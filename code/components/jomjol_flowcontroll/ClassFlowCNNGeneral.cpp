@@ -234,18 +234,19 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
     // Beispiel dig=6.8, ana=2.2 ==> dig=7
     // dig=4.8, ana=5.5 => dig=4
 
-    // Aber zwischen ziffer_vorgaenger 3..8 keine Veränderung
-    if (ergebnis_nachkomma >= 1 || (ziffer_vorgaenger>3 && ziffer_vorgaenger<8) ) {
-
+    // Vorlauf bei ergebnis_nachkomma >=0..1 und ziffer_vorgaenger 8..9
+    if (ergebnis_nachkomma <= 1 &&  ziffer_vorgaenger>=8)  {
+        result =  (ergebnis_vorkomma - 1 + 10) % 10;
+    } else {
         // Ziffer bleibt bei x.8 oder x.9 "hängen", kommt also nicht richtig auf x.0
         // muss eine Rundung erfolgen
-        if (eval_vorgaenger<8 && ergebnis_nachkomma >= 7)   
+        // jedoch nicht im während der Transition (ziffer_vorgaenger>=8)
+         if (eval_vorgaenger<9 && ziffer_vorgaenger<8 && ergebnis_nachkomma >= 8)   
             result = ((int) round(zahl) + 10) % 10;
         else
             result = ergebnis_vorkomma;
-    } else
-        result =  (ergebnis_vorkomma - 1 + 10) % 10;
-
+    }
+    
     if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - 9.0 --> noch kein Nulldurchgang = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
     return result;

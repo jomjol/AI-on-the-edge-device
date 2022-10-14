@@ -82,7 +82,7 @@ void test_doFlow() {
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
   
         /*
-         * https://github.com/jomjol/AI-on-the-edge-device/issues/921
+         * https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1222672175
          * 
          * Das Ergebnis sollte "376529.6" sein. Bzw. 16.98 ohne Extended true
          */
@@ -418,6 +418,37 @@ void test_doFlow() {
         analogs = {3.6,  8.2, 3.2, 2.0};
         expected = "92.3832";
         expected_extended= "92.38320";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+        // Fehler  V12.0.1 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1143#issue-1400807695
+        digits = { 7.0, 4.0, 7.0, 2.0, 7.0, 5.4, 9.4};  // 7472.749 als falsches Ergebnis
+        analogs = {};
+        expected = "7472.759";
+        expected_extended= "7472.7594";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+        // Fehler  V12.0.1 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1143#issuecomment-1274434805
+        digits = { 4.9, 6.9, 6.8};  // 576.8649 als falsches Ergebnis
+        analogs = {8.6, 6.2, 5.0, 9.0};
+        // fall unklar ob wirklich 577 oder 576, erst mal 577
+        expected = "576.8649";
+        expected_extended= "576.86490";
         
         // extendResolution=false
         result = process_doFlow(analogs, digits, Digital100, false, false, 0);
