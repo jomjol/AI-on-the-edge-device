@@ -305,10 +305,10 @@ void test_doFlow() {
 
        // Fehler bei V12.0.1 
         // Lokal
-        digits = { 9.8, 9.8, 1.9, 0.9, 0.9, 9.9, 2.9, 4.8};  // 211.0355 als falsches Ergebnis
+        digits = { 9.8, 9.8, 1.9, 0.9, 0.9, 9.9, 2.9, 4.8};  // 211.0345 als falsches Ergebnis
         analogs = { 5.5};
-        expected = "211.0345";
-        expected_extended= "211.03455";
+        expected = "211.0355";
+        expected_extended= "211.03555";
         
         // extendResolution=false
         result = process_doFlow(analogs, digits, Digital100, false, false, -3);
@@ -402,6 +402,22 @@ void test_doFlow() {
         analogs = {9.0,  8.0, 1.8, 7.4};
         expected = "90.8817";
         expected_extended= "90.88174";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+
+        // Fehler bei rolling post V12.0.1 
+        // lokal watermeter1
+        digits = { 0.0, 0.0, 9.0, 1.9};  //91.38403 als falsches Ergebnis
+        analogs = {3.6,  8.2, 3.2, 2.0};
+        expected = "92.3832";
+        expected_extended= "92.38320";
         
         // extendResolution=false
         result = process_doFlow(analogs, digits, Digital100, false, false, 0);
