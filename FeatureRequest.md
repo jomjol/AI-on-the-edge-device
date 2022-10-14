@@ -11,9 +11,18 @@
 
 ____
 
-#### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
+#### #30 Support meter clock over
 
-~~* https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
+* In case of meter clocking over, that is, reaching its max. value and starting over from 0,
+  accept the new value and calculate correctly the difference.
+  (see line 739 onwards in ClassFlowPostProcessing.cpp)
+
+* In case of meter clocking over, that is, reaching its max. value and starting over from 0,
+  accept the new value and calculate correctly the difference.
+  (see line 739 onwards in ClassFlowPostProcessing.cpp)
+
+
+
 
 #### #28 Improved error handling for ROIs
 
@@ -47,13 +56,7 @@ ____
 
 * Show the CPU Temp directly in Webpage. Also add the value to MQTT sending
 
-  
-
-#### ~~#22 Direct hint to the different neural network files in the other repositories~~- implemented >v11.3.1
-
-~~* https://github.com/jomjol/AI-on-the-edge-device/issues/644~~
-
-  
+    
 
 #### #21 Extended "CheckDigitalConsistency" Logik
 
@@ -61,39 +64,20 @@ ____
 
   
 
-#### #20 Deep sleep and push mode
-
-* Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post.
-* Support ESP-NOW to reduce the overhead of connecting to wifi and mqtt 
-* the above should enable battery powered applications
-
-* An other way to set deep sleep would be to enable it in a specific period (at night).
-  
-
-#### #19 Extended log informations
-
-* https://github.com/jomjol/AI-on-the-edge-device/issues/580
-
-  
-
-#### ~~#18 Document WLAN-strength in web page~~
-
-* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/563~~
-
-
-
-#### ~~#17 Direct InfluxDB connection~~
-
-* ~~Done in v10.6.0~~
-
 
 #### #16 Serial Communication
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/512
+
 * Send the readout value via RX/TX interface with a dedicated TAG
+
 * Make dedicated communication FlowModule
+
 * Modification of RX/TX communication
+
 * Configuration interfache
+
+  
 
 
 #### #15 Calibration for FishEye image
@@ -108,27 +92,11 @@ ____
 
 
 
-#### ~~#14 Backup and restore option for configuration~~- implemented v11.3.1
-
-* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/459~~
-
-* ~~Implement a zip file compression for store and restore~~
-
-* ~~Update the html to handle it~~
-
-  
-
 #### #13 Manage non linear gauge without CNN re-training
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/443
 
 * Implement a look up table for non linear analog meters
-
-  
-
-#### ~~#12 Less reboots due to memory leakage~~
-
-* ~~Issue: #414 & #425  #430~~
 
   
 
@@ -144,17 +112,13 @@ ____
 
   
 
-#### #9 Basic auth for the UI
-
-* https://github.com/jomjol/AI-on-the-edge-device/issues/283
-
-* Implementation of an authentication mechanism.
-
 #### #8 MQTT configurable readout intervall
 
 Make the readout intervall configurable via MQTT.
 
 * Change the mqtt part to receive and process input and not only sending
+
+
 
 #### #7 Extended Error Handling
 
@@ -166,15 +130,7 @@ To do:
 * Implement a checking algo
 * Extend the firmware and html page for the error handling
 
-#### ~~#6 Check for double ROI names~~ - implemented v8.0.0
 
-~~Check during configuration, that ROI names are unique.~~
-
-~~To do:~~
-
-* ~~Implementation of ROI name checking in html code before saving analog or digital ROIs~~
-
-  
 
 #### #5 Configurable decimal separator (point or comma) 
 
@@ -187,6 +143,112 @@ To do:
 * Adaption of the html configuration to implement shifting
 
 
+
+#### #2 MQTT-controll with callback 
+* https://github.com/jomjol/AI-on-the-edge-device/issues/105
+
+Extend the MQTT client to also enable callbacks for configuration setting
+
+To do:
+
+* implement callback for receiving information and override `config.ini` settings
+
+* change configuration management to handle online updates (currently changes need a restart)
+
+* think about the startup, as there the default config is loaded 
+
+  
+
+____
+
+
+
+# Refused
+
+#### #9 Basic auth for the UI 
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/283
+
+* Implementation of an authentication mechanism.
+
+This will not be part of the free version
+
+
+
+#### #20 Deep sleep and push mode
+
+* Let the device be normally in deep sleep state, and wake it up periodically to collect data and push it via MQTT or HTTP post.
+* Support ESP-NOW to reduce the overhead of connecting to wifi and mqtt 
+* the above should enable battery powered applications
+
+* An other way to set deep sleep would be to enable it in a specific period (at night).
+
+Technically not possible, as the limiting factor for the power consumption is not the esp32, but the electrical curcuit on the ESP32CAM board, which consumes a lot already in deep sleep mode.
+
+
+
+# Closed
+
+
+#### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
+
+
+
+#### ~~#19 Extended log informations~~
+
+~~* https://github.com/jomjol/AI-on-the-edge-device/issues/580~~
+
+  
+
+#### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
+
+~~* https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
+
+
+
+#### ~~#22 Direct hint to the different neural network files in the other repositories~~- implemented >v11.3.1
+
+~~* https://github.com/jomjol/AI-on-the-edge-device/issues/644~~
+
+
+
+#### ~~#18 Document WLAN-strength in web page~~
+
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/563~~
+
+
+
+#### ~~#17 Direct InfluxDB connection~~
+
+* ~~Done in v10.6.0~~
+
+
+
+#### ~~#14 Backup and restore option for configuration~~- implemented v11.3.1
+
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/459~~
+
+* ~~Implement a zip file compression for store and restore~~
+
+* ~~Update the html to handle it~~
+
+  
+
+#### ~~#12 Less reboots due to memory leakage~~
+
+* ~~Issue: #414 & #425  #430~~
+
+
+
+#### ~~#6 Check for double ROI names~~ - implemented v8.0.0
+
+~~Check during configuration, that ROI names are unique.~~
+
+~~To do:~~
+
+* ~~Implementation of ROI name checking in html code before saving analog or digital ROIs~~
+
+  
 
 #### ~~#4 Initial Shifting and Rotation~~ - implemented v7.0.0
 
@@ -214,27 +276,6 @@ To do:
 
 
 
-
-
-____
-
-#### #2 MQTT-controll with callback 
-* https://github.com/jomjol/AI-on-the-edge-device/issues/105
-
-Extend the MQTT client to also enable callbacks for configuration setting
-
-To do:
-
-* implement callback for receiving information and override `config.ini` settings
-
-* change configuration management to handle online updates (currently changes need a restart)
-
-* think about the startup, as there the default config is loaded 
-
-  
-
-____
-
 #### ~~#1 Optional GPIO for external flash/lighting~~ - implemented (v8.0.0)
 
 * ~~https://github.com/jomjol/AI-on-the-edge-device/issues/133~~
@@ -248,3 +289,6 @@ ____
 * ~~Implementation of a software module for external light source (e.g. WS8132 LED controller, ...)~~
 * ~~Update of the camera module to use the external light instead of the internal flash light~~
 * ~~Adopt the configuration algorithm with a configurable light source~~
+
+
+

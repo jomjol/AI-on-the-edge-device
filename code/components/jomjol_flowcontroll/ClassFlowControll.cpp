@@ -404,7 +404,7 @@ string ClassFlowControll::GetPrevalue(std::string _number)
 
 std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)
 {
-    float zw;
+    double zw;
     char* p;
 
     _newvalue = trim(_newvalue);
@@ -416,7 +416,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string
     }
     else
     {
-        zw = strtof(_newvalue.c_str(), &p);
+        zw = strtod(_newvalue.c_str(), &p);
         if (zw == 0)
             return "- Error in String to Value Conversion!!! Must be of format value=123.456";
     }

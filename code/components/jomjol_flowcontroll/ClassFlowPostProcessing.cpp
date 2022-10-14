@@ -35,6 +35,7 @@ std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, 
         else
             json += "    \"value\": \"\","  + _lineend;
         json += "    \"raw\": \""        + NUMBERS[i]->ReturnRawValue              + "\","  + _lineend;
+        json += "    \"pre\": \""        + NUMBERS[i]->ReturnPreValue              + "\","  + _lineend;
         json += "    \"error\": \""     + NUMBERS[i]->ErrorMessageText             + "\","  + _lineend;
         if (NUMBERS[i]->ReturnRateValue.length() > 0)
             json += "    \"rate\": "      + NUMBERS[i]->ReturnRateValue                + ","  + _lineend;
@@ -78,7 +79,7 @@ void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _exte
         if (NUMBERS[j]->name == _numbers)
         {
             NUMBERS[j]->PreValue = zw;
-            NUMBERS[j]->ReturnPreValue = std::to_string(zw);
+            NUMBERS[j]->ReturnPreValue = RundeOutput(zw, NUMBERS[j]->Nachkomma);
             NUMBERS[j]->PreValueOkay = true;
             if (_extern)
             {
