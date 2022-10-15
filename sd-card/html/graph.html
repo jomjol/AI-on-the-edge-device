@@ -40,11 +40,9 @@ fetch('/fileserver/log/message/log_'+date+'.txt')
                 var value = line.split(" ")[6];
                 var time  = line.split(" ")[0];
                 console.log("> "+time+" "+value+"\n");
-                if (value<1000) {
-                    trace.x.push(timex);
-                    timex += 1;
-                    trace.y.push(value);
-                }
+                trace.x.push(timex);
+                timex += 1;
+                trace.y.push(value);
             }
         }
         console.log(trace);
