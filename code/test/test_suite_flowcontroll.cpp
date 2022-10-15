@@ -1,5 +1,4 @@
 #include <unity.h>
-#include "components/jomjol-flowcontroll/test_cnnflowcontroll.cpp"
 #include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"
@@ -8,6 +7,24 @@
 #include "driver/sdmmc_host.h"
 #include "driver/sdmmc_defs.h"
 static const char *TAGMAIN = "main";
+#define __SD_USE_ONE_LINE_MODE__
+#include "server_GPIO.h"
+
+
+
+
+void initGPIO()
+{
+    gpio_config_t io_conf;
+    //set as output mode
+    io_conf.mode = gpio_mode_t::GPIO_MODE_INPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO18/19
+     io_conf.pull_down_en =  gpio_pulldown_t::GPIO_PULLDOWN_ENABLE;
+    //set pull-up mode
+    io_conf.pull_up_en =  gpio_pullup_t::GPIO_PULLUP_DISABLE;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+}
 
 bool Init_NVS_SDCard()
 {
@@ -80,11 +97,10 @@ bool Init_NVS_SDCard()
  */
 extern "C" void app_main()
 {
+  initGPIO();
   Init_NVS_SDCard();
   UNITY_BEGIN();
 
-//  RUN_TEST(test_ZeigerEval);
-//  RUN_TEST(test_ZeigerEvalHybrid);
   RUN_TEST(test_doFlow);
   
   UNITY_END();
