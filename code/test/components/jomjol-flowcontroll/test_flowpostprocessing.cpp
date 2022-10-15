@@ -427,7 +427,7 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
-        // Fehler  V12.0.1 
+        // Fehler  V11.3.0 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/1143#issue-1400807695
         digits = { 7.0, 4.0, 7.0, 2.0, 7.0, 5.4, 9.4};  // 7472.749 als falsches Ergebnis
         analogs = {};

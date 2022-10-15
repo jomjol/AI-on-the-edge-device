@@ -9,11 +9,12 @@
 ### Changed
 
 -   Updated built environment to `espressif32@v5.2.0`
-
+-   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
 ### Fixed
 
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
 -   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
+-   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) changed postprocess for analog->digit (lowest digit processing)
 ### Removed
 
 -   n.a.
