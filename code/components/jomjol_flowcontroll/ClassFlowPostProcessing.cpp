@@ -739,12 +739,18 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (!NUMBERS[j]->AllowNegativeRates)
         {
-            if (NUMBERS[j]->Value < NUMBERS[j]->PreValue)
+            if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue))
             {
-                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
-                NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                NUMBERS[j]->ReturnValue = "";
-                continue;
+                // Bei isExtendedResolution Ungenauigkeit von 0.2 mit einrechnen.
+                if (NUMBERS[j]->Value < (NUMBERS[j]->PreValue-0.2) && NUMBERS[j]->isExtendedResolution) {
+                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                } else {
+                    NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
+                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                    NUMBERS[j]->ReturnValue = "";
+                    continue;
+                }
+                
             }
         }
         #ifdef SERIAL_DEBUG
