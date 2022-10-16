@@ -11,17 +11,17 @@
 
 ____
 
+#### #31 Implement InfluxDB v2.x interface
+
+* Currently only InfluxDB v1.x is supportet, extend to v2.x
+* Remark: interface has changed
+* see [#1160](https://github.com/jomjol/AI-on-the-edge-device/issues/1160)
+
 #### #30 Support meter clock over
 
 * In case of meter clocking over, that is, reaching its max. value and starting over from 0,
   accept the new value and calculate correctly the difference.
   (see line 739 onwards in ClassFlowPostProcessing.cpp)
-
-* In case of meter clocking over, that is, reaching its max. value and starting over from 0,
-  accept the new value and calculate correctly the difference.
-  (see line 739 onwards in ClassFlowPostProcessing.cpp)
-
-
 
 
 #### #28 Improved error handling for ROIs
