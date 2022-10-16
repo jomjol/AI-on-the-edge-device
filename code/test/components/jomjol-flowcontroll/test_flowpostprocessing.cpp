@@ -1,27 +1,6 @@
-#include <unity.h>
-#include <ClassFlowPostProcessing.h>
-#include <ClassFlowCNNGeneral.h>
-#include <ClassFlowCNNGeneral.h>
-#include <ClassFlowMakeImage.h>
-
-void setUpClassFlowPostprocessing(void);
-string process_doFlow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType = Digital100, 
-                bool checkConsistency=false,  bool extendedResolution=false, int decimal_shift=0);
-
-ClassFlowCNNGeneral* _analog;
-ClassFlowCNNGeneral* _digit;
-std::vector<ClassFlow*> FlowControll;
-ClassFlowMakeImage* flowmakeimage;
+#include "test_flow.h"
 
 
-class UnderTestPost : public ClassFlowPostProcessing {
-    public:
-        UnderTestPost(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit)
-            : ClassFlowPostProcessing::ClassFlowPostProcessing(lfc, _analog, _digit) {}
-        using ClassFlowPostProcessing::InitNUMBERS;
-};
-
-UnderTestPost* undertestPost;
 
 
 /**
@@ -32,6 +11,7 @@ UnderTestPost* undertestPost;
  * 
  */
 void test_doFlow() {
+        
         /*
          * 
          * digit1 = 1.2
@@ -458,96 +438,24 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits, Digital100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
+
+        // Fehler  V12.0.1 "TODO 00211.03480 vs 00211.03580"
+        // Lokal
+        digits = { 4.9, 6.9, 6.8};  // 576.8649 als falsches Ergebnis
+        analogs = {8.6, 6.2, 5.0, 9.0};
+        // fall unklar ob wirklich 577 oder 576, erst mal 577
+        expected = "576.8649";
+        expected_extended= "576.86490";
+        
+        // extendResolution=false
+        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+
 }
 
-
-
-void setUpClassFlowPostprocessing(t_CNNType digType, t_CNNType anaType)
-{
-    
-    // wird im doFlow verwendet
-    flowmakeimage = new ClassFlowMakeImage(&FlowControll);
-    FlowControll.push_back(flowmakeimage);
-
-    // Die Modeltypen werden gesetzt, da keine Modelle verwendet werden.
-    _analog = new ClassFlowCNNGeneral(nullptr, anaType);
-    
-    _digit =  new ClassFlowCNNGeneral(nullptr, digType);
-
-    undertestPost = new UnderTestPost(&FlowControll, _analog, _digit);
-  
-}
-
-
-std::string process_doFlow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType, 
-            bool checkConsistency, bool extendedResolution, int decimal_shift) {
-    // setup the classundertest
-    setUpClassFlowPostprocessing(digType, Analogue100);
-
-    printf("SetupClassFlowPostprocessing completed.\n");
-
-    // digits
-    if (digits.size()>0) {
-        general* gen_digit = _digit->GetGENERAL("default", true);
-        gen_digit->ROI.clear();
-        for (int i = 0; i<digits.size(); i++) {
-            roi* digitROI = new roi();
-            string name = "digit_" + std::to_string(i);
-            digitROI->name = name;
-            digitROI->result_klasse = (int) digits[i];
-            digitROI->result_float = digits[i];
-            gen_digit->ROI.push_back(digitROI);
-        }
-    }
-
-    // analog
-    if (analog.size()>0) {
-        general* gen_analog = _analog->GetGENERAL("default", true);
-        gen_analog->ROI.clear();
-
-        for (int i = 0; i<analog.size(); i++) {
-            roi* anaROI = new roi();
-            string name = "ana_" + std::to_string(i);
-            anaROI->name = name;
-            anaROI->result_float = analog[i];
-            gen_analog->ROI.push_back(anaROI);
-        }
-    }
-    printf("Setting up of ROIs completed.\n");
-
-    undertestPost->InitNUMBERS();
-    if (checkConsistency) {
-        printf("checkConsistency=true\n");
-        std::vector<NumberPost*>* NUMBERS = undertestPost->GetNumbers();    
-        for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
-            printf("Setting checkConsistency on number: %d\n", _n);
-            (*NUMBERS)[_n]->checkDigitIncreaseConsistency = true;
-        }
-    }
-    if (extendedResolution ) {
-       std::vector<NumberPost*>* NUMBERS = undertestPost->GetNumbers();    
-        for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
-            printf("Setting extendedResolution on number: %d\n", _n);
-            (*NUMBERS)[_n]->isExtendedResolution = true;
-        }
-
-    }
-    if (decimal_shift!=0) {
-        std::vector<NumberPost*>* NUMBERS = undertestPost->GetNumbers();    
-        for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
-            printf("Setting decimal shift on number: %d to %d\n", _n, decimal_shift);
-            (*NUMBERS)[_n]->DecimalShift = decimal_shift;
-            (*NUMBERS)[_n]->DecimalShiftInitial = decimal_shift;   
-        }       
-    }
-
-    string time;
- 
-    // run test
-    TEST_ASSERT_TRUE(undertestPost->doFlow(time));
-
- 
-    return undertestPost->getReadout(0);
-
-}
 

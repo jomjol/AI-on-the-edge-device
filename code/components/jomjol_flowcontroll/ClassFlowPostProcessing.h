@@ -49,6 +49,7 @@ public:
     bool PreValueUse;
 
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
+    virtual ~ClassFlowPostProcessing(){};
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getReadout(int _number);
