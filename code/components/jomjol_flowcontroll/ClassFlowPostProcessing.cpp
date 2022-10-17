@@ -470,7 +470,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             handleDecimalSeparator(zerlegt[0], zerlegt[1]);
         }
-        if ((toUpper(_param) == "ANALOG_DIGITAL_TRANSITION_START") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (zerlegt.size() > 1))
         {
             handleAnalogDigitalTransitionStart(zerlegt[0], zerlegt[1]);
         }
