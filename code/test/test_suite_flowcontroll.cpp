@@ -1,8 +1,9 @@
 #include <unity.h>
 
-#include "components/jomjol-flowcontroll/test_flow.cpp"
+#include "components/jomjol-flowcontroll/test_flow_postrocess_helper.cpp"
 #include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
 #include "components/jomjol-flowcontroll/test_flow_pp_negative.cpp"
+#include "components/jomjol-flowcontroll/test_ZeigerEvalAnalogToDigitNeu.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"
 #include "esp_vfs_fat.h"
@@ -104,8 +105,10 @@ extern "C" void app_main()
   Init_NVS_SDCard();
   UNITY_BEGIN();
 
-  RUN_TEST(testNegative);
-  RUN_TEST(test_doFlow);
+    RUN_TEST(test_analogToDigit_Standard);
+    RUN_TEST(test_analogToDigit_Transition);
+  //RUN_TEST(testNegative);
+    RUN_TEST(test_doFlow);
   
   UNITY_END();
 }

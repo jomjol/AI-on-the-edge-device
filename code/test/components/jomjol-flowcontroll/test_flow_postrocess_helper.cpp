@@ -1,4 +1,4 @@
-#include "test_flow.h"
+#include "test_flow_postrocess_helper.h"
 
 
 UnderTestPost* setUpClassFlowPostprocessing(t_CNNType digType, t_CNNType anaType)
@@ -42,7 +42,9 @@ std::string process_doFlow(std::vector<float> analog, std::vector<float> digits,
     // run test
     TEST_ASSERT_TRUE(_undertestPost->doFlow(time));
 
-    return _undertestPost->getReadout(0);
+    std::string result =  _undertestPost->getReadout(0);
+    delete _undertestPost;
+    return result;
 
 }
 

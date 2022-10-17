@@ -343,6 +343,29 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
     }
 }
 
+void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        float _zwdc = 9.2;
+        {
+            _zwdc = stof(_value);
+        }
+        if (_digit == "default" || NUMBERS[j]->name == _digit)  // erstmal auf default setzen (falls sonst nichts gesetzt)
+        {
+            NUMBERS[j]->AnalogDigitalTransitionStart = _zwdc;
+            
+        }
+    }
+}
 
 
 void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
@@ -446,6 +469,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(_param) == "DECIMALSHIFT") && (zerlegt.size() > 1))
         {
             handleDecimalSeparator(zerlegt[0], zerlegt[1]);
+        }
+        if ((toUpper(_param) == "ANALOG_DIGITAL_TRANSITION_START") && (zerlegt.size() > 1))
+        {
+            handleAnalogDigitalTransitionStart(zerlegt[0], zerlegt[1]);
         }
         if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
         {
@@ -674,7 +701,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (NUMBERS[j]->digit_roi)
         {
             if (NUMBERS[j]->analog_roi) 
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float) + NUMBERS[j]->ReturnRawValue;
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogDigitalTransitionStart) + NUMBERS[j]->ReturnRawValue;
             else
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
