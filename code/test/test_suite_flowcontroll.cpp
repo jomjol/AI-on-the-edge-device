@@ -104,10 +104,11 @@ extern "C" void app_main()
   initGPIO();
   Init_NVS_SDCard();
   UNITY_BEGIN();
-
+  
+    RUN_TEST(testNegative);
+  
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
-  //RUN_TEST(testNegative);
     RUN_TEST(test_doFlow);
   
   UNITY_END();
