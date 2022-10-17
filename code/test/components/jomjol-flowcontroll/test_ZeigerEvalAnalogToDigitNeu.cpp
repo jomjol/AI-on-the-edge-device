@@ -53,7 +53,7 @@ void test_analogToDigit_Standard() {
     // Standard: dig=6.8, ana=1.0 => erg=7
     // Transition = nein
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(7,  undertest->ZeigerEvalAnalogToDigitNeu( 6.8, 8.6, 6, 9.2));
+    TEST_ASSERT_EQUAL_INT(7,  undertest->ZeigerEvalAnalogToDigitNeu( 6.8, 1.0, 1, 9.2));
 
 
 }
@@ -84,5 +84,13 @@ void test_analogToDigit_Transition() {
     // Besonderheit: analog wird durch vorherigen analog wieder auf 9 gesetzt
     TEST_ASSERT_EQUAL_INT(9,  undertest->ZeigerEvalAnalogToDigitNeu( 9.8, 0.1, 9, 9.2));
 
+
+    // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1277425333
+    // Standard: dig=5.9, ana=9.4 => erg=9
+    // Transition = ja
+    // Nulldurchgang = nein
+    // Versatz = nein
+    // Besonderheit: 
+    TEST_ASSERT_EQUAL_INT(5,  undertest->ZeigerEvalAnalogToDigitNeu( 5.9, 9.4, 9, 9.2));
 
 }

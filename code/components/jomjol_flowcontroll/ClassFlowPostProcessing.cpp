@@ -584,6 +584,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->DecimalShift = 0;
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
+        _number->AnalogDigitalTransitionStart=9.2;
 
 
         _number->FlowRateAct = 0;          // m3 / min
