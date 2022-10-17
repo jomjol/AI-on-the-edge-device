@@ -10,6 +10,7 @@
 
 -   Updated built environment to `espressif32@v5.2.0`
 -   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
+-   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) added config parameter AnalogDigitalTransitionStart. It can setup very early and very late digit transition starts.
 ### Fixed
 
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
