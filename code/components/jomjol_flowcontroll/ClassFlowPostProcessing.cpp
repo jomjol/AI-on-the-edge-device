@@ -728,22 +728,30 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
             else
             {
-                printf("checkDigitIncreaseConsistency = true - no digital numbers defined!\n"); 
+                #ifdef SERIAL_DEBUG
+                    printf("checkDigitIncreaseConsistency = true - no digital numbers defined!\n"); 
+                #endif
             }
         }
 
         #ifdef SERIAL_DEBUG
             printf("After checkDigitIncreaseConsistency: Value %f\n", NUMBERS[j]->Value);  
         #endif
-
+               
 
         if (!NUMBERS[j]->AllowNegativeRates)
         {
             if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue))
             {
+                #ifdef SERIAL_DEBUG
+                    printf("Neg: value=%f, preValue=%f, preToll%f\n", NUMBERS[j]->Value, NUMBERS[j]->PreValue,
+                     NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
+                      ) ;
+                #endif
                 // Bei isExtendedResolution Ungenauigkeit von 0.2 mit einrechnen.
-                if (NUMBERS[j]->Value < (NUMBERS[j]->PreValue-0.2) && NUMBERS[j]->isExtendedResolution) {
+                if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                    NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
                 } else {
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -929,9 +937,6 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
         printf("checkDigitConsistency: pot=%d, decimalshift=%d\n", pot, _decilamshift);
     #endif
     pot_max = ((int) log10(input)) + 1;
-    #ifdef SERIAL_DEBUG
-        printf("checkDigitConsistency: not_checked_input=%f\n", not_checked_input);
-    #endif
     while (pot <= pot_max)
     {
         zw = input / pow(10, pot-1);

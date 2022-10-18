@@ -1,5 +1,8 @@
 #include <unity.h>
+
+#include "components/jomjol-flowcontroll/test_flow.cpp"
 #include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
+#include "components/jomjol-flowcontroll/test_flow_pp_negative.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"
 #include "esp_vfs_fat.h"
@@ -101,6 +104,7 @@ extern "C" void app_main()
   Init_NVS_SDCard();
   UNITY_BEGIN();
 
+  RUN_TEST(testNegative);
   RUN_TEST(test_doFlow);
   
   UNITY_END();
