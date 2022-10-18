@@ -228,7 +228,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
     // Kein Nulldurchgang hat stattgefunden.
     // Nur eval_vorgaenger verwendet, da ziffer_vorgaenger hier falsch sein könnte.
     // ziffer_vorgaenger<=0.1 & eval_vorgaenger=9 entspricht analog wurde zurückgesetzt wegen vorhergehender analog, die noch nicht auf 0 sind.
-    if ((eval_vorgaenger>=9 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp)
+    if ((eval_vorgaenger>=6 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp)
         // digit läuft dem Analog vor. Darf aber erst passieren, wenn 
         // digit wirklich schnon los läuft, deshalb 9
         || (eval_vorgaenger>9 && ziffer_vorgaenger>analogDigitalTransitionStart && ergebnis_nachkomma<=1))

@@ -20,7 +20,7 @@ class ClassFlowCNNGeneral :
     public ClassFlowImage
 {
 protected:
-    bool debugdetailgeneral = true;
+    bool debugdetailgeneral = false;
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;

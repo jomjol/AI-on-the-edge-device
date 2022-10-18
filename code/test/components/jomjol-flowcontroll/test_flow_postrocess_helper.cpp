@@ -142,3 +142,13 @@ void setDecimalShift(UnderTestPost* _underTestPost, int _decimal_shift) {
         }       
     }
 }
+
+void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analogdigitTransistionStart) {
+    if (_analogdigitTransistionStart!=0) {
+        std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();    
+        for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
+            printf("Setting decimal shift on number: %d to %f\n", _n, _analogdigitTransistionStart);
+            (*NUMBERS)[_n]->AnalogDigitalTransitionStart = _analogdigitTransistionStart; 
+        }       
+    }
+}

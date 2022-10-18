@@ -93,4 +93,12 @@ void test_analogToDigit_Transition() {
     // Besonderheit: 
     TEST_ASSERT_EQUAL_INT(5,  undertest->ZeigerEvalAnalogToDigitNeu( 5.9, 9.4, 9, 9.2));
 
+    // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1282168030
+    // Standard: dig=1.8, ana=7.8 => erg=9
+    // Transition = ja
+    // Nulldurchgang = nein
+    // Versatz = nein
+    // Besonderheit: Digit läuft mit Analog mit. Deshalb 1.8 (vs. 7.8)
+    TEST_ASSERT_EQUAL_INT(1,  undertest->ZeigerEvalAnalogToDigitNeu( 1.8, 7.8, 7, 7.7));
+
 }
