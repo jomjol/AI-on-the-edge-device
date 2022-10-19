@@ -176,7 +176,7 @@ void ClassLogFile::RemoveOld()
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
             //ESP_LOGI(TAG, "list log file : %s %s", entry->d_name, cmpfilename);
-            if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
+            if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) == 0)) {
                 ESP_LOGI(TAG, "delete log file : %s", entry->d_name);
                 std::string filepath = logroot + "/" + entry->d_name; 
                 if (unlink(filepath.c_str()) == 0) {
@@ -189,7 +189,8 @@ void ClassLogFile::RemoveOld()
             }
         }
     }
-    ESP_LOGI(TAG, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
+    ESP_LOGI(TAG, "%d logfiles deleted. %d files not deleted (incl. leer.txt).", deleted, notDeleted);
+    LogFile.WriteToFile("logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
     closedir(dir);
 }
 
