@@ -46,6 +46,7 @@ struct NumberPost {
     int AnzahlDigital;
     int DecimalShift;
     int DecimalShiftInitial;
+    float AnalogDigitalTransitionStart; // Wann ist das digit > x.1, also wann fängt es an zu kippen
     int Nachkomma;
 
     bool isExtendedResolution;
