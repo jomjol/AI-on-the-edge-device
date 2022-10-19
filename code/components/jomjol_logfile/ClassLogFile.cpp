@@ -16,7 +16,7 @@ extern "C" {
 
 static const char *TAG = "log";
 
-ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt");
+ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.txt");
 
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
@@ -61,6 +61,59 @@ std::string ClassLogFile::getESPHeapInfo(){
 	espInfoResultStr += string(aMsgBuf);
 	return 	espInfoResultStr;
 }
+
+void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[30];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, 30, datafile.c_str(), timeinfo);
+    std::string logpath = dataroot + "/" + buffer; 
+    
+    FILE* pFile;
+    std::string zwtime;
+
+    if (!doLogFile){
+        return;
+    }
+
+    pFile = fopen(logpath.c_str(), "a+");
+
+    if (pFile!=NULL) {
+        time_t rawtime;
+        struct tm* timeinfo;
+        char buffer[80];
+
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+
+        strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
+
+        zwtime = std::string(buffer) + ":";
+        fputs(zwtime.c_str(), pFile);
+        fputs(_ReturnRawValue.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_ReturnValue.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_ErrorMessageText.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_digital.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_analog.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs("\n", pFile);
+
+        fclose(pFile);    
+    } else {
+        ESP_LOGI(TAG, "Can't open data file %s", logpath.c_str());
+    }
+
+}
+
 
 void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool _time)
 {
@@ -161,6 +214,8 @@ void ClassLogFile::RemoveOld()
     rawtime = addDays(rawtime, -retentionInDays);
     timeinfo = localtime(&rawtime);
     
+
+//////////////////////  message /////////////////////////////////////////
     strftime(cmpfilename, 30, logfile.c_str(), timeinfo);
     //ESP_LOGE(TAG, "log file name to compare: %s", cmpfilename);
 
@@ -191,12 +246,46 @@ void ClassLogFile::RemoveOld()
     }
     ESP_LOGI(TAG, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
     closedir(dir);
+
+
+//////////////////////  data /////////////////////////////////////////
+    strftime(cmpfilename, 30, datafile.c_str(), timeinfo);
+    //ESP_LOGE(TAG, "log file name to compare: %s", cmpfilename);
+
+    dir = opendir(dataroot.c_str());
+    if (!dir) {
+        ESP_LOGI(TAG, "Failed to stat dir : %s", dataroot.c_str());
+        return;
+    }
+
+    deleted = 0;
+    notDeleted = 0;
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG) {
+            //ESP_LOGI(TAG, "list log file : %s %s", entry->d_name, cmpfilename);
+            if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
+                ESP_LOGI(TAG, "delete data file : %s", entry->d_name);
+                std::string filepath = logroot + "/" + entry->d_name; 
+                if (unlink(filepath.c_str()) == 0) {
+                    deleted ++;
+                } else {
+                    ESP_LOGE(TAG, "can't delete file : %s", entry->d_name);
+                }
+            } else {
+                notDeleted ++;
+            }
+        }
+    }
+    ESP_LOGI(TAG, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
+    closedir(dir);
 }
 
-ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile)
+ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::string _logdatapath, std::string _datafile)
 {
     logroot = _logroot;
     logfile =  _logfile;
+    datafile = _datafile;
+    dataroot = _logdatapath;
     doLogFile = true;
     retentionInDays = 10;
     loglevel = 0;

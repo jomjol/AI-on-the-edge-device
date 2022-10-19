@@ -127,6 +127,35 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
+
+string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
+{
+    string rt = "";
+
+    if (GENERAL[_analog]->ROI.size() == 0)
+        return rt;
+ 
+    for (int i = GENERAL[_analog]->ROI.size() - 1; i >= 0; --i)
+    {
+        if (CNNType == Analogue || CNNType == Analogue100)
+        {
+            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+        }
+
+        if (CNNType == Digital)
+        {
+            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
+        }
+
+        if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
+        {
+            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+        }
+    }
+    return rt;
+}
+
+
 int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger)
 {
     int result;

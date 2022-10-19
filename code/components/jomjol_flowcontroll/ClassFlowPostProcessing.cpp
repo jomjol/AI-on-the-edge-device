@@ -803,10 +803,24 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
         LogFile.WriteToFile(_zw);
+        WriteDataLog(j);
     }
 
     SavePreValue();
     return true;
+}
+
+void ClassFlowPostProcessing::WriteDataLog(int _analog)
+{
+    string analog = "";
+    string digital = "";
+    if (flowAnalog)
+        analog = flowAnalog->getReadout(_analog);
+    if (flowDigit)
+        digital = flowDigit->getReadout(_analog);
+//    LogFile.WriteToFile(analog);
+    LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
+
 }
 
 
@@ -989,3 +1003,5 @@ string ClassFlowPostProcessing::getReadoutError(int _number)
 {
     return NUMBERS[_number]->ErrorMessageText;
 }
+
+

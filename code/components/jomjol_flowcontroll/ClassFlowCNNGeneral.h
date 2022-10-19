@@ -58,7 +58,9 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _vorgaengerAnalog = -1);   
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _vorgaengerAnalog = -1); 
+
+    string getReadoutRawString(int _analog);  
 
     void DrawROI(CImageBasis *_zw); 
 
