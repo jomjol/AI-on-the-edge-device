@@ -362,7 +362,7 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
         if (_digit == "default" || NUMBERS[j]->name == _digit)  // erstmal auf default setzen (falls sonst nichts gesetzt)
         {
             NUMBERS[j]->AnalogDigitalTransitionStart = _zwdc;
-            
+
         }
     }
 }
@@ -399,6 +399,7 @@ void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
 
 
 
+
 void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 {
     string _digit, _decpos;
@@ -408,11 +409,9 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
         _digit = _decsep.substr(0, _pospunkt);
     else
         _digit = "default";
-
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
         float _zwdc = 1;
-
 //        try
         {
             _zwdc = stof(_value);
@@ -422,13 +421,11 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
             printf("ERROR - MaxRateValue is not a number: %s\n", _value.c_str());
         }
 */
-
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
         {
             NUMBERS[j]->useMaxRateValue = true;
             NUMBERS[j]->MaxRateValue = _zwdc;
         }
-
         if (NUMBERS[j]->name == _digit)
         {
             NUMBERS[j]->useMaxRateValue = true;
@@ -727,9 +724,14 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (findDelimiterPos(NUMBERS[j]->ReturnValue, "N") != std::string::npos)
         {
             if (PreValueUse && NUMBERS[j]->PreValueOkay)
+            {
                 NUMBERS[j]->ReturnValue = ErsetzteN(NUMBERS[j]->ReturnValue, NUMBERS[j]->PreValue); 
+            }
             else
+            {
+                WriteDataLog(j);
                 continue; // es gibt keinen Zahl, da noch ein N vorhanden ist.
+            }
         }
         #ifdef SERIAL_DEBUG
             printf("After findDelimiterPos: ReturnValue %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
@@ -784,6 +786,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
+                    WriteDataLog(j);
                     continue;
                 }
                 
@@ -811,6 +814,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
+                WriteDataLog(j);
                 continue;
             }
         }
@@ -830,6 +834,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         UpdatePreValueINI = true;
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
+        printf("%s\n", zw.c_str());
         LogFile.WriteToFile(_zw);
         WriteDataLog(j);
     }
@@ -848,7 +853,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _analog)
         digital = flowDigit->getReadout(_analog);
 //    LogFile.WriteToFile(analog);
     LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
-
+    printf("WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_analog]->ReturnRawValue.c_str(), NUMBERS[_analog]->ReturnValue.c_str(), NUMBERS[_analog]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
 }
 
 

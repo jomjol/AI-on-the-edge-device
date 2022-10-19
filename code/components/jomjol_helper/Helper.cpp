@@ -154,6 +154,13 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
     }
 }
 
+void MakeDir(std::string _what)
+{
+//	chdir(_where.c_str());
+
+	if (mkdir(_what.c_str(), S_IRWXU|S_IRWXG|S_IROTH))
+		printf("Problem with MakeDir: %s \n", _what.c_str());
+}
 
 
 

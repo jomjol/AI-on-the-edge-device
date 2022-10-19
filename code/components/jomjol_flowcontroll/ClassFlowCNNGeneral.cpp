@@ -127,36 +127,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
-
-string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
-{
-    string rt = "";
-
-    if (GENERAL[_analog]->ROI.size() == 0)
-        return rt;
- 
-    for (int i = GENERAL[_analog]->ROI.size() - 1; i >= 0; --i)
-    {
-        if (CNNType == Analogue || CNNType == Analogue100)
-        {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
-        }
-
-        if (CNNType == Digital)
-        {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
-        }
-
-        if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
-        {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
-        }
-    }
-    return rt;
-}
-
-
-int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger)
+int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger, float digitalAnalogTransitionStart)
 {
     int result;
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
@@ -237,12 +208,21 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
     bool roundedUp = false;
 
-    if (ziffer_vorgaenger < 0)
-    {
-        result = (int) floor(zahl);
-        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
-        return result;
+    // Innerhalb der digitalen Unschaefe 
+    if (ergebnis_nachkomma >= (10-DigitalUnschaerfe * 10))  {   // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+        result = (int) (round(zahl) + 10) % 10;
+        roundedUp = true;
+        // vor/nachkomma neu berechnen, da wir anhand der Unschaefe die Zahl anpassen.
+        ergebnis_nachkomma = ((int) floor(result * 10)) % 10;
+        ergebnis_vorkomma = ((int) floor(result) + 10) % 10;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger: " + std::to_string(ziffer_vorgaenger) +
+                                                    " erg_vorkomma: " + std::to_string(ergebnis_vorkomma) + 
+                                                    " erg_nachkomma: " + std::to_string(ergebnis_nachkomma));
+    } else {
+        result = (int) ((int) trunc(zahl) + 10) % 10;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - KEINE digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger));
     }
 
     // Kein Nulldurchgang hat stattgefunden.
@@ -260,24 +240,6 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
                                     " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + 
                                     " erg_nachkomma = " +  std::to_string(ergebnis_nachkomma));
 
-    // Vorlauf ziffer_vorgaenger <=9.9 und ergebnis_nachkomma >=0..1 (digits drehen nach umschalten nicht gleich weiter)
-    // Beispiel dig=4.0, ana=9.1 ==> dig=3
-
-    // Nachlauf ziffer_vorgaenger 0..2 und ergebnis_nachkomma 8..9
-    // Beispiel dig=6.8, ana=2.2 ==> dig=7
-    // dig=4.8, ana=5.5 => dig=4
-
-    // Vorlauf bei ergebnis_nachkomma >=0..1 und ziffer_vorgaenger 8..9
-    if (ergebnis_nachkomma <= 1 &&  ziffer_vorgaenger>=8)  {
-        result =  (ergebnis_vorkomma - 1 + 10) % 10;
-    } else {
-        // Ziffer bleibt bei x.8 oder x.9 "hängen", kommt also nicht richtig auf x.0
-        // muss eine Rundung erfolgen
-        // jedoch nicht im während der Transition (ziffer_vorgaenger>=8)
-         if (eval_vorgaenger<9 && ziffer_vorgaenger<8 && ergebnis_nachkomma >= 8)   
-            result = ((int) round(zahl) + 10) % 10;
-        else
-            result = ergebnis_vorkomma;
     }
 
     return result;
@@ -1008,3 +970,31 @@ void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numb
             (*_name_numbers).push_back(_name);
     }
 }
+
+string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
+{
+    string rt = "";
+
+    if (GENERAL[_analog]->ROI.size() == 0)
+        return rt;
+ 
+    for (int i = GENERAL[_analog]->ROI.size() - 1; i >= 0; --i)
+    {
+        if (CNNType == Analogue || CNNType == Analogue100)
+        {
+            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+        }
+
+        if (CNNType == Digital)
+        {
+            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
+        }
+
+        if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
+        {
+            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+        }
+    }
+    return rt;
+}
+

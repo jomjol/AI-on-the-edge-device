@@ -64,6 +64,7 @@ std::string ClassLogFile::getESPHeapInfo(){
 
 void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
 {
+    printf("Start WriteToData\n");
     time_t rawtime;
     struct tm* timeinfo;
     char buffer[30];
@@ -81,6 +82,7 @@ void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnV
         return;
     }
 
+    printf("Datalogfile: %s\n", logpath.c_str());
     pFile = fopen(logpath.c_str(), "a+");
 
     if (pFile!=NULL) {
@@ -290,4 +292,7 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::stri
     doLogFile = true;
     retentionInDays = 10;
     loglevel = 0;
+    MakeDir("/sdcard/log/data");
+    MakeDir("/sdcard/test");
+    MakeDir("/test");
 }
