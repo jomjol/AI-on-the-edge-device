@@ -65,7 +65,7 @@ void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, i
         else
         {
             sprintf(buf, "%.1f_", *resultFloat);
-            if (strcmp(buf, "10.0_"))
+            if (strcmp(buf, "10.0_") == 0)
                 sprintf(buf, "0.0_");
         }
             
@@ -119,14 +119,16 @@ void ClassFlowImage::RemoveOldLogs()
         string folderPath = LogImageLocation + "/" + entry->d_name;
 		if (entry->d_type == DT_DIR) {
 			//ESP_LOGI(logTag, "Compare %s %s", entry->d_name, folderName.c_str());	
-			if ((strlen(entry->d_name) == folderName.length()) && (strcmp(entry->d_name, folderName.c_str()) < 0)) {
-                deleted += removeFolder(folderPath.c_str(), logTag);
+			if ((strlen(entry->d_name) == folderName.length()) && (strcmp(entry->d_name, folderName.c_str()) == 0)) {
+                removeFolder(folderPath.c_str(), logTag);
+                deleted++;
 			} else {
                 notDeleted ++;
             }
 		}
     }
-    ESP_LOGI(logTag, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
+    ESP_LOGI(logTag, "%d image folder deleted. %d image folder not deleted.", deleted, notDeleted);
+    LogFile.WriteToFile("Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
     closedir(dir);
 }
 
