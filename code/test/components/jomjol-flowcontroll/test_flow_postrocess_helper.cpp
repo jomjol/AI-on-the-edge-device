@@ -1,4 +1,4 @@
-#include "test_flow.h"
+#include "test_flow_postrocess_helper.h"
 
 
 UnderTestPost* setUpClassFlowPostprocessing(t_CNNType digType, t_CNNType anaType)
@@ -42,7 +42,9 @@ std::string process_doFlow(std::vector<float> analog, std::vector<float> digits,
     // run test
     TEST_ASSERT_TRUE(_undertestPost->doFlow(time));
 
-    return _undertestPost->getReadout(0);
+    std::string result =  _undertestPost->getReadout(0);
+    delete _undertestPost;
+    return result;
 
 }
 
@@ -137,6 +139,16 @@ void setDecimalShift(UnderTestPost* _underTestPost, int _decimal_shift) {
             printf("Setting decimal shift on number: %d to %d\n", _n, _decimal_shift);
             (*NUMBERS)[_n]->DecimalShift = _decimal_shift;
             (*NUMBERS)[_n]->DecimalShiftInitial = _decimal_shift;   
+        }       
+    }
+}
+
+void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analogdigitTransistionStart) {
+    if (_analogdigitTransistionStart!=0) {
+        std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();    
+        for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
+            printf("Setting decimal shift on number: %d to %f\n", _n, _analogdigitTransistionStart);
+            (*NUMBERS)[_n]->AnalogDigitalTransitionStart = _analogdigitTransistionStart; 
         }       
     }
 }

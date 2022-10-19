@@ -319,7 +319,7 @@ string getDirectory(string filename)
 
 string getFileType(string filename)
 {
-	size_t lastpos = filename.find(".", 0);
+	size_t lastpos = filename.rfind(".", filename.length());
 	size_t neu_pos;
 	while ((neu_pos = filename.find(".", lastpos + 1)) > -1)
 	{

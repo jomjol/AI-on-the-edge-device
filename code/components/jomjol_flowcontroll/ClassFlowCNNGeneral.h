@@ -20,6 +20,7 @@ class ClassFlowCNNGeneral :
     public ClassFlowImage
 {
 protected:
+    bool debugdetailgeneral = true;
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
@@ -28,7 +29,6 @@ protected:
     float DigitalUnschaerfe = 0.2;
     int DigitalBand = 3;
     float DigitalAnalogerVorgaengerUebergangsbereich = 2;
-    // nicht mehr benötigt float DigitalUebergangsbereichVorgaengerAnalogToDigit = 1; // war vorher 2
     float DigitalUebergangsbereichVorgaenger = 0.7; // 9.3 - 0.7
     float DigitalUebergangsbereichVorlauf = 9.7; // Vorlauf-Nulldurchgang passiert erst ab ca. 9.7
 
@@ -41,8 +41,8 @@ protected:
     bool SaveAllFiles;   
 
     int ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger);
-    int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger);
-    int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false);
+    int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger, float analogDigitalTransitionStart);
+    int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false, float analogDigitalTransitionStart=9.2);
 
 
 
@@ -58,7 +58,7 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _vorgaengerAnalog = -1); 
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _vorgaengerAnalog = -1, float analogDigitalTransitionStart=9.2); 
 
     string getReadoutRawString(int _analog);  
 

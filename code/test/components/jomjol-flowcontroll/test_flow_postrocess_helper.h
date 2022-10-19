@@ -99,4 +99,12 @@ void setExtendedResolution(UnderTestPost* _UnderTestPost, bool _extendedResoluti
  */
 void setDecimalShift(UnderTestPost* _UnderTestPost, int decimal_shift);
 
+/**
+ * @brief Set the Analogdigit Transistion Start 
+ * 
+ * @param _underTestPost the testobject  
+ * @param _analogdigitTransistionStart the analog to digit transition start
+ */
+void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analogdigitTransistionStart);
+
 #endif // TEST_FLOW_H

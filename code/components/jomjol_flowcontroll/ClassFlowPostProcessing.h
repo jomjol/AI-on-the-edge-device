@@ -41,7 +41,7 @@ protected:
     void handleMaxRateValue(string _decsep, string _value);
     void handleDecimalExtendedResolution(string _decsep, string _value); 
     void handleMaxRateType(string _decsep, string _value);
-
+    void handleAnalogDigitalTransitionStart(string _decsep, string _value);
     std::string GetStringReadouts(general);
 
     void WriteDataLog(int _analog);
