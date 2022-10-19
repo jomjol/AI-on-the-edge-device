@@ -10,23 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
 
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Cache PlatformIO
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
@@ -59,7 +61,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -74,7 +76,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Rename firmware file to contain versioning (old ota)
       run: |
@@ -109,7 +111,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -124,7 +126,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Prepare update.zip artifact
       run: |
@@ -177,7 +179,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -192,7 +194,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Prepare artifacts for release
       run: |
@@ -231,7 +233,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -262,7 +264,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 
     - name: Prepare artifacts for release
