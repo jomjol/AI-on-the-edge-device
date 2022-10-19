@@ -62,7 +62,7 @@ std::string ClassLogFile::getESPHeapInfo(){
 	return 	espInfoResultStr;
 }
 
-void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
+void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ReturnPreValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
 {
     printf("Start WriteToData\n");
     time_t rawtime;
@@ -95,11 +95,13 @@ void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnV
 
         strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
 
-        zwtime = std::string(buffer) + ":";
+        zwtime = std::string(buffer) + ":\t";
         fputs(zwtime.c_str(), pFile);
         fputs(_ReturnRawValue.c_str(), pFile);
         fputs("\t", pFile);
         fputs(_ReturnValue.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_ReturnPreValue.c_str(), pFile);
         fputs("\t", pFile);
         fputs(_ErrorMessageText.c_str(), pFile);
         fputs("\t", pFile);

@@ -848,11 +848,11 @@ void ClassFlowPostProcessing::WriteDataLog(int _analog)
     string analog = "";
     string digital = "";
     if (flowAnalog)
-        analog = flowAnalog->getReadout(_analog);
+        analog = flowAnalog->getReadoutRawString(_analog);
     if (flowDigit)
-        digital = flowDigit->getReadout(_analog);
+        digital = flowDigit->getReadoutRawString(_analog);
 //    LogFile.WriteToFile(analog);
-    LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
+    LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ReturnPreValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
     printf("WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_analog]->ReturnRawValue.c_str(), NUMBERS[_analog]->ReturnValue.c_str(), NUMBERS[_analog]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
 }
 
