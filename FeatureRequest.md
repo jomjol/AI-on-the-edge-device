@@ -11,6 +11,12 @@
 
 ____
 
+#### #30 Add feature to correct misinterpreted value
+
+* If a value is misinterpreted, the user can manually correct the value.
+* The misinterpreted ROIs would be saved in a "training data" -folder on the SD-card
+* Stretch goal: make sending of saved training data as easy as pushing a button =)
+
 #### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
 
 ~~* https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
