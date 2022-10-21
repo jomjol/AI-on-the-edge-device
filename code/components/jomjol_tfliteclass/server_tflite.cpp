@@ -718,7 +718,6 @@ void task_autodoFlow(void *pvParameter)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
         LogFile.WriteToFile(_zw); 
-        ESP_LOGD(TAGTFLITE, "Autoflow: start");
         fr_start = esp_timer_get_time();
 
         if (flowisrunning)
@@ -747,7 +746,6 @@ void task_autodoFlow(void *pvParameter)
         stream << std::fixed << std::setprecision(1) << cputmp;
         string zwtemp = "CPU Temperature: " + stream.str();
         LogFile.WriteToFile(zwtemp); 
-        ESP_LOGD(TAGTFLITE, "CPU Temperature: %.2f", cputmp);
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
         {

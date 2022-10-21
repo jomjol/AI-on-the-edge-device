@@ -494,7 +494,6 @@ void task_reboot(void *pvParameter)
 void doReboot(){
     LogFile.SwitchOnOff(true);
     LogFile.WriteToFile("Reboot triggered by Software (5s).");
-    ESP_LOGI(TAGPARTOTA, "Reboot in 5sec");
     LogFile.WriteToFile("Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     // KillTFliteTasks(); // kills itself 

@@ -85,7 +85,6 @@ void setTimeZone(std::string _tzstring)
 {
     setenv("TZ", _tzstring.c_str(), 1);
     tzset();    
-    ESP_LOGD(TAG, "TimeZone set to %s", _tzstring.c_str());
     _tzstring = "Time zone set to " + _tzstring;
     LogFile.WriteToFile(_tzstring);
 }

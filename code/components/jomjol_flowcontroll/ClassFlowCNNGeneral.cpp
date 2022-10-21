@@ -548,8 +548,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        ESP_LOGD(TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
-        LogFile.WriteToFile("Cannot load model");
+        LogFile.WriteToFile("Can't read model file /sdcard%s", cnnmodelfile.c_str());
         delete tflite;
         return false;
     } 
@@ -617,8 +616,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        ESP_LOGD(TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
-        LogFile.WriteToFile("Cannot load model");
+        LogFile.WriteToFile("Can't read model file /sdcard%s", cnnmodelfile.c_str());
 
         delete tflite;
         return false;
@@ -804,8 +802,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             GENERAL[_ana]->ROI[i]->isReject = true;
                             result = -1;
                             _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
-                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
-                            ESP_LOGD(TAG, "Value Rejected due to Threshold (Fit: %f, Threshold: %f", _fit, CNNGoodThreshold);
+                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
                             LogFile.WriteToFile(zw);
                         }
                         else
