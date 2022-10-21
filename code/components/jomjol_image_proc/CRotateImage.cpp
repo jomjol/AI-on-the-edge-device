@@ -280,13 +280,13 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
 
 void CRotateImage::Rotate(float _angle)
 {
-//    printf("width %d, height %d\n", width, height);
+//    ESP_LOGD(TAG, "width %d, height %d", width, height);
     Rotate(_angle, width / 2, height / 2);
 }
 
 void CRotateImage::RotateAntiAliasing(float _angle)
 {
-//    printf("width %d, height %d\n", width, height);
+//    ESP_LOGD(TAG, "width %d, height %d", width, height);
     RotateAntiAliasing(_angle, width / 2, height / 2);
 }
 

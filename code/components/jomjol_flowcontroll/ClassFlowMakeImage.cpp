@@ -6,6 +6,7 @@
 #include "ClassControllCamera.h"
 
 #include "esp_wifi.h"
+#include "esp_log.h"
 
 #include <time.h>
 
@@ -30,7 +31,7 @@ void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
     rawImage->width = image_width;          
     rawImage->height = image_height;
     /////////////////////////////////////////////////////////////////////////////////////
-    printf("Flashdauer: %d\n", flashdauer);
+    ESP_LOGD(TAG, "Flashdauer: %d", flashdauer);
     Camera.CaptureToBasisImage(rawImage, flashdauer);
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
@@ -145,7 +146,7 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     waitbeforepicture_store = waitbeforepicture;
     if (FixedExposure && (waitbeforepicture > 0))
     {
-//        printf("Fixed Exposure enabled!\n");
+//        ESP_LOGD(TAG, "Fixed Exposure enabled!");
         int flashdauer = (int) (waitbeforepicture * 1000);
         Camera.EnableAutoExposure(flashdauer);
         waitbeforepicture = 0.2;

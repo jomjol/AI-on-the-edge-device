@@ -211,7 +211,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     while ((line.size() > 0) || !(feof(pFile)))
     {
-        printf("%s", line.c_str());
+        ESP_LOGD(TAG, "%s", line.c_str());
         zerlegt = ZerlegeZeileWLAN(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
 
@@ -244,7 +244,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     for (int i = 0; i < neuesfile.size(); ++i)
     {
-        printf(neuesfile[i].c_str());
+        ESP_LOGD(TAG, "%s", neuesfile[i].c_str());
         fputs(neuesfile[i].c_str(), pFile);
     }
 

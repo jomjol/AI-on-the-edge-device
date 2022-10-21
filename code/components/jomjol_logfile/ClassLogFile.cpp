@@ -64,7 +64,7 @@ std::string ClassLogFile::getESPHeapInfo(){
 
 void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ReturnPreValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
 {
-    printf("Start WriteToData\n");
+    ESP_LOGD(TAG, "Start WriteToData\n");
     time_t rawtime;
     struct tm* timeinfo;
     char buffer[30];
@@ -82,7 +82,7 @@ void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnV
         return;
     }
 
-    printf("Datalogfile: %s\n", logpath.c_str());
+    ESP_LOGD(TAG, "Datalogfile: %s", logpath.c_str());
     pFile = fopen(logpath.c_str(), "a+");
 
     if (pFile!=NULL) {
@@ -130,7 +130,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
 
 //    pFile = OpenFileAndWait(_fn.c_str(), "a"); 
     pFile = fopen(_fn.c_str(), "a+");
-//    printf("Logfile opened: %s\n", _fn.c_str());
+//    ESP_LOGD(TAG, "Logfile opened: %s", _fn.c_str());
 
     if (pFile!=NULL) {
         if (_time)
@@ -186,7 +186,7 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
     std::string logpath = logroot + "/" + buffer; 
     
     WriteToDedicatedFile(logpath, info, _time);
-    printf((info + "\n").c_str());
+    ESP_LOGD(TAG, "%s", info.c_str());
 }
 
 std::string ClassLogFile::GetCurrentFileName()

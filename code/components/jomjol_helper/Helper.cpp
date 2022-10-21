@@ -22,6 +22,8 @@ extern "C" {
 #include "ClassLogFile.h"
 //#include "ClassLogFile.h"
 
+static const char* TAG = "helper";
+
 //#define ISWINDOWS_TRUE
 #define PATH_MAX_STRING_SIZE 256
 
@@ -90,13 +92,13 @@ FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
 	FILE *pfile;
 
-	printf("open file %s in mode %s\n", nm, _mode);
+	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
 
 	if ((pfile = fopen(nm, _mode)) != NULL) {
-		printf("File %s successfully opened\n", nm);
+		ESP_LOGD(TAG, "File %s successfully opened", nm);
 	}
 	else {
-		printf("Error: file %s does not exist!\n", nm);
+		ESP_LOGD(TAG, "Error: file %s does not exist!", nm);
 		return NULL;
 	}
 
@@ -106,8 +108,7 @@ FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 		TickType_t xDelay;
 		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
 		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec) + " seconds";
-	    printf(zw.c_str());
-		printf("\n");
+	    ESP_LOGD(TAG, "%s", zw.c_str());
 		LogFile.WriteToFile(zw);      
 		vTaskDelay( xDelay );
 		pfile = fopen(nm, _mode);
@@ -159,7 +160,7 @@ void MakeDir(std::string _what)
 //	chdir(_where.c_str());
 
 	if (mkdir(_what.c_str(), S_IRWXU|S_IRWXG|S_IROTH))
-		printf("Problem with MakeDir: %s \n", _what.c_str());
+		ESP_LOGD(TAG, "Problem with MakeDir: %s", _what.c_str());
 }
 
 
@@ -233,7 +234,7 @@ void RenameFile(string from, string to)
 	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		printf("DeleteFile: File %s existiert nicht!\n", from.c_str());
+		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
 		return;
 	}
 	fclose(fpSourceFile);
@@ -249,7 +250,7 @@ void DeleteFile(string fn)
 	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		printf("DeleteFile: File %s existiert nicht!\n", fn.c_str());
+		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
 		return;
 	}
 	fclose(fpSourceFile);
@@ -265,7 +266,7 @@ void CopyFile(string input, string output)
 
 	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
 	{
-		printf("wlan.ini kann nicht kopiert werden!\n");
+		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
 		return;
 	}
 
@@ -273,7 +274,7 @@ void CopyFile(string input, string output)
 	FILE* fpSourceFile = OpenFileAndWait(input.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		printf("File %s existiert nicht!\n", input.c_str());
+		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
 		return;
 	}
 
@@ -291,7 +292,7 @@ void CopyFile(string input, string output)
 	// Close The Files
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
-	printf("File copied: %s to %s", input.c_str(), output.c_str());
+	ESP_LOGD(TAG, "File copied: %s to %s", input.c_str(), output.c_str());
 }
 
 string getFileFullFileName(string filename)
@@ -301,7 +302,7 @@ string getFileFullFileName(string filename)
 	if (lastpos == string::npos)
 		return "";
 
-//	printf("Last position: %d\n", lastpos);
+//	ESP_LOGD(TAG, "Last position: %d", lastpos);
 
 	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
 
@@ -318,7 +319,7 @@ string getDirectory(string filename)
 	if (lastpos == string::npos)
 		return "";
 
-//	printf("Directory: %d\n", lastpos);
+//	ESP_LOGD(TAG, "Directory: %d", lastpos);
 
 	string zw = filename.substr(0, lastpos - 1);
 	return zw;
