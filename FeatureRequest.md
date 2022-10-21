@@ -11,6 +11,12 @@
 
 ____
 
+#### #32 Add feature to correct misinterpreted value
+
+* If a value is misinterpreted, the user can manually correct the value.
+* The misinterpreted ROIs would be saved in a "training data" -folder on the SD-card
+* Stretch goal: make sending of saved training data as easy as pushing a button =)
+
 #### #31 Implement InfluxDB v2.x interface
 
 * Currently only InfluxDB v1.x is supportet, extend to v2.x
