@@ -78,14 +78,14 @@ void setup_time()
     ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("timeist %s\n", zw.c_str());
+    ESP_LOGD(TAG, "timeist %s", zw.c_str());
 }
 
 void setTimeZone(std::string _tzstring)
 {
     setenv("TZ", _tzstring.c_str(), 1);
     tzset();    
-    printf("TimeZone set to %s\n", _tzstring.c_str());
+    ESP_LOGD(TAG, "TimeZone set to %s", _tzstring.c_str());
     _tzstring = "Time zone set to " + _tzstring;
     LogFile.WriteToFile(_tzstring);
 }
@@ -109,14 +109,14 @@ static void obtain_time(void)
 
 void reset_servername(std::string _servername)
 {
-    printf("Set SNTP-Server: %s\n", _servername.c_str());
+    ESP_LOGD(TAG, "Set SNTP-Server: %s", _servername.c_str());
     sntp_stop();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, _servername.c_str());
     sntp_init();
     obtain_time();
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("Time ist %s\n", zw.c_str());
+    ESP_LOGD(TAG, "Time ist %s", zw.c_str());
 }
 
 static void initialize_sntp(void)

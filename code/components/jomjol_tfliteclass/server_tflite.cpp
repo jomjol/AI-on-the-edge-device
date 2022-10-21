@@ -67,7 +67,7 @@ bool isSetupModusActive() {
 void KillTFliteTasks()
 {
 #ifdef DEBUG_DETAIL_ON          
-    printf("Handle: xHandleblink_task_doFlow: %ld\n", (long) xHandleblink_task_doFlow);  
+    ESP_LOGD(TAGTFLITE, "Handle: xHandleblink_task_doFlow: %ld", (long) xHandleblink_task_doFlow);
 #endif  
     if (xHandleblink_task_doFlow != NULL)
     {
@@ -75,12 +75,12 @@ void KillTFliteTasks()
         xHandleblink_task_doFlow = NULL;
         vTaskDelete(xHandleblink_task_doFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
-        printf("Killed: xHandleblink_task_doFlow\n");
+        ESP_LOGD(TAGTFLITE, "Killed: xHandleblink_task_doFlow");
 #endif
     }
 
 #ifdef DEBUG_DETAIL_ON      
-    printf("Handle: xHandletask_autodoFlow: %ld\n", (long) xHandletask_autodoFlow);  
+    ESP_LOGD(TAGTFLITE, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
 #endif
     if (xHandletask_autodoFlow != NULL)
     {
@@ -88,7 +88,7 @@ void KillTFliteTasks()
         xHandletask_autodoFlow = NULL;
         vTaskDelete(xHandletask_autodoFlowTmp);
 #ifdef DEBUG_DETAIL_ON      
-        printf("Killed: xHandletask_autodoFlow\n");
+        ESP_LOGD(TAGTFLITE, "Killed: xHandletask_autodoFlow");
 #endif
     }
 
@@ -97,11 +97,11 @@ void KillTFliteTasks()
 void doInit(void)
 {
 #ifdef DEBUG_DETAIL_ON             
-    printf("Start tfliteflow.InitFlow(config);\n");
+    ESP_LOGD(TAGTFLITE, "Start tfliteflow.InitFlow(config);");
 #endif
     tfliteflow.InitFlow(CONFIG_FILE);
 #ifdef DEBUG_DETAIL_ON      
-    printf("Finished tfliteflow.InitFlow(config);\n");
+    ESP_LOGD(TAGTFLITE, "Finished tfliteflow.InitFlow(config);");
 #endif
 }
 
@@ -110,13 +110,13 @@ bool doflow(void)
 {
     
     std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
-    printf("doflow - start %s\n", zw_time.c_str());
+    ESP_LOGD(TAGTFLITE, "doflow - start %s", zw_time.c_str());
     flowisrunning = true;
     tfliteflow.doFlow(zw_time);
     flowisrunning = false;
 
 #ifdef DEBUG_DETAIL_ON      
-    printf("doflow - end %s\n", zw_time.c_str());
+    ESP_LOGD(TAGTFLITE, "doflow - end %s", zw_time.c_str());
 #endif    
     return true;
 }
@@ -124,7 +124,7 @@ bool doflow(void)
 void blink_task_doFlow(void *pvParameter)
 {
 #ifdef DEBUG_DETAIL_ON          
-    printf("blink_task_doFlow\n");
+    ESP_LOGD(TAGTFLITE, "blink_task_doFlow");
 #endif
     if (!flowisrunning)
     {
@@ -141,7 +141,7 @@ esp_err_t handler_init(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON      
     LogFile.WriteHeapInfo("handler_init - Start");       
-    printf("handler_doinit uri:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_doinit uri: %s", req->uri);
 #endif
 
     const char* resp_str = "Init started<br>";
@@ -167,7 +167,7 @@ esp_err_t handler_doflow(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_doflow - Start");       
 #endif
 
-    printf("handler_doFlow uri: "); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_doFlow uri: %s", req->uri);
 
     if (flowisrunning)
     {
@@ -199,7 +199,7 @@ esp_err_t handler_json(httpd_req_t *req)
 #endif
 
 
-    printf("handler_JSON uri:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_JSON uri: %s", req->uri);
 
     char _query[100];
 //    char _size[10];
@@ -236,18 +236,18 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     std::string _type = "value";
     string zw;
 
-    printf("handler_wasserzaehler uri:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_wasserzaehler uri: %s", req->uri);
 
     char _query[100];
     char _size[10];
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-//        printf("Query: "); printf(_query); printf("\n");
+//        ESP_LOGD(TAGTFLITE, "Query: %s", _query);
         if (httpd_query_key_value(_query, "all", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("all is found"); printf(_size); printf("\n"); 
+            ESP_LOGD(TAGTFLITE, "all is found%s", _size);
 #endif
             _all = true;
         }
@@ -255,7 +255,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         if (httpd_query_key_value(_query, "type", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("all is found"); printf(_size); printf("\n"); 
+            ESP_LOGD(TAGTFLITE, "all is found: %s", _size);
 #endif
             _type = std::string(_size);
         }
@@ -263,14 +263,14 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         if (httpd_query_key_value(_query, "rawvalue", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("rawvalue is found"); printf(_size); printf("\n"); 
+            ESP_LOGD(TAGTFLITE, "rawvalue is found: %s", _size);
 #endif
             _rawValue = true;
         }
         if (httpd_query_key_value(_query, "noerror", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("noerror is found"); printf(_size); printf("\n"); 
+            ESP_LOGD(TAGTFLITE, "noerror is found: %s", _size);
 #endif
             _noerror = true;
         }        
@@ -281,7 +281,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     if (_all)
     {
         httpd_resp_set_type(req, "text/plain");
-        printf("TYPE: %s\n", _type.c_str());
+        ESP_LOGD(TAGTFLITE, "TYPE: %s", _type.c_str());
         int _intype = READOUT_TYPE_VALUE;
         if (_type == "prevalue")
             _intype = READOUT_TYPE_PREVALUE;
@@ -292,7 +292,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 
         zw = tfliteflow.getReadoutAll(_intype);
-        printf("ZW: %s\n", zw.c_str());
+        ESP_LOGD(TAGTFLITE, "ZW: %s", zw.c_str());
         if (zw.length() > 0)
             httpd_resp_sendstr_chunk(req, zw.c_str()); 
         httpd_resp_sendstr_chunk(req, NULL);   
@@ -304,7 +304,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
     string query = std::string(_query);
-//    printf("Query: %s\n", query.c_str());
+//    ESP_LOGD(TAGTFLITE, "Query: %s, query.c_str());
     if (query.find("full") != std::string::npos)
     {
         string txt, zw;
@@ -380,7 +380,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_editflow - Start");       
 #endif
 
-    printf("handler_editflow uri: "); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_editflow uri: %s", req->uri);
 
     char _query[200];
     char _valuechar[30];
@@ -391,7 +391,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("task is found: %s\n", _valuechar); 
+            ESP_LOGD(TAGTFLITE, "task is found: %s", _valuechar);
 #endif
             _task = string(_valuechar);
         }
@@ -399,7 +399,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     if (_task.compare("tflite") == 0)
     {
-        printf("Get tflite list\n");
+        ESP_LOGD(TAGTFLITE, "Get tflite list");
         return get_tflite_file_handler(req);
     }
 
@@ -414,8 +414,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
         out = string(_valuechar);  
 
 #ifdef DEBUG_DETAIL_ON       
-        printf("in: "); printf(in.c_str()); printf("\n"); 
-        printf("out: "); printf(out.c_str()); printf("\n"); 
+        ESP_LOGD(TAGTFLITE, "in: %s", in.c_str());
+        ESP_LOGD(TAGTFLITE, "out: %s", out.c_str());
 #endif
 
         in = "/sdcard" + in;
@@ -456,12 +456,12 @@ esp_err_t handler_editflow(httpd_req_t *req)
         dy = stoi(zw);          
 
 #ifdef DEBUG_DETAIL_ON       
-        printf("in: "); printf(in.c_str()); printf("\n"); 
-        printf("out: "); printf(out.c_str()); printf("\n"); 
-        printf("x: "); printf(zw.c_str()); printf("\n"); 
-        printf("y: "); printf(zw.c_str()); printf("\n"); 
-        printf("dx: "); printf(zw.c_str()); printf("\n"); 
-        printf("dy: "); printf(zw.c_str()); printf("\n"); 
+        ESP_LOGD(TAGTFLITE, "in: %s", in.c_str());
+        ESP_LOGD(TAGTFLITE, "out: %s", out.c_str());
+        ESP_LOGD(TAGTFLITE, "x: %s", zw.c_str());
+        ESP_LOGD(TAGTFLITE, "y: %s", zw.c_str());
+        ESP_LOGD(TAGTFLITE, "dx: %s", zw.c_str());
+        ESP_LOGD(TAGTFLITE, "dy: %s", zw.c_str());
 #endif
 
         if (httpd_query_key_value(_query, "enhance", _valuechar, 10) == ESP_OK)
@@ -529,11 +529,11 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
 
 
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+//        ESP_LOGD(TAGTFLITE, "Parameter host: %s", _host.c_str());
+//        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAGTFLITE, zwzw.c_str());
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
         Camera.SetLEDIntensity(intens);
-        printf("test_take - vor MakeImage");
+        ESP_LOGD(TAGTFLITE, "test_take - vor MakeImage");
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
@@ -546,9 +546,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
         }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
+//        ESP_LOGD(TAGTFLITE, "Parameter host: %s", _host.c_str());
 
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
+//        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAGTFLITE, zwzw.c_str());
         std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
     }
@@ -573,7 +573,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     const char* resp_str;
 
 #ifdef DEBUG_DETAIL_ON       
-    printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_prevalue: %s", req->uri);
 #endif
 
     string* zw = tfliteflow.getActStatus();
@@ -651,7 +651,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     string zw;
 
 #ifdef DEBUG_DETAIL_ON       
-    printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAGTFLITE, "handler_prevalue: %s", req->uri);
 #endif
 
     char _query[100];
@@ -661,13 +661,13 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
 #ifdef DEBUG_DETAIL_ON       
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAGTFLITE, "Query: %s", _query);
 #endif
 
         if (httpd_query_key_value(_query, "value", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("Value: "); printf(_size); printf("\n"); 
+            ESP_LOGD(TAGTFLITE, "Value: %s", _size);
 #endif
         }
 
@@ -703,7 +703,7 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
-    printf("task_autodoFlow: start\r\n");
+    ESP_LOGD(TAGTFLITE, "task_autodoFlow: start");
     doInit();
     gpio_handler_init();
 
@@ -718,24 +718,24 @@ void task_autodoFlow(void *pvParameter)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
         LogFile.WriteToFile(_zw); 
-        printf("Autoflow: start\n");
+        ESP_LOGD(TAGTFLITE, "Autoflow: start");
         fr_start = esp_timer_get_time();
 
         if (flowisrunning)
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("Autoflow: doFlow is already running!\n");
+            ESP_LOGD(TAGTFLITE, "Autoflow: doFlow is already running!");
 #endif
         }
         else
         {
 #ifdef DEBUG_DETAIL_ON       
-            printf("Autoflow: doFlow is started\n");
+            ESP_LOGD(TAGTFLITE, "Autoflow: doFlow is started");
 #endif
             flowisrunning = true;
             doflow();
 #ifdef DEBUG_DETAIL_ON       
-            printf("Remove older log files\n");
+            ESP_LOGD(TAGTFLITE, "Remove older log files");
 #endif
             LogFile.RemoveOld();
         }
@@ -747,18 +747,18 @@ void task_autodoFlow(void *pvParameter)
         stream << std::fixed << std::setprecision(1) << cputmp;
         string zwtemp = "CPU Temperature: " + stream.str();
         LogFile.WriteToFile(zwtemp); 
-        printf("CPU Temperature: %.2f\n", cputmp);
+        ESP_LOGD(TAGTFLITE, "CPU Temperature: %.2f", cputmp);
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
         {
             const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
-            printf("Autoflow: sleep for : %ldms\n", (long) xDelay);
+            ESP_LOGD(TAGTFLITE, "Autoflow: sleep for : %ldms", (long) xDelay);
             vTaskDelay( xDelay );        
         }
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
-    printf("task_autodoFlow: end\r\n");
+    ESP_LOGD(TAGTFLITE, "task_autodoFlow: end");
 }
 
 void TFliteDoAutoStart()
@@ -767,17 +767,17 @@ void TFliteDoAutoStart()
 
     int _i = configMINIMAL_STACK_SIZE;
 
-    printf("task_autodoFlow configMINIMAL_STACK_SIZE: %d\n", _i);
-    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+    ESP_LOGD(TAGTFLITE, "task_autodoFlow configMINIMAL_STACK_SIZE: %d", _i);
+    ESP_LOGD(TAGTFLITE, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 
     xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
     if( xReturned != pdPASS )
     {
 
        //Memory: 64 --> 48 --> 35 --> 25
-       printf("ERROR task_autodoFlow konnte nicht erzeugt werden !!\r\n");
+       ESP_LOGD(TAGTFLITE, "ERROR task_autodoFlow konnte nicht erzeugt werden!");
     }
-    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+    ESP_LOGD(TAGTFLITE, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 
 
 }
