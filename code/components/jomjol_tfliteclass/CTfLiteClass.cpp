@@ -1,10 +1,14 @@
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
 #include "Helper.h"
+#include "esp_log.h"
 
 #include <sys/stat.h>
 
 // #define DEBUG_DETAIL_ON
+
+
+static const char *TAG = "ctflite_class";
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -41,7 +45,7 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
     return -1;
 
   int numeroutput = output2->dims->data[1];
-  //printf("\n number output neurons: %d\n\n", numeroutput);
+  //ESP_LOGD(TAG, "number output neurons: %d", numeroutput);
 
   if (_bis == -1)
     _bis = numeroutput -1;
@@ -51,7 +55,7 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
 
   if (_bis >= numeroutput)
   {
-    printf("ANZAHL OUTPUT NEURONS passt nicht zu geforderter Classifizierung!");
+    ESP_LOGD(TAG, "ANZAHL OUTPUT NEURONS passt nicht zu geforderter Classifizierung!");
     return -1;
   }
 
@@ -74,13 +78,13 @@ void CTfLiteClass::GetInputDimension(bool silent = false)
   TfLiteTensor* input2 = this->interpreter->input(0);
 
   int numdim = input2->dims->size;
-  if (!silent)  printf("NumDimension: %d\n", numdim);  
+  if (!silent)  ESP_LOGD(TAG, "NumDimension: %d", numdim);
 
   int sizeofdim;
   for (int j = 0; j < numdim; ++j)
   {
     sizeofdim = input2->dims->data[j];
-    if (!silent) printf("SizeOfDimension %d: %d\n", j, sizeofdim);  
+    if (!silent) ESP_LOGD(TAG, "SizeOfDimension %d: %d", j, sizeofdim);
     if (j == 1) im_height = sizeofdim;
     if (j == 2) im_width = sizeofdim;
     if (j == 3) im_channel = sizeofdim;
@@ -106,13 +110,13 @@ int CTfLiteClass::GetAnzOutPut(bool silent)
   TfLiteTensor* output2 = this->interpreter->output(0);
 
   int numdim = output2->dims->size;
-  if (!silent) printf("NumDimension: %d\n", numdim);  
+  if (!silent) ESP_LOGD(TAG, "NumDimension: %d", numdim);
 
   int sizeofdim;
   for (int j = 0; j < numdim; ++j)
   {
     sizeofdim = output2->dims->data[j];
-    if (!silent) printf("SizeOfDimension %d: %d\n", j, sizeofdim);  
+    if (!silent) ESP_LOGD(TAG, "SizeOfDimension %d: %d", j, sizeofdim);
   }
 
 
@@ -123,7 +127,7 @@ int CTfLiteClass::GetAnzOutPut(bool silent)
   for (int i = 0; i < numeroutput; ++i)
   {
    fo = output2->data.f[i];
-    if (!silent) printf("Result %d: %f\n", i, fo);  
+    if (!silent) ESP_LOGD(TAG, "Result %d: %f", i, fo);
   }
   return numeroutput;
 }
@@ -143,7 +147,7 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
     unsigned int w = rs->width;
     unsigned int h = rs->height;
     unsigned char red, green, blue;
-//    printf("Image: %s size: %d x %d\n", _fn.c_str(), w, h);
+//    ESP_LOGD(TAG, "Image: %s size: %d x %d\n", _fn.c_str(), w, h);
 
     input_i = 0;
     float* input_data_ptr = (interpreter->input(0))->data.f;
@@ -174,9 +178,9 @@ void CTfLiteClass::MakeAllocate()
 {
     static tflite::AllOpsResolver resolver;
 
-//    printf(LogFile.getESPHeapInfo().c_str()); printf("\n");
+//    ESP_LOGD(TAG, "%s", LogFile.getESPHeapInfo().c_str());
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
-//    printf(LogFile.getESPHeapInfo().c_str()); printf("\n");
+//    ESP_LOGD(TAG, "%s", LogFile.getESPHeapInfo().c_str());
 
     TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
@@ -186,14 +190,14 @@ void CTfLiteClass::MakeAllocate()
     this->GetInputDimension();   
     return;
   }
-//    printf("Allocate Done.\n");
+//    ESP_LOGD(TAG, "Allocate Done");
 }
 
 void CTfLiteClass::GetInputTensorSize(){
 #ifdef DEBUG_DETAIL_ON    
     float *zw = this->input;
     int test = sizeof(zw);
-    printf("Input Tensor Dimension: %d\n", test);       
+    ESP_LOGD(TAG, "Input Tensor Dimension: %d", test);
 #endif
 }
 
@@ -213,7 +217,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
     if (size == -1)
     {
-  		printf("\nFile doesn't exist.\n");
+      ESP_LOGD(TAG, "File doesn't exist");
       return NULL;
     }
 
@@ -222,7 +226,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
     while (!result && (anz < 6))    // maximal 5x versuchen (= 5s)
     {
 #ifdef DEBUG_DETAIL_ON      
-		    printf("Speicher ist voll - Versuche es erneut: %d.\n", anz);
+		    ESP_LOGD(TAG, "Speicher ist voll - Versuche es erneut: %d", anz);
 #endif
         result = (unsigned char*) malloc(size);
         anz++;
@@ -234,7 +238,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
         fread(result, 1, size, f);
         fclose(f);        
 	  }else {
-		  printf("\nNo free memory available.\n");
+		  ESP_LOGD(TAG, "No free memory available");
 	}    
 
 

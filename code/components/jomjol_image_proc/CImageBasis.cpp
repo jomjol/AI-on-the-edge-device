@@ -29,7 +29,7 @@ uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
     if (islocked)
     {
 #ifdef DEBUG_DETAIL_ON   
-        printf("Image is locked: sleep for : %ds\n", _waitmaxsec);
+        ESP_LOGD(TAG, "Image is locked: sleep for: %ds", _waitmaxsec);
 #endif
         TickType_t xDelay;
         xDelay = 1000 / portTICK_PERIOD_MS;

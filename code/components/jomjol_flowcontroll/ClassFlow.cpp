@@ -3,7 +3,9 @@
 #include <string>
 #include <iostream>
 #include <string.h>
+#include "esp_log.h"
 
+static const char *TAG = "class_flow";
 
 
 void ClassFlow::SetInitialParameter(void)
@@ -105,7 +107,7 @@ std::string ClassFlow::GetParameterName(std::string _input)
     {
         _param = _input;
     }
-//    printf("Parameter: %s, Pospunkt: %d\n", _param.c_str(), _pospunkt);
+//    ESP_LOGD(TAG, "Parameter: %s, Pospunkt: %d", _param.c_str(), _pospunkt);
 	return _param;
 }
 
@@ -121,10 +123,10 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 	if (!fgets(zw, 1024, pfile))
 	{
 		*rt = "";
-		printf("END OF FILE\n");
+		ESP_LOGD(TAG, "END OF FILE");
 		return false;
 	}
-	printf("%s", zw);
+	ESP_LOGD(TAG, "%s", zw);
 	*rt = zw;
 	*rt = trim(*rt);
 	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph
@@ -132,7 +134,7 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 		*rt = "";
 		if (!fgets(zw, 1024, pfile))
 			return false;
-		printf("%s", zw);		
+		ESP_LOGD(TAG, "%s", zw);
 		*rt = zw;
 		*rt = trim(*rt);
 	}

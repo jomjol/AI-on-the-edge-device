@@ -752,7 +752,7 @@ void task_autodoFlow(void *pvParameter)
         if (auto_intervall > fr_delta_ms)
         {
             const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
-            ESP_LOGD(TAGTFLITE, "Autoflow: sleep for : %ldms", (long) xDelay);
+            ESP_LOGD(TAGTFLITE, "Autoflow: sleep for: %ldms", (long) xDelay);
             vTaskDelay( xDelay );        
         }
     }

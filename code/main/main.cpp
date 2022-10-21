@@ -154,7 +154,7 @@ extern "C" void app_main(void)
     esp_err_t cam = Camera.InitCam();
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "After camera initialization: sleep for : %ldms", (long) xDelay);
+    ESP_LOGD(TAGMAIN, "After camera initialization: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
 
 
@@ -194,7 +194,7 @@ extern "C" void app_main(void)
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "main: sleep for : %ldms", (long) xDelay);
+    ESP_LOGD(TAGMAIN, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
     setup_time();
     setBootTime();
@@ -243,7 +243,7 @@ extern "C" void app_main(void)
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "main: sleep for : %ldms", (long) xDelay*10);
+    ESP_LOGD(TAGMAIN, "main: sleep for: %ldms", (long) xDelay*10);
     vTaskDelay( xDelay ); 
 
     ESP_LOGD(TAGMAIN, "starting server");
