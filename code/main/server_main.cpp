@@ -150,7 +150,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
     if (_task.compare("SDCardFreePartitionSpace") == 0)
     {
         std::string zw;
-        zw = getSDCardFreeParitionSpace();
+        zw = getSDCardFreePartitionSpace();
         httpd_resp_sendstr_chunk(req, zw.c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
