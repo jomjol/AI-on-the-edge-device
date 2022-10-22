@@ -90,7 +90,7 @@ string getSDCardPartitionSize(){
 	return std::to_string(tot_sect);
 }
 
-string getSDCardFreeParitionSpace(){
+string getSDCardFreePartitionSpace(){
 	FATFS *fs;
     uint32_t fre_clust, fre_sect;
   
@@ -103,7 +103,7 @@ string getSDCardFreeParitionSpace(){
 	return std::to_string(fre_sect);
 }
 
-string getSDCardParitionAllocationSize(){
+string getSDCardPartitionAllocationSize(){
 	FATFS *fs;
     uint32_t fre_clust, allocation_size;
   
@@ -111,7 +111,7 @@ string getSDCardParitionAllocationSize(){
     f_getfree("0:", (DWORD *)&fre_clust, &fs);
     allocation_size = fs->ssize;
 
-    printf("SD Card Parition Allocation Size (bytes): %d)\n", allocation_size);
+    printf("SD Card Partition Allocation Size (bytes): %d)\n", allocation_size);
 
 	return std::to_string(allocation_size);
 }

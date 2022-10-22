@@ -48,8 +48,8 @@ string getESPHeapInfo();
 
 /////////////////////////////
 string getSDCardPartitionSize();
-string getSDCardFreeParitionSpace();
-string getSDCardParitionAllocationSize();
+string getSDCardFreePartitionSpace();
+string getSDCardPartitionAllocationSize();
 
 void SaveSDCardInfo(sdmmc_card_t* card);
 string SDCardParseManufacturerIDs(int);
