@@ -16,7 +16,6 @@
 #include "server_tflite.h"
 #include "esp_log.h"
 
-
 #include "Helper.h"
 
 //#define DEBUG_DETAIL_ON      
