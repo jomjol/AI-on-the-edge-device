@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include "sdmmc_cmd.h"
+
 
 using namespace std;
 
@@ -47,13 +47,3 @@ size_t getESPHeapSize();
 string getESPHeapInfo();
 
 /////////////////////////////
-string getSDCardPartitionSize();
-string getSDCardFreePartitionSpace();
-string getSDCardPartitionAllocationSize();
-
-void SaveSDCardInfo(sdmmc_card_t* card);
-string SDCardParseManufacturerIDs(int);
-string getSDCardManufacturer();
-string getSDCardName();
-string getSDCardCapacity();
-string getSDCardSectorSize();
