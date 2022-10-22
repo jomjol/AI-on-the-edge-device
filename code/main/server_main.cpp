@@ -154,7 +154,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
-    if (_task.compare("SDCardPartitionSectorSize") == 0)
+    if (_task.compare("SDCardParitionAllocationSize") == 0)
     {
         std::string zw;
         zw = getSDCardParitionAllocationSize();
