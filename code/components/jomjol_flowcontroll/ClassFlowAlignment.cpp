@@ -3,11 +3,13 @@
 #include "ClassFlow.h"
 
 #include "CRotateImage.h"
+#include "esp_log.h"
 
 
 #include "ClassLogFile.h"
 
 
+static const char *TAG = "class_flow_alignment";
 
 bool AlignmentExtendedDebugging = true;
 
@@ -48,7 +50,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 
     if (!ImageBasis)            // die Funktion Bilder aufnehmen existiert nicht --> muss erst erzeugt werden NUR ZU TESTZWECKEN
     {
-        if (AlignmentExtendedDebugging) printf("CImageBasis had to be created\n");
+        if (AlignmentExtendedDebugging) ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis(namerawimage);
     }
 }
@@ -174,7 +176,7 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 
     if (initialmirror){
-        printf("do mirror\n");
+        ESP_LOGD(TAG, "do mirror");
         rt.Mirror();
         if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/mirror.jpg"));
     }
@@ -279,7 +281,7 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 //    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues01");      
 
     fgets(zw, 1024, pFile);
-    printf("%s", zw);
+    ESP_LOGD(TAG, "%s", zw);
 
 //    zwvalue = "LoadReferenceAlignmentValues Time: " + std::string(zw);
 

@@ -4,8 +4,9 @@
 
 #include "Helper.h"
 #include "configFile.h"
+#include <esp_log.h>
 
-//static const char *TAGCONFIGFILE = "configFile";
+static const char *TAG = "configFile";
 
 ConfigFile::ConfigFile(std::string filePath)
 {
@@ -48,7 +49,7 @@ bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 
 	if (fgets(zw, 1024, pFile))
 	{
-		printf("%s", zw);
+		ESP_LOGD(TAG, "%s", zw);
 		if ((strlen(zw) == 0) && feof(pFile))
 		{
 			*rt = "";
@@ -67,7 +68,7 @@ bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph
 	{
 		fgets(zw, 1024, pFile);
-		printf("%s", zw);		
+		ESP_LOGD(TAG, "%s", zw);
 		if (feof(pFile))
 		{
 			*rt = "";

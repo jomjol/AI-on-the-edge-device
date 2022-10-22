@@ -126,7 +126,7 @@ void task_NoSDBlink(void *pvParameter)
     
     TickType_t xDelay;
     xDelay = 100 / portTICK_PERIOD_MS;
-    printf("SD-Card could not be inialized - STOP THE PROGRAMM HERE\n");
+    ESP_LOGD(TAGMAIN, "SD-Card could not be inialized - STOP THE PROGRAMM HERE");
 
     while (1)
     {
@@ -146,15 +146,15 @@ extern "C" void app_main(void)
     string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
             "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
 
-    printf("=============================================================================================\n");
-    printf("%s\n", versionFormated.c_str());
-    printf("=============================================================================================\n");
+    ESP_LOGD(TAGMAIN, "=============================================================================================");
+    ESP_LOGD(TAGMAIN, "%s", versionFormated.c_str());
+    ESP_LOGD(TAGMAIN, "=============================================================================================");
 
     PowerResetCamera();
     esp_err_t cam = Camera.InitCam();
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("After camera initialization: sleep for : %ldms\n", (long) xDelay);
+    ESP_LOGD(TAGMAIN, "After camera initialization: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
 
 
@@ -171,30 +171,30 @@ extern "C" void app_main(void)
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
-        printf("\nWLan: %s, XXXXXX\n", ssid);
+        ESP_LOGD(TAGMAIN, "WLan: %s, XXXXXX", ssid);
 #else
-        printf("\nWLan: %s, %s\n", ssid, passwd);
+        ESP_LOGD(TAGMAIN, "WLan: %s, %s", ssid, passwd);
 #endif        
 
     else
-        printf("No SSID and PASSWORD set!!!");
+        ESP_LOGD(TAGMAIN, "No SSID and PASSWORD set!!!");
 
     if (hostname != NULL)
-        printf("Hostename: %s\n", hostname);
+        ESP_LOGD(TAGMAIN, "Hostename: %s", hostname);
     else
-        printf("Hostname not set.\n");
+        ESP_LOGD(TAGMAIN, "Hostname not set");
 
     if (ip != NULL && gateway != NULL && netmask != NULL)
-       printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip, gateway, netmask);
+       ESP_LOGD(TAGMAIN, "Fixed IP: %s, Gateway %s, Netmask %s", ip, gateway, netmask);
     if (dns != NULL)
-       printf("DNS IP: %s\n", dns);
+       ESP_LOGD(TAGMAIN, "DNS IP: %s", dns);
 
 
     wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay);
+    ESP_LOGD(TAGMAIN, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
     setup_time();
     setBootTime();
@@ -205,14 +205,14 @@ extern "C" void app_main(void)
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("time %s\n", zw.c_str());    
+    ESP_LOGD(TAGMAIN, "time %s", zw.c_str());
 
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
         std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
         _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
-        printf(_zws.c_str());
+        ESP_LOGD(TAGMAIN, "%s", _zws.c_str());
         LogFile.SwitchOnOff(true);
         LogFile.WriteToFile(_zws);
         LogFile.SwitchOnOff(false);
@@ -243,10 +243,10 @@ extern "C" void app_main(void)
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay*10);
+    ESP_LOGD(TAGMAIN, "main: sleep for: %ldms", (long) xDelay*10);
     vTaskDelay( xDelay ); 
 
-    printf("starting server\n");
+    ESP_LOGD(TAGMAIN, "starting server");
 
     server = start_webserver();   
     register_server_camera_uri(server); 
@@ -256,10 +256,10 @@ extern "C" void app_main(void)
 
     gpio_handler_create(server);
 
-    printf("vor reg server main\n");
+    ESP_LOGD(TAGMAIN, "vor reg server main");
     register_server_main_uri(server, "/sdcard");
 
-    printf("vor dotautostart\n");
+    ESP_LOGD(TAGMAIN, "vor dotautostart");
     TFliteDoAutoStart();
 
 }

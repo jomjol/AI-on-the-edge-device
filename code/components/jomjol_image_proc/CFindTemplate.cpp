@@ -2,6 +2,10 @@
 
 #include "ClassLogFile.h"
 
+#include <esp_log.h>
+
+static const char* TAG = "c_find_template";
+
 // #define DEBUG_DETAIL_ON  
 
 
@@ -9,7 +13,7 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
 {
     uint8_t* rgb_template = stbi_load(_ref->image_file.c_str(), &tpl_width, &tpl_height, &tpl_bpp, channels);
 
-//    printf("FindTemplate 01\n");
+//    ESP_LOGD(TAG, "FindTemplate 01");
 
     int ow, ow_start, ow_stop;
     int oh, oh_start, oh_stop;
@@ -45,7 +49,7 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
     int min, max;
     bool isSimilar = false;
 
-//    printf("FindTemplate 02\n");
+//    ESP_LOGD(TAG, "FindTemplate 02");
 
     if ((_ref->alignment_algo == 2) && (_ref->fastalg_x > -1) && (_ref->fastalg_y > -1))     // für Testzwecke immer Berechnen
     {
@@ -57,7 +61,7 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
 #endif
     }
 
-//    printf("FindTemplate 03\n");
+//    ESP_LOGD(TAG, "FindTemplate 03");
 
 
     if (isSimilar)
@@ -70,7 +74,7 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
         return true;
     }
 
-//    printf("FindTemplate 04\n");
+//    ESP_LOGD(TAG, "FindTemplate 04");
 
 
     double aktSAD;
@@ -78,7 +82,7 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
 
     RGBImageLock();
 
-//    printf("FindTemplate 05\n");
+//    ESP_LOGD(TAG, "FindTemplate 05");
     int xouter, youter, tpl_x, tpl_y, _ch;
     int _anzchannels = channels;
     if (_ref->alignment_algo == 0)  // 0 = "Default" (nur R-Kanal)
@@ -106,14 +110,14 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
             }
         }
 
-//    printf("FindTemplate 06\n");
+//    ESP_LOGD(TAG, "FindTemplate 06");
 
 
     if (_ref->alignment_algo == 2)
         CalculateSimularities(rgb_template, _ref->found_x, _ref->found_y, ow, oh, min, avg, max, SAD, _ref->fastalg_SAD, _ref->fastalg_SAD_criteria);
 
 
-//    printf("FindTemplate 07\n");
+//    ESP_LOGD(TAG, "FindTemplate 07");
 
     _ref->fastalg_x = _ref->found_x;
     _ref->fastalg_y = _ref->found_y;
@@ -132,7 +136,7 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
     RGBImageRelease();
     stbi_image_free(rgb_template);
     
-//    printf("FindTemplate 08\n");
+//    ESP_LOGD(TAG, "FindTemplate 08");
 
     return false;
 }
@@ -173,7 +177,7 @@ bool CFindTemplate::CalculateSimularities(uint8_t* _rgb_tmpl, int _startx, int _
 
     float _SADdif = abs(SAD - _SADold);
 
-    printf("Anzahl %ld, avgDifSum %fd, avg %f, SAD_neu: %fd, _SAD_old: %f, _SAD_crit:%f\n", anz, avgDifSum, avg, SAD, _SADold, _SADdif);
+    ESP_LOGD(TAG, "Anzahl %ld, avgDifSum %fd, avg %f, SAD_neu: %fd, _SAD_old: %f, _SAD_crit:%f", anz, avgDifSum, avg, SAD, _SADold, _SADdif);
 
     if (_SADdif <= _SADcrit)
         return true;

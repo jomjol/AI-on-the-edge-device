@@ -5,6 +5,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
+#include <esp_log.h>
+
+static const char* TAG = "c_align_and_cut_image";
 
 //#define GET_MEMORY malloc
 #define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
@@ -43,14 +46,14 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     r0_x = _temp1->target_x;
     r0_y = _temp1->target_y;
-    printf("Vor ft->FindTemplate(_temp1);  %s\n", _temp1->image_file.c_str());
+    ESP_LOGD(TAG, "Vor ft->FindTemplate(_temp1); %s", _temp1->image_file.c_str());
     isSimilar1 = ft->FindTemplate(_temp1);
     _temp1->width = ft->tpl_width;
     _temp1->height = ft->tpl_height; 
 
     r1_x = _temp2->target_x;
     r1_y = _temp2->target_y;
-    printf("Vor ft->FindTemplate(_temp2);  %s\n", _temp2->image_file.c_str());
+    ESP_LOGD(TAG, "Vor ft->FindTemplate(_temp2); %s", _temp2->image_file.c_str());
     isSimilar2 = ft->FindTemplate(_temp2);
     _temp2->width = ft->tpl_width;
     _temp2->height = ft->tpl_height; 
@@ -86,7 +89,7 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
     CRotateImage rt(this, ImageTMP);
     rt.Translate(dx, dy);
     rt.Rotate(d_winkel, _temp1->target_x, _temp1->target_y);
-    printf("Alignment: dx %d - dy %d - rot %f\n", dx, dy, d_winkel);
+    ESP_LOGD(TAG, "Alignment: dx %d - dy %d - rot %f", dx, dy, d_winkel);
 
     return (isSimilar1 && isSimilar2);
 }
@@ -147,7 +150,7 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
 
     if ((_target->height != dy) || (_target->width != dx) || (_target->channels != channels))
     {
-        printf("CAlignAndCutImage::CutAndSave - Image size does not match !!");
+        ESP_LOGD(TAG, "CAlignAndCutImage::CutAndSave - Image size does not match!");
         return;
     }
 

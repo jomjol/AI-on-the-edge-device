@@ -14,6 +14,8 @@ extern "C" {
 #include "time_sntp.h"
 #include "ClassLogFile.h"
 #include "CImageBasis.h"
+#include "esp_log.h"
+
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {
@@ -79,7 +81,7 @@ void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, i
 	nm = FormatFileName(nm);
 	string output = "/sdcard/img_tmp/" + name + ".jpg";
 	output = FormatFileName(output);
-	printf("save to file: %s\n", nm.c_str());
+	ESP_LOGD(logTag, "save to file: %s", nm.c_str());
 	_img->SaveToFile(nm);
 //	CopyFile(output, nm);
 }

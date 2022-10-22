@@ -12,6 +12,8 @@
 
 #define __HIDE_PASSWORD
 
+static const char *TAG = "class_flow_MQTT";
+
 void ClassFlowMQTT::SetInitialParameter(void)
 {
     uri = "";
@@ -120,19 +122,19 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
 #ifdef __HIDE_PASSWORD
-    printf("Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
+    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
 #else
-    printf("Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
+    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
 #endif
 
     if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
     { 
-        printf("InitMQTTInit\n");
+        ESP_LOGD(TAG, "InitMQTTInit");
         mainerrortopic = maintopic + "/connection";
 #ifdef __HIDE_PASSWORD
-        printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
+        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
 #else
-        printf("Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s\n", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
+        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
 #endif
         if (!MQTTInit(uri, clientname, user, password, mainerrortopic, keepAlive))
         { // Failed

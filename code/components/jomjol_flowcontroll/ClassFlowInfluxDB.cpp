@@ -6,8 +6,11 @@
 #include "time_sntp.h"
 #include "interface_influxdb.h"
 #include "ClassFlowPostProcessing.h"
+#include "esp_log.h"
 
 #include <time.h>
+
+static const char* TAG = "class_flow_influxDb";
 
 void ClassFlowInfluxDB::SetInitialParameter(void)
 {
@@ -76,7 +79,7 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        printf("while loop reading line: %s\n", aktparamgraph.c_str());
+        ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
         zerlegt = this->ZerlegeZeile(aktparamgraph);
         if ((toUpper(zerlegt[0]) == "USER") && (zerlegt.size() > 1))
         {
@@ -102,11 +105,11 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     if ((uri.length() > 0) && (database.length() > 0) && (measurement.length() > 0)) 
     { 
-        printf("Init InfluxDB with uri: %s, measurement: %s, user: %s, password: %s\n", uri.c_str(), measurement.c_str(), user.c_str(), password.c_str());
+        ESP_LOGD(TAG, "Init InfluxDB with uri: %s, measurement: %s, user: %s, password: %s", uri.c_str(), measurement.c_str(), user.c_str(), password.c_str());
         InfluxDBInit(uri, database, measurement, user, password); 
         InfluxDBenable = true;
     } else {
-        printf("InfluxDB init skipped as we are missing some parameters");
+        ESP_LOGD(TAG, "InfluxDB init skipped as we are missing some parameters");
     }
    
     return true;

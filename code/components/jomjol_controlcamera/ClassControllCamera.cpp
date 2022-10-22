@@ -249,7 +249,7 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 
 void CCamera::EnableAutoExposure(int flashdauer)
 {
-    printf("EnableAutoExposure");
+    ESP_LOGD(TAGCAMERACLASS, "EnableAutoExposure");
     LEDOnOff(true);
     if (flashdauer > 0)
         LightOnOff(true);
@@ -423,19 +423,19 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     LEDOnOff(false);    
 
 #ifdef DEBUG_DETAIL_ON    
-    printf("w %d, h %d, size %d\n", fb->width, fb->height, fb->len);
+    ESP_LOGD(TAGCAMERACLASS, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
 #endif
 
     nm = FormatFileName(nm);
 
 #ifdef DEBUG_DETAIL_ON
-    printf("Save Camera to : %s\n", nm.c_str());
+    ESP_LOGD(TAGCAMERACLASS, "Save Camera to : %s", nm.c_str());
 #endif
 
     ftype = toUpper(getFileType(nm));
 
 #ifdef DEBUG_DETAIL_ON
-    printf("Filetype: %s\n", ftype.c_str());
+    ESP_LOGD(TAGCAMERACLASS, "Filetype: %s", ftype.c_str());
 #endif
 
     uint8_t * buf = NULL;
@@ -551,20 +551,20 @@ void CCamera::LightOnOff(bool status)
 {
     GpioHandler* gpioHandler = gpio_handler_get();
     if ((gpioHandler != NULL) && (gpioHandler->isEnabled())) {
-        printf("Use gpioHandler flashLigh\n");
+        ESP_LOGD(TAGCAMERACLASS, "Use gpioHandler flashLigh");
         gpioHandler->flashLightEnable(status);
     }  else {
     #ifdef USE_PWM_LEDFLASH
         if (status)
         {
-            printf("Internal Flash-LED turn on with PWM %d\n", led_intensity);
+            ESP_LOGD(TAGCAMERACLASS, "Internal Flash-LED turn on with PWM %d", led_intensity);
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, led_intensity));
             // Update duty to apply the new value
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
         else
         {
-            printf("Internal Flash-LED turn off PWM\n");
+            ESP_LOGD(TAGCAMERACLASS, "Internal Flash-LED turn off PWM");
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0));
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
@@ -608,11 +608,11 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAGCAMERACLASS, "Query: %s", _query);
         if (httpd_query_key_value(_query, "size", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON   
-            printf("Size: "); printf(_size); printf("\n");            
+            ESP_LOGD(TAGCAMERACLASS, "Size: %s", _size);
 #endif
             if (strcmp(_size, "QVGA") == 0)
                 resol = FRAMESIZE_QVGA;       // 320x240
@@ -630,7 +630,7 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
         if (httpd_query_key_value(_query, "quality", _qual, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON   
-            printf("Quality: "); printf(_qual); printf("\n");
+            ESP_LOGD(TAGCAMERACLASS, "Quality: %s", _qual);
 #endif
             qual = atoi(_qual);
                 
@@ -663,7 +663,7 @@ framesize_t CCamera::TextToFramesize(const char * _size)
 CCamera::CCamera()
 {
 #ifdef DEBUG_DETAIL_ON    
-    printf("CreateClassCamera\n");
+    ESP_LOGD(TAGCAMERACLASS, "CreateClassCamera");
 #endif
     brightness = -5;
     contrast = -5;
@@ -675,7 +675,7 @@ CCamera::CCamera()
 
 esp_err_t CCamera::InitCam()
 {
-    printf("Init Camera\n");
+    ESP_LOGD(TAGCAMERACLASS, "Init Camera");
     ActualQuality = camera_config.jpeg_quality;
     ActualResolution = camera_config.frame_size;
     //initialize the camera
@@ -694,6 +694,6 @@ void CCamera::SetLEDIntensity(float _intrel)
     _intrel = max(_intrel, (float) 0);
     _intrel = _intrel / 100;
     led_intensity = (int) (_intrel * 8191);
-    printf("Set led_intensity to %d of 8191\n", led_intensity);
+    ESP_LOGD(TAGCAMERACLASS, "Set led_intensity to %d of 8191", led_intensity);
 
 }

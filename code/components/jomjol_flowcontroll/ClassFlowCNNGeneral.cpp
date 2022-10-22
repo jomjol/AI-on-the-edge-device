@@ -7,6 +7,7 @@
 
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
+#include "esp_log.h"
 
 static const char* TAG = "flow_analog";
 
@@ -311,7 +312,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     {
         disabled = true;
         while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
-        printf("[Analog/Digit] is disabled !!!\n");
+        ESP_LOGD(TAG, "[Analog/Digit] is disabled!");
         return true;
     }
 
@@ -429,7 +430,7 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
 
     _ret->ROI.push_back(neuroi);
 
-    printf("GetGENERAL - GENERAL %s - roi %s - CCW: %d\n", _analog.c_str(), _roi.c_str(), neuroi->CCW);
+    ESP_LOGD(TAG, "GetGENERAL - GENERAL %s - roi %s - CCW: %d", _analog.c_str(), _roi.c_str(), neuroi->CCW);
 
     return _ret;
 }
@@ -488,7 +489,7 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            printf("General %d - Align&Cut\n", i);
+            ESP_LOGD(TAG, "General %d - Align&Cut", i);
             
             caic->CutAndSave(GENERAL[_ana]->ROI[i]->posx, GENERAL[_ana]->ROI[i]->posy, GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, GENERAL[_ana]->ROI[i]->image_org);
             if (SaveAllFiles)
@@ -545,9 +546,9 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
-    printf(zwcnn.c_str());printf("\n");
+    ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        ESP_LOGD(TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
         LogFile.WriteToFile("Cannot load model");
         delete tflite;
         return false;
@@ -566,37 +567,37 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
         {
             case 2:
                 CNNType = Analogue;
-                printf("TFlite-Type set to Analogue\n");
+                ESP_LOGD(TAG, "TFlite-Type set to Analogue");
                 break;
             case 10:
                 CNNType = DoubleHyprid10;
-                printf("TFlite-Type set to DoubleHyprid10\n");
+                ESP_LOGD(TAG, "TFlite-Type set to DoubleHyprid10");
                 break;
             case 11:
                 CNNType = Digital;
-                printf("TFlite-Type set to Digital\n");
+                ESP_LOGD(TAG, "TFlite-Type set to Digital");
                 break;
 /*            case 20:
                 CNNType = DigitalHyprid10;
-                printf("TFlite-Type set to DigitalHyprid10\n");
+                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid10");
                 break;
 */
 //            case 22:
 //                CNNType = DigitalHyprid;
-//                printf("TFlite-Type set to DigitalHyprid\n");
+//                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid");
 //                break;
              case 100:
                 if (modelxsize==32 && modelysize == 32) {
                     CNNType = Analogue100;
-                    printf("TFlite-Type set to Analogue100\n");
+                    ESP_LOGD(TAG, "TFlite-Type set to Analogue100");
                 } else {
                     CNNType = Digital100;
-                    printf("TFlite-Type set to Digital\n");
+                    ESP_LOGD(TAG, "TFlite-Type set to Digital");
                 }
                 break;
             default:
                 LogFile.WriteToFile("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
-                printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
+                ESP_LOGD(TAG, "ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR");
         }
     }
 
@@ -614,9 +615,9 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
-    printf(zwcnn.c_str());printf("\n");
+    ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
+        ESP_LOGD(TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
         LogFile.WriteToFile("Cannot load model");
 
         delete tflite;
@@ -628,7 +629,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     {
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            printf("General %d - TfLite\n", i);
+            ESP_LOGD(TAG, "General %d - TfLite", i);
 
             switch (CNNType) {
                 case Analogue:
@@ -649,7 +650,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         else
                             GENERAL[_ana]->ROI[i]->result_float = result * 10;
                               
-                        printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float);
                         if (isLogImage)
                             LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;
@@ -658,7 +659,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     {
                         GENERAL[_ana]->ROI[i]->result_klasse = 0;
                         GENERAL[_ana]->ROI[i]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image);
-                        printf("Result General(Digit)%i: %d\n", i, GENERAL[_ana]->ROI[i]->result_klasse);
+                        ESP_LOGD(TAG, "Result General(Digit)%i: %d", i, GENERAL[_ana]->ROI[i]->result_klasse);
 
                         if (isLogImage)
                         {
@@ -695,7 +696,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         else
                             GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
 
-                        printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
                         _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
@@ -732,7 +733,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
 
-                        printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
                         _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
@@ -792,7 +793,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         string zw = "_num (p, m): " + to_string(_num) + " " + to_string(_numplus) + " " + to_string(_numminus);
                         zw = zw + " _val (p, m): " + to_string(_val) + " " + to_string(_valplus) + " " + to_string(_valminus);
                         zw = zw + " result: " + to_string(result) + " _fit: " + to_string(_fit);
-                        printf("details cnn: %s\n", zw.c_str());
+                        ESP_LOGD(TAG, "details cnn: %s", zw.c_str());
                         LogFile.WriteToFile(zw);
 
 
@@ -804,7 +805,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             result = -1;
                             _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
                             string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
-                            printf("Value Rejected due to Threshold (Fit: %f, Threshold: %f\n", _fit, CNNGoodThreshold);
+                            ESP_LOGD(TAG, "Value Rejected due to Threshold (Fit: %f, Threshold: %f", _fit, CNNGoodThreshold);
                             LogFile.WriteToFile(zw);
                         }
                         else
@@ -814,7 +815,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
 
                         GENERAL[_ana]->ROI[i]->result_float = result;
-                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(Analog)%i: %f", i, GENERAL[_ana]->ROI[i]->result_float);
 
                         if (isLogImage)
                         {
@@ -852,7 +853,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         
                         GENERAL[_ana]->ROI[i]->isReject = false;
                         
-                        printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float);
 
                         if (isLogImage)
                         {
@@ -898,7 +899,7 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            printf("Image: %d\n", (int) GENERAL[_ana]->ROI[i]->image);
+            ESP_LOGD(TAG, "Image: %d", (int) GENERAL[_ana]->ROI[i]->image);
             if (GENERAL[_ana]->ROI[i]->image)
             {
                 if (GENERAL[_ana]->name == "default")

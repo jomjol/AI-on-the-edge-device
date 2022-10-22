@@ -9,6 +9,11 @@
 #include <time.h>
 
 #include "time_sntp.h"
+
+#include "esp_log.h"
+
+static const char* TAG = "class_flow_postproc";
+
 //#define SERIAL_DEBUG // testing debug on serial enabled
 
 
@@ -72,10 +77,10 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
 
 void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _extern)
 {
-    printf("SetPrevalue: %f, %s\n", zw, _numbers.c_str());
+    ESP_LOGD(TAG, "SetPrevalue: %f, %s", zw, _numbers.c_str());
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
-//        printf("Number %d, %s\n", j, NUMBERS[j]->name.c_str());
+//        ESP_LOGD(TAG, "Number %d, %s", j, NUMBERS[j]->name.c_str());
         if (NUMBERS[j]->name == _numbers)
         {
             NUMBERS[j]->PreValue = zw;
@@ -86,7 +91,7 @@ void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _exte
                 time(&(NUMBERS[j]->lastvalue));
                 localtime(&(NUMBERS[j]->lastvalue));
             }
-//            printf("Found %d! - set to %f\n", j,  NUMBERS[j]->PreValue);
+//            ESP_LOGD(TAG, "Found %d! - set to %f", j,  NUMBERS[j]->PreValue);
         }
     }
     UpdatePreValueINI = true;
@@ -110,7 +115,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         return false;
 
     fgets(zw, 1024, pFile);
-    printf("Read line Prevalue.ini: %s", zw);
+    ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
     zwtime = trim(std::string(zw));
     if (zwtime.length() == 0)
         return false;
@@ -161,7 +166,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 _done = true;
             else
             {
-                printf("Read line Prevalue.ini: %s", zw);
+                ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
                 zerlegt = HelperZerlegeZeile(trim(std::string(zw)), "\t");
                 if (zerlegt.size() > 1)
                 {
@@ -177,7 +182,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     {
         fgets(zw, 1024, pFile);
         fclose(pFile);
-        printf("%s", zw);
+        ESP_LOGD(TAG, "%s", zw);
         zwvalue = trim(std::string(zw));
         NUMBERS[0]->PreValue = stod(zwvalue.c_str());
 
@@ -194,7 +199,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
         whenStart.tm_sec = ss;
         whenStart.tm_isdst = -1;
 
-        printf("TIME: %d, %d, %d, %d, %d, %d\n", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
+        ESP_LOGD(TAG, "TIME: %d, %d, %d, %d, %d, %d", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
 
         NUMBERS[0]->lastvalue = mktime(&whenStart);
 
@@ -236,10 +241,10 @@ void ClassFlowPostProcessing::SavePreValue()
         struct tm* timeinfo = localtime(&NUMBERS[j]->lastvalue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         NUMBERS[j]->timeStamp = std::string(buffer);
-//        printf("SaverPreValue %d, Value: %f, Nachkomma %d\n", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+//        ESP_LOGD(TAG, "SaverPreValue %d, Value: %f, Nachkomma %d", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
         _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
-        printf("Write PreValue Zeile: %s\n", _zw.c_str());
+        ESP_LOGD(TAG, "Write PreValue Zeile: %s", _zw.c_str());
         if (pFile) {
             fputs(_zw.c_str(), pFile);
         }
@@ -278,7 +283,7 @@ void ClassFlowPostProcessing::handleDecimalExtendedResolution(string _decsep, st
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
         _digit = _decsep.substr(0, _pospunkt);
     else
@@ -308,7 +313,7 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
         _digit = _decsep.substr(0, _pospunkt);
     else
@@ -324,7 +329,7 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
         }
 /*        catch(const std::exception& e)
         {
-            printf("ERROR - Decimalshift is not a number: %s\n", _value.c_str());
+            ESP_LOGD(TAG, "ERROR - Decimalshift is not a number: %s", _value.c_str());
         }
 */        
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
@@ -347,7 +352,7 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
         _digit = _decsep.substr(0, _pospunkt);
     else
@@ -372,7 +377,7 @@ void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
         _digit = _decsep.substr(0, _pospunkt);
     else
@@ -404,7 +409,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    printf("Name: %s, Pospunkt: %d\n", _decsep.c_str(), _pospunkt);
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
         _digit = _decsep.substr(0, _pospunkt);
     else
@@ -418,7 +423,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
         }
 /*        catch(const std::exception& e)
         {
-            printf("ERROR - MaxRateValue is not a number: %s\n", _value.c_str());
+            ESP_LOGD(TAG, "ERROR - MaxRateValue is not a number: %s", _value.c_str());
         }
 */
         if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
@@ -541,7 +546,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         flowAnalog->UpdateNameNumbers(&name_numbers);
     }
 
-    printf("Anzahl NUMBERS: %d - DIGITS: %d, ANALOG: %d\n", name_numbers.size(), anzDIGIT, anzANALOG);
+    ESP_LOGD(TAG, "Anzahl NUMBERS: %d - DIGITS: %d, ANALOG: %d", name_numbers.size(), anzDIGIT, anzANALOG);
 
     for (int _num = 0; _num < name_numbers.size(); ++_num)
     {
@@ -597,7 +602,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
     }
 
     for (int i = 0; i < NUMBERS.size(); ++i) {
-        printf("Number %s, Anz DIG: %d, Anz ANA %d\n", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigital, NUMBERS[i]->AnzahlAnalog);
+        ESP_LOGD(TAG, "Number %s, Anz DIG: %d, Anz ANA %d", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigital, NUMBERS[i]->AnzahlAnalog);
     }
 
 }
@@ -666,7 +671,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%dT%H:%M:%S", timeinfo);
     zwtime = std::string(strftime_buf);
 
-    printf("Anzahl NUMBERS: %d\n", NUMBERS.size());
+    ESP_LOGD(TAG, "Anzahl NUMBERS: %d", NUMBERS.size());
 
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
@@ -691,7 +696,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
         }
         #ifdef SERIAL_DEBUG
-            printf("After analog->getReadout: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+            ESP_LOGD(TAG, "After analog->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = "." + NUMBERS[j]->ReturnRawValue;
@@ -704,12 +709,12 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
         }
         #ifdef SERIAL_DEBUG
-            printf("After digital->getReadout: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+            ESP_LOGD(TAG, "After digital->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
 
         #ifdef SERIAL_DEBUG
-            printf("After ShiftDecimal: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+            ESP_LOGD(TAG, "After ShiftDecimal: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
 
         if (IgnoreLeadingNaN)               
@@ -717,7 +722,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->ReturnRawValue.erase(0, 1);
 
         #ifdef SERIAL_DEBUG
-            printf("After IgnoreLeadingNaN: ReturnRaw %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+            ESP_LOGD(TAG, "After IgnoreLeadingNaN: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
         NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnRawValue;
 
@@ -734,17 +739,17 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
         }
         #ifdef SERIAL_DEBUG
-            printf("After findDelimiterPos: ReturnValue %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+            ESP_LOGD(TAG, "After findDelimiterPos: ReturnValue %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
         // Lösche führende Nullen (außer es ist nur noch einen 0)
         while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
             NUMBERS[j]->ReturnValue.erase(0, 1);
         #ifdef SERIAL_DEBUG
-            printf("After removeLeadingZeros: ReturnValue %s\n", NUMBERS[j]->ReturnRawValue.c_str());  
+            ESP_LOGD(TAG, "After removeLeadingZeros: ReturnValue %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
         NUMBERS[j]->Value = std::stod(NUMBERS[j]->ReturnValue);
         #ifdef SERIAL_DEBUG
-            printf("After setting the Value: Value %f and as double is %f\n", NUMBERS[j]->Value, std::stod(NUMBERS[j]->ReturnValue));  
+            ESP_LOGD(TAG, "After setting the Value: Value %f and as double is %f", NUMBERS[j]->Value, std::stod(NUMBERS[j]->ReturnValue));
         #endif
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency)
@@ -752,20 +757,20 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             if (flowDigit)
             {
                 if (flowDigit->getCNNType() != Digital)
-                    printf("checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digital Classification)\n"); 
+                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digital Classification)");
                 else 
                     NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
             }
             else
             {
                 #ifdef SERIAL_DEBUG
-                    printf("checkDigitIncreaseConsistency = true - no digital numbers defined!\n"); 
+                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - no digital numbers defined!");
                 #endif
             }
         }
 
         #ifdef SERIAL_DEBUG
-            printf("After checkDigitIncreaseConsistency: Value %f\n", NUMBERS[j]->Value);  
+            ESP_LOGD(TAG, "After checkDigitIncreaseConsistency: Value %f", NUMBERS[j]->Value);
         #endif
                
 
@@ -774,7 +779,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue))
             {
                 #ifdef SERIAL_DEBUG
-                    printf("Neg: value=%f, preValue=%f, preToll%f\n", NUMBERS[j]->Value, NUMBERS[j]->PreValue,
+                    ESP_LOGD(TAG, "Neg: value=%f, preValue=%f, preToll%f", NUMBERS[j]->Value, NUMBERS[j]->PreValue,
                      NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
                       ) ;
                 #endif
@@ -793,7 +798,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
         }
         #ifdef SERIAL_DEBUG
-            printf("After AllowNegativeRates: Value %f\n", NUMBERS[j]->Value);  
+            ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
         double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
         difference /= 60;  
@@ -819,7 +824,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
         }
         #ifdef SERIAL_DEBUG
-           printf("After MaxRateCheck: Value %f\n", NUMBERS[j]->Value);  
+           ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
         NUMBERS[j]->lastvalue = imagetime;
@@ -834,7 +839,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         UpdatePreValueINI = true;
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
-        printf("%s\n", zw.c_str());
+        ESP_LOGD(TAG, "%s", zw.c_str());
         LogFile.WriteToFile(_zw);
         WriteDataLog(j);
     }
@@ -853,7 +858,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _analog)
         digital = flowDigit->getReadoutRawString(_analog);
 //    LogFile.WriteToFile(analog);
     LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ReturnPreValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
-    printf("WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_analog]->ReturnRawValue.c_str(), NUMBERS[_analog]->ReturnValue.c_str(), NUMBERS[_analog]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
+    ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_analog]->ReturnRawValue.c_str(), NUMBERS[_analog]->ReturnValue.c_str(), NUMBERS[_analog]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
 }
 
 
@@ -863,7 +868,7 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
     {
         if (NUMBERS[j]->digit_roi && !NUMBERS[j]->analog_roi)            // es gibt nur digitale ziffern
         {
-//            printf("Nurdigital\n");
+//            ESP_LOGD(TAG, "Nurdigital");
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
 
             if (NUMBERS[j]->isExtendedResolution && flowDigit->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
@@ -874,7 +879,7 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
 
         if (!NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)            // es gibt nur analoge ziffern
         {
-//            printf("Nur analog\n");
+//            ESP_LOGD(TAG, "Nur analog");
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
             if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
                 NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShift-1;
@@ -884,7 +889,7 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
 
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)            // digital + analog
         {
-//            printf("Nur digital + analog\n");
+//            ESP_LOGD(TAG, "Nur digital + analog");
 
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
             NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size() - NUMBERS[j]->DecimalShift;
@@ -894,7 +899,7 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
 
         }
 
-        printf("UpdateNachkommaDecShift NUMBER%i: Nachkomma %i, DecShift %i\n", j, NUMBERS[j]->Nachkomma,NUMBERS[j]->DecimalShift);
+        ESP_LOGD(TAG, "UpdateNachkommaDecShift NUMBER%i: Nachkomma %i, DecShift %i", j, NUMBERS[j]->Nachkomma,NUMBERS[j]->DecimalShift);
     }
 }
 
@@ -916,7 +921,7 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, i
 string ClassFlowPostProcessing::RundeOutput(double _in, int _anzNachkomma){
     std::stringstream stream;
     int _zw = _in;    
-//    printf("AnzNachkomma: %d\n", _anzNachkomma);
+//    ESP_LOGD(TAG, "AnzNachkomma: %d", _anzNachkomma);
 
     if (_anzNachkomma < 0) {
         _anzNachkomma = 0;
@@ -981,7 +986,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
         pot++;
     }
     #ifdef SERIAL_DEBUG
-        printf("checkDigitConsistency: pot=%d, decimalshift=%d\n", pot, _decilamshift);
+        ESP_LOGD(TAG, "checkDigitConsistency: pot=%d, decimalshift=%d", pot, _decilamshift);
     #endif
     pot_max = ((int) log10(input)) + 1;
     while (pot <= pot_max)
@@ -1013,7 +1018,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
             }
         }
         #ifdef SERIAL_DEBUG
-            printf("checkDigitConsistency: input=%f", input);
+            ESP_LOGD(TAG, "checkDigitConsistency: input=%f", input);
         #endif
         pot++;
     }
