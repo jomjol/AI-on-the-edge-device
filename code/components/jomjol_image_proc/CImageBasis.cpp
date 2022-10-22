@@ -362,11 +362,8 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
     if ((width * height * channels) == 0)
     {
-        ESP_LOGE(TAG, "Image with size 0 loaded --> reboot to be done! "
-            "Check that your camera module is working and connected properly.");
-
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Image with size 0 loaded --> reboot to be done! "
+        LogFile.WriteToFile(ESP_LOG_ERROR, "Image with size 0 loaded --> reboot to be done! "
                 "Check that your camera module is working and connected properly.");
 
         doReboot();

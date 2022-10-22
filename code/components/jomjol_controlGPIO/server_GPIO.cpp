@@ -400,7 +400,7 @@ bool GpioHandler::readConfig()
 
     if (gpioExtLED > 0)
     {
-    //     LogFile.WriteToFile("Startsequence 06");      // Nremove
+    //     LogFile.WriteToFile(ESP_LOG_INFO, "Startsequence 06");      // Nremove
 //        vTaskDelay( xDelay );   
 //        xDelay = 5000 / portTICK_PERIOD_MS;
 //        ESP_LOGD(TAG_SERVERGPIO, "main: sleep for: %ldms", (long) xDelay);
@@ -458,7 +458,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_switch_GPIO - Start");    
 #endif
 
-    LogFile.WriteToFile("handler_switch_GPIO");    
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "handler_switch_GPIO");
     char _query[200];
     char _valueGPIO[30];    
     char _valueStatus[30];    

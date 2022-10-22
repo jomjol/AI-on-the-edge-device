@@ -840,7 +840,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
         ESP_LOGD(TAG, "%s", zw.c_str());
-        LogFile.WriteToFile(_zw);
+        LogFile.WriteToFile(ESP_LOG_INFO, _zw);
         WriteDataLog(j);
     }
 
@@ -856,7 +856,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _analog)
         analog = flowAnalog->getReadoutRawString(_analog);
     if (flowDigit)
         digital = flowDigit->getReadoutRawString(_analog);
-//    LogFile.WriteToFile(analog);
+//    LogFile.WriteToFile(ESP_LOG_INFO, analog);
     LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ReturnPreValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
     ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_analog]->ReturnRawValue.c_str(), NUMBERS[_analog]->ReturnValue.c_str(), NUMBERS[_analog]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
 }
