@@ -47,7 +47,6 @@ string ClassFlowImage::CreateLogFolder(string time) {
 	string logPath = LogImageLocation + "/" + time.LOGFILE_TIME_FORMAT_DATE_EXTR + "/" + time.LOGFILE_TIME_FORMAT_HOUR_EXTR;
     isLogImage = mkdir_r(logPath.c_str(), S_IRWXU) == 0;
     if (!isLogImage) {
-        ESP_LOGW(logTag, "Can't create log folder for analog images. Path %s", logPath.c_str());
         LogFile.WriteToFile("Can't create log folder for analog images. Path " + logPath);
     }
 
@@ -129,7 +128,6 @@ void ClassFlowImage::RemoveOldLogs()
             }
 		}
     }
-    ESP_LOGI(logTag, "%d image folder deleted. %d image folder not deleted.", deleted, notDeleted);
     LogFile.WriteToFile("Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
     closedir(dir);
 }

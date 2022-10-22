@@ -248,7 +248,6 @@ void ClassLogFile::RemoveOld()
             }
         }
     }
-    ESP_LOGI(TAG, "%d logfiles deleted. %d files not deleted (incl. leer.txt).", deleted, notDeleted);
     LogFile.WriteToFile("logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
     closedir(dir);
 

@@ -212,15 +212,11 @@ extern "C" void app_main(void)
     {
         std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
         _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
-        ESP_LOGD(TAGMAIN, "%s", _zws.c_str());
         LogFile.SwitchOnOff(true);
         LogFile.WriteToFile(_zws);
         LogFile.SwitchOnOff(false);
     } else {
         if (cam != ESP_OK) {
-                ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
-                    "Check that your camera module is working and connected properly.");
-
                 LogFile.SwitchOnOff(true);
                 LogFile.WriteToFile("Failed to initialize camera module. "
                         "Check that your camera module is working and connected properly.");
@@ -229,7 +225,6 @@ extern "C" void app_main(void)
 // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                ESP_LOGE(TAGMAIN, "esp_camera_fb_get: Camera Capture Failed");
                 LogFile.SwitchOnOff(true);
                 LogFile.WriteToFile("Camera cannot be initialzed. "
                         "System will reboot.");

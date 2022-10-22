@@ -493,9 +493,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
-                ESP_LOGD(TAG, "do reboot");
                 LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Reboot to activate new HOSTNAME.");
+                LogFile.WriteToFile("Rebooting to activate new HOSTNAME...");
                 esp_restart();
                 hard_restart();                   
                 doReboot();
