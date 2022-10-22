@@ -17,6 +17,8 @@
 #include "esp_log.h"
 
 
+#include "helper.h"
+
 //#define DEBUG_DETAIL_ON      
 
 
@@ -135,6 +137,71 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
+
+    if (_task.compare("SDCardPartitionSize") == 0)
+    {
+        std::string zw;
+        zw = getSDCardPartitionSize();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardFreeParitionSpace") == 0)
+    {
+        std::string zw;
+        zw = getSDCardFreeParitionSpace();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardPartitionSectorSize") == 0)
+    {
+        std::string zw;
+        zw = getSDCardParitionAllocationSize();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardManufacturer") == 0)
+    {
+        std::string zw;
+        zw = getSDCardManufacturer(); 
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardName") == 0)
+    {
+        std::string zw;
+        zw = getSDCardName(); 
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardCapacity") == 0)
+    {
+        std::string zw;
+        zw = getSDCardCapacity();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardSectorSize") == 0)
+    {
+        std::string zw;
+        zw = getSDCardSectorSize();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+
 
     return ESP_OK;
 }
