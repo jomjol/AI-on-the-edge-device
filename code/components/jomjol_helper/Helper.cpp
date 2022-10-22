@@ -150,28 +150,6 @@ string getSDCardSectorSize(){
 	return std::to_string(SDCardSectorSize);
 }
 
-/*
-    int SDCardManu = card->cid.mfg_id;
-    printf("SD Manu: %s\n", std::to_string(SDCardManu).c_str()); 
-
-    printf("SD Manu (ASCII): %s\n", SDCardParseManufacturerIDs(card->cid.mfg_id).c_str());
-    
-    int SDCardOEM = card->cid.oem_id;
-    printf("SD OEM: %s\n", std::to_string(SDCardOEM).c_str()); 
-
-    int SDCardRev = card->cid.revision;
-    printf("SD Rev: %s\n", std::to_string(SDCardRev).c_str()); 
-
-    char *SDCardName = card->cid.name;
-    printf("SD Name: %s\n", SDCardName); 
-
-    int SDCardCSize = card->csd.sector_size;
-    printf("SD C-Size: %s\n", std::to_string(SDCardCSize).c_str()); 
-
-    int SDCardCapa = card->csd.capacity / (1024/card->csd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
-    printf("SD Capa: %s\n", std::to_string(SDCardCapa).c_str()); 
-*/
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
