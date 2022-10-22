@@ -33,7 +33,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
     LogFile.WriteHeapInfo("info_get_handler - Start");    
 #endif
 
-    LogFile.WriteToFile("info_get_handler");    
+    LogFile.WriteToFile(ESP_LOG_INFO, "info_get_handler");    
     char _query[200];
     char _valuechar[30];    
     std::string _task;

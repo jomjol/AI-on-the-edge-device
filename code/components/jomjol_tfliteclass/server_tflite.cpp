@@ -717,7 +717,7 @@ void task_autodoFlow(void *pvParameter)
     while (auto_isrunning)
     {
         std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
-        LogFile.WriteToFile(_zw); 
+        LogFile.WriteToFile(ESP_LOG_INFO, _zw); 
         fr_start = esp_timer_get_time();
 
         if (flowisrunning)
@@ -739,13 +739,13 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOld();
         }
         
-        LogFile.WriteToFile("task_autodoFlow - round done");
+        LogFile.WriteToFile(ESP_LOG_INFO, "task_autodoFlow - round done");
         //CPU Temp
         float cputmp = temperatureRead();
         std::stringstream stream;
         stream << std::fixed << std::setprecision(1) << cputmp;
         string zwtemp = "CPU Temperature: " + stream.str();
-        LogFile.WriteToFile(zwtemp); 
+        LogFile.WriteToFile(ESP_LOG_INFO, zwtemp); 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
         {

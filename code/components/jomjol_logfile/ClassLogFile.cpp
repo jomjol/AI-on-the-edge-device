@@ -1,5 +1,6 @@
 #include "ClassLogFile.h"
 #include "time_sntp.h"
+#include "esp_log.h"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -21,10 +22,10 @@ ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/dat
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
     std::string _zw = "\t" + _id;
-    if (loglevel > 0)
+    if (loglevel > ESP_LOG_WARN) 
         _zw =  _zw + "\t" + getESPHeapInfo();
 
-    WriteToFile(_zw);
+    WriteToFile(ESP_LOG_DEBUG, _zw);
 }
 
 
@@ -64,7 +65,7 @@ std::string ClassLogFile::getESPHeapInfo(){
 
 void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ReturnPreValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
 {
-    ESP_LOGD(TAG, "Start WriteToData\n");
+    ESP_LOGD(TAG, "Start WriteToData");
     time_t rawtime;
     struct tm* timeinfo;
     char buffer[30];
@@ -113,16 +114,17 @@ void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnV
 
         fclose(pFile);    
     } else {
-        ESP_LOGI(TAG, "Can't open data file %s", logpath.c_str());
+        ESP_LOGE(TAG, "Can't open data file %s", logpath.c_str());
     }
 
 }
 
 
-void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool _time)
+void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string info, bool _time)
 {
     FILE* pFile;
     std::string zwtime;
+    std::string logline = "";
 
     if (!doLogFile){
         return;
@@ -145,14 +147,39 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, std::string info, bool 
             strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
 
             zwtime = std::string(buffer);
-            info = zwtime + ": " + info;
+            logline = zwtime;
         }
-        fputs(info.c_str(), pFile);
-        fputs("\n", pFile);
 
+        std::string loglevelString; 
+        switch(level) {
+            case  ESP_LOG_NONE:
+                loglevelString = "NONE";
+                break;
+            case  ESP_LOG_ERROR:
+                loglevelString = "ERR";
+                break;
+            case  ESP_LOG_WARN:
+                loglevelString = "WRN";
+                break;
+            case  ESP_LOG_INFO:
+                loglevelString = "INF";
+                break;
+            case  ESP_LOG_DEBUG:
+                loglevelString = "DBG";
+                break;
+            case  ESP_LOG_VERBOSE:
+                loglevelString = "VER";
+                break;
+            default:
+                loglevelString = "NONE";
+                break;
+        }
+        
+        logline = logline + "\t<" + loglevelString + ">\t" + info.c_str() + "\n";
+        fputs(logline.c_str(), pFile);
         fclose(pFile);    
     } else {
-        ESP_LOGI(TAG, "Can't open log file %s", _fn.c_str());
+        ESP_LOGE(TAG, "Can't open log file %s", _fn.c_str());
     }
 }
 
@@ -164,14 +191,14 @@ void ClassLogFile::SetRetention(unsigned short _retentionInDays){
     retentionInDays = _retentionInDays;
 };
 
-void ClassLogFile::WriteToFile(std::string info, bool _time)
+void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _time)
 {
 /*
     struct stat path_stat;
     if (stat(logroot.c_str(), &path_stat) != 0) {
         ESP_LOGI(TAG, "Create log folder: %s", logroot.c_str());
         if (mkdir_r(logroot.c_str(), S_IRWXU) == -1)  {
-            ESP_LOGI(TAG, "Can't create log folder");
+            ESP_LOGE(TAG, "Can't create log folder");
         }
     }
 */
@@ -185,8 +212,8 @@ void ClassLogFile::WriteToFile(std::string info, bool _time)
     strftime(buffer, 30, logfile.c_str(), timeinfo);
     std::string logpath = logroot + "/" + buffer; 
     
-    WriteToDedicatedFile(logpath, info, _time);
-    ESP_LOGD(TAG, "%s", info.c_str());
+    WriteToDedicatedFile(logpath, level, info, _time);
+    ESP_LOG_LEVEL(level, TAG, "%s", info.c_str());
 }
 
 std::string ClassLogFile::GetCurrentFileName()
@@ -248,7 +275,7 @@ void ClassLogFile::RemoveOld()
             }
         }
     }
-    LogFile.WriteToFile("logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
+    LogFile.WriteToFile(ESP_LOG_INFO, "logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
     closedir(dir);
 
 
@@ -292,7 +319,7 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::stri
     dataroot = _logdatapath;
     doLogFile = true;
     retentionInDays = 10;
-    loglevel = 0;
+    loglevel = ESP_LOG_INFO;
     MakeDir("/sdcard/log/data");
     MakeDir("/sdcard/test");
     MakeDir("/test");
