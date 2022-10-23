@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <iomanip>
+#include <sstream>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -693,5 +696,30 @@ string SDCardParseManufacturerIDs(int id)
 		}
 	}
 	return ret_val;
+}
+
+
+string RundeOutput(double _in, int _anzNachkomma)
+{
+    std::stringstream stream;
+    int _zw = _in;    
+//    ESP_LOGD(TAG, "AnzNachkomma: %d", _anzNachkomma);
+
+    if (_anzNachkomma < 0) {
+        _anzNachkomma = 0;
+    }
+
+    if (_anzNachkomma > 0)
+    {
+        stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
+        return stream.str();          
+    }
+    else
+    {
+        stream << _zw;
+    }
+
+
+    return stream.str();  
 }
 

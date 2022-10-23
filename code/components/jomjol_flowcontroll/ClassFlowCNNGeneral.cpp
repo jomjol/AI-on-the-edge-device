@@ -980,17 +980,20 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
     {
         if (CNNType == Analogue || CNNType == Analogue100)
         {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
 
         if (CNNType == Digital)
         {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
+            if (GENERAL[_analog]->ROI[i]->result_klasse == 10)
+                rt = rt + "\tN";
+            else
+                rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_klasse, 0);
         }
 
         if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
         {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
     }
     return rt;

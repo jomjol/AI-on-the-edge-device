@@ -927,6 +927,8 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, i
     return NUMBERS[_number]->ReturnValue;
 }
 
+/*  Jetzt als globale Funktion in Helper.h
+
 string ClassFlowPostProcessing::RundeOutput(double _in, int _anzNachkomma){
     std::stringstream stream;
     int _zw = _in;    
@@ -949,6 +951,7 @@ string ClassFlowPostProcessing::RundeOutput(double _in, int _anzNachkomma){
 
     return stream.str();  
 }
+*/
 
 
 string ClassFlowPostProcessing::ErsetzteN(string input, double _prevalue)

@@ -15,6 +15,8 @@ void RenameFile(string from, string to);
 void MakeDir(std::string _what);
 
 
+string RundeOutput(double _in, int _anzNachkomma);
+
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1);
 
