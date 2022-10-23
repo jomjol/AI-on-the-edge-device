@@ -7,6 +7,7 @@
 -   added `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
 -   Added PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
 -   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
+-   SD card info into the "Info" Menue (thanks to [@Slider007]( https://github.com/Slider0007))
 
 ### Changed
 
