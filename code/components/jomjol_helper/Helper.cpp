@@ -20,7 +20,8 @@ extern "C" {
 
 
 #include "ClassLogFile.h"
-//#include "ClassLogFile.h"
+
+#include "esp_vfs_fat.h"
 
 static const char* TAG = "helper";
 
@@ -28,6 +29,9 @@ static const char* TAG = "helper";
 #define PATH_MAX_STRING_SIZE 256
 
 using namespace std;
+
+sdmmc_cid_t SDCardCid;
+sdmmc_csd_t SDCardCsd;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 string getESPHeapInfo(){
@@ -75,8 +79,78 @@ size_t getInternalESPHeapSize() {
 	return aFreeInternalHeapSize;
 }
 
+string getSDCardPartitionSize(){
+	FATFS *fs;
+    uint32_t fre_clust, tot_sect;
+
+    /* Get volume information and free clusters of drive 0 */
+    f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    tot_sect = ((fs->n_fatent - 2) * fs->csize) /1024 /(1024/SDCardCsd.sector_size);	//corrected by SD Card sector size (usually 512 bytes) and convert to MB
+
+    printf("%d MB total drive space (Sector size [bytes]: %d)\n", (int)tot_sect, (int)fs->csize*512);
+
+	return std::to_string(tot_sect);
+}
+
+string getSDCardFreePartitionSpace(){
+	FATFS *fs;
+    uint32_t fre_clust, fre_sect;
+  
+    /* Get volume information and free clusters of drive 0 */
+    f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    fre_sect = (fre_clust * fs->csize) / 1024 /(1024/SDCardCsd.sector_size);	//corrected by SD Card sector size (usually 512 bytes) and convert to MB
+
+    printf("%d MB free drive space (Sector size [bytes]: %d)\n", (int)fre_sect, (int)fs->ssize);
+
+	return std::to_string(fre_sect);
+}
+
+string getSDCardPartitionAllocationSize(){
+	FATFS *fs;
+    uint32_t fre_clust, allocation_size;
+  
+    /* Get volume information and free clusters of drive 0 */
+    f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    allocation_size = fs->ssize;
+
+    printf("SD Card Partition Allocation Size (bytes): %d)\n", allocation_size);
+
+	return std::to_string(allocation_size);
+}
 
 
+void SaveSDCardInfo(sdmmc_card_t* card) {
+	SDCardCid = card->cid;
+    SDCardCsd = card->csd;
+}
+
+string getSDCardManufacturer(){
+	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
+	printf("SD Card Manufactuer: %s\n", SDCardManufacturer.c_str());
+	
+	return (SDCardManufacturer + " (ID: " + std::to_string(SDCardCid.mfg_id) + ")");
+}
+
+string getSDCardName(){
+	char *SDCardName = SDCardCid.name;
+	printf("SD Card Name: %s\n", SDCardName); 
+
+	return std::string(SDCardName);
+}
+
+string getSDCardCapacity(){
+	int SDCardCapacity = SDCardCsd.capacity / (1024/SDCardCsd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
+	printf("SD Card Capacity: %s\n", std::to_string(SDCardCapacity).c_str()); 
+
+	return std::to_string(SDCardCapacity);
+}
+
+string getSDCardSectorSize(){
+	int SDCardSectorSize = SDCardCsd.sector_size;
+	printf("SD Card Sector Size: %s\n", std::to_string(SDCardSectorSize).c_str()); 
+
+	return std::to_string(SDCardSectorSize);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -462,7 +536,6 @@ int removeFolder(const char* folderPath, const char* logTag) {
 }
 
 
-
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter = "")
 {
 	std::vector<string> Output;
@@ -485,5 +558,141 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 	Output.push_back(input);
 
 	return Output;
+}
+
+
+/* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
+/* SD Card Manufacturer Database */
+struct SDCard_Manufacturer_database {
+	string type;
+	int id;
+	string manufacturer;
+};
+
+/* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
+/* SD Card Manufacturer Database */
+struct SDCard_Manufacturer_database database[] = {
+	{
+		.type = "sd",
+		.id = 0x01,
+		.manufacturer = "Panasonic",
+	},
+	{
+		.type = "sd",
+		.id = 0x02,
+		.manufacturer = "Toshiba/Kingston/Viking",
+	},
+	{
+		.type = "sd",
+		.id = 0x03,
+		.manufacturer = "SanDisk",
+	},
+	{
+		.type = "sd",
+		.id = 0x08,
+		.manufacturer = "Silicon Power",
+	},
+	{
+		.type = "sd",
+		.id = 0x18,
+		.manufacturer = "Infineon",
+	},
+	{
+		.type = "sd",
+		.id = 0x1b,
+		.manufacturer = "Transcend/Samsung",
+	},
+	{
+		.type = "sd",
+		.id = 0x1c,
+		.manufacturer = "Transcend",
+	},
+	{
+		.type = "sd",
+		.id = 0x1d,
+		.manufacturer = "Corsair/AData",
+	},
+	{
+		.type = "sd",
+		.id = 0x1e,
+		.manufacturer = "Transcend",
+	},
+	{
+		.type = "sd",
+		.id = 0x1f,
+		.manufacturer = "Kingston",
+	},
+	{
+		.type = "sd",
+		.id = 0x27,
+		.manufacturer = "Delkin/Phison",
+	},
+	{
+		.type = "sd",
+		.id = 0x28,
+		.manufacturer = "Lexar",
+	},
+	{
+		.type = "sd",
+		.id = 0x30,
+		.manufacturer = "SanDisk",
+	},
+	{
+		.type = "sd",
+		.id = 0x31,
+		.manufacturer = "Silicon Power",
+	},
+	{
+		.type = "sd",
+		.id = 0x33,
+		.manufacturer = "STMicroelectronics",
+	},
+	{
+		.type = "sd",
+		.id = 0x41,
+		.manufacturer = "Kingston",
+	},
+	{
+		.type = "sd",
+		.id = 0x6f,
+		.manufacturer = "STMicroelectronics",
+	},
+	{
+		.type = "sd",
+		.id = 0x74,
+		.manufacturer = "Transcend",
+	},
+	{
+		.type = "sd",
+		.id = 0x76,
+		.manufacturer = "Patriot",
+	},
+	{
+		.type = "sd",
+		.id = 0x82,
+		.manufacturer = "Gobe/Sony",
+	},
+	{
+		.type = "sd",
+		.id = 0x89,
+		.manufacturer = "Unknown",
+	}
+};
+
+/* Parse SD Card Manufacturer Database */
+string SDCardParseManufacturerIDs(int id) 
+{
+	unsigned int id_cnt = sizeof(database) / sizeof(struct SDCard_Manufacturer_database);
+	string ret_val = "";
+
+	for (int i = 0; i < id_cnt; i++) {
+		if (database[i].id == id) {
+			return database[i].manufacturer;
+		}
+		else {
+			ret_val = "ID unknown (not in DB)";
+		}
+	}
+	return ret_val;
 }
 
