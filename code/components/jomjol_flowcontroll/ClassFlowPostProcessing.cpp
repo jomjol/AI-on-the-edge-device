@@ -848,17 +848,26 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     return true;
 }
 
-void ClassFlowPostProcessing::WriteDataLog(int _analog)
+void ClassFlowPostProcessing::WriteDataLog(int _index)
 {
     string analog = "";
     string digital = "";
+    string timezw = "";
+    char buffer[80];
+    struct tm* timeinfo = localtime(&NUMBERS[_index]->lastvalue);
+    strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
+    timezw = std::string(buffer);
+
     if (flowAnalog)
-        analog = flowAnalog->getReadoutRawString(_analog);
+        analog = flowAnalog->getReadoutRawString(_index);
     if (flowDigit)
-        digital = flowDigit->getReadoutRawString(_analog);
-//    LogFile.WriteToFile(analog);
-    LogFile.WriteToData(NUMBERS[_analog]->ReturnRawValue, NUMBERS[_analog]->ReturnValue, NUMBERS[_analog]->ReturnPreValue, NUMBERS[_analog]->ErrorMessageText, digital, analog);
-    ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_analog]->ReturnRawValue.c_str(), NUMBERS[_analog]->ReturnValue.c_str(), NUMBERS[_analog]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
+        digital = flowDigit->getReadoutRawString(_index);
+    LogFile.WriteToData(timezw, NUMBERS[_index]->name, 
+                        NUMBERS[_index]->ReturnRawValue, NUMBERS[_index]->ReturnValue, NUMBERS[_index]->ReturnPreValue, 
+                        NUMBERS[_index]->ReturnRateValue, NUMBERS[_index]->ReturnChangeAbsolute,
+                        NUMBERS[_index]->ErrorMessageText, 
+                        digital, analog);
+    ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_index]->ReturnRawValue.c_str(), NUMBERS[_index]->ReturnValue.c_str(), NUMBERS[_index]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
 }
 
 

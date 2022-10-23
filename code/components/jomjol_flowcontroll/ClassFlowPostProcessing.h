@@ -44,7 +44,7 @@ protected:
     void handleAnalogDigitalTransitionStart(string _decsep, string _value);
     std::string GetStringReadouts(general);
 
-    void WriteDataLog(int _analog);
+    void WriteDataLog(int _index);
 
 
 
