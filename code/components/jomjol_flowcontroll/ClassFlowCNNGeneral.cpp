@@ -976,7 +976,7 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
     if (GENERAL[_analog]->ROI.size() == 0)
         return rt;
  
-    for (int i = GENERAL[_analog]->ROI.size() - 1; i >= 0; --i)
+    for (int i = 0; i < GENERAL[_analog]->ROI.size(); ++i)
     {
         if (CNNType == Analogue || CNNType == Analogue100)
         {
