@@ -8,6 +8,11 @@
 -   Added PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
 -   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
 -   SD card info into the "Info" Menue (thanks to [@Slider007]( https://github.com/Slider0007))
+-   Added a logging of the values in a text table in `/log/data` - each measurement is one line
+    -   Format: tabulator separated
+    -   Content: time, raw-value, return-value, pre-value, error-text, cnn-digital, cnn-analog
+    -   ATTENTION: format not fully fixed yet!
+
 
 ### Changed
 

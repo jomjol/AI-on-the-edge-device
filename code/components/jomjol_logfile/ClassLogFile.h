@@ -24,6 +24,8 @@ public:
     void SwitchOnOff(bool _doLogFile);
     void SetRetention(unsigned short _retentionInDays);
 
+    void CreateLogDirectories();
+
     void WriteToFile(std::string info, bool _time = true);
     void WriteToDedicatedFile(std::string _fn, std::string info, bool _time = true);
     void RemoveOld();
