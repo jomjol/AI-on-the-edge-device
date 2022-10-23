@@ -112,6 +112,7 @@ bool Init_NVS_SDCard()
         return false;
     }
     sdmmc_card_print_info(stdout, card);
+    SaveSDCardInfo(card);
 
     return true;
 }
