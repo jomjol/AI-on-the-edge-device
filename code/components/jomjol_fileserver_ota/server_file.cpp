@@ -36,6 +36,8 @@ extern "C" {
 #include "defines.h"
 #include "ClassLogFile.h"
 
+#include "server_tflite.h""
+
 #include "server_help.h"
 #include "interface_mqtt.h"
 #include "server_GPIO.h"
@@ -78,13 +80,69 @@ using namespace std;
 string SUFFIX_ZW = "_0xge";
 
 
+esp_err_t get_numbers_file_handler(httpd_req_t *req)
+{
+    std::string ret = tfliteflow.getNumbersName();
+
+//    ESP_LOGI(TAG, "Result get_numbers_file_handler: %s", ret.c_str());
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
+
+    httpd_resp_sendstr_chunk(req, ret.c_str());
+    httpd_resp_sendstr_chunk(req, NULL);
+
+    return ESP_OK;
+}
+
+
+esp_err_t get_data_file_handler(httpd_req_t *req)
+{
+    struct dirent *entry;
+
+    std::string _filename, _fileext;
+    size_t pos = 0;
+    
+    const char verz_name[] = "/sdcard/log/data";
+    ESP_LOGD(TAG, "Suche TFLITE in /sdcard/log/data");
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
+
+    DIR *dir = opendir(verz_name);
+    while ((entry = readdir(dir)) != NULL) 
+    {
+        _filename = std::string(entry->d_name);
+        ESP_LOGD(TAG, "File: %s", _filename.c_str());
+
+        // ignore all files with starting dot (hidden files)
+        if (_filename.rfind(".", 0) == 0) {
+            continue;
+        }
+
+        _fileext = _filename;
+        pos = _fileext.find_last_of(".");
+        if (pos != std::string::npos)
+            _fileext = _fileext.erase(0, pos + 1);
+
+        ESP_LOGD(TAG, " Extension: %s", _fileext.c_str());
+
+        if (_fileext == "txt")
+        {
+            _filename = _filename + "\t";
+            httpd_resp_sendstr_chunk(req, _filename.c_str());
+        }
+    }
+    closedir(dir);
+
+    httpd_resp_sendstr_chunk(req, NULL);
+    return ESP_OK;
+}
+
+
 esp_err_t get_tflite_file_handler(httpd_req_t *req)
 {
-//    DIR *verzeichnis;
-//    struct dirent *files;
     struct dirent *entry;
-//    struct stat entry_stat;
-
 
     std::string _filename, _fileext;
     size_t pos = 0;

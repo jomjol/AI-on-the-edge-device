@@ -11,6 +11,68 @@ var NUMBERS = new Array(0);
 var REFERENCES = new Array(0);
 
 
+function getNUMBERSList() {
+	_basepath = getbasepath(); 
+     var datalist = "";
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener('load', function(event) {
+	  if (xhttp.status >= 200 && xhttp.status < 300) {
+		datalist = xhttp.responseText;
+	  } else {
+		 console.warn(request.statusText, request.responseText);
+	  }
+	 });
+
+	 try {
+		  url = _basepath + '/editflow.html?task=namenumbers';     
+		  xhttp.open("GET", url, false);
+		  xhttp.send();
+
+	 }
+	 catch (error)
+	 {
+               alert("Loading Hostname failed");
+	 }
+
+      datalist = datalist.split("\t");
+//      datalist.pop();
+
+      return datalist;
+  }
+
+
+function getDATAList() {
+	_basepath = getbasepath(); 
+     tflitelist = "";
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener('load', function(event) {
+	  if (xhttp.status >= 200 && xhttp.status < 300) {
+		tflitelist = xhttp.responseText;
+	  } else {
+		 console.warn(request.statusText, request.responseText);
+	  }
+	 });
+
+	 try {
+		  url = _basepath + '/editflow.html?task=data';     
+		  xhttp.open("GET", url, false);
+		  xhttp.send();
+
+	 }
+	 catch (error)
+	 {
+//               alert("Loading Hostname failed");
+	 }
+
+      tflitelist = tflitelist.split("\t");
+      tflitelist.pop();
+
+      return tflitelist;
+  }
+
+
 function getTFLITEList() {
 	_basepath = getbasepath(); 
      tflitelist = "";

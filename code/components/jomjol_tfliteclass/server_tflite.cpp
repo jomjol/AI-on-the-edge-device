@@ -397,6 +397,18 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
     }  
 
+    if (_task.compare("namenumbers") == 0)
+    {
+        ESP_LOGI(TAGTFLITE, "Get NUMBER list");
+        return get_numbers_file_handler(req);
+    }
+
+    if (_task.compare("data") == 0)
+    {
+        ESP_LOGI(TAGTFLITE, "Get data list");
+        return get_data_file_handler(req);
+    }
+
     if (_task.compare("tflite") == 0)
     {
         ESP_LOGD(TAGTFLITE, "Get tflite list");
