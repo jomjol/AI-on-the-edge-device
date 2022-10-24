@@ -725,7 +725,7 @@ string RundeOutput(double _in, int _anzNachkomma)
 
 
 string getMac(void) {
-    uint8_t *macInt;
+    uint8_t macInt[6];
     char macFormated[6*2 + 5 + 1];
 
     esp_read_mac(macInt, ESP_MAC_WIFI_STA);
