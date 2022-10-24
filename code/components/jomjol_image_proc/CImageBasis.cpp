@@ -29,7 +29,7 @@ uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
     if (islocked)
     {
 #ifdef DEBUG_DETAIL_ON   
-        printf("Image is locked: sleep for : %ds\n", _waitmaxsec);
+        ESP_LOGD(TAG, "Image is locked: sleep for: %ds", _waitmaxsec);
 #endif
         TickType_t xDelay;
         xDelay = 1000 / portTICK_PERIOD_MS;
@@ -61,7 +61,7 @@ uint8_t * CImageBasis::RGBImageGet()
 
 void writejpghelp(void *context, void *data, int size)
 {
-//    printf("Size all: %d, size %d\n", ((ImageData*)context)->size, size);
+//    ESP_LOGD(TAG, "Size all: %d, size %d", ((ImageData*)context)->size, size);
     ImageData* _zw = (ImageData*) context;
     uint8_t *voidstart = _zw->data;
     uint8_t *datastart = (uint8_t*) data;
@@ -146,7 +146,7 @@ bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
     int gr = height * width * channels;
     if (gr != _size)            // Größe passt nicht
     {
-        printf("Cannot copy image from memory - sizes do not match: should be %d, but is %d\n", _size, gr);
+        ESP_LOGD(TAG, "Cannot copy image from memory - sizes do not match: should be %d, but is %d", _size, gr);
         return false;
     }
 
@@ -359,7 +359,7 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
         stbi_image_free(rgb_image);
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
-    printf("Image loaded from memory: %d, %d, %d\n", width, height, channels);
+    ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
     if ((width * height * channels) == 0)
     {
         ESP_LOGE(TAG, "Image with size 0 loaded --> reboot to be done! "
@@ -392,7 +392,7 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     int anz = 1;
     while (!rgb_image && (anz < _anzrepeat))    
     {
-	    printf("Create Image from Copy - Memory is full - try again: %d.\n", anz);
+	    ESP_LOGD(TAG, "Create Image from Copy - Memory is full - try again: %d", anz);
         rgb_image = (unsigned char*) malloc(memsize);
         anz++;
     }
@@ -400,8 +400,8 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     
     if (!rgb_image)
     {
-        printf(getESPHeapInfo().c_str());
-        printf("\nNo more free memory!! Needed: %d %d %d %d\n", width, height, channels, memsize);
+        ESP_LOGD(TAG, "%s", getESPHeapInfo().c_str());
+        ESP_LOGD(TAG, "No more free memory!! Needed: %d %d %d %d", width, height, channels, memsize);
         RGBImageRelease();
         return;
     }
@@ -424,8 +424,8 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
     if (!rgb_image)
     {
-        printf(getESPHeapInfo().c_str());
-        printf("\nNo more free memory!! Needed: %d %d %d %d\n", width, height, channels, memsize);
+        ESP_LOGD(TAG, "%s", getESPHeapInfo().c_str());
+        ESP_LOGD(TAG, "No more free memory!! Needed: %d %d %d %d", width, height, channels, memsize);
         return;
     }
 }
@@ -438,21 +438,21 @@ CImageBasis::CImageBasis(std::string _image)
     externalImage = false;
     filename = _image;
     long zwld = esp_get_free_heap_size();
-    printf("freeheapsize before: %ld\n", zwld);
+    ESP_LOGD(TAG, "freeheapsize before: %ld", zwld);
 
     RGBImageLock();
     rgb_image = stbi_load(_image.c_str(), &width, &height, &bpp, channels);
     RGBImageRelease();
 
     zwld = esp_get_free_heap_size();
-    printf("freeheapsize after : %ld\n", zwld);
+    ESP_LOGD(TAG, "freeheapsize after : %ld", zwld);
 
-    std::string zw = "Image Load failed:" + _image + "\n";
+    std::string zw = "Image Load failed:" + _image;
     if (rgb_image == NULL)
-        printf(zw.c_str());
+        ESP_LOGD(TAG, "%s", zw.c_str());
     zw = "CImageBasis after load " + _image + "\n";
-    printf(zw.c_str());
-    printf("w %d, h %d, b %d, c %d\n", width, height, bpp, channels);
+    ESP_LOGD(TAG, "%s", zw.c_str());
+    ESP_LOGD(TAG, "w %d, h %d, b %d, c %d", width, height, bpp, channels);
 
 }
 
@@ -543,7 +543,7 @@ void CImageBasis::Resize(int _new_dx, int _new_dy, CImageBasis *_target)
 {
     if ((_target->height != _new_dy) || (_target->width != _new_dx) || (_target->channels != channels))
     {
-        printf("CImageBasis::Resize - Target image size does not fit !!");
+        ESP_LOGD(TAG, "CImageBasis::Resize - Target image size does not fit!");
         return;
     }
 

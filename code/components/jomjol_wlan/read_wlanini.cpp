@@ -10,7 +10,9 @@
 #include <sstream>
 #include <iostream>
 #include <string.h>
+#include "esp_log.h"
 
+static const char *TAG = "read_wlanini";
 
 std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
 {
@@ -55,7 +57,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     fn = FormatFileName(fn);
 
     pFile = OpenFileAndWait(fn.c_str(), "r");
-    printf("file loaded\n");
+    ESP_LOGD(TAG, "file loaded");
 
     if (pFile == NULL)
         return;
@@ -66,7 +68,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
 
     while ((line.size() > 0) || !(feof(pFile)))
     {
-//        printf("%s", line.c_str());
+//        ESP_LOGD(TAG, "%s", line.c_str());
         zerlegt = ZerlegeZeileWLAN(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
 
@@ -198,7 +200,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     fn = FormatFileName(fn);
     pFile = OpenFileAndWait(fn.c_str(), "r");
 
-    printf("file loaded\n");
+    ESP_LOGD(TAG, "file loaded\n");
 
     if (pFile == NULL)
         return false;
@@ -209,7 +211,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     while ((line.size() > 0) || !(feof(pFile)))
     {
-        printf("%s", line.c_str());
+        ESP_LOGD(TAG, "%s", line.c_str());
         zerlegt = ZerlegeZeileWLAN(line, "=");
         zerlegt[0] = trim(zerlegt[0], " ");
 
@@ -242,13 +244,13 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     for (int i = 0; i < neuesfile.size(); ++i)
     {
-        printf(neuesfile[i].c_str());
+        ESP_LOGD(TAG, "%s", neuesfile[i].c_str());
         fputs(neuesfile[i].c_str(), pFile);
     }
 
     fclose(pFile);
 
-    printf("*** Hostname update done ***\n");
+    ESP_LOGD(TAG, "*** Hostname update done ***");
 
     return true;
 }

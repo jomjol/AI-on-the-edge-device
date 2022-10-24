@@ -7,10 +7,11 @@
 
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
+#include "esp_log.h"
 
 static const char* TAG = "flow_analog";
 
-bool debugdetailgeneral = false;
+
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
@@ -28,7 +29,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     flowpostalignment = _flowalign;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _vorgaengerAnalog)
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _vorgaengerAnalog, float analogDigitalTransitionStart)
 {
     string result = "";    
 
@@ -87,7 +88,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             {
 //                prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
                 if (_vorgaengerAnalog >= 0)
-                    prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _vorgaengerAnalog, prev, true);
+                    prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _vorgaengerAnalog, prev, true, analogDigitalTransitionStart);
                 else
                     prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 result = std::to_string(prev);
@@ -127,7 +128,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
-int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger)
+int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger, float digitalAnalogTransitionStart)
 {
     int result;
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
@@ -147,7 +148,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
 
     if (AnalogerVorgaenger)
     {
-        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger, eval_vorgaenger);
+        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger, eval_vorgaenger, digitalAnalogTransitionStart);
         if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
@@ -201,55 +202,49 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
 }
 
 
-int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger)
+int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger, float analogDigitalTransitionStart)
 {
     int result;
     int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
     int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
+    bool roundedUp = false;
 
-    if (ziffer_vorgaenger < 0)
-    {
-        result = (int) floor(zahl);
-        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
-        return result;
-    }
-
-    if (ziffer_vorgaenger <= 3 && eval_vorgaenger<9)  // Nulldurchgang hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
-        // aber Sonderfall ziffer_vorgaeger = 0.1 vor_vorgaenger 9.9 => eval_vorgaenger ist 9, damit hat Nulldurchgang nicht stattgefunden.
-    {
-        if (ergebnis_nachkomma > 5)
-            result =  (ergebnis_vorkomma + 1) % 10;
-        else
-            result =  ergebnis_vorkomma;
-        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - Nulldurchgang hat stattgefunden = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
-        return result;
-    }
-
-    // Vorlauf ziffer_vorgaenger <=9.9 und ergebnis_nachkomma >=0..1 (digits drehen nach umschalten nicht gleich weiter)
-    // Beispiel dig=4.0, ana=9.1 ==> dig=3
-
-    // Nachlauf ziffer_vorgaenger 0..2 und ergebnis_nachkomma 8..9
-    // Beispiel dig=6.8, ana=2.2 ==> dig=7
-    // dig=4.8, ana=5.5 => dig=4
-
-    // Vorlauf bei ergebnis_nachkomma >=0..1 und ziffer_vorgaenger 8..9
-    if (ergebnis_nachkomma <= 1 &&  ziffer_vorgaenger>=8)  {
-        result =  (ergebnis_vorkomma - 1 + 10) % 10;
+    // Innerhalb der digitalen Unschaefe 
+    if (ergebnis_nachkomma >= (10-DigitalUnschaerfe * 10))  {   // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+        result = (int) (round(zahl) + 10) % 10;
+        roundedUp = true;
+        // vor/nachkomma neu berechnen, da wir anhand der Unschaefe die Zahl anpassen.
+        ergebnis_nachkomma = ((int) floor(result * 10)) % 10;
+        ergebnis_vorkomma = ((int) floor(result) + 10) % 10;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger: " + std::to_string(ziffer_vorgaenger) +
+                                                    " erg_vorkomma: " + std::to_string(ergebnis_vorkomma) + 
+                                                    " erg_nachkomma: " + std::to_string(ergebnis_nachkomma));
     } else {
-        // Ziffer bleibt bei x.8 oder x.9 "hängen", kommt also nicht richtig auf x.0
-        // muss eine Rundung erfolgen
-        // jedoch nicht im während der Transition (ziffer_vorgaenger>=8)
-         if (eval_vorgaenger<9 && ziffer_vorgaenger<8 && ergebnis_nachkomma >= 8)   
-            result = ((int) round(zahl) + 10) % 10;
-        else
-            result = ergebnis_vorkomma;
+        result = (int) ((int) trunc(zahl) + 10) % 10;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - KEINE digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
+                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger));
     }
-    
-    if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - 9.0 --> noch kein Nulldurchgang = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+
+    // Kein Nulldurchgang hat stattgefunden.
+    // Nur eval_vorgaenger verwendet, da ziffer_vorgaenger hier falsch sein könnte.
+    // ziffer_vorgaenger<=0.1 & eval_vorgaenger=9 entspricht analog wurde zurückgesetzt wegen vorhergehender analog, die noch nicht auf 0 sind.
+    if ((eval_vorgaenger>=6 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp)
+        // digit läuft dem Analog vor. Darf aber erst passieren, wenn 
+        // digit wirklich schnon los läuft, deshalb 9
+        || (eval_vorgaenger>9 && ziffer_vorgaenger>analogDigitalTransitionStart && ergebnis_nachkomma<=1))
+
+    {
+        result =  ((ergebnis_vorkomma+10) - 1) % 10;
+        if (debugdetailgeneral) LogFile.WriteToFile("ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
+                                    " zahl: " + std::to_string(zahl) + 
+                                    " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + 
+                                    " erg_nachkomma = " +  std::to_string(ergebnis_nachkomma));
+
+    }
+
     return result;
+
 }
 
 int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
@@ -317,7 +312,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     {
         disabled = true;
         while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
-        printf("[Analog/Digit] is disabled !!!\n");
+        ESP_LOGD(TAG, "[Analog/Digit] is disabled!");
         return true;
     }
 
@@ -435,7 +430,7 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
 
     _ret->ROI.push_back(neuroi);
 
-    printf("GetGENERAL - GENERAL %s - roi %s - CCW: %d\n", _analog.c_str(), _roi.c_str(), neuroi->CCW);
+    ESP_LOGD(TAG, "GetGENERAL - GENERAL %s - roi %s - CCW: %d", _analog.c_str(), _roi.c_str(), neuroi->CCW);
 
     return _ret;
 }
@@ -494,7 +489,7 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            printf("General %d - Align&Cut\n", i);
+            ESP_LOGD(TAG, "General %d - Align&Cut", i);
             
             caic->CutAndSave(GENERAL[_ana]->ROI[i]->posx, GENERAL[_ana]->ROI[i]->posy, GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, GENERAL[_ana]->ROI[i]->image_org);
             if (SaveAllFiles)
@@ -551,10 +546,9 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
-    printf(zwcnn.c_str());printf("\n");
+    ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
-        LogFile.WriteToFile("Cannot load model");
+        LogFile.WriteToFile("Can't read model file /sdcard%s", cnnmodelfile.c_str());
         delete tflite;
         return false;
     } 
@@ -572,37 +566,37 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
         {
             case 2:
                 CNNType = Analogue;
-                printf("TFlite-Type set to Analogue\n");
+                ESP_LOGD(TAG, "TFlite-Type set to Analogue");
                 break;
             case 10:
                 CNNType = DoubleHyprid10;
-                printf("TFlite-Type set to DoubleHyprid10\n");
+                ESP_LOGD(TAG, "TFlite-Type set to DoubleHyprid10");
                 break;
             case 11:
                 CNNType = Digital;
-                printf("TFlite-Type set to Digital\n");
+                ESP_LOGD(TAG, "TFlite-Type set to Digital");
                 break;
 /*            case 20:
                 CNNType = DigitalHyprid10;
-                printf("TFlite-Type set to DigitalHyprid10\n");
+                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid10");
                 break;
 */
 //            case 22:
 //                CNNType = DigitalHyprid;
-//                printf("TFlite-Type set to DigitalHyprid\n");
+//                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid");
 //                break;
              case 100:
                 if (modelxsize==32 && modelysize == 32) {
                     CNNType = Analogue100;
-                    printf("TFlite-Type set to Analogue100\n");
+                    ESP_LOGD(TAG, "TFlite-Type set to Analogue100");
                 } else {
                     CNNType = Digital100;
-                    printf("TFlite-Type set to Digital\n");
+                    ESP_LOGD(TAG, "TFlite-Type set to Digital");
                 }
                 break;
             default:
                 LogFile.WriteToFile("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
-                printf("ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR\n");
+                ESP_LOGD(TAG, "ERROR ERROR ERROR - tflite passt nicht zur Firmware - ERROR ERROR ERROR");
         }
     }
 
@@ -620,10 +614,9 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
-    printf(zwcnn.c_str());printf("\n");
+    ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        printf("Can't read model file /sdcard%s\n", cnnmodelfile.c_str());
-        LogFile.WriteToFile("Cannot load model");
+        LogFile.WriteToFile("Can't read model file /sdcard%s", cnnmodelfile.c_str());
 
         delete tflite;
         return false;
@@ -634,7 +627,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     {
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            printf("General %d - TfLite\n", i);
+            ESP_LOGD(TAG, "General %d - TfLite", i);
 
             switch (CNNType) {
                 case Analogue:
@@ -655,7 +648,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         else
                             GENERAL[_ana]->ROI[i]->result_float = result * 10;
                               
-                        printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float);
                         if (isLogImage)
                             LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
                     } break;
@@ -664,7 +657,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     {
                         GENERAL[_ana]->ROI[i]->result_klasse = 0;
                         GENERAL[_ana]->ROI[i]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image);
-                        printf("Result General(Digit)%i: %d\n", i, GENERAL[_ana]->ROI[i]->result_klasse);
+                        ESP_LOGD(TAG, "Result General(Digit)%i: %d", i, GENERAL[_ana]->ROI[i]->result_klasse);
 
                         if (isLogImage)
                         {
@@ -701,7 +694,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         else
                             GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
 
-                        printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
                         _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
@@ -738,7 +731,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
 
-                        printf("Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
                         _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
@@ -798,7 +791,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         string zw = "_num (p, m): " + to_string(_num) + " " + to_string(_numplus) + " " + to_string(_numminus);
                         zw = zw + " _val (p, m): " + to_string(_val) + " " + to_string(_valplus) + " " + to_string(_valminus);
                         zw = zw + " result: " + to_string(result) + " _fit: " + to_string(_fit);
-                        printf("details cnn: %s\n", zw.c_str());
+                        ESP_LOGD(TAG, "details cnn: %s", zw.c_str());
                         LogFile.WriteToFile(zw);
 
 
@@ -809,8 +802,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             GENERAL[_ana]->ROI[i]->isReject = true;
                             result = -1;
                             _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
-                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold);
-                            printf("Value Rejected due to Threshold (Fit: %f, Threshold: %f\n", _fit, CNNGoodThreshold);
+                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
                             LogFile.WriteToFile(zw);
                         }
                         else
@@ -820,7 +812,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
 
                         GENERAL[_ana]->ROI[i]->result_float = result;
-                        printf("Result General(Analog)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(Analog)%i: %f", i, GENERAL[_ana]->ROI[i]->result_float);
 
                         if (isLogImage)
                         {
@@ -858,7 +850,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         
                         GENERAL[_ana]->ROI[i]->isReject = false;
                         
-                        printf("Result General(Analog)%i - CCW: %d -  %f\n", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float); 
+                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float);
 
                         if (isLogImage)
                         {
@@ -904,7 +896,7 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            printf("Image: %d\n", (int) GENERAL[_ana]->ROI[i]->image);
+            ESP_LOGD(TAG, "Image: %d", (int) GENERAL[_ana]->ROI[i]->image);
             if (GENERAL[_ana]->ROI[i]->image)
             {
                 if (GENERAL[_ana]->name == "default")
@@ -976,3 +968,34 @@ void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numb
             (*_name_numbers).push_back(_name);
     }
 }
+
+string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
+{
+    string rt = "";
+
+    if (GENERAL[_analog]->ROI.size() == 0)
+        return rt;
+ 
+    for (int i = 0; i < GENERAL[_analog]->ROI.size(); ++i)
+    {
+        if (CNNType == Analogue || CNNType == Analogue100)
+        {
+            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
+        }
+
+        if (CNNType == Digital)
+        {
+            if (GENERAL[_analog]->ROI[i]->result_klasse == 10)
+                rt = rt + "\tN";
+            else
+                rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_klasse, 0);
+        }
+
+        if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
+        {
+            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
+        }
+    }
+    return rt;
+}
+

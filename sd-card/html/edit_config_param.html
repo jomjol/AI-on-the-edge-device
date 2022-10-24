@@ -491,6 +491,20 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
+				<input type="checkbox" id="PostProcessing_AnalogDigitalTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogDigitalTransitionStart")' unchecked >
+				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">AnalogDigitalTransitionStart</class></label>
+			</td>
+			<td>
+				<input type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2">
+			</td>
+			<td style="font-size: 80%;">
+				If you have false Values, but the recognition is correct. Look for the start of changing of the first digit and note the analog pointer value behind. Set it here.
+				Only used on combination of digits and analog pointers. Default=9.2
+			</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
 				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class></label>
 			</td>
@@ -1670,6 +1684,7 @@ function UpdateInputIndividual()
 	if (NUNBERSAkt != -1)
 	{
 		ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
@@ -1679,6 +1694,7 @@ function UpdateInputIndividual()
 	var sel = document.getElementById("Numbers_value1");
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);

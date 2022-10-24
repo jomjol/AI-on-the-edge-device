@@ -14,6 +14,9 @@
 #include "esp_wifi.h"
 
 #include "server_tflite.h"
+#include "esp_log.h"
+
+#include "Helper.h"
 
 //#define DEBUG_DETAIL_ON      
 
@@ -38,11 +41,11 @@ esp_err_t info_get_handler(httpd_req_t *req)
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAG_SERVERMAIN, "Query: %s", _query);
         
         if (httpd_query_key_value(_query, "type", _valuechar, 30) == ESP_OK)
         {
-            printf("type is found"); printf(_valuechar); printf("\n"); 
+            ESP_LOGD(TAG_SERVERMAIN, "type is found: %s", _valuechar);
             _task = std::string(_valuechar);
         }
     };
@@ -134,6 +137,71 @@ esp_err_t info_get_handler(httpd_req_t *req)
         return ESP_OK;        
     }
 
+    if (_task.compare("SDCardPartitionSize") == 0)
+    {
+        std::string zw;
+        zw = getSDCardPartitionSize();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardFreePartitionSpace") == 0)
+    {
+        std::string zw;
+        zw = getSDCardFreePartitionSpace();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardPartitionAllocationSize") == 0)
+    {
+        std::string zw;
+        zw = getSDCardPartitionAllocationSize();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardManufacturer") == 0)
+    {
+        std::string zw;
+        zw = getSDCardManufacturer(); 
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardName") == 0)
+    {
+        std::string zw;
+        zw = getSDCardName(); 
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardCapacity") == 0)
+    {
+        std::string zw;
+        zw = getSDCardCapacity();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+    if (_task.compare("SDCardSectorSize") == 0)
+    {
+        std::string zw;
+        zw = getSDCardSectorSize();
+        httpd_resp_sendstr_chunk(req, zw.c_str());
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
+
+
+
     return ESP_OK;
 }
 
@@ -153,7 +221,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 #endif
 
     char filepath[50];
-    printf("uri: %s\n", req->uri);
+    ESP_LOGD(TAG_SERVERMAIN, "uri: %s\n", req->uri);
     int _pos;
     esp_err_t res;
 
@@ -162,7 +230,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 
     const char *filename = get_path_from_uri(filepath, base_path,
                                              req->uri - 1, sizeof(filepath));    
-    printf("1 uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+    ESP_LOGD(TAG_SERVERMAIN, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     if ((strcmp(req->uri, "/") == 0))
     {
@@ -180,13 +248,13 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     }
 
     if (filetosend == "/sdcard/html/index.html" && isSetupModusActive()) {
-        printf("System is in setup mode --> index.html --> setup.html");
+        ESP_LOGD(TAG_SERVERMAIN, "System is in setup mode --> index.html --> setup.html");
         filetosend = "/sdcard/html/setup.html";
     }
 
-    printf("Filename: %s\n", filename);
+    ESP_LOGD(TAG_SERVERMAIN, "Filename: %s", filename);
     
-    printf("File requested: %s\n", filetosend.c_str());    
+    ESP_LOGD(TAG_SERVERMAIN, "File requested: %s", filetosend.c_str());
 
     if (!filename) {
         ESP_LOGE(TAG_SERVERMAIN, "Filename is too long");
@@ -216,17 +284,17 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
     char filepath[50];
-    printf("uri: %s\n", req->uri);
+    ESP_LOGD(TAG_SERVERMAIN, "uri: %s", req->uri);
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
     const char *filename = get_path_from_uri(filepath, base_path,
                                              req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
-    printf("1 uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+    ESP_LOGD(TAG_SERVERMAIN, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
-    printf("File to upload: %s\n", filetosend.c_str());    
+    ESP_LOGD(TAG_SERVERMAIN, "File to upload: %s", filetosend.c_str());
 
     esp_err_t res = send_file(req, filetosend); 
     if (res != ESP_OK)
@@ -245,17 +313,17 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
     char filepath[50];
 
-    printf("uri: %s\n", req->uri);
+    ESP_LOGD(TAG_SERVERMAIN, "uri: %s", req->uri);
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
     const char *filename = get_path_from_uri(filepath, base_path,
                                              req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
-    printf("1 uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+    ESP_LOGD(TAG_SERVERMAIN, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     filetosend = std::string(filename);
-    printf("File to upload: %s\n", filetosend.c_str()); 
+    ESP_LOGD(TAG_SERVERMAIN, "File to upload: %s", filetosend.c_str());
 
     if (filetosend == "raw.jpg")
     {

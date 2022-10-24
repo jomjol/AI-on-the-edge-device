@@ -7,6 +7,9 @@
 #include "ClassControllCamera.h"
 
 #include "ClassLogFile.h"
+#include "esp_log.h"
+
+static const char *TAG = "server_cam";
 
 #define SCRATCH_BUFSIZE2  8192 
 char scratch2[SCRATCH_BUFSIZE2];
@@ -37,7 +40,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON   
     LogFile.WriteHeapInfo("handler_lightOn - Start");
-    printf("handler_lightOn uri:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAG, "handler_lightOn uri: %s", req->uri);
 #endif
 
     Camera.LightOnOff(true);
@@ -55,7 +58,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON   
     LogFile.WriteHeapInfo("handler_lightOff - Start");
-    printf("handler_lightOff uri:\n"); printf(req->uri); printf("\n");
+    ESP_LOGD(TAG, "handler_lightOff uri: %s", req->uri);
 #endif
     Camera.LightOnOff(false);
     const char* resp_str = (const char*) req->user_ctx;
@@ -80,7 +83,7 @@ esp_err_t handler_capture(httpd_req_t *req)
     Camera.GetCameraParameter(req, quality, res);
 
 #ifdef DEBUG_DETAIL_ON   
-    printf("Size: %d", res); printf(" Quality: %d\n", quality);
+    ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
 #endif
 
     Camera.SetQualitySize(quality, res);
@@ -110,11 +113,11 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAG, "Query: %s", _query);
         if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON   
-            printf("Delay: "); printf(_delay); printf("\n");    
+            ESP_LOGD(TAG, "Delay: %s", _delay);
 #endif        
             delay = atoi(_delay);
 
@@ -126,7 +129,7 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
     Camera.GetCameraParameter(req, quality, res);
 
 #ifdef DEBUG_DETAIL_ON   
-    printf("Size: %d", res); printf(" Quality: %d\n", quality);
+    ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
 #endif
 
     Camera.SetQualitySize(quality, res);
@@ -166,12 +169,12 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAG, "Query: %s", _query);
         if (httpd_query_key_value(_query, "filename", filename, 100) == ESP_OK)
         {
             fn.append(filename);
 #ifdef DEBUG_DETAIL_ON   
-            printf("Filename: "); printf(fn.c_str()); printf("\n");            
+            ESP_LOGD(TAG, "Filename: %s", fn.c_str());
 #endif
         }
         else
@@ -180,7 +183,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
         if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON   
-            printf("Delay: "); printf(_delay); printf("\n");            
+            ESP_LOGD(TAG, "Delay: %s", _delay);
 #endif
             delay = atoi(_delay);
 
@@ -194,7 +197,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
     Camera.GetCameraParameter(req, quality, res);
 #ifdef DEBUG_DETAIL_ON   
-    printf("Size: %d", res); printf(" Quality: %d\n", quality);
+    ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
 #endif
     Camera.SetQualitySize(quality, res);
 

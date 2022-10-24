@@ -58,7 +58,7 @@ static void infinite_loop(void)
     int i = 0;
     ESP_LOGI(TAGPARTOTA, "When a new firmware is available on the server, press the reset button to download it");
     while(1) {
-        ESP_LOGI(TAGPARTOTA, "Waiting for a new firmware ... %d", ++i);
+        ESP_LOGI(TAGPARTOTA, "Waiting for a new firmware... %d", ++i);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
@@ -219,8 +219,7 @@ static bool diagnostic(void)
 
 void CheckOTAUpdate(void)
 {
-    ESP_LOGI(TAGPARTOTA, "Start CheckOTAUpdateCheck ...");
-    printf("Start CheckOTAUpdateCheck ...\n");
+    ESP_LOGI(TAGPARTOTA, "Start CheckOTAUpdateCheck...");
 
     uint8_t sha_256[HASH_LEN] = { 0 };
     esp_partition_t partition;
@@ -249,31 +248,29 @@ void CheckOTAUpdate(void)
     switch (res_stat_partition)
     {
         case ESP_OK:
-            printf("CheckOTAUpdate Partition: ESP_OK\n");
+            ESP_LOGD(TAGPARTOTA, "CheckOTAUpdate Partition: ESP_OK");
             if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
                 if (ota_state == ESP_OTA_IMG_PENDING_VERIFY) {
                     // run diagnostic function ...
                     bool diagnostic_is_ok = diagnostic();
                     if (diagnostic_is_ok) {
-                        ESP_LOGI(TAGPARTOTA, "Diagnostics completed successfully! Continuing execution ...");
-                        printf("Diagnostics completed successfully! Continuing execution ...\n");
+                        ESP_LOGI(TAGPARTOTA, "Diagnostics completed successfully! Continuing execution...");
                         esp_ota_mark_app_valid_cancel_rollback();
                     } else {
-                        ESP_LOGE(TAGPARTOTA, "Diagnostics failed! Start rollback to the previous version ...");
-                        printf("Diagnostics failed! Start rollback to the previous version ...\n");
+                        ESP_LOGE(TAGPARTOTA, "Diagnostics failed! Start rollback to the previous version...");
                         esp_ota_mark_app_invalid_rollback_and_reboot();
                     }
                 }
             }            
             break;
         case ESP_ERR_INVALID_ARG:
-            printf("CheckOTAUpdate Partition: ESP_ERR_INVALID_ARG\n");
+            ESP_LOGD(TAGPARTOTA, "CheckOTAUpdate Partition: ESP_ERR_INVALID_ARG");
             break;
         case ESP_ERR_NOT_SUPPORTED:
-            printf("CheckOTAUpdate Partition: ESP_ERR_NOT_SUPPORTED\n");
+            ESP_LOGD(TAGPARTOTA, "CheckOTAUpdate Partition: ESP_ERR_NOT_SUPPORTED");
             break;
         case ESP_ERR_NOT_FOUND:
-            printf("CheckOTAUpdate Partition: ESP_ERR_NOT_FOUND\n");
+            ESP_LOGD(TAGPARTOTA, "CheckOTAUpdate Partition: ESP_ERR_NOT_FOUND");
             break;
     }
     if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
@@ -281,12 +278,10 @@ void CheckOTAUpdate(void)
             // run diagnostic function ...
             bool diagnostic_is_ok = diagnostic();
             if (diagnostic_is_ok) {
-                ESP_LOGI(TAGPARTOTA, "Diagnostics completed successfully! Continuing execution ...");
-                printf("Diagnostics completed successfully! Continuing execution ...\n");
+                ESP_LOGI(TAGPARTOTA, "Diagnostics completed successfully! Continuing execution...");
                 esp_ota_mark_app_valid_cancel_rollback();
             } else {
-                ESP_LOGE(TAGPARTOTA, "Diagnostics failed! Start rollback to the previous version ...");
-                printf("Diagnostics failed! Start rollback to the previous version ...\n");
+                ESP_LOGE(TAGPARTOTA, "Diagnostics failed! Start rollback to the previous version...");
                 esp_ota_mark_app_invalid_rollback_and_reboot();
             }
         }
@@ -311,24 +306,24 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAGPARTOTA, "Query: %s", _query);
         
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-            printf("task is found: "); printf(_valuechar); printf("\n"); 
+            ESP_LOGD(TAGPARTOTA, "task is found: %s", _valuechar);
             _task = std::string(_valuechar);
         }
 
         if (httpd_query_key_value(_query, "file", _filename, 100) == ESP_OK)
         {
             fn.append(_filename);
-            printf("File: "); printf(fn.c_str()); printf("\n");            
+            ESP_LOGD(TAGPARTOTA, "File: %s", fn.c_str());
         }
         if (httpd_query_key_value(_query, "delete", _filename, 100) == ESP_OK)
         {
             fn.append(_filename);
             _file_del = true;
-            printf("Delete Default File: "); printf(fn.c_str()); printf("\n");            
+            ESP_LOGD(TAGPARTOTA, "Delete Default File: %s", fn.c_str());
         }
 
     };
@@ -394,7 +389,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
                 std::string zw = "reboot\n";
                 httpd_resp_sendstr_chunk(req, zw.c_str());
                 httpd_resp_sendstr_chunk(req, NULL);  
-                printf("Send reboot\n");
+                ESP_LOGD(TAGPARTOTA, "Send reboot");
                 return ESP_OK;                
             }
 
@@ -418,7 +413,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     if (_task.compare("unziphtml") == 0)
     {
-        printf("Task unziphmtl\n");
+        ESP_LOGD(TAGPARTOTA, "Task unziphtml");
         std::string in, out, zw;
 
         in = "/sdcard/firmware/html.zip";
@@ -435,22 +430,22 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     if (_file_del)
     {
-        printf("Delete !! _file_del: %s\n", fn.c_str());
+        ESP_LOGD(TAGPARTOTA, "Delete !! _file_del: %s", fn.c_str());
         struct stat file_stat;
         int _result = stat(fn.c_str(), &file_stat);
-        printf("Ergebnis %d\n", _result);
+        ESP_LOGD(TAGPARTOTA, "Ergebnis %d\n", _result);
         if (_result == 0) {
-            printf("Deleting file : %s\n", fn.c_str());
+            ESP_LOGD(TAGPARTOTA, "Deleting file : %s", fn.c_str());
             /* Delete file */
             unlink(fn.c_str());
         }
         else
         {
-            printf("File does not exist: %s\n", fn.c_str());
+            ESP_LOGD(TAGPARTOTA, "File does not exist: %s", fn.c_str());
         }
         /* Respond with an empty chunk to signal HTTP response completion */
         std::string zw = "file deleted\n";
-        printf((zw + "\n").c_str());
+        ESP_LOGD(TAGPARTOTA, "%s", zw.c_str());
         httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
         httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
@@ -499,7 +494,6 @@ void task_reboot(void *pvParameter)
 void doReboot(){
     LogFile.SwitchOnOff(true);
     LogFile.WriteToFile("Reboot triggered by Software (5s).");
-    ESP_LOGI(TAGPARTOTA, "Reboot in 5sec");
     LogFile.WriteToFile("Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     // KillTFliteTasks(); // kills itself 

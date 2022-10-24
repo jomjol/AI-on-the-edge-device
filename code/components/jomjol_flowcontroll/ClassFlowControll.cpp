@@ -33,7 +33,7 @@ static const char* TAG = "flow_controll";
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
-//    printf("_stepname: %s\n", _stepname.c_str());
+//    ESP_LOGD(TAG, "_stepname: %s", _stepname.c_str());
     if ((_stepname.compare("[MakeImage]") == 0) || (_stepname.compare(";[MakeImage]") == 0)){
         _classname = "ClassFlowMakeImage";
     }
@@ -89,7 +89,7 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 {
     if (flowdigit)
     {
-        printf("ClassFlowControll::GetAllDigital - flowdigit != NULL\n");
+        ESP_LOGD(TAG, "ClassFlowControll::GetAllDigital - flowdigit != NULL");
         return flowdigit->GetHTMLInfo();
     }
 
@@ -230,7 +230,7 @@ void ClassFlowControll::InitFlow(std::string config)
     if (pFile != NULL)
     {
         fgets(zw, 1024, pFile);
-        printf("%s", zw);
+        ESP_LOGD(TAG, "%s", zw);
         line = std::string(zw);
     }
 
@@ -239,7 +239,7 @@ void ClassFlowControll::InitFlow(std::string config)
         cfc = CreateClassFlow(line);
         if (cfc)
         {
-            printf("Start ReadParameter (%s)\n", line.c_str());
+            ESP_LOGD(TAG, "Start ReadParameter (%s)", line.c_str());
             cfc->ReadParameter(pFile, line);
         }
         else
@@ -247,7 +247,7 @@ void ClassFlowControll::InitFlow(std::string config)
             line = "";
             if (fgets(zw, 1024, pFile) && !feof(pFile))
                 {
-                    printf("Read: %s", zw);
+                    ESP_LOGD(TAG, "Read: %s", zw);
                     line = std::string(zw);
                 }
         }
@@ -362,7 +362,7 @@ string ClassFlowControll::getReadoutAll(int _type)
             if (i < (*numbers).size()-1)
                 out = out + "\r\n";
         }
-    //    printf("OUT: %s", out.c_str());
+    //    ESP_LOGD(TAG, "OUT: %s", out.c_str());
     }
 
     return out;
@@ -408,7 +408,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string
     char* p;
 
     _newvalue = trim(_newvalue);
-//    printf("Input UpdatePreValue: %s\n", _newvalue.c_str());
+//    ESP_LOGD(TAG, "Input UpdatePreValue: %s", _newvalue.c_str());
 
     if (_newvalue.compare("0.0") == 0)
     {
@@ -493,9 +493,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
-                printf("do reboot\n");
                 LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Reboot to activate new HOSTNAME.");
+                LogFile.WriteToFile("Rebooting to activate new HOSTNAME...");
                 esp_restart();
                 hard_restart();                   
                 doReboot();
@@ -558,7 +557,7 @@ esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 
 esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 {
-    printf("ClassFlowControll::GetJPGStream %s\n", _fn.c_str());
+    ESP_LOGD(TAG, "ClassFlowControll::GetJPGStream %s", _fn.c_str());
 
     CImageBasis *_send = NULL;
     esp_err_t result = ESP_FAIL;
@@ -566,7 +565,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
     if (flowalignment == NULL)
     {
-        printf("Can't continue, flowalignment is NULL\n");
+        ESP_LOGD(TAG, "Can't continue, flowalignment is NULL");
         return ESP_FAIL;
     }
 
@@ -589,7 +588,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
         {
             std::vector<HTMLInfo*> htmlinfo;
             htmlinfo = GetAllDigital();
-            printf("After getClassFlowControll::GetAllDigital\n");
+            ESP_LOGD(TAG, "After getClassFlowControll::GetAllDigital");
 
             for (int i = 0; i < htmlinfo.size(); ++i)
             {

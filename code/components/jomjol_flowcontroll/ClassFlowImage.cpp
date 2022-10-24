@@ -14,6 +14,8 @@ extern "C" {
 #include "time_sntp.h"
 #include "ClassLogFile.h"
 #include "CImageBasis.h"
+#include "esp_log.h"
+
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {
@@ -45,7 +47,6 @@ string ClassFlowImage::CreateLogFolder(string time) {
 	string logPath = LogImageLocation + "/" + time.LOGFILE_TIME_FORMAT_DATE_EXTR + "/" + time.LOGFILE_TIME_FORMAT_HOUR_EXTR;
     isLogImage = mkdir_r(logPath.c_str(), S_IRWXU) == 0;
     if (!isLogImage) {
-        ESP_LOGW(logTag, "Can't create log folder for analog images. Path %s", logPath.c_str());
         LogFile.WriteToFile("Can't create log folder for analog images. Path " + logPath);
     }
 
@@ -65,7 +66,7 @@ void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, i
         else
         {
             sprintf(buf, "%.1f_", *resultFloat);
-            if (strcmp(buf, "10.0_"))
+            if (strcmp(buf, "10.0_") == 0)
                 sprintf(buf, "0.0_");
         }
             
@@ -79,7 +80,7 @@ void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, i
 	nm = FormatFileName(nm);
 	string output = "/sdcard/img_tmp/" + name + ".jpg";
 	output = FormatFileName(output);
-	printf("save to file: %s\n", nm.c_str());
+	ESP_LOGD(logTag, "save to file: %s", nm.c_str());
 	_img->SaveToFile(nm);
 //	CopyFile(output, nm);
 }
@@ -119,14 +120,15 @@ void ClassFlowImage::RemoveOldLogs()
         string folderPath = LogImageLocation + "/" + entry->d_name;
 		if (entry->d_type == DT_DIR) {
 			//ESP_LOGI(logTag, "Compare %s %s", entry->d_name, folderName.c_str());	
-			if ((strlen(entry->d_name) == folderName.length()) && (strcmp(entry->d_name, folderName.c_str()) < 0)) {
-                deleted += removeFolder(folderPath.c_str(), logTag);
+			if ((strlen(entry->d_name) == folderName.length()) && (strcmp(entry->d_name, folderName.c_str()) == 0)) {
+                removeFolder(folderPath.c_str(), logTag);
+                deleted++;
 			} else {
                 notDeleted ++;
             }
 		}
     }
-    ESP_LOGI(logTag, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
+    LogFile.WriteToFile("Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
     closedir(dir);
 }
 

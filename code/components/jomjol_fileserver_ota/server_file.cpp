@@ -43,6 +43,8 @@ extern "C" {
 #include "Helper.h"
 #include "miniz.h"
 
+static const char *TAG = "server_file";
+
 /* Max length a file path can have on storage */
 // #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
 #define FILE_PATH_MAX (255)
@@ -88,7 +90,7 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
     size_t pos = 0;
     
     const char verz_name[] = "/sdcard/config";
-    printf("Suche TFLITE in /sdcard/config/\n");
+    ESP_LOGD(TAG, "Suche TFLITE in /sdcard/config/");
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -97,7 +99,7 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
     while ((entry = readdir(dir)) != NULL) 
     {
         _filename = std::string(entry->d_name);
-        printf("File: %s\t", _filename.c_str());
+        ESP_LOGD(TAG, "File: %s", _filename.c_str());
 
         // ignore all files with starting dot (hidden files)
         if (_filename.rfind(".", 0) == 0) {
@@ -109,7 +111,7 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
         if (pos != std::string::npos)
             _fileext = _fileext.erase(0, pos + 1);
 
-        printf(" Extension: %s\n", _fileext.c_str());
+        ESP_LOGD(TAG, " Extension: %s", _fileext.c_str());
 
         if ((_fileext == "tfl") || (_fileext == "tflite"))
         {
@@ -147,11 +149,11 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     DIR *dir = opendir(dirpath_corrected);
 
     const size_t dirpath_len = strlen(dirpath);
-    printf("Dirpath: <%s>, Pathlength: %d\n", dirpath, dirpath_len);    
+    ESP_LOGD(TAG, "Dirpath: <%s>, Pathlength: %d", dirpath, dirpath_len);
 
     /* Retrieve the base path of file storage to construct the full path */
     strlcpy(entrypath, dirpath, sizeof(entrypath));
-    printf("entrypath: <%s>\n", entrypath);    
+    ESP_LOGD(TAG, "entrypath: <%s>", entrypath);
 
     if (!dir) {
         ESP_LOGE(TAG_FILESERVER, "Failed to stat dir : %s", dirpath);
@@ -170,7 +172,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
         size_t chunksize;
         do {
             chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
-            //        printf("Chunksize %d\n", chunksize);
+            //        ESP_LOGD(TAG, "Chunksize %d", chunksize);
             if (chunksize > 0){
                 if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
                 fclose(fd);
@@ -211,7 +213,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
             entrytype = (entry->d_type == DT_DIR ? "directory" : "file");
 
             strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
-            printf("Entrypath: %s\n", entrypath);
+            ESP_LOGD(TAG, "Entrypath: %s", entrypath);
             if (stat(entrypath, &entry_stat) == -1) {
                 ESP_LOGE(TAG_FILESERVER, "Failed to stat %s : %s", entrytype, entry->d_name);
                 continue;
@@ -266,11 +268,11 @@ static esp_err_t logfileact_get_handler(httpd_req_t *req)
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
-    printf("uri: %s\n", req->uri);
+    ESP_LOGD(TAG, "uri: %s", req->uri);
 
     const char* filename = "log_current.txt"; 
 
-    printf("uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     std::string currentfilename = LogFile.GetCurrentFileName();
 
@@ -331,12 +333,12 @@ static esp_err_t download_get_handler(httpd_req_t *req)
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
-    printf("uri: %s\n", req->uri);
+    ESP_LOGD(TAG, "uri: %s", req->uri);
 
     const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
                                              req->uri  + sizeof("/fileserver") - 1, sizeof(filepath));    
 
-    printf("uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
 //    filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
 //                                             req->uri, sizeof(filepath));
@@ -366,7 +368,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
             }
         }
 
-        printf("uri: %s, filename: %s, filepath: %s\n", req->uri, filename, filepath);
+        ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
         return http_resp_dir_html(req, filepath, filename, readonly);
     }
 
@@ -541,12 +543,12 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 	}
 
     int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-    printf("Directory: %s, start_fn: %d, found: %d\n", directory.c_str(), start_fn, found);
+    ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
 	directory = directory.substr(start_fn, found - start_fn + 1);
-    printf("Directory danach 1: %s\n", directory.c_str());    
+    ESP_LOGD(TAG, "Directory danach 1: %s", directory.c_str());
 
     directory = "/fileserver" + directory;
-    printf("Directory danach 2: %s\n", directory.c_str());   
+    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
 
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
@@ -559,7 +561,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 
 /*
     if (strcmp(filepath, CONFIG_FILE) == 0) {
-        printf("New config found. Reload handler.");
+        ESP_LOGD(TAG, "New config found. Reload handler.");
         gpio_handler_deinit();
         MQTTdestroy();
     }
@@ -586,11 +588,11 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
-        printf("Query: "); printf(_query); printf("\n");
+        ESP_LOGD(TAG, "Query: %s", _query);
         
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-            printf("task is found: "); printf(_valuechar); printf("\n"); 
+            ESP_LOGD(TAG, "task is found: %s", _valuechar);
             _task = std::string(_valuechar);
         }
     }
@@ -610,12 +612,12 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         zw = zw.substr(0, zw.length()-1);
         directory = "/fileserver" + zw + "/";
         zw = "/sdcard" + zw;
-        printf("Directory to delete: %s\n", zw.c_str());
+        ESP_LOGD(TAG, "Directory to delete: %s", zw.c_str());
 
         delete_all_in_directory(zw);
 //        directory = std::string(filepath);
 //        directory = "/fileserver" + directory;
-        printf("Location after delete directory content: %s\n", directory.c_str());
+        ESP_LOGD(TAG, "Location after delete directory content: %s", directory.c_str());
         /* Redirect onto root to see the updated file list */
 //        httpd_resp_set_status(req, "303 See Other");
 //        httpd_resp_set_hdr(req, "Location", directory.c_str());
@@ -663,12 +665,12 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         }
 
         int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-        printf("Directory: %s, start_fn: %d, found: %d\n", directory.c_str(), start_fn, found);
+        ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
         directory = directory.substr(start_fn, found - start_fn + 1);
-        printf("Directory danach 3: %s\n", directory.c_str());    
+        ESP_LOGD(TAG, "Directory danach 3: %s", directory.c_str());
 
         directory = "/fileserver" + directory;
-        printf("Directory danach 4: %s\n", directory.c_str());   
+        ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());
     }
     
 
@@ -722,18 +724,18 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
     std::string directory = "";
 //    static const char* s_Test_archive_filename = "testhtml.zip";
 
-    printf("miniz.c version: %s\n", MZ_VERSION);
-    printf("Zipfile: %s\n", _in_zip_file.c_str());
-    printf("Target Dir ZIP: %s\n", _target_zip.c_str());
-    printf("Target Dir BIN: %s\n", _target_bin.c_str());
-    printf("Target Dir main: %s\n", _main.c_str());
+    ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
+    ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
+    ESP_LOGD(TAG, "Target Dir ZIP: %s", _target_zip.c_str());
+    ESP_LOGD(TAG, "Target Dir BIN: %s", _target_bin.c_str());
+    ESP_LOGD(TAG, "Target Dir main: %s", _main.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
     status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), 0);
     if (!status)
     {
-        printf("mz_zip_reader_init_file() failed!\n");
+        ESP_LOGD(TAG, "mz_zip_reader_init_file() failed!");
         return ret;
     }
 
@@ -745,7 +747,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
         status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);
         if (!status)
         {
-            printf("mz_zip_reader_init_file() failed!\n");
+            ESP_LOGD(TAG, "mz_zip_reader_init_file() failed!");
             return ret;
         }
 
@@ -760,14 +762,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
                 if (!p)
                 {
-                    printf("mz_zip_reader_extract_file_to_heap() failed on file %s\n", archive_filename);
+                    ESP_LOGD(TAG, "mz_zip_reader_extract_file_to_heap() failed on file %s", archive_filename);
                     mz_zip_reader_end(&zip_archive);
                     return ret;
                 }
             
                 // Save to File.
                 zw = std::string(archive_filename);
-                printf("Rohfilename: %s\n", zw.c_str());
+                ESP_LOGD(TAG, "Rohfilename: %s", zw.c_str());
 
                 if (getFileType(zw) == "BIN")
                 {
@@ -791,7 +793,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             
                 string filename_zw = zw + SUFFIX_ZW;
 
-                printf("Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+                ESP_LOGD(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
@@ -803,8 +805,8 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 RenameFile(filename_zw, zw);
                 DeleteFile(filename_zw);
 
-                printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
-                //            printf("File data: \"%s\"\n", (const char*)p);
+                ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                //            ESP_LOGD(TAG, "File data: \"%s\"", (const char*)p);
 
                 // We're done.
                 mz_free(p);
@@ -815,7 +817,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
         mz_zip_reader_end(&zip_archive);
     }
 
-    printf("Success.\n");
+    ESP_LOGD(TAG, "Success.");
     return ret;
 }
 
@@ -829,16 +831,16 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
     std::string zw;
 //    static const char* s_Test_archive_filename = "testhtml.zip";
 
-    printf("miniz.c version: %s\n", MZ_VERSION);
-    printf("Zipfile: %s\n", _in_zip_file.c_str());
-    printf("Target Dir: %s\n", _target_directory.c_str());
+    ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
+    ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
+    ESP_LOGD(TAG, "Target Dir: %s", _target_directory.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
     status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), 0);
     if (!status)
     {
-        printf("mz_zip_reader_init_file() failed!\n");
+        ESP_LOGD(TAG, "mz_zip_reader_init_file() failed!");
         return;
     }
 
@@ -850,7 +852,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
         status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);
         if (!status)
         {
-            printf("mz_zip_reader_init_file() failed!\n");
+            ESP_LOGD(TAG, "mz_zip_reader_init_file() failed!");
             return;
         }
 
@@ -864,7 +866,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
             p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
             if (!p)
             {
-                printf("mz_zip_reader_extract_file_to_heap() failed!\n");
+                ESP_LOGD(TAG, "mz_zip_reader_extract_file_to_heap() failed!");
                 mz_zip_reader_end(&zip_archive);
                 return;
             }
@@ -872,13 +874,13 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
             // Save to File.
             zw = std::string(archive_filename);
             zw = _target_directory + zw;
-            printf("Filename to extract: %s", zw.c_str());
+            ESP_LOGD(TAG, "Filename to extract: %s", zw.c_str());
             FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
 
-            printf("Successfully extracted file \"%s\", size %u\n", archive_filename, (uint)uncomp_size);
-            //            printf("File data: \"%s\"\n", (const char*)p);
+            ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+            //            ESP_LOGD(TAG, "File data: \"%s\"", (const char*)p);
 
             // We're done.
             mz_free(p);
@@ -888,7 +890,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
         mz_zip_reader_end(&zip_archive);
     }
 
-    printf("Success.\n");
+    ESP_LOGD(TAG, "Success.");
 }
 
 
@@ -925,7 +927,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
 //    strcpy(zw, serverprefix);
 //    zw[strlen(serverprefix)] = '*';
 //    zw[strlen(serverprefix)+1] = '\0';    
-//    printf("zw: %s\n", zw);
+//    ESP_LOGD(TAG, "zw: %s", zw);
     httpd_uri_t file_download = {
         .uri       = "/fileserver*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,

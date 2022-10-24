@@ -32,7 +32,6 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag){
     }
     zw = "MQTT - sent publish successful in MQTTPublish, msg_id=" + std::to_string(msg_id) + ", " + _key + ", " + _content;
     if (debugdetail) LogFile.WriteToFile(zw);
-    ESP_LOGD(TAG_INTERFACEMQTT, "sent publish successful in MQTTPublish, msg_id=%d, %s, %s", msg_id, _key.c_str(), _content.c_str());
     return true;
 }
 
@@ -223,7 +222,6 @@ void MQTTconnected(){
        if (subscribeFunktionMap != NULL) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
                 int msg_id = esp_mqtt_client_subscribe(client, it->first.c_str(), 0);
-                ESP_LOGD(TAG_INTERFACEMQTT, "topic %s subscribe successful, msg_id=%d", it->first.c_str(), msg_id);
                 LogFile.WriteToFile("MQTT - topic " + it->first + " subscribe successful, msg_id=" + std::to_string(msg_id));
             }
         }

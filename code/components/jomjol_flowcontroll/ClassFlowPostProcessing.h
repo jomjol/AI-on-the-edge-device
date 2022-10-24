@@ -34,13 +34,16 @@ protected:
 
     string ErsetzteN(string, double _prevalue);
     float checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
-    string RundeOutput(double _in, int _anzNachkomma);
 
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
     void handleMaxRateValue(string _decsep, string _value);
     void handleDecimalExtendedResolution(string _decsep, string _value); 
     void handleMaxRateType(string _decsep, string _value);
+    void handleAnalogDigitalTransitionStart(string _decsep, string _value);
+    std::string GetStringReadouts(general);
+
+    void WriteDataLog(int _index);
 
 
 

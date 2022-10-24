@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <iomanip>
+#include <sstream>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -20,12 +23,18 @@ extern "C" {
 
 
 #include "ClassLogFile.h"
-//#include "ClassLogFile.h"
+
+#include "esp_vfs_fat.h"
+
+static const char* TAG = "helper";
 
 //#define ISWINDOWS_TRUE
 #define PATH_MAX_STRING_SIZE 256
 
 using namespace std;
+
+sdmmc_cid_t SDCardCid;
+sdmmc_csd_t SDCardCsd;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 string getESPHeapInfo(){
@@ -73,8 +82,78 @@ size_t getInternalESPHeapSize() {
 	return aFreeInternalHeapSize;
 }
 
+string getSDCardPartitionSize(){
+	FATFS *fs;
+    uint32_t fre_clust, tot_sect;
+
+    /* Get volume information and free clusters of drive 0 */
+    f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    tot_sect = ((fs->n_fatent - 2) * fs->csize) /1024 /(1024/SDCardCsd.sector_size);	//corrected by SD Card sector size (usually 512 bytes) and convert to MB
+
+    printf("%d MB total drive space (Sector size [bytes]: %d)\n", (int)tot_sect, (int)fs->csize*512);
+
+	return std::to_string(tot_sect);
+}
+
+string getSDCardFreePartitionSpace(){
+	FATFS *fs;
+    uint32_t fre_clust, fre_sect;
+  
+    /* Get volume information and free clusters of drive 0 */
+    f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    fre_sect = (fre_clust * fs->csize) / 1024 /(1024/SDCardCsd.sector_size);	//corrected by SD Card sector size (usually 512 bytes) and convert to MB
+
+    printf("%d MB free drive space (Sector size [bytes]: %d)\n", (int)fre_sect, (int)fs->ssize);
+
+	return std::to_string(fre_sect);
+}
+
+string getSDCardPartitionAllocationSize(){
+	FATFS *fs;
+    uint32_t fre_clust, allocation_size;
+  
+    /* Get volume information and free clusters of drive 0 */
+    f_getfree("0:", (DWORD *)&fre_clust, &fs);
+    allocation_size = fs->ssize;
+
+    printf("SD Card Partition Allocation Size (bytes): %d)\n", allocation_size);
+
+	return std::to_string(allocation_size);
+}
 
 
+void SaveSDCardInfo(sdmmc_card_t* card) {
+	SDCardCid = card->cid;
+    SDCardCsd = card->csd;
+}
+
+string getSDCardManufacturer(){
+	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
+	printf("SD Card Manufactuer: %s\n", SDCardManufacturer.c_str());
+	
+	return (SDCardManufacturer + " (ID: " + std::to_string(SDCardCid.mfg_id) + ")");
+}
+
+string getSDCardName(){
+	char *SDCardName = SDCardCid.name;
+	printf("SD Card Name: %s\n", SDCardName); 
+
+	return std::string(SDCardName);
+}
+
+string getSDCardCapacity(){
+	int SDCardCapacity = SDCardCsd.capacity / (1024/SDCardCsd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
+	printf("SD Card Capacity: %s\n", std::to_string(SDCardCapacity).c_str()); 
+
+	return std::to_string(SDCardCapacity);
+}
+
+string getSDCardSectorSize(){
+	int SDCardSectorSize = SDCardCsd.sector_size;
+	printf("SD Card Sector Size: %s\n", std::to_string(SDCardSectorSize).c_str()); 
+
+	return std::to_string(SDCardSectorSize);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,13 +169,13 @@ FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
 	FILE *pfile;
 
-	printf("open file %s in mode %s\n", nm, _mode);
+	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
 
 	if ((pfile = fopen(nm, _mode)) != NULL) {
-		printf("File %s successfully opened\n", nm);
+		ESP_LOGD(TAG, "File %s successfully opened", nm);
 	}
 	else {
-		printf("Error: file %s does not exist!\n", nm);
+		ESP_LOGD(TAG, "Error: file %s does not exist!", nm);
 		return NULL;
 	}
 
@@ -106,9 +185,7 @@ FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 		TickType_t xDelay;
 		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
 		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec) + " seconds";
-	    printf(zw.c_str());
-		printf("\n");
-		LogFile.WriteToFile(zw);      
+	    LogFile.WriteToFile(zw);
 		vTaskDelay( xDelay );
 		pfile = fopen(nm, _mode);
 	}
@@ -154,6 +231,12 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
     }
 }
 
+void MakeDir(std::string _what)
+{
+int mk_ret = mkdir(_what.c_str(), 0775);
+if (mk_ret)
+	ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
+}
 
 
 
@@ -226,7 +309,7 @@ void RenameFile(string from, string to)
 	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		printf("DeleteFile: File %s existiert nicht!\n", from.c_str());
+		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
 		return;
 	}
 	fclose(fpSourceFile);
@@ -242,7 +325,7 @@ void DeleteFile(string fn)
 	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		printf("DeleteFile: File %s existiert nicht!\n", fn.c_str());
+		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
 		return;
 	}
 	fclose(fpSourceFile);
@@ -258,7 +341,7 @@ void CopyFile(string input, string output)
 
 	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
 	{
-		printf("wlan.ini kann nicht kopiert werden!\n");
+		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
 		return;
 	}
 
@@ -266,7 +349,7 @@ void CopyFile(string input, string output)
 	FILE* fpSourceFile = OpenFileAndWait(input.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		printf("File %s existiert nicht!\n", input.c_str());
+		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
 		return;
 	}
 
@@ -284,7 +367,7 @@ void CopyFile(string input, string output)
 	// Close The Files
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
-	printf("File copied: %s to %s", input.c_str(), output.c_str());
+	ESP_LOGD(TAG, "File copied: %s to %s", input.c_str(), output.c_str());
 }
 
 string getFileFullFileName(string filename)
@@ -294,7 +377,7 @@ string getFileFullFileName(string filename)
 	if (lastpos == string::npos)
 		return "";
 
-//	printf("Last position: %d\n", lastpos);
+//	ESP_LOGD(TAG, "Last position: %d", lastpos);
 
 	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
 
@@ -311,7 +394,7 @@ string getDirectory(string filename)
 	if (lastpos == string::npos)
 		return "";
 
-//	printf("Directory: %d\n", lastpos);
+//	ESP_LOGD(TAG, "Directory: %d", lastpos);
 
 	string zw = filename.substr(0, lastpos - 1);
 	return zw;
@@ -319,7 +402,7 @@ string getDirectory(string filename)
 
 string getFileType(string filename)
 {
-	size_t lastpos = filename.find(".", 0);
+	size_t lastpos = filename.rfind(".", filename.length());
 	size_t neu_pos;
 	while ((neu_pos = filename.find(".", lastpos + 1)) > -1)
 	{
@@ -455,7 +538,6 @@ int removeFolder(const char* folderPath, const char* logTag) {
 }
 
 
-
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter = "")
 {
 	std::vector<string> Output;
@@ -478,5 +560,166 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 	Output.push_back(input);
 
 	return Output;
+}
+
+
+/* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
+/* SD Card Manufacturer Database */
+struct SDCard_Manufacturer_database {
+	string type;
+	int id;
+	string manufacturer;
+};
+
+/* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
+/* SD Card Manufacturer Database */
+struct SDCard_Manufacturer_database database[] = {
+	{
+		.type = "sd",
+		.id = 0x01,
+		.manufacturer = "Panasonic",
+	},
+	{
+		.type = "sd",
+		.id = 0x02,
+		.manufacturer = "Toshiba/Kingston/Viking",
+	},
+	{
+		.type = "sd",
+		.id = 0x03,
+		.manufacturer = "SanDisk",
+	},
+	{
+		.type = "sd",
+		.id = 0x08,
+		.manufacturer = "Silicon Power",
+	},
+	{
+		.type = "sd",
+		.id = 0x18,
+		.manufacturer = "Infineon",
+	},
+	{
+		.type = "sd",
+		.id = 0x1b,
+		.manufacturer = "Transcend/Samsung",
+	},
+	{
+		.type = "sd",
+		.id = 0x1c,
+		.manufacturer = "Transcend",
+	},
+	{
+		.type = "sd",
+		.id = 0x1d,
+		.manufacturer = "Corsair/AData",
+	},
+	{
+		.type = "sd",
+		.id = 0x1e,
+		.manufacturer = "Transcend",
+	},
+	{
+		.type = "sd",
+		.id = 0x1f,
+		.manufacturer = "Kingston",
+	},
+	{
+		.type = "sd",
+		.id = 0x27,
+		.manufacturer = "Delkin/Phison",
+	},
+	{
+		.type = "sd",
+		.id = 0x28,
+		.manufacturer = "Lexar",
+	},
+	{
+		.type = "sd",
+		.id = 0x30,
+		.manufacturer = "SanDisk",
+	},
+	{
+		.type = "sd",
+		.id = 0x31,
+		.manufacturer = "Silicon Power",
+	},
+	{
+		.type = "sd",
+		.id = 0x33,
+		.manufacturer = "STMicroelectronics",
+	},
+	{
+		.type = "sd",
+		.id = 0x41,
+		.manufacturer = "Kingston",
+	},
+	{
+		.type = "sd",
+		.id = 0x6f,
+		.manufacturer = "STMicroelectronics",
+	},
+	{
+		.type = "sd",
+		.id = 0x74,
+		.manufacturer = "Transcend",
+	},
+	{
+		.type = "sd",
+		.id = 0x76,
+		.manufacturer = "Patriot",
+	},
+	{
+		.type = "sd",
+		.id = 0x82,
+		.manufacturer = "Gobe/Sony",
+	},
+	{
+		.type = "sd",
+		.id = 0x89,
+		.manufacturer = "Unknown",
+	}
+};
+
+/* Parse SD Card Manufacturer Database */
+string SDCardParseManufacturerIDs(int id) 
+{
+	unsigned int id_cnt = sizeof(database) / sizeof(struct SDCard_Manufacturer_database);
+	string ret_val = "";
+
+	for (int i = 0; i < id_cnt; i++) {
+		if (database[i].id == id) {
+			return database[i].manufacturer;
+		}
+		else {
+			ret_val = "ID unknown (not in DB)";
+		}
+	}
+	return ret_val;
+}
+
+
+string RundeOutput(double _in, int _anzNachkomma)
+{
+    std::stringstream stream;
+    int _zw = _in;    
+//    ESP_LOGD(TAG, "AnzNachkomma: %d", _anzNachkomma);
+
+    if (_anzNachkomma < 0) {
+        _anzNachkomma = 0;
+    }
+
+    if (_anzNachkomma > 0)
+    {
+        stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
+        return stream.str();          
+    }
+    else
+    {
+        stream << _zw;
+    }
+
+
+    return stream.str();  
 }
 

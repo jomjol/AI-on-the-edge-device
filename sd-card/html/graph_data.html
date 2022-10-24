@@ -26,21 +26,21 @@ console.log (hash);
 var d = new Date();
 var options="<option>Please Select...</option>";
 for (var i=0;  i<27; i++) {
-    var currentDate = new Date(d-i*60*60*24*1000);
-    var option = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+currentDate.getDate()
-    options += "<option>"+option+"</option>\n";
+  var currentDate = new Date(d-i*60*60*24*1000);
+  var option = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+currentDate.getDate()
+  options += "<option>"+option+"</option>\n";
 }
 document.getElementById("selector").innerHTML = options;
 
 var dateString = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();    
 if (hash!="") {
-    dateString = hash.substring(1);
+  dateString = hash.substring(1);
 }
-fetch('/fileserver/log/data/data_'+dateString+'.txt')
+fetch('/fileserver/log/message/log_'+dateString+'.txt')
 .then(response => {
     // handle the response
     if (response.status == 404) {
-        alert("no log data available for "+dateString);
+      alert("no log data available for "+dateString);
     }
     response.text()
     .then( result => {
@@ -53,10 +53,10 @@ fetch('/fileserver/log/data/data_'+dateString+'.txt')
 
         var timex = 1;
         for (let line of lines) {
-            {
+            if (line.includes("PostProcessing - Raw")) {
                 console.log(line);
-                var value = line.split("\t")[3];
-                var time  = line.split("\t")[0];
+                var value = line.split(" ")[6];
+                var time  = line.split(" ")[0];
                 console.log("> "+time+" "+value+"\n");
                 if (value<1000) {
                     trace.x.push(timex);

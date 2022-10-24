@@ -210,10 +210,10 @@ GpioHandler::~GpioHandler()  {
 void GpioHandler::init()
 {
     // TickType_t xDelay = 60000 / portTICK_PERIOD_MS;
-    // printf("wait before start %ldms\r\n", (long) xDelay);
+    // ESP_LOGD(TAG_SERVERGPIO, "wait before start %ldms", (long) xDelay);
     // vTaskDelay( xDelay );
 
-    printf("*************** Start GPIOHandler_Init *****************\n");
+    ESP_LOGD(TAG_SERVERGPIO, "*************** Start GPIOHandler_Init *****************");
 
     if (gpioMap == NULL) {
         gpioMap = new std::map<gpio_num_t, GpioPin*>();
@@ -300,13 +300,13 @@ bool GpioHandler::readConfig()
     bool eof = false;
     gpio_num_t gpioExtLED = (gpio_num_t) 0;
     
-//    printf("readConfig - Start 1\n");
+//    ESP_LOGD(TAG_SERVERGPIO, "readConfig - Start 1");
         
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || (line.compare("[GPIO]") != 0)) && !eof) {}
     if (eof)
         return false;
 
-//    printf("readConfig - Start 2 line: %s, disabbledLine: %d\n", line.c_str(), (int) disabledLine);
+//    ESP_LOGD(TAG_SERVERGPIO, "readConfig - Start 2 line: %s, disabbledLine: %d", line.c_str(), (int) disabledLine);
 
 
     _isEnabled = !disabledLine;
@@ -314,7 +314,7 @@ bool GpioHandler::readConfig()
     if (!_isEnabled)
         return false;
 
-//    printf("readConfig - Start 3\n");
+//    ESP_LOGD(TAG_SERVERGPIO, "readConfig - Start 3");
 
 //    std::string mainTopicMQTT = "";
     std::string mainTopicMQTT = GetMQTTMainTopic();
@@ -359,7 +359,7 @@ bool GpioHandler::readConfig()
 
             if (pinMode == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)
             {
-                printf("Set WS2812 to GPIO %d\n", gpioNr);
+                ESP_LOGD(TAG_SERVERGPIO, "Set WS2812 to GPIO %d", gpioNr);
                 gpioExtLED = gpioNr;
             }
 
@@ -403,7 +403,7 @@ bool GpioHandler::readConfig()
     //     LogFile.WriteToFile("Startsequence 06");      // Nremove
 //        vTaskDelay( xDelay );   
 //        xDelay = 5000 / portTICK_PERIOD_MS;
-//        printf("main: sleep for : %ldms\n", (long) xDelay);
+//        ESP_LOGD(TAG_SERVERGPIO, "main: sleep for: %ldms", (long) xDelay);
 
 //        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
 

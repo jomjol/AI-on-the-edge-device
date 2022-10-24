@@ -7,11 +7,18 @@
 -   added `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
 -   Added PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
 -   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
+-   SD card info into the "Info" Menue (thanks to [@Slider007]( https://github.com/Slider0007))
+-   Added a logging of the values in a text table in `/log/data` - each measurement is one line
+    -   Format: tabulator separated
+    -   Content: time, name-of-number, raw-value, return-value, pre-value, change-rate, change-absolute, error-text, cnn-digital, cnn-analog
+    -   ATTENTION: format not fully fixed yet!
+
 
 ### Changed
 
 -   Updated built environment to `espressif32@v5.2.0`
 -   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
+-   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) added config parameter AnalogDigitalTransitionStart. It can setup very early and very late digit transition starts.
 ### Fixed
 
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
