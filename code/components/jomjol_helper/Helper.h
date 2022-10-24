@@ -59,3 +59,5 @@ string getSDCardManufacturer();
 string getSDCardName();
 string getSDCardCapacity();
 string getSDCardSectorSize();
+
+string getMac(void);
