@@ -27,11 +27,11 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag){
     std::string zw;
     msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
     if (msg_id < 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Failed to publish '" + _key + "'!");
+        LogFile.WriteToFile("MQTT - Failed to publish '" + _key + "'!");
         return false;
     }
     zw = "MQTT - sent publish successful in MQTTPublish, msg_id=" + std::to_string(msg_id) + ", " + _key + ", " + _content;
-    if (debugdetail) LogFile.WriteToFile(ESP_LOG_INFO, zw);
+    if (debugdetail) LogFile.WriteToFile(zw);
     return true;
 }
 
@@ -109,7 +109,7 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
         .keepalive = _keepalive
     };
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init");
+    LogFile.WriteToFile("MQTT - Init (client ID: '%s'", _clientid.c_str());
 
     if (_user.length() && _password.length()){
         mqtt_cfg.username = _user.c_str();
@@ -128,28 +128,28 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
     {
         if (esp_mqtt_client_register_event(client, esp_mmqtt_ID, mqtt_event_handler, client) != ESP_OK)
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not register event!");
+            LogFile.WriteToFile("MQTT - Could not register event!");
             return false;
         }
         if (esp_mqtt_client_start(client) != ESP_OK)
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not start client!");
+            LogFile.WriteToFile("MQTT - Could not start client!");
             return false;
         }
 
        /* if(!MQTTPublish(_LWTContext, "", 1))
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish LWT!");
+            LogFile.WriteToFile("MQTT - Could not publish LWT!");
             return false;
         }*/
     }
     else
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not Init client!");
+        LogFile.WriteToFile("MQTT - Could not Init client!");
         return false;
     }
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init successful");
+    LogFile.WriteToFile("MQTT - Init successful");
     return true;
 }
 
@@ -211,7 +211,7 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 
 void MQTTconnected(){
     if (mqtt_connected) {
-        LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Connected");
+        LogFile.WriteToFile("MQTT - Connected");
         if (connectFunktionMap != NULL) {
             for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
                 it->second();
@@ -222,7 +222,7 @@ void MQTTconnected(){
        if (subscribeFunktionMap != NULL) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
                 int msg_id = esp_mqtt_client_subscribe(client, it->first.c_str(), 0);
-                LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - topic " + it->first + " subscribe successful, msg_id=" + std::to_string(msg_id));
+                LogFile.WriteToFile("MQTT - topic " + it->first + " subscribe successful, msg_id=" + std::to_string(msg_id));
             }
         }
     }
