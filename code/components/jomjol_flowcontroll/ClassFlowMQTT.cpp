@@ -27,8 +27,8 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicUptime = "";
     topicFreeMem = "";
 
+    clientname = "AIOTED-" + getMac();
 
-    clientname = "AI-on-the-edge-device-" + getMac();
     OldValue = "";
     flowpostprocessing = NULL;  
     user = "";
