@@ -148,7 +148,10 @@ extern "C" void app_main(void)
             "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
 
     ESP_LOGI(TAGMAIN, "\n\n\n\n\n\n\n\nInit System..."); // Add mark on log to see when it restarted
-
+    ESP_LOGD(TAGMAIN, "=============================================================================================");
+    ESP_LOGD(TAGMAIN, "%s", versionFormated.c_str());
+    ESP_LOGD(TAGMAIN, "=============================================================================================");
+    ESP_LOGD(TAGMAIN("Reset reason: " + getResetReason());
 
 
     PowerResetCamera();
