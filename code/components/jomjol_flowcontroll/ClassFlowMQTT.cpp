@@ -124,9 +124,9 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
 #ifdef __HIDE_PASSWORD
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), lwt.c_str());
+    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), maintopic.c_str());
 #else
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), lwt.c_str());
+    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), maintopic.c_str());
 #endif
 
     if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
@@ -134,9 +134,9 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         ESP_LOGD(TAG, "InitMQTTInit");
         lwt = maintopic + "/connection";
 #ifdef __HIDE_PASSWORD
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), lwt.c_str());
+        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), maintopic.c_str());
 #else
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), lwt.c_str());
+        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), maintopic.c_str());
 #endif
         if (!MQTTInit(uri, clientname, user, password, lwt, keepAlive))
         { // Failed
