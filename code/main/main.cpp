@@ -151,7 +151,7 @@ extern "C" void app_main(void)
     ESP_LOGD(TAGMAIN, "=============================================================================================");
     ESP_LOGD(TAGMAIN, "%s", versionFormated.c_str());
     ESP_LOGD(TAGMAIN, "=============================================================================================");
-    ESP_LOGD(TAGMAIN("Reset reason: " + getResetReason());
+    ESP_LOGD(TAGMAIN, "Reset reason: " + getResetReason());
 
 
     PowerResetCamera();
