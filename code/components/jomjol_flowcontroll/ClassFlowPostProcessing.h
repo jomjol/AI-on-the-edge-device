@@ -65,6 +65,7 @@ public:
     void SetPreValue(double zw, string _numbers, bool _extern = false);
 
     std::string GetJSON(std::string _id = "", std::string _mac = "", std::string _lineend = "\n");
+    std::string getNumbersName();
 
     void UpdateNachkommaDecimalShift();
 
