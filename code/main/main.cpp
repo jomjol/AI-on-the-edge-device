@@ -147,9 +147,9 @@ extern "C" void app_main(void)
     string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
             "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
 
-    ESP_LOGD(TAGMAIN, "=============================================================================================");
-    ESP_LOGD(TAGMAIN, "%s", versionFormated.c_str());
-    ESP_LOGD(TAGMAIN, "=============================================================================================");
+    ESP_LOGI(TAGMAIN, "\n\n\n\n\n\n\n\nInit System..."); // Add mark on log to see when it restarted
+
+
 
     PowerResetCamera();
     esp_err_t cam = Camera.InitCam();
@@ -214,6 +214,7 @@ extern "C" void app_main(void)
     LogFile.WriteToFile("=================================== Main Started ============================================");
     LogFile.WriteToFile("=============================================================================================");    
     LogFile.WriteToFile(versionFormated);
+    LogFile.WriteToFile("Reset reason: " + getResetReason());
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");

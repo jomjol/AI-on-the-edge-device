@@ -723,3 +723,33 @@ string RundeOutput(double _in, int _anzNachkomma)
     return stream.str();  
 }
 
+
+string getMac(void) {
+    uint8_t *macInt;
+    char macFormated[6*2 + 5 + 1];
+
+    esp_read_mac(macInt, ESP_MAC_WIFI_STA);
+    sprintf(macFormated, "%02X:%02X:%02X:%02X:%02X:%02X", macInt[0], macInt[1], macInt[2], macInt[3], macInt[4], macInt[5]); 
+
+    return macFormated;
+}
+
+string getResetReason(void) {
+	std::string reasonText;
+
+	switch(esp_reset_reason()) {
+		case ESP_RST_UNKNOWN: reasonText = "Unknown"; break;    //!< Reset reason can not be determined
+		case ESP_RST_POWERON: reasonText = "Power-on event"; break;    //!< Reset due to power-on event
+		case ESP_RST_EXT: reasonText = "External pin"; break;        //!< Reset by external pin (not applicable for ESP32)
+		case ESP_RST_SW: reasonText = "Via esp_restart"; break;         //!< Software reset via esp_restart
+		case ESP_RST_PANIC: reasonText = "Exception/panic"; break;      //!< Software reset due to exception/panic
+		case ESP_RST_INT_WDT: reasonText = "Interrupt watchdog"; break;    //!< Reset (software or hardware) due to interrupt watchdog
+		case ESP_RST_TASK_WDT: reasonText = "Task watchdog"; break;   //!< Reset due to task watchdog
+		case ESP_RST_WDT: reasonText = "Other watchdogs"; break;        //!< Reset due to other watchdogs
+		case ESP_RST_DEEPSLEEP: reasonText = "Exiting deep sleep mode"; break;  //!< Reset after exiting deep sleep mode
+		case ESP_RST_BROWNOUT: reasonText = "Brownout"; break;   //!< Brownout reset (software or hardware)
+		case ESP_RST_SDIO: reasonText = "SDIO"; break;       //!< Reset over SDIO
+		default: reasonText = "unknnow"
+	}
+    return reasonText;
+}
