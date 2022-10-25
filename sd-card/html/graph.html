@@ -66,11 +66,9 @@ fetch(_basepath + '/fileserver/log/data/' + datefile)
                     var value = line.split("\t")[datatype];
                     var time  = line.split("\t")[0];
                     console.log("> "+time+" "+value+"\n");
-                    if (value<1000) {
-                        trace.x.push(timex);
-                        timex += 1;
-                        trace.y.push(value);
-                    }
+                    trace.x.push(time);
+//                    timex += 1;
+                    trace.y.push(value);
                 }
             }
         }

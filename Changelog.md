@@ -7,11 +7,13 @@
 -   added `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
 -   Added PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
 -   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
+    -   Using new data logging (see below)
+    -   Possiblity to choose different values and switch betwenn different numbers (if present)
+
 -   SD card info into the "Info" Menue (thanks to [@Slider007]( https://github.com/Slider0007))
 -   Added a logging of the values in a text table in `/log/data` - each measurement is one line
     -   Format: tabulator separated
     -   Content: time, name-of-number, raw-value, return-value, pre-value, change-rate, change-absolute, error-text, cnn-digital, cnn-analog
-    -   ATTENTION: format not fully fixed yet!
 
 
 ### Changed
