@@ -214,11 +214,11 @@ extern "C" void app_main(void)
     setup_time();
     setBootTime();
 
-    LogFile.WriteToFile("=============================================================================================");
-    LogFile.WriteToFile("=================================== Main Started ============================================");
-    LogFile.WriteToFile("=============================================================================================");    
-    LogFile.WriteToFile(versionFormated);
-    LogFile.WriteToFile("Reset reason: " + getResetReason());
+    LogFile.WriteToFile(ESP_LOG_INFO, "=============================================================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, "=================================== Main Started ============================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, "=============================================================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, versionFormated);
+    LogFile.WriteToFile(ESP_LOG_INFO, "Reset reason: " + getResetReason());
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
