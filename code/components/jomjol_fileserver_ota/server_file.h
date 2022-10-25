@@ -10,3 +10,6 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 void delete_all_in_directory(std::string _directory);
 
 esp_err_t get_tflite_file_handler(httpd_req_t *req);
+esp_err_t get_data_file_handler(httpd_req_t *req);
+esp_err_t get_numbers_file_handler(httpd_req_t *req);
+

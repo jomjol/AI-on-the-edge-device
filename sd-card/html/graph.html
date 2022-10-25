@@ -2,6 +2,11 @@
 <html>
     <head>
     <script src='https://cdn.plot.ly/plotly-2.14.0.min.js'></script>
+
+    <script type="text/javascript" src="./gethost.js"></script> 
+    <script type="text/javascript" src="./readconfigcommon.js"></script>  
+    <script type="text/javascript" src="./readconfigparam.js"></script>  
+
     <style>
         textarea {
             width: 600px;
@@ -13,30 +18,31 @@
       var el = document.getElementById('cnsl');
       el && eval(el.value);
     }
+
+
     </script>
     </head>
     <body>
     <div id='chart'></div>
-    <select id="selector" onchange="document.location.href=document.location.href.split('#')[0]+'#'+this.value;run();"></select>
+    <select id="datafiles" onchange="run();"></select>
+    <select id="numbers" onchange="run();"></select>
+    <select id="datatype" onchange="run();">
+        <option value="3">Value</option>
+        <option value="4">PreValue</option>
+        <option value="5">Change-Rate</option>
+        <option value="6">Change-Absolut</option>
+      </select>
+
     <button onclick="document.getElementById('editor').hidden = false; this.hidden = true;" >Editor</button>
     <div id='editor' hidden='true'>
     <textarea id="cnsl">
-var hash = window.location.hash;
-console.log (hash);
-var d = new Date();
-var options="<option>Please Select...</option>";
-for (var i=0;  i<27; i++) {
-    var currentDate = new Date(d-i*60*60*24*1000);
-    var option = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+currentDate.getDate()
-    options += "<option>"+option+"</option>\n";
-}
-document.getElementById("selector").innerHTML = options;
+datefile = document.getElementById("datafiles").value;
+numbername = document.getElementById("numbers").value;
+datatype = document.getElementById("datatype").value;
+//alert("Auslesen: " + datefile + " " + numbername);
 
-var dateString = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();    
-if (hash!="") {
-    dateString = hash.substring(1);
-}
-fetch('/fileserver/log/data/data_'+dateString+'.txt')
+_basepath = getbasepath(); 
+fetch(_basepath + '/fileserver/log/data/' + datefile)
 .then(response => {
     // handle the response
     if (response.status == 404) {
@@ -55,13 +61,16 @@ fetch('/fileserver/log/data/data_'+dateString+'.txt')
         for (let line of lines) {
             {
                 console.log(line);
-                var value = line.split("\t")[3];
-                var time  = line.split("\t")[0];
-                console.log("> "+time+" "+value+"\n");
-                if (value<1000) {
-                    trace.x.push(timex);
-                    timex += 1;
-                    trace.y.push(value);
+                if (line.split("\t")[1] == numbername)
+                {
+                    var value = line.split("\t")[datatype];
+                    var time  = line.split("\t")[0];
+                    console.log("> "+time+" "+value+"\n");
+                    if (value<1000) {
+                        trace.x.push(timex);
+                        timex += 1;
+                        trace.y.push(value);
+                    }
                 }
             }
         }
@@ -77,6 +86,52 @@ alert("test");
 </textarea><br />
 <button onclick="run();">run</button>
 </div>
-<script>run();</script>
+<script>
+
+function WriteModelFiles()
+    {
+        list_data = getDATAList();
+
+        var _indexDig = document.getElementById("datafiles");
+        while (_indexDig.length)
+            _indexDig.remove(0);
+
+        for (var i = list_data.length - 1; i >= 0; --i)
+        {
+            var optionDig = document.createElement("option");
+            
+            var text = list_data[i];
+            optionDig.text = text;
+            optionDig.value = list_data[i];
+            _indexDig.add(optionDig);
+        }
+    }
+
+    function WriteNumbers()
+    {
+        list_data = getNUMBERSList();
+
+        var _indexDig = document.getElementById("numbers");
+        while (_indexDig.length)
+            _indexDig.remove(0);
+
+        for (var i = 0; i < list_data.length; ++i)
+        {
+            var optionDig = document.createElement("option");
+            
+            var text = list_data[i];
+            optionDig.text = text;
+            optionDig.value = list_data[i];
+            _indexDig.add(optionDig);
+        }
+    }
+
+    WriteModelFiles();
+    WriteNumbers();
+
+
+
+run();
+</script>
 </body>
 </html>

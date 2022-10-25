@@ -21,6 +21,22 @@ static const char* TAG = "class_flow_postproc";
 #define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
 
 
+std::string ClassFlowPostProcessing::getNumbersName()
+{
+    std::string ret="";
+
+    for (int i = 0; i < NUMBERS.size(); ++i)
+    {
+        ret += NUMBERS[i]->name;
+        if (i < NUMBERS.size()-1)
+            ret = ret + "\t";
+    }
+
+//    ESP_LOGI(TAG, "Result ClassFlowPostProcessing::getNumbersName: %s", ret.c_str());
+
+    return ret;
+}
+
 std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, std::string _lineend)
 {
     std::string json="{" + _lineend;

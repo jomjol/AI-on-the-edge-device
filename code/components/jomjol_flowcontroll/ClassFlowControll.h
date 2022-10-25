@@ -51,6 +51,7 @@ public:
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON(std::string _id = "", std::string _mac = "");
+	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);
 
