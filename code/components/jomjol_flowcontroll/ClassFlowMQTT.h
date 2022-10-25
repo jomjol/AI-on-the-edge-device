@@ -17,7 +17,7 @@ protected:
     bool MQTTenable;
     int keepAlive;
 
-    std::string maintopic, mainerrortopic; 
+    std::string maintopic, lwt; 
 	void SetInitialParameter(void);        
 
 public:
