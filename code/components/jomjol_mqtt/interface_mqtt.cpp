@@ -109,7 +109,7 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
         .keepalive = _keepalive
     };
 
-    LogFile.WriteToFile("MQTT - Init (client ID: '%s'", _clientid.c_str());
+    LogFile.WriteToFile("MQTT - Init (client ID: \"%s\")", _clientid.c_str());
 
     if (_user.length() && _password.length()){
         mqtt_cfg.username = _user.c_str();
