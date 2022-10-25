@@ -61,7 +61,7 @@ static const char *TAG = "server_file";
 #define SCRATCH_BUFSIZE  4096 
 
 /* Size of partial log file to return */
-#define LOGFILE_LAST_PART_BYTES SCRATCH_BUFSIZE * 4
+#define LOGFILE_LAST_PART_BYTES SCRATCH_BUFSIZE * 20 /* 80 kBytes */
 
 struct file_server_data {
     /* Base path of file storage */
@@ -344,7 +344,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     //struct stat file_stat;
     ESP_LOGD(TAG, "uri: %s", req->uri);
 
-    const char* filename; 
+    const char* filename = ""; 
 
     std::string currentfilename = LogFile.GetCurrentFileName();
 
@@ -364,6 +364,8 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     set_content_type_from_file(req, filename);
 
     if (!send_full_file) { // Send only last part of file
+        ESP_LOGD(TAG_FILESERVER, "Sending last %d bytes of the actual logfile!", LOGFILE_LAST_PART_BYTES);
+
         /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
         if (fseek(fd, 0, SEEK_END)) {
             ESP_LOGE(TAG_FILESERVER, "Failed to get to end of file!");
