@@ -121,6 +121,9 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             maintopic = zerlegt[1];
         }
+        else { // Main topic not set, use the hostname
+            maintopic = hostname;
+        }
     }
 
 #ifdef __HIDE_PASSWORD
