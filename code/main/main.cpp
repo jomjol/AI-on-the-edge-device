@@ -210,10 +210,10 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );   
     setup_time();
     setBootTime();
-    LogFile.WriteToFile("=============================================================================================");
-    LogFile.WriteToFile("=================================== Main Started ============================================");
-    LogFile.WriteToFile("=============================================================================================");    
-    LogFile.WriteToFile(versionFormated);
+    LogFile.WriteToFile(ESP_LOG_INFO, "=============================================================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, "=================================== Main Started ============================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, "=============================================================================================");    
+    LogFile.WriteToFile(ESP_LOG_INFO, versionFormated);
     LogFile.SwitchOnOff(false);
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
@@ -225,12 +225,12 @@ extern "C" void app_main(void)
         std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
         _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile(_zws);
+        LogFile.WriteToFile(ESP_LOG_ERROR, _zws);
         LogFile.SwitchOnOff(false);
     } else {
         if (cam != ESP_OK) {
                 LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Failed to initialize camera module. "
+                LogFile.WriteToFile(ESP_LOG_ERROR, "Failed to initialize camera module. "
                         "Check that your camera module is working and connected properly.");
                 LogFile.SwitchOnOff(false);
         } else {
@@ -238,7 +238,7 @@ extern "C" void app_main(void)
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
                 LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Camera cannot be initialzed. "
+                LogFile.WriteToFile(ESP_LOG_ERROR, "Camera cannot be initialzed. "
                         "System will reboot.");
                 doReboot();
             }

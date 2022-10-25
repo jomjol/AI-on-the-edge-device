@@ -146,7 +146,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     // Try sending mainerrortopic. If it fails, re-run init
     if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
     { // Failed
-        LogFile.WriteToFile("MQTT - Re-running init...!");
+        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
         if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
         { // Failed
             MQTTenable = false;
@@ -166,14 +166,14 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
    
  /*   if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
     { // Failed
-        LogFile.WriteToFile("MQTT - Could not publish connection status!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish connection status!");
         MQTTenable = false;
         return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
     }*/
 
  /*   if(!MQTTPublish(_LWTContext, "", 1))
     {
-        LogFile.WriteToFile("MQTT - Could not publish LWT!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish LWT!");
         MQTTenable = false;
         return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
     }*/
@@ -195,7 +195,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     // Try sending mainerrortopic. If it fails, re-run init
     if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
     { // Failed
-        LogFile.WriteToFile("MQTT - Re-running init...!");
+        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
         if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
         { // Failed
             MQTTenable = false;

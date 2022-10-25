@@ -185,7 +185,7 @@ FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 		TickType_t xDelay;
 		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
 		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec) + " seconds";
-	    LogFile.WriteToFile(zw);
+	    LogFile.WriteToFile(ESP_LOG_INFO, zw);
 		vTaskDelay( xDelay );
 		pfile = fopen(nm, _mode);
 	}

@@ -301,12 +301,12 @@ bool ClassFlowControll::doFlow(string time)
 
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
-            LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
+            LogFile.WriteToFile(ESP_LOG_WARN, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
             if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
                 LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
+                LogFile.WriteToFile(ESP_LOG_ERROR, "Wiederholung 5x nicht erfolgreich --> reboot");
                 doReboot();
                 // Schritt wurde 5x wiederholt --> reboot
             }
@@ -494,7 +494,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
                 LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Rebooting to activate new HOSTNAME...");
+                LogFile.WriteToFile(ESP_LOG_WARN, "Rebooting to activate new HOSTNAME...");
                 esp_restart();
                 hard_restart();                   
                 doReboot();
@@ -509,9 +509,9 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }        
         }      
 
-        if ((toUpper(zerlegt[0]) == "LOGLEVEL") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "LOGLEVEL") && (zerlegt.size() > 1)) // TODO there seems to be no such parameter in the config, but there is one called "Debug_Logfile_value1"!
         {
-            LogFile.setLogLevel(stoi(zerlegt[1]));
+            LogFile.setLogLevel((esp_log_level_t)(stoi(zerlegt[1]))); // Gets mapped to esp_log_level_t
         }      
     }
     return true;

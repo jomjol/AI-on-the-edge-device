@@ -120,7 +120,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
 #ifdef DEBUG_DETAIL_ON
             std::string zw2 = "Alignmentmodus gewählt: " + zerlegt[1];
-            LogFile.WriteToFile(zw2);
+            LogFile.WriteToFile(ESP_LOG_DEBUG, zw2);
 #endif
             if (toUpper(zerlegt[1]) == "HIGHACCURACY")
                 alg_algo = 1;
@@ -137,7 +137,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         References[i].alignment_algo = alg_algo;
 #ifdef DEBUG_DETAIL_ON
         std::string zw2 = "Alignmentmodus geschrieben: " + std::to_string(alg_algo);
-        LogFile.WriteToFile(zw2);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, zw2);
 #endif
     }
 

@@ -264,7 +264,7 @@ void CCamera::EnableAutoExposure(int flashdauer)
         LEDOnOff(false);
         LightOnOff(false);
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Camera Capture Failed (Procedure 'EnableAutoExposure') --> Reboot"
+        LogFile.WriteToFile(ESP_LOG_ERROR, "Camera Capture Failed (Procedure 'EnableAutoExposure') --> Reboot! "
                 "Check that your camera module is working and connected properly.");
         //doReboot();
     }
@@ -316,7 +316,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LightOnOff(false);
 
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Camera is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
+        LogFile.WriteToFile(ESP_LOG_ERROR, "Camera is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
                 "System will reboot.");
         doReboot();
 
@@ -329,7 +329,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     {
         ESP_LOGE(TAGCAMERACLASS, "Insufficient memory space for image in function CaptureToBasisImage()");
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Insufficient memory space for image in function CaptureToBasisImage()");
+        LogFile.WriteToFile(ESP_LOG_ERROR, "Insufficient memory space for image in function CaptureToBasisImage()");
     }
     for (int i = 0; i < _size; ++i)
         *(zwischenspeicher + i) = *(fb->buf + i);
@@ -366,7 +366,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 #ifdef DEBUG_DETAIL_ON
     std::string _zw = "Targetimage: " + std::to_string((int) _Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
     _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage.rgb_image)  + " Size: " + std::to_string(_zwImage.width) + ", " + std::to_string(_zwImage.height);
-    LogFile.WriteToFile(_zw);
+    LogFile.WriteToFile(ESP_LOG_DEBUG, _zw);
 #endif
 
     for (int x = 0; x < width; ++x)
@@ -414,7 +414,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LEDOnOff(false);
         LightOnOff(false);
         LogFile.SwitchOnOff(true);
-        LogFile.WriteToFile("Camera Capture Failed (CCamera::CaptureToFile) --> Reboot"
+        LogFile.WriteToFile(ESP_LOG_ERROR, "Camera Capture Failed (CCamera::CaptureToFile) --> Reboot! "
                 "Check that your camera module is working and connected properly.");
         //doReboot();
 
