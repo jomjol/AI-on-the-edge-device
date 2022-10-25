@@ -1,6 +1,6 @@
 name: Build and Pack
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
 #########################################################################################
@@ -77,23 +77,24 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / .)" >> $GITHUB_OUTPUT
 
     - name: Rename firmware file to contain versioning (old ota)
       run: |
         mkdir -p ./dist_old_ota
-        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
+        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }}).bin"
 
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
 #        name: "firmware__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})__(extract_before_upload__only_needed_for_migration_from_11.3.1)"
-        name: "firmware__(extract_before_upload)__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
+        name: "firmware__(extract_before_upload)__${{ steps.vars.outputs.branch }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "html__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
+        name: "html__${{ steps.vars.outputs.branch }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./sd-card/html/*
 
 
@@ -127,6 +128,7 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / .)" >> $GITHUB_OUTPUT
 
     - name: Prepare update.zip artifact
       run: |
@@ -157,7 +159,7 @@ jobs:
     - name: Upload dist as update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
-        name: "update__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
 
     - name: Store generated files in cache
@@ -165,7 +167,7 @@ jobs:
       with:
         path: |
           ./dist
-        key: ${{ github.run_number }}-pack-for-OTA-v2
+        key: ${{ steps.vars.outputs.branch }}-pack-for-OTA-v2
 
 
 
@@ -195,6 +197,7 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / .)" >> $GITHUB_OUTPUT
 
     - name: Prepare artifacts for release
       run: |
@@ -211,7 +214,7 @@ jobs:
     - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v3
       with:
-        name: "initial_esp32_setup__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "initial_esp32_setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./firmware
 
     - name: Store generated files in cache
