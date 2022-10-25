@@ -733,3 +733,23 @@ string getMac(void) {
 
     return macFormated;
 }
+
+string getResetReason(void) {
+	std::string reasonText;
+
+	switch(esp_reset_reason()) {
+		case ESP_RST_UNKNOWN: reasonText = "Unknown"; break;    //!< Reset reason can not be determined
+		case ESP_RST_POWERON: reasonText = "Power-on event"; break;    //!< Reset due to power-on event
+		case ESP_RST_EXT: reasonText = "External pin"; break;        //!< Reset by external pin (not applicable for ESP32)
+		case ESP_RST_SW: reasonText = "Via esp_restart"; break;         //!< Software reset via esp_restart
+		case ESP_RST_PANIC: reasonText = "Exception/panic"; break;      //!< Software reset due to exception/panic
+		case ESP_RST_INT_WDT: reasonText = "Interrupt watchdog"; break;    //!< Reset (software or hardware) due to interrupt watchdog
+		case ESP_RST_TASK_WDT: reasonText = "Task watchdog"; break;   //!< Reset due to task watchdog
+		case ESP_RST_WDT: reasonText = "Other watchdogs"; break;        //!< Reset due to other watchdogs
+		case ESP_RST_DEEPSLEEP: reasonText = "Exiting deep sleep mode"; break;  //!< Reset after exiting deep sleep mode
+		case ESP_RST_BROWNOUT: reasonText = "Brownout"; break;   //!< Brownout reset (software or hardware)
+		case ESP_RST_SDIO: reasonText = "SDIO"; break;       //!< Reset over SDIO
+		default: reasonText = "unknnow"
+	}
+    return reasonText;
+}

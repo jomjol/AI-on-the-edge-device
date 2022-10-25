@@ -61,3 +61,4 @@ string getSDCardCapacity();
 string getSDCardSectorSize();
 
 string getMac(void);
+string getResetReason(void);
