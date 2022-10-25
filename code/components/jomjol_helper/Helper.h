@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
-
+#include "sdmmc_cmd.h"
 
 using namespace std;
 
@@ -14,6 +14,8 @@ void DeleteFile(string fn);
 void RenameFile(string from, string to);
 void MakeDir(std::string _what);
 
+
+string RundeOutput(double _in, int _anzNachkomma);
 
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1);
@@ -47,3 +49,13 @@ size_t getESPHeapSize();
 string getESPHeapInfo();
 
 /////////////////////////////
+string getSDCardPartitionSize();
+string getSDCardFreePartitionSpace();
+string getSDCardPartitionAllocationSize();
+
+void SaveSDCardInfo(sdmmc_card_t* card);
+string SDCardParseManufacturerIDs(int);
+string getSDCardManufacturer();
+string getSDCardName();
+string getSDCardCapacity();
+string getSDCardSectorSize();

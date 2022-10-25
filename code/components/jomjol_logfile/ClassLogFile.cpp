@@ -63,7 +63,7 @@ std::string ClassLogFile::getESPHeapInfo(){
 	return 	espInfoResultStr;
 }
 
-void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ReturnPreValue, std::string _ErrorMessageText, std::string _digital, std::string _analog)
+void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::string  _ReturnRawValue, std::string  _ReturnValue, std::string  _ReturnPreValue, std::string  _ReturnRateValue, std::string  _ReturnChangeAbsolute, std::string  _ErrorMessageText, std::string  _digital, std::string  _analog)
 {
     ESP_LOGD(TAG, "Start WriteToData");
     time_t rawtime;
@@ -87,29 +87,23 @@ void ClassLogFile::WriteToData(std::string _ReturnRawValue, std::string _ReturnV
     pFile = fopen(logpath.c_str(), "a+");
 
     if (pFile!=NULL) {
-        time_t rawtime;
-        struct tm* timeinfo;
-        char buffer[80];
-
-        time(&rawtime);
-        timeinfo = localtime(&rawtime);
-
-        strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
-
-        zwtime = std::string(buffer) + ":\t";
-        fputs(zwtime.c_str(), pFile);
+        fputs(_timestamp.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_name.c_str(), pFile);
+        fputs("\t", pFile);
         fputs(_ReturnRawValue.c_str(), pFile);
         fputs("\t", pFile);
         fputs(_ReturnValue.c_str(), pFile);
         fputs("\t", pFile);
         fputs(_ReturnPreValue.c_str(), pFile);
         fputs("\t", pFile);
+        fputs(_ReturnRateValue.c_str(), pFile);
+        fputs("\t", pFile);
+        fputs(_ReturnChangeAbsolute.c_str(), pFile);
+        fputs("\t", pFile);
         fputs(_ErrorMessageText.c_str(), pFile);
-        fputs("\t", pFile);
         fputs(_digital.c_str(), pFile);
-        fputs("\t", pFile);
         fputs(_analog.c_str(), pFile);
-        fputs("\t", pFile);
         fputs("\n", pFile);
 
         fclose(pFile);    
@@ -311,6 +305,17 @@ void ClassLogFile::RemoveOld()
     closedir(dir);
 }
 
+void ClassLogFile::CreateLogDirectories()
+{
+    MakeDir("/sdcard/log");
+    MakeDir("/sdcard/log/data");
+    MakeDir("/sdcard/log/analog");
+    MakeDir("/sdcard/log/digit");
+    MakeDir("/sdcard/log/message");
+    MakeDir("/sdcard/log/source");
+}
+
+
 ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::string _logdatapath, std::string _datafile)
 {
     logroot = _logroot;
@@ -321,6 +326,4 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::stri
     retentionInDays = 10;
     loglevel = ESP_LOG_INFO;
     MakeDir("/sdcard/log/data");
-    MakeDir("/sdcard/test");
-    MakeDir("/test");
 }

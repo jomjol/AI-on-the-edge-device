@@ -34,7 +34,6 @@ protected:
 
     string ErsetzteN(string, double _prevalue);
     float checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
-    string RundeOutput(double _in, int _anzNachkomma);
 
     void InitNUMBERS();
     void handleDecimalSeparator(string _decsep, string _value);
@@ -44,7 +43,7 @@ protected:
     void handleAnalogDigitalTransitionStart(string _decsep, string _value);
     std::string GetStringReadouts(general);
 
-    void WriteDataLog(int _analog);
+    void WriteDataLog(int _index);
 
 
 
@@ -66,6 +65,7 @@ public:
     void SetPreValue(double zw, string _numbers, bool _extern = false);
 
     std::string GetJSON(std::string _id = "", std::string _mac = "", std::string _lineend = "\n");
+    std::string getNumbersName();
 
     void UpdateNachkommaDecimalShift();
 

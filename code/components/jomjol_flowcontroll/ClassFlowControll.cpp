@@ -647,6 +647,12 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     return result;
 }
 
+
+string ClassFlowControll::getNumbersName()
+{
+    return flowpostprocessing->getNumbersName();
+}
+
 string ClassFlowControll::getJSON(std::string _id, std::string _mac)
 {
     return flowpostprocessing->GetJSON(_id, _mac);

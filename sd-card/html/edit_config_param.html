@@ -328,21 +328,6 @@ textarea {
 				Time to keep the separated digit images (in days, resp. "0" = forever)
 			</td>
 		</tr>
-<!--
-
-		<tr class="expert"  id="ex9">
-			<td class="indent1">
-				<class id="Digits_ModelInputSize_text" style="color:black;">ModelInputSize</class>
-			</td>
-			<td>
-				x: <input type="number" id="Digits_ModelInputSize_value1" class="smallSelect" min="1" step="1">
-				y: <input type="number" id="Digits_ModelInputSize_value2" class="smallSelect" min="1" step="1">
-			</td>
-			<td style="font-size: 80%;">
-				Size of the input image for the CNN model
-			</td>
-		</tr>
--->
 
 		<tr id="Category_Analog_ex4">
 			<td colspan="3" style="padding-left: 20px;">
@@ -376,19 +361,6 @@ textarea {
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
 			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
 		</tr>
-
-<!--
-
-		<tr class="expert"  id="ex10">
-			<td class="indent1"> </td>
-			<td> <class id="Analog_ModelInputSize_text" style="color:black;">ModelInputSize</class> </td>
-			<td>
-				x: <input type="number" id="Analog_ModelInputSize_value1" class="smallSelect" min="1" step="1">
-				y: <input type="number" id="Analog_ModelInputSize_value2" class="smallSelect" min="1" step="1">
-			</td>
-			<td style="font-size: 80%;"> Size of the input image for the CNN model </td>
-		</tr>
--->
 
 		<tr>
 			<td colspan="3" style="padding-left: 20px;"><h4>PostProcessing</h4></td>
@@ -527,7 +499,7 @@ textarea {
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the intervall (RateChange = change/minute).
+				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the interval (RateChange = change/minute).
 			</td>
 		</tr>
 		<tr>
@@ -743,13 +715,13 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-			    <class id="AutoTimer_Intervall_text" style="color:black;">Intervall</class>
+			    <class id="AutoTimer_Intervall_text" style="color:black;">Interval</class>
 			</td>
 			<td>
 				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
 			</td>
 			<td style="font-size: 80%;">
-				Intervall in which the counter is read (in minutes). Number must be greater than 3 minutes.
+				Interval in which the number(s) are read (in minutes). If a run takes longer than this interval, the next run gets postponed until the current run completes.
 			</td>
 		</tr>
 
@@ -1727,11 +1699,9 @@ function UpdateInput() {
 	WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
 	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
 	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
-//	WriteParameter(param, category, "Digits", "ModelInputSize", false);	
 	
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
-//	WriteParameter(param, category, "Analog", "ModelInputSize", false);		
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
@@ -1844,12 +1814,10 @@ function ReadParameterAll()
 	ReadParameter(param, "Digits", "CNNGoodThreshold", true);
 	ReadParameter(param, "Digits", "LogImageLocation", true);		
 	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
-//	ReadParameter(param, "Digits", "ModelInputSize", false);
 
 	ReadParameter(param, "Analog", "Model", false);		
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
-//	ReadParameter(param, "Analog", "ModelInputSize", false);
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		

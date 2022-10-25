@@ -975,21 +975,24 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
     if (GENERAL[_analog]->ROI.size() == 0)
         return rt;
  
-    for (int i = GENERAL[_analog]->ROI.size() - 1; i >= 0; --i)
+    for (int i = 0; i < GENERAL[_analog]->ROI.size(); ++i)
     {
         if (CNNType == Analogue || CNNType == Analogue100)
         {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
 
         if (CNNType == Digital)
         {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
+            if (GENERAL[_analog]->ROI[i]->result_klasse == 10)
+                rt = rt + "\tN";
+            else
+                rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_klasse, 0);
         }
 
         if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
         {
-            rt = rt + "\t" + std::to_string(GENERAL[_analog]->ROI[i]->result_float);
+            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
     }
     return rt;

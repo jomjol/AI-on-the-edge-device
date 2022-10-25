@@ -3,6 +3,7 @@
 
 #include <esp_http_server.h>
 #include "CImageBasis.h"
+#include "ClassFlowControll.h"
 
 //#include "ClassControllCamera.h"
 
@@ -19,3 +20,5 @@ std::string GetMQTTMainTopic();
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req);
 
 esp_err_t GetRawJPG(httpd_req_t *req);
+
+extern ClassFlowControll tfliteflow;
