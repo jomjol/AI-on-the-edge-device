@@ -22,7 +22,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicRate = "";
     topicTimeStamp = "";
     maintopic = "";
-    mainerrortopic = ""; 
+    lwt = ""; 
 
     topicUptime = "";
     topicFreeMem = "";
@@ -124,32 +124,32 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
 #ifdef __HIDE_PASSWORD
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
+    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), lwt.c_str());
 #else
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
+    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), lwt.c_str());
 #endif
 
     if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
     { 
         ESP_LOGD(TAG, "InitMQTTInit");
-        mainerrortopic = maintopic + "/connection";
+        lwt = maintopic + "/connection";
 #ifdef __HIDE_PASSWORD
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
+        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), lwt.c_str());
 #else
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
+        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), lwt.c_str());
 #endif
-        if (!MQTTInit(uri, clientname, user, password, mainerrortopic, keepAlive))
+        if (!MQTTInit(uri, clientname, user, password, lwt, keepAlive))
         { // Failed
             MQTTenable = false;
             return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
         }
     }
 
-    // Try sending mainerrortopic. If it fails, re-run init
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
+    // Try sending lwt. If it fails, re-run init
+    if (!MQTTPublish(lwt, "connected", SetRetainFlag))
     { // Failed
         LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
-        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
+        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->lwt, keepAlive))
         { // Failed
             MQTTenable = false;
             return false;
@@ -157,7 +157,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
     // Try again and quit if it fails
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
+    if (!MQTTPublish(lwt, "connected", SetRetainFlag))
     { // Failed
         MQTTenable = false;
         return false;
@@ -166,7 +166,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 
    
- /*   if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
+ /*   if (!MQTTPublish(lwt, "connected", SetRetainFlag))
     { // Failed
         LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish connection status!");
         MQTTenable = false;
@@ -194,11 +194,11 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
-    // Try sending mainerrortopic. If it fails, re-run init
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
+    // Try sending lwt. If it fails, re-run init
+    if (!MQTTPublish(lwt, "connected", SetRetainFlag))
     { // Failed
         LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
-        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
+        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->lwt, keepAlive))
         { // Failed
             MQTTenable = false;
             return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
@@ -206,7 +206,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     }
 
     // Try again and quit if it fails
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
+    if (!MQTTPublish(lwt, "connected", SetRetainFlag))
     { // Failed
         MQTTenable = false;
         return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
@@ -221,7 +221,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    // if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
+    // if (!MQTTPublish(lwt, "connected", SetRetainFlag))
     //{ // Failed, skip other topics
     //    return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
     //}
