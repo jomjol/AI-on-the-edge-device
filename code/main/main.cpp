@@ -147,11 +147,11 @@ extern "C" void app_main(void)
     string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
             "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
 
-    ESP_LOGI(TAGMAIN, "\n\n\n\n\n\n\n\nInit System..."); // Add mark on log to see when it restarted
+    ESP_LOGI(TAGMAIN, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     ESP_LOGD(TAGMAIN, "=============================================================================================");
     ESP_LOGD(TAGMAIN, "%s", versionFormated.c_str());
     ESP_LOGD(TAGMAIN, "=============================================================================================");
-    ESP_LOGD(TAGMAIN, "Reset reason: " + getResetReason());
+    ESP_LOGD(TAGMAIN, "Reset reason: %s", getResetReason().c_str());
 
 
     PowerResetCamera();
