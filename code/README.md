@@ -18,16 +18,14 @@ platformio run --environment esp32cam
 
 ### Upload
 ```
-pio run --target upload
+pio run --target upload --upload-port /dev/ttyUSB0
 ```
 
-If it doesnt find the device:
-1. make sure it is in bootloader mode
-1. set the UART device correctly: In `platformio.ini`, set `upload_port` correctly, eg. `upload_port = /dev/ttyUSB0`
+Alternatively you also can set the UART device in `platformio.ini`, eg. `upload_port = /dev/ttyUSB0`
 
 ### Monitor UART Log
 ```
-pio device monitor
+pio device monitor -p /dev/ttyUSB0
 ```
 
 ## Build and Flash with Visual Code IDE
