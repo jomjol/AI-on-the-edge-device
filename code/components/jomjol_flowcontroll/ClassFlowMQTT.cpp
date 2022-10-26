@@ -192,7 +192,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     char uptimeStr[11];
     sprintf(uptimeStr, "%ld", (long)getUpTime());
 
-    // Try sending ptime. If it fails, re-run init
+    // Try sending uptime. If it fails, re-run init
     if (!MQTTPublish(zw, uptimeStr, SetRetainFlag))
     { // Failed
         LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
