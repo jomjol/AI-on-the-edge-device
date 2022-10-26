@@ -11,7 +11,6 @@ static const char *TAG_INTERFACEMQTT = "interface_mqtt";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
-bool debugdetail = true;
 
 // #define CONFIG_BROKER_URL "mqtt://192.168.178.43:1883"
 
@@ -27,11 +26,11 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag){
     std::string zw;
     msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
     if (msg_id < 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Failed to publish '" + _key + "'!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Failed to publish topic '" + _key + "'!");
         return false;
     }
-    zw = "MQTT - sent publish successful in MQTTPublish, msg_id=" + std::to_string(msg_id) + ", " + _key + ", " + _content;
-    if (debugdetail) LogFile.WriteToFile(ESP_LOG_INFO, zw);
+    zw = "MQTT - Published topic: " + _key + ", content: " + _content + " (msg_id=" + std::to_string(msg_id) + ")";
+    LogFile.WriteToFile(ESP_LOG_DEBUG, zw);
     return true;
 }
 
@@ -109,7 +108,7 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
         .keepalive = _keepalive
     };
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init");
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init (client ID: " +  _clientid + ")");
 
     if (_user.length() && _password.length()){
         mqtt_cfg.username = _user.c_str();
@@ -139,7 +138,7 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
 
        /* if(!MQTTPublish(_LWTContext, "", 1))
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish LWT!");
+            LogFile.WriteToFile("MQTT - Could not publish LWT!");
             return false;
         }*/
     }
