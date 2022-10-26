@@ -139,15 +139,6 @@ bool MQTT_Init() {
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init");
 
     MQTTdestroy_client();
-/*
-    mqtt_cfg.uri = uri.c_str();
-    mqtt_cfg.client_id = client_id.c_str();
-    mqtt_cfg.lwt_topic = lwt_topic.c_str();
-    mqtt_cfg.lwt_msg = lwt_msg.c_str();
-    mqtt_cfg.lwt_retain = 1;
-    mqtt_cfg.lwt_msg_len = lwt_msg.length();
-    mqtt_cfg.keepalive = keepalive;
-*/
 
     std::string lw = "connection lost";
 
