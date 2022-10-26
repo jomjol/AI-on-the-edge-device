@@ -36,7 +36,7 @@ extern "C" {
 #include "defines.h"
 #include "ClassLogFile.h"
 
-#include "server_tflite.h""
+#include "server_tflite.h"
 
 #include "server_help.h"
 #include "interface_mqtt.h"

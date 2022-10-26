@@ -2,6 +2,7 @@
 
 
 
+
 /**
  * @brief Testfall für Überprüfung allowNegatives
  * 
@@ -33,7 +34,7 @@ void testNegative() {
         setPreValue(underTestPost, preValue_extended);
         result = process_doFlow(underTestPost);
         TEST_ASSERT_EQUAL_STRING("no error", underTestPost->getReadoutError().c_str());
-        TEST_ASSERT_EQUAL_STRING(underTestPost->RundeOutput(preValue_extended, analogs.size()+1).c_str(), result.c_str());
+        TEST_ASSERT_EQUAL_STRING(RundeOutput(preValue_extended, analogs.size()+1).c_str(), result.c_str());
         delete underTestPost;
 
         // extendResolution=true
