@@ -866,6 +866,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
 void ClassFlowPostProcessing::WriteDataLog(int _index)
 {
+    LogFile.WriteToFile(ESP_LOG_WARN, "Data file writing temporarily disabled, see https://github.com/jomjol/AI-on-the-edge-device/issues/1225");
+    return;
     string analog = "";
     string digital = "";
     string timezw = "";
