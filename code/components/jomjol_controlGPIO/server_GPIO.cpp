@@ -110,7 +110,7 @@ void GpioPin::init()
 //    if (_interruptType != GPIO_INTR_DISABLE) {                // ohne GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X, wenn das genutzt wird, dann soll auch der Handler hier nicht initialisiert werden, da das dann über SmartLED erfolgt.
     if ((_interruptType != GPIO_INTR_DISABLE) && (_interruptType != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
         //hook isr handler for specific gpio pin
-        ESP_LOGD(TAG_SERVERGPIO, "GpioPin::init add isr handler for GPIO %d\r\n", _gpio);
+        ESP_LOGD(TAG_SERVERGPIO, "GpioPin::init add isr handler for GPIO %d", _gpio);
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*)&_gpio);
     }
 
@@ -131,7 +131,7 @@ bool GpioPin::getValue(std::string* errorText)
 
 void GpioPin::setValue(bool value, gpio_set_source setSource, std::string* errorText)
 {
-    ESP_LOGD(TAG_SERVERGPIO, "GpioPin::setValue %d\r\n", value);
+    ESP_LOGD(TAG_SERVERGPIO, "GpioPin::setValue %d", value);
 
     if ((_mode != GPIO_PIN_MODE_OUTPUT) && (_mode != GPIO_PIN_MODE_OUTPUT_PWM) && (_mode != GPIO_PIN_MODE_BUILT_IN_FLASH_LED)) {
         (*errorText) = "GPIO is not in output mode";
@@ -154,7 +154,7 @@ void GpioPin::publishState() {
 }
 
 bool GpioPin::handleMQTT(std::string, char* data, int data_len) {
-    ESP_LOGD(TAG_SERVERGPIO, "GpioPin::handleMQTT data %.*s\r\n", data_len, data);
+    ESP_LOGD(TAG_SERVERGPIO, "GpioPin::handleMQTT data %.*s", data_len, data);
 
     std::string dataStr(data, data_len);
     dataStr = toLower(dataStr);
@@ -321,7 +321,7 @@ bool GpioHandler::readConfig()
     if (mainTopicMQTT.length() > 0)
     {
         mainTopicMQTT = mainTopicMQTT + "/GPIO";
-        ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found\r\n");
+        ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found");
     }
 
     bool registerISR = false;
@@ -333,9 +333,9 @@ bool GpioHandler::readConfig()
         // if (std::regex_match(zerlegt[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
         // {
         //     std::string gpioStr = pieces_match[1];
-        ESP_LOGD(TAG_SERVERGPIO, "conf param %s\r\n", toUpper(zerlegt[0]).c_str());
+        ESP_LOGD(TAG_SERVERGPIO, "conf param %s", toUpper(zerlegt[0]).c_str());
         if (toUpper(zerlegt[0]) == "MAINTOPICMQTT") {
-//            ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found\r\n");
+//            ESP_LOGD(TAG_SERVERGPIO, "MAINTOPICMQTT found");
 //            mainTopicMQTT = zerlegt[1];
         } else if ((zerlegt[0].rfind("IO", 0) == 0) && (zerlegt.size() >= 6))
         {
@@ -420,7 +420,7 @@ bool GpioHandler::readConfig()
 
 void GpioHandler::clear() 
 {
-    ESP_LOGD(TAG_SERVERGPIO, "GpioHandler::clear\r\n");
+    ESP_LOGD(TAG_SERVERGPIO, "GpioHandler::clear");
 
     if (gpioMap != NULL) {
         for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) {
@@ -541,7 +541,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
 
 void GpioHandler::flashLightEnable(bool value) 
 {
-    ESP_LOGD(TAG_SERVERGPIO, "GpioHandler::flashLightEnable %s\r\n", value ? "true" : "false");
+    ESP_LOGD(TAG_SERVERGPIO, "GpioHandler::flashLightEnable %s", value ? "true" : "false");
 
     if (gpioMap != NULL) {
         for(std::map<gpio_num_t, GpioPin*>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it) 
@@ -552,9 +552,9 @@ void GpioHandler::flashLightEnable(bool value)
                 it->second->setValue(value, GPIO_SET_SOURCE_INTERNAL, &resp_str);
 
                 if (resp_str == "") {
-                    ESP_LOGD(TAG_SERVERGPIO, "Flash light pin GPIO %d switched to %s\r\n", (int)it->first, (value ? "on" : "off"));
+                    ESP_LOGD(TAG_SERVERGPIO, "Flash light pin GPIO %d switched to %s", (int)it->first, (value ? "on" : "off"));
                 } else {
-                    ESP_LOGE(TAG_SERVERGPIO, "Can't set flash light pin GPIO %d.  Error: %s\r\n", (int)it->first, resp_str.c_str());
+                    ESP_LOGE(TAG_SERVERGPIO, "Can't set flash light pin GPIO %d.  Error: %s", (int)it->first, resp_str.c_str());
                 }
             } else 
                 {
