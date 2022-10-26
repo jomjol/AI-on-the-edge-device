@@ -60,6 +60,9 @@ static const char *TAG = "server_file";
 /* Scratch buffer size */
 #define SCRATCH_BUFSIZE  4096 
 
+/* Size of partial log file to return */
+#define LOGFILE_LAST_PART_BYTES SCRATCH_BUFSIZE * 20 /* 80 kBytes */
+
 struct file_server_data {
     /* Base path of file storage */
     char base_path[ESP_VFS_PATH_MAX + 1];
@@ -78,6 +81,9 @@ static const char *TAG_FILESERVER = "file_server";
 using namespace std;
 
 string SUFFIX_ZW = "_0xge";
+
+
+static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file);
 
 
 esp_err_t get_numbers_file_handler(httpd_req_t *req)
@@ -320,20 +326,29 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
 
 
-static esp_err_t logfileact_get_handler(httpd_req_t *req)
+static esp_err_t logfileact_get_full_handler(httpd_req_t *req) {
+    return send_logfile(req, true);
+}
+
+
+static esp_err_t logfileact_get_last_part_handler(httpd_req_t *req) {
+    return send_logfile(req, false);
+}
+
+
+static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "logfileact_get_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "log_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
     ESP_LOGD(TAG, "uri: %s", req->uri);
 
-    const char* filename = "log_current.txt"; 
-
-    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+    const char* filename = ""; 
 
     std::string currentfilename = LogFile.GetCurrentFileName();
 
+    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
@@ -347,6 +362,32 @@ static esp_err_t logfileact_get_handler(httpd_req_t *req)
 
 //    ESP_LOGI(TAG_FILESERVER, "Sending file : %s (%ld bytes)...", &filename, file_stat.st_size);
     set_content_type_from_file(req, filename);
+
+    if (!send_full_file) { // Send only last part of file
+        ESP_LOGD(TAG_FILESERVER, "Sending last %d bytes of the actual logfile!", LOGFILE_LAST_PART_BYTES);
+
+        /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
+        if (fseek(fd, 0, SEEK_END)) {
+            ESP_LOGE(TAG_FILESERVER, "Failed to get to end of file!");
+            return ESP_FAIL;
+        }
+        else {
+            long pos = ftell(fd); // Number of bytes in the file
+            ESP_LOGI(TAG_FILESERVER, "File contains %ld bytes", pos);
+
+            if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET)) { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
+                ESP_LOGE(TAG_FILESERVER, "Failed to go back %ld bytes within the file!", std::min((long)LOGFILE_LAST_PART_BYTES, pos));
+                return ESP_FAIL;
+            }
+        }
+
+        /* Find end of line */
+        while (1) {
+            if (fgetc(fd) == '\n') {
+                break;
+            }
+        }
+    }
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
     char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
@@ -377,11 +418,6 @@ static esp_err_t logfileact_get_handler(httpd_req_t *req)
     httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
-
-
-
-
-
 
 
 /* Handler to download a file kept on the server */
@@ -999,10 +1035,19 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_logfileact = {
         .uri       = "/logfileact",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = logfileact_get_handler,
+        .handler   = logfileact_get_full_handler,
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_logfileact);
+
+
+    httpd_uri_t file_logfile_last_part_handle = {
+        .uri       = "/log",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = logfileact_get_last_part_handler,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &file_logfile_last_part_handle);
 
 
     /* URI handler for uploading files to server */
