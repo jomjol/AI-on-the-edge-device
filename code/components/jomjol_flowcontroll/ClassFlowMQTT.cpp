@@ -26,7 +26,9 @@ void ClassFlowMQTT::SetInitialParameter(void)
 
     topicUptime = "";
     topicFreeMem = "";
-    clientname = "watermeter";
+
+    clientname = "AIOTED-" + getMac();
+
     OldValue = "";
     flowpostprocessing = NULL;  
     user = "";
