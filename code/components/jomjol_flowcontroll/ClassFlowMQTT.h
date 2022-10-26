@@ -14,10 +14,9 @@ protected:
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
     int SetRetainFlag;
-    bool MQTTenable;
     int keepAlive;
 
-    std::string maintopic, lwt; 
+    std::string maintopic; 
 	void SetInitialParameter(void);        
 
 public:
@@ -28,6 +27,7 @@ public:
     string GetMQTTMainTopic();
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
+    void publishRuntimeData();
     bool doFlow(string time);
     string name(){return "ClassFlowMQTT";};
 };

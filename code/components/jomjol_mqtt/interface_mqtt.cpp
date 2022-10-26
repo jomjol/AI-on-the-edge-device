@@ -19,16 +19,36 @@ esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
 
 bool mqtt_connected = false;
 esp_mqtt_client_handle_t client = NULL;
+std::string uri, client_id, lwt_topic, user, password;
+int keepalive;
 
-bool MQTTPublish(std::string _key, std::string _content, int retained_flag){
-  
+
+bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
     int msg_id;
     std::string zw;
+
+    if (!mqtt_connected) {
+        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Not connected, trying to re-connect...");
+        if (!MQTT_Init()) {
+            if (!MQTT_Init()) { // Retry
+                LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Failed to init!");
+                return false;
+            }
+        }
+    }    
+
     msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
     if (msg_id < 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Failed to publish topic '" + _key + "'!");
-        return false;
+        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Failed to publish topic '" + _key + "', re-trying...");
+
+        msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
+        if (msg_id < 0) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Failed to publish topic '" + _key + "'!");
+            mqtt_connected = false; // Force re-init on next call
+            return false;
+        }
     }
+
     zw = "MQTT - Published topic: " + _key + ", content: " + _content + " (msg_id=" + std::to_string(msg_id) + ")";
     LogFile.WriteToFile(ESP_LOG_DEBUG, zw);
     return true;
@@ -50,6 +70,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DISCONNECTED");
+            mqtt_connected = false; // Force re-init on next call
             esp_mqtt_client_reconnect(client);
             break;
         case MQTT_EVENT_SUBSCRIBED:
@@ -79,6 +100,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_ERROR");
+            mqtt_connected = false; // Force re-init on next call
             break;
         default:
             ESP_LOGI(TAG_INTERFACEMQTT, "Other event id:%d", event->event_id);
@@ -93,35 +115,57 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 
-bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _LWTContext, int _keepalive){
-    std::string _zwmessage = "connection lost";
+void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _lwt, int _keepalive){
+#ifdef __HIDE_PASSWORD
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
+            ", user: " + _user + ", password: XXXXXXXX, last-will-topic: " + _lwt + ", timeout: " + std::to_string(_keepalive)); 
+#else
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
+            ", user: " + _user + ", password: " + _password + ", last-will-topic: " + _lwt + ", timeout: " + std::to_string(_keepalive)); 
+#endif
 
-    int _lzw = _zwmessage.length();
-
-    esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = _mqttURI.c_str(),
-        .client_id = _clientid.c_str(),
-        .lwt_topic = _LWTContext.c_str(),
-        .lwt_msg = _zwmessage.c_str(),
-        .lwt_retain = 1,
-        .lwt_msg_len = _lzw,
-        .keepalive = _keepalive
-    };
-
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init (client ID: " +  _clientid + ")");
+    uri = _mqttURI;
+    client_id = _clientid;
+    lwt_topic = _lwt;
+    keepalive = _keepalive;
 
     if (_user.length() && _password.length()){
-        mqtt_cfg.username = _user.c_str();
-        mqtt_cfg.password = _password.c_str();
+        user = _user;
+        password = _password;
+    }
+}
 
-#ifdef __HIDE_PASSWORD
-        ESP_LOGI(TAG_INTERFACEMQTT, "Connect to MQTT: %s, XXXXXXXX", mqtt_cfg.username);
-#else
-        ESP_LOGI(TAG_INTERFACEMQTT, "Connect to MQTT: %s, %s", mqtt_cfg.username, mqtt_cfg.password);
-#endif        
+bool MQTT_Init() {
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init");
+
+    MQTTdestroy_client();
+/*
+    mqtt_cfg.uri = uri.c_str();
+    mqtt_cfg.client_id = client_id.c_str();
+    mqtt_cfg.lwt_topic = lwt_topic.c_str();
+    mqtt_cfg.lwt_msg = lwt_msg.c_str();
+    mqtt_cfg.lwt_retain = 1;
+    mqtt_cfg.lwt_msg_len = lwt_msg.length();
+    mqtt_cfg.keepalive = keepalive;
+*/
+
+    std::string lw = "connection lost";
+
+    esp_mqtt_client_config_t mqtt_cfg = {
+        .uri = uri.c_str(),
+        .client_id = client_id.c_str(),
+        .lwt_topic = lwt_topic.c_str(),
+        .lwt_msg = lw.c_str(),
+        .lwt_retain = 1,
+        .lwt_msg_len = (int)(lw.length()),
+        .keepalive = keepalive
     };
 
-    MQTTdestroy();
+    if (user.length() && password.length()){
+        mqtt_cfg.username = user.c_str();
+        mqtt_cfg.password = password.c_str();
+    };
+
     client = esp_mqtt_client_init(&mqtt_cfg);
     if (client)
     {
@@ -135,16 +179,10 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
             LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not start client!");
             return false;
         }
-
-       /* if(!MQTTPublish(_LWTContext, "", 1))
-        {
-            LogFile.WriteToFile("MQTT - Could not publish LWT!");
-            return false;
-        }*/
     }
     else
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not Init client!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not init client!");
         return false;
     }
 
@@ -153,7 +191,7 @@ bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, st
 }
 
 
-void MQTTdestroy() {
+void MQTTdestroy_client() {
     if (client != NULL) {
         esp_mqtt_client_stop(client);
         esp_mqtt_client_destroy(client);
@@ -211,6 +249,9 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 void MQTTconnected(){
     if (mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Connected");
+
+        MQTTPublish(lwt_topic, "connected", true);
+
         if (connectFunktionMap != NULL) {
             for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
                 it->second();

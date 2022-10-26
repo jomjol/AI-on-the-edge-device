@@ -131,7 +131,6 @@ string ClassFlowControll::GetMQTTMainTopic()
         if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
             return ((ClassFlowMQTT*) (FlowControll[i]))->GetMQTTMainTopic();
 
-
     return "";
 }
 
@@ -148,13 +147,17 @@ void ClassFlowControll::SetInitialParameter(void)
     disabled = false;
     aktRunNr = 0;
     aktstatus = "Booting ...";
-
 }
 
 bool ClassFlowControll::isAutoStart(long &_intervall)
 {
     _intervall = AutoIntervall * 60 * 1000; // AutoIntervall: Minuten -> ms
     return AutoStart;
+}
+
+int ClassFlowControll::getAutoInterval()
+{
+    return AutoIntervall * 60; // AutoIntervall: Minuten -> seconds
 }
 
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)

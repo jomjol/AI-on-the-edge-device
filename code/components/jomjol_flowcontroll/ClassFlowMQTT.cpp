@@ -6,7 +6,8 @@
 #include "time_sntp.h"
 #include "interface_mqtt.h"
 #include "ClassFlowPostProcessing.h"
-#include "ClassLogFile.h"
+#include "ClassFlowPostProcessing.h"
+#include "ClassFlowControll.h"
 
 #include <time.h>
 
@@ -22,7 +23,6 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicRate = "";
     topicTimeStamp = "";
     maintopic = "";
-    lwt = ""; 
 
     topicUptime = "";
     topicFreeMem = "";
@@ -37,8 +37,6 @@ void ClassFlowMQTT::SetInitialParameter(void)
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
-    MQTTenable = false;
-    keepAlive = 600; // TODO This must be greater than the Flow Interval!
 }       
 
 ClassFlowMQTT::ClassFlowMQTT()
@@ -56,6 +54,12 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+        }
+
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowControll") == 0)
+        {
+            ClassFlowControll *cfc = (ClassFlowControll*) (*ListFlowControll)[i];
+            keepAlive = cfc->getAutoInterval()* 2.5; // Allow at least than 2 failed rounds before we are threated as disconnected
         }
     }
 }
@@ -125,48 +129,23 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             maintopic = hostname;
         }
     }
+    
+    MQTT_Configure(uri, clientname, user, password, maintopic + "/connection", keepAlive);
 
-#ifdef __HIDE_PASSWORD
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), maintopic.c_str());
-#else
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), maintopic.c_str());
-#endif
+    ESP_LOGD(TAG, "MQTT maintopic: %s", maintopic.c_str());
 
-    if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
-    { 
-        ESP_LOGD(TAG, "InitMQTTInit");
-        lwt = maintopic + "/connection";
-#ifdef __HIDE_PASSWORD
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), maintopic.c_str());
-#else
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), maintopic.c_str());
-#endif
-        if (!MQTTInit(uri, clientname, user, password, lwt, keepAlive))
-        { // Failed
-            MQTTenable = false;
-            return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-        }
-    }
-
-    // Try sending LWT. If it fails, re-run init
-    if (!MQTTPublish(lwt, "connected", SetRetainFlag))
-    { // Failed
-        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
-        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->lwt, keepAlive))
-        { // Failed
-            MQTTenable = false;
-            return false;
-        } 
-
-        // Try again sending LWT and quit if it fails
-        if (!MQTTPublish(lwt, "connected", SetRetainFlag))
-        { // Failed
-            MQTTenable = false;
+    if (!MQTT_Init()) {
+        if (!MQTT_Init()) { // Retry
             return false;
         }
     }
 
-    MQTTenable = true;
+    MQTTPublish(maintopic + "/" + "mac", getMac(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "ip", *getIPAddress(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
+
+    publishRuntimeData();
+
     return true;
 }
 
@@ -174,6 +153,22 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 string ClassFlowMQTT::GetMQTTMainTopic()
 {
     return maintopic;
+}
+
+void ClassFlowMQTT::publishRuntimeData() {
+    char tmp_char[50];
+
+    sprintf(tmp_char, "%ld", (long)getUpTime());
+    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
+    
+    sprintf(tmp_char, "%zu", esp_get_free_heap_size());
+    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), SetRetainFlag);
+
+    sprintf(tmp_char, "%d", get_WIFI_RSSI());
+    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), SetRetainFlag);
+
+    sprintf(tmp_char, "%d", (int)temperatureRead());
+    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), SetRetainFlag);
 }
 
 
@@ -188,44 +183,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    zw = maintopic + "/" + "uptime";
-    char uptimeStr[11];
-    sprintf(uptimeStr, "%ld", (long)getUpTime());
-
-    // Try sending uptime. If it fails, re-run init
-    if (!MQTTPublish(zw, uptimeStr, SetRetainFlag))
-    { // Failed
-        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
-        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->lwt, keepAlive))
-        { // Failed
-            MQTTenable = false;
-            return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-        } 
-
-        // Try again and quit if it fails
-        if (!MQTTPublish(zw, uptimeStr, SetRetainFlag))
-        { // Failed
-            MQTTenable = false;
-            return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-        }
-    }
-    
-    zw = maintopic + "/" + "freeMem";
-    char freeheapmem[11];
-    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
-    if (!MQTTPublish(zw, freeheapmem, SetRetainFlag))
-    { // Failed, skip other topics
-        return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-    }
-
-    zw = maintopic + "/" + "wifiRSSI";
-    char rssi[11];
-    sprintf(rssi, "%d", get_WIFI_RSSI());
-    MQTTPublish(zw, rssi, SetRetainFlag);
-
-    zw = maintopic + "/" + "CPUtemp";
-    std::string cputemp = std::to_string(temperatureRead());
-    MQTTPublish(zw, cputemp, SetRetainFlag);
+    publishRuntimeData();
 
     if (flowpostprocessing)
     {
@@ -246,29 +204,23 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-            zw = namenumber + "value"; 
             if (result.length() > 0)   
-                MQTTPublish(zw, result, SetRetainFlag);
+                MQTTPublish(namenumber + "value", result, SetRetainFlag);
 
-            zw = namenumber + "error"; 
             if (resulterror.length() > 0)  
-                MQTTPublish(zw, resulterror, SetRetainFlag);
+                MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
 
-            zw = namenumber + "rate"; 
             if (resultrate.length() > 0)   
-                MQTTPublish(zw, resultrate, SetRetainFlag);
+                MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
 
-            zw = namenumber + "changeabsolut"; 
             if (resultchangabs.length() > 0)   
-                MQTTPublish(zw, resultchangabs, SetRetainFlag);
+                MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag);
 
-            zw = namenumber + "raw"; 
             if (resultraw.length() > 0)   
-                MQTTPublish(zw, resultraw, SetRetainFlag);
+                MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
 
-            zw = namenumber + "timestamp";
             if (resulttimestamp.length() > 0)
-                MQTTPublish(zw, resulttimestamp, SetRetainFlag);
+                MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
 
             std::string json = "";
@@ -286,8 +238,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 json += "\",\"rate\":\"\"";
             json += ",\"timestamp\":\""+resulttimestamp+"\"}";
 
-            zw = namenumber + "json";
-            MQTTPublish(zw, json, SetRetainFlag);
+            MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
     else
