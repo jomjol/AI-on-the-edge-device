@@ -14,22 +14,6 @@ static const char *TAGMAIN = "main";
 #define __SD_USE_ONE_LINE_MODE__
 #include "server_GPIO.h"
 
-
-
-
-void initGPIO()
-{
-    gpio_config_t io_conf;
-    //set as output mode
-    io_conf.mode = gpio_mode_t::GPIO_MODE_INPUT;
-    //bit mask of the pins that you want to set,e.g.GPIO18/19
-     io_conf.pull_down_en =  gpio_pulldown_t::GPIO_PULLDOWN_ENABLE;
-    //set pull-up mode
-    io_conf.pull_up_en =  gpio_pullup_t::GPIO_PULLUP_DISABLE;
-    //configure GPIO with the given settings
-    gpio_config(&io_conf);
-}
-
 bool Init_NVS_SDCard()
 {
     esp_err_t ret = nvs_flash_init();
@@ -68,7 +52,7 @@ bool Init_NVS_SDCard()
     // formatted in case when mounting fails.
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 5,
+        .max_files = 7,                         // anstatt 5 (2022-09-21)
         .allocation_unit_size = 16 * 1024
     };
 
@@ -89,10 +73,27 @@ bool Init_NVS_SDCard()
         }
         return false;
     }
-    sdmmc_card_print_info(stdout, card);
 
+    sdmmc_card_print_info(stdout, card);
+    SaveSDCardInfo(card);
     return true;
 }
+
+
+
+void initGPIO()
+{
+    gpio_config_t io_conf;
+    //set as output mode
+    io_conf.mode = gpio_mode_t::GPIO_MODE_INPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO18/19
+     io_conf.pull_down_en =  gpio_pulldown_t::GPIO_PULLDOWN_ENABLE;
+    //set pull-up mode
+    io_conf.pull_up_en =  gpio_pullup_t::GPIO_PULLUP_DISABLE;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+}
+
 
 
 /**

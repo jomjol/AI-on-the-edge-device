@@ -6,7 +6,7 @@
 #include <ClassFlowCNNGeneral.h>
 #include <ClassFlowCNNGeneral.h>
 #include <ClassFlowMakeImage.h>
-
+#include <Helper.h>
 
 
 class UnderTestPost : public ClassFlowPostProcessing {
@@ -15,7 +15,6 @@ class UnderTestPost : public ClassFlowPostProcessing {
             : ClassFlowPostProcessing::ClassFlowPostProcessing(lfc, _analog, _digit) {}
         
         using ClassFlowPostProcessing::InitNUMBERS;
-        using ClassFlowPostProcessing::RundeOutput;
         using ClassFlowPostProcessing::flowAnalog;
         using ClassFlowPostProcessing::flowDigit;    
 
@@ -106,5 +105,13 @@ void setDecimalShift(UnderTestPost* _UnderTestPost, int decimal_shift);
  * @param _analogdigitTransistionStart the analog to digit transition start
  */
 void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analogdigitTransistionStart);
+
+/**
+ * @brief Set the allowNegatives in testobject 
+ * 
+ * @param _underTestPost the testobject  
+ * @param _allowNegatives if should be set true or false
+ */
+void setAllowNegatives(UnderTestPost* _underTestPost, bool _allowNegatives);
 
 #endif // TEST_FLOW_H
