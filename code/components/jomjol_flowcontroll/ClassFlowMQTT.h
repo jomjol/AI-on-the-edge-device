@@ -27,7 +27,6 @@ public:
     string GetMQTTMainTopic();
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
-    void publishRuntimeData();
     bool doFlow(string time);
     string name(){return "ClassFlowMQTT";};
 };

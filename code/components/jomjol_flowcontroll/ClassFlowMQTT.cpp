@@ -16,7 +16,31 @@
 static const char *TAG = "class_flow_MQTT";
 
 
-extern ClassFlowControll tfliteflow;
+void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
+    char tmp_char[50];
+
+    sprintf(tmp_char, "%ld", (long)getUpTime());
+    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
+    
+    sprintf(tmp_char, "%zu", esp_get_free_heap_size());
+    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), SetRetainFlag);
+
+    sprintf(tmp_char, "%d", get_WIFI_RSSI());
+    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), SetRetainFlag);
+
+    sprintf(tmp_char, "%d", (int)temperatureRead());
+    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), SetRetainFlag);
+}
+
+void GotConnected(std::string maintopic, int SetRetainFlag) {
+    MQTTPublish(maintopic + "/" + "mac", getMac(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "ip", *getIPAddress(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
+
+    publishRuntimeData(maintopic, SetRetainFlag);
+}
+
+
 
 void ClassFlowMQTT::SetInitialParameter(void)
 {
@@ -25,7 +49,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicError = "";
     topicRate = "";
     topicTimeStamp = "";
-    maintopic = "";
+    maintopic = hostname;
 
     topicUptime = "";
     topicFreeMem = "";
@@ -133,25 +157,15 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             maintopic = zerlegt[1];
         }
-        else { // Main topic not set, use the hostname
-            maintopic = hostname;
-        }
     }
-       
-    MQTT_Configure(uri, clientname, user, password, maintopic, "connection", keepAlive);
+
+    MQTT_Configure(uri, clientname, user, password, maintopic, "connection", keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTT_Init()) {
         if (!MQTT_Init()) { // Retry
             return false;
         }
     }
-
-    MQTTPublish(maintopic + "/" + "mac", getMac(), SetRetainFlag);
-    MQTTPublish(maintopic + "/" + "ip", *getIPAddress(), SetRetainFlag);
-    MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
-
-    publishRuntimeData();
-
     return true;
 }
 
@@ -159,22 +173,6 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 string ClassFlowMQTT::GetMQTTMainTopic()
 {
     return maintopic;
-}
-
-void ClassFlowMQTT::publishRuntimeData() {
-    char tmp_char[50];
-
-    sprintf(tmp_char, "%ld", (long)getUpTime());
-    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
-    
-    sprintf(tmp_char, "%zu", esp_get_free_heap_size());
-    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), SetRetainFlag);
-
-    sprintf(tmp_char, "%d", get_WIFI_RSSI());
-    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), SetRetainFlag);
-
-    sprintf(tmp_char, "%d", (int)temperatureRead());
-    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), SetRetainFlag);
 }
 
 
@@ -189,7 +187,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    publishRuntimeData();
+    publishRuntimeData(maintopic, SetRetainFlag);
 
     if (flowpostprocessing)
     {
