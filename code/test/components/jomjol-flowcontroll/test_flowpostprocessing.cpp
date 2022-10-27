@@ -108,11 +108,14 @@ void test_doFlowPP() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
        
+}
+
+void test_doFlowPP1() {
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
-        digits = { 0.0, 2.9, 3.0, 2.9, 3.5, 9.5};
-        analogs = {        };
-        expected = "33330";
-        result = process_doFlow(analogs, digits);
+        std::vector<float> digits = { 0.0, 2.9, 3.0, 2.9, 3.5, 9.5};
+        std::vector<float>  analogs = {        };
+        const char* expected = "33330";
+        std::string result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
@@ -151,15 +154,13 @@ void test_doFlowPP() {
         expected = "377988.4";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
-}
 
-void test_doFlowPP1() {
         // Fehler bei V11.2.0
         // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1233149877
-        std::vector<float> digits = { 0.0, 0.0, 7.0, 8.9};  // 79.9999(6) als falsches Ergebnis
-        std::vector<float> analogs = { 0.1, 0.1, 0.1, 9.6};
-        const char* expected = "78.9999";
-        std::string result = process_doFlow(analogs, digits);
+        digits = { 0.0, 0.0, 7.0, 8.9};  // 79.9999(6) als falsches Ergebnis
+        analogs = { 0.1, 0.1, 0.1, 9.6};
+        expected = "78.9999";
+        result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // Fehler bei V11.2.0 
