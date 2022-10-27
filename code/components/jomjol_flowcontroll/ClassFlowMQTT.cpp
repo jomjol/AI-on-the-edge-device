@@ -70,9 +70,9 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     }
 
     payload += 
-        "\"availability_topic\": \"~/connection\"," + nl +
-        "\"payload_available\": \"connected\"," + nl +
-        "\"payload_not_available\": \"connection lost\"," + nl;
+        "\"availability_topic\": \"~/" + std::string(LWT_TOPIC) + "\"," + nl +
+        "\"payload_available\": \"" + LWT_CONNECTED + "\"," + nl +
+        "\"payload_not_available\": \"" + LWT_DISCONNECTED + "\"," + nl;
 
     payload +=
     "\"device\": {" + nl +
