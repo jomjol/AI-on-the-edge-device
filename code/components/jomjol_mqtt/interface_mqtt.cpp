@@ -11,7 +11,6 @@ static const char *TAG_INTERFACEMQTT = "interface_mqtt";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
-bool debugdetail = true;
 
 // #define CONFIG_BROKER_URL "mqtt://192.168.178.43:1883"
 
@@ -31,7 +30,7 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag){
         return false;
     }
     zw = "MQTT - sent publish successful in MQTTPublish, msg_id=" + std::to_string(msg_id) + ", " + _key + ", " + _content;
-    if (debugdetail) LogFile.WriteToFile(ESP_LOG_INFO, zw);
+    LogFile.WriteToFile(ESP_LOG_INFO, zw);
     return true;
 }
 
