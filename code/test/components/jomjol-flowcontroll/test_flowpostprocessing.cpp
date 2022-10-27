@@ -13,7 +13,7 @@
  * expected - enthält das erwartete Ergebnis, wobei der Dezimalpunkt genau zwischen digits und analog ist.
  * 
  */
-void test_doFlow() {
+void test_doFlowPP() {
         
         /*
          * 
@@ -27,7 +27,7 @@ void test_doFlow() {
         std::vector<float> digits = { 1.2, 6.7};
         std::vector<float> analogs = { 9.5, 8.4};
         const char* expected = "16.98";
-        const char* expected_extended = "16.984";
+        //const char* expected_extended = "16.984";
         std::string result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
@@ -108,11 +108,14 @@ void test_doFlow() {
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
        
+}
+
+void test_doFlowPP1() {
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
-        digits = { 0.0, 2.9, 3.0, 2.9, 3.5, 9.5};
-        analogs = {        };
-        expected = "33330";
-        result = process_doFlow(analogs, digits);
+        std::vector<float> digits = { 0.0, 2.9, 3.0, 2.9, 3.5, 9.5};
+        std::vector<float>  analogs = {        };
+        const char* expected = "33330";
+        std::string result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
@@ -167,13 +170,15 @@ void test_doFlow() {
         expected = "395.8632";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+}
 
+void test_doFlowPP2() {
         // Fehler bei V11.2.0 
         // https://github.com/jomjol/AI-on-the-edge-device/discussions/950#discussion-4338615
-        digits = { 1.0, 9.0, 9.0};  // Übergang wurde um 1 erhöht (200, statt 199)
-        analogs = { 7.1, 4.8, 8.3};
-        expected = "199.748";
-        result = process_doFlow(analogs, digits, Digital);
+        std::vector<float> digits = { 1.0, 9.0, 9.0};  // Übergang wurde um 1 erhöht (200, statt 199)
+        std::vector<float> analogs = { 7.1, 4.8, 8.3};
+        const char* expected = "199.748";
+        std::string result = process_doFlow(analogs, digits, Digital);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // Fehler bei Rolling (2002-09-09)
@@ -181,7 +186,7 @@ void test_doFlow() {
         digits = { 3.0, 2.0, 2.0, 8.0, 9.0, 4.0, 1.7, 9.8};  // falscher Wert 32290.420
         analogs = { };
         expected = "32289.420";
-        expected_extended= "32289.4198";
+        const char* expected_extended= "32289.4198";
         // FALSCH! wegen ungenügender Präzision von NUMBERS->Value
         // expected_extended= "32289.4198";
 
@@ -330,16 +335,18 @@ void test_doFlow() {
         // checkConsistency=false und extendResolution=true
         result = process_doFlow(analogs, digits, Digital100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+}
 
+void test_doFlowPP3() {
         // Fehler bei V12.0.1 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1265523710
-        digits = { 2.0, 4.0, 6.8};  // 246.2045 als falsches Ergebnis
-        analogs = { 2.2, 0.1, 4.5};
-        expected = "247.204";
-        expected_extended= "247.2045";
+        std::vector<float> digits = { 2.0, 4.0, 6.8};  // 246.2045 als falsches Ergebnis
+        std::vector<float> analogs = { 2.2, 0.1, 4.5};
+        const char* expected = "247.204";
+        const char* expected_extended= "247.2045";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        std::string result = process_doFlow(analogs, digits, Digital100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
