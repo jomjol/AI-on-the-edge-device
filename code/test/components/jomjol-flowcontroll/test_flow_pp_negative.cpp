@@ -8,6 +8,8 @@
  * 
  */
 void testNegative() {
+
+
         // Ohne decimal_shift
         std::vector<float> digits = { 1.2, 6.7};
         std::vector<float> analogs = { 9.5, 8.4};

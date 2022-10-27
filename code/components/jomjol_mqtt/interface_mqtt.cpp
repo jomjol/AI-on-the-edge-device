@@ -51,6 +51,7 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
 
     zw = "MQTT - Published topic: " + _key + ", content: " + _content + " (msg_id=" + std::to_string(msg_id) + ")";
     LogFile.WriteToFile(ESP_LOG_DEBUG, zw);
+
     return true;
 }
 

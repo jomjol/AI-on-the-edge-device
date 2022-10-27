@@ -82,6 +82,8 @@ UnderTestPost* init_do_flow(std::vector<float> analog, std::vector<float> digits
             anaROI->result_float = analog[i];
             gen_analog->ROI.push_back(anaROI);
         }
+    } else {
+        _undertestPost->flowAnalog = NULL;
     }
     ESP_LOGD(TAG, "Setting up of ROIs completed.");
 
