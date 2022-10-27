@@ -492,7 +492,6 @@ void task_reboot(void *pvParameter)
 }
 
 void doReboot(){
-    LogFile.SwitchOnOff(true);
     LogFile.WriteToFile(ESP_LOG_INFO, "Reboot triggered by Software (5s).");
     LogFile.WriteToFile(ESP_LOG_WARN, "Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
