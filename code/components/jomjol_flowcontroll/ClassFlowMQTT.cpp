@@ -70,19 +70,17 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     }
 
     payload += 
-        "\"avty_t\": \"~/" + std::string(LWT_TOPIC) + "\"," + nl +
-        "\"pl_avail\": \"" + LWT_CONNECTED + "\"," + nl +
-        "\"pl_not_avail\": \"" + LWT_DISCONNECTED + "\"," + nl;
+        "\"availability_topic\": \"~/connection\"," + nl +
+        "\"payload_available\": \"connected\"," + nl +
+        "\"payload_not_available\": \"connection lost\"," + nl;
 
     payload +=
     "\"device\": {" + nl +
-        "\"ids\": [\"" + maintopic + "\"]," + nl +
+        "\"identifiers\": [\"" + maintopic + "\"]," + nl +
         "\"name\": \"" + maintopic + "\"," + nl +
-        "\"model\": \"Meter Digitizer\"," + nl +
-        "\"mf\": \"AI on the Edge Device\"," + nl +
-        "\"sw\": \"" + version + "\"" + nl +
-        "\"hw\": \"ESP32-CAM\"" + nl +
-        "\"cu\": \"https://" + *getIPAddress() + "\"" + nl +
+        "\"model\": \"HomeAssistant Discovery for AI on the Edge Device\"," + nl +
+        "\"manufacturer\": \"AI on the Edge Device\"," + nl +
+      "\"sw_version\": \"" + version + "\"" + nl +
     "}" + nl +
     "}" + nl;
 
