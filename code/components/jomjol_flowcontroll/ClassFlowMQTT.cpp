@@ -14,7 +14,10 @@
 #define __HIDE_PASSWORD
 
 static const char *TAG = "class_flow_MQTT";
-#define LWT_TOPIC "connection"
+
+#define LWT_TOPIC        "connection"
+#define LWT_CONNECTED    "connected"
+#define LWT_DISCONNECTED "connection lost"
 
 extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
@@ -51,6 +54,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
     topic = "homeassistant/sensor/" + maintopic + "-" + topicT + "/config";
 
+    /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
     payload = "{" + nl +
         "\"~\": \"" + maintopic + "\"," + nl +
         "\"unique_id\": \"" + maintopic + "-" +topicT + "\"," + nl +
@@ -66,17 +70,19 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     }
 
     payload += 
-        "\"availability_topic\": \"~/connection\"," + nl +
-        "\"payload_available\": \"connected\"," + nl +
-        "\"payload_not_available\": \"connection lost\"," + nl;
+        "\"avty_t\": \"~/" + std::string(LWT_TOPIC) + "\"," + nl +
+        "\"pl_avail\": \"" + LWT_CONNECTED + "\"," + nl +
+        "\"pl_not_avail\": \"" + LWT_DISCONNECTED + "\"," + nl;
 
     payload +=
     "\"device\": {" + nl +
-        "\"identifiers\": [\"" + maintopic + "\"]," + nl +
+        "\"ids\": [\"" + maintopic + "\"]," + nl +
         "\"name\": \"" + maintopic + "\"," + nl +
-        "\"model\": \"HomeAssistant Discovery for AI on the Edge Device\"," + nl +
-        "\"manufacturer\": \"AI on the Edge Device\"," + nl +
-        "\"sw_version\": \"" + version + "\"" + nl +
+        "\"model\": \"Meter Digitizer\"," + nl +
+        "\"mf\": \"AI on the Edge Device\"," + nl +
+        "\"sw\": \"" + version + "\"" + nl +
+        "\"hw\": \"ESP32-CAM\"" + nl +
+        "\"cu\": \"https://" + *getIPAddress() + "\"" + nl +
     "}" + nl +
     "}" + nl;
 
@@ -103,9 +109,6 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "clock-time-eight-outline", "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "code-json",                "");
     }
-
-    // Send LWT once more to indicate that we are online
-    //MQTTPublish(LWT_TOPIC, "connected", true);
 }
 
 void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
@@ -254,7 +257,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, keepAlive, SetRetainFlag, (void *)&GotConnected);
+    MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED, LWT_DISCONNECTED, keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTT_Init()) {
         if (!MQTT_Init()) { // Retry

@@ -18,7 +18,7 @@ esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
 
 bool mqtt_connected = false;
 esp_mqtt_client_handle_t client = NULL;
-std::string uri, client_id, lwt_topic, user, password, maintopic;
+std::string uri, client_id, lwt_topic, lwt_connected, lwt_disconnected, user, password, maintopic;
 int keepalive, SetRetainFlag;
 void (*callbackOnConnected)(std::string, int) = NULL;
 
@@ -116,7 +116,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 
 void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
-        std::string _maintopic, std::string _lwt, int _keepalive, int _SetRetainFlag, void *_callbackOnConnected){
+        std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
+        int _keepalive, int _SetRetainFlag, void *_callbackOnConnected){
 #ifdef __HIDE_PASSWORD
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
             ", user: " + _user + ", password: XXXXXXXX, maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
@@ -128,6 +129,8 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     uri = _mqttURI;
     client_id = _clientid;
     lwt_topic = _maintopic + "/" + _lwt;
+    lwt_connected = _lwt_connected;
+    lwt_disconnected = _lwt_disconnected;
     keepalive = _keepalive;
     SetRetainFlag = _SetRetainFlag;
     maintopic = _maintopic;
@@ -145,7 +148,7 @@ bool MQTT_Init() {
 
     MQTTdestroy_client();
 
-    std::string lw = "connection lost";
+    std::string lw = lwt_disconnected;
 
     esp_mqtt_client_config_t mqtt_cfg = {
         .uri = uri.c_str(),
@@ -254,7 +257,7 @@ void MQTTconnected(){
     if (mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Connected");
 
-        MQTTPublish(lwt_topic, "connected", true);
+        MQTTPublish(lwt_topic, lwt_connected, true);
 
         if (connectFunktionMap != NULL) {
             for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {

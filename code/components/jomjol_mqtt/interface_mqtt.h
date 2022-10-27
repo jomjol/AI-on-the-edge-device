@@ -6,7 +6,8 @@
 #include <functional>
 
 void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
-        std::string _maintopic, std::string _lwt, int _keepalive, int SetRetainFlag, void *callbackOnConnected);
+        std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
+        int _keepalive, int SetRetainFlag, void *callbackOnConnected);
 bool MQTT_Init();
 void MQTTdestroy_client();
 
