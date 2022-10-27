@@ -115,14 +115,15 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 
-void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _lwt, int _keepalive){
+void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _maintopic, std::string _lwt, int _keepalive){
 #ifdef __HIDE_PASSWORD
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
-            ", user: " + _user + ", password: XXXXXXXX, last-will-topic: " + _lwt + ", timeout: " + std::to_string(_keepalive)); 
+            ", user: " + _user + ", password: XXXXXXXX, last-will-topic: " + _maintopic + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
 #else
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
-            ", user: " + _user + ", password: " + _password + ", last-will-topic: " + _lwt + ", timeout: " + std::to_string(_keepalive)); 
+            ", user: " + _user + ", password: " + _password + ", last-will-topic: " + _maintopic + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
 #endif
+
 
     uri = _mqttURI;
     client_id = _clientid;
@@ -133,6 +134,9 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
         user = _user;
         password = _password;
     }
+
+
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT maintopic: %s", _maintopic.c_str());
 }
 
 bool MQTT_Init() {

@@ -15,6 +15,9 @@
 
 static const char *TAG = "class_flow_MQTT";
 
+
+extern ClassFlowControll tfliteflow;
+
 void ClassFlowMQTT::SetInitialParameter(void)
 {
     uri = "";
@@ -37,6 +40,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
+    keepAlive = 25*60;
 }       
 
 ClassFlowMQTT::ClassFlowMQTT()
@@ -51,16 +55,20 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
     ListFlowControll = lfc;
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
+      //  ESP_LOGW(TAG, "LCF: %s", ((*ListFlowControll)[i])->name().c_str());
+
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
         }
 
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowControll") == 0)
+// TODO this does not work since ClassFlowControll is not in the list!
+      /*  if (((*ListFlowControll)[i])->name().compare("ClassFlowControll") == 0)
         {
             ClassFlowControll *cfc = (ClassFlowControll*) (*ListFlowControll)[i];
-            keepAlive = cfc->getAutoInterval()* 2.5; // Allow at least than 2 failed rounds before we are threated as disconnected
-        }
+            this->keepAlive = cfc->getAutoInterval()* 2.5; // Allow at least than 2 failed rounds before we are threated as disconnected
+            ESP_LOGW(TAG, "KEEPALIVE: %d", this->keepAlive);       
+        }*/
     }
 }
 
@@ -130,9 +138,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
     
-    MQTT_Configure(uri, clientname, user, password, maintopic + "/connection", keepAlive);
-
-    ESP_LOGD(TAG, "MQTT maintopic: %s", maintopic.c_str());
+    ESP_LOGW(TAG, "KEEPALIVE: %d", keepAlive);   
+    MQTT_Configure(uri, clientname, user, password, maintopic, "/connection", keepAlive);
 
     if (!MQTT_Init()) {
         if (!MQTT_Init()) { // Retry

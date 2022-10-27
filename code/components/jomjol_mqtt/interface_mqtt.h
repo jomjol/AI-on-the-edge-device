@@ -5,7 +5,7 @@
 #include <map>
 #include <functional>
 
-void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _lwt, int _keepalive);
+void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _maintopic, std::string _lwt, int _keepalive);
 bool MQTT_Init();
 void MQTTdestroy_client();
 
