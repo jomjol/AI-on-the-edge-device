@@ -173,11 +173,17 @@ bool MQTT_Init() {
             LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not register event (ret=" + std::to_string(ret) + ")!");
             return false;
         }
+
         ret = esp_mqtt_client_start(client);
         if (ret != ESP_OK)
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not start client (ret=" + std::to_string(ret) + ")!");
-            return false;
+            LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Could not start client (ret=" + std::to_string(ret) + "), retrying...");
+            ret = esp_mqtt_client_start(client);
+            if (ret != ESP_OK)
+            {
+                LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not start client (ret=" + std::to_string(ret) + ")!");
+                return false;
+            }
         }
     }
     else
