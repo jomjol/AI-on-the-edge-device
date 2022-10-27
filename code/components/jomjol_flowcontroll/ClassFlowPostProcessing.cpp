@@ -866,8 +866,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
 void ClassFlowPostProcessing::WriteDataLog(int _index)
 {
-    LogFile.WriteToFile(ESP_LOG_WARN, "Data file writing temporarily disabled, see https://github.com/jomjol/AI-on-the-edge-device/issues/1225");
-    return;
     string analog = "";
     string digital = "";
     string timezw = "";
@@ -875,7 +873,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _index)
     struct tm* timeinfo = localtime(&NUMBERS[_index]->lastvalue);
     strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
     timezw = std::string(buffer);
-
+    
     if (flowAnalog)
         analog = flowAnalog->getReadoutRawString(_index);
     if (flowDigit)

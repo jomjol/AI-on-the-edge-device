@@ -4,7 +4,6 @@
 #include <unity.h>
 #include <ClassFlowPostProcessing.h>
 #include <ClassFlowCNNGeneral.h>
-#include <ClassFlowCNNGeneral.h>
 #include <ClassFlowMakeImage.h>
 #include <Helper.h>
 
