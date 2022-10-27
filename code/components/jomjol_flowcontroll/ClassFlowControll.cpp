@@ -308,7 +308,6 @@ bool ClassFlowControll::doFlow(string time)
             if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
-                LogFile.SwitchOnOff(true);
                 LogFile.WriteToFile(ESP_LOG_ERROR, "Wiederholung 5x nicht erfolgreich --> reboot");
                 doReboot();
                 // Schritt wurde 5x wiederholt --> reboot
@@ -496,8 +495,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
-                LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile(ESP_LOG_WARN, "Rebooting to activate new HOSTNAME...");
+                LogFile.WriteToFile(ESP_LOG_ERROR, "Rebooting to activate new HOSTNAME...");
                 esp_restart();
                 hard_restart();                   
                 doReboot();

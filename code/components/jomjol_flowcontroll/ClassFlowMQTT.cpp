@@ -137,9 +137,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             maintopic = hostname;
         }
     }
-    
-    ESP_LOGW(TAG, "KEEPALIVE: %d", keepAlive);   
-    MQTT_Configure(uri, clientname, user, password, maintopic, "/connection", keepAlive);
+       
+    MQTT_Configure(uri, clientname, user, password, maintopic, "connection", keepAlive);
 
     if (!MQTT_Init()) {
         if (!MQTT_Init()) { // Retry
