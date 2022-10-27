@@ -2,10 +2,10 @@
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 #include "connect_wlan.h"
+#include "ClassLogFile.h"
 
 #include "time_sntp.h"
 #include "interface_mqtt.h"
-#include "ClassFlowPostProcessing.h"
 #include "ClassFlowPostProcessing.h"
 #include "ClassFlowControll.h"
 
@@ -14,7 +14,99 @@
 #define __HIDE_PASSWORD
 
 static const char *TAG = "class_flow_MQTT";
+#define LWT_TOPIC "connection"
 
+extern const char* libfive_git_version(void);
+extern const char* libfive_git_revision(void);
+extern const char* libfive_git_branch(void);
+
+std::vector<NumberPost*>* NUMBERS;
+
+void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field, std::string icon, std::string unit) {
+    std::string version = std::string(libfive_git_version());
+
+    if (version == "") {
+        version = std::string(libfive_git_branch()) + " (" + std::string(libfive_git_revision()) + ")";
+    }
+    
+    std::string topic;
+    std::string topicT;
+    std::string payload;
+    std::string nl = "\n";
+    std::string name;
+
+    if (group != "") {
+        topic = group + "/" + field;
+        topicT = group + "_" + field;
+    }
+    else {
+        topic =  field;
+        topicT = field;
+    }
+
+    name = field;
+    if (group != "") {
+        name = group + " " + name;
+    }
+
+    topic = "homeassistant/sensor/" + maintopic + "-" + topicT + "/config";
+
+    payload = "{" + nl +
+        "\"~\": \"" + maintopic + "\"," + nl +
+        "\"unique_id\": \"" + maintopic + "-" +topicT + "\"," + nl +
+        "\"name\": \"" + name + "\"," + nl +
+        "\"icon\": \"mdi:" + icon + "\"," + nl +
+        "\"unit_of_meas\": \"" + unit + "\"," + nl;
+
+    if (group != "") {
+        payload += "\"state_topic\": \"~/" + group + "/" + field + "\"," + nl;
+    }
+    else {
+        payload += "\"state_topic\": \"~/" + field + "\"," + nl;
+    }
+
+    payload += 
+        "\"availability_topic\": \"~/connection\"," + nl +
+        "\"payload_available\": \"connected\"," + nl +
+        "\"payload_not_available\": \"connection lost\"," + nl;
+
+    payload +=
+    "\"device\": {" + nl +
+        "\"identifiers\": [\"" + maintopic + "\"]," + nl +
+        "\"name\": \"" + maintopic + "\"," + nl +
+        "\"model\": \"HomeAssistant Discovery for AI on the Edge Device\"," + nl +
+        "\"manufacturer\": \"AI on the Edge Device\"," + nl +
+        "\"sw_version\": \"" + version + "\"" + nl +
+    "}" + nl +
+    "}" + nl;
+
+    MQTTPublish(topic, payload, true);
+}
+
+void MQTThomeassistantDiscovery(std::string maintopic) {
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics...");
+
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "uptime",   "clock-time-eight-outline", "s");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",       "network-outline",          "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",      "network-outline",          "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname", "network-outline",          "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "freeMem",  "memory",                   "B");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI", "file-question-outline",    "dBm");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",  "thermometer",              "°C");
+
+    for (int i = 0; i < (*NUMBERS).size(); ++i) {
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "gauge",                    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "alert-circle-outline",     "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "clock-time-eight-outline", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "code-json",                "");
+    }
+
+    // Send LWT once more to indicate that we are online
+    //MQTTPublish(LWT_TOPIC, "connected", true);
+}
 
 void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
     char tmp_char[50];
@@ -33,8 +125,10 @@ void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
 }
 
 void GotConnected(std::string maintopic, int SetRetainFlag) {
-    MQTTPublish(maintopic + "/" + "mac", getMac(), SetRetainFlag);
-    MQTTPublish(maintopic + "/" + "ip", *getIPAddress(), SetRetainFlag);
+    MQTThomeassistantDiscovery(maintopic);
+
+    MQTTPublish(maintopic + "/" + "MAC", getMac(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), SetRetainFlag);
     MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
 
     publishRuntimeData(maintopic, SetRetainFlag);
@@ -94,6 +188,8 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
             ESP_LOGW(TAG, "KEEPALIVE: %d", this->keepAlive);       
         }*/
     }
+
+    NUMBERS = flowpostprocessing->GetNumbers();
 }
 
 ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
@@ -158,7 +254,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    MQTT_Configure(uri, clientname, user, password, maintopic, "connection", keepAlive, SetRetainFlag, (void *)&GotConnected);
+    MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTT_Init()) {
         if (!MQTT_Init()) { // Retry
