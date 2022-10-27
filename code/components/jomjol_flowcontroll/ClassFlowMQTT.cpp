@@ -78,9 +78,10 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     "\"device\": {" + nl +
         "\"identifiers\": [\"" + maintopic + "\"]," + nl +
         "\"name\": \"" + maintopic + "\"," + nl +
-        "\"model\": \"HomeAssistant Discovery for AI on the Edge Device\"," + nl +
+        "\"model\": \"Meter Digitizer\"," + nl +
         "\"manufacturer\": \"AI on the Edge Device\"," + nl +
-      "\"sw_version\": \"" + version + "\"" + nl +
+      "\"sw_version\": \"" + version + "\"," + nl +
+      "\"configuration_url\": \"http://" + *getIPAddress() + "\"" + nl +
     "}" + nl +
     "}" + nl;
 
