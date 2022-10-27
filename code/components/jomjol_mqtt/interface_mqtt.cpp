@@ -12,7 +12,6 @@ static const char *TAG_INTERFACEMQTT = "interface_mqtt";
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
 
-// #define CONFIG_BROKER_URL "mqtt://192.168.178.43:1883"
 
 esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
 // ESP_EVENT_ANY_ID
@@ -125,7 +124,6 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
             ", user: " + _user + ", password: " + _password + ", maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
 #endif
-
 
     uri = _mqttURI;
     client_id = _clientid;

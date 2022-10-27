@@ -147,7 +147,6 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 SetRetainFlag = 1;  
         }
 
-
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
             this->clientname = zerlegt[1];
