@@ -105,9 +105,9 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     //                                  maintopic  group                field           User Friendly Name  icon                        unit
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",           "gauge",                    "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "file-question-outline",    "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "file-question-outline",    "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "swap-vertical",            "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "arrow-expand-vertical",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "raw",                      "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "");
     }
