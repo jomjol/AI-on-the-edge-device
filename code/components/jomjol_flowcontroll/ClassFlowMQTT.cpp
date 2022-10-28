@@ -25,7 +25,7 @@ extern const char* libfive_git_branch(void);
 
 std::vector<NumberPost*>* NUMBERS;
 
-void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field, std::string icon, std::string unit) {
+void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field, std::string userFriendlyName, std::string icon, std::string unit) {
     std::string version = std::string(libfive_git_version());
 
     if (version == "") {
@@ -50,6 +50,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     name = field;
     if (group != "") {
         name = group + " " + name;
+        userFriendlyName = group + " " + userFriendlyName;
     }
 
     topic = "homeassistant/sensor/" + maintopic + "-" + topicT + "/config";
@@ -58,7 +59,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     payload = "{" + nl +
         "\"~\": \"" + maintopic + "\"," + nl +
         "\"unique_id\": \"" + maintopic + "-" +topicT + "\"," + nl +
-        "\"name\": \"" + name + "\"," + nl +
+        "\"name\": \"" + userFriendlyName + "\"," + nl +
         "\"icon\": \"mdi:" + icon + "\"," + nl +
         "\"unit_of_meas\": \"" + unit + "\"," + nl;
 
@@ -90,23 +91,24 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics...");
-
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "uptime",   "clock-time-eight-outline", "s");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",       "network-outline",          "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",      "network-outline",          "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname", "network-outline",          "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "freeMem",  "memory",                   "B");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI", "file-question-outline",    "dBm");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",  "thermometer",              "°C");
+    //                              maintopic  group  field        User Friendly Name    icon                        unit
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "uptime",          "Uptime",          "clock-time-eight-outline", "s");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",              "IP",              "network-outline",          "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",             "MAC Address",     "network-outline",          "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname",        "Hostname",        "network-outline",          "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "FreeMem",         "Free Memory",     "memory",                   "B");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI",        "Wi-Fi RSSI",      "wifi",                     "dBm");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",         "CPU Temperature", "thermometer",              "°C");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "gauge",                    "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "alert-circle-outline",     "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "file-question-outline",    "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "file-question-outline",    "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "file-question-outline",    "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "clock-time-eight-outline", "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "code-json",                "");
+    //                                  maintopic  group                field           User Friendly Name  icon                        unit
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",           "gauge",                    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "file-question-outline",    "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "");
     }
 }
 
