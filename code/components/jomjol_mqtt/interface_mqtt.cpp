@@ -49,6 +49,11 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
         }
     }
 
+    if (_content.length() > 80) { // Truncate message if too long
+        _content.resize(80);
+        _content.append("..");
+    }
+
     zw = "MQTT - Published topic: " + _key + ", content: " + _content + " (msg_id=" + std::to_string(msg_id) + ")";
     LogFile.WriteToFile(ESP_LOG_DEBUG, zw);
 
