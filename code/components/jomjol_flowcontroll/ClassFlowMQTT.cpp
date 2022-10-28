@@ -132,7 +132,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "",   "timestamp",     "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "",   "",              "");
 
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",        "code-json",                 "",   "",              ""); // Special binary sensor which is based on error topic
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",         "alert-outline",            "",   "",              ""); // Special binary sensor which is based on error topic
     }
 }
 
