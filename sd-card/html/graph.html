@@ -30,7 +30,58 @@
             <option value="5">Change-Rate</option>
             <option value="6">Change-Absolut</option>
         </select>
-    <div>
+
+  <!-- <button onclick="document.getElementById('editor').hidden = false; this.hidden = true;" >Editor</button> -->
+    <div id='editor' hidden='true'>
+    <textarea id="cnsl">
+datefile = document.getElementById("datafiles").value;
+numbername = document.getElementById("numbers").value;
+datatype = document.getElementById("datatype").value;
+//alert("Auslesen: " + datefile + " " + numbername);
+
+_basepath = getbasepath(); 
+fetch(_basepath + '/fileserver/log/data/' + datefile)
+.then(response => {
+    // handle the response
+    if (response.status == 404) {
+        alert("no log data available for "+dateString);
+    }
+    response.text()
+    .then( result => {
+        var lines = result.split("\n");
+        var trace = {
+        x: [],
+        y: [],
+        type: 'scatter'
+        };
+
+        var timex = 1;
+        for (let line of lines) {
+            {
+                console.log(line);
+                if (line.split("\t")[1] == numbername)
+                {
+                    var value = line.split("\t")[datatype];
+                    var time  = line.split("\t")[0];
+                    console.log("> "+time+" "+value+"\n");
+                    trace.x.push(time);
+//                    timex += 1;
+                    trace.y.push(value);
+                }
+            }
+        }
+        console.log(trace);
+        var data = [trace];
+        Plotly.newPlot('chart', data);
+    });
+}).catch((error) => {
+    // handle the error
+    console.log(error);
+alert("test");
+});        
+</textarea><br />
+<button onclick="run();">run</button>
+</div>
 
 <script>
     function WriteModelFiles()
