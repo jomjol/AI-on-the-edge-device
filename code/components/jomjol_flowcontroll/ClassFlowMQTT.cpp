@@ -65,10 +65,16 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
         "\"icon\": \"mdi:" + icon + "\"," + nl;        
 
     if (group != "") {
-        payload += "\"state_topic\": \"~/" + group + "/" + field + "\"," + nl;
+        if (field == "problem") { // Special binary sensor which is based on error topic
+            payload += "\"state_topic\": \"~/" + group + "/error\"," + nl;
+            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+        }
+        else {
+            payload += "\"state_topic\": \"~/" + group + "/" + field + "\"," + nl;
+        }
     }
     else {
-        payload += "\"state_topic\": \"~/" + field + "\"," + nl;
+            payload += "\"state_topic\": \"~/" + field + "\"," + nl;
     }
 
     if (unit != "") {
@@ -77,9 +83,9 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
     if (deviceClass != "") {
         payload += "\"device_class\": \"" + deviceClass + "\"," + nl;
-        if (deviceClass == "problem") {
+     /*   if (deviceClass == "problem") {
             payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
-        }
+        }*/
     }
 
     if (stateClass != "") {
@@ -119,12 +125,14 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
     //                                  maintopic  group                field           User Friendly Name  icon                        unit   Device Class     State Class
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",           "gauge",                    "",   "",              "total_increasing");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "",   "problem",       "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "",   "",              "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "swap-vertical",            "",   "",              "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "arrow-expand-vertical",    "",   "",              "measurement");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "raw",                      "",   "",              "total_increasing");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "",   "timestamp",     "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "",   "",              "");
+
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",        "code-json",                 "",   "",              ""); // Special binary sensor which is based on error topic
     }
 }
 
