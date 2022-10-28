@@ -33,6 +33,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     }
     
     std::string topic;
+    std::string topicFull;
     std::string topicT;
     std::string payload;
     std::string nl = "\n";
@@ -53,7 +54,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
         userFriendlyName = group + " " + userFriendlyName;
     }
 
-    topic = "homeassistant/sensor/" + maintopic + "-" + topicT + "/config";
+    topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
     payload = "{" + nl +
@@ -86,7 +87,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     "}" + nl +
     "}" + nl;
 
-    MQTTPublish(topic, payload, true);
+    MQTTPublish(topicFull, payload, true);
 }
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
