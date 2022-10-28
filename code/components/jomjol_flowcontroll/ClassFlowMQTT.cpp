@@ -27,7 +27,10 @@ std::vector<NumberPost*>* NUMBERS;
 
 enum TopicType {
     TOPIC_TYPE_NORMAL,
-    TOPIC_TYPE_BINARY
+    TOPIC_TYPE_ERROR,
+    TOPIC_TYPE_SIGNAL_STRENGTH,
+    TOPIC_TYPE_TEMPERATURE,
+    TOPIC_TYPE_TIMESTAMP
 };
 
 void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
@@ -80,8 +83,22 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
         payload += "\"unit_of_meas\": \"" + unit + "\"," + nl;
     }
 
-    if (topicType == TOPIC_TYPE_BINARY) {
-        payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+    if (topicType == TOPIC_TYPE_ERROR) {
+        payload += std::string("") + 
+            "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl + 
+            "\"device_class\": \"problem\"," + nl;
+    }
+    else if (topicType == TOPIC_TYPE_SIGNAL_STRENGTH) {
+        payload += std::string("") + 
+            "\"device_class\": \"signal_strength\"," + nl;
+    }
+    else if (topicType == TOPIC_TYPE_TEMPERATURE) {
+        payload += std::string("") + 
+            "\"device_class\": \"temperature\"," + nl;
+    }
+    else if (topicType == TOPIC_TYPE_TIMESTAMP) {
+        payload += std::string("") + 
+            "\"device_class\": \"timestamp\"," + nl;
     }
 
     payload += 
@@ -107,22 +124,22 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics...");
     //                              maintopic  group  field        User Friendly Name    icon                        unit   Topic Type
     sendHomeAssistantDiscoveryTopic(maintopic, "", "uptime",          "Uptime",          "clock-time-eight-outline", "s",   TOPIC_TYPE_NORMAL);
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",              "IP",              "network-outline",          "-",    TOPIC_TYPE_NORMAL);
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",             "MAC Address",     "network-outline",          "-",    TOPIC_TYPE_NORMAL);
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname",        "Hostname",        "network-outline",          "-",    TOPIC_TYPE_NORMAL);
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",              "IP",              "network-outline",          "-",   TOPIC_TYPE_NORMAL);
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",             "MAC Address",     "network-outline",          "-",   TOPIC_TYPE_NORMAL);
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname",        "Hostname",        "network-outline",          "-",   TOPIC_TYPE_NORMAL);
     sendHomeAssistantDiscoveryTopic(maintopic, "", "FreeMem",         "Free Memory",     "memory",                   "B",   TOPIC_TYPE_NORMAL);
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI",        "Wi-Fi RSSI",      "wifi",                     "dBm", TOPIC_TYPE_NORMAL);
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",         "CPU Temperature", "thermometer",              "°C",  TOPIC_TYPE_NORMAL);
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI",        "Wi-Fi RSSI",      "wifi",                     "dBm", TOPIC_TYPE_SIGNAL_STRENGTH);
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",         "CPU Temperature", "thermometer",              "°C",  TOPIC_TYPE_TEMPERATURE);
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
     //                                  maintopic  group                field           User Friendly Name  icon                        unit  Topic Type
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",           "gauge",                    "",   TOPIC_TYPE_NORMAL);
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "-",   TOPIC_TYPE_BINARY);
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "-",  TOPIC_TYPE_ERROR);
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "swap-vertical",            "",   TOPIC_TYPE_NORMAL);
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "arrow-expand-vertical",    "",   TOPIC_TYPE_NORMAL);
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "raw",                      "",   TOPIC_TYPE_NORMAL);
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "-",   TOPIC_TYPE_NORMAL);
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "-",   TOPIC_TYPE_NORMAL);
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "-",  TOPIC_TYPE_TIMESTAMP);
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "-",  TOPIC_TYPE_NORMAL);
     }
 }
 
