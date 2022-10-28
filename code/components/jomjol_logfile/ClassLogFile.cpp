@@ -120,7 +120,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
     std::string zwtime;
     std::string logline = "";
 
-    if (!doLogFile){
+    if (!doLogFile && level != ESP_LOG_ERROR){ // Only write to file if logfile is enabled or its an error message
         return;
     }
 

@@ -104,13 +104,18 @@ extern "C" void app_main()
 {
   initGPIO();
   Init_NVS_SDCard();
+  esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to ERROR level
+
   UNITY_BEGIN();
   
     RUN_TEST(testNegative);
   
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
-    RUN_TEST(test_doFlow);
+    RUN_TEST(test_doFlowPP);
+    RUN_TEST(test_doFlowPP1);
+    RUN_TEST(test_doFlowPP2);
+    RUN_TEST(test_doFlowPP3);
   
   UNITY_END();
 }
