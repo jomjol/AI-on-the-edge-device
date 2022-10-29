@@ -1233,7 +1233,7 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "Logfile")' unchecked >
-				<label for=Debug_Logfile_enabled><class id="Debug_Logfile_text" style="color:black;">Logfile</class></label>
+				<label for=Debug_Logfile_enabled><class id="Debug_Logfile_text" style="color:black;">Logfile Log Level</class></label>
 			</td>
 			<td>
 				<select id="Debug_Logfile_value1">
@@ -1247,23 +1247,6 @@ textarea {
 				Set the level of the logging to the SD-Card.<br><b>Warning:</b> DEBUG or INFO might damage the SD-Card if enabled longterm due to excessive writes to the SD-Card!
 			</td>
 		</tr> 		
-<!--		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="Debug_LogfileLevel_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileLevel")' unchecked >
-				<label for=Debug_LogfileLevel_enabled><class id="Debug_LogfileLevel_text" style="color:black;">Logfile</class></label>
-			</td>
-			<td>
-				<select id="Debug_LogfileLevel_value1">
-					<option value="ERROR" selected>0</option>
-					<option value="WARNING" >1</option>
-					<option value="INFO" >2</option>
-					<option value="DEBUG" >3</option>
-				</select>
-			</td>
-			<td class="description">
-				Set the log level. 
-			</td>
-		</tr> -->
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked >
