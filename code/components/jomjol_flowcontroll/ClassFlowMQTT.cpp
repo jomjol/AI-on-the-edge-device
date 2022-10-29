@@ -48,11 +48,9 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
         topicT = group + "_" + field;
     }
 
-    /* The name is used as Friendly Name but also to generate the Entity ID! */
     if (group != "") { // Prepend the group to the name
         name = group + " " + name;
     }
-    name = maintopic + " " + name; // Prepend device name to make the entities unique
 
     topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
 
@@ -60,6 +58,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     payload = "{" + nl +
         "\"~\": \"" + maintopic + "\"," + nl +
         "\"unique_id\": \"" + maintopic + "-" + topicT + "\"," + nl +
+        "\"object_id\": \"" + maintopic + "_" + topicT + "\"," + nl + // This used to generate the Entity ID
         "\"name\": \"" + name + "\"," + nl +
         "\"icon\": \"mdi:" + icon + "\"," + nl;        
 
