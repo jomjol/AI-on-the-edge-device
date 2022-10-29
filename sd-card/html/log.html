@@ -79,6 +79,9 @@
                 logArr.forEach(processLogLine);
 
                 document.getElementById('log').innerHTML = logArr.join("\n");
+
+                window.scrollBy(0,document.body.scrollHeight);
+
             })
             .catch((err) => {
                 document.getElementById("log").innerHTML = err;
