@@ -187,6 +187,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
      ParamAddValue(param, catname, "SetRetainFlag");
+     ParamAddValue(param, catname, "HomeassistantDiscovery");
 
      var catname = "InfluxDB";
      category[catname] = new Object(); 

@@ -24,6 +24,7 @@ extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
 
 std::vector<NumberPost*>* NUMBERS;
+bool HomeassistantDiscovery = false;
 
 void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
     std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass) {
@@ -151,7 +152,9 @@ void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
 }
 
 void GotConnected(std::string maintopic, int SetRetainFlag) {
-    MQTThomeassistantDiscovery(maintopic);
+    if (HomeassistantDiscovery) {
+        MQTThomeassistantDiscovery(maintopic);
+    }
 
     MQTTPublish(maintopic + "/" + "MAC", getMac(), SetRetainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), SetRetainFlag);
@@ -180,7 +183,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     flowpostprocessing = NULL;  
     user = "";
     password = ""; 
-    SetRetainFlag = 0;  
+    SetRetainFlag = 0;
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
@@ -267,6 +270,11 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 SetRetainFlag = 1;  
+        }
+        if ((toUpper(zerlegt[0]) == "HOMEASSISTANTDISCOVERY") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                HomeassistantDiscovery = true;  
         }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
