@@ -26,7 +26,7 @@ extern const char* libfive_git_branch(void);
 std::vector<NumberPost*>* NUMBERS;
 
 void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
-    std::string userFriendlyName, std::string icon, std::string unit, std::string deviceClass, std::string stateClass) {
+    std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass) {
     std::string version = std::string(libfive_git_version());
 
     if (version == "") {
@@ -38,30 +38,29 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     std::string topicT;
     std::string payload;
     std::string nl = "\n";
-    std::string name;
 
-    if (group != "") {
-        topic = group + "/" + field;
-        topicT = group + "_" + field;
-    }
-    else {
+    if (group == "") {
         topic =  field;
         topicT = field;
     }
-
-    name = field;
-    if (group != "") {
-        name = group + " " + name;
-        userFriendlyName = group + " " + userFriendlyName;
+    else {
+        topic = group + "/" + field;
+        topicT = group + "_" + field;
     }
+
+    /* The name is used as Friendly Name but also to generate the Entity ID! */
+    if (group != "") { // Prepend the group to the name
+        name = group + " " + name;
+    }
+    name = maintopic + " " + name; // Prepend device name to make the entities unique
 
     topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
     payload = "{" + nl +
         "\"~\": \"" + maintopic + "\"," + nl +
-        "\"unique_id\": \"" + maintopic + "-" +topicT + "\"," + nl +
-        "\"name\": \"" + userFriendlyName + "\"," + nl +
+        "\"unique_id\": \"" + maintopic + "-" + topicT + "\"," + nl +
+        "\"name\": \"" + name + "\"," + nl +
         "\"icon\": \"mdi:" + icon + "\"," + nl;        
 
     if (group != "") {
