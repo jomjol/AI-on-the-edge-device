@@ -1,7 +1,5 @@
 <html>
     <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  
         <style>
             html,
             body {
@@ -36,20 +34,28 @@
     <body>
         <div class="box">
             <div class="row header">
-                <button onClick="window.location.reload();">Reload</button>
+                <button onClick="reload();">Reload</button>
                 <button onClick="window.open('logfileact');">Show full log</button>
                 <button onClick="window.location.href = 'fileserver/log/message/'">Show older log files</button>
             </div>
-            <div class="row content" id="log"><br><br><br>Loading Logfile, please wait...</div>
+            <div class="row content" id="log"><br><br><br><b>Loading Logfile, please wait...</b></div>
             <div class="row footer">
-                <button onClick="window.location.reload();">Reload</button>
+                <button onClick="reload();">Reload</button>
                 <button onClick="window.open('logfileact');">Show full log</button>
                 <button onClick="window.location.href = 'fileserver/log/message/'">Show older log files</button>
             </div>
           </div>
     </body>
 
-    <script>   
+    <script>  
+        function reload() {
+          //  document.getElementById('log').innerHTML += "<br><b>Reloading...<b><br><br>";
+            document.getElementById('log').innerHTML += "<b>Reloading...</b>";
+            window.scrollBy(0,document.body.scrollHeight);
+            funcRequest('log');
+        } 
+
+
         function processLogLine(line, index, arr) {
             if (line.includes("&lt;WRN&gt;")) {
                 arr[index] = "<span style=\"color:#e83c00\">" + line + "</span>";
@@ -78,7 +84,7 @@
                 logArr = log.split("\n");
                 logArr.forEach(processLogLine);
 
-                document.getElementById('log').innerHTML = logArr.join("\n");
+                document.getElementById('log').innerHTML = "<br>" + logArr.join("\n") + "&nbsp;";
 
                 window.scrollBy(0,document.body.scrollHeight);
 
