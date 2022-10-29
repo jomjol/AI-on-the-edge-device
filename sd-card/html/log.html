@@ -49,17 +49,36 @@
           </div>
     </body>
 
-    <script>        
+    <script>   
+        function processLogLine(line, index, arr) {
+            if (line.includes("&lt;WRN&gt;")) {
+                arr[index] = "<span style=\"color:#e83c00\">" + line + "</span>";
+            }
+            else if (line.includes("&lt;ERR&gt;")) {
+                arr[index] = "<span style=\"color:red\"><b>" + line + "</b></span>";
+            }
+            else if (line.includes("&lt;DBG&gt;")) {
+                arr[index] = "<span style=\"color:gray\">" + line + "</span>";
+            }
+            
+            arr[index] += "<br>";
+        }
+
         async function funcRequest(url){
             await fetch(url)
             .then((res) => {
                 if (!res.ok) {
                     document.getElementById("log").innerHTML = "HTTP error " + res.status;
                 }
+
                 return res.text();
             })
-            .then((data) => {
-                document.getElementById("log").innerHTML = data.replace(/[\r\n]/gm, '<br>\n');
+            .then((log) => {
+                log = log.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                logArr = log.split("\n");
+                logArr.forEach(processLogLine);
+
+                document.getElementById('log').innerHTML = logArr.join("\n");
             })
             .catch((err) => {
                 document.getElementById("log").innerHTML = err;
