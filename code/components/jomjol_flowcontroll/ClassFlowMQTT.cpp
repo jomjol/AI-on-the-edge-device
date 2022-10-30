@@ -133,15 +133,15 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     // The IP config topic not published as it is already provided through the configuration_url    -   sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-    //                                  Maintopic | Group             | Field          | User Friendly Name | Icon                     | Unit      | Device Class | State Class         | Entity Category
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",            "gauge",                    valueUnit, meterType,     "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",        "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",            "alert-circle-outline",     "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",             "swap-vertical",            rateUnit,  "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change",  "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",        "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",             "code-json",                "",        "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",          "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
+    //                                  Maintopic | Group             | Field          | User Friendly Name           | Icon                     | Unit      | Device Class | State Class         | Entity Category
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",                      "gauge",                    valueUnit, meterType,     "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",                  "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",                      "alert-circle-outline",     "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",                       "swap-vertical",            rateUnit,  "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",                       "code-json",                "",        "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
