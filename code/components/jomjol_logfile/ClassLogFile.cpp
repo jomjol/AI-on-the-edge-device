@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <algorithm>
 
 #ifdef __cplusplus
 extern "C" {
@@ -206,6 +207,8 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _ti
     strftime(buffer, 30, logfile.c_str(), timeinfo);
     std::string logpath = logroot + "/" + buffer; 
     
+    std::replace(info.begin(), info.end(), '\n', ' '); // Replace all newline characters
+
     WriteToDedicatedFile(logpath, level, info, _time);
     ESP_LOG_LEVEL(level, TAG, "%s", info.c_str());
 }

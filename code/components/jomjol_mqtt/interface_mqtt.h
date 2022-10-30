@@ -5,8 +5,11 @@
 #include <map>
 #include <functional>
 
-bool MQTTInit(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password, std::string _LWTContext, int _keepalive);
-void MQTTdestroy();
+void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
+        std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
+        int _keepalive, int SetRetainFlag, void *callbackOnConnected);
+bool MQTT_Init();
+void MQTTdestroy_client();
 
 bool MQTTPublish(std::string _key, std::string _content, int retained_flag = 1);            // retained Flag as Standart
 

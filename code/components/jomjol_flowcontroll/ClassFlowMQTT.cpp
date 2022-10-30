@@ -2,17 +2,168 @@
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 #include "connect_wlan.h"
+#include "ClassLogFile.h"
 
 #include "time_sntp.h"
 #include "interface_mqtt.h"
 #include "ClassFlowPostProcessing.h"
-#include "ClassLogFile.h"
+#include "ClassFlowControll.h"
 
 #include <time.h>
 
 #define __HIDE_PASSWORD
 
 static const char *TAG = "class_flow_MQTT";
+
+#define LWT_TOPIC        "connection"
+#define LWT_CONNECTED    "connected"
+#define LWT_DISCONNECTED "connection lost"
+
+extern const char* libfive_git_version(void);
+extern const char* libfive_git_revision(void);
+extern const char* libfive_git_branch(void);
+
+std::vector<NumberPost*>* NUMBERS;
+bool HomeassistantDiscovery = false;
+
+void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
+    std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass) {
+    std::string version = std::string(libfive_git_version());
+
+    if (version == "") {
+        version = std::string(libfive_git_branch()) + " (" + std::string(libfive_git_revision()) + ")";
+    }
+    
+    std::string topic;
+    std::string topicFull;
+    std::string topicT;
+    std::string payload;
+    std::string nl = "\n";
+
+    if (group == "") {
+        topic =  field;
+        topicT = field;
+    }
+    else {
+        topic = group + "/" + field;
+        topicT = group + "_" + field;
+    }
+
+    if (group != "") { // Prepend the group to the name
+        name = group + " " + name;
+    }
+
+    topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
+
+    /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
+    payload = "{" + nl +
+        "\"~\": \"" + maintopic + "\"," + nl +
+        "\"unique_id\": \"" + maintopic + "-" + topicT + "\"," + nl +
+        "\"object_id\": \"" + maintopic + "_" + topicT + "\"," + nl + // This used to generate the Entity ID
+        "\"name\": \"" + name + "\"," + nl +
+        "\"icon\": \"mdi:" + icon + "\"," + nl;        
+
+    if (group != "") {
+        if (field == "problem") { // Special binary sensor which is based on error topic
+            payload += "\"state_topic\": \"~/" + group + "/error\"," + nl;
+            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+        }
+        else {
+            payload += "\"state_topic\": \"~/" + group + "/" + field + "\"," + nl;
+        }
+    }
+    else {
+            payload += "\"state_topic\": \"~/" + field + "\"," + nl;
+    }
+
+    if (unit != "") {
+        payload += "\"unit_of_meas\": \"" + unit + "\"," + nl;
+    }
+
+    if (deviceClass != "") {
+        payload += "\"device_class\": \"" + deviceClass + "\"," + nl;
+     /*   if (deviceClass == "problem") {
+            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+        }*/
+    }
+
+    if (stateClass != "") {
+        payload += "\"state_class\": \"" + stateClass + "\"," + nl;
+    } 
+
+    payload += 
+        "\"availability_topic\": \"~/" + std::string(LWT_TOPIC) + "\"," + nl +
+        "\"payload_available\": \"" + LWT_CONNECTED + "\"," + nl +
+        "\"payload_not_available\": \"" + LWT_DISCONNECTED + "\"," + nl;
+
+    payload +=
+    "\"device\": {" + nl +
+        "\"identifiers\": [\"" + maintopic + "\"]," + nl +
+        "\"name\": \"" + maintopic + "\"," + nl +
+        "\"model\": \"Meter Digitizer\"," + nl +
+        "\"manufacturer\": \"AI on the Edge Device\"," + nl +
+      "\"sw_version\": \"" + version + "\"," + nl +
+      "\"configuration_url\": \"http://" + *getIPAddress() + "\"" + nl +
+    "}" + nl +
+    "}" + nl;
+
+    MQTTPublish(topicFull, payload, true);
+}
+
+void MQTThomeassistantDiscovery(std::string maintopic) {
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics...");
+    //                              maintopic  group  field        User Friendly Name    icon                        unit   Device Class     State Class
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "uptime",          "Uptime",          "clock-time-eight-outline", "s",   "",                "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",              "IP",              "network-outline",          "",    "",                "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",             "MAC Address",     "network-outline",          "",    "",                "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname",        "Hostname",        "network-outline",          "",    "",                "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "freeMem",         "Free Memory",     "memory",                   "B",   "",                "measurement");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI",        "Wi-Fi RSSI",      "wifi",                     "dBm", "signal_strength", "");
+    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",         "CPU Temperature", "thermometer",              "°C",  "temperature",     "measurement");
+
+    for (int i = 0; i < (*NUMBERS).size(); ++i) {
+    //                                  maintopic  group                field           User Friendly Name  icon                        unit   Device Class     State Class
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",           "gauge",                    "",   "",              "total_increasing");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "",   "",              "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "swap-vertical",            "",   "",              "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "arrow-expand-vertical",    "",   "",              "measurement");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "raw",                      "",   "",              "total_increasing");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "",   "timestamp",     "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "",   "",              "");
+
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",         "alert-outline",            "",   "",              ""); // Special binary sensor which is based on error topic
+    }
+}
+
+void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
+    char tmp_char[50];
+
+    sprintf(tmp_char, "%ld", (long)getUpTime());
+    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
+    
+    sprintf(tmp_char, "%zu", esp_get_free_heap_size());
+    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), SetRetainFlag);
+
+    sprintf(tmp_char, "%d", get_WIFI_RSSI());
+    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), SetRetainFlag);
+
+    sprintf(tmp_char, "%d", (int)temperatureRead());
+    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), SetRetainFlag);
+}
+
+void GotConnected(std::string maintopic, int SetRetainFlag) {
+    if (HomeassistantDiscovery) {
+        MQTThomeassistantDiscovery(maintopic);
+    }
+
+    MQTTPublish(maintopic + "/" + "MAC", getMac(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
+
+    publishRuntimeData(maintopic, SetRetainFlag);
+}
+
+
 
 void ClassFlowMQTT::SetInitialParameter(void)
 {
@@ -21,22 +172,22 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicError = "";
     topicRate = "";
     topicTimeStamp = "";
-    maintopic = "";
-    mainerrortopic = ""; 
+    maintopic = hostname;
 
     topicUptime = "";
     topicFreeMem = "";
-    clientname = "watermeter";
+
+    clientname = "AIOTED-" + getMac();
+
     OldValue = "";
     flowpostprocessing = NULL;  
     user = "";
     password = ""; 
-    SetRetainFlag = 0;  
+    SetRetainFlag = 0;
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
-    MQTTenable = false;
-    keepAlive = 600; // TODO This must be greater than the Flow Interval!
+    keepAlive = 25*60;
 }       
 
 ClassFlowMQTT::ClassFlowMQTT()
@@ -51,11 +202,23 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
     ListFlowControll = lfc;
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
+      //  ESP_LOGW(TAG, "LCF: %s", ((*ListFlowControll)[i])->name().c_str());
+
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
         }
+
+// TODO this does not work since ClassFlowControll is not in the list!
+      /*  if (((*ListFlowControll)[i])->name().compare("ClassFlowControll") == 0)
+        {
+            ClassFlowControll *cfc = (ClassFlowControll*) (*ListFlowControll)[i];
+            this->keepAlive = cfc->getAutoInterval()* 2.5; // Allow at least than 2 failed rounds before we are threated as disconnected
+            ESP_LOGW(TAG, "KEEPALIVE: %d", this->keepAlive);       
+        }*/
     }
+
+    NUMBERS = flowpostprocessing->GetNumbers();
 }
 
 ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
@@ -108,7 +271,11 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 SetRetainFlag = 1;  
         }
-
+        if ((toUpper(zerlegt[0]) == "HOMEASSISTANTDISCOVERY") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+                HomeassistantDiscovery = true;  
+        }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
@@ -121,65 +288,13 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-#ifdef __HIDE_PASSWORD
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: XXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
-#else
-    ESP_LOGD(TAG, "Init Read with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
-#endif
+    MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED, LWT_DISCONNECTED, keepAlive, SetRetainFlag, (void *)&GotConnected);
 
-    if (!MQTTisConnected() && (uri.length() > 0) && (maintopic.length() > 0)) 
-    { 
-        ESP_LOGD(TAG, "InitMQTTInit");
-        mainerrortopic = maintopic + "/connection";
-#ifdef __HIDE_PASSWORD
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: XXXXXXXX, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), mainerrortopic.c_str());
-#else
-        ESP_LOGD(TAG, "Init MQTT with uri: %s, clientname: %s, user: %s, password: %s, maintopic: %s", uri.c_str(), clientname.c_str(), user.c_str(), password.c_str(), mainerrortopic.c_str());
-#endif
-        if (!MQTTInit(uri, clientname, user, password, mainerrortopic, keepAlive))
-        { // Failed
-            MQTTenable = false;
-            return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
+    if (!MQTT_Init()) {
+        if (!MQTT_Init()) { // Retry
+            return false;
         }
     }
-
-    // Try sending mainerrortopic. If it fails, re-run init
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-    { // Failed
-        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
-        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
-        { // Failed
-            MQTTenable = false;
-            return false;
-        } 
-    }
-
-    // Try again and quit if it fails
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-    { // Failed
-        MQTTenable = false;
-        return false;
-    }
-
-
-
-   
- /*   if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-    { // Failed
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish connection status!");
-        MQTTenable = false;
-        return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-    }*/
-
- /*   if(!MQTTPublish(_LWTContext, "", 1))
-    {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "MQTT - Could not publish LWT!");
-        MQTTenable = false;
-        return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-    }*/
-
-
-    MQTTenable = true;
     return true;
 }
 
@@ -192,24 +307,6 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
-    // Try sending mainerrortopic. If it fails, re-run init
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-    { // Failed
-        LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Re-running init...!");
-        if (!MQTTInit(this->uri, this->clientname, this->user, this->password, this->mainerrortopic, keepAlive))
-        { // Failed
-            MQTTenable = false;
-            return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-        } 
-    }
-
-    // Try again and quit if it fails
-    if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-    { // Failed
-        MQTTenable = false;
-        return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-    }
-
     std::string result;
     std::string resulterror = "";
     std::string resultraw = "";
@@ -219,32 +316,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    // if (!MQTTPublish(mainerrortopic, "connected", SetRetainFlag))
-    //{ // Failed, skip other topics
-    //    return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-    //}
-    
-    zw = maintopic + "/" + "uptime";
-    char uptimeStr[11];
-    sprintf(uptimeStr, "%ld", (long)getUpTime());
-    MQTTPublish(zw, uptimeStr, SetRetainFlag);
-
-    zw = maintopic + "/" + "freeMem";
-    char freeheapmem[11];
-    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
-    if (!MQTTPublish(zw, freeheapmem, SetRetainFlag))
-    { // Failed, skip other topics
-        return true; // We need to return true despite we failed, else it will retry 5x and then reboot!
-    }
-
-    zw = maintopic + "/" + "wifiRSSI";
-    char rssi[11];
-    sprintf(rssi, "%d", get_WIFI_RSSI());
-    MQTTPublish(zw, rssi, SetRetainFlag);
-
-    zw = maintopic + "/" + "CPUtemp";
-    std::string cputemp = std::to_string(temperatureRead());
-    MQTTPublish(zw, cputemp, SetRetainFlag);
+    publishRuntimeData(maintopic, SetRetainFlag);
 
     if (flowpostprocessing)
     {
@@ -265,29 +337,23 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-            zw = namenumber + "value"; 
             if (result.length() > 0)   
-                MQTTPublish(zw, result, SetRetainFlag);
+                MQTTPublish(namenumber + "value", result, SetRetainFlag);
 
-            zw = namenumber + "error"; 
             if (resulterror.length() > 0)  
-                MQTTPublish(zw, resulterror, SetRetainFlag);
+                MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
 
-            zw = namenumber + "rate"; 
             if (resultrate.length() > 0)   
-                MQTTPublish(zw, resultrate, SetRetainFlag);
+                MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
 
-            zw = namenumber + "changeabsolut"; 
             if (resultchangabs.length() > 0)   
-                MQTTPublish(zw, resultchangabs, SetRetainFlag);
+                MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag);
 
-            zw = namenumber + "raw"; 
             if (resultraw.length() > 0)   
-                MQTTPublish(zw, resultraw, SetRetainFlag);
+                MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
 
-            zw = namenumber + "timestamp";
             if (resulttimestamp.length() > 0)
-                MQTTPublish(zw, resulttimestamp, SetRetainFlag);
+                MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
 
             std::string json = "";
@@ -305,8 +371,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 json += "\",\"rate\":\"\"";
             json += ",\"timestamp\":\""+resulttimestamp+"\"}";
 
-            zw = namenumber + "json";
-            MQTTPublish(zw, json, SetRetainFlag);
+            MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
     else

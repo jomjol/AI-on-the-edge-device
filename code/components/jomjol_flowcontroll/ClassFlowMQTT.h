@@ -14,10 +14,9 @@ protected:
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
     int SetRetainFlag;
-    bool MQTTenable;
     int keepAlive;
 
-    std::string maintopic, mainerrortopic; 
+    std::string maintopic; 
 	void SetInitialParameter(void);        
 
 public:
