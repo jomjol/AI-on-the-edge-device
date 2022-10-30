@@ -82,7 +82,7 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / .)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Rename firmware file to contain versioning (old ota)
       run: |
@@ -133,7 +133,7 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / .)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Prepare update.zip artifact
       run: |
@@ -202,7 +202,7 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / .)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Prepare artifacts for release
       run: |
