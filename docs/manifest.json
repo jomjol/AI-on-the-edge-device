@@ -1,0 +1,25 @@
+{
+  "name": "AI-on-the-edge",
+  "version": "12.0.1",
+  "funding_url": "https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "docs/releases/download/v11.2.0/bootloader.bin",
+          "offset": 4096
+        },
+        {
+          "path": "docs/releases/download/v11.2.0/partitions.bin",
+          "offset": 32768
+        },
+        {
+          "path": "docs/releases/download/v12.0.1/firmware.bin",
+          "offset": 65536
+        }
+      ]
+    }
+  ]
+}
