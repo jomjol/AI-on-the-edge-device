@@ -29,6 +29,8 @@ extern "C" {
 
 static const char* TAG = "flow_controll";
 
+float AutoIntervalShared = 10;
+
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
@@ -153,11 +155,6 @@ bool ClassFlowControll::isAutoStart(long &_intervall)
 {
     _intervall = AutoIntervall * 60 * 1000; // AutoIntervall: Minuten -> ms
     return AutoStart;
-}
-
-int ClassFlowControll::getAutoInterval()
-{
-    return AutoIntervall * 60; // AutoIntervall: Minuten -> seconds
 }
 
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
@@ -515,6 +512,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             LogFile.setLogLevel((esp_log_level_t)(stoi(zerlegt[1]))); // Gets mapped to esp_log_level_t
         }      
     }
+
+    AutoIntervalShared = AutoIntervall;
     return true;
 }
 

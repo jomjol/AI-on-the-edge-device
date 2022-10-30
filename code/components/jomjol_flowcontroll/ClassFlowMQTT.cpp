@@ -23,6 +23,8 @@ extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
 
+extern float AutoIntervalShared;
+
 std::vector<NumberPost*>* NUMBERS;
 bool HomeassistantDiscovery = false;
 
@@ -163,8 +165,6 @@ void GotConnected(std::string maintopic, int SetRetainFlag) {
     publishRuntimeData(maintopic, SetRetainFlag);
 }
 
-
-
 void ClassFlowMQTT::SetInitialParameter(void)
 {
     uri = "";
@@ -202,23 +202,17 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
     ListFlowControll = lfc;
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
-      //  ESP_LOGW(TAG, "LCF: %s", ((*ListFlowControll)[i])->name().c_str());
-
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
         }
-
-// TODO this does not work since ClassFlowControll is not in the list!
-      /*  if (((*ListFlowControll)[i])->name().compare("ClassFlowControll") == 0)
-        {
-            ClassFlowControll *cfc = (ClassFlowControll*) (*ListFlowControll)[i];
-            this->keepAlive = cfc->getAutoInterval()* 2.5; // Allow at least than 2 failed rounds before we are threated as disconnected
-            ESP_LOGW(TAG, "KEEPALIVE: %d", this->keepAlive);       
-        }*/
     }
 
     NUMBERS = flowpostprocessing->GetNumbers();
+    keepAlive = AutoIntervalShared * 60 * 2.5; // TODO find better way to access AutoIntervall in ClassFlowControll
+
+    LogFile.WriteToFile(ESP_LOG_INFO, "Digitizer interval is " + std::to_string(AutoIntervalShared) + 
+            " minutes => setting MQTT LWT timeout to " + std::to_string(keepAlive/60) + " minutes.");
 }
 
 ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
