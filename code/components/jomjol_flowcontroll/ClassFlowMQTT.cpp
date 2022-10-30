@@ -120,7 +120,6 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 }
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
-    std::string device_class;
     
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ")...");
 
@@ -131,26 +130,18 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "freeMem",  "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifiRSSI", "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPUtemp",  "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
-        // The IP config topic not published as it is already provided through the configuration_url    -   sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "");
-
-    /* Use predefined device classes, see https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes */
-    if ((meterType == "water") || (meterType == "gas") || (meterType == "energy")) {
-        device_class = meterType;
-    }
-    else {
-        device_class = "";
-    }
+    // The IP config topic not published as it is already provided through the configuration_url    -   sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-    //                                  Maintopic | Group             | Field          | User Friendly Name | Icon                     | Unit | Device Class | State Class         | Entity Category
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",            "gauge",                    "",   device_class,  "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",            "alert-circle-outline",     "",   "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",             "swap-vertical",            "",   "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change",  "arrow-expand-vertical",    "",   "",            "measurement",      "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",        "raw",                      "",   "",            "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",        "clock-time-eight-outline", "",   "timestamp",   "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",             "code-json",                "",   "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",          "alert-outline",            "",   "",            "",                 ""); // Special binary sensor which is based on error topic
+    //                                  Maintopic | Group             | Field          | User Friendly Name | Icon                     | Unit      | Device Class | State Class         | Entity Category
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",            "gauge",                    valueUnit, meterType,     "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",        "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",            "alert-circle-outline",     "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",             "swap-vertical",            rateUnit,  "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change",  "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",        "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",             "code-json",                "",        "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",          "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
@@ -288,6 +279,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 HomeassistantDiscovery = true;  
         }
         if ((toUpper(zerlegt[0]) == "METERTYPE") && (zerlegt.size() > 1))
+        /* Use meter type for the device class 
+           Make sure it is a listed one on https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes */
         {
             if (toUpper(zerlegt[1]) == "WATER_M3") {
                 meterType = "water";
