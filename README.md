@@ -48,6 +48,15 @@ The latest available version is available on the [Releases page](https://github.
 
 Initially you will have to flash it through an USB connection. Later an update is possible directly over the Air (OTA).
 
+
+
+## Web Installer
+
+There is a Web Installer available, that will work right out of the web browser Edge and Chrome
+You can access it with the following link: https://jomjol.github.io/AI-on-the-edge-device/index.html
+
+
+
 ## Casing
 
 A 3d-printable housing can be found here:
