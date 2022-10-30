@@ -9,45 +9,7 @@
         padding-left: 60px;
         padding-right: 60px;
    ">
-      <h1 id="welcome-to-the-ai-on-the-edge-device">Welcome to the AI-on-the-edge-device</h1>
-      <p>Artificial intelligence based systems have been established in our every days live. Just think of speech or image recognition. Most of the systems relay on either powerful processors or a direct connection to the cloud for doing the calculations up there. With the increasing power of modern processors the AI systems are coming closer to the end user - which is usually called <strong>edge computing</strong>.
-         Here this edge computing is brought into a practical oriented example, where a AI network is implemented on a ESP32 device so: <strong>AI on the edge</strong>.
-      </p>
-      <p>This projects allows you to digitalize your <strong>analoge</strong> water, gas, power and other meters using cheap and easily available hardware.</p>
-      <p>All you need is an <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Hardware-Compatibility">ESP32 board with a supported camera</a> and a bit of a practical hand.</p>
-      <p><img src="images/esp32-cam.png" width="200"></p>
-      <h2 id="key-features">Key features</h2>
-      <ul>
-         <li><strong>Small</strong> and <strong>cheap</strong> device (3x4.5x2 cm³, &lt; 10 EUR)</li>
-         <li>camera and illumination integrated</li>
-         <li>Web surface for administration and control</li>
-         <li>OTA-Interface to update directly through the web interface</li>
-         <li>API for easy integration</li>
-         <li>Inline Image processing (feature detection, alignment, ROI extraction)</li>
-         <li>Tensorflow Lite (TFlite) integration - including easy to use wrapper</li>
-      </ul>
-      <h2 id="workflow">Workflow</h2>
-      <p>The device takes a photo of your meter at a defined interval. It then extracts the Regions of Interest (ROI&#39;s) out of it and runs them through an artificial inteligence. As a result, you get the digitalized value of your meter.</p>
-      <p>There are several options what to do with that value. Either send it to a MQTT broker, write it to an InfluxDb or simply provide it throug a REST API.</p>
-      <p><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/idea.jpg" width="600"> </p>
-      <h2 id="impressions">Impressions</h2>
-      <h3 id="ai-on-the-edge-device-on-a-water-meter">AI-on-the-edge-device on a Water Meter</h3>
-      <p><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> </p>
-      <h3 id="web-interface-water-meter-">Web Interface (Water Meter)</h3>
-      <p><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> </p>
-      <h3 id="ai-on-the-edge-device-on-a-electrical-power-meter">AI-on-the-edge-device on a Electrical Power Meter</h3>
-      <p><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> </p>
-      <h2 id="setup">Setup</h2>
-      <p>There is a growing <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki">wiki</a> which provides you with a lot of information.
-         Head there to get a start, set it up and configure it.
-      </p>
-      <p>There are also a articles in the German Heise magazine &quot;make:&quot; about the setup and the technical background (behind a paywall) : <a href="https://www.heise.de/select/make/2021/2/2103513300897420296">DIY - Setup</a></p>
-      <p>For further background information, head to <a href="https://www.heise.de/select/make/2021/6/2126410443385102621">Neural Networks</a>, <a href="https://www.heise.de/select/make/2022/1/2134114065999161585">Training Neural Networks</a> and <a href="https://www.heise.de/select/make/2022/2/2204010051597422030">Programming on the ESP32</a> </p>
-     
-      <h2 id="download">Download</h2>
-      <p>The latest available version is available on the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases">Releases page</a>.</p>
-      <p>Initially you will have to flash it through an USB connection. Later an update is possible directly over the Air (OTA).<br><br>... or use the </p>
-      
+      <h1 id="welcome-to-the-ai-on-the-edge-device">Welcome to the AI-on-the-edge-device Web Installer</h1>
       <h2 id="install">Webinstaller and Console</h2>
       <p>
         <esp-web-install-button
@@ -56,40 +18,6 @@
       </p>
       <p style="font-size: small;">(AI-on-the-edge-device Installer powered by ESP Web Tools)</p>
       
-      
-      <h2 id="casing">Casing</h2>
-      <p>A 3d-printable housing can be found here:</p>
-      <ul>
-         <li><a href="https://www.thingiverse.com/thing:4573481">https://www.thingiverse.com/thing:4573481</a> (Water Meter)</li>
-         <li><a href="https://www.thingiverse.com/thing:5028229">https://www.thingiverse.com/thing:5028229</a> (Power Meter)</li>
-         <li><a href="https://www.thingiverse.com/thing:4571627">https://www.thingiverse.com/thing:4571627</a> (ESP32-Cam housing only)</li>
-      </ul>
-      <h2 id="build-it-yourself">Build it yourself</h2>
-      <p>See <a href="code/README.md">Build Instructions</a>.</p>
-      <h2 id="donate">Donate</h2>
-      <p>If you would like to support the developer with a cup of coffee you can do that via <a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL">Paypal</a>.</p>
-      <p>
-      <form action="https://www.paypal.com/donate" method="post" target="_top">
-         </p>
-         <p><input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" /></p>
-         <p><input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-            <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
-      </form>
-      If you have any technical topics, you can create an <a href="https://github.com/jomjol/AI-on-the-edge-device/issues">Issue</a>. </p>
-      <p>In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25"> </p>
-      <h2 id="changes-and-history">Changes and History</h2>
-      <p>See <a href="Changelog.md">Changelog</a></p>
-      <h2 id="tools">Tools</h2>
-      <ul>
-         <li>
-            Logfile downloader and combiner (Thx to <a href="https://github.com/reserve85">reserve85</a>)
-            <ul>
-               <li>Files see <a href="tbd">&#39;/tools/logfile-tool&#39;</a>, How-to see <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader">wiki</a></li>
-            </ul>
-         </li>
-      </ul>
-      <h2 id="additional-ideas">Additional Ideas</h2>
-      <p>There are some ideas and feature requests which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: <a href="FeatureRequest.md">FeatureRequest.md</a></p>
-     
+           
    </body>
 </html>
