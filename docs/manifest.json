@@ -8,15 +8,15 @@
       "chipFamily": "ESP32",
       "parts": [
         {
-          "path": "docs/releases/download/v11.2.0/bootloader.bin",
+          "path": "releases/download/v11.2.0/bootloader.bin",
           "offset": 4096
         },
         {
-          "path": "docs/releases/download/v11.2.0/partitions.bin",
+          "path": "releases/download/v11.2.0/partitions.bin",
           "offset": 32768
         },
         {
-          "path": "docs/releases/download/v12.0.1/firmware.bin",
+          "path": "releases/download/v12.0.1/firmware.bin",
           "offset": 65536
         }
       ]
