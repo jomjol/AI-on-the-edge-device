@@ -327,11 +327,6 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 valueUnit = "MWh";
                 rateUnit = "MW";
             }
-            else { // Other
-                meterType = "";
-                valueUnit = "";
-                rateUnit = "";
-            }
         }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
