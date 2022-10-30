@@ -63,6 +63,7 @@ public:
 	std::string doSingleStep(std::string _stepname, std::string _host);
 
 	bool isAutoStart(long &_intervall);
+	int getAutoInterval();
 
 	std::string* getActStatus();
 

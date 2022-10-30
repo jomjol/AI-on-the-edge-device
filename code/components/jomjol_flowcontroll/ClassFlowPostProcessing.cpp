@@ -943,32 +943,6 @@ string ClassFlowPostProcessing::getReadoutParam(bool _rawValue, bool _noerror, i
     return NUMBERS[_number]->ReturnValue;
 }
 
-/*  Jetzt als globale Funktion in Helper.h
-
-string ClassFlowPostProcessing::RundeOutput(double _in, int _anzNachkomma){
-    std::stringstream stream;
-    int _zw = _in;    
-//    ESP_LOGD(TAG, "AnzNachkomma: %d", _anzNachkomma);
-
-    if (_anzNachkomma < 0) {
-        _anzNachkomma = 0;
-    }
-
-    if (_anzNachkomma > 0)
-    {
-        stream << std::fixed << std::setprecision(_anzNachkomma) << _in;
-        return stream.str();          
-    }
-    else
-    {
-        stream << _zw;
-    }
-
-
-    return stream.str();  
-}
-*/
-
 
 string ClassFlowPostProcessing::ErsetzteN(string input, double _prevalue)
 {

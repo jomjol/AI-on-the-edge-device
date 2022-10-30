@@ -625,7 +625,23 @@ textarea {
 				Enable or disable the retain flag for all MQTT entries
 			</td>
 		</tr>
-                                 
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_HomeassistantDiscovery_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "HomeassistantDiscovery")' unchecked >
+				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Enable Homeassistant Discovery</class></label>
+			</td>
+			<td>
+				<select id="MQTT_HomeassistantDiscovery_value1">
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable or disable the <a href=https://www.home-assistant.io/docs/mqtt/discovery/ target=_blank>Homeassistand Discovery</a>
+			</td>
+		</tr>
+
+		
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 			    <h4>
@@ -1715,6 +1731,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
 	WriteParameter(param, category, "MQTT", "SetRetainFlag", true);
+	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", true);
 	
 	WriteParameter(param, category, "InfluxDB", "Uri", true);	
 	WriteParameter(param, category, "InfluxDB", "Database", true);	
@@ -1831,6 +1848,7 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
 	ReadParameter(param, "MQTT", "SetRetainFlag", true);	
+	ReadParameter(param, "MQTT", "HomeassistantDiscovery", true);
 
 	ReadParameter(param, "InfluxDB", "Uri", true);	
 	ReadParameter(param, "InfluxDB", "Database", true);	
