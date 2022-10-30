@@ -121,7 +121,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
     
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ")...");
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Maintopic | Group | Field     | User Friendly Name | Icon                      | Unit | Device Class     | State Class   | Entity Category
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",   "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
