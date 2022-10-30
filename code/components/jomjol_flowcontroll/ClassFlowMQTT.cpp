@@ -130,6 +130,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "freeMem",  "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifiRSSI", "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPUtemp",  "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
+
     // The IP config topic not published as it is already provided through the configuration_url    -   sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
@@ -138,7 +139,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",                  "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",                      "alert-circle-outline",     "",        "",            "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",                       "swap-vertical",            rateUnit,  "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Unit/Interval!
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",                       "code-json",                "",        "",            "",                 "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
@@ -278,10 +279,9 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(zerlegt[1]) == "TRUE")
                 HomeassistantDiscovery = true;  
         }
-        if ((toUpper(zerlegt[0]) == "METERTYPE") && (zerlegt.size() > 1))
+        if ((toUpper(zerlegt[0]) == "METERTYPE") && (zerlegt.size() > 1)) {
         /* Use meter type for the device class 
            Make sure it is a listed one on https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes */
-        {
             if (toUpper(zerlegt[1]) == "WATER_M3") {
                 meterType = "water";
                 valueUnit = "m³";
