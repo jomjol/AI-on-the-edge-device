@@ -27,9 +27,12 @@ extern float AutoIntervalShared;
 
 std::vector<NumberPost*>* NUMBERS;
 bool HomeassistantDiscovery = false;
+std::string meterType = "";
+std::string valueUnit = "";
+std::string rateUnit = "";
 
 void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
-    std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass) {
+    std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory) {
     std::string version = std::string(libfive_git_version());
 
     if (version == "") {
@@ -93,6 +96,10 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
         payload += "\"state_class\": \"" + stateClass + "\"," + nl;
     } 
 
+    if (entityCategory != "") {
+        payload += "\"entity_category\": \"" + entityCategory + "\"," + nl;
+    } 
+
     payload += 
         "\"availability_topic\": \"~/" + std::string(LWT_TOPIC) + "\"," + nl +
         "\"payload_available\": \"" + LWT_CONNECTED + "\"," + nl +
@@ -113,27 +120,37 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 }
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics...");
-    //                              maintopic  group  field        User Friendly Name    icon                        unit   Device Class     State Class
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "uptime",          "Uptime",          "clock-time-eight-outline", "s",   "",                "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "IP",              "IP",              "network-outline",          "",    "",                "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "MAC",             "MAC Address",     "network-outline",          "",    "",                "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "hostname",        "Hostname",        "network-outline",          "",    "",                "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "freeMem",         "Free Memory",     "memory",                   "B",   "",                "measurement");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "wifiRSSI",        "Wi-Fi RSSI",      "wifi",                     "dBm", "signal_strength", "");
-    sendHomeAssistantDiscoveryTopic(maintopic, "", "CPUtemp",         "CPU Temperature", "thermometer",              "°C",  "temperature",     "measurement");
+    std::string device_class;
+    
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ")...");
+
+    //                              Maintopic | Group | Field     | User Friendly Name | Icon                      | Unit | Device Class     | State Class   | Entity Category
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",   "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "MAC",      "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "hostname", "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "freeMem",  "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifiRSSI", "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPUtemp",  "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
+        // The IP config topic not published as it is already provided through the configuration_url    -   sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "");
+
+    /* Use predefined device classes, see https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes */
+    if ((meterType == "water") || (meterType == "gas") || (meterType == "energy")) {
+        device_class = meterType;
+    }
+    else {
+        device_class = "";
+    }
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-    //                                  maintopic  group                field           User Friendly Name  icon                        unit   Device Class     State Class
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",           "gauge",                    "",   "",              "total_increasing");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",           "alert-circle-outline",     "",   "",              "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",            "swap-vertical",            "",   "",              "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change", "arrow-expand-vertical",    "",   "",              "measurement");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",       "raw",                      "",   "",              "total_increasing");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",       "clock-time-eight-outline", "",   "timestamp",     "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",            "code-json",                "",   "",              "");
-
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",         "alert-outline",            "",   "",              ""); // Special binary sensor which is based on error topic
+    //                                  Maintopic | Group             | Field          | User Friendly Name | Icon                     | Unit | Device Class | State Class         | Entity Category
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",            "gauge",                    "",   device_class,  "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",            "alert-circle-outline",     "",   "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",             "swap-vertical",            "",   "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Absolute Change",  "arrow-expand-vertical",    "",   "",            "measurement",      "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",        "raw",                      "",   "",            "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",        "clock-time-eight-outline", "",   "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",             "code-json",                "",   "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",          "alert-outline",            "",   "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
@@ -269,6 +286,59 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(zerlegt[1]) == "TRUE")
                 HomeassistantDiscovery = true;  
+        }
+        if ((toUpper(zerlegt[0]) == "METERTYPE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "WATER_M3") {
+                meterType = "water";
+                valueUnit = "m³";
+                rateUnit = "m³/h";
+            }
+            if (toUpper(zerlegt[1]) == "WATER_L") {
+                meterType = "water";
+                valueUnit = "L";
+                rateUnit = "L/h";
+            }
+            if (toUpper(zerlegt[1]) == "WATER_FT3") {
+                meterType = "water";
+                valueUnit = "ft³";
+                rateUnit = "ft³/h";
+            }
+            if (toUpper(zerlegt[1]) == "WATER_GAL") {
+                meterType = "water";
+                valueUnit = "gal";
+                rateUnit = "gal/h";
+            }
+            else if (toUpper(zerlegt[1]) == "GAS_M3") {
+                meterType = "gas";
+                valueUnit = "m³";
+                rateUnit = "m³/h";
+            }
+            if (toUpper(zerlegt[1]) == "GAS_FT3") {
+                meterType = "gas";
+                valueUnit = "ft³";
+                rateUnit = "ft³/h";
+            }
+            else if (toUpper(zerlegt[1]) == "ENERGY_W") {
+                meterType = "energy";
+                valueUnit = "Wh";
+                rateUnit = "W";
+            }
+            else if (toUpper(zerlegt[1]) == "ENERGY_KW") {
+                meterType = "energy";
+                valueUnit = "kWh";
+                rateUnit = "kW";
+            }
+            else if (toUpper(zerlegt[1]) == "ENERGY_MW") {
+                meterType = "energy";
+                valueUnit = "MWh";
+                rateUnit = "MW";
+            }
+            else { // Other
+                meterType = "";
+                valueUnit = "";
+                rateUnit = "";
+            }
         }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
