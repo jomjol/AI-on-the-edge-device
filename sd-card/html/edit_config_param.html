@@ -745,7 +745,7 @@ textarea {
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
 				    <label for=Category_GPIO_enabled>GPIO Settings
-					<span class="GPIO_Item" > - Enabling GPIO handler, disable by default integrated flash light. Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
+					<span class="GPIO_Item" > - Enabling GPIO handler, disable by default integrated flash light.<br>Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
 				</h4>	
 			</td>
 		</tr> 	
@@ -1249,18 +1249,20 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "Logfile")' unchecked >
-				<label for=Debug_Logfile_enabled><class id="Debug_Logfile_text" style="color:black;">Logfile</class></label>
+				<label for=Debug_Logfile_enabled><class id="Debug_Logfile_text" style="color:black;">Logfile Log Level</class></label>
 			</td>
 			<td>
 				<select id="Debug_Logfile_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="1" selected>ERROR</option> <!-- matches esp_log_level_t -->
+					<option value="2">WARNING</option>
+					<option value="3">INFO</option>
+					<option value="4">DEBUG</option>
 				</select>
 			</td>
 			<td class="description">
-				Turn on/off the extended logging
+				Set the level of the logging to the SD-Card.<br><b>Warning:</b> DEBUG or INFO might damage the SD-Card if enabled longterm due to excessive writes to the SD-Card!
 			</td>
-		</tr>
+		</tr> 		
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked >
@@ -1431,7 +1433,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				}
 				if (!_isFound)
 				{
-					_zw_txt = "In the selectd field the value '" + textToFind + "' in the parameter '";
+					_zw_txt = "In the selected field the value '" + textToFind + "' in the parameter '";
 					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
 					alert(_zw_txt);
 				}
@@ -1472,7 +1474,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				}
 				if (!_isFound)
 				{
-					_zw_txt = "In the selectd field the value '" + textToFind + "' in the section '";
+					_zw_txt = "In the selected field the value '" + textToFind + "' in the section '";
 					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
 					alert(_zw_txt);
 				}

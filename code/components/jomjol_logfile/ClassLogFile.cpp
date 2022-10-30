@@ -80,9 +80,10 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
     FILE* pFile;
     std::string zwtime;
 
-    if (!doLogFile){
+    // TODO add separate parameter to disable write of data. 
+    /*if (!doLogFile){
         return;
-    }
+    }*/
 
     ESP_LOGD(TAG, "Datalogfile: %s", logpath.c_str());
     pFile = fopen(logpath.c_str(), "a+");
@@ -121,7 +122,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
     std::string zwtime;
     std::string logline = "";
 
-    if (!doLogFile && level != ESP_LOG_ERROR){ // Only write to file if logfile is enabled or its an error message
+    if (level > loglevel) {// Only write to file if loglevel is below threshold
         return;
     }
 
@@ -147,9 +148,6 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
 
         std::string loglevelString; 
         switch(level) {
-            case  ESP_LOG_NONE:
-                loglevelString = "NONE";
-                break;
             case  ESP_LOG_ERROR:
                 loglevelString = "ERR";
                 break;
@@ -165,6 +163,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
             case  ESP_LOG_VERBOSE:
                 loglevelString = "VER";
                 break;
+            case  ESP_LOG_NONE:
             default:
                 loglevelString = "NONE";
                 break;
@@ -178,8 +177,37 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
     }
 }
 
-void ClassLogFile::SwitchOnOff(bool _doLogFile){
-    doLogFile = _doLogFile;
+void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
+    loglevel = _logLevel;
+
+    std::string levelText;
+
+    switch(_logLevel) {            
+        case ESP_LOG_WARN:
+            levelText = "WARNING";
+            break;
+            
+        case ESP_LOG_INFO:
+            levelText = "INFO";
+            break;
+            
+        case ESP_LOG_DEBUG:
+            levelText = "DEBUG";
+            break;
+        case ESP_LOG_ERROR:
+        default:
+            levelText = "ERROR";
+            break;
+    }
+
+    ESP_LOGI(TAG, "Logfile Log Level set to %s", levelText.c_str());
+
+    /*
+    LogFile.WriteToFile(ESP_LOG_ERROR, "Test");
+    LogFile.WriteToFile(ESP_LOG_WARN, "Test");
+    LogFile.WriteToFile(ESP_LOG_INFO, "Test");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "Test");
+    */
 };
 
 void ClassLogFile::SetRetention(unsigned short _retentionInDays){
@@ -325,7 +353,6 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::stri
     logfile =  _logfile;
     datafile = _datafile;
     dataroot = _logdatapath;
-    doLogFile = true;
     retentionInDays = 10;
     loglevel = ESP_LOG_INFO;
     MakeDir("/sdcard/log/data");

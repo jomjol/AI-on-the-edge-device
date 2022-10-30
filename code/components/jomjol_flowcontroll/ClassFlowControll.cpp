@@ -460,13 +460,22 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(zerlegt[0]) == "LOGFILE") && (zerlegt.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            /* matches esp_log_level_t */
+            if ((toUpper(zerlegt[1]) == "TRUE") || (toUpper(zerlegt[1]) == "2"))
             {
-                LogFile.SwitchOnOff(true);
+                LogFile.setLogLevel(ESP_LOG_WARN);
             }
-            if (toUpper(zerlegt[1]) == "FALSE")
+            else if ((toUpper(zerlegt[1]) == "FALSE") || (toUpper(zerlegt[1]) == "0") || (toUpper(zerlegt[1]) == "1"))
             {
-                LogFile.SwitchOnOff(false);
+                LogFile.setLogLevel(ESP_LOG_ERROR);
+            }
+            else if (toUpper(zerlegt[1]) == "3")
+            {
+                LogFile.setLogLevel(ESP_LOG_INFO);
+            }
+            else if (toUpper(zerlegt[1]) == "4")
+            {
+                LogFile.setLogLevel(ESP_LOG_DEBUG);
             }
         }
         if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
@@ -505,12 +514,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 SetupModeActive = true;
             }        
-        }      
-
-        if ((toUpper(zerlegt[0]) == "LOGLEVEL") && (zerlegt.size() > 1)) // TODO there seems to be no such parameter in the config, but there is one called "Debug_Logfile_value1"!
-        {
-            LogFile.setLogLevel((esp_log_level_t)(stoi(zerlegt[1]))); // Gets mapped to esp_log_level_t
-        }      
+        }
     }
 
     AutoIntervalShared = AutoIntervall;

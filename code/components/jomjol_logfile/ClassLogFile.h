@@ -10,7 +10,6 @@ private:
     std::string logfile;
     std::string dataroot;
     std::string datafile;
-    bool doLogFile;
     unsigned short retentionInDays;
     esp_log_level_t loglevel;
 public:
@@ -18,11 +17,9 @@ public:
 
     std::string getESPHeapInfo();
 
-    void setLogLevel(esp_log_level_t i){loglevel = i;};
-
     void WriteHeapInfo(std::string _id);
 
-    void SwitchOnOff(bool _doLogFile);
+    void setLogLevel(esp_log_level_t _logLevel);
     void SetRetention(unsigned short _retentionInDays);
 
     void WriteToFile(esp_log_level_t level, std::string info, bool _time = true);
