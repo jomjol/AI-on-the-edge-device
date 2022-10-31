@@ -30,6 +30,7 @@ bool HomeassistantDiscovery = false;
 std::string meterType = "";
 std::string valueUnit = "";
 std::string timeUnit = "";
+std::string rateUnit = "";
 
 void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
     std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory) {
@@ -121,7 +122,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
     
-    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + valueUnit + "/" + timeUnit + ")...");
+    LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Maintopic | Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
@@ -140,7 +141,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate2",             "Rate (" + valueUnit + "/" + timeUnit + ")", "swap-vertical", valueUnit + "/" + timeUnit, "",                 "",                 "");        
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",              "measurement",      ""); // correctly the Unit is Uint/Interval!
         /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
            We need to know the timezone and append it! Until we do this, we simply
@@ -293,46 +294,55 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 meterType = "water";
                 valueUnit = "m³";
                 timeUnit = "h"; // Hour
+                rateUnit = "m³/h";
             }
             else if (toUpper(zerlegt[1]) == "WATER_L") {
                 meterType = "water";
                 valueUnit = "L";
                 timeUnit = "h"; // Hour
+                rateUnit = "L/h";
             }
             else if (toUpper(zerlegt[1]) == "WATER_FT3") {
                 meterType = "water";
                 valueUnit = "ft³";
                 timeUnit = "m"; // Minutes
+                rateUnit = "ft³/m";
             }
             else if (toUpper(zerlegt[1]) == "WATER_GAL") {
                 meterType = "water";
                 valueUnit = "gal";
                 timeUnit = "h"; // Hour
+                rateUnit = "gal/h";
             }
             else if (toUpper(zerlegt[1]) == "GAS_M3") {
                 meterType = "gas";
                 valueUnit = "m³";
                 timeUnit = "h"; // Hour
+                rateUnit = "m³/h";
             }
             else if (toUpper(zerlegt[1]) == "GAS_FT3") {
                 meterType = "gas";
                 valueUnit = "ft³";
                 timeUnit = "m"; // Minutes
+                rateUnit = "ft³/m";
             }
             else if (toUpper(zerlegt[1]) == "ENERGY_W") {
                 meterType = "energy";
                 valueUnit = "Wh";
-                timeUnit = "W"; // Hour
+                timeUnit = "h"; // Hour
+                rateUnit = "W";
             }
             else if (toUpper(zerlegt[1]) == "ENERGY_KW") {
                 meterType = "energy";
                 valueUnit = "kWh";
-                timeUnit = "kW"; // Hour
+                timeUnit = "h"; // Hour
+                rateUnit = "kW";
             }
             else if (toUpper(zerlegt[1]) == "ENERGY_MW") {
                 meterType = "energy";
                 valueUnit = "MWh";
-                timeUnit = "MW"; // Hour
+                timeUnit = "h"; // Hour
+                rateUnit = "MWh";
             }
         }
 
@@ -407,7 +417,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
                 
                 std::string resultrate2;
-                if ((timeUnit == "h") || (meterType == "energy")) { // Need conversion to be per hour
+                if (timeUnit == "h") { // Need conversion to be per hour
                     resultrate2 = resultrate2 = to_string((*NUMBERS)[i]->FlowRateAct / 60); // per minutes => per hour
                 }
                 else { // Keep per minute
