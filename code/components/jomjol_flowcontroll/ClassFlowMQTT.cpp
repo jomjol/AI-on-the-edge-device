@@ -136,8 +136,8 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
         xxx needs splitting. only the name can have no group!
-     /*   std::string group = "";
-        if ((*NUMBERS).size() > 1) { // There is more than one meter, use the NUMBER name as group
+        std::string group = "";
+     /*   if ((*NUMBERS).size() > 1) { // There is more than one meter, use the NUMBER name as group
             group = (*NUMBERS)[i]->name;
         }*/
          group = (*NUMBERS)[i]->name;
