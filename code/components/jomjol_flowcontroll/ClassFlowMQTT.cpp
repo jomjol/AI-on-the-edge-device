@@ -135,10 +135,10 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-        std::string group = "";
+     /*   std::string group = "";
         if ((*NUMBERS).size() > 1) { // There is more than one meter, use the NUMBER name as group
             group = (*NUMBERS)[i]->name;
-        }
+        }*/
         
     //                                  Maintopic | Group | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
         sendHomeAssistantDiscoveryTopic(maintopic, group,   "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
