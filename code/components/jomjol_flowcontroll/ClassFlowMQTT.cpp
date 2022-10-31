@@ -130,8 +130,8 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "freeMem",  "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifiRSSI", "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPUtemp",  "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
-
-    // The IP config topic not published as it is already provided through the configuration_url    -   sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "");
+    // The IP config topic not published as it is already provided through the configuration_url
+    //sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
     //                                  Maintopic | Group             | Field          | User Friendly Name           | Icon                     | Unit      | Device Class | State Class         | Entity Category
@@ -139,8 +139,12 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",                  "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",                      "alert-circle-outline",     "",        "",            "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",                       "swap-vertical",            rateUnit,  "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Unit/Interval!
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
+        /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
+           We need to know the timezone and append it! Until we do this, we simply
+           do not set the device class to "timestamp" to avoid errors in Homeassistant! */
+        //sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",                       "code-json",                "",        "",            "",                 "");
         sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
