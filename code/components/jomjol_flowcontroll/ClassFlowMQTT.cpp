@@ -342,7 +342,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 meterType = "energy";
                 valueUnit = "MWh";
                 timeUnit = "h"; // Hour
-                rateUnit = "MWh";
+                rateUnit = "MW";
             }
         }
 
@@ -435,7 +435,6 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             if (resulttimestamp.length() > 0)
                 MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
-
             std::string json = "";
             
             if (result.length() > 0)
@@ -445,10 +444,12 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             json += ",\"raw\":\""+resultraw;
             json += "\",\"error\":\""+resulterror;
+
             if (resultrate.length() > 0)
                 json += "\",\"rate\":"+resultrate;
             else
                 json += "\",\"rate\":\"\"";
+
             json += ",\"timestamp\":\""+resulttimestamp+"\"}";
 
             MQTTPublish(namenumber + "json", json, SetRetainFlag);
