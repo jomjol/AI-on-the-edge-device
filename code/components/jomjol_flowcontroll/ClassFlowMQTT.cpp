@@ -136,20 +136,25 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     //sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-    //                                  Maintopic | Group              | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",              "measurement",      ""); // correctly the Unit is Uint/Interval!
+        std::string group = "";
+        if ((*NUMBERS).size() > 1) { // There is more than one meter, use the NUMBER name as group
+            group = (*NUMBERS)[i]->name;
+        }
+        
+    //                                  Maintopic | Group | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",              "measurement",      ""); // correctly the Unit is Uint/Interval!
         /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
            We need to know the timezone and append it! Until we do this, we simply
            do not set the device class to "timestamp" to avoid errors in Homeassistant! */
-        // sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",               "JSON",                       "code-json",                "",        "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
+        // sendHomeAssistantDiscoveryTopic(maintopic, group,   "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
