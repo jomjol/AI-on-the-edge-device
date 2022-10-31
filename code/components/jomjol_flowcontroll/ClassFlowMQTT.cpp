@@ -383,7 +383,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             result =  (*NUMBERS)[i]->ReturnValue;
             resultraw =  (*NUMBERS)[i]->ReturnRawValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
-            resultrate = (*NUMBERS)[i]->ReturnRateValue;
+            resultrate = to_string((*NUMBERS)[i]->FlowRateAct / 60); // per minutes => per hour
             resultchangabs = (*NUMBERS)[i]->ReturnChangeAbsolute;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
