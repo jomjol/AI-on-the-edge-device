@@ -30,7 +30,7 @@ bool HomeassistantDiscovery = false;
 std::string meterType = "";
 std::string valueUnit = "";
 std::string timeUnit = "";
-std::string rateUnit = "";
+std::string rateUnit = "Unit/Minute";
 
 void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
     std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory) {
