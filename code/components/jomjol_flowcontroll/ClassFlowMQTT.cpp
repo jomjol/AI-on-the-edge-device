@@ -160,10 +160,10 @@ void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
     MQTTPublish(maintopic + "/" + "free_memory", std::string(tmp_char), SetRetainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
-    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "wifi_RSSI", std::string(tmp_char), SetRetainFlag);
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
-    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "CPU_temperature", std::string(tmp_char), SetRetainFlag);
 }
 
 void GotConnected(std::string maintopic, int SetRetainFlag) {
