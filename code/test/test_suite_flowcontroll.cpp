@@ -4,6 +4,7 @@
 #include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
 #include "components/jomjol-flowcontroll/test_flow_pp_negative.cpp"
 #include "components/jomjol-flowcontroll/test_ZeigerEvalAnalogToDigitNeu.cpp"
+#include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"
 #include "esp_vfs_fat.h"
@@ -116,6 +117,9 @@ extern "C" void app_main()
     RUN_TEST(test_doFlowPP1);
     RUN_TEST(test_doFlowPP2);
     RUN_TEST(test_doFlowPP3);
+
+    // getReadoutRawString test
+    RUN_TEST(test_getReadoutRawString);
   
   UNITY_END();
 }
