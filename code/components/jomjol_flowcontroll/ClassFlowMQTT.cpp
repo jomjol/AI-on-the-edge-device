@@ -123,30 +123,30 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
-    //                              Maintopic | Group | Field     | User Friendly Name | Icon                      | Unit | Device Class     | State Class   | Entity Category
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",   "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "MAC",      "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "hostname", "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "freeMem",  "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifiRSSI", "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPUtemp",  "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
+    //                              Maintopic | Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "MAC",             "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "hostname",        "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "free_memory",         "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifi_RSSI",       "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPU_temperature", "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
     // The IP config topic not published as it is already provided through the configuration_url
     //sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",       "IP",                "network-outline",          "",    "",                "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-    //                                  Maintopic | Group             | Field          | User Friendly Name           | Icon                     | Unit      | Device Class | State Class         | Entity Category
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",         "Value",                      "gauge",                    valueUnit, meterType,     "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",           "Raw Value",                  "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",         "Error",                      "alert-circle-outline",     "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",          "Rate",                       "swap-vertical",            rateUnit,  "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "changeabsolut", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
+    //                                  Maintopic | Group              | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "value",             "Value",                      "gauge",                    valueUnit, meterType,     "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "raw",               "Raw Value",                  "raw",                      valueUnit, "",            "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "error",             "Error",                      "alert-circle-outline",     "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate",              "Rate",                       "swap-vertical",            rateUnit,  "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
         /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
            We need to know the timezone and append it! Until we do this, we simply
            do not set the device class to "timestamp" to avoid errors in Homeassistant! */
-        //sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",     "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",          "JSON",                       "code-json",                "",        "",            "",                 "");
-        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",       "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
+        // sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "json",               "JSON",                       "code-json",                "",        "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, (*NUMBERS)[i]->name, "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
@@ -157,7 +157,7 @@ void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
     
     sprintf(tmp_char, "%zu", esp_get_free_heap_size());
-    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "free_memory", std::string(tmp_char), SetRetainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
     MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), SetRetainFlag);
@@ -403,7 +403,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
 
             if (resultchangabs.length() > 0)   
-                MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag);
+                MQTTPublish(namenumber + "rate_per_interval", resultchangabs, SetRetainFlag);
 
             if (resultraw.length() > 0)   
                 MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
