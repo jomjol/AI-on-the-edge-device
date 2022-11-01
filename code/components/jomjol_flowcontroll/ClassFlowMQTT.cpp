@@ -55,8 +55,10 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
         topicT = group + "_" + field;
     }
 
-    if (group != "") { // Prepend the group to the name
-        name = group + " " + name;
+    if ((*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
+        if (group != "") { // But only if the group is set
+            name = group + " " + name;
+        }
     }
 
     topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
@@ -88,9 +90,6 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
     if (deviceClass != "") {
         payload += "\"device_class\": \"" + deviceClass + "\"," + nl;
-     /*   if (deviceClass == "problem") {
-            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
-        }*/
     }
 
     if (stateClass != "") {
@@ -135,12 +134,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-  //      xxx needs splitting. only the name can have no group!
-        std::string group = "";
-     /*   if ((*NUMBERS).size() > 1) { // There is more than one meter, use the NUMBER name as group
-            group = (*NUMBERS)[i]->name;
-        }*/
-         group = (*NUMBERS)[i]->name;
+         std::string group = (*NUMBERS)[i]->name;
     //                                  Maintopic | Group | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
         sendHomeAssistantDiscoveryTopic(maintopic, group,   "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
         sendHomeAssistantDiscoveryTopic(maintopic, group,   "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
