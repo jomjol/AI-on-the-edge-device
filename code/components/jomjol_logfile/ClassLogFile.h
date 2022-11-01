@@ -23,7 +23,9 @@ public:
     void SetRetention(unsigned short _retentionInDays);
 
     void WriteToFile(esp_log_level_t level, std::string info, bool _time = true);
-    void WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string info, bool _time = true);
+    void WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time);
+    void WriteToFile(esp_log_level_t level, std::string tag, std::string info);
+    void WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string message, bool _time = true);
 
     void CreateLogDirectories();
     void RemoveOld();

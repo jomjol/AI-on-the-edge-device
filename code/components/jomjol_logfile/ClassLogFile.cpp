@@ -214,7 +214,7 @@ void ClassLogFile::SetRetention(unsigned short _retentionInDays){
     retentionInDays = _retentionInDays;
 };
 
-void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _time)
+void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string info, bool _time)
 {
 /*
     struct stat path_stat;
@@ -237,8 +237,23 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _ti
     
     std::replace(info.begin(), info.end(), '\n', ' '); // Replace all newline characters
 
+    if (tag != "") {
+        info = tag + " - " + info;
+        ESP_LOG_LEVEL(level, tag.c_str(), "%s", info.c_str());
+    }
+    else {
+     ESP_LOG_LEVEL(level, "", "%s", info.c_str());
+    }
     WriteToDedicatedFile(logpath, level, info, _time);
-    ESP_LOG_LEVEL(level, TAG, "%s", info.c_str());
+}
+
+
+void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _time) {
+    LogFile.WriteToFile(level, "", info, _time);
+}
+
+void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string info) {
+    LogFile.WriteToFile(level, "", info, true);
 }
 
 std::string ClassLogFile::GetCurrentFileName()
