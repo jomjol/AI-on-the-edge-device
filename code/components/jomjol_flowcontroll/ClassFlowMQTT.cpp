@@ -325,19 +325,19 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 timeUnit = "m"; // Minutes
                 rateUnit = "ft³/m";
             }
-            else if (toUpper(zerlegt[1]) == "ENERGY_W") {
+            else if (toUpper(zerlegt[1]) == "ENERGY_WH") {
                 meterType = "energy";
                 valueUnit = "Wh";
                 timeUnit = "h"; // Hour
                 rateUnit = "W";
             }
-            else if (toUpper(zerlegt[1]) == "ENERGY_KW") {
+            else if (toUpper(zerlegt[1]) == "ENERGY_KWH") {
                 meterType = "energy";
                 valueUnit = "kWh";
                 timeUnit = "h"; // Hour
                 rateUnit = "kW";
             }
-            else if (toUpper(zerlegt[1]) == "ENERGY_MW") {
+            else if (toUpper(zerlegt[1]) == "ENERGY_MWH") {
                 meterType = "energy";
                 valueUnit = "MWh";
                 timeUnit = "h"; // Hour
