@@ -200,7 +200,7 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
             break;
     }
 
-    ESP_LOGI(TAG, "Logfile Log Level set to %s", levelText.c_str());
+    ESP_LOGI(TAG, "Log Level set to %s", levelText.c_str());
 
     /*
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Test");
@@ -238,11 +238,11 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
     std::replace(message.begin(), message.end(), '\n', ' '); // Replace all newline characters
 
     if (tag != "") {
-        message = "[" + tag + "] " + message;
         ESP_LOG_LEVEL(level, tag.c_str(), "%s", message.c_str());
+        message = "[" + tag + "] " + message;
     }
     else {
-     ESP_LOG_LEVEL(level, "", "%s", message.c_str());
+        ESP_LOG_LEVEL(level, "", "%s", message.c_str());
     }
     WriteToDedicatedFile(logpath, level, message, _time);
 }
