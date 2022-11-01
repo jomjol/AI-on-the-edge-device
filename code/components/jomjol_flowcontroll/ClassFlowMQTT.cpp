@@ -147,7 +147,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
            do not set the device class to "timestamp" to avoid errors in Homeassistant! */
         // sendHomeAssistantDiscoveryTopic(maintopic, group,   "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "");
+        sendHomeAssistantDiscoveryTopic(maintopic, group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(maintopic, group,   "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
