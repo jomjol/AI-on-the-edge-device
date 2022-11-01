@@ -130,7 +130,7 @@ void MQTThomeassistantDiscovery(std::string maintopic) {
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "free_memory",     "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifi_RSSI",       "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPU_temperature", "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "interval",        "Interval",          "clock-time-eight-outline", "min",  "temperature",    "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic(maintopic, "",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
