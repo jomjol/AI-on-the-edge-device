@@ -35,7 +35,7 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
-static const char *TAG = "wifi station";
+static const char *TAG = "WIFI";
 
 static int s_retry_num = 0;
 
@@ -48,7 +48,7 @@ bool BlinkOff;
 bool BlinkIsRunning = false;
 
 std::string hostname = "";
-std::string std_hostname = "watermeter";
+std::string std_hostname = "AIOTED";
 std::string ipadress = "";
 std::string ssid = "";
 

@@ -15,7 +15,7 @@
 
 #include "ClassLogFile.h"
 
-static const char *TAG = "sntp";
+static const char *TAG = "SNTP";
 
 bool setTimeAlwaysOnReboot = true;
 time_t bootTime;
@@ -86,7 +86,7 @@ void setTimeZone(std::string _tzstring)
     setenv("TZ", _tzstring.c_str(), 1);
     tzset();    
     _tzstring = "Time zone set to " + _tzstring;
-    LogFile.WriteToFile(ESP_LOG_INFO, _tzstring);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, _tzstring);
 }
 
 static void obtain_time(void)

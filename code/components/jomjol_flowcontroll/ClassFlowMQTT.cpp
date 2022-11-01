@@ -13,7 +13,7 @@
 
 #define __HIDE_PASSWORD
 
-static const char *TAG = "class_flow_MQTT";
+static const char *TAG = "FLOW MQTT";
 
 #define LWT_TOPIC        "connection"
 #define LWT_CONNECTED    "connected"
@@ -121,7 +121,7 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
 
 void MQTThomeassistantDiscovery(std::string maintopic) {
     
-    LogFile.WriteToFile(ESP_LOG_INFO, std::string("MQTT"), "Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Maintopic | Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
     sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
@@ -227,7 +227,7 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
     NUMBERS = flowpostprocessing->GetNumbers();
     keepAlive = AutoIntervalShared * 60 * 2.5; // TODO find better way to access AutoIntervall in ClassFlowControll
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "Digitizer interval is " + std::to_string(AutoIntervalShared) + 
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Digitizer interval is " + std::to_string(AutoIntervalShared) + 
             " minutes => setting MQTT LWT timeout to " + std::to_string(keepAlive/60) + " minutes.");
 }
 

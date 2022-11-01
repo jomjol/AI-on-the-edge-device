@@ -68,7 +68,7 @@
 #define CAM_PIN_PCLK 22
 
 
-static const char *TAGCAMERACLASS = "server_part_camera"; 
+static const char *TAG = "CAM"; 
 
 static camera_config_t camera_config = {
     .pin_pwdn = CAM_PIN_PWDN,
@@ -249,7 +249,7 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 
 void CCamera::EnableAutoExposure(int flashdauer)
 {
-    ESP_LOGD(TAGCAMERACLASS, "EnableAutoExposure");
+    ESP_LOGD(TAG, "EnableAutoExposure");
     LEDOnOff(true);
     if (flashdauer > 0)
         LightOnOff(true);
@@ -260,10 +260,10 @@ void CCamera::EnableAutoExposure(int flashdauer)
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAGCAMERACLASS, "Camera Capture Failed");
+        ESP_LOGE(TAG, "Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Camera Capture Failed (Procedure 'EnableAutoExposure') --> Reboot! "
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Capture Failed (Procedure 'EnableAutoExposure') --> Reboot! "
                 "Check that your camera module is working and connected properly.");
         //doReboot();
     }
@@ -310,11 +310,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     esp_camera_fb_return(fb);        
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAGCAMERACLASS, "CaptureToBasisImage: Camera Capture Failed");
+        ESP_LOGE(TAG, "CaptureToBasisImage: Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
 
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Camera is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
                 "System will reboot.");
         doReboot();
 
@@ -325,8 +325,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     zwischenspeicher = (uint8_t*) malloc(_size);
     if (!zwischenspeicher)
     {
-        ESP_LOGE(TAGCAMERACLASS, "Insufficient memory space for image in function CaptureToBasisImage()");
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Insufficient memory space for image in function CaptureToBasisImage()");
+        ESP_LOGE(TAG, "Insufficient memory space for image in function CaptureToBasisImage()");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Insufficient memory space for image in function CaptureToBasisImage()");
     }
     for (int i = 0; i < _size; ++i)
         *(zwischenspeicher + i) = *(fb->buf + i);
@@ -363,7 +363,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 #ifdef DEBUG_DETAIL_ON
     std::string _zw = "Targetimage: " + std::to_string((int) _Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
     _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage.rgb_image)  + " Size: " + std::to_string(_zwImage.width) + ", " + std::to_string(_zwImage.height);
-    LogFile.WriteToFile(ESP_LOG_DEBUG, _zw);
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
 #endif
 
     for (int x = 0; x < width; ++x)
@@ -407,10 +407,10 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAGCAMERACLASS, "CaptureToFile: Camera Capture Failed");
+        ESP_LOGE(TAG, "CaptureToFile: Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Camera Capture Failed (CCamera::CaptureToFile) --> Reboot! "
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Capture Failed (CCamera::CaptureToFile) --> Reboot! "
                 "Check that your camera module is working and connected properly.");
         //doReboot();
 
@@ -419,19 +419,19 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     LEDOnOff(false);    
 
 #ifdef DEBUG_DETAIL_ON    
-    ESP_LOGD(TAGCAMERACLASS, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
+    ESP_LOGD(TAG, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
 #endif
 
     nm = FormatFileName(nm);
 
 #ifdef DEBUG_DETAIL_ON
-    ESP_LOGD(TAGCAMERACLASS, "Save Camera to : %s", nm.c_str());
+    ESP_LOGD(TAG, "Save Camera to : %s", nm.c_str());
 #endif
 
     ftype = toUpper(getFileType(nm));
 
 #ifdef DEBUG_DETAIL_ON
-    ESP_LOGD(TAGCAMERACLASS, "Filetype: %s", ftype.c_str());
+    ESP_LOGD(TAG, "Filetype: %s", ftype.c_str());
 #endif
 
     uint8_t * buf = NULL;
@@ -449,7 +449,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
             bool jpeg_converted = frame2jpg(fb, ActualQuality, &buf, &buf_len);
             converted = true;
             if(!jpeg_converted){
-                ESP_LOGE(TAGCAMERACLASS, "JPEG compression failed");
+                ESP_LOGE(TAG, "JPEG compression failed");
             }
         } else {
             buf_len = fb->len;
@@ -503,7 +503,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAGCAMERACLASS, "Camera capture failed");
+        ESP_LOGE(TAG, "Camera capture failed");
         LEDOnOff(false);
         LightOnOff(false);
         httpd_resp_send_500(req);
@@ -533,7 +533,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     esp_camera_fb_return(fb);
     int64_t fr_end = esp_timer_get_time();
     
-    ESP_LOGI(TAGCAMERACLASS, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
+    ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
 
     if (delay > 0) 
     {
@@ -547,20 +547,20 @@ void CCamera::LightOnOff(bool status)
 {
     GpioHandler* gpioHandler = gpio_handler_get();
     if ((gpioHandler != NULL) && (gpioHandler->isEnabled())) {
-        ESP_LOGD(TAGCAMERACLASS, "Use gpioHandler flashLigh");
+        ESP_LOGD(TAG, "Use gpioHandler flashLigh");
         gpioHandler->flashLightEnable(status);
     }  else {
     #ifdef USE_PWM_LEDFLASH
         if (status)
         {
-            ESP_LOGD(TAGCAMERACLASS, "Internal Flash-LED turn on with PWM %d", led_intensity);
+            ESP_LOGD(TAG, "Internal Flash-LED turn on with PWM %d", led_intensity);
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, led_intensity));
             // Update duty to apply the new value
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
         else
         {
-            ESP_LOGD(TAGCAMERACLASS, "Internal Flash-LED turn off PWM");
+            ESP_LOGD(TAG, "Internal Flash-LED turn off PWM");
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0));
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
@@ -604,11 +604,11 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-        ESP_LOGD(TAGCAMERACLASS, "Query: %s", _query);
+        ESP_LOGD(TAG, "Query: %s", _query);
         if (httpd_query_key_value(_query, "size", _size, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON   
-            ESP_LOGD(TAGCAMERACLASS, "Size: %s", _size);
+            ESP_LOGD(TAG, "Size: %s", _size);
 #endif
             if (strcmp(_size, "QVGA") == 0)
                 resol = FRAMESIZE_QVGA;       // 320x240
@@ -626,7 +626,7 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
         if (httpd_query_key_value(_query, "quality", _qual, 10) == ESP_OK)
         {
 #ifdef DEBUG_DETAIL_ON   
-            ESP_LOGD(TAGCAMERACLASS, "Quality: %s", _qual);
+            ESP_LOGD(TAG, "Quality: %s", _qual);
 #endif
             qual = atoi(_qual);
                 
@@ -659,7 +659,7 @@ framesize_t CCamera::TextToFramesize(const char * _size)
 CCamera::CCamera()
 {
 #ifdef DEBUG_DETAIL_ON    
-    ESP_LOGD(TAGCAMERACLASS, "CreateClassCamera");
+    ESP_LOGD(TAG, "CreateClassCamera");
 #endif
     brightness = -5;
     contrast = -5;
@@ -671,13 +671,13 @@ CCamera::CCamera()
 
 esp_err_t CCamera::InitCam()
 {
-    ESP_LOGD(TAGCAMERACLASS, "Init Camera");
+    ESP_LOGD(TAG, "Init Camera");
     ActualQuality = camera_config.jpeg_quality;
     ActualResolution = camera_config.frame_size;
     //initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
-        ESP_LOGE(TAGCAMERACLASS, "Camera Init Failed");
+        ESP_LOGE(TAG, "Camera Init Failed");
         return err;
     }
 
@@ -690,6 +690,6 @@ void CCamera::SetLEDIntensity(float _intrel)
     _intrel = max(_intrel, (float) 0);
     _intrel = _intrel / 100;
     led_intensity = (int) (_intrel * 8191);
-    ESP_LOGD(TAGCAMERACLASS, "Set led_intensity to %d of 8191", led_intensity);
+    ESP_LOGD(TAG, "Set led_intensity to %d of 8191", led_intensity);
 
 }

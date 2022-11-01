@@ -48,7 +48,7 @@ extern const char* BUILD_TIME;
 
 #define BLINK_GPIO GPIO_NUM_33
 
-static const char *TAGMAIN = "main";
+static const char *TAG = "MAIN";
 
 //#define FLASH_GPIO GPIO_NUM_4
 
@@ -61,7 +61,7 @@ bool Init_NVS_SDCard()
     }
 ////////////////////////////////////////////////
 
-    ESP_LOGI(TAGMAIN, "Using SDMMC peripheral");
+    ESP_LOGI(TAG, "Using SDMMC peripheral");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
@@ -103,10 +103,10 @@ bool Init_NVS_SDCard()
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAGMAIN, "Failed to mount filesystem. "
+            ESP_LOGE(TAG, "Failed to mount filesystem. "
                 "If you want the card to be formatted, set format_if_mount_failed = true.");
         } else {
-            ESP_LOGE(TAGMAIN, "Failed to initialize the card (%s). "
+            ESP_LOGE(TAG, "Failed to initialize the card (%s). "
                 "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
         return false;
@@ -127,7 +127,7 @@ void task_NoSDBlink(void *pvParameter)
     
     TickType_t xDelay;
     xDelay = 100 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "SD-Card could not be inialized - STOP THE PROGRAMM HERE");
+    ESP_LOGD(TAG, "SD-Card could not be inialized - STOP THE PROGRAMM HERE");
 
     while (1)
     {
@@ -147,18 +147,18 @@ extern "C" void app_main(void)
     string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
             "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
 
-    ESP_LOGI(TAGMAIN, "\n\n\n\n\n"); // Add mark on log to see when it restarted
-    ESP_LOGD(TAGMAIN, "=============================================================================================");
-    ESP_LOGD(TAGMAIN, "%s", versionFormated.c_str());
-    ESP_LOGD(TAGMAIN, "=============================================================================================");
-    ESP_LOGD(TAGMAIN, "Reset reason: %s", getResetReason().c_str());
+    ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
+    ESP_LOGD(TAG, "=============================================================================================");
+    ESP_LOGD(TAG, "%s", versionFormated.c_str());
+    ESP_LOGD(TAG, "=============================================================================================");
+    ESP_LOGD(TAG, "Reset reason: %s", getResetReason().c_str());
 
 
     PowerResetCamera();
     esp_err_t cam = Camera.InitCam();
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "After camera initialization: sleep for: %ldms", (long) xDelay);
+    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
 
 
@@ -173,9 +173,9 @@ extern "C" void app_main(void)
     LogFile.CreateLogDirectories();
 /*
     int mk_ret = mkdir("/sdcard/new_fd_mkdir", 0775);
-    ESP_LOGI(TAGMAIN, "mkdir ret %d", mk_ret);
+    ESP_LOGI(TAG, "mkdir ret %d", mk_ret);
     mk_ret = mkdir("/sdcard/new_fd_mkdir/test", 0775);
-    ESP_LOGI(TAGMAIN, "mkdir ret %d", mk_ret);
+    ESP_LOGI(TAG, "mkdir ret %d", mk_ret);
     MakeDir("/sdcard/test2");
     MakeDir("/sdcard/test2/intern");
 */
@@ -186,58 +186,58 @@ extern "C" void app_main(void)
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
-        ESP_LOGD(TAGMAIN, "WLan: %s, XXXXXX", ssid);
+        ESP_LOGD(TAG, "WLan: %s, XXXXXX", ssid);
 #else
-        ESP_LOGD(TAGMAIN, "WLan: %s, %s", ssid, passwd);
+        ESP_LOGD(TAG, "WLan: %s, %s", ssid, passwd);
 #endif        
 
     else
-        ESP_LOGD(TAGMAIN, "No SSID and PASSWORD set!!!");
+        ESP_LOGD(TAG, "No SSID and PASSWORD set!!!");
 
     if (hostname != NULL)
-        ESP_LOGD(TAGMAIN, "Hostename: %s", hostname);
+        ESP_LOGD(TAG, "Hostename: %s", hostname);
     else
-        ESP_LOGD(TAGMAIN, "Hostname not set");
+        ESP_LOGD(TAG, "Hostname not set");
 
     if (ip != NULL && gateway != NULL && netmask != NULL)
-       ESP_LOGD(TAGMAIN, "Fixed IP: %s, Gateway %s, Netmask %s", ip, gateway, netmask);
+       ESP_LOGD(TAG, "Fixed IP: %s, Gateway %s, Netmask %s", ip, gateway, netmask);
     if (dns != NULL)
-       ESP_LOGD(TAGMAIN, "DNS IP: %s", dns);
+       ESP_LOGD(TAG, "DNS IP: %s", dns);
 
 
     wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "main: sleep for: %ldms", (long) xDelay);
+    ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
     setup_time();
     setBootTime();
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "=============================================================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, "=================================== Main Started ============================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, "=============================================================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, versionFormated);
-    LogFile.WriteToFile(ESP_LOG_INFO, "Reset reason: " + getResetReason());
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================== Main Started ============================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    ESP_LOGD(TAGMAIN, "time %s", zw.c_str());
+    ESP_LOGD(TAG, "time %s", zw.c_str());
 
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
         std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
         _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
-        LogFile.WriteToFile(ESP_LOG_ERROR, _zws);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zws);
     } else {
         if (cam != ESP_OK) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, "Failed to initialize camera module. "
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. "
                         "Check that your camera module is working and connected properly.");
         } else {
 // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, "Camera cannot be initialzed. "
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera cannot be initialzed. "
                         "System will reboot.");
                 doReboot();
             }
@@ -249,10 +249,10 @@ extern "C" void app_main(void)
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAGMAIN, "main: sleep for: %ldms", (long) xDelay*10);
+    ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay*10);
     vTaskDelay( xDelay ); 
 
-    ESP_LOGD(TAGMAIN, "starting server");
+    ESP_LOGD(TAG, "starting server");
 
     server = start_webserver();   
     register_server_camera_uri(server); 
@@ -262,10 +262,10 @@ extern "C" void app_main(void)
 
     gpio_handler_create(server);
 
-    ESP_LOGD(TAGMAIN, "vor reg server main");
+    ESP_LOGD(TAG, "vor reg server main");
     register_server_main_uri(server, "/sdcard");
 
-    ESP_LOGD(TAGMAIN, "vor dotautostart");
+    ESP_LOGD(TAG, "vor dotautostart");
     TFliteDoAutoStart();
 
 }

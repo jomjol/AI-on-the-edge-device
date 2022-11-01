@@ -27,7 +27,7 @@ extern "C" {
 
 //#define DEBUG_DETAIL_ON  
 
-static const char* TAG = "flow_controll";
+static const char* TAG = "FLOW CTRL";
 
 float AutoIntervalShared = 10; // Minutes
 
@@ -301,11 +301,11 @@ bool ClassFlowControll::doFlow(string time)
 
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
-            LogFile.WriteToFile(ESP_LOG_WARN, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
             if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, "Wiederholung 5x nicht erfolgreich --> reboot");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
                 doReboot();
                 // Schritt wurde 5x wiederholt --> reboot
             }
@@ -501,7 +501,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_ERROR, "Rebooting to activate new HOSTNAME...");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Rebooting to activate new HOSTNAME...");
                 esp_restart();
                 hard_restart();                   
                 doReboot();
