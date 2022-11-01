@@ -819,37 +819,59 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/doflow";
     camuri.handler   = handler_doflow;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/statusflow.html";
+    // Legacy
+    // camuri.uri       = "/statusflow.html";
+    // camuri.handler   = handler_statusflow;
+    // camuri.user_ctx  = (void*) "Light Off"; 
+    // httpd_register_uri_handler(server, &camuri);
+
+    // camuri.uri       = "/cputemp.html";
+    // camuri.handler   = handler_cputemp;
+    // camuri.user_ctx  = (void*) "Light Off"; 
+    // httpd_register_uri_handler(server, &camuri);
+
+    // camuri.uri       = "/rssi.html";
+    // camuri.handler   = handler_rssi;
+    // camuri.user_ctx  = (void*) "Light Off"; 
+    // httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/statusflow";
     camuri.handler   = handler_statusflow;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
-    
-    camuri.uri       = "/cputemp.html";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/cputemp";
     camuri.handler   = handler_cputemp;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/rssi.html";
+    camuri.uri       = "/rssi";
     camuri.handler   = handler_rssi;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;
-    camuri.user_ctx  = (void*) "EditFlow"; 
-    httpd_register_uri_handler(server, &camuri);     
-
-    camuri.uri       = "/value.html";
+    camuri.user_ctx  = (void*) "EditFlow";
+    httpd_register_uri_handler(server, &camuri);
+    
+    camuri.uri       = "/value";
     camuri.handler   = handler_wasserzaehler;
-    camuri.user_ctx  = (void*) "Value"; 
-    httpd_register_uri_handler(server, &camuri);  
+    camuri.user_ctx  = (void*) "Value";
+    httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/wasserzaehler.html";
-    camuri.handler   = handler_wasserzaehler;
-    camuri.user_ctx  = (void*) "Wasserzaehler"; 
-    httpd_register_uri_handler(server, &camuri);  
+    // Legacy
+    // camuri.uri       = "/value.html";
+    // camuri.handler   = handler_wasserzaehler;
+    // camuri.user_ctx  = (void*) "Value";
+    // httpd_register_uri_handler(server, &camuri);
+
+    // camuri.uri       = "/wasserzaehler.html";
+    // camuri.handler   = handler_wasserzaehler;
+    // camuri.user_ctx  = (void*) "Wasserzaehler";
+    // httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/json";
     camuri.handler   = handler_json;
