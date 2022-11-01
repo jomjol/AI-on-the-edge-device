@@ -67,33 +67,34 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_BEFORE_CONNECT");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_BEFORE_CONNECT");
             break;
         case MQTT_EVENT_CONNECTED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_CONNECTED");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_CONNECTED");
             mqtt_connected = true;
             MQTTconnected();
             break;
         case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DISCONNECTED");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_DISCONNECTED");
+            LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Disconnected, going to re-connect...");
             mqtt_connected = false; // Force re-init on next call
             esp_mqtt_client_reconnect(client);
             break;
         case MQTT_EVENT_SUBSCRIBED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
             msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-            ESP_LOGI(TAG_INTERFACEMQTT, "sent publish successful, msg_id=%d", msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "sent publish successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_UNSUBSCRIBED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_PUBLISHED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_DATA:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DATA");
-            ESP_LOGI(TAG_INTERFACEMQTT, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            ESP_LOGI(TAG_INTERFACEMQTT, "DATA=%.*s\r\n", event->data_len, event->data);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_DATA");
+            ESP_LOGD(TAG_INTERFACEMQTT, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            ESP_LOGD(TAG_INTERFACEMQTT, "DATA=%.*s\r\n", event->data_len, event->data);
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
@@ -105,11 +106,11 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             }
             break;
         case MQTT_EVENT_ERROR:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_ERROR");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_ERROR");
             mqtt_connected = false; // Force re-init on next call
             break;
         default:
-            ESP_LOGI(TAG_INTERFACEMQTT, "Other event id:%d", event->event_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "Other event id:%d", event->event_id);
             break;
     }
     return ESP_OK;
