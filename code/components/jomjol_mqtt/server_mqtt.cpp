@@ -195,6 +195,9 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
 
     publishStaticData();
 
+    const char* resp_str = (const char*) req->user_ctx;
+    httpd_resp_send(req, resp_str, strlen(resp_str));  
+
     return ESP_OK;
 }
 
@@ -213,7 +216,7 @@ void register_server_mqtt_uri(httpd_handle_t server) {
 
     uri.uri       = "/mqtt_publish_discovery";
     uri.handler   = sendDiscovery_and_static_Topics;
-    uri.user_ctx  = (void*) "MQTT Send Discovery and Static";    
+    uri.user_ctx  = (void*) "MQTT Discovery and Static Topics sent";    
     httpd_register_uri_handler(server, &uri); 
 }
 
