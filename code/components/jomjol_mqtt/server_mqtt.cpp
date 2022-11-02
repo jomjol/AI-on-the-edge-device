@@ -211,7 +211,7 @@ void register_server_mqtt_uri(httpd_handle_t server) {
     httpd_uri_t uri = { };
     uri.method    = HTTP_GET;
 
-    uri.uri       = "/mqtt_send";
+    uri.uri       = "/mqtt_publish_discovery";
     uri.handler   = sendDiscovery_and_static_Topics;
     uri.user_ctx  = (void*) "MQTT Send Discovery and Static";    
     httpd_register_uri_handler(server, &uri); 
