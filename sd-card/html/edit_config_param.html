@@ -626,7 +626,9 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>Homeassistant Discovery (using MQTT)</h4></td>
+			<td colspan="3" style="padding-left: 20px;"><h4>Homeassistant Discovery (using MQTT)</h4>
+			<span style="font-size: 80%;">The discovery topics and the static topics (IP, MAC, Hostname, Interval, ...) only get sent on startup.
+			To send them again, you can call the following URL: <a href=mqtt_publish_discovery target="_blank">http://&lt;IP&gt;/mqtt_publish_discovery</a></span></td>
 		</tr> 
 		<tr>
 			<td class="indent1">
