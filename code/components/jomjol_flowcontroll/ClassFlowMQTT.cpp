@@ -119,8 +119,10 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(zerlegt[0]) == "SETRETAINFLAG") && (zerlegt.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(zerlegt[1]) == "TRUE") {
                 SetRetainFlag = 1;  
+                setMqtt_Server_Retain(SetRetainFlag);
+            }
         }
         if ((toUpper(zerlegt[0]) == "HOMEASSISTANTDISCOVERY") && (zerlegt.size() > 1))
         {
@@ -167,6 +169,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (((toUpper(zerlegt[0]) == "TOPIC") || (toUpper(zerlegt[0]) == "MAINTOPIC")) && (zerlegt.size() > 1))
         {
             maintopic = zerlegt[1];
+            mqttServer_setMainTopic(maintopic);
         }
     }
 
@@ -200,7 +203,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    publishRuntimeData(maintopic, SetRetainFlag);
+    publishRuntimeData();
 
     if (flowpostprocessing)
     {

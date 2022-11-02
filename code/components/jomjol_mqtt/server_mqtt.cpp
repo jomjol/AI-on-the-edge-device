@@ -26,7 +26,8 @@ std::string valueUnit = "";
 std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
 int interval = 0;
-
+int retainFlag;
+static std::string maintopic;
 
 
 void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _interval) {
@@ -41,7 +42,7 @@ void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std
     rateUnit = _rateUnit;
 }
 
-void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, std::string field,
+void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory) {
     std::string version = std::string(libfive_git_version());
 
@@ -128,86 +129,92 @@ void sendHomeAssistantDiscoveryTopic(std::string maintopic, std::string group, s
     MQTTPublish(topicFull, payload, true);
 }
 
-void MQTThomeassistantDiscovery(std::string maintopic) {
-    
+void MQTThomeassistantDiscovery() {    
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
-    //                              Maintopic | Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "MAC",             "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "hostname",        "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "free_memory",     "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "wifi_RSSI",       "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "CPU_temperature", "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic(maintopic, "",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
+    //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
+    sendHomeAssistantDiscoveryTopic("",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "MAC",             "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "hostname",        "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "free_memory",     "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "wifi_RSSI",       "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "CPU_temperature", "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
          std::string group = (*NUMBERS)[i]->name;
-    //                                  Maintopic | Group | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",              "measurement",      ""); // correctly the Unit is Uint/Interval!
+    //                                  Group | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
+        sendHomeAssistantDiscoveryTopic(group,   "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(group,   "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
+        sendHomeAssistantDiscoveryTopic(group,   "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
+        sendHomeAssistantDiscoveryTopic(group,   "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",              "measurement",      ""); // correctly the Unit is Uint/Interval!
         /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
            We need to know the timezone and append it! Until we do this, we simply
            do not set the device class to "timestamp" to avoid errors in Homeassistant! */
-        // sendHomeAssistantDiscoveryTopic(maintopic, group,   "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(maintopic, group,   "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
+        // sendHomeAssistantDiscoveryTopic(group,   "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
-void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
+void publishRuntimeData() {
     char tmp_char[50];
 
     sprintf(tmp_char, "%ld", (long)getUpTime());
-    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
     
     sprintf(tmp_char, "%zu", esp_get_free_heap_size());
-    MQTTPublish(maintopic + "/" + "free_memory", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "free_memory", std::string(tmp_char), retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
-    MQTTPublish(maintopic + "/" + "wifi_RSSI", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "wifi_RSSI", std::string(tmp_char), retainFlag);
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
-    MQTTPublish(maintopic + "/" + "CPU_temperature", std::string(tmp_char), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "CPU_temperature", std::string(tmp_char), retainFlag);
 }
 
 
-void publishStaticData(std::string maintopic, int SetRetainFlag) {
-    MQTTPublish(maintopic + "/" + "MAC", getMac(), SetRetainFlag);
-    MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), SetRetainFlag);
-    MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
+void publishStaticData() {
+    MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
+    MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
+    MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << interval;
-    MQTTPublish(maintopic + "/" + "interval", stream.str(), SetRetainFlag);
+    MQTTPublish(maintopic + "/" + "interval", stream.str(), retainFlag);
 }
 
-
-void GotConnected(std::string maintopic, int SetRetainFlag) {
+esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
     if (HomeassistantDiscovery) {
-        MQTThomeassistantDiscovery(maintopic);
+        MQTThomeassistantDiscovery();
     }
 
-    publishStaticData(maintopic, SetRetainFlag);
-    publishRuntimeData(maintopic, SetRetainFlag);
+    publishStaticData();
+
+    return ESP_OK;
 }
 
+void GotConnected(std::string maintopic, int retainFlag) {
+    if (HomeassistantDiscovery) {
+        MQTThomeassistantDiscovery();
+    }
+
+    publishStaticData();
+    publishRuntimeData();
+}
 
 void register_server_mqtt_uri(httpd_handle_t server) {
-
- /*   httpd_uri_t uri = { };
+    httpd_uri_t uri = { };
     uri.method    = HTTP_GET;
 
     uri.uri       = "/mqtt_send";
-    uri.handler   = handler_lightOn;
-    uri.user_ctx  = (void*) "MQTT Send Static";    
-    httpd_register_uri_handler(server, &uri); */
+    uri.handler   = sendDiscovery_and_static_Topics;
+    uri.user_ctx  = (void*) "MQTT Send Discovery and Static";    
+    httpd_register_uri_handler(server, &uri); 
 }
 
 
@@ -218,4 +225,13 @@ std::string getTimeUnit(void) {
 
 void SetHomeassistantDiscoveryEnabled(bool enabled) {
     HomeassistantDiscovery = enabled;
+}
+
+
+void setMqtt_Server_Retain(int _retainFlag) {
+    retainFlag = _retainFlag;
+}
+
+void mqttServer_setMainTopic( std::string _maintopic) {
+    maintopic = _maintopic;
 }
