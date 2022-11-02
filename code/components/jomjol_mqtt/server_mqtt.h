@@ -6,7 +6,7 @@
 
 
 void SetHomeassistantDiscoveryEnabled(bool enabled);
-void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS);
+void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int interval);
 void mqttServer_setMeterType(std::string meterType, std::string valueUnit, std::string timeUnit,std::string rateUnit);
 
 void register_server_mqtt_uri(httpd_handle_t server);

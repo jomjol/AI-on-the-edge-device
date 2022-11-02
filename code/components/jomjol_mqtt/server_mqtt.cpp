@@ -19,18 +19,19 @@ extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
 
-
 std::vector<NumberPost*>* NUMBERS;
 bool HomeassistantDiscovery = false;
 std::string meterType = "";
 std::string valueUnit = "";
 std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
+int interval = 0;
 
 
 
-void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS) {
+void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _interval) {
     NUMBERS = _NUMBERS;
+    interval = _interval;
 }
 
 void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std::string _timeUnit,std::string _rateUnit) {
@@ -183,7 +184,7 @@ void publishStaticData(std::string maintopic, int SetRetainFlag) {
     MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
 
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(1) << AutoIntervalShared;
+    stream << std::fixed << std::setprecision(1) << interval;
     MQTTPublish(maintopic + "/" + "interval", stream.str(), SetRetainFlag);
 }
 
