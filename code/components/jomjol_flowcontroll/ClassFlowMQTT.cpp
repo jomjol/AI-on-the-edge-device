@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 #include "connect_wlan.h"
@@ -10,6 +11,7 @@
 #include "ClassFlowControll.h"
 
 #include <time.h>
+
 
 #define __HIDE_PASSWORD
 
@@ -176,7 +178,10 @@ void GotConnected(std::string maintopic, int SetRetainFlag) {
     MQTTPublish(maintopic + "/" + "MAC", getMac(), SetRetainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), SetRetainFlag);
     MQTTPublish(maintopic + "/" + "hostname", hostname, SetRetainFlag);
-    MQTTPublish(maintopic + "/" + "interval", std::to_string(AutoIntervalShared), SetRetainFlag);
+
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(1) << AutoIntervalShared;
+    MQTTPublish(maintopic + "/" + "interval", stream.str(), SetRetainFlag);
 
     publishRuntimeData(maintopic, SetRetainFlag);
 }
