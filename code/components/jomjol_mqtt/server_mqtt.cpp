@@ -31,9 +31,10 @@ int retainFlag;
 static std::string maintopic;
 
 
-void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float roundInterval) {
+void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
     NUMBERS = _NUMBERS;
     keepAlive = _keepAlive;
+    roundInterval = _roundInterval; 
 }
 
 void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std::string _timeUnit,std::string _rateUnit) {
