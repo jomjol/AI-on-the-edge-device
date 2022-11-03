@@ -144,13 +144,14 @@ void MQTThomeassistantDiscovery() {
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
          std::string group = (*NUMBERS)[i]->name;
-    //                                  Group | Field              | User Friendly Name          | Icon                      | Unit     | Device Class | State Class       | Entity Category
-        sendHomeAssistantDiscoveryTopic(group,   "value",             "Value",                      "gauge",                    valueUnit, meterType,       "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(group,   "raw",               "Raw Value",                  "raw",                      valueUnit, "",              "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
-        sendHomeAssistantDiscoveryTopic(group,   "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
-        sendHomeAssistantDiscoveryTopic(group,   "rate_per_interval", "Change since last digitalization", "arrow-expand-vertical", valueUnit, "",           "measurement",      ""); // correctly the Unit is Uint/Interval!
+    //                                  Group | Field                 | User Friendly Name                | Icon                   | Unit     | Device Class | State Class       | Entity Category
+        sendHomeAssistantDiscoveryTopic(group,   "value",              "Value",                            "gauge",                 valueUnit, meterType,     "total_increasing", "");
+        sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   valueUnit, "",            "total_increasing", "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "error",              "Error",                            "alert-circle-outline",  "",        "",            "",                 "diagnostic");
+        /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitalization_round */
+        // sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
+        sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit", "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,  "",            "",                 "");        
+        sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round", "arrow-expand-vertical", valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
         /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
            We need to know the timezone and append it! Until we do this, we simply
            do not set the device class to "timestamp" to avoid errors in Homeassistant! */

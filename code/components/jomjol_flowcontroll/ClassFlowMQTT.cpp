@@ -197,7 +197,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     std::string resulterror = "";
     std::string resultraw = "";
     std::string resultrate = ""; // Always Unit / Minute
-    std::string resultrate2 = ""; // According to selection
+    std::string resultRatePerTimeUnit = ""; // According to selection
     std::string resulttimestamp = "";
     std::string resultchangabs = "";
     string zw = "";
@@ -233,18 +233,20 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             if (resultrate.length() > 0) {
                 MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
                 
-                std::string resultrate2;
+                std::string resultRatePerTimeUnit;
                 if (getTimeUnit() == "h") { // Need conversion to be per hour
-                    resultrate2 = resultrate2 = to_string((*NUMBERS)[i]->FlowRateAct / 60); // per minutes => per hour
+                    resultRatePerTimeUnit = resultRatePerTimeUnit = to_string((*NUMBERS)[i]->FlowRateAct / 60); // per minutes => per hour
                 }
                 else { // Keep per minute
-                    resultrate2 = resultrate;
+                    resultRatePerTimeUnit = resultrate;
                 }
-                MQTTPublish(namenumber + "rate2", resultrate2, SetRetainFlag);
+                MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, SetRetainFlag);
             }
 
-            if (resultchangabs.length() > 0)   
-                MQTTPublish(namenumber + "rate_per_interval", resultchangabs, SetRetainFlag);
+            if (resultchangabs.length() > 0) {
+                MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag); // Legacy API
+                MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, SetRetainFlag);
+            }
 
             if (resultraw.length() > 0)   
                 MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
