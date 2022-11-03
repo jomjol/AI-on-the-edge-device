@@ -25,14 +25,15 @@ std::string meterType = "";
 std::string valueUnit = "";
 std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
-int interval = 0;
+float roundInterval;
+int keepAlive = 0;
 int retainFlag;
 static std::string maintopic;
 
 
-void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _interval) {
+void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float roundInterval) {
     NUMBERS = _NUMBERS;
-    interval = _interval;
+    keepAlive = _keepAlive;
 }
 
 void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std::string _timeUnit,std::string _rateUnit) {
@@ -188,7 +189,7 @@ void publishStaticData() {
     MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);
 
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(1) << interval;
+    stream << std::fixed << std::setprecision(1) << roundInterval; // minutes
     MQTTPublish(maintopic + "/" + "interval", stream.str(), retainFlag);
 }
 

@@ -64,9 +64,9 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
         }
     }
     
-    keepAlive = AutoIntervalShared * 60 * 2.5; // TODO find better way to access AutoIntervall in ClassFlowControll
+    keepAlive = AutoIntervalShared * 60 * 2.5; // seconds
 
-    mqttServer_Init(flowpostprocessing->GetNumbers(), keepAlive);
+    mqttServer_Init(flowpostprocessing->GetNumbers(), keepAlive, AutoIntervalShared);
 
     LogFile.WriteToFile(ESP_LOG_INFO, "Digitizer interval is " + std::to_string(AutoIntervalShared) + 
             " minutes => setting MQTT LWT timeout to " + std::to_string(keepAlive/60) + " minutes.");
