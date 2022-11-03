@@ -823,8 +823,8 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/statusflow.html";
     camuri.handler   = handler_statusflow;
-    camuri.user_ctx  = (void*) "Light Off";
-    httpd_register_uri_handler(server, &camuri);
+    camuri.user_ctx  = (void*) "Light Off"; 
+    httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/statusflow";
     camuri.handler   = handler_statusflow;
