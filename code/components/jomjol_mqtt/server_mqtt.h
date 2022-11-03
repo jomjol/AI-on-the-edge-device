@@ -13,7 +13,7 @@ void mqttServer_setMainTopic( std::string maintopic);
 
 void register_server_mqtt_uri(httpd_handle_t server);
 
-void publishRuntimeData();
+void publishSystemData();
 
 std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, int SetRetainFlag);
