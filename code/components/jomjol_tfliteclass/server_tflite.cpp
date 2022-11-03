@@ -818,7 +818,7 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/doflow";
     camuri.handler   = handler_doflow;
-    camuri.user_ctx  = (void*) "Light Off"; 
+    camuri.user_ctx  = (void*) "Light Off";  
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/statusflow.html";
@@ -866,14 +866,14 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/value";
     camuri.handler   = handler_wasserzaehler;
-    camuri.user_ctx  = (void*) "Value";
-    httpd_register_uri_handler(server, &camuri);
+    camuri.user_ctx  = (void*) "Value"; 
+    httpd_register_uri_handler(server, &camuri);  
 
     // Legacy API => New: "/value"
     camuri.uri       = "/wasserzaehler.html";
     camuri.handler   = handler_wasserzaehler;
-    camuri.user_ctx  = (void*) "Wasserzaehler";
-    httpd_register_uri_handler(server, &camuri);
+    camuri.user_ctx  = (void*) "Wasserzaehler"; 
+    httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/json";
     camuri.handler   = handler_json;
