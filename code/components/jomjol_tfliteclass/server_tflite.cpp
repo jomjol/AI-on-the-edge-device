@@ -846,7 +846,7 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/rssi.html";
     camuri.handler   = handler_rssi;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);
+    httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/rssi";
     camuri.handler   = handler_rssi;
