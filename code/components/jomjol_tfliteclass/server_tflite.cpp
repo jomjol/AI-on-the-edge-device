@@ -856,7 +856,7 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;
     camuri.user_ctx  = (void*) "EditFlow"; 
-    httpd_register_uri_handler(server, &camuri);    
+    httpd_register_uri_handler(server, &camuri);     
 
     // Legacy API => New: "/value"
     camuri.uri       = "/value.html";
