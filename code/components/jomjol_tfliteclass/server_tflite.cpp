@@ -837,7 +837,7 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light Off";
     httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/cputemp";
+    camuri.uri       = "/cpu_temperature";
     camuri.handler   = handler_cputemp;
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
