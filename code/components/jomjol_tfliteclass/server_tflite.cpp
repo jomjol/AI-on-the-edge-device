@@ -818,8 +818,8 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/doflow";
     camuri.handler   = handler_doflow;
-    camuri.user_ctx  = (void*) "Light Off";  
-    httpd_register_uri_handler(server, &camuri);
+    camuri.user_ctx  = (void*) "Light Off"; 
+    httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/statusflow.html";
     camuri.handler   = handler_statusflow;
@@ -840,7 +840,7 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/cputemp";
     camuri.handler   = handler_cputemp;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);
+    httpd_register_uri_handler(server, &camuri);  
 
     // Legacy API => New: "/rssi"
     camuri.uri       = "/rssi.html";
@@ -855,8 +855,8 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;
-    camuri.user_ctx  = (void*) "EditFlow";
-    httpd_register_uri_handler(server, &camuri);
+    camuri.user_ctx  = (void*) "EditFlow"; 
+    httpd_register_uri_handler(server, &camuri);    
 
     // Legacy API => New: "/value"
     camuri.uri       = "/value.html";
