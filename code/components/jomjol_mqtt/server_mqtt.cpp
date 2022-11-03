@@ -136,9 +136,9 @@ void MQTThomeassistantDiscovery() {
     sendHomeAssistantDiscoveryTopic("",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "MAC",             "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "hostname",        "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "free_memory",     "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "wifi_RSSI",       "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "CPU_temperature", "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "freeMem",         "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "wifiRSSI",        "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "CPUttemp",        "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
@@ -168,13 +168,13 @@ void publishRuntimeData() {
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
     
     sprintf(tmp_char, "%zu", esp_get_free_heap_size());
-    MQTTPublish(maintopic + "/" + "free_memory", std::string(tmp_char), retainFlag);
+    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
-    MQTTPublish(maintopic + "/" + "wifi_RSSI", std::string(tmp_char), retainFlag);
+    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), retainFlag);
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
-    MQTTPublish(maintopic + "/" + "CPU_temperature", std::string(tmp_char), retainFlag);
+    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), retainFlag);
 }
 
 
