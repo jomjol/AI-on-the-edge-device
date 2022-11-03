@@ -150,7 +150,7 @@ void MQTThomeassistantDiscovery() {
         sendHomeAssistantDiscoveryTopic(group,   "error",             "Error",                      "alert-circle-outline",     "",        "",              "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(group,   "rate",              "Rate (Unit/Minute)",         "swap-vertical",            "",        "",              "",                 ""); // Legacy, always Unit per Minute
         sendHomeAssistantDiscoveryTopic(group,   "rate2",             "Rate (" + rateUnit + ")",    "swap-vertical",            rateUnit,  "",              "",                "");        
-        sendHomeAssistantDiscoveryTopic(group,   "rate_per_interval", "Change since last Interval", "arrow-expand-vertical",    valueUnit, "",              "measurement",      ""); // correctly the Unit is Uint/Interval!
+        sendHomeAssistantDiscoveryTopic(group,   "rate_per_interval", "Change since last digitalization", "arrow-expand-vertical", valueUnit, "",           "measurement",      ""); // correctly the Unit is Uint/Interval!
         /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
            We need to know the timezone and append it! Until we do this, we simply
            do not set the device class to "timestamp" to avoid errors in Homeassistant! */
