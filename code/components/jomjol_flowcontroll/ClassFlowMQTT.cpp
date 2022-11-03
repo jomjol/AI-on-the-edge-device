@@ -215,7 +215,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             resultraw =  (*NUMBERS)[i]->ReturnRawValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
             resultrate = (*NUMBERS)[i]->ReturnRateValue; // Unit per minutes
-            resultchangabs = (*NUMBERS)[i]->ReturnChangeAbsolute;
+            resultchangabs = (*NUMBERS)[i]->ReturnChangeAbsolute; // Units per round
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
             namenumber = (*NUMBERS)[i]->name;
@@ -223,6 +223,8 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 namenumber = maintopic + "/";
             else
                 namenumber = maintopic + "/" + namenumber + "/";
+
+            LogFile.WriteToFile(ESP_LOG_INFO, "Publishing MQTT topics...");
 
             if (result.length() > 0)   
                 MQTTPublish(namenumber + "value", result, SetRetainFlag);
