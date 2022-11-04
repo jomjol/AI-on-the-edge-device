@@ -127,10 +127,10 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
         int _keepalive, int _SetRetainFlag, void *_callbackOnConnected){
 #ifdef __HIDE_PASSWORD
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
-            ", user: " + _user + ", password: XXXXXXXX, maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
+            ", user: " + _user + ", password: XXXXXXXX, maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive) + " s"); 
 #else
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
-            ", user: " + _user + ", password: " + _password + ", maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
+            ", user: " + _user + ", password: " + _password + ", maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)+ " s"); 
 #endif
 
     uri = _mqttURI;
