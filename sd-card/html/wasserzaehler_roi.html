@@ -111,7 +111,7 @@ function refresh() {
 	var basepath = "http://192.168.178.22"; 
 
 	function loadStatus() {
-		url = basepath + '/statusflow.html';     
+		url = basepath + '/statusflow';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -125,7 +125,7 @@ function refresh() {
 	}
 
 	function loadCPUTemp() {
-		url = basepath + '/cputemp.html';     
+		url = basepath + '/cpu_temperature';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -138,7 +138,7 @@ function refresh() {
 	}
 
 	function loadRSSI() {
-		url = basepath + '/rssi.html';     
+		url = basepath + '/rssi';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {

@@ -84,7 +84,7 @@ function setprevalue() {
 	inputVal = inputVal.replace(",", ".");
   	var xhttp = new XMLHttpRequest();
     try {
-          url = basepath + "/setPreValue.html?value=" + inputVal + "&numbers=" + _number;     
+          url = basepath + "/setPreValue?value=" + inputVal + "&numbers=" + _number;     
           xhttp.open("GET", url, false);
           xhttp.send();
           response = xhttp.responseText;
@@ -102,7 +102,7 @@ function loadPrevalue(_basepath) {
 
      var xhttp = new XMLHttpRequest();
      try {
-          url = _basepath + '/setPreValue.html?numbers=' + _number;     
+          url = _basepath + '/setPreValue?numbers=' + _number;     
           xhttp.open("GET", url, false);
           xhttp.send();
           response = xhttp.responseText;
