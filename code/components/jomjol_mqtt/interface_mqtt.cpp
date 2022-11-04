@@ -67,33 +67,34 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_BEFORE_CONNECT");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_BEFORE_CONNECT");
             break;
         case MQTT_EVENT_CONNECTED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_CONNECTED");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_CONNECTED");
             mqtt_connected = true;
             MQTTconnected();
             break;
         case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DISCONNECTED");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_DISCONNECTED");
+            LogFile.WriteToFile(ESP_LOG_WARN, "MQTT - Disconnected, going to re-connect...");
             mqtt_connected = false; // Force re-init on next call
             esp_mqtt_client_reconnect(client);
             break;
         case MQTT_EVENT_SUBSCRIBED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
             msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-            ESP_LOGI(TAG_INTERFACEMQTT, "sent publish successful, msg_id=%d", msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "sent publish successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_UNSUBSCRIBED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_PUBLISHED:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_DATA:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_DATA");
-            ESP_LOGI(TAG_INTERFACEMQTT, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            ESP_LOGI(TAG_INTERFACEMQTT, "DATA=%.*s\r\n", event->data_len, event->data);
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_DATA");
+            ESP_LOGD(TAG_INTERFACEMQTT, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            ESP_LOGD(TAG_INTERFACEMQTT, "DATA=%.*s\r\n", event->data_len, event->data);
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
@@ -105,22 +106,18 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             }
             break;
         case MQTT_EVENT_ERROR:
-            ESP_LOGI(TAG_INTERFACEMQTT, "MQTT_EVENT_ERROR");
+            ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_ERROR");
             mqtt_connected = false; // Force re-init on next call
             break;
         default:
-            ESP_LOGI(TAG_INTERFACEMQTT, "Other event id:%d", event->event_id);
+            ESP_LOGD(TAG_INTERFACEMQTT, "Other event id:%d", event->event_id);
             break;
     }
     return ESP_OK;
 }
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-    ESP_LOGD(TAG_INTERFACEMQTT, "Event dispatched from event loop base=%s, event_id=%ld", base, event_id);
-#else
     ESP_LOGD(TAG_INTERFACEMQTT, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
-#endif
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
@@ -130,10 +127,10 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
         int _keepalive, int _SetRetainFlag, void *_callbackOnConnected){
 #ifdef __HIDE_PASSWORD
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
-            ", user: " + _user + ", password: XXXXXXXX, maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
+            ", user: " + _user + ", password: XXXXXXXX, maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive) + " s"); 
 #else
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT Configuration: uri: " + _mqttURI + ", clientname: " + _clientid + 
-            ", user: " + _user + ", password: " + _password + ", maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)); 
+            ", user: " + _user + ", password: " + _password + ", maintopic: " + _maintopic + ", last-will-topic: " + _maintopic + "/" + _lwt + ", keepAlive: " + std::to_string(_keepalive)+ " s"); 
 #endif
 
     uri = _mqttURI;
@@ -153,7 +150,6 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
 }
 
 bool MQTT_Init() {
-    esp_mqtt_client_config_t mqtt_cfg;
     esp_err_t ret;
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init");
 
@@ -161,33 +157,19 @@ bool MQTT_Init() {
 
     std::string lw = lwt_disconnected;
 
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-    mqtt_cfg.broker.address.uri = uri.c_str();
-    mqtt_cfg.credentials.client_id = client_id.c_str();
-    mqtt_cfg.session.last_will.topic = lwt_topic.c_str();
-    mqtt_cfg.session.last_will.msg = lw.c_str();
-    mqtt_cfg.session.last_will.msg_len = (int)(lw.length());
-    mqtt_cfg.session.last_will.retain = 1;
-    mqtt_cfg.session.keepalive = keepalive;
-#else
-    mqtt_cfg.uri = uri.c_str();
-    mqtt_cfg.client_id = client_id.c_str();
-    mqtt_cfg.lwt_topic = lwt_topic.c_str();
-    mqtt_cfg.lwt_msg = lw.c_str();
-    mqtt_cfg.lwt_retain = 1;
-    mqtt_cfg.lwt_msg_len = (int)(lw.length());
-    mqtt_cfg.keepalive = keepalive;
-#endif
+    esp_mqtt_client_config_t mqtt_cfg = {
+        .uri = uri.c_str(),
+        .client_id = client_id.c_str(),
+        .lwt_topic = lwt_topic.c_str(),
+        .lwt_msg = lw.c_str(),
+        .lwt_retain = 1,
+        .lwt_msg_len = (int)(lw.length()),
+        .keepalive = keepalive
+    };
 
     if (user.length() && password.length()){
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-        mqtt_cfg.credentials.username = user.c_str();
-        mqtt_cfg.credentials.authentication.password = password.c_str();
-	mqtt_cfg.credentials.authentication.key_password_len = password.length();
-#else
         mqtt_cfg.username = user.c_str();
         mqtt_cfg.password = password.c_str();
-#endif
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);

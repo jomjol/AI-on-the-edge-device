@@ -29,7 +29,7 @@ extern "C" {
 
 static const char* TAG = "flow_controll";
 
-float AutoIntervalShared = 10;
+float AutoIntervalShared = 10; // Minutes
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
@@ -142,7 +142,7 @@ void ClassFlowControll::SetInitialParameter(void)
 {
     AutoStart = false;
     SetupModeActive = false;
-    AutoIntervall = 10;
+    AutoIntervall = 10; // Minutes
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;

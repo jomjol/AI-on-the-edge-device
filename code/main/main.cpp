@@ -27,6 +27,7 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
+#include "server_mqtt.h"
 #include "Helper.h"
 
 extern const char* GIT_TAG;
@@ -261,6 +262,7 @@ extern "C" void app_main(void)
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
+    register_server_mqtt_uri(server); 
 
     gpio_handler_create(server);
 
