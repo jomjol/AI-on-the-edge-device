@@ -13,7 +13,7 @@
 
 #define __HIDE_PASSWORD
 
-//static const char *TAG = "class_flow_MQTT";
+static const char *TAG = "class_flow_MQTT";
 
 #define LWT_TOPIC        "connection"
 #define LWT_CONNECTED    "connected"
@@ -143,11 +143,7 @@ void publishRuntimeData(std::string maintopic, int SetRetainFlag) {
     sprintf(tmp_char, "%ld", (long)getUpTime());
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), SetRetainFlag);
     
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-    sprintf(tmp_char, "%lu", esp_get_free_heap_size());
-#else
     sprintf(tmp_char, "%zu", esp_get_free_heap_size());
-#endif
     MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), SetRetainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());

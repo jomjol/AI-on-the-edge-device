@@ -19,21 +19,13 @@ union Rgb {
     bool operator==( Rgb in ) const { return in.value == value; }
     Rgb& blend( Rgb in );
     void swap( Rgb& o ) {  value = o.value; }
-    constexpr Rgb(const Rgb& other) : r(other.r), g(other.g), b(other.b), a(other.a) { }
     void linearize() {
         r = channelGamma(r);
         g = channelGamma(g);
         b = channelGamma(b);
     }
 
-    uint8_t IRAM_ATTR getGrb( int idx ) {
-	switch ( idx ) {
-	case 0: return g;
-	case 1: return r;
-	case 2: return b;
-	}
-	__builtin_unreachable();
-    }
+    uint8_t IRAM_ATTR getGrb( int idx );
 
     void stretchChannels( uint8_t maxR, uint8_t maxG, uint8_t maxB ) {
         r = stretch( r, maxR );
@@ -62,7 +54,6 @@ private:
     }
 };
 
-
 union Hsv {
     struct __attribute__ ((packed)) {
         uint8_t h, s, v, a;
@@ -75,5 +66,4 @@ union Hsv {
     Hsv& operator=( Rgb rgb );
     bool operator==( Hsv in ) const { return in.value == value; }
     void swap( Hsv& o ) { value = o.value; }
-    constexpr Hsv(const Hsv& other) : h(other.h), s(other.s), v(other.v), a(other.a) { }
 };

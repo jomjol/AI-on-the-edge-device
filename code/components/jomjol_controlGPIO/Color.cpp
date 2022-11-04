@@ -89,6 +89,15 @@ Rgb& Rgb::blend( Rgb in ) {
     return *this;
 }
 
+uint8_t IRAM_ATTR Rgb::getGrb( int idx ) {
+    switch ( idx ) {
+        case 0: return g;
+        case 1: return r;
+        case 2: return b;
+    }
+    __builtin_unreachable();
+}
+
 Hsv::Hsv( Rgb r ) {
     int min = std::min( r.r, std::min( r.g, r.b ) );
     int max = std::max( r.r, std::max( r.g, r.b ) );

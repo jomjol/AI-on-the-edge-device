@@ -4,9 +4,7 @@
 
 #include <string>
 
-#ifndef BLINK_GPIO
 #define BLINK_GPIO GPIO_NUM_4
-#endif
 
 #define CAMERA_MODEL_AI_THINKER
 

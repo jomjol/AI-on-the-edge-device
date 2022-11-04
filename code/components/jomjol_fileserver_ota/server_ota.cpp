@@ -3,6 +3,7 @@
 #include <string>
 #include "string.h"
 
+#include <esp_int_wdt.h>
 #include <esp_task_wdt.h>
 
 
@@ -16,9 +17,7 @@
 #include <esp_ota_ops.h>
 #include "esp_http_client.h"
 #include "esp_flash_partitions.h"
-#include "esp_vfs.h"
 #include "esp_partition.h"
-#include "esp_app_format.h"
 #include <nvs.h>
 #include "nvs_flash.h"
 #include "driver/gpio.h"
@@ -79,28 +78,16 @@ static bool ota_update_task(std::string fn)
     const esp_partition_t *running = esp_ota_get_running_partition();
 
     if (configured != running) {
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-        ESP_LOGW(TAGPARTOTA, "Configured OTA boot partition at offset 0x%08lx, but running from offset 0x%08lx",
-#else
         ESP_LOGW(TAGPARTOTA, "Configured OTA boot partition at offset 0x%08x, but running from offset 0x%08x",
-#endif
                  configured->address, running->address);
         ESP_LOGW(TAGPARTOTA, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
     }
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-    ESP_LOGI(TAGPARTOTA, "Running partition type %d subtype %d (offset 0x%08lx)",
-#else
     ESP_LOGI(TAGPARTOTA, "Running partition type %d subtype %d (offset 0x%08x)",
-#endif
              running->type, running->subtype, running->address);
 
 
     update_partition = esp_ota_get_next_update_partition(NULL);
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-    ESP_LOGI(TAGPARTOTA, "Writing to partition subtype %d at offset 0x%lx",
-#else
     ESP_LOGI(TAGPARTOTA, "Writing to partition subtype %d at offset 0x%x",
-#endif
              update_partition->subtype, update_partition->address);
 //    assert(update_partition != NULL);
 
@@ -487,17 +474,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 };
 
 void hard_restart() {
-
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-  esp_task_wdt_config_t wd_config;
-  wd_config.timeout_ms = 1000;
-  wd_config.idle_core_mask = (1 << portNUM_PROCESSORS) - 1;    // Bitmask of all cores
-  wd_config.trigger_panic = true;
-
-  esp_task_wdt_init(&wd_config);
-#else
   esp_task_wdt_init(1,true);
-#endif
   esp_task_wdt_add(NULL);
   while(true);
 }

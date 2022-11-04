@@ -5,8 +5,6 @@
 
 #include <esp_http_server.h>
 #include <map>
-#include "hal/gpio_ll.h"
-#include "rom/gpio.h"
 #include "driver/gpio.h"
 
 #include "SmartLeds.h"

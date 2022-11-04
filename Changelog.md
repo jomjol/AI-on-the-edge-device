@@ -29,7 +29,7 @@
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) changed postprocess for analog->digit (lowest digit processing)
 ### Removed
 
--   [#1261](https://github.com/jomjol/AI-on-the-edge-device/issues/1261) removed unused parameter `ErrorMessage`
+-   n.a.
 
 
 

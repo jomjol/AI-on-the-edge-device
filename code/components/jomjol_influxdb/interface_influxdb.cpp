@@ -41,24 +41,19 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
          case HTTP_EVENT_DISCONNECTED:
             ESP_LOGI(TAG_INTERFACEINFLUXDB, "HTTP Client Disconnected");
             break;
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-	case HTTP_EVENT_REDIRECT:
-            ESP_LOGI(TAG_INTERFACEINFLUXDB, "HTTP Client Redirect");
-	    break;
-#endif
     }
     return ESP_OK;
 }
 
 void InfluxDBPublish(std::string _key, std::string _content, std::string _timestamp) {
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
-    esp_http_client_config_t http_config;
-
-    http_config.user_agent = "ESP32 Meter reader";
-    http_config.method = HTTP_METHOD_POST;
-    http_config.event_handler = http_event_handler;
-    http_config.buffer_size = MAX_HTTP_OUTPUT_BUFFER;
-    http_config.user_data = response_buffer;
+    esp_http_client_config_t http_config = {
+       .user_agent = "ESP32 Meter reader",
+       .method = HTTP_METHOD_POST,
+       .event_handler = http_event_handler,
+       .buffer_size = MAX_HTTP_OUTPUT_BUFFER,
+       .user_data = response_buffer
+    };
 
     if (_influxDBUser.length() && _influxDBPassword.length()){
        http_config.username = _influxDBUser.c_str();

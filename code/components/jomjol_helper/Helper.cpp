@@ -25,7 +25,6 @@ extern "C" {
 #include "ClassLogFile.h"
 
 #include "esp_vfs_fat.h"
-#include "esp_mac.h"
 
 static const char* TAG = "helper";
 
@@ -117,11 +116,7 @@ string getSDCardPartitionAllocationSize(){
     f_getfree("0:", (DWORD *)&fre_clust, &fs);
     allocation_size = fs->ssize;
 
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-    printf("SD Card Partition Allocation Size (bytes): %lu)\n", allocation_size);
-#else
-    printf("SD Card Partition Allocation Size (bytes): %zu)\n", allocation_size);
-#endif
+    printf("SD Card Partition Allocation Size (bytes): %d)\n", allocation_size);
 
 	return std::to_string(allocation_size);
 }
