@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 #include "connect_wlan.h"
@@ -67,14 +68,6 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
         }
     }
-    
-    /* TODO: Find a way to access the interval from ClassFlowControl! */
-    float roundInterval = 0;
-
-    mqttServer_Init(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
-
-    LogFile.WriteToFile(ESP_LOG_INFO, "Digitizer interval is " + std::to_string(roundInterval) + 
-            " minutes => setting MQTT LWT timeout to " + std::to_string(keepAlive/60) + " minutes.");
 }
 
 ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
@@ -178,6 +171,33 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+    /* Note:
+     * Originally, we started the MQTT client here.
+     * How ever we need the interval parameter from the ClassFlowControll, but that only gets started later.
+     * To work around this, we delay the start and trigger it from ClassFlowControll::ReadParameter() */
+
+    return true;
+}
+
+
+string ClassFlowMQTT::GetMQTTMainTopic()
+{
+    return maintopic;
+}
+
+
+bool ClassFlowMQTT::Start(float AutoIntervall) {
+
+    roundInterval = AutoIntervall; // Minutes
+    keepAlive = roundInterval * 60 * 2.5; // Seconds, make sure it is greater thatn 2 rounds!
+
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(1) << "Digitizer interval is " << roundInterval <<
+            " minutes => setting MQTT LWT timeout to " << ((float)keepAlive/60) << " minutes.";
+    LogFile.WriteToFile(ESP_LOG_INFO, stream.str());
+
+    mqttServer_setParameter(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
+
     MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED, LWT_DISCONNECTED,
             keepAlive, SetRetainFlag, (void *)&GotConnected);
 
@@ -186,13 +206,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
         }
     }
+
     return true;
-}
-
-
-string ClassFlowMQTT::GetMQTTMainTopic()
-{
-    return maintopic;
 }
 
 

@@ -516,6 +516,11 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+    /* Start the MQTT service */
+    for (int i = 0; i < FlowControll.size(); ++i)
+        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
+            return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
+
     return true;
 }
 

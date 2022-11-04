@@ -25,13 +25,13 @@ std::string meterType = "";
 std::string valueUnit = "";
 std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
-float roundInterval;
-int keepAlive = 0;
+float roundInterval; // Minutes
+int keepAlive = 0; // Seconds
 int retainFlag;
 static std::string maintopic;
 
 
-void mqttServer_Init(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
+void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
     NUMBERS = _NUMBERS;
     keepAlive = _keepAlive;
     roundInterval = _roundInterval; 
