@@ -12,6 +12,7 @@
 #include "Helper.h"
 
 #include "esp_camera.h"
+#include "esp_timer.h"
 #include "time_sntp.h"
 #include "ClassControllCamera.h"
 

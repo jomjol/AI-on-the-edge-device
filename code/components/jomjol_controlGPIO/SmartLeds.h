@@ -56,10 +56,14 @@
         #include <freertos/semphr.h>
         #include <soc/dport_reg.h>
         #include <soc/gpio_sig_map.h>
+	#include <soc/gpio_periph.h>
+	#include <esp32/rom/gpio.h>
         #include <soc/rmt_struct.h>
         #include <driver/spi_master.h>
+	#include <driver/rmt.h>
     }
     #include <stdio.h>
+    extern rmt_mem_t RMTMEM;
 #endif
 
 #include "Color.h"
@@ -131,8 +135,7 @@ public:
         initChannel( _channel );
 
         RMT.tx_lim_ch[ _channel ].limit = detail::MAX_PULSES;
-        RMT.int_ena.val |= 1 << ( 24 + _channel );
-        RMT.int_ena.val |= 1 << ( 3 * _channel );
+	RMT.int_ena.val = RMT.int_ena.val | (1 << ( 24 + _channel )) | (1 << ( 3 * _channel ));
 
         _bitToRmt[ 0 ].level0 = 1;
         _bitToRmt[ 0 ].level1 = 0;
