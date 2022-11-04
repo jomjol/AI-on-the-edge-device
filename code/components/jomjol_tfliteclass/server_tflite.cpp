@@ -811,7 +811,13 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light On";    
     httpd_register_uri_handler(server, &camuri);
 
+    // Legacy API => New: "/setPreValue"
     camuri.uri       = "/setPreValue.html";
+    camuri.handler   = handler_prevalue;
+    camuri.user_ctx  = (void*) "Prevalue";    
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/setPreValue";
     camuri.handler   = handler_prevalue;
     camuri.user_ctx  = (void*) "Prevalue";    
     httpd_register_uri_handler(server, &camuri);
