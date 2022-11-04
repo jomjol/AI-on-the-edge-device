@@ -108,7 +108,7 @@ void GpioPin::init()
     gpio_config(&io_conf);
 
 //    if (_interruptType != GPIO_INTR_DISABLE) {                // ohne GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X, wenn das genutzt wird, dann soll auch der Handler hier nicht initialisiert werden, da das dann über SmartLED erfolgt.
-    if ((_interruptType != GPIO_INTR_DISABLE) && (_interruptType != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
+    if ((_interruptType != GPIO_INTR_DISABLE) && (_mode != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
         //hook isr handler for specific gpio pin
         ESP_LOGD(TAG_SERVERGPIO, "GpioPin::init add isr handler for GPIO %d", _gpio);
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*)&_gpio);

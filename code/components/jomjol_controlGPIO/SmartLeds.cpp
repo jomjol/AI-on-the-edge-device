@@ -16,16 +16,16 @@ void IRAM_ATTR SmartLed::interruptHandler(void*) {
         if ( RMT.int_st.val & (1 << (24 + channel ) ) ) { // tx_thr_event
             if ( self )
                 self->copyRmtHalfBlock();
-            RMT.int_clr.val |= 1 << ( 24 + channel );
+            RMT.int_clr.val = RMT.int_clr.val | 1 << ( 24 + channel );
         } else if ( RMT.int_st.val & ( 1 << (3 * channel ) ) ) { // tx_end
             if ( self )
                 xSemaphoreGiveFromISR( self->_finishedFlag, nullptr );
-            RMT.int_clr.val |= 1 << ( 3 * channel );
+            RMT.int_clr.val = RMT.int_clr.val | 1 << ( 3 * channel );
         }
     }
 }
 
-void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
+void SmartLed::copyRmtHalfBlock() {
     int offset = detail::MAX_PULSES * _halfIdx;
     _halfIdx = !_halfIdx;
     int len = 3 - _componentPosition + 3 * ( _count - 1 );
