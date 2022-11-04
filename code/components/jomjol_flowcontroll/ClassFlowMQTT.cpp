@@ -16,8 +16,6 @@
 
 #define __HIDE_PASSWORD
 
-//static const char *TAG = "class_flow_MQTT";
-
 #define LWT_TOPIC        "connection"
 #define LWT_CONNECTED    "connected"
 #define LWT_DISCONNECTED "connection lost"
@@ -26,7 +24,6 @@ extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
 
-extern float AutoIntervalShared;
 
 void ClassFlowMQTT::SetInitialParameter(void)
 {
@@ -71,11 +68,12 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc)
         }
     }
     
-    keepAlive = AutoIntervalShared * 60 * 2.5; // seconds
+    /* TODO: Find a way to access the interval from ClassFlowControl! */
+    float roundInterval = 0;
 
-    mqttServer_Init(flowpostprocessing->GetNumbers(), keepAlive, AutoIntervalShared);
+    mqttServer_Init(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "Digitizer interval is " + std::to_string(AutoIntervalShared) + 
+    LogFile.WriteToFile(ESP_LOG_INFO, "Digitizer interval is " + std::to_string(roundInterval) + 
             " minutes => setting MQTT LWT timeout to " + std::to_string(keepAlive/60) + " minutes.");
 }
 

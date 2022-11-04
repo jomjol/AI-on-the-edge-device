@@ -29,7 +29,6 @@ extern "C" {
 
 static const char* TAG = "flow_controll";
 
-float AutoIntervalShared = 10; // Minutes
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
@@ -517,7 +516,6 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    AutoIntervalShared = AutoIntervall;
     return true;
 }
 
