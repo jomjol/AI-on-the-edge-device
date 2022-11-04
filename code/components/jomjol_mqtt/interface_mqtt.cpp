@@ -93,16 +93,16 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGD(TAG_INTERFACEMQTT, "MQTT_EVENT_DATA");
-            ESP_LOGD(TAG_INTERFACEMQTT, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            ESP_LOGD(TAG_INTERFACEMQTT, "DATA=%.*s\r\n", event->data_len, event->data);
+            ESP_LOGD(TAG_INTERFACEMQTT, "TOPIC=%.*s", event->topic_len, event->topic);
+            ESP_LOGD(TAG_INTERFACEMQTT, "DATA=%.*s", event->data_len, event->data);
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
-                    ESP_LOGD(TAG_INTERFACEMQTT, "call handler function\r\n");
+                    ESP_LOGD(TAG_INTERFACEMQTT, "call handler function");
                     (*subscribeFunktionMap)[topic](topic, event->data, event->data_len);
                 }
             } else {
-                ESP_LOGW(TAG_INTERFACEMQTT, "no handler available\r\n");
+                ESP_LOGW(TAG_INTERFACEMQTT, "no handler available");
             }
             break;
         case MQTT_EVENT_ERROR:
@@ -217,7 +217,7 @@ bool MQTTisConnected() {
 }
 
 void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
-    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisteronnectFunction %s\r\n", name.c_str());
+    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisteronnectFunction %s", name.c_str());
     if (connectFunktionMap == NULL) {
         connectFunktionMap = new std::map<std::string, std::function<void()>>();
     }
@@ -235,14 +235,14 @@ void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
 }
 
 void MQTTunregisterConnectFunction(std::string name){
-    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisteronnectFunction %s\r\n", name.c_str());
+    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisteronnectFunction %s", name.c_str());
     if ((connectFunktionMap != NULL) && (connectFunktionMap->find(name) != connectFunktionMap->end())) {
         connectFunktionMap->erase(name);
     }
 }
 
 void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::string, char*, int)> func){
-    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisterSubscribeFunction %s\r\n", topic.c_str());
+    ESP_LOGD(TAG_INTERFACEMQTT, "MQTTregisterSubscribeFunction %s", topic.c_str());
     if (subscribeFunktionMap == NULL) {
         subscribeFunktionMap = new std::map<std::string, std::function<bool(std::string, char*, int)>>();
     }
