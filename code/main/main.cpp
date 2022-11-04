@@ -46,6 +46,9 @@ extern const char* BUILD_TIME;
 #include "server_GPIO.h"
 
 
+#ifdef BLINK_GPIO
+#undef BLINK_GPIO
+#endif
 #define BLINK_GPIO GPIO_NUM_33
 
 static const char *TAGMAIN = "main";
@@ -88,11 +91,10 @@ bool Init_NVS_SDCard()
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
     // formatted in case when mounting fails.
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-        .format_if_mount_failed = false,
-        .max_files = 7,                         // anstatt 5 (2022-09-21)
-        .allocation_unit_size = 16 * 1024
-    };
+    esp_vfs_fat_sdmmc_mount_config_t mount_config;
+    mount_config.format_if_mount_failed = false;
+    mount_config.max_files = 7;                         // anstatt 5 (2022-09-21)
+    mount_config.allocation_unit_size = 16 * 1024;
 
     // Use settings defined above to initialize SD card and mount FAT filesystem.
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
@@ -195,7 +197,7 @@ extern "C" void app_main(void)
         ESP_LOGD(TAGMAIN, "No SSID and PASSWORD set!!!");
 
     if (hostname != NULL)
-        ESP_LOGD(TAGMAIN, "Hostename: %s", hostname);
+        ESP_LOGD(TAGMAIN, "Hostname: %s", hostname);
     else
         ESP_LOGD(TAGMAIN, "Hostname not set");
 

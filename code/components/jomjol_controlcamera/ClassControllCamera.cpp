@@ -70,41 +70,7 @@
 
 static const char *TAGCAMERACLASS = "server_part_camera"; 
 
-static camera_config_t camera_config = {
-    .pin_pwdn = CAM_PIN_PWDN,
-    .pin_reset = CAM_PIN_RESET,
-    .pin_xclk = CAM_PIN_XCLK,
-    .pin_sscb_sda = CAM_PIN_SIOD,
-    .pin_sscb_scl = CAM_PIN_SIOC,
-
-    .pin_d7 = CAM_PIN_D7,
-    .pin_d6 = CAM_PIN_D6,
-    .pin_d5 = CAM_PIN_D5,
-    .pin_d4 = CAM_PIN_D4,
-    .pin_d3 = CAM_PIN_D3,
-    .pin_d2 = CAM_PIN_D2,
-    .pin_d1 = CAM_PIN_D1,
-    .pin_d0 = CAM_PIN_D0,
-    .pin_vsync = CAM_PIN_VSYNC,
-    .pin_href = CAM_PIN_HREF,
-    .pin_pclk = CAM_PIN_PCLK,
-
-    //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,             // Orginalwert
-//    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!! Hängt in Version 9.2 !!!!
-    .ledc_timer = LEDC_TIMER_0,
-    .ledc_channel = LEDC_CHANNEL_0,
-
-    .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_VGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-//    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    .jpeg_quality = 12, //0-63 lower number means higher quality
-    .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
-    .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
-//    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
-    .grab_mode = CAMERA_GRAB_LATEST,      // erst ab neuer esp32cam-version
-    
-};
+static camera_config_t camera_config;
 
 
 #include "driver/ledc.h"
@@ -112,6 +78,9 @@ static camera_config_t camera_config = {
 CCamera Camera;
 
 #define FLASH_GPIO GPIO_NUM_4
+#ifdef BLINK_GPIO
+#undef BLINK_GPIO
+#endif
 #define BLINK_GPIO GPIO_NUM_33
 
 typedef struct {
@@ -533,7 +502,11 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     esp_camera_fb_return(fb);
     int64_t fr_end = esp_timer_get_time();
     
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+    ESP_LOGI(TAGCAMERACLASS, "JPG: %luKB %lums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
+#else
     ESP_LOGI(TAGCAMERACLASS, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
+#endif
 
     if (delay > 0) 
     {
@@ -672,6 +645,40 @@ CCamera::CCamera()
 esp_err_t CCamera::InitCam()
 {
     ESP_LOGD(TAGCAMERACLASS, "Init Camera");
+
+    camera_config.pin_pwdn = CAM_PIN_PWDN;
+    camera_config.pin_reset = CAM_PIN_RESET;
+    camera_config.pin_xclk = CAM_PIN_XCLK;
+    camera_config.pin_sccb_sda = CAM_PIN_SIOD;
+    camera_config.pin_sccb_scl = CAM_PIN_SIOC;
+
+    camera_config.pin_d7 = CAM_PIN_D7;
+    camera_config.pin_d6 = CAM_PIN_D6;
+    camera_config.pin_d5 = CAM_PIN_D5;
+    camera_config.pin_d4 = CAM_PIN_D4;
+    camera_config.pin_d3 = CAM_PIN_D3;
+    camera_config.pin_d2 = CAM_PIN_D2;
+    camera_config.pin_d1 = CAM_PIN_D1;
+    camera_config.pin_d0 = CAM_PIN_D0;
+    camera_config.pin_vsync = CAM_PIN_VSYNC;
+    camera_config.pin_href = CAM_PIN_HREF;
+    camera_config.pin_pclk = CAM_PIN_PCLK;
+
+    //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
+    camera_config.xclk_freq_hz = 20000000;             // Orginalwert
+//    camera_config.xclk_freq_hz =    5000000;               // Test, um die Bildfehler los zu werden !!!! Hängt in Version 9.2 !!!!
+    camera_config.ledc_timer = LEDC_TIMER_0;
+    camera_config.ledc_channel = LEDC_CHANNEL_0;
+
+    camera_config.pixel_format = PIXFORMAT_JPEG; //YUV422,GRAYSCALE,RGB565,JPEG
+    camera_config.frame_size = FRAMESIZE_VGA;    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+//    camera_config.frame_size = FRAMESIZE_UXGA;    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    camera_config.jpeg_quality = 12; //0-63 lower number means higher quality
+    camera_config.fb_count = 1;       //if more than one, i2s runs in continuous mode. Use only with JPEG
+    camera_config.fb_location = CAMERA_FB_IN_PSRAM; /*!< The location where the frame buffer will be allocated */
+//    camera_config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
+    camera_config.grab_mode = CAMERA_GRAB_LATEST;      // erst ab neuer esp32cam-version
+
     ActualQuality = camera_config.jpeg_quality;
     ActualResolution = camera_config.frame_size;
     //initialize the camera

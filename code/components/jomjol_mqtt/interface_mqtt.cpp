@@ -116,7 +116,11 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 }
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+    ESP_LOGD(TAG_INTERFACEMQTT, "Event dispatched from event loop base=%s, event_id=%ld", base, event_id);
+#else
     ESP_LOGD(TAG_INTERFACEMQTT, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
+#endif
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
@@ -149,6 +153,7 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
 }
 
 bool MQTT_Init() {
+    esp_mqtt_client_config_t mqtt_cfg;
     esp_err_t ret;
     LogFile.WriteToFile(ESP_LOG_INFO, "MQTT - Init");
 
@@ -156,19 +161,33 @@ bool MQTT_Init() {
 
     std::string lw = lwt_disconnected;
 
-    esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = uri.c_str(),
-        .client_id = client_id.c_str(),
-        .lwt_topic = lwt_topic.c_str(),
-        .lwt_msg = lw.c_str(),
-        .lwt_retain = 1,
-        .lwt_msg_len = (int)(lw.length()),
-        .keepalive = keepalive
-    };
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+    mqtt_cfg.broker.address.uri = uri.c_str();
+    mqtt_cfg.credentials.client_id = client_id.c_str();
+    mqtt_cfg.session.last_will.topic = lwt_topic.c_str();
+    mqtt_cfg.session.last_will.msg = lw.c_str();
+    mqtt_cfg.session.last_will.msg_len = (int)(lw.length());
+    mqtt_cfg.session.last_will.retain = 1;
+    mqtt_cfg.session.keepalive = keepalive;
+#else
+    mqtt_cfg.uri = uri.c_str();
+    mqtt_cfg.client_id = client_id.c_str();
+    mqtt_cfg.lwt_topic = lwt_topic.c_str();
+    mqtt_cfg.lwt_msg = lw.c_str();
+    mqtt_cfg.lwt_retain = 1;
+    mqtt_cfg.lwt_msg_len = (int)(lw.length());
+    mqtt_cfg.keepalive = keepalive;
+#endif
 
     if (user.length() && password.length()){
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+        mqtt_cfg.credentials.username = user.c_str();
+        mqtt_cfg.credentials.authentication.password = password.c_str();
+	mqtt_cfg.credentials.authentication.key_password_len = password.length();
+#else
         mqtt_cfg.username = user.c_str();
         mqtt_cfg.password = password.c_str();
+#endif
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);

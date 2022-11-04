@@ -172,7 +172,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "MaxRateType", 1, true);
      ParamAddValue(param, catname, "ExtendedResolution", 1, true);
      ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true);
-     ParamAddValue(param, catname, "ErrorMessage");
+//     ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
 
      var catname = "MQTT";

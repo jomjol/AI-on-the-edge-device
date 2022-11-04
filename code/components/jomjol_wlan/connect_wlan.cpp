@@ -13,6 +13,8 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "lwip/ip_addr.h"
+#include "lwip/inet.h"
 
 #include <fstream>
 #include <string>
@@ -36,10 +38,14 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_FAIL_BIT      BIT1
 
 static const char *TAG = "wifi station";
+static esp_netif_t *my_sta;
 
 static int s_retry_num = 0;
 
 ///////////////////////////////////////////////////////////
+#ifdef BLINK_GPIO
+#undef BLINK_GPIO
+#endif
 #define BLINK_GPIO GPIO_NUM_33
 
 int BlinkDauer;
@@ -75,7 +81,11 @@ void task_doBlink(void *pvParameter)
     BlinkIsRunning = true;
 
 	// Init the GPIO
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+    esp_rom_gpio_pad_select_gpio(BLINK_GPIO);
+#else
     gpio_pad_select_gpio(BLINK_GPIO);
+#endif
     /* Set the GPIO as a push/pull output */
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
 
@@ -127,7 +137,9 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        ipadress = std::string(ip4addr_ntoa((const ip4_addr*) &event->ip_info.ip));
+	char ip_addr[16];
+	inet_ntoa_r(event->ip_info.ip.addr, ip_addr, 16);
+        ipadress = std::string(ip_addr);
         s_retry_num = 0;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
         LEDBlinkTask(1000, 5, true);
@@ -149,7 +161,7 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
     ESP_ERROR_CHECK(esp_netif_init());
 
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_t *my_sta = esp_netif_create_default_wifi_sta();
+    my_sta = esp_netif_create_default_wifi_sta();
 
     if ((_ipadr != NULL) && (_gw != NULL) && (_netmask != NULL))
     {
@@ -225,7 +237,7 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 
     if (_hostname != NULL)
     {
-        esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , _hostname);
+	esp_err_t ret = esp_netif_set_hostname(my_sta, _hostname);
         hostname = std::string(_hostname);
         if(ret != ESP_OK ){
             ESP_LOGE(TAG,"failed to set hostname:%d",ret);  

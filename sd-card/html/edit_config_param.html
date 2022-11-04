@@ -407,6 +407,7 @@ textarea {
 				Set on "false" to ensure, that only positive changes are accepted (typically for counter)
 			</td>
 		</tr>
+<!--
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
@@ -422,6 +423,7 @@ textarea {
 				Do not show error message in return value - in error case, the last valid number will be send out
 			</td>
 		</tr>
+-->
 		<tr class="expert" id="ex1dddd">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "CheckDigitIncreaseConsistency")' unchecked >
@@ -1724,7 +1726,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
-	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
+//	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
 	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
 	WriteParameter(param, category, "MQTT", "Uri", true);	
@@ -1841,7 +1843,7 @@ function ReadParameterAll()
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
 	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
-	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
+//	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
 	ReadParameter(param, "MQTT", "Uri", true);	

@@ -12,6 +12,7 @@
 #include "Helper.h"
 
 #include "esp_camera.h"
+#include "esp_timer.h"
 #include "time_sntp.h"
 #include "ClassControllCamera.h"
 
@@ -811,7 +812,13 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light On";    
     httpd_register_uri_handler(server, &camuri);
 
+    // Legacy API => New: "/setPreValue"
     camuri.uri       = "/setPreValue.html";
+    camuri.handler   = handler_prevalue;
+    camuri.user_ctx  = (void*) "Prevalue";    
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/setPreValue";
     camuri.handler   = handler_prevalue;
     camuri.user_ctx  = (void*) "Prevalue";    
     httpd_register_uri_handler(server, &camuri);
@@ -825,27 +832,51 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_statusflow;
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
-    
+
+    camuri.uri       = "/statusflow";
+    camuri.handler   = handler_statusflow;
+    camuri.user_ctx  = (void*) "Light Off";
+    httpd_register_uri_handler(server, &camuri);
+
+    // Legacy API => New: "/cpu_temperature"
     camuri.uri       = "/cputemp.html";
+    camuri.handler   = handler_cputemp;
+    camuri.user_ctx  = (void*) "Light Off";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/cpu_temperature";
     camuri.handler   = handler_cputemp;
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
 
+    // Legacy API => New: "/rssi"
     camuri.uri       = "/rssi.html";
     camuri.handler   = handler_rssi;
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
+
+    camuri.uri       = "/rssi";
+    camuri.handler   = handler_rssi;
+    camuri.user_ctx  = (void*) "Light Off";
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/editflow.html";
     camuri.handler   = handler_editflow;
     camuri.user_ctx  = (void*) "EditFlow"; 
     httpd_register_uri_handler(server, &camuri);     
 
+    // Legacy API => New: "/value"
     camuri.uri       = "/value.html";
+    camuri.handler   = handler_wasserzaehler;
+    camuri.user_ctx  = (void*) "Value";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/value";
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Value"; 
     httpd_register_uri_handler(server, &camuri);  
 
+    // Legacy API => New: "/value"
     camuri.uri       = "/wasserzaehler.html";
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 

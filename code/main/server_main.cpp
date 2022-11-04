@@ -12,6 +12,7 @@
 #include "version.h"
 
 #include "esp_wifi.h"
+#include "lwip/inet.h"
 
 #include "server_tflite.h"
 #include "esp_log.h"
@@ -359,12 +360,25 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     std::string gitrevision = libfive_git_revision();
     std::string htmlversion = getHTMLversion();
     char freeheapmem[11];
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+    sprintf(freeheapmem, "%lu", esp_get_free_heap_size());
+#else
     sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+#endif
     
-    tcpip_adapter_ip_info_t ip_info;
-    ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+    char ipstr[INET_ADDRSTRLEN];
     const char *hostname;
-    ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
+    esp_netif_t *esp_netif = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
+    if (esp_netif != NULL) {
+	esp_netif_ip_info_t ip_info;
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(esp_netif, &ip_info));
+	esp_ip4addr_ntoa(&ip_info.ip, ipstr, INET_ADDRSTRLEN);
+
+	ESP_ERROR_CHECK(esp_netif_get_hostname(esp_netif, &hostname));
+    } else {
+	ipstr[0] = '\0';
+	hostname = "n/a";
+    }
     
     zw = "[\
             {\
@@ -376,7 +390,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
                 \"html\" : \"" + htmlversion + "\",\
                 \"cputemp\" : \"" + cputemp + "\",\
                 \"hostname\" : \"" + hostname + "\",\
-                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\",\
+                \"IPv4\" : \"" + ipstr + "\",\
                 \"freeHeapMem\" : \"" + freeheapmem + "\"\
             }\
         ]";
