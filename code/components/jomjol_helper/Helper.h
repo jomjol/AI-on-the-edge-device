@@ -43,6 +43,8 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);
 
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter);
 
+bool strval_is_true(const char *);
+
 ///////////////////////////
 size_t getInternalESPHeapSize();
 size_t getESPHeapSize();

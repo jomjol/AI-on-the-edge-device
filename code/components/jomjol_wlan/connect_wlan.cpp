@@ -20,6 +20,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "Helper.h"
+
 #define __HIDE_PASSWORD
 
 
@@ -51,6 +53,8 @@ std::string hostname = "";
 std::string std_hostname = "watermeter";
 std::string ipadress = "";
 std::string ssid = "";
+std::string ipv6en = "";
+std::string std_ipv6en = "0";
 
 std::string* getIPAddress()
 {
@@ -131,8 +135,30 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         s_retry_num = 0;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
         LEDBlinkTask(1000, 5, true);
+#ifdef CONFIG_LWIP_IPV6
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_GOT_IP6) {
+	char buf[48];
+	ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
+	ESP_LOGI(TAG, "Got IPv6 address: " IPV6STR, IPV62STR(event->ip6_info.ip));
+
+	ip6addr_ntoa_r((const ip6_addr*)&event->ip6_info.ip, buf, sizeof(buf));
+	ipadress = std::string(buf);
+	xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+	LEDBlinkTask(1000, 5, true);
+#endif
     }
 }
+
+#ifdef CONFIG_LWIP_IPV6
+static void
+on_wifi_connect(void *arg, esp_event_base_t event_base __unused,
+    int32_t event_id __unused, void *event_data __unused)
+{
+	esp_netif_t *esp_netif = (esp_netif_t *)arg;
+	ESP_LOGI(TAG, "Wifi connected. Enabling IPv6 link-local...");
+	esp_netif_create_ip6_linklocal(esp_netif);
+}
+#endif
 
 void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
     std::string zw = std::string(ip);
@@ -142,7 +168,7 @@ void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
 }
 
 
-void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns)
+void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns, const char *_ipv6en)
 {
     s_wifi_event_group = xEventGroupCreate();
 
@@ -193,14 +219,10 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
             
         ESP_LOGI(TAG, "set DNS manual");
         esp_netif_dns_info_t dns_info;
-        ip4_addr_t ip;
-        ip.addr = esp_ip4addr_aton(_dns);
-        ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
+        dns_info.ip.u_addr.ip4.addr = ipaddr_addr(_dns);
+        dns_info.ip.type = IPADDR_TYPE_V4;
         ESP_ERROR_CHECK(esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info));
     }
-
-
-
 
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
@@ -214,6 +236,25 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
                                                         &event_handler,
                                                         NULL,
                                                         &instance_got_ip));
+
+    if (strval_is_true(_ipv6en)) {
+#ifdef CONFIG_LWIP_IPV6
+	esp_event_handler_instance_t instance_got_ip6;
+
+	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT,
+						   WIFI_EVENT_STA_CONNECTED,
+						   &on_wifi_connect,
+						   my_sta));
+	ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+							    IP_EVENT_GOT_IP6,
+							    &event_handler,
+							    NULL,
+							    &instance_got_ip6));
+#else
+	ESP_LOGI(TAG, "IPv6 support enabled but not compiled into image.");
+#endif
+    }
+
     wifi_config_t wifi_config = { };
 
     strcpy((char*)wifi_config.sta.ssid, (const char*)_ssid);
@@ -279,13 +320,18 @@ int get_WIFI_RSSI()
     return ap.rssi;
 }
 
+void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns)
+{
+    wifi_init_sta(_ssid, _password, _hostname, _ipadr, _gw, _netmask, _dns, NULL);
+}
+
 void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname)
 {
-    wifi_init_sta(_ssid, _password, _hostname, NULL, NULL, NULL, NULL);
+    wifi_init_sta(_ssid, _password, _hostname, NULL, NULL, NULL, NULL, NULL);
 }
 
 void wifi_init_sta(const char *_ssid, const char *_password)
 {
-    wifi_init_sta(_ssid, _password, NULL, NULL, NULL, NULL, NULL);
+    wifi_init_sta(_ssid, _password, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 

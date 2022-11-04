@@ -181,8 +181,8 @@ extern "C" void app_main(void)
 */
 
 
-    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
+    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL, *ipv6en = NULL;
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, ipv6en);
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
@@ -204,8 +204,14 @@ extern "C" void app_main(void)
     if (dns != NULL)
        ESP_LOGD(TAGMAIN, "DNS IP: %s", dns);
 
+#ifdef CONFIG_LWIP_IPV6
+    if (strval_is_true(ipv6en))
+       printf("Enabling IPv6 support\n");
+    else
+#endif
+       printf("No IPv6 support enabled\n");
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns, ipv6en);
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;

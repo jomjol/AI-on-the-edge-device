@@ -755,3 +755,19 @@ string getResetReason(void) {
 	}
     return reasonText;
 }
+
+bool
+strval_is_true(const char *val)
+{
+
+	if (val == NULL || *val == '\0')
+		return (false);
+
+	if (strcasecmp(val, "true") == 0 ||
+	    strcasecmp(val, "yes") == 0 ||
+	    strcasecmp(val, "ja") == 0 ||
+	    strcmp(val, "1") == 0)
+		return (true);
+
+	return (false);
+}

@@ -40,7 +40,7 @@ std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter =
 
 
 
-void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns)
+void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, char *&_ipv6en)
 {
     std::string ssid = "";
     std::string passphrase = "";
@@ -52,6 +52,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     std::string line = "";
     std::vector<string> zerlegt;
     hostname = std_hostname;
+    ipv6en = std_ipv6en;
 
     FILE* pFile;
     fn = FormatFileName(fn);
@@ -121,6 +122,12 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
             }
         }
 
+	if ((zerlegt.size() > 1) && (toUpper(zerlegt[0]) == "IPV6EN")){
+	    ipv6en = zerlegt[1];
+	    if ((ipv6en[0] == '"') && (ipv6en[ipv6en.length()-1] == '"')){
+		ipv6en = ipv6en.substr(1, ipv6en.length()-2);
+	    }
+	}
 
         if (fgets(zw, 1024, pFile) == NULL)
         {
@@ -134,9 +141,13 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
 
     fclose(pFile);
 
-    // Check if Hostname was empty in .ini if yes set to std_hostname
+    // Check if Hostname/IPv6en was empty in .ini and
+    // if yes set to std_hostname/std_ipv6en.
     if(hostname.length() == 0){
         hostname = std_hostname;
+    }
+    if (ipv6en.length() == 0){
+        ipv6en = std_ipv6en;
     }
 
     _hostname = new char[hostname.length() + 1];
@@ -179,6 +190,9 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     }
     else
         _dns = NULL;
+
+    _ipv6en = new char[ipv6en.length() + 1];
+    strcpy(_ipv6en, ipv6en.c_str());
 }
 
 
