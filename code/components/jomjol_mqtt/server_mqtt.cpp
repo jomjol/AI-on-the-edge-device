@@ -73,7 +73,12 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         }
     }
 
-    topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
+    if (field == "problem") { // Special binary sensor which is based on error topic
+        topicFull = "homeassistant/binary_sensor/" + maintopic + "/" + topicT + "/config";
+    }
+    else {
+        topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
+    }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
     payload = "{" + nl +
