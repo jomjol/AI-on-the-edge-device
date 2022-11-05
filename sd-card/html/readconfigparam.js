@@ -657,6 +657,12 @@ function getNUMBERInfo(){
 }
 
 function RenameNUMBER(_alt, _neu){
+     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0))
+     {
+          return "Name must not contain ',' or '.' - please change name";
+     }
+
+
      index = -1;
      found = false;
      for (i = 0; i < NUMBERS.length; ++i) {
