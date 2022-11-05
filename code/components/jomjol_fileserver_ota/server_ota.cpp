@@ -296,7 +296,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_ota_update - Start");    
 #endif
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_ota_update");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "handler_ota_update");
     char _query[200];
     char _filename[100];
     char _valuechar[30];    
@@ -327,6 +327,23 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         }
 
     };
+
+    if (_task.compare("emptyfirmwaredir") == 0)
+    {
+        ESP_LOGD(TAG, "Start empty directory /firmware");
+        delete_all_in_directory("/sdcard/firmware");
+        std::string zw = "firmware directory deleted - v2\n";
+        ESP_LOGD(TAG, "%s", zw.c_str());
+        printf("Ausgabe: %s\n", zw.c_str());
+    
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_send_chunk(req, NULL, 0);  
+
+        ESP_LOGD(TAG, "Done empty directory /firmware");
+        return ESP_OK;
+    }
 
     if (_task.compare("update") == 0)
     {
@@ -451,6 +468,14 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         return ESP_OK;
     }
 
+    string zw = "ota without parameter - should not be the case!";
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
+    httpd_resp_send_chunk(req, NULL, 0);  
+
+    ESP_LOGE(TAG, "ota without parameter - should not be the case!");
+
+/*  
     const char* resp_str;    
 
     KillTFliteTasks();
@@ -469,6 +494,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 #ifdef DEBUG_DETAIL_ON 
     LogFile.WriteHeapInfo("handler_ota_update - Done");    
 #endif
+*/
 
     return ESP_OK;
 };
@@ -492,8 +518,8 @@ void task_reboot(void *pvParameter)
 }
 
 void doReboot(){
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
-    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
+    LogFile.WriteToFile(ESP_LOG_INFO, "Reboot triggered by Software (5s).");
+    LogFile.WriteToFile(ESP_LOG_WARN, "Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     // KillTFliteTasks(); // kills itself 
     gpio_handler_destroy();
@@ -509,7 +535,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_reboot - Start");
 #endif    
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "handler_reboot");
     ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
     const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
@@ -525,7 +551,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
 void register_server_ota_sdcard_uri(httpd_handle_t server)
 {
-    ESP_LOGI(TAG, "server_ota - Registering URI handlers");
+    ESP_LOGI(TAG, "Registering URI handlers");
     
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;
