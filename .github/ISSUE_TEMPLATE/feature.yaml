@@ -19,4 +19,4 @@ body:
       required: true
     attributes:
       label: The Feature
-      description: A clear and concise description of what the new feature. If possible, refer to other projects or add a mockup.
+      description: A clear and concise description of what the new feature should do. If possible, refer to other projects or add a mockup.
