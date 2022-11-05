@@ -999,15 +999,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                     ESP_LOGD(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 }
 
-                DeleteFile(zw);
                 if (!isokay)
                     ESP_LOGE(TAG, "ERROR in fwrite \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 isokay = isokay && RenameFile(filename_zw, zw);
                 if (!isokay)
                     ESP_LOGE(TAG, "ERROR in Rename \"%s\" to \"%s\"", filename_zw.c_str(), zw.c_str());
-//                isokay = isokay && DeleteFile(filename_zw);
-//                if (!isokay)
-//                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
+                isokay = isokay && DeleteFile(filename_zw);
+                if (!isokay)
+                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
 
                 if (isokay)
                     ESP_LOGI(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
