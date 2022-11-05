@@ -328,6 +328,23 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     };
 
+    if (_task.compare("emptyfirmwaredir") == 0)
+    {
+        ESP_LOGD(TAGPARTOTA, "Start empty directory /firmware");
+        delete_all_in_directory("/sdcard/firmware");
+        std::string zw = "firmware directory deleted - v2\n";
+        ESP_LOGD(TAGPARTOTA, "%s", zw.c_str());
+        printf("Ausgabe: %s\n", zw.c_str());
+    
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_send_chunk(req, NULL, 0);  
+
+        ESP_LOGD(TAGPARTOTA, "Done empty directory /firmware");
+        return ESP_OK;
+    }
+
     if (_task.compare("update") == 0)
     {
         std::string filetype = toUpper(getFileType(fn));
@@ -451,6 +468,14 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         return ESP_OK;
     }
 
+    string zw = "ota without parameter - should not be the case!";
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
+    httpd_resp_send_chunk(req, NULL, 0);  
+
+    ESP_LOGE(TAGPARTOTA, "ota without parameter - should not be the case!");
+
+/*  
     const char* resp_str;    
 
     KillTFliteTasks();
@@ -469,6 +494,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 #ifdef DEBUG_DETAIL_ON 
     LogFile.WriteHeapInfo("handler_ota_update - Done");    
 #endif
+*/
 
     return ESP_OK;
 };
