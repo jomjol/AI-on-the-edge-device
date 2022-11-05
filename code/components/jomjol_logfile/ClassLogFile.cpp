@@ -16,7 +16,7 @@ extern "C" {
 
 #include "Helper.h"
 
-static const char *TAG = "log";
+static const char *TAG = "LOGFILE";
 
 ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.csv");
 
@@ -26,7 +26,7 @@ void ClassLogFile::WriteHeapInfo(std::string _id)
     if (loglevel > ESP_LOG_WARN) 
         _zw =  _zw + "\t" + getESPHeapInfo();
 
-    WriteToFile(ESP_LOG_DEBUG, _zw);
+    WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
 }
 
 
@@ -116,7 +116,7 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
 }
 
 
-void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string info, bool _time)
+void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string message, bool _time)
 {
     FILE* pFile;
     std::string zwtime;
@@ -169,7 +169,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
                 break;
         }
         
-        logline = logline + "\t<" + loglevelString + ">\t" + info.c_str() + "\n";
+        logline = logline + "\t<" + loglevelString + ">\t" + message.c_str() + "\n";
         fputs(logline.c_str(), pFile);
         fclose(pFile);    
     } else {
@@ -200,13 +200,13 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
             break;
     }
 
-    ESP_LOGI(TAG, "Logfile Log Level set to %s", levelText.c_str());
+    ESP_LOGI(TAG, "Log Level set to %s", levelText.c_str());
 
     /*
-    LogFile.WriteToFile(ESP_LOG_ERROR, "Test");
-    LogFile.WriteToFile(ESP_LOG_WARN, "Test");
-    LogFile.WriteToFile(ESP_LOG_INFO, "Test");
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "Test");
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Test");
+    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Test");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Test");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test");
     */
 };
 
@@ -214,7 +214,7 @@ void ClassLogFile::SetRetention(unsigned short _retentionInDays){
     retentionInDays = _retentionInDays;
 };
 
-void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _time)
+void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
 /*
     struct stat path_stat;
@@ -235,10 +235,21 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _ti
     strftime(buffer, 30, logfile.c_str(), timeinfo);
     std::string logpath = logroot + "/" + buffer; 
     
-    std::replace(info.begin(), info.end(), '\n', ' '); // Replace all newline characters
+    std::replace(message.begin(), message.end(), '\n', ' '); // Replace all newline characters
 
-    WriteToDedicatedFile(logpath, level, info, _time);
-    ESP_LOG_LEVEL(level, TAG, "%s", info.c_str());
+    if (tag != "") {
+        ESP_LOG_LEVEL(level, tag.c_str(), "%s", message.c_str());
+        message = "[" + tag + "] " + message;
+    }
+    else {
+        ESP_LOG_LEVEL(level, "", "%s", message.c_str());
+    }
+    WriteToDedicatedFile(logpath, level, message, _time);
+}
+
+
+void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message) {
+    LogFile.WriteToFile(level, tag, message, true);
 }
 
 std::string ClassLogFile::GetCurrentFileNameData()
@@ -316,7 +327,7 @@ void ClassLogFile::RemoveOld()
             }
         }
     }
-    LogFile.WriteToFile(ESP_LOG_INFO, "logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
     closedir(dir);
 
 

@@ -26,7 +26,7 @@ extern "C" {
 
 #include "esp_vfs_fat.h"
 
-static const char* TAG = "helper";
+static const char* TAG = "HELPER";
 
 //#define ISWINDOWS_TRUE
 #define PATH_MAX_STRING_SIZE 256
