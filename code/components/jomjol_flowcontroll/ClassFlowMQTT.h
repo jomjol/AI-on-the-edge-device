@@ -14,7 +14,8 @@ protected:
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
     int SetRetainFlag;
-    int keepAlive;
+    int keepAlive; // Seconds
+    float roundInterval; // Minutes
 
     std::string maintopic; 
 	void SetInitialParameter(void);        
@@ -25,6 +26,7 @@ public:
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
     string GetMQTTMainTopic();
+    bool Start(float AutoIntervall);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
