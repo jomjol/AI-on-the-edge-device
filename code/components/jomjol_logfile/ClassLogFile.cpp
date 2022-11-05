@@ -26,7 +26,7 @@ void ClassLogFile::WriteHeapInfo(std::string _id)
     if (loglevel > ESP_LOG_WARN) 
         _zw =  _zw + "\t" + getESPHeapInfo();
 
-    WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+    WriteToFile(ESP_LOG_DEBUG, TAG, "HEAP", _zw);
 }
 
 

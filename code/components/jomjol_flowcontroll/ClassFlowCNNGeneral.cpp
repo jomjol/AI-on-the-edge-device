@@ -35,7 +35,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
     if (GENERAL[_analog]->ROI.size() == 0)
         return result;
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout _analog=" + std::to_string(_analog) + ", _extendedResolution=" + std::to_string(_extendedResolution) + ", prev=" + std::to_string(prev));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout _analog=" + std::to_string(_analog) + ", _extendedResolution=" + std::to_string(_extendedResolution) + ", prev=" + std::to_string(prev));
  
     if (CNNType == Analogue || CNNType == Analogue100)
     {
@@ -43,7 +43,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
         
         prev = ZeigerEvalAnalogNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout(analog) zahl=" + std::to_string(zahl) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(analog) zahl=" + std::to_string(zahl) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
         result = std::to_string(prev);
 
         if (_extendedResolution && (CNNType != Digital))
@@ -82,7 +82,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
                 result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
                 prev = ergebnis_vorkomma;
-                LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout(dig100-ext) ergebnis_vorkomma=" + std::to_string(ergebnis_vorkomma) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100-ext) ergebnis_vorkomma=" + std::to_string(ergebnis_vorkomma) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
             }
             else
             {
@@ -92,7 +92,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 else
                     prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 result = std::to_string(prev);
-                LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout(dig100)  prev=" + std::to_string(prev));
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
         
             }
         }
@@ -108,16 +108,16 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             if (GENERAL[_analog]->ROI[i]->result_float >= 0)
             {
                 prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
-                LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout#ZeigerEvalHybridNeu()= " + std::to_string(prev));
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#ZeigerEvalHybridNeu()= " + std::to_string(prev));
                 result = std::to_string(prev) + result;
-                LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout#result= " + result);
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#result= " + result);
                 
             }
             else
             {
                 prev = -1;
                 result = "N" + result;
-                LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::getReadout(result_float<0 /'N')  result_float=" + std::to_string(GENERAL[_analog]->ROI[i]->result_float));
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(result_float<0 /'N')  result_float=" + std::to_string(GENERAL[_analog]->ROI[i]->result_float));
         
             }
         }
@@ -141,7 +141,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
         else
             result = (int) ((int) trunc(zahl) + 10) % 10;
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalHybridNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
     }
@@ -149,7 +149,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
     if (AnalogerVorgaenger)
     {
         result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger, eval_vorgaenger, digitalAnalogTransitionStart);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
     }
@@ -162,7 +162,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
         else
             result = ((int) trunc(zahl) + 10) % 10;
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, kein Ziffernwechsel, da Vorkomma weit genug weg = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, kein Ziffernwechsel, da Vorkomma weit genug weg = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
     }  
@@ -177,7 +177,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
         else
             // Akt. digit und Vorgänger haben Nulldurchgang
             result =  ergebnis_vorkomma;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, Nulldurchgang hat stattgefunden = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, Nulldurchgang hat stattgefunden = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
         return result;
     }
@@ -196,7 +196,7 @@ int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, 
         // keinen Nulldurchgang hat. Daher wird um 1 reduziert.
         result =  (ergebnis_vorkomma - 1 + 10) % 10;
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +
                                                 " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe) + " ergebnis_nachkomma = " + std::to_string(ergebnis_nachkomma));
     return result;
 }
@@ -216,13 +216,13 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
         // vor/nachkomma neu berechnen, da wir anhand der Unschaefe die Zahl anpassen.
         ergebnis_nachkomma = ((int) floor(result * 10)) % 10;
         ergebnis_vorkomma = ((int) floor(result) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger: " + std::to_string(ziffer_vorgaenger) +
                                                     " erg_vorkomma: " + std::to_string(ergebnis_vorkomma) + 
                                                     " erg_nachkomma: " + std::to_string(ergebnis_nachkomma));
     } else {
         result = (int) ((int) trunc(zahl) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - KEINE digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - KEINE digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger));
     }
 
@@ -236,7 +236,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
 
     {
         result =  ((ergebnis_vorkomma+10) - 1) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
                                     " zahl: " + std::to_string(zahl) + 
                                     " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + 
                                     " erg_nachkomma = " +  std::to_string(ergebnis_nachkomma));
@@ -255,7 +255,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
     if (ziffer_vorgaenger == -1)
     {
         result = (int) floor(zahl);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
                                                     " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
         return result;
     }
@@ -268,14 +268,14 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
         if (ziffer_vorgaenger <= AnalogFehler)
         {
             result = ((int) floor(zahl_max) + 10) % 10;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach oben - Ergebnis = " + std::to_string(result) +
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach oben - Ergebnis = " + std::to_string(result) +
                                                         " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
             return result;
         }
         if (ziffer_vorgaenger >= 10 - AnalogFehler)
         {
             result = ((int) floor(zahl_min) + 10) % 10;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach unten - Ergebnis = " + std::to_string(result) +
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach unten - Ergebnis = " + std::to_string(result) +
                                                         " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
             return result;
         }
@@ -283,7 +283,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
     
 
     result = ((int) floor(zahl) + 10) % 10;
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::ZeigerEvalAnalogNeu - Zahl eindeutig, keine Korrektur notwendig - Ergebnis = " + std::to_string(result) +
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - Zahl eindeutig, keine Korrektur notwendig - Ergebnis = " + std::to_string(result) +
                                                 " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
 
     return result;
@@ -471,7 +471,7 @@ bool ClassFlowCNNGeneral::doFlow(string time)
         return false;
     };
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "ClassFlowCNNGeneral::doFlow nach Alignment");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow nach Alignment");
 
     doNeuralNetwork(time);
 
@@ -548,7 +548,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
         delete tflite;
         return false;
     } 
@@ -595,7 +595,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 }
                 break;
             default:
-                LogFile.WriteToFile(ESP_LOG_ERROR, "tflite passt nicht zur Firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "tflite passt nicht zur Firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
         }
     }
 
@@ -615,7 +615,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
 
         delete tflite;
         return false;
@@ -636,7 +636,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
 
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
@@ -679,7 +679,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
 
                         _num = tflite->GetOutClassification(0, 10);
                         _nachkomma = tflite->GetOutClassification(11, 21);
@@ -719,7 +719,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
 
                         _num = tflite->GetOutClassification(0, 9);
                         _nachkomma = tflite->GetOutClassification(10, 19);
@@ -759,7 +759,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
 
                         _num = tflite->GetOutClassification(0, 9);
                         _numplus = (_num + 1) % 10;
