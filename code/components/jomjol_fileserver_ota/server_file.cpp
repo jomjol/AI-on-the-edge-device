@@ -45,7 +45,7 @@ extern "C" {
 #include "Helper.h"
 #include "miniz.h"
 
-static const char *TAG = "OTA File";
+static const char *TAG = "OTA FILE";
 
 /* Max length a file path can have on storage */
 // #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
@@ -109,7 +109,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
     size_t pos = 0;
     
     const char verz_name[] = "/sdcard/log/data";
-    ESP_LOGD(TAG, "Suche TFLITE in /sdcard/log/data");
+    ESP_LOGD(TAG, "Suche data files in /sdcard/log/data");
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -132,7 +132,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
 
         ESP_LOGD(TAG, " Extension: %s", _fileext.c_str());
 
-        if (_fileext == "txt")
+        if (_fileext == "csv")
         {
             _filename = _filename + "\t";
             httpd_resp_sendstr_chunk(req, _filename.c_str());
@@ -345,7 +345,7 @@ static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
 
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "data_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
@@ -373,7 +373,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     set_content_type_from_file(req, filename);
 
     if (!send_full_file) { // Send only last part of file
-        ESP_LOGD(TAG, "Sending last %d bytes of the actual logfile!", LOGFILE_LAST_PART_BYTES);
+        ESP_LOGD(TAG, "Sending last %d bytes of the actual datafile!", LOGFILE_LAST_PART_BYTES);
 
         /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
         if (fseek(fd, 0, SEEK_END)) {
@@ -431,7 +431,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "log_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
@@ -517,7 +517,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 /* Handler to download a file kept on the server */
 static esp_err_t download_get_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "download_get_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "download_get_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
@@ -618,7 +618,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 /* Handler to upload a file onto the server */
 static esp_err_t upload_post_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "upload_post_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
@@ -733,10 +733,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
     ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
 	directory = directory.substr(start_fn, found - start_fn + 1);
-    ESP_LOGD(TAG, "Directory danach 1: %s", directory.c_str());
-
     directory = "/fileserver" + directory;
-    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
+//    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
 
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
@@ -761,7 +759,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 /* Handler to delete a file from the server */
 static esp_err_t delete_post_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "delete_post_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "delete_post_handler");
     char filepath[FILE_PATH_MAX];
     struct stat file_stat;
 
@@ -855,8 +853,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
         ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
         directory = directory.substr(start_fn, found - start_fn + 1);
-        ESP_LOGD(TAG, "Directory danach 3: %s", directory.c_str());
-
         directory = "/fileserver" + directory;
         ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());
     }
@@ -914,9 +910,9 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
     ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
     ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
-    ESP_LOGD(TAG, "Target Dir ZIP: %s", _target_zip.c_str());
-    ESP_LOGD(TAG, "Target Dir BIN: %s", _target_bin.c_str());
-    ESP_LOGD(TAG, "Target Dir main: %s", _main.c_str());
+//    ESP_LOGD(TAG, "Target Dir ZIP: %s", _target_zip.c_str());
+//    ESP_LOGD(TAG, "Target Dir BIN: %s", _target_bin.c_str());
+//    ESP_LOGD(TAG, "Target Dir main: %s", _main.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
@@ -981,24 +977,43 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             
                 string filename_zw = zw + SUFFIX_ZW;
 
-                ESP_LOGD(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+                ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
                 FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
-                fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
+                uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
                 fclose(fpTargetFile);
+                
+                bool isokay = true;
 
+                if (writtenbytes == (uint)uncomp_size)
+                {
+                    isokay = true;
+                }
+                else
+                {
+                    isokay = false;
+                    ESP_LOGD(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                }
+
+                DeleteFile(zw);
                 if (!isokay)
                     ESP_LOGE(TAG, "ERROR in fwrite \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 isokay = isokay && RenameFile(filename_zw, zw);
                 if (!isokay)
                     ESP_LOGE(TAG, "ERROR in Rename \"%s\" to \"%s\"", filename_zw.c_str(), zw.c_str());
-                isokay = isokay && DeleteFile(filename_zw);
-                if (!isokay)
-                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
+//                isokay = isokay && DeleteFile(filename_zw);
+//                if (!isokay)
+//                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
 
-                // We're done.
+                if (isokay)
+                    ESP_LOGI(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                else
+                {
+                    ESP_LOGE(TAG, "ERROR in extracting file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                    ret = "ERROR";
+                }
                 mz_free(p);
             }
         }
