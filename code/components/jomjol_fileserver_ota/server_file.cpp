@@ -345,7 +345,7 @@ static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
 
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "data_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
@@ -361,7 +361,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
-        ESP_LOGE(TAG_FILESERVER, "Failed to read existing file : %s", filepath);
+        ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
         /* Respond with 500 Internal Server Error */
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
         return ESP_FAIL;
@@ -369,23 +369,23 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-//    ESP_LOGI(TAG_FILESERVER, "Sending file : %s (%ld bytes)...", &filename, file_stat.st_size);
+//    ESP_LOGI(TAG, "Sending file : %s (%ld bytes)...", &filename, file_stat.st_size);
     set_content_type_from_file(req, filename);
 
     if (!send_full_file) { // Send only last part of file
-        ESP_LOGD(TAG_FILESERVER, "Sending last %d bytes of the actual datafile!", LOGFILE_LAST_PART_BYTES);
+        ESP_LOGD(TAG, "Sending last %d bytes of the actual logfile!", LOGFILE_LAST_PART_BYTES);
 
         /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
         if (fseek(fd, 0, SEEK_END)) {
-            ESP_LOGE(TAG_FILESERVER, "Failed to get to end of file!");
+            ESP_LOGE(TAG, "Failed to get to end of file!");
             return ESP_FAIL;
         }
         else {
             long pos = ftell(fd); // Number of bytes in the file
-            ESP_LOGI(TAG_FILESERVER, "File contains %ld bytes", pos);
+            ESP_LOGI(TAG, "File contains %ld bytes", pos);
 
             if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET)) { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
-                ESP_LOGE(TAG_FILESERVER, "Failed to go back %ld bytes within the file!", std::min((long)LOGFILE_LAST_PART_BYTES, pos));
+                ESP_LOGE(TAG, "Failed to go back %ld bytes within the file!", std::min((long)LOGFILE_LAST_PART_BYTES, pos));
                 return ESP_FAIL;
             }
         }
@@ -408,7 +408,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
         /* Send the buffer contents as HTTP response chunk */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
             fclose(fd);
-            ESP_LOGE(TAG_FILESERVER, "File sending failed!");
+            ESP_LOGE(TAG, "File sending failed!");
             /* Abort sending file */
             httpd_resp_sendstr_chunk(req, NULL);
             /* Respond with 500 Internal Server Error */
@@ -421,7 +421,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     /* Close file after sending complete */
     fclose(fd);
-    ESP_LOGI(TAG_FILESERVER, "File sending complete");
+    ESP_LOGI(TAG, "File sending complete");
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);
