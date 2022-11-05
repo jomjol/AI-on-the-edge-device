@@ -29,7 +29,6 @@ extern "C" {
 
 static const char* TAG = "flow_controll";
 
-float AutoIntervalShared = 10;
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
@@ -142,7 +141,7 @@ void ClassFlowControll::SetInitialParameter(void)
 {
     AutoStart = false;
     SetupModeActive = false;
-    AutoIntervall = 10;
+    AutoIntervall = 10; // Minutes
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
@@ -517,7 +516,11 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    AutoIntervalShared = AutoIntervall;
+    /* Start the MQTT service */
+    for (int i = 0; i < FlowControll.size(); ++i)
+        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
+            return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
+
     return true;
 }
 
