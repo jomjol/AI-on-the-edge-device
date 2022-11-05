@@ -791,7 +791,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         zw = zw + " _val (p, m): " + to_string(_val) + " " + to_string(_valplus) + " " + to_string(_valminus);
                         zw = zw + " result: " + to_string(result) + " _fit: " + to_string(_fit);
                         ESP_LOGD(TAG, "details cnn: %s", zw.c_str());
-                        LogFile.WriteToFile(ESP_LOG_INFO, zw);
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, zw);
 
 
                         _result_save_file = result;
@@ -802,7 +802,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             result = -1;
                             _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
                             string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
-                            LogFile.WriteToFile(ESP_LOG_WARN, zw);
+                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, zw);
                         }
                         else
                         {
