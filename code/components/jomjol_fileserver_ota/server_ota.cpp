@@ -296,7 +296,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_ota_update - Start");    
 #endif
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "handler_ota_update");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_ota_update");
     char _query[200];
     char _filename[100];
     char _valuechar[30];    
@@ -518,8 +518,8 @@ void task_reboot(void *pvParameter)
 }
 
 void doReboot(){
-    LogFile.WriteToFile(ESP_LOG_INFO, "Reboot triggered by Software (5s).");
-    LogFile.WriteToFile(ESP_LOG_WARN, "Reboot in 5sec");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
+    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     // KillTFliteTasks(); // kills itself 
     gpio_handler_destroy();
@@ -535,7 +535,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_reboot - Start");
 #endif    
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "handler_reboot");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
     ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
     const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
