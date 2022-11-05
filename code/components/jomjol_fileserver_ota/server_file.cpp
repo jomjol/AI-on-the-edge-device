@@ -110,7 +110,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
     size_t pos = 0;
     
     const char verz_name[] = "/sdcard/log/data";
-    ESP_LOGD(TAG, "Suche TFLITE in /sdcard/log/data");
+    ESP_LOGD(TAG, "Suche data files in /sdcard/log/data");
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -133,7 +133,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
 
         ESP_LOGD(TAG, " Extension: %s", _fileext.c_str());
 
-        if (_fileext == "txt")
+        if (_fileext == "csv")
         {
             _filename = _filename + "\t";
             httpd_resp_sendstr_chunk(req, _filename.c_str());
