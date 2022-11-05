@@ -25,7 +25,7 @@
 httpd_handle_t server = NULL;   
 std::string starttime = "";
 
-static const char *TAG_SERVERMAIN = "server-main";
+static const char *TAG = "MAIN SERVER";
 
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
@@ -34,18 +34,18 @@ esp_err_t info_get_handler(httpd_req_t *req)
     LogFile.WriteHeapInfo("info_get_handler - Start");    
 #endif
 
-    LogFile.WriteToFile(ESP_LOG_INFO, "info_get_handler");    
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "info_get_handler");    
     char _query[200];
     char _valuechar[30];    
     std::string _task;
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
-        ESP_LOGD(TAG_SERVERMAIN, "Query: %s", _query);
+        ESP_LOGD(TAG, "Query: %s", _query);
         
         if (httpd_query_key_value(_query, "type", _valuechar, 30) == ESP_OK)
         {
-            ESP_LOGD(TAG_SERVERMAIN, "type is found: %s", _valuechar);
+            ESP_LOGD(TAG, "type is found: %s", _valuechar);
             _task = std::string(_valuechar);
         }
     };
@@ -221,7 +221,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 #endif
 
     char filepath[50];
-    ESP_LOGD(TAG_SERVERMAIN, "uri: %s\n", req->uri);
+    ESP_LOGD(TAG, "uri: %s\n", req->uri);
     int _pos;
     esp_err_t res;
 
@@ -230,7 +230,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 
     const char *filename = get_path_from_uri(filepath, base_path,
                                              req->uri - 1, sizeof(filepath));    
-    ESP_LOGD(TAG_SERVERMAIN, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     if ((strcmp(req->uri, "/") == 0))
     {
@@ -248,16 +248,16 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     }
 
     if (filetosend == "/sdcard/html/index.html" && isSetupModusActive()) {
-        ESP_LOGD(TAG_SERVERMAIN, "System is in setup mode --> index.html --> setup.html");
+        ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");
         filetosend = "/sdcard/html/setup.html";
     }
 
-    ESP_LOGD(TAG_SERVERMAIN, "Filename: %s", filename);
+    ESP_LOGD(TAG, "Filename: %s", filename);
     
-    ESP_LOGD(TAG_SERVERMAIN, "File requested: %s", filetosend.c_str());
+    ESP_LOGD(TAG, "File requested: %s", filetosend.c_str());
 
     if (!filename) {
-        ESP_LOGE(TAG_SERVERMAIN, "Filename is too long");
+        ESP_LOGE(TAG, "Filename is too long");
         /* Respond with 500 Internal Server Error */
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
         return ESP_FAIL;
@@ -284,17 +284,17 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
     char filepath[50];
-    ESP_LOGD(TAG_SERVERMAIN, "uri: %s", req->uri);
+    ESP_LOGD(TAG, "uri: %s", req->uri);
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
     const char *filename = get_path_from_uri(filepath, base_path,
                                              req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
-    ESP_LOGD(TAG_SERVERMAIN, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
-    ESP_LOGD(TAG_SERVERMAIN, "File to upload: %s", filetosend.c_str());
+    ESP_LOGD(TAG, "File to upload: %s", filetosend.c_str());
 
     esp_err_t res = send_file(req, filetosend); 
     if (res != ESP_OK)
@@ -313,17 +313,17 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
     char filepath[50];
 
-    ESP_LOGD(TAG_SERVERMAIN, "uri: %s", req->uri);
+    ESP_LOGD(TAG, "uri: %s", req->uri);
 
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
     const char *filename = get_path_from_uri(filepath, base_path,
                                              req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
-    ESP_LOGD(TAG_SERVERMAIN, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     filetosend = std::string(filename);
-    ESP_LOGD(TAG_SERVERMAIN, "File to upload: %s", filetosend.c_str());
+    ESP_LOGD(TAG, "File to upload: %s", filetosend.c_str());
 
     if (filetosend == "raw.jpg")
     {
@@ -468,14 +468,14 @@ httpd_handle_t start_webserver(void)
     starttime = gettimestring("%Y%m%d-%H%M%S");
 
     // Start the httpd server
-    ESP_LOGI(TAG_SERVERMAIN, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
-        ESP_LOGI(TAG_SERVERMAIN, "Registering URI handlers");
+        ESP_LOGI(TAG, "Registering URI handlers");
         return server;
     }
 
-    ESP_LOGI(TAG_SERVERMAIN, "Error starting server!");
+    ESP_LOGI(TAG, "Error starting server!");
     return NULL;
 }
 
@@ -490,7 +490,7 @@ void disconnect_handler(void* arg, esp_event_base_t event_base,
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
-        ESP_LOGI(TAG_SERVERMAIN, "Stopping webserver");
+        ESP_LOGI(TAG, "Stopping webserver");
         stop_webserver(*server);
         *server = NULL;
     }
@@ -501,7 +501,7 @@ void connect_handler(void* arg, esp_event_base_t event_base,
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {
-        ESP_LOGI(TAG_SERVERMAIN, "Starting webserver");
+        ESP_LOGI(TAG, "Starting webserver");
         *server = start_webserver();
     }
 }
