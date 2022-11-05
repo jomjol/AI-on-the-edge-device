@@ -859,7 +859,7 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light Off";
     httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/editflow.html";
+    camuri.uri       = "/editflow";
     camuri.handler   = handler_editflow;
     camuri.user_ctx  = (void*) "EditFlow"; 
     httpd_register_uri_handler(server, &camuri);     

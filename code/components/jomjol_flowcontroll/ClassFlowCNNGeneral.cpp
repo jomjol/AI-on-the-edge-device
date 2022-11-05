@@ -979,20 +979,20 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
     {
         if (CNNType == Analogue || CNNType == Analogue100)
         {
-            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
+            rt = rt + "," + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
 
         if (CNNType == Digital)
         {
             if (GENERAL[_analog]->ROI[i]->result_klasse == 10)
-                rt = rt + "\tN";
+                rt = rt + ",N";
             else
-                rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_klasse, 0);
+                rt = rt + "," + RundeOutput(GENERAL[_analog]->ROI[i]->result_klasse, 0);
         }
 
         if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
         {
-            rt = rt + "\t" + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
+            rt = rt + "," + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
     }
     return rt;

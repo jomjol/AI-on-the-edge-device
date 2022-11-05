@@ -126,12 +126,12 @@ table {
                 _brightness = document.getElementById("MakeImage_Brightness_value1").value;
                 _contrast = document.getElementById("MakeImage_Contrast_value1").value;
                 _saturation = document.getElementById("MakeImage_Saturation_value1").value;
-                url = basepath + "/editflow.html?task=test_take&bri=" + _brightness;
+                url = basepath + "/editflow?task=test_take&bri=" + _brightness;
                 url = url + "&con=" + _saturation + "&sat=" + _saturation + "&int=" + _intensity;
             }
             else
             {
-                url = basepath + "/editflow.html?task=test_take";
+                url = basepath + "/editflow?task=test_take";
             }
             if (basepath.length > 0){
                 url = url + "&host=" + basepath;

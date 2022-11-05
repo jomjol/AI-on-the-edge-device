@@ -18,7 +18,7 @@ extern "C" {
 
 static const char *TAG = "log";
 
-ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.txt");
+ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.csv");
 
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
@@ -90,19 +90,19 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
 
     if (pFile!=NULL) {
         fputs(_timestamp.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_name.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_ReturnRawValue.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_ReturnValue.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_ReturnPreValue.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_ReturnRateValue.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_ReturnChangeAbsolute.c_str(), pFile);
-        fputs("\t", pFile);
+        fputs(",", pFile);
         fputs(_ErrorMessageText.c_str(), pFile);
         fputs(_digital.c_str(), pFile);
         fputs(_analog.c_str(), pFile);

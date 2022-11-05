@@ -25,7 +25,7 @@ function getNUMBERSList() {
 	 });
 
 	 try {
-		  url = _basepath + '/editflow.html?task=namenumbers';     
+		  url = _basepath + '/editflow?task=namenumbers';     
 		  xhttp.open("GET", url, false);
 		  xhttp.send();
 
@@ -56,7 +56,7 @@ function getDATAList() {
 	 });
 
 	 try {
-		  url = _basepath + '/editflow.html?task=data';     
+		  url = _basepath + '/editflow?task=data';     
 		  xhttp.open("GET", url, false);
 		  xhttp.send();
 
@@ -87,7 +87,7 @@ function getTFLITEList() {
 	 });
 
 	 try {
-		  url = _basepath + '/editflow.html?task=tflite';     
+		  url = _basepath + '/editflow?task=tflite';     
 		  xhttp.open("GET", url, false);
 		  xhttp.send();
 

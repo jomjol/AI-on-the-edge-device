@@ -12,7 +12,7 @@
 
 -   SD card info into the "Info" Menue (thanks to [@Slider007]( https://github.com/Slider0007))
 -   Added a logging of the values in a text table in `/log/data` - each measurement is one line
-    -   Format: tabulator separated
+    -   Format: csv - comma separated
     -   Content: time, name-of-number, raw-value, return-value, pre-value, change-rate, change-absolute, error-text, cnn-digital, cnn-analog
 
 
@@ -27,6 +27,8 @@
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
 -   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) changed postprocess for analog->digit (lowest digit processing)
+-    [#1280](https://github.com/jomjol/AI-on-the-edge-device/issues/1280) check ROIs name for "," and "." (not allowed)
+
 ### Removed
 
 -   n.a.

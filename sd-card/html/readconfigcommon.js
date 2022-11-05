@@ -141,7 +141,7 @@ function dataURLtoBlob(dataurl) {
      }	
      
 function FileCopyOnServer(_source, _target, _basepath = ""){
-     url = _basepath + "/editflow.html?task=copy&in=" + _source + "&out=" + _target;
+     url = _basepath + "/editflow?task=copy&in=" + _source + "&out=" + _target;
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
@@ -225,7 +225,7 @@ function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
 
 function MakeContrastImageZW(zw, _enhance, _basepath){
      _filename = zw["name"].replace("/config/", "/img_tmp/");
-     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     url = _basepath + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      if (_enhance == true){
           url = url + "&enhance=true";
      }
@@ -245,7 +245,7 @@ function MakeContrastImageZW(zw, _enhance, _basepath){
 function MakeRefZW(zw, _basepath){
      _filetarget = zw["name"].replace("/config/", "/img_tmp/");
      _filetarget = _filetarget.replace(".jpg", "_org.jpg");
-     url = _basepath + "/editflow.html?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     url = _basepath + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
