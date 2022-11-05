@@ -241,6 +241,22 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string info, bool _ti
     ESP_LOG_LEVEL(level, TAG, "%s", info.c_str());
 }
 
+std::string ClassLogFile::GetCurrentFileNameData()
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[60];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, 60, datafile.c_str(), timeinfo);
+    std::string logpath = dataroot + "/" + buffer; 
+
+    return logpath;
+}
+
+
 std::string ClassLogFile::GetCurrentFileName()
 {
     time_t rawtime;

@@ -84,6 +84,7 @@ string SUFFIX_ZW = "_0xge";
 
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file);
+static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file);
 
 
 esp_err_t get_numbers_file_handler(httpd_req_t *req)
@@ -110,7 +111,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
     size_t pos = 0;
     
     const char verz_name[] = "/sdcard/log/data";
-    ESP_LOGD(TAG, "Suche TFLITE in /sdcard/log/data");
+    ESP_LOGD(TAG, "Suche data files in /sdcard/log/data");
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -133,7 +134,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
 
         ESP_LOGD(TAG, " Extension: %s", _fileext.c_str());
 
-        if (_fileext == "txt")
+        if (_fileext == "csv")
         {
             _filename = _filename + "\t";
             httpd_resp_sendstr_chunk(req, _filename.c_str());
@@ -335,10 +336,18 @@ static esp_err_t logfileact_get_last_part_handler(httpd_req_t *req) {
     return send_logfile(req, false);
 }
 
+static esp_err_t datafileact_get_full_handler(httpd_req_t *req) {
+    return send_datafile(req, true);
+}
 
-static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
+
+static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
+    return send_datafile(req, false);
+}
+
+static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "log_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "data_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
@@ -346,9 +355,96 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 
     const char* filename = ""; 
 
+    std::string currentfilename = LogFile.GetCurrentFileNameData();
+
+    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    fd = OpenFileAndWait(currentfilename.c_str(), "r");
+    if (!fd) {
+        ESP_LOGE(TAG_FILESERVER, "Failed to read existing file : %s", filepath);
+        /* Respond with 500 Internal Server Error */
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+        return ESP_FAIL;
+    }
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+//    ESP_LOGI(TAG_FILESERVER, "Sending file : %s (%ld bytes)...", &filename, file_stat.st_size);
+    set_content_type_from_file(req, filename);
+
+    if (!send_full_file) { // Send only last part of file
+        ESP_LOGD(TAG_FILESERVER, "Sending last %d bytes of the actual datafile!", LOGFILE_LAST_PART_BYTES);
+
+        /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
+        if (fseek(fd, 0, SEEK_END)) {
+            ESP_LOGE(TAG_FILESERVER, "Failed to get to end of file!");
+            return ESP_FAIL;
+        }
+        else {
+            long pos = ftell(fd); // Number of bytes in the file
+            ESP_LOGI(TAG_FILESERVER, "File contains %ld bytes", pos);
+
+            if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET)) { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
+                ESP_LOGE(TAG_FILESERVER, "Failed to go back %ld bytes within the file!", std::min((long)LOGFILE_LAST_PART_BYTES, pos));
+                return ESP_FAIL;
+            }
+        }
+
+        /* Find end of line */
+        while (1) {
+            if (fgetc(fd) == '\n') {
+                break;
+            }
+        }
+    }
+
+    /* Retrieve the pointer to scratch buffer for temporary storage */
+    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
+    size_t chunksize;
+    do {
+        /* Read file in chunks into the scratch buffer */
+        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+
+        /* Send the buffer contents as HTTP response chunk */
+        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
+            fclose(fd);
+            ESP_LOGE(TAG_FILESERVER, "File sending failed!");
+            /* Abort sending file */
+            httpd_resp_sendstr_chunk(req, NULL);
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to send file");
+            return ESP_FAIL;
+        }
+
+        /* Keep looping till the whole file is sent */
+    } while (chunksize != 0);
+
+    /* Close file after sending complete */
+    fclose(fd);
+    ESP_LOGI(TAG_FILESERVER, "File sending complete");
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);
+    return ESP_OK;
+}
+
+
+static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
+{
+    LogFile.WriteToFile(ESP_LOG_DEBUG, "log_get_last_part_handler");
+    char filepath[FILE_PATH_MAX];
+    FILE *fd = NULL;
+    //struct stat file_stat;
+    ESP_LOGI(TAG, "uri: %s", req->uri);
+
+    const char* filename = ""; 
+
     std::string currentfilename = LogFile.GetCurrentFileName();
 
     ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+
 
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
@@ -852,7 +948,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
                 if (!p)
                 {
-                    ESP_LOGD(TAG, "mz_zip_reader_extract_file_to_heap() failed on file %s", archive_filename);
+                    ESP_LOGE(TAG, "mz_zip_reader_extract_file_to_heap() failed on file %s", archive_filename);
                     mz_zip_reader_end(&zip_archive);
                     return ret;
                 }
@@ -883,7 +979,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             
                 string filename_zw = zw + SUFFIX_ZW;
 
-                ESP_LOGD(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+                ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
@@ -900,15 +996,21 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 else
                 {
                     isokay = false;
-                    ESP_LOGE(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                    ESP_LOGD(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 }
 
-
+                DeleteFile(zw);
+                if (!isokay)
+                    ESP_LOGE(TAG, "ERROR in fwrite \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 isokay = isokay && RenameFile(filename_zw, zw);
-                isokay = isokay && DeleteFile(filename_zw);
+                if (!isokay)
+                    ESP_LOGE(TAG, "ERROR in Rename \"%s\" to \"%s\"", filename_zw.c_str(), zw.c_str());
+//                isokay = isokay && DeleteFile(filename_zw);
+//                if (!isokay)
+//                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
 
                 if (isokay)
-                    ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                    ESP_LOGI(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 else
                 {
                     ESP_LOGE(TAG, "ERROR in extracting file \"%s\", size %u", archive_filename, (uint)uncomp_size);
@@ -1042,6 +1144,22 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_register_uri_handler(server, &file_download);
 
 
+    httpd_uri_t file_datafileact = {
+        .uri       = "/datafileact",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = datafileact_get_full_handler,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &file_datafileact);
+
+
+    httpd_uri_t file_datafile_last_part_handle = {
+        .uri       = "/data",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = datafileact_get_last_part_handler,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &file_datafile_last_part_handle);
 
     httpd_uri_t file_logfileact = {
         .uri       = "/logfileact",  // Match all URIs of type /path/to/file

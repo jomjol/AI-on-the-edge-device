@@ -32,6 +32,7 @@ public:
 
 
     std::string GetCurrentFileName();
+    std::string GetCurrentFileNameData();
 };
 
 extern ClassLogFile LogFile;
