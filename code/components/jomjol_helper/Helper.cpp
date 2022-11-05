@@ -172,10 +172,10 @@ FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec, bool sile
 	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
 
 	if ((pfile = fopen(nm, _mode)) != NULL) {
-		if (!silent) ESP_LOGD(TAG, "File %s successfully opened", nm);
+		if (!silent) ESP_LOGE(TAG, "File %s successfully opened", nm);
 	}
 	else {
-		if (!silent) ESP_LOGD(TAG, "Error: file %s does not exist!", nm);
+		if (!silent) ESP_LOGE(TAG, "Error: file %s does not exist!", nm);
 		return NULL;
 	}
 
@@ -301,7 +301,7 @@ bool RenameFile(string from, string to)
 	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
+		ESP_LOGE(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
 		return false;
 	}
 	fclose(fpSourceFile);

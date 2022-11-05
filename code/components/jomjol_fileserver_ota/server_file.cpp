@@ -883,7 +883,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
             
                 string filename_zw = zw + SUFFIX_ZW;
 
-                ESP_LOGD(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+                ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
@@ -900,15 +900,21 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 else
                 {
                     isokay = false;
-                    ESP_LOGE(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                    ESP_LOGD(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 }
 
 
+                if (!isokay)
+                    ESP_LOGE(TAG, "ERROR in fwrite \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 isokay = isokay && RenameFile(filename_zw, zw);
+                if (!isokay)
+                    ESP_LOGE(TAG, "ERROR in Rename \"%s\" to \"%s\"", filename_zw.c_str(), zw.c_str());
                 isokay = isokay && DeleteFile(filename_zw);
+                if (!isokay)
+                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
 
                 if (isokay)
-                    ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                    ESP_LOGI(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
                 else
                 {
                     ESP_LOGE(TAG, "ERROR in extracting file \"%s\", size %u", archive_filename, (uint)uncomp_size);
