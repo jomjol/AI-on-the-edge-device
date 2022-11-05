@@ -3,5 +3,6 @@ description: Use this form if none of the others fit
 
 body:
   - type: textarea
+    attributes:
       label: The Problem
   
