@@ -431,7 +431,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 {
-    //LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
