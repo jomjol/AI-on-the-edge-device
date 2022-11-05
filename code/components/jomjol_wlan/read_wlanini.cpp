@@ -12,7 +12,7 @@
 #include <string.h>
 #include "esp_log.h"
 
-static const char *TAG = "read_wlanini";
+static const char *TAG = "WLAN.INI";
 
 std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
 {

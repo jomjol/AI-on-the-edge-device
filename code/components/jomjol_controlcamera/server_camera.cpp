@@ -15,11 +15,10 @@ static const char *TAG = "server_cam";
 char scratch2[SCRATCH_BUFSIZE2];
 
 //#define DEBUG_DETAIL_ON   
-static const char *TAGPARTCAMERA = "server_camera";
 
 
 void PowerResetCamera(){
-        ESP_LOGD(TAGPARTCAMERA, "Resetting camera by power down line");
+        ESP_LOGD(TAG, "Resetting camera by power down line");
         gpio_config_t conf;
         conf.intr_type = GPIO_INTR_DISABLE;
         conf.pin_bit_mask = 1LL << GPIO_NUM_32;
@@ -219,7 +218,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 void register_server_camera_uri(httpd_handle_t server)
 {
 #ifdef DEBUG_DETAIL_ON   
-    ESP_LOGI(TAGPARTCAMERA, "server_part_camera - Registering URI handlers");
+    ESP_LOGI(TAG, "server_part_camera - Registering URI handlers");
 #endif
 
     httpd_uri_t camuri = { };
