@@ -517,7 +517,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 /* Handler to download a file kept on the server */
 static esp_err_t download_get_handler(httpd_req_t *req)
 {
-    //LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "download_get_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "download_get_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
