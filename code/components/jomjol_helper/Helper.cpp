@@ -165,31 +165,19 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 
 
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
+FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec, bool silent)
 {
 	FILE *pfile;
 
 	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
 
 	if ((pfile = fopen(nm, _mode)) != NULL) {
-		ESP_LOGD(TAG, "File %s successfully opened", nm);
+		if (!silent) ESP_LOGD(TAG, "File %s successfully opened", nm);
 	}
 	else {
-		ESP_LOGD(TAG, "Error: file %s does not exist!", nm);
+		if (!silent) ESP_LOGD(TAG, "Error: file %s does not exist!", nm);
 		return NULL;
 	}
-
-/*
-	if (pfile == NULL)
-	{
-		TickType_t xDelay;
-		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
-		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec) + " seconds";
-	    LogFile.WriteToFile(ESP_LOG_INFO, zw);
-		vTaskDelay( xDelay );
-		pfile = fopen(nm, _mode);
-	}
-*/
 
 	return pfile;
 }
@@ -231,11 +219,15 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
     }
 }
 
-void MakeDir(std::string _what)
+bool MakeDir(std::string _what)
 {
-int mk_ret = mkdir(_what.c_str(), 0775);
-if (mk_ret)
-	ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
+	int mk_ret = mkdir(_what.c_str(), 0775);
+	if (mk_ret)
+	{
+		ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
+		return false;
+	}
+	return true;
 }
 
 
@@ -302,7 +294,7 @@ size_t findDelimiterPos(string input, string delimiter)
 }
 
 
-void RenameFile(string from, string to)
+bool RenameFile(string from, string to)
 {
 //	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
 	/* Delete file */
@@ -310,15 +302,16 @@ void RenameFile(string from, string to)
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
-		return;
+		return false;
 	}
 	fclose(fpSourceFile);
 
 	rename(from.c_str(), to.c_str());
+	return true;
 }
 
 
-void DeleteFile(string fn)
+bool DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
 	/* Delete file */
@@ -326,15 +319,16 @@ void DeleteFile(string fn)
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
-		return;
+		return false;
 	}
 	fclose(fpSourceFile);
 
-	unlink(fn.c_str());    
+	unlink(fn.c_str());
+	return true;    
 }
 
 
-void CopyFile(string input, string output)
+bool CopyFile(string input, string output)
 {
 	input = FormatFileName(input);
 	output = FormatFileName(output);
@@ -342,7 +336,7 @@ void CopyFile(string input, string output)
 	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
 	{
 		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
-		return;
+		return false;
 	}
 
 	char cTemp;
@@ -350,7 +344,7 @@ void CopyFile(string input, string output)
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
-		return;
+		return false;
 	}
 
 	FILE* fpTargetFile = OpenFileAndWait(output.c_str(), "wb");
@@ -368,6 +362,7 @@ void CopyFile(string input, string output)
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
 	ESP_LOGD(TAG, "File copied: %s to %s", input.c_str(), output.c_str());
+	return true;
 }
 
 string getFileFullFileName(string filename)

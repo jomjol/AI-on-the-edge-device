@@ -639,10 +639,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
     ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
 	directory = directory.substr(start_fn, found - start_fn + 1);
-    ESP_LOGD(TAG, "Directory danach 1: %s", directory.c_str());
-
     directory = "/fileserver" + directory;
-    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
+//    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
 
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
@@ -761,8 +759,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
         ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
         directory = directory.substr(start_fn, found - start_fn + 1);
-        ESP_LOGD(TAG, "Directory danach 3: %s", directory.c_str());
-
         directory = "/fileserver" + directory;
         ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());
     }
@@ -820,9 +816,9 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
     ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
     ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
-    ESP_LOGD(TAG, "Target Dir ZIP: %s", _target_zip.c_str());
-    ESP_LOGD(TAG, "Target Dir BIN: %s", _target_bin.c_str());
-    ESP_LOGD(TAG, "Target Dir main: %s", _main.c_str());
+//    ESP_LOGD(TAG, "Target Dir ZIP: %s", _target_zip.c_str());
+//    ESP_LOGD(TAG, "Target Dir BIN: %s", _target_bin.c_str());
+//    ESP_LOGD(TAG, "Target Dir main: %s", _main.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
@@ -892,17 +888,32 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
                 FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
-                fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
+                uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
                 fclose(fpTargetFile);
+                
+                bool isokay = true;
 
-                DeleteFile(zw);
-                RenameFile(filename_zw, zw);
-                DeleteFile(filename_zw);
+                if (writtenbytes == (uint)uncomp_size)
+                {
+                    isokay = true;
+                }
+                else
+                {
+                    isokay = false;
+                    ESP_LOGE(TAG, "ERROR in writting extracted file (function fwrite) extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                }
 
-                ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
-                //            ESP_LOGD(TAG, "File data: \"%s\"", (const char*)p);
 
-                // We're done.
+                isokay = isokay && RenameFile(filename_zw, zw);
+                isokay = isokay && DeleteFile(filename_zw);
+
+                if (isokay)
+                    ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                else
+                {
+                    ESP_LOGE(TAG, "ERROR in extracting file \"%s\", size %u", archive_filename, (uint)uncomp_size);
+                    ret = "ERROR";
+                }
                 mz_free(p);
             }
         }
