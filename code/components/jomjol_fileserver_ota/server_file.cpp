@@ -345,7 +345,7 @@ static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
 
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "data_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "data_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
@@ -431,7 +431,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "log_get_last_part_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
@@ -517,7 +517,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 /* Handler to download a file kept on the server */
 static esp_err_t download_get_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "download_get_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "download_get_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
@@ -618,7 +618,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 /* Handler to upload a file onto the server */
 static esp_err_t upload_post_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "upload_post_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
@@ -759,7 +759,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 /* Handler to delete a file from the server */
 static esp_err_t delete_post_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "delete_post_handler");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "delete_post_handler");
     char filepath[FILE_PATH_MAX];
     struct stat file_stat;
 
