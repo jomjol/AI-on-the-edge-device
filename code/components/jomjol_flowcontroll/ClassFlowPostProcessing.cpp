@@ -12,7 +12,7 @@
 
 #include "esp_log.h"
 
-static const char* TAG = "class_flow_postproc";
+static const char* TAG = "FLOW POSTPROC";
 
 //#define SERIAL_DEBUG // testing debug on serial enabled
 
@@ -856,7 +856,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
         ESP_LOGD(TAG, "%s", zw.c_str());
-        LogFile.WriteToFile(ESP_LOG_INFO, _zw);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
     }
 

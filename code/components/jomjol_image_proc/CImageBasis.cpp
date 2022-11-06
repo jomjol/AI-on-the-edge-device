@@ -18,7 +18,7 @@
 
 using namespace std;
 
-static const char *TAG = "CImageBasis";
+static const char *TAG = "C IMG BASIS";
 
 //#define DEBUG_DETAIL_ON   
 
@@ -362,7 +362,7 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
     if ((width * height * channels) == 0)
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Image with size 0 loaded --> reboot to be done! "
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image with size 0 loaded --> reboot to be done! "
                 "Check that your camera module is working and connected properly.");
 
         doReboot();
