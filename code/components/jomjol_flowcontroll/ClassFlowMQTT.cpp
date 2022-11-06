@@ -17,6 +17,7 @@
 
 #define __HIDE_PASSWORD
 
+static const char *TAG = "FLOW MQTT";
 #define LWT_TOPIC        "connection"
 #define LWT_CONNECTED    "connected"
 #define LWT_DISCONNECTED "connection lost"
@@ -194,7 +195,7 @@ bool ClassFlowMQTT::Start(float AutoIntervall) {
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << "Digitizer interval is " << roundInterval <<
             " minutes => setting MQTT LWT timeout to " << ((float)keepAlive/60) << " minutes.";
-    LogFile.WriteToFile(ESP_LOG_INFO, stream.str());
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, stream.str());
 
     mqttServer_setParameter(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
 
@@ -244,7 +245,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-            LogFile.WriteToFile(ESP_LOG_INFO, "Publishing MQTT topics...");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
 
             if (result.length() > 0)   
                 MQTTPublish(namenumber + "value", result, SetRetainFlag);

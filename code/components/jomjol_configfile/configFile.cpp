@@ -6,7 +6,7 @@
 #include "configFile.h"
 #include <esp_log.h>
 
-static const char *TAG = "configFile";
+static const char *TAG = "CONFIG";
 
 ConfigFile::ConfigFile(std::string filePath)
 {

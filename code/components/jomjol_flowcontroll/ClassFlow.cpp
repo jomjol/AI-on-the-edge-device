@@ -5,7 +5,7 @@
 #include <string.h>
 #include "esp_log.h"
 
-static const char *TAG = "class_flow";
+static const char *TAG = "FLOW CLASS";
 
 
 void ClassFlow::SetInitialParameter(void)

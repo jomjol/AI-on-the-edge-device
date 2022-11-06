@@ -16,6 +16,7 @@ extern "C" {
 #include "CImageBasis.h"
 #include "esp_log.h"
 
+static const char* TAG = "FLOW IMG";
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {
@@ -47,7 +48,7 @@ string ClassFlowImage::CreateLogFolder(string time) {
 	string logPath = LogImageLocation + "/" + time.LOGFILE_TIME_FORMAT_DATE_EXTR + "/" + time.LOGFILE_TIME_FORMAT_HOUR_EXTR;
     isLogImage = mkdir_r(logPath.c_str(), S_IRWXU) == 0;
     if (!isLogImage) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, "Can't create log folder for analog images. Path " + logPath);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't create log folder for analog images. Path " + logPath);
     }
 
 	return logPath;
@@ -128,7 +129,7 @@ void ClassFlowImage::RemoveOldLogs()
             }
 		}
     }
-    LogFile.WriteToFile(ESP_LOG_INFO, "Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
     closedir(dir);
 }
 
