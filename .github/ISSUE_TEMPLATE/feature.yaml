@@ -1,0 +1,23 @@
+name: 💡 Feature Request
+description: Use this form if you have an idea or wish for a new feature
+labels: feature
+body:
+
+
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking your time to document your idea.
+
+        Before you proceed, please check:
+        - [ ] Is there already another similar issue open or closed? Check for open and closed [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues) and [Discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions).
+        - [ ] Is there already another similar [discussion](https://github.com/jomjol/AI-on-the-edge-device/discussions) ongoing?
+
+        Please be aware that we might decline your request if we have a reason for it!
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: The Feature
+      description: A clear and concise description of what the new feature should do. If possible, refer to other projects or add a mockup.
