@@ -658,11 +658,10 @@ function getNUMBERInfo(){
 }
 
 function RenameNUMBER(_alt, _neu){
-     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0))
+     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0) || (_neu.search(" ") >= 0) || (_neu.search("\"") >= 0))
      {
-          return "Name must not contain ',' or '.' - please change name";
+          return "Name must not contain ',', '.', ' ' or '\"' - please change name";
      }
-
 
      index = -1;
      found = false;
@@ -745,9 +744,9 @@ function getROIInfo(_typeROI, _number){
 
 
 function RenameROI(_number, _type, _alt, _neu){
-     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0))
+     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0) || (_neu.search(" ") >= 0) || (_neu.search("\"") >= 0))
      {
-          return "Name must not contain ',' or '.' - please change name";
+          return "Name must not contain ',', '.', ' ' or '\"' - please change name";
      }
 
 
