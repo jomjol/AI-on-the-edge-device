@@ -397,7 +397,7 @@ string ClassFlowControll::GetPrevalue(std::string _number)
         return flowpostprocessing->GetPreValue(_number);   
     }
 
-    return std::string();    
+    return std::string("");    
 }
 
 std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)

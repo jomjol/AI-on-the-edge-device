@@ -80,11 +80,14 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     int index = -1;
 
     if (_number == "")
-        _number = "default";
+        _number = "default"; 
 
     for (int i = 0; i < NUMBERS.size(); ++i)
         if (NUMBERS[i]->name == _number)
             index = i;
+
+    if (index == -1)
+        return std::string("");
 
     result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
 
