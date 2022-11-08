@@ -67,10 +67,8 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         topicT = group + "_" + field;
     }
 
-    if ((*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
-        if (group != "") { // But only if the group is set
-            name = group + " " + name;
-        }
+    if (group != "") { // Group is set, prepend it to name
+        name = group + " " + name;
     }
 
     if (field == "problem") { // Special binary sensor which is based on error topic
@@ -136,7 +134,9 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     MQTTPublish(topicFull, payload, true);
 }
 
-void MQTThomeassistantDiscovery() {    
+void MQTThomeassistantDiscovery() {
+    std::string group;
+    
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
@@ -150,7 +150,13 @@ void MQTThomeassistantDiscovery() {
     sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-         std::string group = (*NUMBERS)[i]->name;
+        if ((*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
+            group = (*NUMBERS)[i]->name;
+        }
+        else {
+            group = "";
+        }
+        
     //                                  Group | Field                 | User Friendly Name                | Icon                   | Unit     | Device Class | State Class       | Entity Category
         sendHomeAssistantDiscoveryTopic(group,   "value",              "Value",                            "gauge",                 valueUnit, meterType,     "total_increasing", "");
         sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   valueUnit, "",            "total_increasing", "diagnostic");
