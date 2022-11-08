@@ -58,17 +58,16 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     std::string payload;
     std::string nl = "\n";
 
-    if (group == "") {
-        topic =  field;
-        topicT = field;
-    }
-    else {
-        topic = group + "/" + field;
-        topicT = group + "_" + field;
-    }
-
-    if (group != "") { // Group is set, prepend it to name
-        name = group + " " + name;
+    if ((*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
+        if (group != "") { // But only if the group is set
+            name = group + " " + name;
+            topic = group + "/" + field;
+            topicT = group + "_" + field;
+        }
+        else {
+            topic =  field;
+            topicT = field;
+        }
     }
 
     if (field == "problem") { // Special binary sensor which is based on error topic
@@ -134,9 +133,7 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     MQTTPublish(topicFull, payload, true);
 }
 
-void MQTThomeassistantDiscovery() {
-    std::string group;
-    
+void MQTThomeassistantDiscovery() {    
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
@@ -150,13 +147,7 @@ void MQTThomeassistantDiscovery() {
     sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-        if ((*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
-            group = (*NUMBERS)[i]->name;
-        }
-        else {
-            group = "";
-        }
-        
+         std::string group = (*NUMBERS)[i]->name;
     //                                  Group | Field                 | User Friendly Name                | Icon                   | Unit     | Device Class | State Class       | Entity Category
         sendHomeAssistantDiscoveryTopic(group,   "value",              "Value",                            "gauge",                 valueUnit, meterType,     "total_increasing", "");
         sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   valueUnit, "",            "total_increasing", "diagnostic");
