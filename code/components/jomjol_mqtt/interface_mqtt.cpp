@@ -183,6 +183,7 @@ bool MQTT_Init() {
         mqtt_cfg.password = password.c_str();
     };
 
+    LogFile.WriteHeapInfo("MQTT Client Init");
     client = esp_mqtt_client_init(&mqtt_cfg);
     if (client)
     {
@@ -193,6 +194,7 @@ bool MQTT_Init() {
             return false;
         }
 
+        LogFile.WriteHeapInfo("MQTT Client Start");
         ret = esp_mqtt_client_start(client);
         if (ret != ESP_OK)
         {
