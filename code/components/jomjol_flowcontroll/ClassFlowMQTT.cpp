@@ -230,6 +230,8 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
+
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
             result =  (*NUMBERS)[i]->ReturnValue;
@@ -245,7 +247,6 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
 
             if (result.length() > 0)   
                 MQTTPublish(namenumber + "value", result, SetRetainFlag);
