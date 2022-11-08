@@ -52,36 +52,30 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         version = std::string(libfive_git_branch()) + " (" + std::string(libfive_git_revision()) + ")";
     }
     
-    std::string topic;
     std::string topicFull;
-    std::string topicT;
+    std::string configTopic;
     std::string payload;
     std::string nl = "\n";
 
-    if ((*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
-        if (group != "") { // But only if the group is set
-            name = group + " " + name;
-            topic = group + "/" + field;
-            topicT = group + "_" + field;
-        }
-        else {
-            topic =  field;
-            topicT = field;
-        }
-    }
+    configTopic = field;
+
+    if (group != "" && (*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
+        configTopic = group + "_" + field;
+        name = group + " " + name;
+    }    
 
     if (field == "problem") { // Special binary sensor which is based on error topic
-        topicFull = "homeassistant/binary_sensor/" + maintopic + "/" + topicT + "/config";
+        topicFull = "homeassistant/binary_sensor/" + maintopic + "/" + configTopic + "/config";
     }
     else {
-        topicFull = "homeassistant/sensor/" + maintopic + "/" + topicT + "/config";
+        topicFull = "homeassistant/sensor/" + maintopic + "/" + configTopic + "/config";
     }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
     payload = "{" + nl +
         "\"~\": \"" + maintopic + "\"," + nl +
-        "\"unique_id\": \"" + maintopic + "-" + topicT + "\"," + nl +
-        "\"object_id\": \"" + maintopic + "_" + topicT + "\"," + nl + // This used to generate the Entity ID
+        "\"unique_id\": \"" + maintopic + "-" + configTopic + "\"," + nl +
+        "\"object_id\": \"" + maintopic + "_" + configTopic + "\"," + nl + // This used to generate the Entity ID
         "\"name\": \"" + name + "\"," + nl +
         "\"icon\": \"mdi:" + icon + "\"," + nl;        
 
