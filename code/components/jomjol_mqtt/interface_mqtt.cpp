@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
+#include "server_tflite.h"
 
 #define __HIDE_PASSWORD
 
@@ -12,6 +13,8 @@ static const char *TAG = "MQTT INTERFACE";
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
 
+
+int failedOnRound = -1;
 
 esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
 // ESP_EVENT_ANY_ID
@@ -27,11 +30,18 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
     int msg_id;
     std::string zw;
 
+    if (failedOnRound == getCountFlowRounds()) { // we already failed in this round, do not retry until the next round
+        return true; // Fail quietly
+    }
+
+    LogFile.WriteHeapInfo("MQTT Publish");
+
     if (!mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Not connected, trying to re-connect...");
         if (!MQTT_Init()) {
             if (!MQTT_Init()) { // Retry
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to init!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to init, skipping all MQTT publishings in this round!");
+                failedOnRound = getCountFlowRounds();
                 return false;
             }
         }
@@ -43,8 +53,9 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
 
         msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
         if (msg_id < 0) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to publish topic '" + _key + "'!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to publish topic '" + _key + "', skipping all MQTT publishings in this round!");
             mqtt_connected = false; // Force re-init on next call
+            failedOnRound = getCountFlowRounds();
             return false;
         }
     }

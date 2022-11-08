@@ -17,6 +17,8 @@ bool isSetupModusActive();
 
 std::string GetMQTTMainTopic();
 
+int getCountFlowRounds();
+
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req);
 
 esp_err_t GetRawJPG(httpd_req_t *req);
