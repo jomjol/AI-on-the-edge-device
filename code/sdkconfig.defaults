@@ -5,6 +5,9 @@
 # sdkconfig.esp32cam to apply your changes!
 ##################################################
 
+CONFIG_TASK_WDT=n
+CONFIG_TASK_WDT_CHECK_IDLE_TASK=n
+
 CONFIG_COMPILER_OPTIMIZATION_DEFAULT=n
 CONFIG_COMPILER_OPTIMIZATION_SIZE=y
 
