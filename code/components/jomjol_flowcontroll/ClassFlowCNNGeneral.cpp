@@ -790,8 +790,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         string zw = "_num (p, m): " + to_string(_num) + " " + to_string(_numplus) + " " + to_string(_numminus);
                         zw = zw + " _val (p, m): " + to_string(_val) + " " + to_string(_valplus) + " " + to_string(_valminus);
                         zw = zw + " result: " + to_string(result) + " _fit: " + to_string(_fit);
-                        ESP_LOGD(TAG, "details cnn: %s", zw.c_str());
-                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, zw);
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw);
 
 
                         _result_save_file = result;

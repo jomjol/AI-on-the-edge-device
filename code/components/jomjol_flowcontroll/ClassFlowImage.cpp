@@ -129,7 +129,7 @@ void ClassFlowImage::RemoveOldLogs()
             }
 		}
     }
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
     closedir(dir);
 }
 
