@@ -548,7 +548,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file " + cnnmodelfile);
         delete tflite;
         return false;
     } 
@@ -615,7 +615,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file /sdcard%s", cnnmodelfile.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file " + cnnmodelfile);
 
         delete tflite;
         return false;
