@@ -1792,12 +1792,12 @@ function WriteModelFiles()
         
         var text = list_tflite[i].replace("/config/", "");
         
-        if (list_tflite[i].includes("/dig-")) { // Its a digital file, only show in the digital list box
+        if (list_tflite[i].includes("/dig")) { // Its a digital file, only show in the digital list box
 	    optionDig.text = text;
 	    optionDig.value = list_tflite[i];
 	    _indexDig.add(optionDig);
         }
-        else if (list_tflite[i].includes("/ana-")) { // Its a digital file, only show in the analog list box
+        else if (list_tflite[i].includes("/ana")) { // Its a digital file, only show in the analog list box
 	    optionAna.text = text;
 	    optionAna.value = list_tflite[i];
 	    _indexAna.add(optionAna);
