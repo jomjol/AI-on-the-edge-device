@@ -479,7 +479,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = ZerlegeZeile(aktparamgraph);
         std::string _param = GetParameterName(zerlegt[0]);
 
         if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (zerlegt.size() > 1))
