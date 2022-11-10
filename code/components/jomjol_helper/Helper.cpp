@@ -558,6 +558,51 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 }
 
 
+
+std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
+{
+	std::vector<string> Output;
+
+	input = trim(input, delimiter);
+
+	/* The input can have multiple formats: 
+	 *  - key = value
+     *  - key = value1 value2 value3 ...
+     *  - key value1 value2 value3 ...
+	 *  
+	 * Examples:
+	 *  - ImageSize = VGA
+	 *  - IO0 = input disabled 10 false false 
+	 *  - main.dig1 28 144 55 100 false
+	 * 
+	 * This causes issues eg. if a password key has a whitespace or equal sign in its value.
+	 * As a workaround and to not break any legacy usage, we enforce to only use the
+	 * equal sign, if the key is "password"
+	*/
+	if (input.find("password") != string::npos) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+		size_t pos = input.find("=");
+		Output.push_back(trim(input.substr(0, pos), ""));
+		Output.push_back(trim(input.substr(pos +1, string::npos), ""));
+	}
+	else { // Legacy Mode
+		size_t pos = findDelimiterPos(input, delimiter);
+		std::string token;
+		while (pos != std::string::npos) {
+			token = input.substr(0, pos);
+			token = trim(token, delimiter);
+			Output.push_back(token);
+			input.erase(0, pos + 1);
+			input = trim(input, delimiter);
+			pos = findDelimiterPos(input, delimiter);
+		}
+		Output.push_back(input);
+	}
+
+	return Output;
+
+}
+
+
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
 /* SD Card Manufacturer Database */
 struct SDCard_Manufacturer_database {

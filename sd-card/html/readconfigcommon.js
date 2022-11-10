@@ -50,17 +50,40 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
 //          delimiter = " =,\t";
      
           input = trim(input, delimiter);
-          var pos = findDelimiterPos(input, delimiter);
-          var token;
-          while (pos > -1) {
-               token = input.substr(0, pos);
-               token = trim(token, delimiter);
-               Output.push(token);
-               input = input.substr(pos+1, input.length);
-               input = trim(input, delimiter);
-               pos = findDelimiterPos(input, delimiter);
+
+          /* The input can have multiple formats: 
+           *  - key = value
+           *  - key = value1 value2 value3 ...
+           *  - key value1 value2 value3 ...
+           *  
+           * Examples:
+           *  - ImageSize = VGA
+           *  - IO0 = input disabled 10 false false 
+           *  - main.dig1 28 144 55 100 false
+           * 
+           * This causes issues eg. if a password key has a whitespace or equal sign in its value.
+           * As a workaround and to not break any legacy usage, we enforce to only use the
+           * equal sign, if the key is "password"
+           */
+          if (input.includes("password")) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+               console.log(input);
+               var pos = input.indexOf("=");
+               Output.push(trim(input.substr(0, pos), delimiter));
+               Output.push(trim(input.substr(pos +1, input.length), delimiter));
           }
-          Output.push(input);
+          else { // Legacy Mode
+               var pos = findDelimiterPos(input, delimiter);
+               var token;
+               while (pos > -1) {
+                    token = input.substr(0, pos);
+                    token = trim(token, delimiter);
+                    Output.push(token);
+                    input = input.substr(pos+1, input.length);
+                    input = trim(input, delimiter);
+                    pos = findDelimiterPos(input, delimiter);
+               }
+               Output.push(input);
+          }
      
           return Output;
      
