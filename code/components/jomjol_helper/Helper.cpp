@@ -541,20 +541,7 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
         delimiter = _delimiter;
     }
 
-	input = trim(input, delimiter);
-	size_t pos = findDelimiterPos(input, delimiter);
-	std::string token;
-	while (pos != std::string::npos) {
-		token = input.substr(0, pos);
-		token = trim(token, delimiter);
-		Output.push_back(token);
-		input.erase(0, pos + 1);
-		input = trim(input, delimiter);
-		pos = findDelimiterPos(input, delimiter);
-	}
-	Output.push_back(input);
-
-	return Output;
+	return ZerlegeZeile(input, delimiter);
 }
 
 
