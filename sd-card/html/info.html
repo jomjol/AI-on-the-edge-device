@@ -37,13 +37,10 @@ div {
 			</div>
 		</td>
 	</tr>
-	</table>
+</table>
 
 
-<table style="font-family: arial">
 <h3>Host Info</h3>
-
-
 <table style="font-family: arial">
 	<tr>
 		<td>
@@ -77,8 +74,64 @@ div {
 	</tr>
 </table>
 
-
+<h3>Version Info</h3>
 <table style="font-family: arial">
+  <tr>
+	<td>
+		Git-Branch:
+	</td>
+	<td>
+		<div id="gitbranch">
+			<object data="/version?type=GitBranch"></object>
+		</div>
+	</td>
+  </tr>
+
+  <tr>
+	<td>
+		Git-Tag:
+	</td>
+	<td>
+		<div>
+			<object data="/version?type=GitTag"></object>
+		</div>
+	</td>
+  </tr>
+
+  <tr>
+	<td>
+		Git-Revision:
+	</td>
+	<td>
+		<div>
+			<object data="/version?type=GitRevision"></object>
+		</div>
+	</td>
+  </tr>
+
+  <tr>
+	<td>
+		Build Time:
+	</td>
+	<td>
+		<div>
+			<object data="/version?type=BuildTime"></object>
+		</div>
+	</td>
+  </tr>
+
+	<tr>
+	<td>
+		HTML Version:
+	</td>
+	<td>
+		<div>
+			<object data="/version?type=HTMLVersion"></object>
+		</div>
+	</td>
+  </tr>
+</table>
+
 <h3>SD Card Info</h3>
 <table style="font-family: arial">
 	<tr>
@@ -151,67 +204,6 @@ div {
 			</div>
 		</td>
 	</tr>
-</table>
-
-
-<table style="font-family: arial">
-<h3>Version Info</h3>
-
-<table style="font-family: arial">
-  <tr>
-	<td>
-		Git-Branch:
-	</td>
-	<td>
-		<div id="gitbranch">
-			<object data="/version?type=GitBranch"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Git-Tag:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=GitTag"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Git-Revision:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=GitRevision"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Build Time:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=BuildTime"></object>
-		</div>
-	</td>
-  </tr>
-
-	<tr>
-	<td>
-		HTML Version:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=HTMLVersion"></object>
-		</div>
-	</td>
-  </tr>
 </table>
 
 <h3>Copyright</h3>
