@@ -42,6 +42,7 @@ time_t addDays(time_t startTime, int days);
 void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);
 
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter);
+std::vector<std::string> ZerlegeZeile(std::string input, std::string delimiter = " =, \t");
 
 ///////////////////////////
 size_t getInternalESPHeapSize();

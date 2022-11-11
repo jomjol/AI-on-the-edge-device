@@ -327,7 +327,7 @@ bool GpioHandler::readConfig()
     bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
-        zerlegt = configFile.ZerlegeZeile(line);
+        zerlegt = ZerlegeZeile(line);
         // const std::regex pieces_regex("IO([0-9]{1,2})");
         // std::smatch pieces_match;
         // if (std::regex_match(zerlegt[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))

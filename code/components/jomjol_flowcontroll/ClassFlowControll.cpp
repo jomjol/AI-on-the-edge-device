@@ -445,7 +445,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph, " =");
+        zerlegt = ZerlegeZeile(aktparamgraph, " =");
         if ((toUpper(zerlegt[0]) == "AUTOSTART") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")

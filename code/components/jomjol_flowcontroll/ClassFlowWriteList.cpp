@@ -50,7 +50,7 @@ bool ClassFlowWriteList::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = ZerlegeZeile(aktparamgraph);
 /*
         if ((toUpper(zerlegt[0]) == "USER") && (zerlegt.size() > 1))
         {

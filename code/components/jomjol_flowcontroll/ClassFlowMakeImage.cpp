@@ -78,7 +78,7 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] ==  "LogImageLocation") && (zerlegt.size() > 1))
         {
             LogImageLocation = "/sdcard" + zerlegt[1];

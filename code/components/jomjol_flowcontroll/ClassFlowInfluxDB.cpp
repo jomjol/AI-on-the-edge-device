@@ -80,7 +80,7 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = ZerlegeZeile(aktparamgraph);
         if ((toUpper(zerlegt[0]) == "USER") && (zerlegt.size() > 1))
         {
             this->user = zerlegt[1];
