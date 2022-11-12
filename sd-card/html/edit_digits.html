@@ -105,13 +105,13 @@ th, td {
 	  </tr>
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
-		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
+		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
 		<td><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6> </td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
-		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-        <td ><label for="lockSizes"> Lock y, dx and dy </label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7> </td>
+		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
+        <td ><label for="lockSizes"> Lock y, Δx and Δy </label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7> </td>
     </tr>
     </table>	
     
@@ -243,6 +243,10 @@ function changelockAR(){
 
 function changelockSizes(){
     lockSizes = document.getElementById("lockSizes").checked;
+
+    if (!lockSizes) {
+        alert("For best results it is (in most cases) advised to keep the y, Δx and Δy identical!");
+    }
 }
 
 function ChangeSelection(){
@@ -595,7 +599,6 @@ function draw() {
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
-            console.log(rect);
 
             if (lockAR) {
                 rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);
@@ -604,8 +607,6 @@ function draw() {
 
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
-
-            console.log(ROIInfo);
             draw();            
         }
     }
@@ -615,7 +616,6 @@ function draw() {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
 
-            console.log(rect);
             if (lockAR) {
                 rect.h = Math.round(rect.w / ROIInfo[aktindex]["ar"]);
                 document.getElementById("refdy").value = rect.h;
