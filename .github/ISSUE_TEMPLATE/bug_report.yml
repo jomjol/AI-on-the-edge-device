@@ -1,5 +1,5 @@
 name: 🐞 Bug Report
-description: Use this form if you think you found a bug
+description: Use this form if you think you found a bug / Verwende dieses Formular, wenn Du denkst, dass Du einen Fehler gefunden hast.
 labels: bug
 body:
 
@@ -14,6 +14,8 @@ body:
         - [ ] Is there already another similar issue? Check for open and closed [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues) and [Discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions).
         - [ ] Are instructions in the [README](https://github.com/jomjol/AI-on-the-edge-device/tree/master#readme) solving your issue?
         - [ ] Are instructions in the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) solving your issue?
+        
+        Du darfst gerne auch in Deutsch schreiben!
 
 
 
@@ -46,6 +48,13 @@ body:
     attributes:
       label: Screenshots
       description: If applicable, add screenshots to help explain your problem.
+        
+
+
+  - type: textarea
+    attributes:
+      label: Logfile
+      description: If applicable, add the logfile (See menu `System > Log Viewer`) to help explain your problem.
 
 
 
