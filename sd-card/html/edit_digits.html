@@ -113,13 +113,18 @@ th, td {
 		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
         <td ><label for="lockSizes"> Synchronize y, Δx and Δy between ROI</label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7> </td>
     </tr>
+    <tr>
+      <td colspan="2"></td>
+      <td >
+        <button class="button" type="button" id="makeX_SpaceEquidistant" name="makeX_SpaceEquidistant" onclick="makeX_SpaceEquidistant()">Make all X spaces between ROIs equidistant</botton></td>
+    </tr>
     </table>	
     
 </div>
 			 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=8></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=9></td>
 	  </tr> 
 	  <tr>
                 <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
@@ -625,6 +630,42 @@ function draw() {
             rect.startY = document.getElementById("refy").value; 
             draw();            
         }
+    }
+
+    // Make all X spaces equidistant
+    function makeX_SpaceEquidistant() {
+        if (ROIInfo.length == 1) { // Only one number
+            return;
+        }
+
+        var sel = document.getElementById("index");
+        var _number = sel.selectedIndex;
+        var space;
+
+        console.log(ROIInfo, _number);
+
+        if (_number == 0) { // First number, use space to next one as reference
+            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+            console.log("space: " + space);
+
+            for (var _nb = 1; _nb < ROIInfo.length; _nb++) {
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x)  + parseInt(ROIInfo[_nb-1].dx) + space;
+            }
+        }
+        else { // In between, use space to previous one as reference
+            space = ROIInfo[_number].x - ROIInfo[_number-1].x -  ROIInfo[_number-1].dx;
+
+
+            for (var _nb = _number - 1; _nb >= 0 ; _nb--) { // left side
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb+1].x) - parseInt(ROIInfo[_nb].dx) - space;
+            }
+
+            for (var _nb = _number + 1; _nb < ROIInfo.length; _nb++) { // right side
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x) + parseInt(ROIInfo[_nb-1].dx) + space;
+            }
+        }
+
+        draw();
     }
 
     function renameROI(){
