@@ -642,11 +642,8 @@ function draw() {
         var _number = sel.selectedIndex;
         var space;
 
-        console.log(ROIInfo, _number);
-
         if (_number == 0) { // First number, use space to next one as reference
             space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
-            console.log("space: " + space);
 
             for (var _nb = 1; _nb < ROIInfo.length; _nb++) {
                 ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x)  + parseInt(ROIInfo[_nb-1].dx) + space;
