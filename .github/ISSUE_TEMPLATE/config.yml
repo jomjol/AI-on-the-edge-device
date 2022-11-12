@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Open a new Discussion
+    url: https://github.com/jomjol/AI-on-the-edge-device/discussions/categories/q-a
+    about: Use this form if you have a question or need help setting your AI-on-the-edge-device it up
