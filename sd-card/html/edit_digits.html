@@ -106,19 +106,20 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td rowspan="2"><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6> </td>
+		<td><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6> </td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
 		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-	  </tr>
+        <td ><label for="lockSizes"> Lock y, dx and dy </label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7> </td>
+    </tr>
     </table>	
     
 </div>
 			 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=7></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=8></td>
 	  </tr> 
 	  <tr>
                 <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
@@ -141,7 +142,8 @@ th, td {
             ROIInfo,
             enhanceCon = false;
             lockAR = true;
-            basepath = "http://192.168.178.26";
+            lockSizes = true;
+            basepath = "http://192.168.1.151";
 
     function doReboot() {
         if (confirm("Are you sure you want to reboot? Did you save the config?")) {
@@ -239,6 +241,10 @@ function changelockAR(){
     lockAR = document.getElementById("lockAR").checked;
 }
 
+function changelockSizes(){
+    lockSizes = document.getElementById("lockSizes").checked;
+}
+
 function ChangeSelection(){
     aktindex = parseInt(document.getElementById("index").value);
 //    lockAR = true;
@@ -322,6 +328,7 @@ function UpdateROIs(_sel){
     }  
     
     document.getElementById("lockAR").checked = lockAR;
+    document.getElementById("lockSizes").checked = lockSizes;
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
@@ -455,6 +462,20 @@ function draw() {
         {
             var sel = document.getElementById("index");
             var _number = sel.selectedIndex;
+
+            if (lockSizes) {
+                // Synchronise Y, dx and dy
+                for (var _nb = 0; _nb < ROIInfo.length; _nb++)
+                {
+                    if (_nb != _number)
+                    {
+                        ROIInfo[_nb].y = rect.startY;
+                        ROIInfo[_nb].dy = rect.h;
+                        ROIInfo[_nb].dx = rect.w;
+                    }
+                }
+            }
+
             for (var _nb = 0; _nb < ROIInfo.length; _nb++)
             {
                 if (_nb != _number)
@@ -492,6 +513,7 @@ function draw() {
             ROIInfo[aktindex]["y"] = rect.startY;       
             ROIInfo[aktindex]["dx"] = rect.w;       
             ROIInfo[aktindex]["dy"] = rect.h;       
+
         }
     }
 
@@ -573,6 +595,8 @@ function draw() {
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
+            console.log(rect);
+
             if (lockAR) {
                 rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);
                 document.getElementById("refdx").value = rect.w;
@@ -580,6 +604,8 @@ function draw() {
 
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
+
+            console.log(ROIInfo);
             draw();            
         }
     }
@@ -588,6 +614,8 @@ function draw() {
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
+
+            console.log(rect);
             if (lockAR) {
                 rect.h = Math.round(rect.w / ROIInfo[aktindex]["ar"]);
                 document.getElementById("refdy").value = rect.h;
