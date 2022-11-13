@@ -107,7 +107,7 @@ th, td {
 		</td>
 		<td>                
             <input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename">  
-		<td>
+        </td>
 		<td>
 		<input class="move" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
 		<input class="move" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
@@ -115,20 +115,24 @@ th, td {
 	  </tr>
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
-		<td>dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td rowspan="1"><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
+		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
+		<td><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
-		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-		<td rowspan="1"><label for="CCW"> Counter-Clockwise Rotation: </label><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" unchecked tabindex=7></td>
+		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
+		<td><label for="lockSizes"> Synchronize Δx and Δy between ROIs</label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7></td>
 	  </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td><label for="CCW"> Counter-Clockwise Rotation: </label><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" unchecked tabindex=8></td>
+      </tr>
 	</table>			 
 </div>	 
 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=8></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=9></td>
 	  </tr>  
 	  <tr>
                 <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
@@ -150,6 +154,7 @@ th, td {
             ROIInfo,
             enhanceCon = false;
             lockAR = true;
+            lockSizes = true;
             basepath = "http://192.168.178.26";
     
 function doReboot() {
@@ -247,6 +252,10 @@ function changelockAR(){
     lockAR = document.getElementById("lockAR").checked;
 }
 
+function changelockSizes(){
+    lockSizes = document.getElementById("lockSizes").checked;
+}
+
 function changeCCW(){
     var sel = document.getElementById("Numbers_value1");
     var _number = sel.options[sel.selectedIndex].text;
@@ -342,6 +351,7 @@ function UpdateROIs(_sel){
     }  
     
     document.getElementById("lockAR").checked = lockAR;
+    document.getElementById("lockSizes").checked = lockSizes;
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
@@ -480,6 +490,19 @@ function removeNumber(){
         {
             var sel = document.getElementById("index");
             var _number = sel.selectedIndex;
+
+            if (lockSizes) {
+                // Synchronize dx and dy
+                for (var _nb = 0; _nb < ROIInfo.length; _nb++)
+                {
+                    if (_nb != _number)
+                    {
+                        ROIInfo[_nb].dy = rect.h;
+                        ROIInfo[_nb].dx = rect.w;
+                    }
+                }
+            }
+
             for (var _nb = 0; _nb < ROIInfo.length; _nb++)
             {
                 if (_nb != _number)
