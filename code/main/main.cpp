@@ -35,6 +35,7 @@ extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
 extern const char* BUILD_TIME;
 
+extern const char* getHTMLversion(void);
 
 #define __HIDE_PASSWORD
 
@@ -145,16 +146,9 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
-    string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + "', Tag: '" + std::string(GIT_TAG) + \
-            "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME);
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
-    ESP_LOGD(TAG, "=============================================================================================");
-    ESP_LOGD(TAG, "%s", versionFormated.c_str());
-    ESP_LOGD(TAG, "=============================================================================================");
-    ESP_LOGD(TAG, "Reset reason: %s", getResetReason().c_str());
-
-
+    
     PowerResetCamera();
     esp_err_t cam = Camera.InitCam();
     Camera.LightOnOff(false);
@@ -162,12 +156,24 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
 
-
     if (!Init_NVS_SDCard())
     {
         xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
         return;
     };
+
+    string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + \
+        "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME) + \
+        ", Web UI: " + getHTMLversion();
+
+    if (std::string(GIT_TAG) != "") { // We are on a tag, add it as prefix
+        string versionFormated = "Tag: '" + std::string(GIT_TAG) + "', " + versionFormated;
+    }
+
+    ESP_LOGD(TAG, "=============================================================================================");
+    ESP_LOGD(TAG, "%s", versionFormated.c_str());
+    ESP_LOGD(TAG, "=============================================================================================");
+    ESP_LOGD(TAG, "Reset reason: %s", getResetReason().c_str());
 
     CheckOTAUpdate();
 
@@ -220,6 +226,10 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
+
+    if (std::string(getHTMLversion()) != std::string(GIT_REV)) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Web UI version does not match firmware version!");
+    }
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
