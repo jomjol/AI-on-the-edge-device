@@ -259,7 +259,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 
                 std::string resultRatePerTimeUnit;
                 if (getTimeUnit() == "h") { // Need conversion to be per hour
-                    resultRatePerTimeUnit = resultRatePerTimeUnit = to_string((*NUMBERS)[i]->FlowRateAct / 60); // per minutes => per hour
+                    resultRatePerTimeUnit = resultRatePerTimeUnit = to_string((*NUMBERS)[i]->FlowRateAct * 60); // per minutes => per hour
                 }
                 else { // Keep per minute
                     resultRatePerTimeUnit = resultrate;
