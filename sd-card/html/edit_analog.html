@@ -486,7 +486,7 @@ function drawTextBG(context, txt, x, y, padding) {
     context.font = "15px Arial";
     context.textAlign = "center";
 
-    context.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    context.fillStyle = 'rgba(255, 0, 0, 0.5)';
     var width = context.measureText(txt).width;
     context.fillRect(x-(width+padding)/2, y-12, width + padding*2, parseInt(context.font, 10) + padding);
 

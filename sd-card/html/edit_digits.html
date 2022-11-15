@@ -139,7 +139,6 @@ th, td {
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
-            ctx = canvas.getContext('2d'),
             imageObj = new Image(),
             rect = {},
             drag = false,
@@ -205,6 +204,7 @@ function deleteROI(){
         aktindex = ROIInfo.length - 1;
     }
     UpdateROIs();
+    draw();
 }
 
 function newROI() {
@@ -214,16 +214,29 @@ function newROI() {
     var _roialt= sel.options[sel.selectedIndex].text;
 
     var _roinew = prompt("Please enter name of new ROI", "name");
+    var space = 0;
 
-    if (ROIInfo.length > 0)
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
+    if (ROIInfo.length > 0) {
+        if (ROIInfo.length > 1) {
+            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+        }
+        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, parseInt(ROIInfo[sel.selectedIndex].x) + parseInt(ROIInfo[sel.selectedIndex].dx) + space,
+                parseInt(ROIInfo[sel.selectedIndex].y), ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
+    }
     else
         erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, 30, 51, 0);
 
     if (erg != "")
         alert(erg);
-    else
+    else {
         UpdateROIs(_roinew);
+        console.log(space);
+        // Shift all ROIs on right side to the right
+        for (var _nb = sel.selectedIndex + 1; _nb < ROIInfo.length; _nb++) {
+            ROIInfo[_nb].x = parseInt(ROIInfo[_nb].x) + parseInt(ROIInfo[_nb].dx) + space;
+        }
+        draw();
+    }
 }
 
 function movePrevious(){
@@ -467,7 +480,7 @@ function drawTextBG(context, txt, x, y, padding) {
     context.font = "15px Arial";
     context.textAlign = "center";
 
-    context.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    context.fillStyle = 'rgba(255, 0, 0, 0.5)';
     var width = context.measureText(txt).width;
     context.fillRect(x-(width+padding)/2, y-12, width + padding*2, parseInt(context.font, 10) + padding);
 
@@ -484,6 +497,10 @@ function draw() {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
+
+        if (ROIInfo.length == 0) {
+            return;
+        }
 
         if (document.getElementById("Category_Digits_enabled").checked)
         {
@@ -589,6 +606,9 @@ function draw() {
         if (drag) {
             zw = getCoords(this)        
 
+            if (ROIInfo.length == 0) {
+                return;
+            }
 
             if (lockAR) {
                 rect.h = (e.pageY - zw.top) - rect.startY;
