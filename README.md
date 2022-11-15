@@ -63,6 +63,7 @@ See the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation
 A 3d-printable housing can be found here:
   - https://www.thingiverse.com/thing:4573481 (Water Meter)
   - https://www.thingiverse.com/thing:5028229 (Power Meter)
+  - https://www.thingiverse.com/thing:5224101 (Gas Meter)
   - https://www.thingiverse.com/thing:4571627 (ESP32-Cam housing only)
 
 ## Build it yourself
