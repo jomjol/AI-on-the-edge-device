@@ -116,7 +116,7 @@ th, td {
     <tr>
       <td colspan="2"></td>
       <td >
-        <button class="button" type="button" id="makeX_SpaceEquidistant" name="makeX_SpaceEquidistant" onclick="makeX_SpaceEquidistant()">Make all X spaces between ROIs equidistant</botton></td>
+       <label for="lockSpaceEquidistant">Keep all X spaces between ROIs equidistant</label><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8></td>
     </tr>
     </table>	
     
@@ -147,6 +147,7 @@ th, td {
             enhanceCon = false;
             lockAR = true;
             lockSizes = true;
+            lockSpaceEquidistant = true;
             basepath = "http://192.168.1.151";
 
     function doReboot() {
@@ -267,6 +268,10 @@ function changelockSizes(){
     }
 }
 
+function changeLockSpaceEquidistant(){
+    lockSpaceEquidistant = document.getElementById("lockSpaceEquidistant").checked;
+}
+
 function ChangeSelection(){
     aktindex = parseInt(document.getElementById("index").value);
 //    lockAR = true;
@@ -351,6 +356,7 @@ function UpdateROIs(_sel){
     
     document.getElementById("lockAR").checked = lockAR;
     document.getElementById("lockSizes").checked = lockSizes;
+    document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
@@ -500,6 +506,10 @@ function draw() {
 
         if (ROIInfo.length == 0) {
             return;
+        }
+
+        if (lockSpaceEquidistant) {
+            makeX_SpaceEquidistant();
         }
 
         if (document.getElementById("Category_Digits_enabled").checked)
@@ -702,8 +712,6 @@ function draw() {
                 ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x) + parseInt(ROIInfo[_nb-1].dx) + space;
             }
         }
-
-        draw();
     }
 
     function renameROI(){
