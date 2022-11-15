@@ -744,9 +744,10 @@ function getROIInfo(_typeROI, _number){
 
 
 function RenameROI(_number, _type, _alt, _neu){
-     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0) || (_neu.search(" ") >= 0) || (_neu.search("\"") >= 0))
-     {
-          return "Name must not contain ',', '.', ' ' or '\"' - please change name";
+     if ((_neu.includes("=")) || (_neu.includes(".")) || (_neu.includes(":")) ||
+         (_neu.includes(",")) || (_neu.includes(";")) || (_neu.includes(" ")) || 
+         (_neu.includes("\""))) {
+          return "Name must not contain any of the following characters: . : , ; = \" ' '";
      }
 
 
