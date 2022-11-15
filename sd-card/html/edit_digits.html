@@ -106,17 +106,17 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6> </td>
+		<td><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6><label for="lockAR"> Lock aspect ratio </label></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
 		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-        <td><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7> </td>
+        <td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label></td>
     </tr>
     <tr>
       <td colspan="2"></td>
-      <td >
-       <label for="lockSpaceEquidistant">Keep all X spaces between ROIs equidistant</label><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8></td>
+      <td ><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=9>
+        <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" step=1 onchange="valuemanualchangedspace()" tabindex=8> between all ROIs</label></td>
     </tr>
     </table>	
     
@@ -124,7 +124,7 @@ th, td {
 			 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=9></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=10></td>
 	  </tr> 
 	  <tr>
                 <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
@@ -148,6 +148,7 @@ th, td {
             lockAR = true;
             lockSizes = true;
             lockSpaceEquidistant = true;
+            space = 3;
             basepath = "http://192.168.1.151";
 
     function doReboot() {
@@ -215,7 +216,6 @@ function newROI() {
     var _roialt= sel.options[sel.selectedIndex].text;
 
     var _roinew = prompt("Please enter name of new ROI", "name");
-    var space = 0;
 
     if (ROIInfo.length > 0) {
         if (ROIInfo.length > 1) {
@@ -231,7 +231,6 @@ function newROI() {
         alert(erg);
     else {
         UpdateROIs(_roinew);
-        console.log(space);
         // Shift all ROIs on right side to the right
         for (var _nb = sel.selectedIndex + 1; _nb < ROIInfo.length; _nb++) {
             ROIInfo[_nb].x = parseInt(ROIInfo[_nb].x) + parseInt(ROIInfo[_nb].dx) + space;
@@ -245,7 +244,8 @@ function movePrevious(){
     ROIInfo[aktindex] = ROIInfo[aktindex-1];
     ROIInfo[aktindex-1] = zw;
     aktindex--;
-    UpdateROIs();      
+    UpdateROIs(); 
+    valuemanualchanged();
 }
 
 function moveNext(){
@@ -253,7 +253,8 @@ function moveNext(){
     ROIInfo[aktindex] = ROIInfo[aktindex+1];
     ROIInfo[aktindex+1] = zw;
     aktindex++;
-    UpdateROIs();    
+    UpdateROIs();   
+    valuemanualchanged();
 }
 
 function changelockAR(){
@@ -357,6 +358,7 @@ function UpdateROIs(_sel){
     document.getElementById("lockAR").checked = lockAR;
     document.getElementById("lockSizes").checked = lockSizes;
     document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
+    document.getElementById("space").value = space;
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
@@ -407,6 +409,10 @@ function UpdateROIs(_sel){
             ParseConfig();
             param = getConfigParameters(); 
             UpdateNUMBERS();
+
+            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+            document.getElementById("space").value = space;
+
             drawImage();
             draw();
         }
@@ -506,10 +512,6 @@ function draw() {
 
         if (ROIInfo.length == 0) {
             return;
-        }
-
-        if (lockSpaceEquidistant) {
-            makeX_SpaceEquidistant();
         }
 
         if (document.getElementById("Category_Digits_enabled").checked)
@@ -652,6 +654,10 @@ function draw() {
     }
 
     function valuemanualchanged(){
+        if (ROIInfo.length == 0) {
+            return;
+        }
+
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
@@ -663,11 +669,20 @@ function draw() {
 
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
-            draw();            
+
+            draw();   
+            if (lockSpaceEquidistant) {
+                makeX_SpaceEquidistant();
+            }   
+            draw();      
         }
     }
 
     function valuemanualchangeddx(){
+        if (ROIInfo.length == 0) {
+            return;
+        }
+
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
@@ -679,37 +694,44 @@ function draw() {
 
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
+
+            if (lockSpaceEquidistant) {
+                makeX_SpaceEquidistant();
+            }
+
             draw();            
+        }
+    }
+
+    function valuemanualchangedspace(){
+        if (!drag) {
+           space = document.getElementById("space").value;
+           valuemanualchanged();
+           draw(); 
         }
     }
 
     // Make all X spaces equidistant
     function makeX_SpaceEquidistant() {
-        if (ROIInfo.length == 1) { // Only one number
+        if (ROIInfo.length <= 1) { // Only one or no number
             return;
         }
 
         var sel = document.getElementById("index");
         var _number = sel.selectedIndex;
-        var space;
 
-        if (_number == 0) { // First number, use space to next one as reference
-            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
-
+        if (_number == 0) { // First number
             for (var _nb = 1; _nb < ROIInfo.length; _nb++) {
-                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x)  + parseInt(ROIInfo[_nb-1].dx) + space;
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x)  + parseInt(ROIInfo[_nb-1].dx) + parseInt(space);
             }
         }
-        else { // In between, use space to previous one as reference
-            space = ROIInfo[_number].x - ROIInfo[_number-1].x -  ROIInfo[_number-1].dx;
-
-
+        else { // In between
             for (var _nb = _number - 1; _nb >= 0 ; _nb--) { // left side
-                ROIInfo[_nb].x = parseInt(ROIInfo[_nb+1].x) - parseInt(ROIInfo[_nb].dx) - space;
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb+1].x) - parseInt(ROIInfo[_nb].dx) - parseInt(space);
             }
 
             for (var _nb = _number + 1; _nb < ROIInfo.length; _nb++) { // right side
-                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x) + parseInt(ROIInfo[_nb-1].dx) + space;
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x) + parseInt(ROIInfo[_nb-1].dx) + parseInt(space);
             }
         }
     }
