@@ -463,10 +463,28 @@ function removeNumber(){
 }
 
 
+function drawTextBG(context, txt, x, y, padding) {
+    context.font = "15px Arial";
+    context.textAlign = "center";
+
+    context.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    var width = context.measureText(txt).width;
+    context.fillRect(x-(width+padding)/2, y-12, width + padding*2, parseInt(context.font, 10) + padding);
+
+    context.fillStyle = "black";
+    context.fillText(txt, x + padding / 2, y + padding / 2);
+}
+
+
 function draw() {
+    if (typeof ROIInfo === 'undefined') { // During init, ROIInfo is not defined yet
+        return;
+    }
+
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
+
         if (document.getElementById("Category_Digits_enabled").checked)
         {
             var sel = document.getElementById("index");
@@ -497,6 +515,7 @@ function draw() {
                     var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
                     var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
                     context.strokeRect(x0, y0, dx, dy);
+                    drawTextBG(context, ROIInfo[_nb]["name"], x0+dx/2, y0-12, 5);
                 }
 
             }
@@ -509,8 +528,10 @@ function draw() {
             var dx = parseInt(rect.w) + parseInt(lw);
             var dy = parseInt(rect.h) + parseInt(lw);
             context.strokeRect(x0, y0, dx, dy);
+            drawTextBG(context, ROIInfo[aktindex]["name"], x0+dx/2, y0-11, 5);
             context.lineWidth = 1;
             context.strokeRect(x0+dx*0.2, y0+dy*0.2, dx*0.6, dy*0.6);
+
 
             context.lineWidth = 2;
             context.beginPath();
