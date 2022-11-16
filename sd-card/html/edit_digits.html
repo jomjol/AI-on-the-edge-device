@@ -106,17 +106,17 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td><label for="lockAR"> Lock aspect ratio </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6> </td>
+		<td><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6><label for="lockAR"> Lock aspect ratio </label></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
 		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-        <td><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7> </td>
+        <td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label></td>
     </tr>
     <tr>
       <td colspan="2"></td>
-      <td >
-        <button class="button" type="button" id="makeX_SpaceEquidistant" name="makeX_SpaceEquidistant" onclick="makeX_SpaceEquidistant()">Make all X spaces between ROIs equidistant</botton></td>
+      <td ><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=9>
+        <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" step=1 onchange="valuemanualchangedspace()" tabindex=8> between all ROIs</label></td>
     </tr>
     </table>	
     
@@ -124,7 +124,7 @@ th, td {
 			 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=9></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save all to Config.ini" tabindex=10></td>
 	  </tr> 
 	  <tr>
                 <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved config</button></td>
@@ -139,7 +139,6 @@ th, td {
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
-            ctx = canvas.getContext('2d'),
             imageObj = new Image(),
             rect = {},
             drag = false,
@@ -148,6 +147,8 @@ th, td {
             enhanceCon = false;
             lockAR = true;
             lockSizes = true;
+            lockSpaceEquidistant = true;
+            space = 3;
             basepath = "http://192.168.1.151";
 
     function doReboot() {
@@ -205,6 +206,7 @@ function deleteROI(){
         aktindex = ROIInfo.length - 1;
     }
     UpdateROIs();
+    draw();
 }
 
 function newROI() {
@@ -215,15 +217,26 @@ function newROI() {
 
     var _roinew = prompt("Please enter name of new ROI", "name");
 
-    if (ROIInfo.length > 0)
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
+    if (ROIInfo.length > 0) {
+        if (ROIInfo.length > 1) {
+            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+        }
+        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, parseInt(ROIInfo[sel.selectedIndex].x) + parseInt(ROIInfo[sel.selectedIndex].dx) + space,
+                parseInt(ROIInfo[sel.selectedIndex].y), ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
+    }
     else
         erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, 30, 51, 0);
 
     if (erg != "")
         alert(erg);
-    else
+    else {
         UpdateROIs(_roinew);
+        // Shift all ROIs on right side to the right
+        for (var _nb = sel.selectedIndex + 1; _nb < ROIInfo.length; _nb++) {
+            ROIInfo[_nb].x = parseInt(ROIInfo[_nb].x) + parseInt(ROIInfo[_nb].dx) + space;
+        }
+        draw();
+    }
 }
 
 function movePrevious(){
@@ -231,7 +244,8 @@ function movePrevious(){
     ROIInfo[aktindex] = ROIInfo[aktindex-1];
     ROIInfo[aktindex-1] = zw;
     aktindex--;
-    UpdateROIs();      
+    UpdateROIs(); 
+    valuemanualchanged();
 }
 
 function moveNext(){
@@ -239,7 +253,8 @@ function moveNext(){
     ROIInfo[aktindex] = ROIInfo[aktindex+1];
     ROIInfo[aktindex+1] = zw;
     aktindex++;
-    UpdateROIs();    
+    UpdateROIs();   
+    valuemanualchanged();
 }
 
 function changelockAR(){
@@ -252,6 +267,10 @@ function changelockSizes(){
     if (!lockSizes) {
         alert("For best results it is (in most cases) advised to keep the y, Δx and Δy identical!");
     }
+}
+
+function changeLockSpaceEquidistant(){
+    lockSpaceEquidistant = document.getElementById("lockSpaceEquidistant").checked;
 }
 
 function ChangeSelection(){
@@ -338,6 +357,8 @@ function UpdateROIs(_sel){
     
     document.getElementById("lockAR").checked = lockAR;
     document.getElementById("lockSizes").checked = lockSizes;
+    document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
+    document.getElementById("space").value = space;
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
@@ -388,6 +409,10 @@ function UpdateROIs(_sel){
             ParseConfig();
             param = getConfigParameters(); 
             UpdateNUMBERS();
+
+            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+            document.getElementById("space").value = space;
+
             drawImage();
             draw();
         }
@@ -463,10 +488,32 @@ function removeNumber(){
 }
 
 
+function drawTextBG(context, txt, x, y, padding) {
+    context.font = "15px Arial";
+    context.textAlign = "center";
+
+    context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    var width = context.measureText(txt).width;
+    context.fillRect(x-(width+padding)/2, y-12, width + padding*2, parseInt(context.font, 10) + padding);
+
+    context.fillStyle = "black";
+    context.fillText(txt, x + padding / 2, y + padding / 2);
+}
+
+
 function draw() {
+    if (typeof ROIInfo === 'undefined') { // During init, ROIInfo is not defined yet
+        return;
+    }
+
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
+
+        if (ROIInfo.length == 0) {
+            return;
+        }
+
         if (document.getElementById("Category_Digits_enabled").checked)
         {
             var sel = document.getElementById("index");
@@ -497,6 +544,7 @@ function draw() {
                     var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
                     var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
                     context.strokeRect(x0, y0, dx, dy);
+                    drawTextBG(context, ROIInfo[_nb]["name"], x0+dx/2, y0-12, 5);
                 }
 
             }
@@ -509,8 +557,10 @@ function draw() {
             var dx = parseInt(rect.w) + parseInt(lw);
             var dy = parseInt(rect.h) + parseInt(lw);
             context.strokeRect(x0, y0, dx, dy);
+            drawTextBG(context, ROIInfo[aktindex]["name"], x0+dx/2, y0-11, 5);
             context.lineWidth = 1;
             context.strokeRect(x0+dx*0.2, y0+dy*0.2, dx*0.6, dy*0.6);
+
 
             context.lineWidth = 2;
             context.beginPath();
@@ -568,6 +618,9 @@ function draw() {
         if (drag) {
             zw = getCoords(this)        
 
+            if (ROIInfo.length == 0) {
+                return;
+            }
 
             if (lockAR) {
                 rect.h = (e.pageY - zw.top) - rect.startY;
@@ -601,6 +654,10 @@ function draw() {
     }
 
     function valuemanualchanged(){
+        if (ROIInfo.length == 0) {
+            return;
+        }
+
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
@@ -612,11 +669,20 @@ function draw() {
 
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
-            draw();            
+
+            draw();   
+            if (lockSpaceEquidistant) {
+                makeX_SpaceEquidistant();
+            }   
+            draw();      
         }
     }
 
     function valuemanualchangeddx(){
+        if (ROIInfo.length == 0) {
+            return;
+        }
+
         if (!drag) {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
@@ -628,41 +694,46 @@ function draw() {
 
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
+
+            if (lockSpaceEquidistant) {
+                makeX_SpaceEquidistant();
+            }
+
             draw();            
+        }
+    }
+
+    function valuemanualchangedspace(){
+        if (!drag) {
+           space = document.getElementById("space").value;
+           valuemanualchanged();
+           draw(); 
         }
     }
 
     // Make all X spaces equidistant
     function makeX_SpaceEquidistant() {
-        if (ROIInfo.length == 1) { // Only one number
+        if (ROIInfo.length <= 1) { // Only one or no number
             return;
         }
 
         var sel = document.getElementById("index");
         var _number = sel.selectedIndex;
-        var space;
 
-        if (_number == 0) { // First number, use space to next one as reference
-            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
-
+        if (_number == 0) { // First number
             for (var _nb = 1; _nb < ROIInfo.length; _nb++) {
-                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x)  + parseInt(ROIInfo[_nb-1].dx) + space;
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x)  + parseInt(ROIInfo[_nb-1].dx) + parseInt(space);
             }
         }
-        else { // In between, use space to previous one as reference
-            space = ROIInfo[_number].x - ROIInfo[_number-1].x -  ROIInfo[_number-1].dx;
-
-
+        else { // In between
             for (var _nb = _number - 1; _nb >= 0 ; _nb--) { // left side
-                ROIInfo[_nb].x = parseInt(ROIInfo[_nb+1].x) - parseInt(ROIInfo[_nb].dx) - space;
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb+1].x) - parseInt(ROIInfo[_nb].dx) - parseInt(space);
             }
 
             for (var _nb = _number + 1; _nb < ROIInfo.length; _nb++) { // right side
-                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x) + parseInt(ROIInfo[_nb-1].dx) + space;
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb-1].x) + parseInt(ROIInfo[_nb-1].dx) + parseInt(space);
             }
         }
-
-        draw();
     }
 
     function renameROI(){
