@@ -2,6 +2,7 @@ name: 📖 New Training Data
 description: Use this form if you collected images and want to provide them for training the model
 title: New Training Data
 labels: new training data
+assignees: jomjol
 body:
   - type: markdown
     attributes:
