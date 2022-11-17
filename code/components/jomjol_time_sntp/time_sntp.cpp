@@ -178,7 +178,7 @@ bool getTimeIsSet(void) {
 
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M:%S", &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
+    ESP_LOGD(TAG, "The current date/time in Berlin is: %s", strftime_buf);
 
     // Is time set? If not, tm_year will be (1970 - 1900).
     if ((timeinfo.tm_year < (2022 - 1900))) {
