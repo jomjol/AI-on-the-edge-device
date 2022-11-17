@@ -42,7 +42,8 @@ body:
       required: true
     attributes:
       label: Logfile
-      description: Add the logfile (See menu `System > Log Viewer`) to help explain your problem.
+      description: Add the logfile (See menu `System > Log Viewer`) to help explain your problem. This will be automatically formatted into code, so no need to format it on your side.
+      render: shell
 
 
 
