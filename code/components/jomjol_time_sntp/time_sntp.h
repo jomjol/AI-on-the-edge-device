@@ -22,3 +22,5 @@ void reset_servername(std::string _servername);
 
 void setBootTime();
 time_t getUpTime();
+bool getTimeIsSet(void);
+void restartNtpClient(void);

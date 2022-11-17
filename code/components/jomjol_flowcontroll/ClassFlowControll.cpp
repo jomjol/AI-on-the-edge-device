@@ -286,6 +286,12 @@ bool ClassFlowControll::doFlow(string time)
     LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
 #endif
 
+    /* Check if we have a valid date/time and if not restart the NTP client */
+    if (! getTimeIsSet()) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time not set, restarting NTP Client!");
+        restartNtpClient();
+    }
+
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%H:%M:%S");
