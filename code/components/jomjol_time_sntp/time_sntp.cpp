@@ -103,7 +103,7 @@ static void obtain_time(void)
         retry++;
 
         if (retry == retry_count) {
-            ESP_LOGW(TAG, "NTP time fetching seems to take longer, will check again on next round!", retry); // The NTP client will automatically retry periodically!
+            ESP_LOGW(TAG, "NTP time fetching seems to take longer, will check again on next round!"); // The NTP client will automatically retry periodically!
             break;
         }
 
