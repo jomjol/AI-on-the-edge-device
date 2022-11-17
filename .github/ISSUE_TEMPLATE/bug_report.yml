@@ -38,6 +38,15 @@ body:
         
 
   - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Logfile
+      description: Add the logfile (See menu `System > Log Viewer`) to help explain your problem.
+
+
+
+  - type: textarea
     attributes:
       label: Expected Behavior
       description: A clear and concise description of what you expected to happen.
@@ -49,13 +58,6 @@ body:
       label: Screenshots
       description: If applicable, add screenshots to help explain your problem.
         
-
-
-  - type: textarea
-    attributes:
-      label: Logfile
-      description: If applicable, add the logfile (See menu `System > Log Viewer`) to help explain your problem.
-
 
 
   - type: textarea
