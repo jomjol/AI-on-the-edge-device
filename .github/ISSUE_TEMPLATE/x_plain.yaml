@@ -3,4 +3,6 @@ description: Use this form if none of the others fit. Please only use none of th
 
 body:
   - type: textarea
+    attributes:
+      label: Issue
   
