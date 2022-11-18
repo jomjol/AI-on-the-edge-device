@@ -95,8 +95,11 @@ function compareVersions() {
 
     arr = fwVersion.split(" ");
     fWGitHash = arr[arr.length - 1].substring(0, 7);
+    arr = webUiVersion.split(" ");
+    webUiHash = arr[arr.length - 1].substring(0, 7);
+    console.log("FW Hash: " + fWGitHash + ", Web UI Hash: " + webUiHash);
     
-    if (fWGitHash != webUiVersion) {
-        alert("The Version of the Web Interface does not match the Firmware Version!");
+    if (fWGitHash != webUiHash) {
+        alert("The Version of the Web Interface does not match the Firmware Version! It is suggested to keep them on the same version!");
     }
 }
