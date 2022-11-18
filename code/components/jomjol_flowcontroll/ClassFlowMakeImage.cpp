@@ -57,6 +57,8 @@ void ClassFlowMakeImage::SetInitialParameter(void)
 
 ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
+    LogImageLocation = "/log/source";
+    logfileRetentionInDays = 5;
     SetInitialParameter();
 }
 
@@ -104,6 +106,10 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             waitbeforepicture = stoi(zerlegt[1]);
         }
 
+        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            this->logfileRetentionInDays = std::stoi(zerlegt[1]);
+        }
 
         if ((toUpper(zerlegt[0]) == "BRIGHTNESS") && (zerlegt.size() > 1))
         {
