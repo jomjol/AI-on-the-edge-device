@@ -4,7 +4,9 @@
 
 ### Added
 
--   added `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
+-   Implementation of Home Assistant mode  (autodetect)
+-   Improved ROIs configuration: locked ROI size, equidistant delta x
+-   Added `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
 -   Added PreValue to `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
 -   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
     -   Using new data logging (see below)
@@ -14,10 +16,13 @@
 -   Added a logging of the values in a text table in `/log/data` - each measurement is one line
     -   Format: csv - comma separated
     -   Content: time, name-of-number, raw-value, return-value, pre-value, change-rate, change-absolute, error-text, cnn-digital, cnn-analog
+    -   Version check (firmware vs. HTML)
 
 
 ### Changed
 
+-   Updated tflite (`dig-cont_0600_s3.tflite`)
+-   Update mode (more robust, not fully bullet prove yet)
 -   Updated built environment to `espressif32@v5.2.0`
 -   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) added config parameter AnalogDigitalTransitionStart. It can setup very early and very late digit transition starts.
@@ -28,6 +33,8 @@
 -   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) changed postprocess for analog->digit (lowest digit processing)
 -    [#1280](https://github.com/jomjol/AI-on-the-edge-device/issues/1280) check ROIs name for "," and "." (not allowed)
+-    [#983](https://github.com/jomjol/AI-on-the-edge-device/issues/983) old log files not deleted 
+-    Missed time sync during startup - repeated now every run (if failed)
 
 ### Removed
 
