@@ -23,7 +23,7 @@ ClassFlowImage::ClassFlowImage(const char* logTag)
 	this->logTag = logTag;
 	isLogImage = false;
     disabled = false;
-
+    this->logfileRetentionInDays = 5;
 }
 
 ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, const char* logTag) : ClassFlow(lfc)
@@ -31,6 +31,7 @@ ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, const char* logTag
 	this->logTag = logTag;
 	isLogImage = false;
     disabled = false;
+    this->logfileRetentionInDays = 5;
 }
 
 ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, ClassFlow *_prev, const char* logTag) :  ClassFlow(lfc, _prev)
@@ -38,6 +39,7 @@ ClassFlowImage::ClassFlowImage(std::vector<ClassFlow*> * lfc, ClassFlow *_prev, 
 	this->logTag = logTag;
 	isLogImage = false;
     disabled = false;
+    this->logfileRetentionInDays = 5;
 }
 
 
@@ -91,7 +93,7 @@ void ClassFlowImage::RemoveOldLogs()
 	if (!isLogImage)
 		return;
 	
-	ESP_LOGI(logTag, "remove old log images");
+	ESP_LOGI(TAG, "remove old images");
     if (logfileRetentionInDays == 0) {
         return;
     }
@@ -101,16 +103,17 @@ void ClassFlowImage::RemoveOldLogs()
     char cmpfilename[30];
 
     time(&rawtime);
-    rawtime = addDays(rawtime, -logfileRetentionInDays);
+    rawtime = addDays(rawtime, -logfileRetentionInDays + 1);
     timeinfo = localtime(&rawtime);
+    //ESP_LOGD(TAG, "ImagefileRetentionInDays: %d", logfileRetentionInDays);
     
     strftime(cmpfilename, 30, LOGFILE_TIME_FORMAT, timeinfo);
-    //ESP_LOGE(TAG, "log file name to compare: %s", cmpfilename);
+    //ESP_LOGD(TAG, "file name to compare: %s", cmpfilename);
 	string folderName = string(cmpfilename).LOGFILE_TIME_FORMAT_DATE_EXTR;
 
     DIR *dir = opendir(LogImageLocation.c_str());
     if (!dir) {
-        ESP_LOGI(logTag, "Failed to stat dir : %s", LogImageLocation.c_str());
+        ESP_LOGE(TAG, "Failed to stat dir : %s", LogImageLocation.c_str());
         return;
     }
 
@@ -120,8 +123,8 @@ void ClassFlowImage::RemoveOldLogs()
     while ((entry = readdir(dir)) != NULL) {
         string folderPath = LogImageLocation + "/" + entry->d_name;
 		if (entry->d_type == DT_DIR) {
-			//ESP_LOGI(logTag, "Compare %s %s", entry->d_name, folderName.c_str());	
-			if ((strlen(entry->d_name) == folderName.length()) && (strcmp(entry->d_name, folderName.c_str()) == 0)) {
+			//ESP_LOGD(TAG, "Compare %s to %s", entry->d_name, folderName.c_str());	
+			if ((strlen(entry->d_name) == folderName.length()) && (strcmp(entry->d_name, folderName.c_str()) < 0)) {
                 removeFolder(folderPath.c_str(), logTag);
                 deleted++;
 			} else {
@@ -129,7 +132,7 @@ void ClassFlowImage::RemoveOldLogs()
             }
 		}
     }
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Image folder deleted: " + std::to_string(deleted) + ". Image folder not deleted: " + std::to_string(notDeleted));	
+    ESP_LOGI(TAG, "Image folder deleted: %d | Image folder not deleted: %d", deleted, notDeleted);	
     closedir(dir);
 }
 

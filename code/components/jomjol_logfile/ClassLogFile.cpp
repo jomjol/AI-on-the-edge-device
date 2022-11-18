@@ -294,17 +294,18 @@ void ClassLogFile::RemoveOld()
     char cmpfilename[30];
 
     time(&rawtime);
-    rawtime = addDays(rawtime, -retentionInDays);
+    rawtime = addDays(rawtime, -retentionInDays + 1);
     timeinfo = localtime(&rawtime);
-    
+    //ESP_LOGD(TAG, "logfileRetentionInDays: %d", retentionInDays);
 
 //////////////////////  message /////////////////////////////////////////
+    ESP_LOGI(TAG, "remove old log files");
     strftime(cmpfilename, 30, logfile.c_str(), timeinfo);
-    //ESP_LOGE(TAG, "log file name to compare: %s", cmpfilename);
+    //ESP_LOGD(TAG, "log file name to compare: %s", cmpfilename);
 
     DIR *dir = opendir(logroot.c_str());
     if (!dir) {
-        ESP_LOGI(TAG, "Failed to stat dir : %s", logroot.c_str());
+        ESP_LOGE(TAG, "Failed to stat dir : %s", logroot.c_str());
         return;
     }
 
@@ -313,31 +314,33 @@ void ClassLogFile::RemoveOld()
     int notDeleted = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
-            //ESP_LOGI(TAG, "list log file : %s %s", entry->d_name, cmpfilename);
-            if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) == 0)) {
-                ESP_LOGI(TAG, "delete log file : %s", entry->d_name);
+            //ESP_LOGD(TAG, "compare log file : %s to %s", entry->d_name, cmpfilename);
+            if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
+                //ESP_LOGD(TAG, "delete log file : %s", entry->d_name);
                 std::string filepath = logroot + "/" + entry->d_name; 
                 if (unlink(filepath.c_str()) == 0) {
                     deleted ++;
                 } else {
                     ESP_LOGE(TAG, "can't delete file : %s", entry->d_name);
+                    notDeleted ++;
                 }
             } else {
                 notDeleted ++;
             }
         }
     }
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "logfiles deleted: " + std::to_string(deleted) + " files not deleted (incl. leer.txt): " + std::to_string(notDeleted));	
+    ESP_LOGI(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 
 
 //////////////////////  data /////////////////////////////////////////
+    ESP_LOGI(TAG, "remove old data files");
     strftime(cmpfilename, 30, datafile.c_str(), timeinfo);
-    //ESP_LOGE(TAG, "log file name to compare: %s", cmpfilename);
+    //ESP_LOGD(TAG, "data file name to compare: %s", cmpfilename);
 
     dir = opendir(dataroot.c_str());
     if (!dir) {
-        ESP_LOGI(TAG, "Failed to stat dir : %s", dataroot.c_str());
+        ESP_LOGE(TAG, "Failed to stat dir : %s", dataroot.c_str());
         return;
     }
 
@@ -345,21 +348,22 @@ void ClassLogFile::RemoveOld()
     notDeleted = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
-            //ESP_LOGI(TAG, "list log file : %s %s", entry->d_name, cmpfilename);
+            //ESP_LOGD(TAG, "Compare data file : %s to %s", entry->d_name, cmpfilename);
             if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
-                ESP_LOGI(TAG, "delete data file : %s", entry->d_name);
-                std::string filepath = logroot + "/" + entry->d_name; 
+                //ESP_LOGD(TAG, "delete data file : %s", entry->d_name);
+                std::string filepath = dataroot + "/" + entry->d_name; 
                 if (unlink(filepath.c_str()) == 0) {
                     deleted ++;
                 } else {
                     ESP_LOGE(TAG, "can't delete file : %s", entry->d_name);
+                    notDeleted ++;
                 }
             } else {
                 notDeleted ++;
             }
         }
     }
-    ESP_LOGI(TAG, "%d older log files deleted. %d current log files not deleted.", deleted, notDeleted);
+    ESP_LOGI(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 
@@ -382,5 +386,4 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::stri
     dataroot = _logdatapath;
     retentionInDays = 10;
     loglevel = ESP_LOG_INFO;
-    MakeDir("/sdcard/log/data");
 }

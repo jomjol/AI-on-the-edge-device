@@ -27,6 +27,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     CNNType = AutoDetect;
     CNNType = _cnntype;
     flowpostalignment = _flowalign;
+    logfileRetentionInDays = 5;
 }
 
 string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _vorgaengerAnalog, float analogDigitalTransitionStart)

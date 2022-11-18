@@ -231,7 +231,7 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
             ESP_LOGE(TAG,"failed to set hostname:%d",ret);  
         }
         else {
-            ESP_LOGE(TAG,"Set Hostname to:%s", _hostname); 
+            ESP_LOGI(TAG,"Set Hostname to:%s", _hostname); 
         }
 
     }
