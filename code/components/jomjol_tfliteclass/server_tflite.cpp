@@ -201,20 +201,18 @@ esp_err_t handler_json(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_JSON uri: %s", req->uri);
 
-    char _query[100];
-//    char _size[10];
-
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "application/json");
 
     std::string zw = tfliteflow.getJSON();
     if (zw.length() > 0)
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-
-    string query = std::string(_query);
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_sendstr_chunk(req, NULL);   
+    {
+        httpd_resp_send(req, zw.c_str(), zw.length());
+    }
+    else
+    {
+        httpd_resp_send(req, NULL, 0);
+    }
 
 #ifdef DEBUG_DETAIL_ON       
     LogFile.WriteHeapInfo("handler_JSON - Done");   
