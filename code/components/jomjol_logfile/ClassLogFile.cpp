@@ -80,11 +80,6 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
     FILE* pFile;
     std::string zwtime;
 
-    // TODO add separate parameter to disable write of data. 
-    /*if (!doLogFile){
-        return;
-    }*/
-
     ESP_LOGD(TAG, "Datalogfile: %s", logpath.c_str());
     pFile = fopen(logpath.c_str(), "a+");
 
@@ -208,11 +203,23 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Test");
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test");
     */
-};
+}
 
-void ClassLogFile::SetRetention(unsigned short _retentionInDays){
-    retentionInDays = _retentionInDays;
-};
+void ClassLogFile::SetLogFileRetention(unsigned short _LogFileRetentionInDays){
+    logFileRetentionInDays = _LogFileRetentionInDays;
+}
+
+void ClassLogFile::SetDataLogRetention(unsigned short _DataLogRetentionInDays){
+    dataLogRetentionInDays = _DataLogRetentionInDays;
+}
+
+void ClassLogFile::SetDataLogToSD(bool _doDataLogToSD){
+    doDataLogToSD = _doDataLogToSD;
+}
+
+bool ClassLogFile::GetDataLogToSD(){
+    return doDataLogToSD;
+}
 
 void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
@@ -283,23 +290,24 @@ std::string ClassLogFile::GetCurrentFileName()
     return logpath;
 }
 
-void ClassLogFile::RemoveOld()
+void ClassLogFile::RemoveOldLogFile()
 {
-    if (retentionInDays == 0) {
+    if (logFileRetentionInDays == 0) {
         return;
     }
+
+    ESP_LOGI(TAG, "Remove old log files");
 
     time_t rawtime;
     struct tm* timeinfo;
     char cmpfilename[30];
 
     time(&rawtime);
-    rawtime = addDays(rawtime, -retentionInDays + 1);
+    rawtime = addDays(rawtime, -logFileRetentionInDays + 1);
     timeinfo = localtime(&rawtime);
-    //ESP_LOGD(TAG, "logfileRetentionInDays: %d", retentionInDays);
+    //ESP_LOGD(TAG, "logFileRetentionInDays: %d", logFileRetentionInDays);
 
-//////////////////////  message /////////////////////////////////////////
-    ESP_LOGI(TAG, "remove old log files");
+
     strftime(cmpfilename, 30, logfile.c_str(), timeinfo);
     //ESP_LOGD(TAG, "log file name to compare: %s", cmpfilename);
 
@@ -329,23 +337,40 @@ void ClassLogFile::RemoveOld()
             }
         }
     }
-    ESP_LOGI(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGI(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
+}
 
 
-//////////////////////  data /////////////////////////////////////////
-    ESP_LOGI(TAG, "remove old data files");
+void ClassLogFile::RemoveOldDataLog()
+{
+    if (dataLogRetentionInDays == 0 || !doDataLogToSD) {
+        return;
+    }
+
+    ESP_LOGI(TAG, "Remove old data files");
+
+    time_t rawtime;
+    struct tm* timeinfo;
+    char cmpfilename[30];
+
+    time(&rawtime);
+    rawtime = addDays(rawtime, -dataLogRetentionInDays + 1);
+    timeinfo = localtime(&rawtime);
+    //ESP_LOGD(TAG, "dataLogRetentionInDays: %d", dataLogRetentionInDays);
+
     strftime(cmpfilename, 30, datafile.c_str(), timeinfo);
     //ESP_LOGD(TAG, "data file name to compare: %s", cmpfilename);
 
-    dir = opendir(dataroot.c_str());
+    DIR *dir = opendir(dataroot.c_str());
     if (!dir) {
         ESP_LOGE(TAG, "Failed to stat dir : %s", dataroot.c_str());
         return;
     }
 
-    deleted = 0;
-    notDeleted = 0;
+    struct dirent *entry;
+    int deleted = 0;
+    int notDeleted = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
             //ESP_LOGD(TAG, "Compare data file : %s to %s", entry->d_name, cmpfilename);
@@ -367,6 +392,7 @@ void ClassLogFile::RemoveOld()
     closedir(dir);
 }
 
+
 void ClassLogFile::CreateLogDirectories()
 {
     MakeDir("/sdcard/log");
@@ -384,6 +410,8 @@ ClassLogFile::ClassLogFile(std::string _logroot, std::string _logfile, std::stri
     logfile =  _logfile;
     datafile = _datafile;
     dataroot = _logdatapath;
-    retentionInDays = 10;
+    logFileRetentionInDays = 3;
+    dataLogRetentionInDays = 3;
+    doDataLogToSD = true;
     loglevel = ESP_LOG_INFO;
 }

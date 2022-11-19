@@ -203,6 +203,9 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     if (toUpper(_type).compare("[AUTOTIMER]") == 0)
         cfc = this;    
 
+    if (toUpper(_type).compare("[DATALOGGING]") == 0)
+        cfc = this;  
+
     if (toUpper(_type).compare("[DEBUG]") == 0)
         cfc = this;  
 
@@ -446,7 +449,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) && (toUpper(aktparamgraph).compare("[SYSTEM]") != 0))      // Paragraph passt nicht zu MakeImage
+    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht zu MakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
@@ -459,10 +463,28 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
                 AutoStart = true;
             }
         }
+
         if ((toUpper(zerlegt[0]) == "INTERVALL") && (zerlegt.size() > 1))
         {
             AutoIntervall = std::stof(zerlegt[1]);
         }
+
+        if ((toUpper(zerlegt[0]) == "DATALOGACTIVE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+            {
+                LogFile.SetDataLogToSD(true);
+            }
+            else {
+                LogFile.SetDataLogToSD(false);
+            }
+        }
+
+        if ((toUpper(zerlegt[0]) == "DATALOGRETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            LogFile.SetDataLogRetention(std::stoi(zerlegt[1]));
+        }
+
         if ((toUpper(zerlegt[0]) == "LOGFILE") && (zerlegt.size() > 1))
         {
             /* matches esp_log_level_t */
@@ -485,8 +507,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
         {
-            LogFile.SetRetention(std::stoi(zerlegt[1]));
-        }      
+            LogFile.SetLogFileRetention(std::stoi(zerlegt[1]));
+        }
 
         if ((toUpper(zerlegt[0]) == "TIMEZONE") && (zerlegt.size() > 1))
         {

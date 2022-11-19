@@ -869,6 +869,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
 void ClassFlowPostProcessing::WriteDataLog(int _index)
 {
+    if (!LogFile.GetDataLogToSD()){
+        return;
+    }
+    
     string analog = "";
     string digital = "";
     string timezw = "";
