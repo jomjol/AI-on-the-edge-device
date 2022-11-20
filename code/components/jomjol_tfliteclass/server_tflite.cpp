@@ -747,7 +747,8 @@ void task_autodoFlow(void *pvParameter)
 #ifdef DEBUG_DETAIL_ON       
             ESP_LOGD(TAG, "Remove older log files");
 #endif
-            LogFile.RemoveOld();
+            LogFile.RemoveOldLogFile();
+            LogFile.RemoveOldDataLog();
         }
         
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "task_autodoFlow - round #" + std::to_string(countRounds) + " done");

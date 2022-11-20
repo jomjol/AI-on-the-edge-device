@@ -231,6 +231,14 @@ function ParseConfig() {
      ParamAddValue(param, catname, "AutoStart");
      ParamAddValue(param, catname, "Intervall");     
 
+     var catname = "DataLogging";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "DataLogActive");
+     ParamAddValue(param, catname, "DataLogRetentionInDays");     
+
      var catname = "Debug";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
