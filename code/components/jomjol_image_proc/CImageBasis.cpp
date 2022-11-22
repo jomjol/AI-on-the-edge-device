@@ -436,8 +436,19 @@ CImageBasis::CImageBasis(std::string _image)
     long zwld = esp_get_free_heap_size();
     ESP_LOGD(TAG, "freeheapsize before: %ld", zwld);
 
+    if (file_size(_image.c_str()) == 0) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "%s is empty!", _image.c_str());
+        return;
+    }
+
     RGBImageLock();
     rgb_image = stbi_load(_image.c_str(), &width, &height, &bpp, channels);
+
+    if (rgb_image == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to load %s! Is it corrupted?", _image.c_str());
+        RGBImageRelease();
+        return;
+    }
     RGBImageRelease();
 
     zwld = esp_get_free_heap_size();

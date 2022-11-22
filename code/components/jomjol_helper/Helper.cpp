@@ -9,6 +9,8 @@
 
 #include <iomanip>
 #include <sstream>
+#include <fstream>
+#include <iostream>
 
 #ifdef __cplusplus
 extern "C" {
@@ -194,6 +196,12 @@ std::string FormatFileName(std::string input)
 }
 
 
+std::size_t file_size(const std::string& file_name) {
+    std::ifstream file(file_name.c_str(),std::ios::in | std::ios::binary);
+    if (!file) return 0;
+    file.seekg (0, std::ios::end);
+    return static_cast<std::size_t>(file.tellg());
+}
 
 
 void FindReplace(std::string& line, std::string& oldString, std::string& newString) {

@@ -1,6 +1,7 @@
 #include "CFindTemplate.h"
 
 #include "ClassLogFile.h"
+#include "Helper.h"
 
 #include <esp_log.h>
 
@@ -11,7 +12,19 @@ static const char* TAG = "C FIND TEMPL";
 
 bool CFindTemplate::FindTemplate(RefInfo *_ref)
 {
-    uint8_t* rgb_template = stbi_load(_ref->image_file.c_str(), &tpl_width, &tpl_height, &tpl_bpp, channels);
+    uint8_t* rgb_template;
+
+    if (file_size(_ref->image_file.c_str()) == 0) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "%s is empty!", _ref->image_file.c_str());
+        return false;
+    }
+   
+    rgb_template = stbi_load(_ref->image_file.c_str(), &tpl_width, &tpl_height, &tpl_bpp, channels);
+
+    if (rgb_template == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to load %s! Is it corrupted?", _ref->image_file.c_str());
+        return false;
+    }
 
 //    ESP_LOGD(TAG, "FindTemplate 01");
 
@@ -71,6 +84,9 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
 #endif
         _ref->found_x = _ref->fastalg_x;
         _ref->found_y = _ref->fastalg_y;
+
+        stbi_image_free(rgb_template);
+        
         return true;
     }
 

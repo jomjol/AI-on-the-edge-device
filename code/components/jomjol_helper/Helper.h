@@ -7,6 +7,7 @@
 using namespace std;
 
 std::string FormatFileName(std::string input);
+std::size_t file_size(const std::string& file_name);
 void FindReplace(std::string& line, std::string& oldString, std::string& newString);
 
 bool CopyFile(string input, string output);
