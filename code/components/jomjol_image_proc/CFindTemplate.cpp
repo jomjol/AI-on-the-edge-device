@@ -15,14 +15,14 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
     uint8_t* rgb_template;
 
     if (file_size(_ref->image_file.c_str()) == 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "%s is empty!", _ref->image_file.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _ref->image_file + " is empty!");
         return false;
     }
    
     rgb_template = stbi_load(_ref->image_file.c_str(), &tpl_width, &tpl_height, &tpl_bpp, channels);
 
     if (rgb_template == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to load %s! Is it corrupted?", _ref->image_file.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to load " + _ref->image_file + "! Is it corrupted?");
         return false;
     }
 
