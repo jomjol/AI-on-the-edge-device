@@ -12,7 +12,7 @@
 // #include "nvs_flash.h"
 #include "esp_sntp.h"
 
-void setup_time(void);
+bool setup_time(void);
 
 std::string gettimestring(const char * frm);
 std::string ConvertTimeToString(time_t _time, const char * frm);

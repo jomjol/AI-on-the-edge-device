@@ -220,7 +220,11 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
 
-    setup_time();
+    if (!setup_time()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed. Will restart in 5 minutes!");
+        initSucessful = false;
+    }
+
     setBootTime();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
@@ -254,14 +258,14 @@ extern "C" void app_main(void)
             vTaskDelay( xDelay ); 
 
             if (camStatus != ESP_OK) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. "
-                        "Check that your camera module is working and connected properly.");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
                 initSucessful = false;
             }
         } else { // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera cannot be initialzed.");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera cannot be initialzed. Will restart in 5 minutes!");
                 initSucessful = false;
             }
             else {
@@ -298,7 +302,10 @@ extern "C" void app_main(void)
     }
     else { // Initialization failed
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart in 5 minutes!");
-        vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
+        vTaskDelay(60*4000 / portTICK_RATE_MS); // Wait 4 minutes to give time to do an OTA or fetch the log
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart in 1 minute!");
+        vTaskDelay(60*1000 / portTICK_RATE_MS); // Wait 1 minute to give time to do an OTA or fetch the log
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart now!");
         doReboot();
     }
 }

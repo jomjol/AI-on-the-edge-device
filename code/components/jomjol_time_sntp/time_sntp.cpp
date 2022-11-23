@@ -19,7 +19,7 @@ static const char *TAG = "SNTP";
 
 time_t bootTime;
 
-static void obtain_time(void);
+static bool obtain_time(void);
 static void initialize_sntp(void);
 static void logNtpStatus(sntp_sync_status_t status);
 
@@ -52,19 +52,23 @@ std::string gettimestring(const char * frm)
     return result;
 }
 
-void setup_time()
+bool setup_time()
 {
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
     char strftime_buf[64];
+    bool success = true;
 
     // Is time set? If not, tm_year will be (1970 - 1900).
     if (!getTimeIsSet()) {
         ESP_LOGI(TAG, "Time is not set yet. Getting time over NTP.");
         initialize_sntp();
-        obtain_time();
+        if (!obtain_time()) {
+            success = false;
+        }
+
         // update 'now' variable with current time
         time(&now);
 
@@ -79,6 +83,7 @@ void setup_time()
         strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M:%S", &timeinfo);
         ESP_LOGI(TAG, "Time is already set (%s)", strftime_buf);
     }
+    return success;
 }
 
 void setTimeZone(std::string _tzstring)
@@ -89,12 +94,14 @@ void setTimeZone(std::string _tzstring)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, _tzstring);
 }
 
-static void obtain_time(void)
+static bool obtain_time(void)
 {
     time_t now = 0;
     struct tm timeinfo = {};
     int retry = 0;
     const int retry_count = 10;
+    bool success = true;
+
     time(&now);
     localtime_r(&now, &timeinfo);    
 
@@ -104,6 +111,7 @@ static void obtain_time(void)
 
         if (retry == retry_count) {
             ESP_LOGW(TAG, "NTP time fetching seems to take longer, will check again on next round!"); // The NTP client will automatically retry periodically!
+            success = false;
             break;
         }
 
@@ -119,6 +127,7 @@ static void obtain_time(void)
     
     time(&now);
     localtime_r(&now, &timeinfo);
+    return success;
 }
 
 
