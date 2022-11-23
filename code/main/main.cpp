@@ -296,7 +296,7 @@ extern "C" void app_main(void)
     register_server_main_uri(server, "/sdcard");
 
     if (initSucessful) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed!");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully!");
         ESP_LOGD(TAG, "vor do autostart");
         TFliteDoAutoStart();
     }
