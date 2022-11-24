@@ -265,7 +265,7 @@ extern "C" void app_main(void)
         } else { // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera cannot be initialzed. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialzed. Will restart in 5 minutes!");
                 initSucessful = false;
             }
             else {
