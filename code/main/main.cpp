@@ -146,11 +146,12 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
+    bool initSucessful = true;
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
     PowerResetCamera();
-    esp_err_t cam = Camera.InitCam();
+    esp_err_t camStatus = Camera.InitCam();
     Camera.LightOnOff(false);
     xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay);
@@ -218,7 +219,12 @@ extern "C" void app_main(void)
     xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
-    setup_time();
+
+    if (!setup_time()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed. Will restart in 5 minutes!");
+        initSucessful = false;
+    }
+
     setBootTime();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
@@ -238,22 +244,34 @@ extern "C" void app_main(void)
     if (_hsize < 4000000)
     {
         std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
-        _zws = _zws + "\nEither not initialzed, too small (2MByte only) or not present at all. Firmware cannot start!!";
+        _zws = _zws + "\nEither not initialized, too small (2MByte only) or not present at all. Firmware cannot start!!";
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zws);
-    } else {
-        if (cam != ESP_OK) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. "
-                        "Check that your camera module is working and connected properly.");
-        } else {
-// Test Camera            
+    } else { // Bad Camera Status, retry init   
+        if (camStatus != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to initialize camera module, retrying...");
+
+            PowerResetCamera();
+            esp_err_t camStatus = Camera.InitCam();
+            Camera.LightOnOff(false);
+            xDelay = 2000 / portTICK_PERIOD_MS;
+            ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay);
+            vTaskDelay( xDelay ); 
+
+            if (camStatus != ESP_OK) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
+                initSucessful = false;
+            }
+        } else { // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera cannot be initialzed. "
-                        "System will reboot.");
-                doReboot();
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera cannot be initialzed. Will restart in 5 minutes!");
+                initSucessful = false;
             }
-            esp_camera_fb_return(fb);   
-            Camera.LightOnOff(false);
+            else {
+                esp_camera_fb_return(fb);   
+                Camera.LightOnOff(false);
+            }
         }
     }
 
@@ -263,7 +281,7 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay*10);
     vTaskDelay( xDelay ); 
 
-    ESP_LOGD(TAG, "starting server");
+    ESP_LOGD(TAG, "starting servers");
 
     server = start_webserver();   
     register_server_camera_uri(server); 
@@ -277,8 +295,17 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "vor reg server main");
     register_server_main_uri(server, "/sdcard");
 
-    ESP_LOGD(TAG, "vor dotautostart");
-    TFliteDoAutoStart();
-
+    if (initSucessful) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully!");
+        ESP_LOGD(TAG, "vor do autostart");
+        TFliteDoAutoStart();
+    }
+    else { // Initialization failed
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart in 5 minutes!");
+        vTaskDelay(60*4000 / portTICK_RATE_MS); // Wait 4 minutes to give time to do an OTA or fetch the log
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart in 1 minute!");
+        vTaskDelay(60*1000 / portTICK_RATE_MS); // Wait 1 minute to give time to do an OTA or fetch the log
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart now!");
+        doReboot();
+    }
 }
-
