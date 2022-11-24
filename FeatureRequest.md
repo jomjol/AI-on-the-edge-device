@@ -11,6 +11,12 @@
 
 ____
 
+
+
+#### #33 Implement MATTER protocoll
+
+* see [#1404](https://github.com/jomjol/AI-on-the-edge-device/issues/1404)
+
 #### #32 Add feature to correct misinterpreted value
 
 * If a value is misinterpreted, the user can manually correct the value.
