@@ -14,6 +14,8 @@
 
 <script>
     async function loadPage(page) {
+        console.log("loadPage(" + page + ")");
+        document.cookie = page;
         document.getElementById('maincontent').src = page;
 
         [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
@@ -42,7 +44,7 @@
 
 <div class="menu" onmouseover="resetMenu()">
   <ul>
-    <li><a href="#" onclick="loadPage('wasserzaehler_roi.html');">Overview</a></li>
+    <li><a href="#" onclick="loadPage('overview.html');">Overview</a></li>
     <li><a>Settings <i class="arrow down"></i></a>
       <ul class="submenu">
         <li><a href="#" onclick="loadPage('prevalue_set.html');">Set Previous Value</a></li>
@@ -77,7 +79,7 @@
   </ul>
 </div>
 
-<iframe name="maincontent" class="iframe" id="maincontent" src="wasserzaehler_roi.html"></iframe>
+<iframe name="maincontent" class="iframe" id="maincontent"></iframe>
 
 <span id="Version" style="font-size: 10px; margin-top: -5px">Loading version...</span>
 
@@ -85,6 +87,12 @@
   LoadHostname();
   LoadFwVersion();
   LoadWebUiVersion();
+
+  if (document.cookie == "" || document.cookie == "reboot_page.html") {
+    document.cookie = "overview.html";
+  }
+  console.log("Loading page: " + document.cookie);
+  document.getElementById('maincontent').src = document.cookie;
 </script>
 
 </div>
