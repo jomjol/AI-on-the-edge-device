@@ -1,6 +1,6 @@
 name: Build and Pack
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
 #########################################################################################
@@ -10,23 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - id: skip_check
+      uses: fkirc/skip-duplicate-actions@v5
+      with:
+        concurrent_skipping: same_content_newer
+    
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
 
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Cache PlatformIO
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
@@ -59,7 +66,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -74,24 +81,25 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Rename firmware file to contain versioning (old ota)
       run: |
         mkdir -p ./dist_old_ota
-        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }}).bin"
+        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }}).bin"
 
     - name: Upload Firmware artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
 #        name: "firmware__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})__(extract_before_upload__only_needed_for_migration_from_11.3.1)"
-        name: "firmware__(extract_before_upload)__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
+        name: "firmware__(extract_before_upload)__${{ steps.vars.outputs.branch }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./dist_old_ota/*
 
     - name: Upload Web interface artifact (old OTA concept)
       uses: actions/upload-artifact@v3
       with:
-        name: "html__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})"
+        name: "html__${{ steps.vars.outputs.branch }}__(${{ steps.vars.outputs.sha_short }})"
         path: ./sd-card/html/*
 
 
@@ -109,7 +117,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -124,7 +132,8 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Prepare update.zip artifact
       run: |
@@ -155,7 +164,7 @@ jobs:
     - name: Upload dist as update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
-        name: "update__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./dist/*
 
     - name: Store generated files in cache
@@ -163,7 +172,7 @@ jobs:
       with:
         path: |
           ./dist
-        key: ${{ github.run_number }}-pack-for-OTA-v2
+        key: ${{ steps.vars.outputs.branch }}-pack-for-OTA-v2
 
 
 
@@ -177,7 +186,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -188,6 +197,12 @@ jobs:
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/version.txt
         key: ${{ github.run_number }}
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Prepare artifacts for release
       run: |
@@ -204,7 +219,7 @@ jobs:
     - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v3
       with:
-        name: "initial_esp32_setup__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "initial_esp32_setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./firmware
 
     - name: Store generated files in cache
@@ -226,7 +241,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -257,7 +272,7 @@ jobs:
     - name: Set Variables
       id: vars
       run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 
     - name: Prepare artifacts for release
