@@ -284,6 +284,30 @@ function ParseConfig() {
           param["MQTT"]["MainTopic"] = param["MQTT"]["Topic"]
      }
      delete param["MQTT"]["Topic"]                // Dient nur der Downwardskompatibilität
+
+
+     if (param["Debug"]["Logfile"]["value1"] == "false" || param["Debug"]["Logfile"]["value1"] == "true")
+     {
+          param["Debug"]["Logfile"]["value1"] = "2";
+     }
+
+
+     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     if (category["DataLogging"]["found"] == false)
+     {
+          category["DataLogging"]["found"] = true;
+          category["DataLogging"]["enabled"] = true;
+
+          param["DataLogging"]["DataLogActive"]["found"] = true;
+          param["DataLogging"]["DataLogActive"]["enabled"] = true;
+          param["DataLogging"]["DataLogActive"]["value1"] = "true";
+          
+          param["DataLogging"]["DataLogRetentionInDays"]["found"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["enabled"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
+     }
+
+
 }
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
