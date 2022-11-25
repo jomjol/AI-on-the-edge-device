@@ -66,7 +66,6 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
            * equal sign, if the key is "password"
            */
           if (input.includes("password")) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
-               console.log(input);
                var pos = input.indexOf("=");
                Output.push(trim(input.substr(0, pos), delimiter));
                Output.push(trim(input.substr(pos +1, input.length), delimiter));
