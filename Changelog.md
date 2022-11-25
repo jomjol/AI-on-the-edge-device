@@ -62,7 +62,6 @@ xxx @jomjol, TODO: are those URLS correct? The `update.zip` does not contain a `
 -   n.a.
 
 
-
 ## [12.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v12.0.1), 2022-09-29
 
 Improve **u**ser e**x**perience 

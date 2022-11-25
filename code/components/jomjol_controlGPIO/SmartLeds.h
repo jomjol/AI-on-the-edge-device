@@ -269,8 +269,7 @@ private:
     std::unique_ptr< Rgb[] > _secondBuffer;
     Rgb *_buffer;
 
-    SemaphoreHandle_t _finishedFlag;
-//    xSemaphoreHandle _finishedFlag;
+    xSemaphoreHandle _finishedFlag;
 
     int _pixelPosition;
     int _componentPosition;
