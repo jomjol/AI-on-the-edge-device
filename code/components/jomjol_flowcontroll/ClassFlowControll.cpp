@@ -34,7 +34,9 @@ static const char* TAG = "FLOW CTRL";
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
-//    ESP_LOGD(TAG, "_stepname: %s", _stepname.c_str());
+
+    ESP_LOGD(TAG, "Step %s start", _stepname.c_str());
+
     if ((_stepname.compare("[MakeImage]") == 0) || (_stepname.compare(";[MakeImage]") == 0)){
         _classname = "ClassFlowMakeImage";
     }
@@ -60,6 +62,8 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
                 FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
+
+    ESP_LOGD(TAG, "Step %s end", _stepname.c_str());
 
     return result;
 }
