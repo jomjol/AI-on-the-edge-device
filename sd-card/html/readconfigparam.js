@@ -307,6 +307,22 @@ function ParseConfig() {
           param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
      }
 
+     if (category["DataLogging"]["enabled"] == false)
+          category["DataLogging"]["enabled"] = true
+
+     if (param["DataLogging"]["DataLogActive"]["enabled"] == false && param["DataLogging"]["DataLogActive"]["value1"] == "")
+     {
+          param["DataLogging"]["DataLogActive"]["found"] = true;
+          param["DataLogging"]["DataLogActive"]["enabled"] = true;
+          param["DataLogging"]["DataLogActive"]["value1"] = "true";
+     }
+
+     if (param["DataLogging"]["DataLogRetentionInDays"]["enabled"] == false && param["DataLogging"]["DataLogRetentionInDays"]["value1"] == "")
+     {
+          param["DataLogging"]["DataLogRetentionInDays"]["found"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["enabled"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
+     }
 
 }
 
