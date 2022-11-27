@@ -174,9 +174,12 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "=============================================================================================");
     ESP_LOGD(TAG, "Reset reason: %s", getResetReason().c_str());
 
+
+
     CheckOTAUpdate();
 
     LogFile.CreateLogDirectories();
+    CheckUpdate();
 /*
     int mk_ret = mkdir("/sdcard/new_fd_mkdir", 0775);
     ESP_LOGI(TAG, "mkdir ret %d", mk_ret);

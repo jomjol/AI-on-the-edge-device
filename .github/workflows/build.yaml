@@ -170,9 +170,8 @@ jobs:
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: |
-          ./dist
-        key: ${{ steps.vars.outputs.branch }}-pack-for-OTA-v2
+        path: dist
+        key: ${{ github.run_number }}-pack-for-OTA-v2
 
 
 
@@ -225,8 +224,7 @@ jobs:
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: |
-          ./firmware
+        path: firmware
         key: ${{ github.run_number }}-pack-for-fresh-install
 
 
@@ -242,6 +240,10 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -251,34 +253,31 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
+        key: ${{ steps.vars.outputs.branch }}
 
     # import the changes from 
     - name: Get generated files from cache
       uses: actions/cache@v3
       with:
-        path: |
-            ./dist
+        path: dist
         key: ${{ github.run_number }}-pack-for-OTA-v2
 
     # import cached artifacts from pack-for-fresh-install
     - name: Get generated files from cache
       uses: actions/cache@v3
       with:
-        path: |
-          ./firmware
+        path: firmware
         key: ${{ github.run_number }}-pack-for-fresh-install
 
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 
     - name: Prepare artifacts for release
       run: |
         mkdir -p release
+        mkdir -p dist
         # create a update.zip like "update__rolling"
+        pwd
+        ls ./dist
         cd ./dist
         zip -r ../release/update.zip .
         cd ../firmware

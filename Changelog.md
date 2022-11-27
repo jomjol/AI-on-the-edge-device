@@ -2,44 +2,52 @@
 
 ## [Unreleased]
 
-Home Assistant Discovery Support
+**Home Assistant MQTT Discovery Support**
 
-**Make sure to read the instructions below carfully!**.
+### Update Procedure
+:bangbang: **Make sure to read the instructions below carfully!**.
 
 1.  Backup your configuration (use the `System -> Backup/Restore` page)!
-1.  You should update to `12.0.1` before you update to this release. All other migrations are not tested. 
+1.  You should update to `12.0.1` before you update to this release. All other migrations are untested. 
 1.  Upload and update the `update-*.zip` file from this release.
 1.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
-1.  Please go to `Settings -> Configuration` and address the changed parameters.
+1.  Please go to `Settings -> Configuration` and address the changed parameters:
     *  DataLogging (storing the values for data graph)
     *  Debug (extended by different debug reporting levels)
 
-If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=update-*.zip` if the upload successed but the extraction failed (`update-*.zip` is the name of the uploaded file).
-1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+If anything breaks you can try to enforce manual update as following:
+
+**OTA:**
+  1. Make sure the last run of the update completed the **Uploading** step.
+  1. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
+
+**Initial Setup:**
+  1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 
 ### Added
 
 -   Implementation of [Home Assistant MQTT Discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery)
 -   Improved ROIs configuration: locked ROI geometry, equidistant delta x
--   `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
--   PreValue is now contained in `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
--   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
-    -   Using new data logging (see below)
-    -   Possibility to choose different values and switch between different numbers (if present)
-
--   SD card info into the `System>Info` menu (thanks to [@Slider007]( https://github.com/Slider0007))
--   Added a logging of the values in a text table in `/log/data` - each measurement is on one line
+-   Improved OTA Update mechanism (only working after installation for next update)
+-   Added data logging in `/log/data` - One day per file and each measurement is on one line
     -   Format: csv - comma separated
     -   Content: `time`, `name-of-number`, `raw-value`, `return-value`, `pre-value`, `change-rate`, `change-absolute`, `error-text`, `cnn-digital`, `cnn-analog`
+-   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
+    -   Using new data logging (see above)
+    -   Possibility to choose different values and switch between different numbers (if present)
+    
+    Note: You need to activate data logging for this feature to work, see above!
+-   PreValue is now contained in `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
+-   SD card info into the `System>Info` menu (thanks to [@Slider007]( https://github.com/Slider0007))
 -   Version check (Firmware vs. Web UI)
+-   Various minor new features
 
 
 ### Changed
 
 -   Updated tflite (`dig-cont_0600_s3.tflite`)
--   Update mode (more robust, not fully bullet prove yet)
+-   Updated OTA functionality (more robust, but not fully bullet prove yet)
 -   Updated Espressif library to `espressif32@v5.2.0`
 -   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) added config parameter `AnalogDigitalTransitionStart`. It can setup very early and very late digit transition starts.
