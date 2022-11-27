@@ -278,7 +278,10 @@ jobs:
     - name: Prepare artifacts for release
       run: |
         mkdir -p release
+        mkdir -p dist
         # create a update.zip like "update__rolling"
+        pwd
+        ls
         cd ./dist
         zip -r ../release/update.zip .
         cd ../firmware
