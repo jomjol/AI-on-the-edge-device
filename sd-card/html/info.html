@@ -25,18 +25,54 @@ div {
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<h3>Current</h3>
+<h3>Runtime Information</h3>
 <table style="font-family: arial">
 	<tr>
 		<td>
 			Last restart:
 		</td>
 		<td>
-			<div id="gitbranch">
+			<div id="starttime">
 				<object data="/starttime"></object>
 			</div>
 		</td>
 	</tr>
+</table>
+
+<h3>Build Info</h3>
+<table style="font-family: arial">
+  <tr>
+	<td>
+		Firmware Versions:
+	</td>
+	<td>
+		<div id="firmware">
+		    <object data="http://192.168.1.151/version"></object>
+		</div>
+		<hr>
+	</td>
+  </tr>
+  <tr>
+	<td>
+		Firmware Build Time:
+	</td>
+	<td>
+		<div>xxx
+			<object data="/version?type=BuildTime"></object>
+		</div>
+	</td>
+  </tr>
+
+	<tr>
+	<td>
+		Web Interface Version:
+	</td>
+	<td>
+		<div id="web-ui">
+			<object data="/version?type=HTMLVersion"></object>
+		</div>
+	</td>
+  </tr>
 </table>
 
 
@@ -47,7 +83,7 @@ div {
 			Hostname:
 		</td>
 		<td>
-			<div id="gitbranch">
+			<div id="Hostname">
 				<object data="/version?type=Hostname"></object>
 			</div>
 		</td>
@@ -57,7 +93,7 @@ div {
 			IP-Address:
 		</td>	
 		<td>
-			<div id="gitbranch">
+			<div id="IP">
 				<object data="/version?type=IP"></object>
 			</div>
 		</td>
@@ -67,69 +103,11 @@ div {
 			WLan-SSID:
 		</td>	
 		<td>
-			<div id="gitbranch">
+			<div id="SSID">
 				<object data="/version?type=SSID"></object>
 			</div>
 		</td>
 	</tr>
-</table>
-
-<h3>Version Info</h3>
-<table style="font-family: arial">
-  <tr>
-	<td>
-		Git-Branch:
-	</td>
-	<td>
-		<div id="gitbranch">
-			<object data="/version?type=GitBranch"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Git-Tag:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=GitTag"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Git-Revision:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=GitRevision"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Build Time:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=BuildTime"></object>
-		</div>
-	</td>
-  </tr>
-
-	<tr>
-	<td>
-		HTML Version:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=HTMLVersion"></object>
-		</div>
-	</td>
-  </tr>
 </table>
 
 <h3>SD Card Info</h3>
