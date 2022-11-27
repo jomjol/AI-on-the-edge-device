@@ -89,7 +89,7 @@ function init(){
 
 
 function doRebootAfterUpdate() {
-	if (confirm("Update completed!\nThe ESP32 will reboot now!")) {
+	if (confirm("Upload completed!\nThe ESP32 will reboot now and complete the update.\nThis will take up to 180s!")) {
 		var stringota = "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
@@ -210,6 +210,7 @@ function extract() {
                 document.getElementById("status").innerText = "Status: Update completed!";
                 document.getElementById("doUpdate").disabled = true;
                 document.getElementById("newfile").disabled = false;
+                document.cookie = "overview.html"; // Make sure after the reboot we go to the overview page
 
                 if (xhttp.responseText.startsWith("reboot"))
                 {
