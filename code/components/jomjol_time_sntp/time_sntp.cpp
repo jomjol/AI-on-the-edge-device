@@ -15,13 +15,13 @@
 
 #include "ClassLogFile.h"
 
-static const char *TAG = "sntp";
+static const char *TAG = "SNTP";
 
-bool setTimeAlwaysOnReboot = true;
 time_t bootTime;
 
-static void obtain_time(void);
+static bool obtain_time(void);
 static void initialize_sntp(void);
+static void logNtpStatus(sntp_sync_status_t status);
 
 void time_sync_notification_cb(struct timeval *tv)
 {
@@ -52,33 +52,38 @@ std::string gettimestring(const char * frm)
     return result;
 }
 
-void setup_time()
+bool setup_time()
 {
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
+    char strftime_buf[64];
+    bool success = true;
+
     // Is time set? If not, tm_year will be (1970 - 1900).
-    if ((timeinfo.tm_year < (2016 - 1900)) || setTimeAlwaysOnReboot) {
-        ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
+    if (!getTimeIsSet()) {
+        ESP_LOGI(TAG, "Time is not set yet. Getting time over NTP.");
         initialize_sntp();
-        obtain_time();
+        if (!obtain_time()) {
+            success = false;
+        }
+
         // update 'now' variable with current time
         time(&now);
+
+        setTimeZone("CET-1CEST,M3.5.0,M10.5.0/3");
+
+        localtime_r(&now, &timeinfo);
+        strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M:%S", &timeinfo);
+        ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
     }
-    char strftime_buf[64];
-
-    setTimeZone("CET-1CEST,M3.5.0,M10.5.0/3");
-
-    localtime_r(&now, &timeinfo);
-    strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
-
-    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M", &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in Berlin is: %s", strftime_buf);
-
-    std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    ESP_LOGD(TAG, "timeist %s", zw.c_str());
+    else {
+        localtime_r(&now, &timeinfo);
+        strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M:%S", &timeinfo);
+        ESP_LOGI(TAG, "Time is already set (%s)", strftime_buf);
+    }
+    return success;
 }
 
 void setTimeZone(std::string _tzstring)
@@ -86,25 +91,58 @@ void setTimeZone(std::string _tzstring)
     setenv("TZ", _tzstring.c_str(), 1);
     tzset();    
     _tzstring = "Time zone set to " + _tzstring;
-    LogFile.WriteToFile(ESP_LOG_INFO, _tzstring);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, _tzstring);
 }
 
-static void obtain_time(void)
+static bool obtain_time(void)
 {
     time_t now = 0;
     struct tm timeinfo = {};
     int retry = 0;
     const int retry_count = 10;
+    bool success = true;
+
     time(&now);
     localtime_r(&now, &timeinfo);    
-    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
-        ESP_LOGI(TAG, "Waiting for system time to be set... (%d/%d)", retry, retry_count);
+
+    ESP_LOGI(TAG, "Waiting until we get a time from the NTP server...");
+    while (true) {
+        retry++;
+
+        if (retry == retry_count) {
+            ESP_LOGW(TAG, "NTP time fetching seems to take longer, will check again on next round!"); // The NTP client will automatically retry periodically!
+            success = false;
+            break;
+        }
+
+        sntp_sync_status_t status = sntp_get_sync_status();
+        logNtpStatus(status);
+        if (status == SNTP_SYNC_STATUS_COMPLETED) {
+            ESP_LOGI(TAG, "Time is synced with NTP Server");
+            break;
+        }
+
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
     
     time(&now);
     localtime_r(&now, &timeinfo);
+    return success;
 }
+
+
+void logNtpStatus(sntp_sync_status_t status) {
+    if (status == SNTP_SYNC_STATUS_COMPLETED) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "NTP Status OK");
+    }
+    else if (status == SNTP_SYNC_STATUS_IN_PROGRESS) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "NTP Status: In Progress");
+    }
+    else { // SNTP_SYNC_STATUS_RESET
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "NTP Status: Reset");
+    }
+}
+
 
 void reset_servername(std::string _servername)
 {
@@ -138,4 +176,29 @@ time_t getUpTime()
     time(&now);
 
     return now - bootTime;
+}
+
+bool getTimeIsSet(void) {
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    char strftime_buf[64];
+
+    localtime_r(&now, &timeinfo);
+    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d_%H:%M:%S", &timeinfo);
+    ESP_LOGD(TAG, "The current date/time in Berlin is: %s", strftime_buf);
+
+    // Is time set? If not, tm_year will be (1970 - 1900).
+    if ((timeinfo.tm_year < (2022 - 1900))) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+void restartNtpClient(void) {
+    sntp_restart();
+    obtain_time();
 }

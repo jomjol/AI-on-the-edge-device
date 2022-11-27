@@ -6,7 +6,7 @@
 #include "configFile.h"
 #include <esp_log.h>
 
-static const char *TAG = "configFile";
+static const char *TAG = "CONFIG";
 
 ConfigFile::ConfigFile(std::string filePath)
 {
@@ -81,26 +81,4 @@ bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 
     disabled = ((*rt)[0] == ';');
 	return true;
-}
-
-std::vector<string> ConfigFile::ZerlegeZeile(std::string input, std::string delimiter)
-{
-	std::vector<string> Output;
-//	std::string delimiter = " =,";
-
-	input = trim(input, delimiter);
-	size_t pos = findDelimiterPos(input, delimiter);
-	std::string token;
-	while (pos != std::string::npos) {
-		token = input.substr(0, pos);
-		token = trim(token, delimiter);
-		Output.push_back(token);
-		input.erase(0, pos + 1);
-		input = trim(input, delimiter);
-		pos = findDelimiterPos(input, delimiter);
-	}
-	Output.push_back(input);
-
-	return Output;
-
 }

@@ -5,7 +5,7 @@
 #include <string.h>
 #include "esp_log.h"
 
-static const char *TAG = "class_flow";
+static const char *TAG = "FLOW CLASS";
 
 
 void ClassFlow::SetInitialParameter(void)
@@ -13,30 +13,6 @@ void ClassFlow::SetInitialParameter(void)
 	ListFlowControll = NULL;
 	previousElement = NULL;	
 	disabled = false;
-}
-
-
-
-
-std::vector<string> ClassFlow::ZerlegeZeile(std::string input, std::string delimiter)
-{
-	std::vector<string> Output;
-
-	input = trim(input, delimiter);
-	size_t pos = findDelimiterPos(input, delimiter);
-	std::string token;
-	while (pos != std::string::npos) {
-		token = input.substr(0, pos);
-		token = trim(token, delimiter);
-		Output.push_back(token);
-		input.erase(0, pos + 1);
-		input = trim(input, delimiter);
-		pos = findDelimiterPos(input, delimiter);
-	}
-	Output.push_back(input);
-
-	return Output;
-
 }
 
 bool ClassFlow::isNewParagraph(string input)

@@ -25,7 +25,7 @@ function getNUMBERSList() {
 	 });
 
 	 try {
-		  url = _basepath + '/editflow.html?task=namenumbers';     
+		  url = _basepath + '/editflow?task=namenumbers';     
 		  xhttp.open("GET", url, false);
 		  xhttp.send();
 
@@ -56,7 +56,7 @@ function getDATAList() {
 	 });
 
 	 try {
-		  url = _basepath + '/editflow.html?task=data';     
+		  url = _basepath + '/editflow?task=data';     
 		  xhttp.open("GET", url, false);
 		  xhttp.send();
 
@@ -87,7 +87,7 @@ function getTFLITEList() {
 	 });
 
 	 try {
-		  url = _basepath + '/editflow.html?task=tflite';     
+		  url = _basepath + '/editflow?task=tflite';     
 		  xhttp.open("GET", url, false);
 		  xhttp.send();
 
@@ -188,6 +188,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "password");
      ParamAddValue(param, catname, "SetRetainFlag");
      ParamAddValue(param, catname, "HomeassistantDiscovery");
+     ParamAddValue(param, catname, "MeterType");
 
      var catname = "InfluxDB";
      category[catname] = new Object(); 
@@ -229,6 +230,14 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "AutoStart");
      ParamAddValue(param, catname, "Intervall");     
+
+     var catname = "DataLogging";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "DataLogActive");
+     ParamAddValue(param, catname, "DataLogRetentionInDays");     
 
      var catname = "Debug";
      category[catname] = new Object(); 
@@ -275,6 +284,46 @@ function ParseConfig() {
           param["MQTT"]["MainTopic"] = param["MQTT"]["Topic"]
      }
      delete param["MQTT"]["Topic"]                // Dient nur der Downwardskompatibilität
+
+
+     if (param["Debug"]["Logfile"]["value1"] == "false" || param["Debug"]["Logfile"]["value1"] == "true")
+     {
+          param["Debug"]["Logfile"]["value1"] = "2";
+     }
+
+
+     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     if (category["DataLogging"]["found"] == false)
+     {
+          category["DataLogging"]["found"] = true;
+          category["DataLogging"]["enabled"] = true;
+
+          param["DataLogging"]["DataLogActive"]["found"] = true;
+          param["DataLogging"]["DataLogActive"]["enabled"] = true;
+          param["DataLogging"]["DataLogActive"]["value1"] = "true";
+          
+          param["DataLogging"]["DataLogRetentionInDays"]["found"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["enabled"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
+     }
+
+     if (category["DataLogging"]["enabled"] == false)
+          category["DataLogging"]["enabled"] = true
+
+     if (param["DataLogging"]["DataLogActive"]["enabled"] == false && param["DataLogging"]["DataLogActive"]["value1"] == "")
+     {
+          param["DataLogging"]["DataLogActive"]["found"] = true;
+          param["DataLogging"]["DataLogActive"]["enabled"] = true;
+          param["DataLogging"]["DataLogActive"]["value1"] = "true";
+     }
+
+     if (param["DataLogging"]["DataLogRetentionInDays"]["enabled"] == false && param["DataLogging"]["DataLogRetentionInDays"]["value1"] == "")
+     {
+          param["DataLogging"]["DataLogRetentionInDays"]["found"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["enabled"] = true;
+          param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
+     }
+
 }
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
@@ -657,6 +706,11 @@ function getNUMBERInfo(){
 }
 
 function RenameNUMBER(_alt, _neu){
+     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0) || (_neu.search(" ") >= 0) || (_neu.search("\"") >= 0))
+     {
+          return "Name must not contain ',', '.', ' ' or '\"' - please change name";
+     }
+
      index = -1;
      found = false;
      for (i = 0; i < NUMBERS.length; ++i) {
@@ -738,6 +792,14 @@ function getROIInfo(_typeROI, _number){
 
 
 function RenameROI(_number, _type, _alt, _neu){
+     if ((_neu.includes("=")) || (_neu.includes(".")) || (_neu.includes(":")) ||
+         (_neu.includes(",")) || (_neu.includes(";")) || (_neu.includes(" ")) || 
+         (_neu.includes("\""))) {
+          return "Name must not contain any of the following characters: . : , ; = \" ' '";
+     }
+
+
+
      index = -1;
      found = false;
      _indexnumber = -1;

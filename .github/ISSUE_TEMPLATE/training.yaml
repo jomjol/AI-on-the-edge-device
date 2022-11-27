@@ -1,0 +1,19 @@
+name: 📖 New Training Data
+description: Use this form if you collected images and want to provide them for training the model
+title: New Training Data
+labels: new training data
+assignees: jomjol
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you proceed, please check:
+        - [ ] Did you make sure we don't have similar data yet in the training data? (see [Digital Counters](https://jomjol.github.io/neural-network-digital-counter-readout/) resp. [Analog Needles](https://jomjol.github.io/neural-network-analog-needle-readout))
+        - [ ] Did you follow the guideline as documented in the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/ROI-Configuration)? We will only be able to accept the files if they fulfill the rules!
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Files
+      description: You can drag & drop your **zipped** images here

@@ -27,15 +27,16 @@ extern "C" {
 
 //#define DEBUG_DETAIL_ON  
 
-static const char* TAG = "flow_controll";
+static const char* TAG = "FLOW CTRL";
 
-float AutoIntervalShared = 10;
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
-//    ESP_LOGD(TAG, "_stepname: %s", _stepname.c_str());
+
+    ESP_LOGD(TAG, "Step %s start", _stepname.c_str());
+
     if ((_stepname.compare("[MakeImage]") == 0) || (_stepname.compare(";[MakeImage]") == 0)){
         _classname = "ClassFlowMakeImage";
     }
@@ -61,6 +62,8 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
                 FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
+
+    ESP_LOGD(TAG, "Step %s end", _stepname.c_str());
 
     return result;
 }
@@ -142,7 +145,7 @@ void ClassFlowControll::SetInitialParameter(void)
 {
     AutoStart = false;
     SetupModeActive = false;
-    AutoIntervall = 10;
+    AutoIntervall = 10; // Minutes
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
@@ -203,6 +206,9 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     if (toUpper(_type).compare("[AUTOTIMER]") == 0)
         cfc = this;    
+
+    if (toUpper(_type).compare("[DATALOGGING]") == 0)
+        cfc = this;  
 
     if (toUpper(_type).compare("[DEBUG]") == 0)
         cfc = this;  
@@ -287,6 +293,12 @@ bool ClassFlowControll::doFlow(string time)
     LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
 #endif
 
+    /* Check if we have a valid date/time and if not restart the NTP client */
+    if (! getTimeIsSet()) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time not set, restarting NTP Client!");
+        restartNtpClient();
+    }
+
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%H:%M:%S");
@@ -301,11 +313,11 @@ bool ClassFlowControll::doFlow(string time)
 
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
-            LogFile.WriteToFile(ESP_LOG_WARN, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
             if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, "Wiederholung 5x nicht erfolgreich --> reboot");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
                 doReboot();
                 // Schritt wurde 5x wiederholt --> reboot
             }
@@ -398,12 +410,12 @@ string ClassFlowControll::GetPrevalue(std::string _number)
         return flowpostprocessing->GetPreValue(_number);   
     }
 
-    return std::string();    
+    return std::string("");    
 }
 
 std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)
 {
-    double zw;
+    float zw;
     char* p;
 
     _newvalue = trim(_newvalue);
@@ -415,7 +427,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string
     }
     else
     {
-        zw = strtod(_newvalue.c_str(), &p);
+        zw = strtof(_newvalue.c_str(), &p);
         if (zw == 0)
             return "- Error in String to Value Conversion!!! Must be of format value=123.456";
     }
@@ -441,12 +453,13 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) && (toUpper(aktparamgraph).compare("[SYSTEM]") != 0))      // Paragraph passt nicht zu MakeImage
+    if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht zu MakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph, " =");
+        zerlegt = ZerlegeZeile(aktparamgraph, " =");
         if ((toUpper(zerlegt[0]) == "AUTOSTART") && (zerlegt.size() > 1))
         {
             if (toUpper(zerlegt[1]) == "TRUE")
@@ -454,10 +467,28 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
                 AutoStart = true;
             }
         }
+
         if ((toUpper(zerlegt[0]) == "INTERVALL") && (zerlegt.size() > 1))
         {
             AutoIntervall = std::stof(zerlegt[1]);
         }
+
+        if ((toUpper(zerlegt[0]) == "DATALOGACTIVE") && (zerlegt.size() > 1))
+        {
+            if (toUpper(zerlegt[1]) == "TRUE")
+            {
+                LogFile.SetDataLogToSD(true);
+            }
+            else {
+                LogFile.SetDataLogToSD(false);
+            }
+        }
+
+        if ((toUpper(zerlegt[0]) == "DATALOGRETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            LogFile.SetDataLogRetention(std::stoi(zerlegt[1]));
+        }
+
         if ((toUpper(zerlegt[0]) == "LOGFILE") && (zerlegt.size() > 1))
         {
             /* matches esp_log_level_t */
@@ -480,8 +511,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
         {
-            LogFile.SetRetention(std::stoi(zerlegt[1]));
-        }      
+            LogFile.SetLogFileRetention(std::stoi(zerlegt[1]));
+        }
 
         if ((toUpper(zerlegt[0]) == "TIMEZONE") && (zerlegt.size() > 1))
         {
@@ -501,7 +532,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
                 fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_ERROR, "Rebooting to activate new HOSTNAME...");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Rebooting to activate new HOSTNAME...");
                 esp_restart();
                 hard_restart();                   
                 doReboot();
@@ -517,7 +548,11 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    AutoIntervalShared = AutoIntervall;
+    /* Start the MQTT service */
+    for (int i = 0; i < FlowControll.size(); ++i)
+        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
+            return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
+
     return true;
 }
 

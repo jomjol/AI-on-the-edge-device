@@ -9,9 +9,8 @@
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
 h3 {font-size: 1.2em;}
-h4 {
-  margin-bottom: 0;
-}
+h4 {font-size: 1em; margin-bottom: 0;}
+h5 {font-size: 0.83em; margin-top: 0.2em; margin-bottom: 0;}
 
 p {font-size: 1em;}
 
@@ -626,9 +625,16 @@ textarea {
 			</td>
 		</tr>
 		<tr>
+			<td class="indent1" colspan="3">
+				<h4>Homeassistant Discovery (using MQTT)</h4>
+				<h5>The discovery topics and the static topics (IP, MAC, Hostname, Interval, ...) only get sent on startup.
+					To send them again, you can call the following URL: <a href=mqtt_publish_discovery target="_blank">http://&lt;IP&gt;/mqtt_publish_discovery</a></h5>
+			</td>
+		</tr> 
+		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_HomeassistantDiscovery_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "HomeassistantDiscovery")' unchecked >
-				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Enable Homeassistant Discovery</class></label>
+				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
 			</td>
 			<td>
 				<select id="MQTT_HomeassistantDiscovery_value1">
@@ -637,7 +643,31 @@ textarea {
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Enable or disable the <a href=https://www.home-assistant.io/docs/mqtt/discovery/ target=_blank>Homeassistand Discovery</a>
+				Enable or disable the <a href=https://www.home-assistant.io/docs/mqtt/discovery/ target=_blank>Homeassistant Discovery</a>
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_MeterType_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MeterType")' unchecked >
+				<label for=MQTT_MeterType_enabled><class id="MQTT_MeterType_text" style="color:black;">Meter Type</class></label>
+			</td>
+			<td>
+				<select id="MQTT_MeterType_value1"> <!-- See https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes -->
+					<option value="other" selected>Other (no Units)</option>
+					<option value="water_m3">Watermeter (Value: m³, Rate: m³/h)</option>
+					<option value="water_l">Watermeter (Value: l, Rate: l/h)</option>
+					<option value="water_gal">Watermeter (Value: gal, Rate: gal/h)</option>
+					<option value="water_ft3">Watermeter (Value: ft³, Rate: ft³/m)</option>
+					<option value="gas_m3">Gasmeter (Value: m³, Rate: m³/h)</option>
+					<option value="gas_ft3">Gasmeter (Value: ft³, Rate: ft³/m)</option>
+					<option value="energy_wh">Energymeter (Value: Wh, Rate: W)</option>
+					<option value="energy_kwh">Energymeter (Value: kWh, Rate: kW)</option>
+					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Select the meter type so the sensors have the right units in Homeassistant.<br>
+				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!
 			</td>
 		</tr>
 
@@ -646,8 +676,7 @@ textarea {
 			<td colspan="3" style="padding-left: 20px;">
 			    <h4>
 				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDB_enabled>InfluxDB (Remark: only InfluxDB v1.x is supported, v2.x has a changed interface)</label>
-			    </h4>
+				<label for=Category_InfluxDB_enabled>InfluxDB</h4><h5>Only InfluxDB v1.x is supported, v2.x has a changed interface</h5></label>				
 			</td>
 		</tr> 		
 		<tr>
@@ -710,43 +739,14 @@ textarea {
 				Password for InfluxDB authentication
 			</td>
 		</tr>
-		
-	
-		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
-		</tr> 			
-		<tr class="expert"  id="ex13">
-			<td class="indent1">
-			    <class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
-			</td>
-			<td>
-				<select id="AutoTimer_AutoStart_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td style="font-size: 80%;">
-				Start the image recognition immediatly after power up. false is basically for debugging.
-			</td>
-		</tr>
-		<tr>
-			<td class="indent1">
-			    <class id="AutoTimer_Intervall_text" style="color:black;">Interval</class>
-			</td>
-			<td>
-				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
-			</td>
-			<td style="font-size: 80%;">
-				Interval in which the number(s) are read (in minutes). If a run takes longer than this interval, the next run gets postponed until the current run completes.
-			</td>
-		</tr>
 
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
 				    <label for=Category_GPIO_enabled>GPIO Settings
-					<span class="GPIO_Item" > - Enabling GPIO handler, disable by default integrated flash light.<br>Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
-				</h4>	
+					<span class="GPIO_Item">
+					<h5>Enabling GPIO handler, disable by default integrated flash light.<br>Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
+				</h4>
 			</td>
 		</tr> 	
 
@@ -1244,12 +1244,70 @@ textarea {
 		<!------------- GPIO13 end ------------------>
 
 		<tr>
+			<td colspan="3" style="padding-left: 20px;"><h4>AutoTimer</h4></td>
+		</tr> 			
+		<tr class="expert"  id="ex13">
+			<td class="indent1">
+			    <class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
+			</td>
+			<td>
+				<select id="AutoTimer_AutoStart_value1">
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Start the image recognition immediatly after power up. false is basically for debugging.
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+			    <class id="AutoTimer_Intervall_text" style="color:black;">Interval</class>
+			</td>
+			<td>
+				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
+			</td>
+			<td style="font-size: 80%;">
+				Interval in which the number(s) are read (in minutes). If a run takes longer than this interval, the next run gets postponed until the current run completes.
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="3" style="padding-left: 20px;"><h4>DataLogging</h4></td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<class id="DataLogging_DataLogActive_text" style="color:black;">DataLogActive</class>
+			</td>
+			<td>
+				<select id="DataLogging_DataLogActive_value1">
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
+				</select>
+			</td>
+			<td class="description">
+				Activate data log to SD card
+			</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<class id="DataLogging_DataLogRetentionInDays_text" style="color:black;">DataLogRetentionInDays</class>
+			</td>
+			<td>
+				<input type="number" id="DataLogging_DataLogRetentionInDays_value1" size="13" min="0" step="1">
+			</td>
+			<td class="description">
+				Time to keep the data files (in days - "0" = forever)
+			</td>
+		</tr>
+
+		<tr>
 			<td colspan="3" style="padding-left: 20px;"><h4>Debug</h4></td>
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="Debug_Logfile_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "Logfile")' unchecked >
-				<label for=Debug_Logfile_enabled><class id="Debug_Logfile_text" style="color:black;">Logfile Log Level</class></label>
+				<class id="Debug_Logfile_text" style="color:black;">Logfile Log Level</class>
 			</td>
 			<td>
 				<select id="Debug_Logfile_value1">
@@ -1265,8 +1323,7 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="Debug_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Debug", "LogfileRetentionInDays")' unchecked >
-				<label for=Debug_LogfileRetentionInDays_enabled><class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+				<class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
 			</td>
 			<td>
 				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13" min="0" step="1">
@@ -1318,16 +1375,16 @@ textarea {
 	</table>
 
 	<p>
-		<button class="button" onclick="saveTextAsFile()">Update Config.ini</button>
+		<button class="button" onclick="saveTextAsFile()">Save</button>
 	</p>
 	<p>
 		
 	</p>
 	<div id="doreboot">
 		<p>
-			<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>
+			<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config file directly</button>
 			
-			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate updates</button>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
 		</p>
 	</div>
 
@@ -1734,6 +1791,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "password", true);
 	WriteParameter(param, category, "MQTT", "SetRetainFlag", true);
 	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", true);
+	WriteParameter(param, category, "MQTT", "MeterType", true);
 	
 	WriteParameter(param, category, "InfluxDB", "Uri", true);	
 	WriteParameter(param, category, "InfluxDB", "Database", true);	
@@ -1754,8 +1812,11 @@ function UpdateInput() {
 	WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
 	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
 
-	WriteParameter(param, category, "Debug", "Logfile", true);	
-	WriteParameter(param, category, "Debug", "LogfileRetentionInDays", true);	
+	WriteParameter(param, category, "DataLogging", "DataLogActive", false);	
+	WriteParameter(param, category, "DataLogging", "DataLogRetentionInDays", false);	
+
+	WriteParameter(param, category, "Debug", "Logfile", false);	
+	WriteParameter(param, category, "Debug", "LogfileRetentionInDays", false);	
 
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
@@ -1781,12 +1842,12 @@ function WriteModelFiles()
         
         var text = list_tflite[i].replace("/config/", "");
         
-        if (list_tflite[i].includes("/dig-")) { // Its a digital file, only show in the digital list box
+        if (list_tflite[i].includes("/dig")) { // Its a digital file, only show in the digital list box
 	    optionDig.text = text;
 	    optionDig.value = list_tflite[i];
 	    _indexDig.add(optionDig);
         }
-        else if (list_tflite[i].includes("/ana-")) { // Its a digital file, only show in the analog list box
+        else if (list_tflite[i].includes("/ana")) { // Its a digital file, only show in the analog list box
 	    optionAna.text = text;
 	    optionAna.value = list_tflite[i];
 	    _indexAna.add(optionAna);
@@ -1851,6 +1912,7 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "password", true);	
 	ReadParameter(param, "MQTT", "SetRetainFlag", true);	
 	ReadParameter(param, "MQTT", "HomeassistantDiscovery", true);
+	ReadParameter(param, "MQTT", "MeterType", true);
 
 	ReadParameter(param, "InfluxDB", "Uri", true);	
 	ReadParameter(param, "InfluxDB", "Database", true);	
@@ -1877,9 +1939,12 @@ function ReadParameterAll()
 
 	ReadParameter(param, "AutoTimer", "AutoStart", false);	
 	ReadParameter(param, "AutoTimer", "Intervall", false);	
+	
+	ReadParameter(param, "DataLogging", "DataLogActive", false);	
+	ReadParameter(param, "DataLogging", "DataLogRetentionInDays", false);	
 
-	ReadParameter(param, "Debug", "Logfile", true);	
-	ReadParameter(param, "Debug", "LogfileRetentionInDays", true);	
+	ReadParameter(param, "Debug", "Logfile", false);	
+	ReadParameter(param, "Debug", "LogfileRetentionInDays", false);	
 
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	

@@ -140,7 +140,7 @@ function prepareOnServer() {
     var nameneu = document.getElementById("newfile").value;
     filePath = nameneu.split(/[\\\/]/).pop();
 
-	/* first delete the old firmware */	
+	/* first delete the old firmware AND empty the /firmware directory*/	
 	xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4) {
             stopProgressTimer();
@@ -159,7 +159,7 @@ function prepareOnServer() {
 
     startProgressTimer("Server preparations...");
 
-    var _toDo = basepath + "/ota?delete=" + filePath;
+    var _toDo = basepath + "/ota?task=emptyfirmwaredir";
 	xhttp.open("GET", _toDo, true);
 	xhttp.send();
 }

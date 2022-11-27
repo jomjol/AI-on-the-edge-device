@@ -9,6 +9,8 @@
 
 #include <iomanip>
 #include <sstream>
+#include <fstream>
+#include <iostream>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +28,7 @@ extern "C" {
 
 #include "esp_vfs_fat.h"
 
-static const char* TAG = "helper";
+static const char* TAG = "HELPER";
 
 //#define ISWINDOWS_TRUE
 #define PATH_MAX_STRING_SIZE 256
@@ -90,7 +92,7 @@ string getSDCardPartitionSize(){
     f_getfree("0:", (DWORD *)&fre_clust, &fs);
     tot_sect = ((fs->n_fatent - 2) * fs->csize) /1024 /(1024/SDCardCsd.sector_size);	//corrected by SD Card sector size (usually 512 bytes) and convert to MB
 
-    printf("%d MB total drive space (Sector size [bytes]: %d)\n", (int)tot_sect, (int)fs->csize*512);
+	//ESP_LOGD(TAG, "%d MB total drive space (Sector size [bytes]: %d)", (int)tot_sect, (int)fs->ssize);
 
 	return std::to_string(tot_sect);
 }
@@ -103,7 +105,7 @@ string getSDCardFreePartitionSpace(){
     f_getfree("0:", (DWORD *)&fre_clust, &fs);
     fre_sect = (fre_clust * fs->csize) / 1024 /(1024/SDCardCsd.sector_size);	//corrected by SD Card sector size (usually 512 bytes) and convert to MB
 
-    printf("%d MB free drive space (Sector size [bytes]: %d)\n", (int)fre_sect, (int)fs->ssize);
+    //ESP_LOGD(TAG, "%d MB free drive space (Sector size [bytes]: %d)", (int)fre_sect, (int)fs->ssize);
 
 	return std::to_string(fre_sect);
 }
@@ -116,7 +118,7 @@ string getSDCardPartitionAllocationSize(){
     f_getfree("0:", (DWORD *)&fre_clust, &fs);
     allocation_size = fs->ssize;
 
-    printf("SD Card Partition Allocation Size (bytes): %d)\n", allocation_size);
+    //ESP_LOGD(TAG, "SD Card Partition Allocation Size: %d bytes", allocation_size);
 
 	return std::to_string(allocation_size);
 }
@@ -129,28 +131,28 @@ void SaveSDCardInfo(sdmmc_card_t* card) {
 
 string getSDCardManufacturer(){
 	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
-	printf("SD Card Manufactuer: %s\n", SDCardManufacturer.c_str());
+	//ESP_LOGD(TAG, "SD Card Manufacturer: %s", SDCardManufacturer.c_str());
 	
 	return (SDCardManufacturer + " (ID: " + std::to_string(SDCardCid.mfg_id) + ")");
 }
 
 string getSDCardName(){
 	char *SDCardName = SDCardCid.name;
-	printf("SD Card Name: %s\n", SDCardName); 
+	//ESP_LOGD(TAG, "SD Card Name: %s", SDCardName); 
 
 	return std::string(SDCardName);
 }
 
 string getSDCardCapacity(){
 	int SDCardCapacity = SDCardCsd.capacity / (1024/SDCardCsd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
-	printf("SD Card Capacity: %s\n", std::to_string(SDCardCapacity).c_str()); 
+	//ESP_LOGD(TAG, "SD Card Capacity: %s", std::to_string(SDCardCapacity).c_str()); 
 
 	return std::to_string(SDCardCapacity);
 }
 
 string getSDCardSectorSize(){
 	int SDCardSectorSize = SDCardCsd.sector_size;
-	printf("SD Card Sector Size: %s\n", std::to_string(SDCardSectorSize).c_str()); 
+	//ESP_LOGD(TAG, "SD Card Sector Size: %s bytes", std::to_string(SDCardSectorSize).c_str()); 
 
 	return std::to_string(SDCardSectorSize);
 }
@@ -165,31 +167,19 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 
 
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
+FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec, bool silent)
 {
 	FILE *pfile;
 
 	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
 
 	if ((pfile = fopen(nm, _mode)) != NULL) {
-		ESP_LOGD(TAG, "File %s successfully opened", nm);
+		if (!silent) ESP_LOGE(TAG, "File %s successfully opened", nm);
 	}
 	else {
-		ESP_LOGD(TAG, "Error: file %s does not exist!", nm);
+		if (!silent) ESP_LOGE(TAG, "Error: file %s does not exist!", nm);
 		return NULL;
 	}
-
-/*
-	if (pfile == NULL)
-	{
-		TickType_t xDelay;
-		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
-		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec) + " seconds";
-	    LogFile.WriteToFile(ESP_LOG_INFO, zw);
-		vTaskDelay( xDelay );
-		pfile = fopen(nm, _mode);
-	}
-*/
 
 	return pfile;
 }
@@ -206,6 +196,12 @@ std::string FormatFileName(std::string input)
 }
 
 
+std::size_t file_size(const std::string& file_name) {
+    std::ifstream file(file_name.c_str(),std::ios::in | std::ios::binary);
+    if (!file) return 0;
+    file.seekg (0, std::ios::end);
+    return static_cast<std::size_t>(file.tellg());
+}
 
 
 void FindReplace(std::string& line, std::string& oldString, std::string& newString) {
@@ -231,11 +227,15 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
     }
 }
 
-void MakeDir(std::string _what)
+bool MakeDir(std::string _what)
 {
-int mk_ret = mkdir(_what.c_str(), 0775);
-if (mk_ret)
-	ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
+	int mk_ret = mkdir(_what.c_str(), 0775);
+	if (mk_ret)
+	{
+		ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
+		return false;
+	}
+	return true;
 }
 
 
@@ -302,23 +302,24 @@ size_t findDelimiterPos(string input, string delimiter)
 }
 
 
-void RenameFile(string from, string to)
+bool RenameFile(string from, string to)
 {
 //	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
 	/* Delete file */
 	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
-		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
-		return;
+		ESP_LOGE(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
+		return false;
 	}
 	fclose(fpSourceFile);
 
 	rename(from.c_str(), to.c_str());
+	return true;
 }
 
 
-void DeleteFile(string fn)
+bool DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
 	/* Delete file */
@@ -326,15 +327,16 @@ void DeleteFile(string fn)
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
-		return;
+		return false;
 	}
 	fclose(fpSourceFile);
 
-	unlink(fn.c_str());    
+	unlink(fn.c_str());
+	return true;    
 }
 
 
-void CopyFile(string input, string output)
+bool CopyFile(string input, string output)
 {
 	input = FormatFileName(input);
 	output = FormatFileName(output);
@@ -342,7 +344,7 @@ void CopyFile(string input, string output)
 	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
 	{
 		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
-		return;
+		return false;
 	}
 
 	char cTemp;
@@ -350,7 +352,7 @@ void CopyFile(string input, string output)
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
-		return;
+		return false;
 	}
 
 	FILE* fpTargetFile = OpenFileAndWait(output.c_str(), "wb");
@@ -368,6 +370,7 @@ void CopyFile(string input, string output)
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
 	ESP_LOGD(TAG, "File copied: %s to %s", input.c_str(), output.c_str());
+	return true;
 }
 
 string getFileFullFileName(string filename)
@@ -505,11 +508,11 @@ time_t addDays(time_t startTime, int days) {
 }
 
 int removeFolder(const char* folderPath, const char* logTag) {
-	ESP_LOGI(logTag, "Delete folder %s", folderPath);
+	//ESP_LOGD(logTag, "Delete content in path %s", folderPath);
 
 	DIR *dir = opendir(folderPath);
     if (!dir) {
-        ESP_LOGI(logTag, "Failed to stat dir : %s", folderPath);
+        ESP_LOGE(logTag, "Failed to stat dir : %s", folderPath);
         return -1;
     }
 
@@ -518,6 +521,7 @@ int removeFolder(const char* folderPath, const char* logTag) {
     while ((entry = readdir(dir)) != NULL) {
         std::string path = string(folderPath) + "/" + entry->d_name;
 		if (entry->d_type == DT_REG) {
+			//ESP_LOGD(logTag, "Delete file %s", path.c_str());
 			if (unlink(path.c_str()) == 0) {
 				deleted ++;
 			} else {
@@ -530,9 +534,9 @@ int removeFolder(const char* folderPath, const char* logTag) {
     
     closedir(dir);
 	if (rmdir(folderPath) != 0) {
-		ESP_LOGE(logTag, "can't delete file : %s", folderPath);
+		ESP_LOGE(logTag, "can't delete folder : %s", folderPath);
 	}
-	ESP_LOGI(logTag, "%d older log files in folder %s deleted.", deleted, folderPath);
+	ESP_LOGD(logTag, "%d files in folder %s deleted.", deleted, folderPath);
 
 	return deleted;
 }
@@ -546,20 +550,52 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
         delimiter = _delimiter;
     }
 
+	return ZerlegeZeile(input, delimiter);
+}
+
+
+
+std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
+{
+	std::vector<string> Output;
+
 	input = trim(input, delimiter);
-	size_t pos = findDelimiterPos(input, delimiter);
-	std::string token;
-	while (pos != std::string::npos) {
-		token = input.substr(0, pos);
-		token = trim(token, delimiter);
-		Output.push_back(token);
-		input.erase(0, pos + 1);
-		input = trim(input, delimiter);
-		pos = findDelimiterPos(input, delimiter);
+
+	/* The input can have multiple formats: 
+	 *  - key = value
+     *  - key = value1 value2 value3 ...
+     *  - key value1 value2 value3 ...
+	 *  
+	 * Examples:
+	 *  - ImageSize = VGA
+	 *  - IO0 = input disabled 10 false false 
+	 *  - main.dig1 28 144 55 100 false
+	 * 
+	 * This causes issues eg. if a password key has a whitespace or equal sign in its value.
+	 * As a workaround and to not break any legacy usage, we enforce to only use the
+	 * equal sign, if the key is "password"
+	*/
+	if (input.find("password") != string::npos) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+		size_t pos = input.find("=");
+		Output.push_back(trim(input.substr(0, pos), ""));
+		Output.push_back(trim(input.substr(pos +1, string::npos), ""));
 	}
-	Output.push_back(input);
+	else { // Legacy Mode
+		size_t pos = findDelimiterPos(input, delimiter);
+		std::string token;
+		while (pos != std::string::npos) {
+			token = input.substr(0, pos);
+			token = trim(token, delimiter);
+			Output.push_back(token);
+			input.erase(0, pos + 1);
+			input = trim(input, delimiter);
+			pos = findDelimiterPos(input, delimiter);
+		}
+		Output.push_back(input);
+	}
 
 	return Output;
+
 }
 
 

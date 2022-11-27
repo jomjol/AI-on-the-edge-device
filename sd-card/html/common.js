@@ -31,26 +31,75 @@ function LoadHostname() {
 }
 
 
-function LoadVersion() {
+var fwVersion = "";
+var webUiVersion = "";
+
+function LoadFwVersion() {
     _basepath = getbasepath(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
-            version = xhttp.responseText;
-            document.getElementById("Version").innerHTML  = version;
+            fwVersion = xhttp.responseText;
+            document.getElementById("Version").innerHTML  = fwVersion;
+            console.log(fwVersion);
+            compareVersions();
         } 
         else {
-                console.warn(request.statusText, request.responseText);
+            console.warn(request.statusText, request.responseText);
+            fwVersion = "NaN";
         }
     });
 
     try {
-            url = _basepath + '/version?type=GitBaseBranch';     
-            xhttp.open("GET", url, true);
-            xhttp.send();
-
+        url = _basepath + '/version?type=GitBaseBranch';     
+        xhttp.open("GET", url, true);
+        xhttp.send();
     }
-    catch (error)
-    {}
+    catch (error) {
+        fwVersion = "NaN";
+    }
+}
+
+function LoadWebUiVersion() {
+    _basepath = getbasepath(); 
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.addEventListener('load', function(event) {
+        if (xhttp.status >= 200 && xhttp.status < 300) {
+            webUiVersion = xhttp.responseText;
+            console.log("Web UI Version: " + webUiVersion);
+            compareVersions();
+        } 
+        else {
+            console.warn(request.statusText, request.responseText);
+            webUiVersion = "NaN";
+        }
+    });
+
+    try {
+        url = _basepath + '/version?type=HTMLVersion';     
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    }
+    catch (error) {
+        webUiVersion = "NaN";
+    }
+}
+
+
+function compareVersions() {
+    if (fwVersion == "" || webUiVersion == "") {
+        return;
+    }
+
+    arr = fwVersion.split(" ");
+    fWGitHash = arr[arr.length - 1].substring(0, 7);
+    arr = webUiVersion.split(" ");
+    webUiHash = arr[arr.length - 1].substring(0, 7);
+    console.log("FW Hash: " + fWGitHash + ", Web UI Hash: " + webUiHash);
+    
+    if (fWGitHash != webUiHash) {
+        alert("The Version of the Web Interface does not match the Firmware Version! It is suggested to keep them on the same version!");
+    }
 }

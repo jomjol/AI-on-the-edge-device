@@ -12,7 +12,7 @@
 
 #include "esp_log.h"
 
-static const char* TAG = "class_flow_postproc";
+static const char* TAG = "FLOW POSTPROC";
 
 //#define SERIAL_DEBUG // testing debug on serial enabled
 
@@ -56,7 +56,6 @@ std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, 
         else
             json += "    \"value\": \"\","  + _lineend;
         json += "    \"raw\": \""        + NUMBERS[i]->ReturnRawValue              + "\","  + _lineend;
-        json += "    \"pre\": \""        + NUMBERS[i]->ReturnPreValue              + "\","  + _lineend;
         json += "    \"error\": \""     + NUMBERS[i]->ErrorMessageText             + "\","  + _lineend;
         if (NUMBERS[i]->ReturnRateValue.length() > 0)
             json += "    \"rate\": "      + NUMBERS[i]->ReturnRateValue                + ","  + _lineend;
@@ -80,11 +79,14 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     int index = -1;
 
     if (_number == "")
-        _number = "default";
+        _number = "default"; 
 
     for (int i = 0; i < NUMBERS.size(); ++i)
         if (NUMBERS[i]->name == _number)
             index = i;
+
+    if (index == -1)
+        return std::string("");
 
     result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
 
@@ -100,7 +102,7 @@ void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _exte
         if (NUMBERS[j]->name == _numbers)
         {
             NUMBERS[j]->PreValue = zw;
-            NUMBERS[j]->ReturnPreValue = RundeOutput(zw, NUMBERS[j]->Nachkomma);
+            NUMBERS[j]->ReturnPreValue = std::to_string(zw);
             NUMBERS[j]->PreValueOkay = true;
             if (_extern)
             {
@@ -476,7 +478,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = ZerlegeZeile(aktparamgraph);
         std::string _param = GetParameterName(zerlegt[0]);
 
         if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (zerlegt.size() > 1))
@@ -856,7 +858,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
         ESP_LOGD(TAG, "%s", zw.c_str());
-        LogFile.WriteToFile(ESP_LOG_INFO, _zw);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
     }
 
@@ -866,6 +868,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
 void ClassFlowPostProcessing::WriteDataLog(int _index)
 {
+    if (!LogFile.GetDataLogToSD()){
+        return;
+    }
+    
     string analog = "";
     string digital = "";
     string timezw = "";

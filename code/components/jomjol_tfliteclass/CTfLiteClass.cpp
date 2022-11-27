@@ -8,7 +8,7 @@
 // #define DEBUG_DETAIL_ON
 
 
-static const char *TAG = "ctflite_class";
+static const char *TAG = "C TFLITE";
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -167,7 +167,7 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
             }
 
 #ifdef DEBUG_DETAIL_ON          
-    LogFile.WriteToFile(ESP_LOG_DEBUG, "Nach dem Laden in input");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach dem Laden in input");
 #endif
 
     return true;
@@ -185,7 +185,7 @@ void CTfLiteClass::MakeAllocate()
     TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
         TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
-        LogFile.WriteToFile(ESP_LOG_ERROR, "AllocateTensors() failed");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "AllocateTensors() failed");
 
     this->GetInputDimension();   
     return;

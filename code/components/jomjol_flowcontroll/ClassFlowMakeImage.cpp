@@ -57,6 +57,8 @@ void ClassFlowMakeImage::SetInitialParameter(void)
 
 ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
+    LogImageLocation = "/log/source";
+    logfileRetentionInDays = 5;
     SetInitialParameter();
 }
 
@@ -78,7 +80,7 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = this->ZerlegeZeile(aktparamgraph);
+        zerlegt = ZerlegeZeile(aktparamgraph);
         if ((zerlegt[0] ==  "LogImageLocation") && (zerlegt.size() > 1))
         {
             LogImageLocation = "/sdcard" + zerlegt[1];
@@ -104,6 +106,10 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             waitbeforepicture = stoi(zerlegt[1]);
         }
 
+        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        {
+            this->logfileRetentionInDays = std::stoi(zerlegt[1]);
+        }
 
         if ((toUpper(zerlegt[0]) == "BRIGHTNESS") && (zerlegt.size() > 1))
         {

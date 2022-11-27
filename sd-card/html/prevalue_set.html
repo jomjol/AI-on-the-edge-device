@@ -52,12 +52,12 @@ input[type=number] {
 	<div id="prevalue"></div>
   <h3>Set Value:</h3><p>
     Input (Format = 123.456):<p>
-	PreValue: 
+	Previous Value: 
 	 <input type="number" id="myInput" name="myInput"
            pattern="[0-9]+([\.,][0-9]+)?" step="0.001"
             title="This should be a number with up to 4 decimal places.">
 	<p></p>
-	<button class="button" type="button" onclick="setprevalue()">Set PreValue</button>
+	<button class="button" type="button" onclick="setprevalue()">Set Previous Value</button>
   </tr>	
   <tr>
     <h3>Result:</h3><p>
@@ -84,36 +84,62 @@ function setprevalue() {
 	inputVal = inputVal.replace(",", ".");
   	var xhttp = new XMLHttpRequest();
     try {
-          url = basepath + "/setPreValue.html?value=" + inputVal + "&numbers=" + _number;     
+          url = basepath + "/setPreValue?value=" + inputVal + "&numbers=" + _number;     
           xhttp.open("GET", url, false);
           xhttp.send();
           response = xhttp.responseText;
           document.getElementById("result").innerHTML=response;
      }
-     catch (error)
-     {
-     //          alert("Deleting Config.ini failed");
-     }
+    catch (error)
+    {
+      alert("Failed to get data from device!");
+    }
 }
 
 function loadPrevalue(_basepath) {
-    var sel = document.getElementById("Numbers_value1");
-    var _number = sel.options[sel.selectedIndex].text;  
+  // Get current Pre Value
+  var sel = document.getElementById("Numbers_value1");
+  var _number = sel.options[sel.selectedIndex].text;
 
-     var xhttp = new XMLHttpRequest();
-     try {
-          url = _basepath + '/setPreValue.html?numbers=' + _number;     
-          xhttp.open("GET", url, false);
-          xhttp.send();
-          response = xhttp.responseText;
-          document.getElementById("prevalue").innerHTML=response;
-          document.getElementById("myInput").value=response;
-     }
-     catch (error)
-     {
-     //          alert("Deleting Config.ini failed");
-     }
-     return true;
+  var xhttp = new XMLHttpRequest();
+  try {
+      url = _basepath + '/setPreValue?numbers=' + _number;
+      xhttp.open("GET", url, false);
+      xhttp.send();
+      response = xhttp.responseText;
+      document.getElementById("prevalue").innerHTML=response;
+  }
+  catch (error)
+  {
+    alert("Failed to get data from device!");
+  }
+
+  // Get current RAW Value
+  var sel = document.getElementById("Numbers_value1");
+  var _number = sel.options[sel.selectedIndex].text;
+
+  var xhttp = new XMLHttpRequest();
+  try {
+    url = _basepath + '/value?all=true&type=raw';
+    xhttp.open("GET", url, false);
+    xhttp.send();
+    response = xhttp.responseText;
+
+    lines = response.split(/\r?\n/);
+
+    lines.forEach(function(line) {
+      arr = line.split("\t");
+      if (_number == arr[0]) {
+        document.getElementById("myInput").value=arr[1];
+        return;
+      }
+    });
+
+  }
+  catch (error)
+  {
+    alert("Failed to get data from device!");
+  }
 }
 
 

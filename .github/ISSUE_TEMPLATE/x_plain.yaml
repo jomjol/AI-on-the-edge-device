@@ -1,0 +1,8 @@
+name: 🗒️ Blank Form
+description: Use this form if none of the others fit. Please only use none of the others fit!
+
+body:
+  - type: textarea
+    attributes:
+      label: Issue
+  

@@ -1,7 +1,7 @@
 #include "test_flow_postrocess_helper.h"
 #include "esp_log.h"
 
-static const char *TAG = "test_flow_postproc_helper";
+static const char *TAG = "FLOW CTRL POSTPROC TEST";
 
 UnderTestPost* setUpClassFlowPostprocessing(t_CNNType digType, t_CNNType anaType)
 {
