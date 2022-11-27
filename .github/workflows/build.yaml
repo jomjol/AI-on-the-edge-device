@@ -251,7 +251,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
+        key: ${{ steps.vars.outputs.branch }}
 
     # import the changes from 
     - name: Get generated files from cache
@@ -259,7 +259,7 @@ jobs:
       with:
         path: |
             ./dist
-        key: ${{ github.run_number }}-pack-for-OTA-v2
+        key: ${{ steps.vars.outputs.branch }}-pack-for-OTA-v2
 
     # import cached artifacts from pack-for-fresh-install
     - name: Get generated files from cache
@@ -267,7 +267,7 @@ jobs:
       with:
         path: |
           ./firmware
-        key: ${{ github.run_number }}-pack-for-fresh-install
+        key: ${{ steps.vars.outputs.branch }}-pack-for-fresh-install
 
     - name: Set Variables
       id: vars
