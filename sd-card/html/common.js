@@ -52,7 +52,7 @@ function LoadFwVersion() {
     });
 
     try {
-        url = _basepath + '/info?type=GitBaseBranch';     
+        url = _basepath + '/info?type=FirmwareVersion';     
         xhttp.open("GET", url, true);
         xhttp.send();
     }
