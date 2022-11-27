@@ -267,7 +267,7 @@ jobs:
       with:
         path: |
           ./firmware
-        key: ${{ steps.vars.outputs.branch }}
+        key: ${{ github.run_number }}-pack-for-fresh-install
 
     - name: Set Variables
       id: vars
