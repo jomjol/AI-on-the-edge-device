@@ -41,7 +41,7 @@ const char* GIT_BRANCH=\"${GIT_BRANCH}\";
 const char* BUILD_TIME=\"${BUILD_TIME}\";")
 
 if ("${GIT_TAG}" STREQUAL "") # Tag not set, show branch
-    set(VERSION_HTML "Branch. ${GIT_BRANCH} (Commit: ${GIT_REV}${GIT_DIFF})")
+    set(VERSION_HTML "Development-Branch. ${GIT_BRANCH} (Commit: ${GIT_REV}${GIT_DIFF})")
 else() # Tag is set, ignore branch
     set(VERSION_HTML "Release: ${GIT_TAG} (Commit: ${GIT_REV}${GIT_DIFF})")
 endif()

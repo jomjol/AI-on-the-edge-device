@@ -80,10 +80,10 @@ esp_err_t info_get_handler(httpd_req_t *req)
     {
         string buf;
         if (std::string(GIT_TAG) == "") { // Tag not set, show branch
-            buf = "Release: '" + std::string(GIT_TAG) + "' (Commit: " + std::string(GIT_REV) + ")";
+            buf = "Development-Branch: '" + std::string(GIT_BRANCH) + "' (Commit: " + std::string(GIT_REV) + ")";
         }
         else { // Tag is set, ignore branch
-            buf = "Branch: '" + std::string(GIT_BRANCH) + "' (Commit: " + std::string(GIT_REV) + ")";
+            buf = "Release: '" + std::string(GIT_TAG) + "' (Commit: " + std::string(GIT_REV) + ")";
         }
         httpd_resp_sendstr_chunk(req, buf.c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
