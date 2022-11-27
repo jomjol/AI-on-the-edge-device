@@ -11,6 +11,10 @@
 1.  You should update to `12.0.1` before you update to this release. All other migrations are untested. 
 1.  Upload and update the `update-*.zip` file from this release.
 1.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
+1.  Safe way: 
+    1.   Update first the `firmware.bin` (extract from zip file) and do the Reboot
+    1.   Update with the full zip file (`update-*.zip`, ignore the version warning after the reboot)
+
 1.  Please go to `Settings -> Configuration` and address the changed parameters:
     *  DataLogging (storing the values for data graph)
     *  Debug (extended by different debug reporting levels)
