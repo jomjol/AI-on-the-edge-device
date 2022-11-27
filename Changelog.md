@@ -2,23 +2,21 @@
 
 ## [Unreleased]
 
-xxx Release Title xxx
+Home Assistant Discovery Support
 
 **Make sure to read the instructions below carfully!**.
 
-1.  Backup your configuration (use the `System > Backup/Restore` page)!
+1.  Backup your configuration (use the `System -> Backup/Restore` page)!
 1.  You should update to `12.0.1` before you update to this release. All other migrations are not tested. 
 1.  Upload and update the `update-*.zip` file from this release.
-1. Let it restart and check on the `System>Info` page that the Firmware as well as the Web UI got updated. if only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
-1. Please go to `Settings>Configuration` and address the changed parameters.
-
-xxx @caco3 TODO: list changed parameters
+1.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
+1.  Please go to `Settings -> Configuration` and address the changed parameters.
+    *  DataLogging (storing the values for data graph)
+    *  Debug (extended by different debug reporting levels)
 
 If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=update-*.zip` if the upload successed but the extraction failed (`update-*.zip` is the name of the uploaded file).
 1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
-
-xxx @jomjol, TODO: are those URLS correct? The `update.zip` does not contain a `html.zip`!
 
 
 ### Added
