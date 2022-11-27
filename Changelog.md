@@ -29,6 +29,7 @@ If anything breaks you can try to enforce manual update as following:
 
 -   Implementation of [Home Assistant MQTT Discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery)
 -   Improved ROIs configuration: locked ROI geometry, equidistant delta x
+-   Improved OTA Update mechanism (only working after installation for next update)
 -   Added data logging in `/log/data` - One day per file and each measurement is on one line
     -   Format: csv - comma separated
     -   Content: `time`, `name-of-number`, `raw-value`, `return-value`, `pre-value`, `change-rate`, `change-absolute`, `error-text`, `cnn-digital`, `cnn-analog`
