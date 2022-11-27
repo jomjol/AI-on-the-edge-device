@@ -19,7 +19,7 @@ function LoadHostname() {
 
 //     var xhttp = new XMLHttpRequest();
     try {
-            url = _basepath + '/version?type=Hostname';     
+            url = _basepath + '/info?type=Hostname';     
             xhttp.open("GET", url, true);
             xhttp.send();
 
@@ -52,7 +52,7 @@ function LoadFwVersion() {
     });
 
     try {
-        url = _basepath + '/version?type=GitBaseBranch';     
+        url = _basepath + '/info?type=GitBaseBranch';     
         xhttp.open("GET", url, true);
         xhttp.send();
     }
@@ -78,7 +78,7 @@ function LoadWebUiVersion() {
     });
 
     try {
-        url = _basepath + '/version?type=HTMLVersion';     
+        url = _basepath + '/info?type=HTMLVersion';     
         xhttp.open("GET", url, true);
         xhttp.send();
     }

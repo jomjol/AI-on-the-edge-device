@@ -43,13 +43,12 @@ div {
 <table style="font-family: arial">
   <tr>
 	<td>
-		Firmware Versions:
+		Firmware Version:
 	</td>
 	<td>
 		<div id="firmware">
-		    <object data="http://192.168.1.151/version"></object>
+		    <object data="/info?type=FirmwareVersion"></object>
 		</div>
-		<hr>
 	</td>
   </tr>
   <tr>
@@ -57,8 +56,8 @@ div {
 		Firmware Build Time:
 	</td>
 	<td>
-		<div>xxx
-			<object data="/version?type=BuildTime"></object>
+		<div id="build-time">
+			<object data="/info?type=BuildTime"></object>
 		</div>
 	</td>
   </tr>
@@ -69,7 +68,7 @@ div {
 	</td>
 	<td>
 		<div id="web-ui">
-			<object data="/version?type=HTMLVersion"></object>
+			<object data="/info?type=HTMLVersion"></object>
 		</div>
 	</td>
   </tr>
@@ -84,7 +83,7 @@ div {
 		</td>
 		<td>
 			<div id="Hostname">
-				<object data="/version?type=Hostname"></object>
+				<object data="/info?type=Hostname"></object>
 			</div>
 		</td>
 	</tr>
@@ -94,7 +93,7 @@ div {
 		</td>	
 		<td>
 			<div id="IP">
-				<object data="/version?type=IP"></object>
+				<object data="/info?type=IP"></object>
 			</div>
 		</td>
 	</tr>
@@ -104,7 +103,7 @@ div {
 		</td>	
 		<td>
 			<div id="SSID">
-				<object data="/version?type=SSID"></object>
+				<object data="/info?type=SSID"></object>
 			</div>
 		</td>
 	</tr>
@@ -118,7 +117,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardManufacturer">
-				<object data="/version?type=SDCardManufacturer"></object>
+				<object data="/info?type=SDCardManufacturer"></object>
 			</div>
 		</td>
 	</tr>
@@ -128,7 +127,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardName">
-				<object data="/version?type=SDCardName"></object>
+				<object data="/info?type=SDCardName"></object>
 			</div>
 		</td>
 	</tr>
@@ -138,7 +137,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardCapacity">
-				<object data="/version?type=SDCardCapacity"></object>
+				<object data="/info?type=SDCardCapacity"></object>
 			</div>
 		</td>
 	</tr>
@@ -148,7 +147,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardSectorSize">
-				<object data="/version?type=SDCardSectorSize"></object>
+				<object data="/info?type=SDCardSectorSize"></object>
 			</div>
 		</td>
 	</tr>
@@ -158,7 +157,7 @@ div {
 		</td>
 		<td>
 			<div id="SDPartitionSize">
-				<object data="/version?type=SDCardPartitionSize"></object>
+				<object data="/info?type=SDCardPartitionSize"></object>
 			</div>
 		</td>
 	</tr>
@@ -168,7 +167,7 @@ div {
 		</td>	
 		<td>
 			<div id="SDFreePartitionSpace">
-				<object data="/version?type=SDCardFreePartitionSpace"></object>
+				<object data="/info?type=SDCardFreePartitionSpace"></object>
 			</div>
 		</td>
 	</tr>
@@ -178,7 +177,7 @@ div {
 		</td>	
 		<td>
 			<div id="SDCardPartitionAllocationSize">
-				<object data="/version?type=SDCardPartitionAllocationSize"></object>
+				<object data="/info?type=SDCardPartitionAllocationSize"></object>
 			</div>
 		</td>
 	</tr>
