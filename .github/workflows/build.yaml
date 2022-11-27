@@ -242,6 +242,10 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Get generated files from cache
       uses: actions/cache@v3
@@ -269,10 +273,6 @@ jobs:
           ./firmware
         key: ${{ github.run_number }}-pack-for-fresh-install
 
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 
     - name: Prepare artifacts for release
