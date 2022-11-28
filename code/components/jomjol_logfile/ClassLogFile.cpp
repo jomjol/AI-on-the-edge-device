@@ -164,7 +164,9 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
                 break;
         }
         
-        logline = logline + "\t<" + loglevelString + ">\t" + message.c_str() + "\n";
+        char uptime[20];
+        snprintf(uptime, sizeof(uptime), "%8d", (uint32_t)(esp_timer_get_time()/1000/1000)); // in seconds
+        logline = "[" + std::string(uptime) + "] "  + logline + "\t<" + loglevelString + ">\t" + message + "\n";
         fputs(logline.c_str(), pFile);
         fclose(pFile);    
     } else {

@@ -57,6 +57,10 @@
 
 
         function processLogLine(line, index, arr) {
+            /* Make sure the whitespaces in the uptime field get persevered */
+            uptimePart = line.slice(0, line.indexOf("]")).replace(/ /g, "&nbsp;");
+            line = uptimePart + line.slice(line.indexOf("]"))
+
             if (line.includes("&lt;WRN&gt;")) {
                 arr[index] = "<span style=\"color:#e83c00\">" + line + "</span>";
             }
@@ -66,7 +70,10 @@
             else if (line.includes("&lt;DBG&gt;")) {
                 arr[index] = "<span style=\"color:gray\">" + line + "</span>";
             }
-            
+            else {
+                arr[index] = line;
+            }
+
             arr[index] += "<br>";
         }
 
@@ -80,7 +87,8 @@
                 return res.text();
             })
             .then((log) => {
-                log = log.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                log = log.replace(/</g, "&lt;");
+                log = log.replace(/>/g, "&gt;");
                 logArr = log.split("\n");
                 logArr.forEach(processLogLine);
 
