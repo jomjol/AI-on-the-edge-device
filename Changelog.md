@@ -5,7 +5,7 @@
 Home Assistant Discovery Support
 
 **Make sure to read the instructions below carfully!**.
-
+ 
 1.  Backup your configuration (use the `System -> Backup/Restore` page)!
 1.  You should update to `12.0.1` before you update to this release. All other migrations are not tested. 
 1.  Upload and update the `update-*.zip` file from this release.
