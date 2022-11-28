@@ -58,7 +58,7 @@ function doBackup() {
     // Get hostname
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/version?type=Hostname", false);
+        xhttp.open("GET", "/info?type=Hostname", false);
         xhttp.send();
         hostname = xhttp.responseText;
     }

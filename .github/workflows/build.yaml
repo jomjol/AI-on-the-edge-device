@@ -253,7 +253,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
+        key: ${{ steps.vars.outputs.branch }}
 
     # import the changes from 
     - name: Get generated files from cache

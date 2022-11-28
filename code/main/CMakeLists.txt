@@ -39,7 +39,12 @@ set(VERSION "const char* GIT_REV=\"${GIT_REV}${GIT_DIFF}\";
 const char* GIT_TAG=\"${GIT_TAG}\";
 const char* GIT_BRANCH=\"${GIT_BRANCH}\";
 const char* BUILD_TIME=\"${BUILD_TIME}\";")
-set(VERSION_HTML "${GIT_BRANCH}, ${GIT_TAG}, ${GIT_REV}${GIT_DIFF}")
+
+if ("${GIT_TAG}" STREQUAL "") # Tag not set, show branch
+    set(VERSION_HTML "Development-Branch: ${GIT_BRANCH} (Commit: ${GIT_REV}${GIT_DIFF})")
+else() # Tag is set, ignore branch
+    set(VERSION_HTML "Release: ${GIT_TAG} (Commit: ${GIT_REV}${GIT_DIFF})")
+endif()
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/version.cpp)
     file(READ ${CMAKE_CURRENT_SOURCE_DIR}/version.cpp VERSION_)

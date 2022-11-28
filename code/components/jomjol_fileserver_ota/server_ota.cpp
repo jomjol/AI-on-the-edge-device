@@ -52,6 +52,68 @@ static const char *TAG = "OTA";
 
 esp_err_t handler_reboot(httpd_req_t *req);
 
+std::string _file_name_update;
+
+
+void task_do_Update_ZIP(void *pvParameter)
+{
+    std::string filetype = toUpper(getFileType(_file_name_update));
+
+  	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
+
+
+    if (filetype == "ZIP")
+    {
+        std::string in, out, outbin, zw, retfirmware;
+
+        out = "/sdcard/html";
+        outbin = "/sdcard/firmware";
+
+        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/");
+    	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
+
+        if (retfirmware.length() > 0)
+        {
+        	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
+            ota_update_task(retfirmware);
+        }
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        doReboot();
+    }
+    else
+    {
+    	LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Only ZIP-Files support for update during startup!");
+    }
+}
+
+
+void CheckUpdate()
+{
+ 	FILE *pfile;
+    if ((pfile = fopen("/sdcard/update.txt", "r")) == NULL)
+    {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No update triggered.");
+        return;
+	}
+
+	char zw[1024] = "";
+	fgets(zw, 1024, pfile);
+    _file_name_update = std::string(zw);
+    fclose(pfile);
+    DeleteFile("/sdcard/update.txt");   // Prevent Boot Loop!!!
+	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update during boot triggered - Update File: " + _file_name_update);
+
+
+    BaseType_t xReturned;
+    int _i = configMINIMAL_STACK_SIZE;
+    xReturned = xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
+    TickType_t xDelay;
+    xDelay = 2000000 / portTICK_PERIOD_MS;
+    ESP_LOGD(TAG, "Wait for Update to be finished: sleep for: %ldms", (long) xDelay);
+    vTaskDelay( xDelay );   
+}
+
+
 
 static void infinite_loop(void)
 {
@@ -373,6 +435,21 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
         if (filetype == "ZIP")
         {
+           	FILE *pfile;
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot.");
+            pfile = fopen("/sdcard/update.txt", "w");
+            fwrite(fn.c_str(), fn.length(), 1, pfile);
+            fclose(pfile);
+
+            std::string zw = "reboot\n";
+            httpd_resp_sendstr_chunk(req, zw.c_str());
+            httpd_resp_sendstr_chunk(req, NULL);  
+            ESP_LOGD(TAG, "Send reboot");
+            return ESP_OK;                
+
+
+
+/*
             std::string in, out, outbin, zw, retfirmware;
 
             out = "/sdcard/html";
@@ -392,6 +469,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
                 httpd_resp_sendstr_chunk(req, NULL);  
                 return ESP_OK;        
             }
+*/
         }
 
 
@@ -537,7 +615,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
     ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s.<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();
