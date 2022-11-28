@@ -15,9 +15,8 @@ Home Assistant Discovery Support
     *  Debug (extended by different debug reporting levels)
 
 If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=update-*.zip` if the upload successed but the extraction failed (`update-*.zip` is the name of the uploaded file).
-1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
-
+-  Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=update-*.zip` if the upload successed but the extraction failed (`update-*.zip` is the name of the uploaded file).
+-  Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 ### Added
 
@@ -59,8 +58,7 @@ If anything breaks you can try to
 
 -   n.a.
 
-
-## [12.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v12.0.1), 2022-09-29
+## [12.0.1] 2022-09-29
 
 Improve **u**ser e**x**perience 
 
@@ -99,7 +97,7 @@ If anything breaks you can try to
 ### Fixed
 
 -   [#1092](https://github.com/jomjol/AI-on-the-edge-device/issues/1092) censor passwords in log outputs 
--   [#1029](https://github.com/jomjol/AI-on-the-edge-device/issues/1029) wrong change of `checkDigitConsistency` now working like releases before `11.3.1` 
+-   [#1029](https://github.com/jomjol/AI-on-the-edge-device/issues/1029) wrong change of `checkDigitConsistency` now working like releases before `11.3.1`
 -   Spelling corrections (**[cristianmitran](https://github.com/cristianmitran)**) 
 
 ### Removed
@@ -729,3 +727,12 @@ External Illumination
 
 -   Initial Version
 
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...HEAD
+
+[12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/11.3.1...12.0.1
+
+[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.3
+
+[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.2
+
+[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.3.9
