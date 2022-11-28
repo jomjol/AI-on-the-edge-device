@@ -38,7 +38,7 @@ const char* libfive_git_branch(void)
 }
 
 
-char _char_getHTMLversion[50]="NaN\0";
+char _char_getHTMLversion[100]="?\0";
 
 const char* getHTMLversion(void){
     FILE* pFile;

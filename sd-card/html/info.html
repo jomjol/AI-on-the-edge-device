@@ -25,18 +25,53 @@ div {
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<h3>Current</h3>
+<h3>Runtime Information</h3>
 <table style="font-family: arial">
 	<tr>
 		<td>
 			Last restart:
 		</td>
 		<td>
-			<div id="gitbranch">
+			<div id="starttime">
 				<object data="/starttime"></object>
 			</div>
 		</td>
 	</tr>
+</table>
+
+<h3>Build Info</h3>
+<table style="font-family: arial">
+  <tr>
+	<td>
+		Firmware Version:
+	</td>
+	<td>
+		<div id="firmware" style="width: 700px">
+		    <object data="/info?type=FirmwareVersion" style="width: 700px"></object>
+		</div>
+	</td>
+  </tr>
+  <tr>
+	<td>
+		Firmware Build Time:
+	</td>
+	<td>
+		<div id="build-time">
+			<object data="/info?type=BuildTime"></object>
+		</div>
+	</td>
+  </tr>
+
+	<tr>
+	<td>
+		Web Interface Version:
+	</td>
+	<td>
+		    <div id="web-ui" style="width: 700px">
+			<object data="/info?type=HTMLVersion" style="width: 700px"></object>
+		</div>
+	</td>
+  </tr>
 </table>
 
 
@@ -47,8 +82,8 @@ div {
 			Hostname:
 		</td>
 		<td>
-			<div id="gitbranch">
-				<object data="/version?type=Hostname"></object>
+			<div id="Hostname">
+				<object data="/info?type=Hostname"></object>
 			</div>
 		</td>
 	</tr>
@@ -57,8 +92,8 @@ div {
 			IP-Address:
 		</td>	
 		<td>
-			<div id="gitbranch">
-				<object data="/version?type=IP"></object>
+			<div id="IP">
+				<object data="/info?type=IP"></object>
 			</div>
 		</td>
 	</tr>
@@ -67,69 +102,11 @@ div {
 			WLan-SSID:
 		</td>	
 		<td>
-			<div id="gitbranch">
-				<object data="/version?type=SSID"></object>
+			<div id="SSID">
+				<object data="/info?type=SSID"></object>
 			</div>
 		</td>
 	</tr>
-</table>
-
-<h3>Version Info</h3>
-<table style="font-family: arial">
-  <tr>
-	<td>
-		Git-Branch:
-	</td>
-	<td>
-		<div id="gitbranch">
-			<object data="/version?type=GitBranch"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Git-Tag:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=GitTag"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Git-Revision:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=GitRevision"></object>
-		</div>
-	</td>
-  </tr>
-
-  <tr>
-	<td>
-		Build Time:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=BuildTime"></object>
-		</div>
-	</td>
-  </tr>
-
-	<tr>
-	<td>
-		HTML Version:
-	</td>
-	<td>
-		<div>
-			<object data="/version?type=HTMLVersion"></object>
-		</div>
-	</td>
-  </tr>
 </table>
 
 <h3>SD Card Info</h3>
@@ -140,7 +117,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardManufacturer">
-				<object data="/version?type=SDCardManufacturer"></object>
+				<object data="/info?type=SDCardManufacturer"></object>
 			</div>
 		</td>
 	</tr>
@@ -150,7 +127,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardName">
-				<object data="/version?type=SDCardName"></object>
+				<object data="/info?type=SDCardName"></object>
 			</div>
 		</td>
 	</tr>
@@ -160,7 +137,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardCapacity">
-				<object data="/version?type=SDCardCapacity"></object>
+				<object data="/info?type=SDCardCapacity"></object>
 			</div>
 		</td>
 	</tr>
@@ -170,7 +147,7 @@ div {
 		</td>
 		<td>
 			<div id="SDCardSectorSize">
-				<object data="/version?type=SDCardSectorSize"></object>
+				<object data="/info?type=SDCardSectorSize"></object>
 			</div>
 		</td>
 	</tr>
@@ -180,7 +157,7 @@ div {
 		</td>
 		<td>
 			<div id="SDPartitionSize">
-				<object data="/version?type=SDCardPartitionSize"></object>
+				<object data="/info?type=SDCardPartitionSize"></object>
 			</div>
 		</td>
 	</tr>
@@ -190,7 +167,7 @@ div {
 		</td>	
 		<td>
 			<div id="SDFreePartitionSpace">
-				<object data="/version?type=SDCardFreePartitionSpace"></object>
+				<object data="/info?type=SDCardFreePartitionSpace"></object>
 			</div>
 		</td>
 	</tr>
@@ -200,7 +177,7 @@ div {
 		</td>	
 		<td>
 			<div id="SDCardPartitionAllocationSize">
-				<object data="/version?type=SDCardPartitionAllocationSize"></object>
+				<object data="/info?type=SDCardPartitionAllocationSize"></object>
 			</div>
 		</td>
 	</tr>

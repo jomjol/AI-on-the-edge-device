@@ -89,7 +89,7 @@ function init(){
 
 
 function doRebootAfterUpdate() {
-	if (confirm("Update completed!\nThe ESP32 will reboot now!")) {
+	if (confirm("Upload completed!\nThe device will reboot now and complete the update.\nThis will take up to 180s!")) {
 		var stringota = "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
@@ -132,7 +132,7 @@ function prepareOnServer() {
         return;
     }
 
-    document.getElementById("status").innerText = "Status: Preparations on ESP32";
+    document.getElementById("status").innerText = "Status: Preparations on device";
     document.getElementById("doUpdate").disabled = true;
 
 	var xhttp = new XMLHttpRequest();
@@ -199,7 +199,7 @@ function upload() {
 
 
 function extract() {
-    document.getElementById("status").innerText = "Status: Processing on ESP32 (takes up to 3 minutes)...";
+    document.getElementById("status").innerText = "Status: Processing on device (takes up to 3 minutes)...";
 
     var xhttp = new XMLHttpRequest();
     /* first delete the old firmware */	
@@ -210,6 +210,7 @@ function extract() {
                 document.getElementById("status").innerText = "Status: Update completed!";
                 document.getElementById("doUpdate").disabled = true;
                 document.getElementById("newfile").disabled = false;
+                document.cookie = "overview.html"; // Make sure after the reboot we go to the overview page
 
                 if (xhttp.responseText.startsWith("reboot"))
                 {
