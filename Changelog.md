@@ -2,46 +2,38 @@
 
 ## [Unreleased]
 
-## [13.0.10] - 2022-11-28
-
 Home Assistant Discovery Support
 
 **Make sure to read the instructions below carfully!**.
 
 1.  Backup your configuration (use the `System -> Backup/Restore` page)!
-2.  You should update to `12.0.1` before you update to this release. All other migrations are not tested. 
-3.  Upload and update the `update-*.zip` file from this release.
-4.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
-5.  Please go to `Settings -> Configuration` and address the changed parameters.
-    -   DataLogging (storing the values for data graph)
-    -   Debug (extended by different debug reporting levels)
+1.  You should update to `12.0.1` before you update to this release. All other migrations are not tested. 
+1.  Upload and update the `update-*.zip` file from this release.
+1.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
+1.  Please go to `Settings -> Configuration` and address the changed parameters.
+    *  DataLogging (storing the values for data graph)
+    *  Debug (extended by different debug reporting levels)
 
 If anything breaks you can try to
-
--   Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=update-*.zip` if the upload successed but the extraction failed (`update-*.zip` is the name of the uploaded file).
--   Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+-  Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=update-*.zip` if the upload successed but the extraction failed (`update-*.zip` is the name of the uploaded file).
+-  Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 ### Added
 
 -   Implementation of [Home Assistant MQTT Discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery)
-
 -   Improved ROIs configuration: locked ROI geometry, equidistant delta x
-
 -   `/graph.html` to fetch measurements from the debug log and display them as a graph. Activate debug logging for this feature to work.
-
 -   PreValue is now contained in `/json` ([#1154](https://github.com/jomjol/AI-on-the-edge-device/issues/1154))
-
 -   Show graph of values direct in the user interface (thanks to [@rdmueller](https://github.com/rdmueller))
     -   Using new data logging (see below)
     -   Possibility to choose different values and switch between different numbers (if present)
 
--   SD card info into the `System>Info` menu (thanks to [@Slider007](https://github.com/Slider0007))
-
+-   SD card info into the `System>Info` menu (thanks to [@Slider007]( https://github.com/Slider0007))
 -   Added a logging of the values in a text table in `/log/data` - each measurement is on one line
     -   Format: csv - comma separated
     -   Content: `time`, `name-of-number`, `raw-value`, `return-value`, `pre-value`, `change-rate`, `change-absolute`, `error-text`, `cnn-digital`, `cnn-analog`
-
 -   Version check (Firmware vs. Web UI)
+
 
 ### Changed
 
@@ -50,18 +42,17 @@ If anything breaks you can try to
 -   Updated Espressif library to `espressif32@v5.2.0`
 -   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) added config parameter `AnalogDigitalTransitionStart`. It can setup very early and very late digit transition starts.
--   New version of `dig-class100` (v1.4.0): added images of heliowatt powermeter 
-
+- New version of `dig-class100` (v1.4.0): added images of heliowatt powermeter 
 ### Fixed
 
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
 -   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) changed postprocess for `analog->digit` (lowest digit processing)
--   [#1280](https://github.com/jomjol/AI-on-the-edge-device/issues/1280) check ROIs name for unsupported characters
--   [#983](https://github.com/jomjol/AI-on-the-edge-device/issues/983) old log files did not get deleted 
--   Failed NTP time sync during startup gets now retried every round if needed
--   Whitespaces and `=` in MQTT and InfluxDB passwords
--   Various minor fixes and improvements
+-    [#1280](https://github.com/jomjol/AI-on-the-edge-device/issues/1280) check ROIs name for unsupported characters
+-    [#983](https://github.com/jomjol/AI-on-the-edge-device/issues/983) old log files did not get deleted 
+-    Failed NTP time sync during startup gets now retried every round if needed
+-    Whitespaces and `=` in MQTT and InfluxDB passwords
+-    Various minor fixes and improvements
 
 ### Removed
 
@@ -83,8 +74,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -736,9 +727,7 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/haverland/AI-on-the-edge-device/compare/13.0.10...HEAD
-
-[13.0.10]: https://github.com/haverland/AI-on-the-edge-device/compare/12.0.1...13.0.10
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...HEAD
 
 [12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/11.3.1...12.0.1
 
