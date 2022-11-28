@@ -729,12 +729,3 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...HEAD
-
-[12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/11.3.1...12.0.1
-
-[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.3
-
-[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.2
-
-[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.3.9
