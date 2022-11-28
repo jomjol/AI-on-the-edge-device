@@ -169,26 +169,16 @@ extern "C" void app_main(void)
         string versionFormated = "Tag: '" + std::string(GIT_TAG) + "', " + versionFormated;
     }
 
-    ESP_LOGD(TAG, "=============================================================================================");
-    ESP_LOGD(TAG, "%s", versionFormated.c_str());
-    ESP_LOGD(TAG, "=============================================================================================");
-    ESP_LOGD(TAG, "Reset reason: %s", getResetReason().c_str());
+    LogFile.CreateLogDirectories();
 
-
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Startup ====================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
     CheckOTAUpdate();
-
-    LogFile.CreateLogDirectories();
     CheckUpdate();
-/*
-    int mk_ret = mkdir("/sdcard/new_fd_mkdir", 0775);
-    ESP_LOGI(TAG, "mkdir ret %d", mk_ret);
-    mk_ret = mkdir("/sdcard/new_fd_mkdir/test", 0775);
-    ESP_LOGI(TAG, "mkdir ret %d", mk_ret);
-    MakeDir("/sdcard/test2");
-    MakeDir("/sdcard/test2/intern");
-*/
-
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
@@ -228,11 +218,9 @@ extern "C" void app_main(void)
 
     setBootTime();
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================== Main Started ============================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
     if (std::string(getHTMLversion()) != std::string(GIT_REV)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Web UI version does not match firmware version!");
