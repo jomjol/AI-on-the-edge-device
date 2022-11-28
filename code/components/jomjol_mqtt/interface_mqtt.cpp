@@ -89,7 +89,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             ESP_LOGD(TAG, "MQTT_EVENT_DISCONNECTED");
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected! Going to re-connect...");
             mqtt_connected = false; // Force re-init on next call
-            esp_mqtt_client_reconnect(client);
+//            esp_mqtt_client_reconnect(client);
+            MQTT_Init(); 
+            // TODO if this still does not work, we should consider rebooting!
             break;
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
