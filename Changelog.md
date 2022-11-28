@@ -72,7 +72,7 @@ If anything breaks you can try to enforce manual update as following:
 -   n.a.
 
 
-## [12.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v12.0.1), 2022-09-29
+## [12.0.1] 2022-09-29
 
 Improve **u**ser e**x**perience 
 
