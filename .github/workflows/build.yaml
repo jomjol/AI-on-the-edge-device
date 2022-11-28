@@ -240,15 +240,19 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Get generated files from cache
       uses: actions/cache@v3
       with:
         path: |
-          code/.pio/build/esp32cam/firmware.bin
-          code/.pio/build/esp32cam/partitions.bin
-          code/.pio/build/esp32cam/bootloader.bin
-          sd-card/html/version.txt
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
         key: ${{ github.run_number }}
 
     # import the changes from 
@@ -265,10 +269,6 @@ jobs:
         path: firmware
         key: ${{ github.run_number }}-pack-for-fresh-install
 
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 
     - name: Prepare artifacts for release
@@ -276,6 +276,9 @@ jobs:
         mkdir -p release
         mkdir -p dist
         # create a update.zip like "update__rolling"
+        pwd
+        ls ./dist
+        cd ./dist
         zip -r ../release/update.zip .
         cd ../firmware
         zip -r ../release/initial_esp32_setup.zip .
