@@ -40,7 +40,7 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-#      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
     - name: Store generated files in cache
@@ -253,7 +253,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/version.txt
-        key: ${{ steps.vars.outputs.branch }}
+        key: ${{ github.run_number }}
 
     # import the changes from 
     - name: Get generated files from cache
