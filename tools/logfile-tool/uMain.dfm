@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Gasmeter Log-Downloader'
-  ClientHeight = 521
-  ClientWidth = 513
+  Caption = 'Gasmeter Value-History'
+  ClientHeight = 523
+  ClientWidth = 453
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,7 +16,7 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object lblImpressum: TLabel
-    Left = 376
+    Left = 316
     Top = 468
     Width = 68
     Height = 13
@@ -31,25 +31,25 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'URL to Logfile-Path on Device:'
     TabOrder = 0
-    Text = 'http://192.168.10.65/fileserver/log/message/'
+    Text = 'http://192.168.10.65/fileserver/log/'
   end
   object btnDownloadLogfiles: TButton
     Left = 28
     Top = 174
     Width = 273
     Height = 25
-    Caption = 'Download Logfiles and generate CSV'
+    Caption = 'Download datafiles and generate CSV'
     TabOrder = 1
     OnClick = btnDownloadLogfilesClick
   end
   object lbledtMaxLogfilesOnServer: TLabeledEdit
     Left = 323
     Top = 36
-    Width = 121
+    Width = 114
     Height = 21
-    EditLabel.Width = 173
+    EditLabel.Width = 112
     EditLabel.Height = 13
-    EditLabel.Caption = 'Download logfiles from past # days:'
+    EditLabel.Caption = 'Download past # days:'
     TabOrder = 2
     Text = '30'
   end
@@ -58,11 +58,11 @@ object Form1: TForm1
     Top = 84
     Width = 273
     Height = 21
-    EditLabel.Width = 103
+    EditLabel.Width = 108
     EditLabel.Height = 13
-    EditLabel.Caption = 'Download Logfiles to:'
+    EditLabel.Caption = 'Download datafiles to:'
     TabOrder = 3
-    Text = 'C:\Temp\Gas\'
+    Text = 'C:\Temp\Gas\Log\'
   end
   object lbledtCsvFile: TLabeledEdit
     Left = 28
