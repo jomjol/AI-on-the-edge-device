@@ -38,20 +38,35 @@ const char* libfive_git_branch(void)
 }
 
 
-char _char_getHTMLversion[100]="?\0";
-
-const char* getHTMLversion(void){
+std::string getHTMLversion(void){
+    char buf[100]="?\0";
     FILE* pFile;
     string fn = FormatFileName("/sdcard/html/version.txt");
     pFile = fopen(fn.c_str(), "r");
 
     if (pFile == NULL)
-        return _char_getHTMLversion;
+        return std::string(buf);
 
-    fgets(_char_getHTMLversion, sizeof(_char_getHTMLversion), pFile);
+    fgets(buf, sizeof(buf), pFile); // Line 1: Version
     fclose(pFile);
 
-    return _char_getHTMLversion;
+    return std::string(buf);
+}
+
+std::string getHTMLcommit(void){
+    char buf[100]="?\0";
+    FILE* pFile;
+    string fn = FormatFileName("/sdcard/html/version.txt");
+    pFile = fopen(fn.c_str(), "r");
+
+    if (pFile == NULL)
+        return std::string(buf);
+
+    fgets(buf, sizeof(buf), pFile); // Line 1: Version -> ignored
+    fgets(buf, sizeof(buf), pFile); // Line 2: Commit
+    fclose(pFile);
+
+    return std::string(buf);
 }
 
 #endif // _VERSION_H
