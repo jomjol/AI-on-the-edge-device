@@ -9,10 +9,12 @@
 ### Changed
 
 -   Update Tool "Logfile downloader and combiner" to handle the new csv file format.
+-   Added MQTT topic `status` containing Digitalization Status. 
+-   Added timezone to MQTT topic `timestamp`.
 
 ### Fixed
 
--   n.a.
+-   Corrected Version comparison between firmware and Web UI.
 
 ### Removed
 
