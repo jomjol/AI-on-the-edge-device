@@ -139,6 +139,9 @@ void MQTThomeassistantDiscovery() {
     sendHomeAssistantDiscoveryTopic("",     "CPUtemp",         "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic");
+
+
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
          std::string group = (*NUMBERS)[i]->name;
@@ -235,4 +238,8 @@ void setMqtt_Server_Retain(int _retainFlag) {
 
 void mqttServer_setMainTopic( std::string _maintopic) {
     maintopic = _maintopic;
+}
+
+std::string mqttServer_getMainTopic() {
+    return maintopic;
 }
