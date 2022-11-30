@@ -35,7 +35,8 @@ extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
 extern const char* BUILD_TIME;
 
-extern const char* getHTMLversion(void);
+extern std::string getHTMLversion(void);
+extern std::string getHTMLcommit(void);
 
 #define __HIDE_PASSWORD
 
@@ -234,8 +235,8 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
-    if (std::string(getHTMLversion()) != std::string(GIT_REV)) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Web UI version does not match firmware version!");
+    if (getHTMLcommit() != std::string(GIT_REV)) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
