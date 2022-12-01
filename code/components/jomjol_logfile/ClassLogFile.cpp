@@ -337,7 +337,7 @@ void ClassLogFile::RemoveOldLogFile()
             }
         }
     }
-    ESP_LOGI(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 
@@ -388,7 +388,7 @@ void ClassLogFile::RemoveOldDataLog()
             }
         }
     }
-    ESP_LOGI(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 
