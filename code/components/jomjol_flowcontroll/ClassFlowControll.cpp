@@ -19,6 +19,8 @@ extern "C" {
 #include "time_sntp.h"
 #include "Helper.h"
 #include "server_ota.h"
+#include "interface_mqtt.h"
+#include "server_mqtt.h"
 
 
 //#include "CImg.h"
@@ -28,7 +30,6 @@ extern "C" {
 //#define DEBUG_DETAIL_ON  
 
 static const char* TAG = "FLOW CTRL";
-
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
@@ -284,7 +285,10 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
         if (FlowControll[i]->name() == "ClassFlowMakeImage") {
 //            zw_time = gettimestring("%Y%m%d-%H%M%S");
             zw_time = gettimestring("%H:%M:%S");
-            aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
+            std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
+            aktstatus = flowStatus + " (" + zw_time + ")";
+            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+
             FlowControll[i]->doFlow(time);
         }
     }
@@ -311,12 +315,10 @@ bool ClassFlowControll::doFlow(string time)
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%H:%M:%S");
-        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
+        std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
+        aktstatus = flowStatus + " (" + zw_time + ")";
+        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 
-//        zw_time = gettimestring("%Y%m%d-%H%M%S");
-//        aktstatus = zw_time + ": " + FlowControll[i]->name();
-        
-       
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
         #ifdef DEBUG_DETAIL_ON 
             LogFile.WriteHeapInfo(zw);
@@ -344,7 +346,9 @@ bool ClassFlowControll::doFlow(string time)
 
     }
     zw_time = gettimestring("%H:%M:%S");
-    aktstatus = "Flow finished (" + zw_time + ")";
+    std::string flowStatus = "Flow finished";
+    aktstatus = flowStatus + " (" + zw_time + ")";
+    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
     return result;
 }
 

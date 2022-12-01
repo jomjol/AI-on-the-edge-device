@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### Added
+
+-   n.a.
+
+### Changed
+
+-   Update Tool "Logfile downloader and combiner" to handle the new csv file format.
+
+### Fixed
+
+-   n.a.
+
+### Removed
+
+-   n.a.
+
 ## [13.0.1] - 2022-11-28
 
 **Home Assistant MQTT Discovery Support**

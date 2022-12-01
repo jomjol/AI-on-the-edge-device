@@ -92,7 +92,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
     }
     else if (_task.compare("HTMLVersion") == 0)
     {
-        httpd_resp_sendstr_chunk(req, getHTMLversion());
+        httpd_resp_sendstr_chunk(req, getHTMLversion().c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
