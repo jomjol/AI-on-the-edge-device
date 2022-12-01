@@ -7,6 +7,7 @@
 #include "server_tflite.h"
 
 #define __HIDE_PASSWORD
+//#define DEBUG_DETAIL_ON       
 
 static const char *TAG = "MQTT INTERFACE";
 
@@ -34,30 +35,32 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
         return true; // Fail quietly
     }
 
-    LogFile.WriteHeapInfo("MQTT Publish");
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("MQTT Publish");
+    #endif
 
     if (!mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Not connected, trying to re-connect...");
         if (!MQTT_Init()) {
-            if (!MQTT_Init()) { // Retry
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to init, skipping all MQTT publishings in this round!");
+            //if (!MQTT_Init()) { // Retry --> is it really necessary???
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to re-connect, skipping all MQTT publishings in this round!");
                 failedOnRound = getCountFlowRounds();
                 return false;
-            }
+            //}
         }
     }    
 
     msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
     if (msg_id < 0) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to publish topic '" + _key + "', re-trying...");
+        //LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to publish topic '" + _key + "', re-trying..."); --> Is it really neccessary???
 
-        msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
-        if (msg_id < 0) {
+        //msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
+        //if (msg_id < 0) { --> Is it really neccessary???
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to publish topic '" + _key + "', skipping all MQTT publishings in this round!");
             mqtt_connected = false; // Force re-init on next call
             failedOnRound = getCountFlowRounds();
             return false;
-        }
+        //}
     }
 
     if (_content.length() > 80) { // Truncate message if too long
@@ -87,9 +90,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGD(TAG, "MQTT_EVENT_DISCONNECTED");
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected! Going to re-connect...");
-            mqtt_connected = false; // Force re-init on next call
-            esp_mqtt_client_reconnect(client);
+            if (mqtt_connected) LogFile.WriteToFile(ESP_LOG_WARN, TAG, "MQTT disconnected! Trying to re-connect next round");
+            mqtt_connected = false; // Force re-connect on next round
+            //esp_mqtt_client_reconnect(client); --> Avoid mutiple reconnect attempts
             break;
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
@@ -183,7 +186,9 @@ bool MQTT_Init() {
         mqtt_cfg.password = password.c_str();
     };
 
-    LogFile.WriteHeapInfo("MQTT Client Init");
+    #ifdef DEBUG_DETAIL_ON    
+        LogFile.WriteHeapInfo("MQTT Client Init");
+    #endif   
     client = esp_mqtt_client_init(&mqtt_cfg);
     if (client)
     {
@@ -193,8 +198,9 @@ bool MQTT_Init() {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Could not register event (ret=" + std::to_string(ret) + ")!");
             return false;
         }
-
-        LogFile.WriteHeapInfo("MQTT Client Start");
+        #ifdef DEBUG_DETAIL_ON    
+            LogFile.WriteHeapInfo("MQTT Client Start");
+        #endif
         ret = esp_mqtt_client_start(client);
         if (ret != ESP_OK)
         {
@@ -222,6 +228,8 @@ void MQTTdestroy_client() {
     if (client != NULL) {
         esp_mqtt_client_stop(client);
         esp_mqtt_client_destroy(client);
+        client = NULL;
+        mqtt_connected = false;
     }
 }
 
@@ -275,7 +283,7 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 
 void MQTTconnected(){
     if (mqtt_connected) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to MQTT Broker");
 
         MQTTPublish(lwt_topic, lwt_connected, true);
 

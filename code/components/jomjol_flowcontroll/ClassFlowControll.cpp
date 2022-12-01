@@ -139,6 +139,15 @@ string ClassFlowControll::GetMQTTMainTopic()
     return "";
 }
 
+bool ClassFlowControll::StartMQTTService() {
+    /* Start the MQTT service */
+        for (int i = 0; i < FlowControll.size(); ++i) {
+            if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {
+                return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
+            }  
+        }
+    return false;
+}
 
 
 void ClassFlowControll::SetInitialParameter(void)
@@ -309,7 +318,9 @@ bool ClassFlowControll::doFlow(string time)
         
        
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
-        LogFile.WriteHeapInfo(zw);
+        #ifdef DEBUG_DETAIL_ON 
+            LogFile.WriteHeapInfo(zw);
+        #endif
 
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
@@ -547,12 +558,6 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }        
         }
     }
-
-    /* Start the MQTT service */
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
-            return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
-
     return true;
 }
 

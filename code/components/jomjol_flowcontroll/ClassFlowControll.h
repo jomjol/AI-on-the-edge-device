@@ -71,6 +71,7 @@ public:
 
 	t_CNNType GetTypeDigital();
 	t_CNNType GetTypeAnalog();
+	bool StartMQTTService();
 
 	int CleanTempFolder();
 

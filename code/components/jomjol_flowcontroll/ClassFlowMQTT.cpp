@@ -203,9 +203,9 @@ bool ClassFlowMQTT::Start(float AutoIntervall) {
             keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTT_Init()) {
-        if (!MQTT_Init()) { // Retry
+        //if (!MQTT_Init()) { // Retry --> Is it really neccessary???
             return false;
-        }
+        //}
     }
 
     return true;
