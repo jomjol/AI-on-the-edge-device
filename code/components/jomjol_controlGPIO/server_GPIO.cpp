@@ -30,7 +30,7 @@
 static const char *TAG = "GPIO";
 QueueHandle_t gpio_queue_handle = NULL;
 
-#define DEBUG_DETAIL_ON 
+//#define DEBUG_DETAIL_ON 
 
 GpioPin::GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, std::string mqttTopic, bool httpEnable) 
 {

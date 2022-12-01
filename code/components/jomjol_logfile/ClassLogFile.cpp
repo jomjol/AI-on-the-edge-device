@@ -23,10 +23,10 @@ ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/dat
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
     std::string _zw = _id;
-    if (loglevel > ESP_LOG_WARN) 
+    if (loglevel >= ESP_LOG_DEBUG) {
         _zw =  _zw + "\t" + getESPHeapInfo();
-
-    WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+        WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+    }
 }
 
 
