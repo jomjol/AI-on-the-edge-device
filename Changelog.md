@@ -1,6 +1,26 @@
 # Changelog
 
-## [Unreleased]
+ ## [Unreleased]
+
+### Added
+
+-   n.a.
+
+### Changed
+
+-   n.a.
+
+### Fixed
+
+-   Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
+
+### Removed
+
+- n.a.
+
+  
+
+## [13.0.2] - 2022-12-02
 
 ## [13.0.2] - 2022-12-02
 
@@ -11,11 +31,15 @@
 ### Changed
 
 -   Update Tool "Logfile downloader and combiner" to handle the new csv file format.
--   Updated logging informtions
+-   Added MQTT topic `status` containing Digitalization Status. 
+-   Added timezone to MQTT topic `timestamp`.
+-   Disable heap logs by default
+-   Cleanup loglevel info (moved some entries to debug level)
+-   Updated logging informations
 
 ### Fixed
 
--   n.a.
+-   Corrected Version comparison between firmware and Web UI.
 
 ### Removed
 
