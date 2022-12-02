@@ -12,6 +12,7 @@ static const char* TAG = "c_align_and_cut_image";
 //#define GET_MEMORY malloc
 #define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
 
+// #define DEBUG_DETAIL_ON 
 
 
 CAlignAndCutImage::CAlignAndCutImage(CImageBasis *_org, CImageBasis *_temp)

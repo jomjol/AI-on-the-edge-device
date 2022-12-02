@@ -23,7 +23,7 @@
 #include "server_file.h"
 #include "connect_wlan.h"
 
-#define DEBUG_DETAIL_ON       
+//#define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;

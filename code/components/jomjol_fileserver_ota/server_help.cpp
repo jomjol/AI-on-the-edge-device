@@ -42,7 +42,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
         return ESP_FAIL;
     }
 
-    ESP_LOGI(TAG, "Sending file : %s ...", filename.c_str());
+    ESP_LOGD(TAG, "Sending file : %s ...", filename.c_str());
 //    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     set_content_type_from_file(req, filename.c_str());
 
@@ -69,7 +69,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
 
     /* Close file after sending complete */
     fclose(fd);
-    ESP_LOGI(TAG, "File sending complete");    
+    ESP_LOGD(TAG, "File sending complete");    
     return ESP_OK;    
 }
 

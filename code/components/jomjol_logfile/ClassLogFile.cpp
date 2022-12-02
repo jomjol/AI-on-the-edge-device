@@ -23,10 +23,10 @@ ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/dat
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
     std::string _zw = _id;
-    if (loglevel > ESP_LOG_WARN) 
+    if (loglevel >= ESP_LOG_DEBUG) {
         _zw =  _zw + "\t" + getESPHeapInfo();
-
-    WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+        WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+    }
 }
 
 
@@ -164,7 +164,9 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
                 break;
         }
         
-        logline = logline + "\t<" + loglevelString + ">\t" + message.c_str() + "\n";
+        char uptime[20];
+        snprintf(uptime, sizeof(uptime), "%8d", (uint32_t)(esp_timer_get_time()/1000/1000)); // in seconds
+        logline = "[" + std::string(uptime) + "] "  + logline + "\t<" + loglevelString + ">\t" + message + "\n";
         fputs(logline.c_str(), pFile);
         fclose(pFile);    
     } else {
@@ -337,7 +339,7 @@ void ClassLogFile::RemoveOldLogFile()
             }
         }
     }
-    ESP_LOGI(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 
@@ -388,7 +390,7 @@ void ClassLogFile::RemoveOldDataLog()
             }
         }
     }
-    ESP_LOGI(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 
