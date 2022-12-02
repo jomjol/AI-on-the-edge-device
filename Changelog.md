@@ -9,6 +9,7 @@
 ### Changed
 
 -   Update Tool "Logfile downloader and combiner" to handle the new csv file format.
+-   Updated logging informtions
 
 ### Fixed
 
