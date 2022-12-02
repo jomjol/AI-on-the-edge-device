@@ -11,6 +11,9 @@
 -   Update Tool "Logfile downloader and combiner" to handle the new csv file format.
 -   Added MQTT topic `status` containing Digitalization Status. 
 -   Added timezone to MQTT topic `timestamp`.
+-   Disable heap logs by default
+-   Cleanup loglevel info (moved some entries to debug level)
+-   improve MQTT initialization
 
 ### Fixed
 
