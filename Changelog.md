@@ -13,7 +13,6 @@
 -   Added timezone to MQTT topic `timestamp`.
 -   Disable heap logs by default
 -   Cleanup loglevel info (moved some entries to debug level)
--   improve MQTT initialization
 -   Updated logging informations
 
 ### Fixed
