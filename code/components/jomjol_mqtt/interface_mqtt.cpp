@@ -8,6 +8,8 @@
 
 #define __HIDE_PASSWORD
 
+//#define DEBUG_DETAIL_ON 
+
 static const char *TAG = "MQTT INTERFACE";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
@@ -34,7 +36,9 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
         return true; // Fail quietly
     }
 
-    LogFile.WriteHeapInfo("MQTT Publish");
+    #ifdef DEBUG_DETAIL_ON  
+        LogFile.WriteHeapInfo("MQTT Publish");
+    #endif
 
     if (!mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Not connected, trying to re-connect...");
@@ -183,7 +187,9 @@ bool MQTT_Init() {
         mqtt_cfg.password = password.c_str();
     };
 
-    LogFile.WriteHeapInfo("MQTT Client Init");
+    #ifdef DEBUG_DETAIL_ON  
+        LogFile.WriteHeapInfo("MQTT Client Init");
+    #endif
     client = esp_mqtt_client_init(&mqtt_cfg);
     if (client)
     {
@@ -194,7 +200,9 @@ bool MQTT_Init() {
             return false;
         }
 
-        LogFile.WriteHeapInfo("MQTT Client Start");
+        #ifdef DEBUG_DETAIL_ON  
+            LogFile.WriteHeapInfo("MQTT Client Start");
+        #endif
         ret = esp_mqtt_client_start(client);
         if (ret != ESP_OK)
         {
