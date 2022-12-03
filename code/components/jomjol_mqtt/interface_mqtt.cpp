@@ -88,7 +88,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGD(TAG, "MQTT_EVENT_DISCONNECTED");
-            mqtt_connected = false; // Force re-connect on next round
+            mqtt_connected = false;
             break;
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
@@ -185,7 +185,10 @@ bool MQTT_Init() {
         mqtt_cfg.password = password.c_str();
     };
 
-    LogFile.WriteHeapInfo("MQTT Client Init");
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("MQTT Client Init");
+    #endif
+
     client = esp_mqtt_client_init(&mqtt_cfg);
     if (client)
     {
@@ -231,6 +234,7 @@ void MQTTdestroy_client() {
         esp_mqtt_client_stop(client);
         esp_mqtt_client_destroy(client);
         client = NULL;
+        mqtt_initialized = false;
         mqtt_connected = false;
     }
 }
