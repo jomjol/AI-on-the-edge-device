@@ -203,7 +203,7 @@ bool ClassFlowMQTT::Start(float AutoIntervall) {
             keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTT_Init()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "MQTT init at startup failed! Retry with next publish call");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init at startup failed! Retry with next publish call");
         return false;
     }
 

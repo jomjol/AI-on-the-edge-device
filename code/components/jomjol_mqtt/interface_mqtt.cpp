@@ -42,7 +42,7 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
 
     if (!mqtt_initialized) {
         if (!MQTT_Init()) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "MQTT init failed, skipping all MQTT publishings in this round!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Iinit failed, skipping all MQTT publishings in this round!");
             failedOnRound = getCountFlowRounds();
             return false;
         }
@@ -223,7 +223,7 @@ bool MQTT_Init() {
         return false;
     }
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT client started, waiting for established connection...");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Client started, waiting for established connection...");
     mqtt_initialized = true;
     return true;
 }
@@ -289,7 +289,7 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 
 void MQTTconnected(){
     if (mqtt_connected) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to MQTT Broker");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
 
         MQTTPublish(lwt_topic, lwt_connected, true);
 
