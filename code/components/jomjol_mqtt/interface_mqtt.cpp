@@ -42,7 +42,7 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
 
     if (!mqtt_initialized) {
         if (!MQTT_Init()) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Iinit failed, skipping all MQTT publishings in this round!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init failed, skipping all MQTT publishings in this round!");
             failedOnRound = getCountFlowRounds();
             return false;
         }
