@@ -569,7 +569,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 int ClassFlowControll::CleanTempFolder() {
     const char* folderPath = "/sdcard/img_tmp";
     
-    ESP_LOGI(TAG, "Clean up temporary folder to avoid damage of sdcard sectors : %s", folderPath);
+    ESP_LOGD(TAG, "Clean up temporary folder to avoid damage of sdcard sectors : %s", folderPath);
     DIR *dir = opendir(folderPath);
     if (!dir) {
         ESP_LOGE(TAG, "Failed to stat dir : %s", folderPath);
@@ -591,7 +591,7 @@ int ClassFlowControll::CleanTempFolder() {
 		}
     }
     closedir(dir);
-    ESP_LOGI(TAG, "%d files deleted", deleted);
+    ESP_LOGD(TAG, "%d files deleted", deleted);
     
     return 0;
 }
@@ -679,10 +679,10 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
     if (_send)
     {
-        ESP_LOGI(TAG, "Sending file : %s ...", _fn.c_str());
+        ESP_LOGD(TAG, "Sending file : %s ...", _fn.c_str());
         set_content_type_from_file(req, _fn.c_str());
         result = _send->SendJPGtoHTTP(req);
-        ESP_LOGI(TAG, "File sending complete");    
+        ESP_LOGD(TAG, "File sending complete");    
         /* Respond with an empty chunk to signal HTTP response completion */
         httpd_resp_send_chunk(req, NULL, 0);
     }

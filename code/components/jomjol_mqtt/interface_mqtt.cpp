@@ -7,7 +7,8 @@
 #include "server_tflite.h"
 
 #define __HIDE_PASSWORD
-//#define DEBUG_DETAIL_ON       
+
+//#define DEBUG_DETAIL_ON 
 
 static const char *TAG = "MQTT INTERFACE";
 
@@ -36,7 +37,8 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
         return true; // Fail quietly
     }
 
-    #ifdef DEBUG_DETAIL_ON      
+
+    #ifdef DEBUG_DETAIL_ON  
         LogFile.WriteHeapInfo("MQTT Publish");
     #endif
 
@@ -185,7 +187,7 @@ bool MQTT_Init() {
         mqtt_cfg.password = password.c_str();
     };
 
-    #ifdef DEBUG_DETAIL_ON   
+    #ifdef DEBUG_DETAIL_ON  
         LogFile.WriteHeapInfo("MQTT Client Init");
     #endif
 
@@ -200,7 +202,7 @@ bool MQTT_Init() {
             return false;
         }
 
-        #ifdef DEBUG_DETAIL_ON    
+        #ifdef DEBUG_DETAIL_ON  
             LogFile.WriteHeapInfo("MQTT Client Start");
         #endif
         ret = esp_mqtt_client_start(client);
