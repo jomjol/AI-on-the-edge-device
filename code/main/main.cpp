@@ -223,7 +223,7 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    if (getHTMLcommit() != std::string(GIT_REV)) {
+    if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
