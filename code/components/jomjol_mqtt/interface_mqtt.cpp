@@ -10,7 +10,7 @@
 
 //#define DEBUG_DETAIL_ON 
 
-static const char *TAG = "MQTT INTERFACE";
+static const char *TAG = "MQTT IF";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
