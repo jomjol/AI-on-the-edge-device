@@ -176,7 +176,7 @@ bool MQTT_Init() {
 
     if ((client_id.length() == 0) || (lwt_topic.length() == 0))
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, std::string("Init with no Client_ID or Topic. Abort Init!"));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, std::string("Init with no Client_ID (" + client_id + ") or Last Will Topic (" + lwt_topic + "). Abort Init!"));
         return false;
     }
     
