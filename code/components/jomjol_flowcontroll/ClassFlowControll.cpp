@@ -146,7 +146,7 @@ bool ClassFlowControll::StartMQTTService() {
             if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {
                 return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
             }  
-        }
+        } 
     return false;
 }
 

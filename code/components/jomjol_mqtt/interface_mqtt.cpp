@@ -17,6 +17,8 @@ std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFu
 
 
 int failedOnRound = -1;
+
+bool MQTT_Enabled = true;
  
 esp_mqtt_event_id_t esp_mmqtt_ID = MQTT_EVENT_ANY;
 // ESP_EVENT_ANY_ID
@@ -28,6 +30,11 @@ std::string uri, client_id, lwt_topic, lwt_connected, lwt_disconnected, user, pa
 int keepalive, SetRetainFlag;
 void (*callbackOnConnected)(std::string, int) = NULL;
 
+
+void MQTTdisable()
+{
+    MQTT_Enabled = false;
+}
 
 bool MQTTPublish(std::string _key, std::string _content, int retained_flag) {
     int msg_id;
@@ -163,6 +170,16 @@ void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
 }
 
 bool MQTT_Init() {
+
+    if (MQTT_Enabled == false)
+        return false;
+
+    if ((client_id.length() == 0) || (lwt_topic.length() == 0))
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, std::string("Init with no Client_ID or Topic. Abort Init!"));
+        return false;
+    }
+    
     esp_err_t ret;
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, std::string("Init"));
 
