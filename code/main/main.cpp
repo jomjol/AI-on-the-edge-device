@@ -213,7 +213,7 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );   
 
     if (!setup_time()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed. Will restart in 5 minutes!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed!");
         initSucessful = false;
     }
 
@@ -223,7 +223,7 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    if (getHTMLcommit() != std::string(GIT_REV)) {
+    if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
@@ -248,14 +248,14 @@ extern "C" void app_main(void)
             vTaskDelay( xDelay ); 
 
             if (camStatus != ESP_OK) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module!");
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
                 initSucessful = false;
             }
         } else { // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialzed. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
                 initSucessful = false;
             }
             else {

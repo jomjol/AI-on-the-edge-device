@@ -189,6 +189,15 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 
 bool ClassFlowMQTT::Start(float AutoIntervall) {
 
+//    printf("URI: %s, MAINTOPIC: %s", uri.c_str(), maintopic.c_str());
+
+    if ((uri.length() == 0) || (maintopic.length() == 0)) 
+    {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT not started because URI or Maintopic is not set. MQTT will be disabled.");
+        MQTTdisable();
+        return false;
+    }
+
     roundInterval = AutoIntervall; // Minutes
     keepAlive = roundInterval * 60 * 2.5; // Seconds, make sure it is greater thatn 2 rounds!
 
@@ -203,9 +212,8 @@ bool ClassFlowMQTT::Start(float AutoIntervall) {
             keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTT_Init()) {
-        if (!MQTT_Init()) { // Retry
-            return false;
-        }
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init at startup failed! Retry with next publish call");
+        return false;
     }
 
     return true;

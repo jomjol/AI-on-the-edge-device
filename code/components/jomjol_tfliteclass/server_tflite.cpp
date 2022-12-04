@@ -103,6 +103,8 @@ void doInit(void)
 #ifdef DEBUG_DETAIL_ON      
     ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
 #endif
+    
+    tfliteflow.StartMQTTService();
 }
 
 

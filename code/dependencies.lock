@@ -1,2 +1,3 @@
-manifest_hash: 45994dbfed009907994c31f6d279c5861a1eacbf219ce8b58e74e39b3393816a
+manifest_hash: 4e37bb0f9273c4de05f38688720fe32aa6e5b892452694a4f7a2ca1659f02cf6
+target: esp32
 version: 1.0.0
