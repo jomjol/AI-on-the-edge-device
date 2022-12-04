@@ -2,49 +2,6 @@
 
  ## [Unreleased]
 
-### Added
-
--   n.a.
-
-### Changed
-
--   n.a.
-
-### Fixed
-
--   Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
-
-### Removed
-
-- n.a.
-
-  
-
-## [13.0.2] - 2022-12-02
-
-### Added
-
--   n.a.
-
-### Changed
-
--   Update Tool "Logfile downloader and combiner" to handle the new csv file format.
--   Added MQTT topic `status` containing Digitalization Status. 
--   Added timezone to MQTT topic `timestamp`.
--   Disable heap logs by default
--   Cleanup loglevel info (moved some entries to debug level)
--   Updated logging informations
-
-### Fixed
-
--   Corrected Version comparison between firmware and Web UI.
-
-### Removed
-
--   n.a.
-
-## [13.0.1] - 2022-11-28
-
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
@@ -103,6 +60,9 @@ If anything breaks you can try to enforce manual update as following:
 -   [#1176](https://github.com/jomjol/AI-on-the-edge-device/discussions/1176) accept minor negative values (-0.2) if extended resolution is enabled
 -   [#1143](https://github.com/jomjol/AI-on-the-edge-device/issues/1143) added config parameter `AnalogDigitalTransitionStart`. It can setup very early and very late digit transition starts.
 -   New version of `dig-class100` (v1.4.0): added images of heliowatt powermeter 
+-   NEW v13.0.2: Update Tool "Logfile downloader and combiner" to handle the new csv file format.
+-   NEW v13.0.2: MQTT: Added MQTT topic `status` (Digitalization Status), Timezone to MQTT topic `timestamp`.#
+-   NEW v13.0.2: Logging: Disable heap logs by default, cleanup
 
 ### Fixed
 
@@ -114,6 +74,9 @@ If anything breaks you can try to enforce manual update as following:
 -   Failed NTP time sync during startup gets now retried every round if needed
 -   Whitespaces and `=` in MQTT and InfluxDB passwords
 -   Various minor fixes and improvements
+-   NEW v13.0.2: Corrected Version comparison between firmware and Web UI.
+-   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
+-   **NEW v13.0.4**: Fix for reboot in case of MQTT not used
 
 ### Removed
 
