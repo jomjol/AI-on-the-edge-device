@@ -289,38 +289,40 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             std::string json = "";
             
             if (result.length() > 0)
-                json += "{\"value\":"+result;
+                json += "{\"value\": "+result;
             else
-                json += "{\"value\":\"\"";
+                json += "{\"value\": \"\"";
 
-            json += ",\"raw\":\""+resultraw;
-            json += "\",\"error\":\""+resulterror;
+            json += ", \"raw\": \""+resultraw;
+            json += "\", \"error\": \""+resulterror;
 
             if (resultrate.length() > 0)
-                json += "\",\"rate\":"+resultrate;
+                json += "\", \"rate\": "+resultrate;
             else
-                json += "\",\"rate\":\"\"";
+                json += "\", \"rate\": \"\"";
 
-            json += ",\"timestamp\":\""+resulttimestamp+"\"}";
+            json += ", \"timestamp\": \""+resulttimestamp+"\"}";
 
             MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
-    else
-    {
-        for (int i = 0; i < ListFlowControll->size(); ++i)
-        {
-            zw = (*ListFlowControll)[i]->getReadout();
-            if (zw.length() > 0)
-            {
-                if (result.length() == 0)
-                    result = zw;
-                else
-                    result = result + "\t" + zw;
-            }
-        }
-        MQTTPublish(topic, result, SetRetainFlag);
-    }
+    
+    /* Disabled because this is no longer a use case */
+    // else
+    // {
+    //     for (int i = 0; i < ListFlowControll->size(); ++i)
+    //     {
+    //         zw = (*ListFlowControll)[i]->getReadout();
+    //         if (zw.length() > 0)
+    //         {
+    //             if (result.length() == 0)
+    //                 result = zw;
+    //             else
+    //                 result = result + "\t" + zw;
+    //         }
+    //     }
+    //     MQTTPublish(topic, result, SetRetainFlag);
+    // }
     
     OldValue = result;
     
