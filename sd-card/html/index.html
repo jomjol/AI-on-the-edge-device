@@ -28,6 +28,22 @@
             el.style.visibility = 'visible';
         });
     }
+    
+    function getCookie(cname) {
+      let name = cname + "=";
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(';');
+      for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }        
 </script>
 
 </head>
@@ -88,11 +104,11 @@
   LoadFwVersion();
   LoadWebUiVersion();
 
-  if (document.cookie == "" || document.cookie == "reboot_page.html") {
-    document.cookie = "overview.html";
+  if (getCookie("page") == "" || getCookie("page") == "reboot_page.html") {
+    document.cookie = "page=overview.html";
   }
-  console.log("Loading page: " + document.cookie);
-  document.getElementById('maincontent').src = document.cookie;
+  console.log("Loading page: " + getCookie(page));
+  document.getElementById('maincontent').src = getCookie("page");
 </script>
 
 </div>
