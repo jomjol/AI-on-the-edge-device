@@ -162,7 +162,7 @@ void MQTThomeassistantDiscovery() {
 void publishSystemData() {
     char tmp_char[50];
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing system MQTT topics...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
 
     sprintf(tmp_char, "%ld", (long)getUpTime());
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
@@ -179,7 +179,7 @@ void publishSystemData() {
 
 
 void publishStaticData() {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing static MQTT topics...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
     MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);

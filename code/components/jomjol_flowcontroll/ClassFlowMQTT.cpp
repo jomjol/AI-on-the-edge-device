@@ -306,21 +306,23 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
-    else
-    {
-        for (int i = 0; i < ListFlowControll->size(); ++i)
-        {
-            zw = (*ListFlowControll)[i]->getReadout();
-            if (zw.length() > 0)
-            {
-                if (result.length() == 0)
-                    result = zw;
-                else
-                    result = result + "\t" + zw;
-            }
-        }
-        MQTTPublish(topic, result, SetRetainFlag);
-    }
+    
+    /* Disabled because this is no longer a use case */
+    // else
+    // {
+    //     for (int i = 0; i < ListFlowControll->size(); ++i)
+    //     {
+    //         zw = (*ListFlowControll)[i]->getReadout();
+    //         if (zw.length() > 0)
+    //         {
+    //             if (result.length() == 0)
+    //                 result = zw;
+    //             else
+    //                 result = result + "\t" + zw;
+    //         }
+    //     }
+    //     MQTTPublish(topic, result, SetRetainFlag);
+    // }
     
     OldValue = result;
     
