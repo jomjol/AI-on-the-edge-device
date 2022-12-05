@@ -107,7 +107,7 @@
   if (getCookie("page") == "" || getCookie("page") == "reboot_page.html") {
     document.cookie = "page=overview.html";
   }
-  console.log("Loading page: " + getCookie(page));
+  console.log("Loading page: " + getCookie("page"));
   document.getElementById('maincontent').src = getCookie("page");
 </script>
 
