@@ -15,7 +15,7 @@
 <script>
     async function loadPage(page) {
         console.log("loadPage(" + page + ")");
-        document.cookie = page;
+        document.cookie = "page="+page;
         document.getElementById('maincontent').src = page;
 
         [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
