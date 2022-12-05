@@ -225,6 +225,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     std::string result;
     std::string resulterror = "";
     std::string resultraw = "";
+    std::string resultpre = "";
     std::string resultrate = ""; // Always Unit / Minute
     std::string resultRatePerTimeUnit = ""; // According to selection
     std::string resulttimestamp = "";
@@ -244,6 +245,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
         {
             result =  (*NUMBERS)[i]->ReturnValue;
             resultraw =  (*NUMBERS)[i]->ReturnRawValue;
+            resultpre =  (*NUMBERS)[i]->ReturnPreValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
             resultrate = (*NUMBERS)[i]->ReturnRateValue; // Unit per minutes
             resultchangabs = (*NUMBERS)[i]->ReturnChangeAbsolute; // Units per round
@@ -289,19 +291,22 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             std::string json = "";
             
             if (result.length() > 0)
-                json += "{\"value\":"+result;
+                json += "{\"value\": "+result;
             else
-                json += "{\"value\":\"\"";
+                json += "{\"value\": \"\"";
 
-            json += ",\"raw\":\""+resultraw;
-            json += "\",\"error\":\""+resulterror;
+            json += ", \"raw\": \""+resultraw;
+
+            json += ", \"pre\": \"" + resultpre;
+
+            json += "\", \"error\": \""+resulterror;
 
             if (resultrate.length() > 0)
-                json += "\",\"rate\":"+resultrate;
+                json += "\", \"rate\": "+resultrate;
             else
-                json += "\",\"rate\":\"\"";
+                json += "\", \"rate\": \"\"";
 
-            json += ",\"timestamp\":\""+resulttimestamp+"\"}";
+            json += ", \"timestamp\": \""+resulttimestamp+"\"}";
 
             MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
