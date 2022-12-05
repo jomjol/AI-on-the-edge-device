@@ -362,8 +362,8 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+        /* Respond with 404 Error */
+        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Failed to read existing file");
         return ESP_FAIL;
     }
 
@@ -447,8 +447,8 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+        /* Respond with 404 Error */
+        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Failed to read existing file");
         return ESP_FAIL;
     }
 
@@ -534,8 +534,8 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     if (!filename) {
         ESP_LOGE(TAG, "Filename is too long");
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
+        /* Respond with 414 Error */
+        httpd_resp_send_err(req, HTTPD_414_URI_TOO_LONG, "Filename too long");
         return ESP_FAIL;
     }
 
@@ -575,8 +575,8 @@ static esp_err_t download_get_handler(httpd_req_t *req)
     fd = OpenFileAndWait(filepath, "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filepath);
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+        /* Respond with 404 Error */
+        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Failed to read existing file");
         return ESP_FAIL;
     }
 
@@ -628,15 +628,16 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
                                              req->uri + sizeof("/upload") - 1, sizeof(filepath));
     if (!filename) {
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
+        /* Respond with 413 Error */
+        httpd_resp_send_err(req, HTTPD_414_URI_TOO_LONG, "Filename too long");
         return ESP_FAIL;
     }
 
     /* Filename cannot have a trailing '/' */
     if (filename[strlen(filename) - 1] == '/') {
         ESP_LOGE(TAG, "Invalid filename : %s", filename);
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Invalid filename");
+        /* Respond with 400 Bad Request */
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid filename");
         return ESP_FAIL;
     }
 
@@ -790,8 +791,8 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
                                                 req->uri  + sizeof("/delete") - 1, sizeof(filepath));
         if (!filename) {
-            /* Respond with 500 Internal Server Error */
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Filename too long");
+            /* Respond with 414 Error */
+            httpd_resp_send_err(req, HTTPD_414_URI_TOO_LONG, "Filename too long");
             return ESP_FAIL;
         }
         zw = std::string(filename);
@@ -825,7 +826,8 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         /* Filename cannot have a trailing '/' */
         if (filename[strlen(filename) - 1] == '/') {
             ESP_LOGE(TAG, "Invalid filename : %s", filename);
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Invalid filename");
+            /* Respond with 400 Bad Request */
+            httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid filename");
             return ESP_FAIL;
         }
 

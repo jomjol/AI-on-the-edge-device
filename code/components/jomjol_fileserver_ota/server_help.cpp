@@ -37,8 +37,8 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     FILE *fd = OpenFileAndWait(filename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file : %s", filename.c_str());
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+        /* Respond with 404 Error */
+        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Failed to read existing file");
         return ESP_FAIL;
     }
 
