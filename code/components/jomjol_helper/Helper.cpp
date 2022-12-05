@@ -798,7 +798,7 @@ const char* get404(void) {
 "        _\n"
 "    .__(.)< ( oh oh! This page does not exist! )\n"
 "    \\___)\n"
-"\n\n\n\n"
-"              You could try your <a href=index.html target=_parent>luck</a> here!</pre>\n"
+"\n\n"
+"                You could try your <a href=index.html target=_parent>luck</a> here!</pre>\n"
 "<script>document.cookie = \"page=overview.html\"</script>"; // Make sure we load the overview page
 }
