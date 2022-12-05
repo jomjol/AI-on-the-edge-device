@@ -63,7 +63,8 @@ bool setup_time()
 
     // Is time set? If not, tm_year will be (1970 - 1900).
     if (!getTimeIsSet()) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is not set yet. Getting time over NTP server " + std::to_string(sntp_getservername(0)));
+        std::string server = sntp_getservername(0);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is not set yet. Getting time over NTP server " + server);
         initialize_sntp();
         if (!obtain_time()) {
             success = false;
@@ -105,7 +106,8 @@ static bool obtain_time(void)
     time(&now);
     localtime_r(&now, &timeinfo);    
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Waiting until we get a time from the NTP server " + std::to_string(sntp_getservername(0)));
+    std::string server = sntp_getservername(0);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Waiting until we get a time from the NTP server " + server);
     while (true) {
         retry++;
 
@@ -118,7 +120,8 @@ static bool obtain_time(void)
         sntp_sync_status_t status = sntp_get_sync_status();
         logNtpStatus(status);
         if (status == SNTP_SYNC_STATUS_COMPLETED) {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " + std::to_string(sntp_getservername(0)));
+            std::string server = sntp_getservername(0);
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " + server);
             break;
         }
 
@@ -146,7 +149,8 @@ void logNtpStatus(sntp_sync_status_t status) {
 
 void reset_servername(std::string _servername)
 {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set SNTP-Server to " + std::to_string(sntp_getservername(0)));
+    std::string server = sntp_getservername(0);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set SNTP-Server to " + server);
     sntp_stop();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, _servername.c_str());
