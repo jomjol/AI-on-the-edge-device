@@ -63,7 +63,7 @@ bool setup_time()
 
     // Is time set? If not, tm_year will be (1970 - 1900).
     if (!getTimeIsSet()) {
-        ESP_LOGI(TAG, "Time is not set yet. Getting time over NTP.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is not set yet. Getting time over NTP server %s", sntp_getservername(0));
         initialize_sntp();
         if (!obtain_time()) {
             success = false;
@@ -105,7 +105,7 @@ static bool obtain_time(void)
     time(&now);
     localtime_r(&now, &timeinfo);    
 
-    ESP_LOGI(TAG, "Waiting until we get a time from the NTP server...");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Waiting until we get a time from the NTP server %s...", sntp_getservername(0));
     while (true) {
         retry++;
 
@@ -118,7 +118,7 @@ static bool obtain_time(void)
         sntp_sync_status_t status = sntp_get_sync_status();
         logNtpStatus(status);
         if (status == SNTP_SYNC_STATUS_COMPLETED) {
-            ESP_LOGI(TAG, "Time is synced with NTP Server");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server %s", sntp_getservername(0));
             break;
         }
 
