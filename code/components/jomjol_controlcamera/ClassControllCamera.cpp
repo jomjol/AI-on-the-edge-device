@@ -425,7 +425,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     nm = FormatFileName(nm);
 
 #ifdef DEBUG_DETAIL_ON
-    ESP_LOGD(TAG, "Save Camera to : %s", nm.c_str());
+    ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
 #endif
 
     ftype = toUpper(getFileType(nm));
