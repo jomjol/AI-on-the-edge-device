@@ -16,7 +16,7 @@
 	var basepath = "http://192.168.178.22"; 
 	function testinit(){
 		basepath = getbasepath();
-		url = basepath + '/wasserzaehler.html?all=true';     
+		url = basepath + '/value?all=true';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
