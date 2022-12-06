@@ -453,7 +453,7 @@ CImageBasis::CImageBasis(std::string _image)
     RGBImageRelease();
 
     zwld = esp_get_free_heap_size();
-    ESP_LOGD(TAG, "freeheapsize after : %ld", zwld);
+    ESP_LOGD(TAG, "freeheapsize after: %ld", zwld);
 
     std::string zw = "Image Load failed:" + _image;
     if (rgb_image == NULL)
