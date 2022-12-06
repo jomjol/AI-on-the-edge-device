@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [13.0.4] - 2022-12-04
-
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
@@ -78,7 +76,8 @@ If anything breaks you can try to enforce manual update as following:
 -   Various minor fixes and improvements
 -   NEW v13.0.2: Corrected Version comparison between firmware and Web UI.
 -   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
--   **NEW v13.0.4**: Fix for reboot in case of MQTT not used
+-   NEW v13.0.4: Fix for reboot in case of MQTT not used
+-   **NEW v13.0.5**: No reboot in case of missing NTP-connection
 
 ### Removed
 
