@@ -304,7 +304,7 @@ size_t findDelimiterPos(string input, string delimiter)
 
 bool RenameFile(string from, string to)
 {
-//	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
+//	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
 	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
@@ -321,7 +321,7 @@ bool RenameFile(string from, string to)
 
 bool DeleteFile(string fn)
 {
-//	ESP_LOGI(logTag, "Deleting file : %s", fn.c_str());
+//	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
 	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
@@ -512,7 +512,7 @@ int removeFolder(const char* folderPath, const char* logTag) {
 
 	DIR *dir = opendir(folderPath);
     if (!dir) {
-        ESP_LOGE(logTag, "Failed to stat dir : %s", folderPath);
+        ESP_LOGE(logTag, "Failed to stat dir: %s", folderPath);
         return -1;
     }
 
@@ -525,7 +525,7 @@ int removeFolder(const char* folderPath, const char* logTag) {
 			if (unlink(path.c_str()) == 0) {
 				deleted ++;
 			} else {
-				ESP_LOGE(logTag, "can't delete file : %s", path.c_str());
+				ESP_LOGE(logTag, "can't delete file: %s", path.c_str());
 			}
         } else if (entry->d_type == DT_DIR) {
 			deleted += removeFolder(path.c_str(), logTag);
@@ -534,7 +534,7 @@ int removeFolder(const char* folderPath, const char* logTag) {
     
     closedir(dir);
 	if (rmdir(folderPath) != 0) {
-		ESP_LOGE(logTag, "can't delete folder : %s", folderPath);
+		ESP_LOGE(logTag, "can't delete folder: %s", folderPath);
 	}
 	ESP_LOGD(logTag, "%d files in folder %s deleted.", deleted, folderPath);
 
@@ -790,4 +790,15 @@ string getResetReason(void) {
 			reasonText = "Unknown";
 	}
     return reasonText;
+}
+
+const char* get404(void) {
+    return 
+"<pre>\n\n\n\n"
+"        _\n"
+"    .__(.)< ( oh oh! This page does not exist! )\n"
+"    \\___)\n"
+"\n\n"
+"                You could try your <a href=index.html target=_parent>luck</a> here!</pre>\n"
+"<script>document.cookie = \"page=overview.html\"</script>"; // Make sure we load the overview page
 }

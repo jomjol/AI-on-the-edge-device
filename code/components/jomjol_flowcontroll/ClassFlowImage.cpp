@@ -113,7 +113,7 @@ void ClassFlowImage::RemoveOldLogs()
 
     DIR *dir = opendir(LogImageLocation.c_str());
     if (!dir) {
-        ESP_LOGE(TAG, "Failed to stat dir : %s", LogImageLocation.c_str());
+        ESP_LOGE(TAG, "Failed to stat dir: %s", LogImageLocation.c_str());
         return;
     }
 

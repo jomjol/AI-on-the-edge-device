@@ -64,3 +64,5 @@ string getSDCardSectorSize();
 
 string getMac(void);
 string getResetReason(void);
+
+const char* get404(void);

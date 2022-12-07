@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [13.0.4] - 2022-12-04
+## [13.0.5] - 2022-12-06
 
 **Home Assistant MQTT Discovery Support**
 
@@ -29,11 +29,11 @@
 If anything breaks you can try to enforce manual update as following:
 
 **OTA:**
-  1. Make sure the last run of the update completed the **Uploading** step.
-  1. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
+  1\. Make sure the last run of the update completed the **Uploading** step.
+  1\. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
 
 **Initial Setup:**
-  1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+  1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 ### Added
 
@@ -78,7 +78,8 @@ If anything breaks you can try to enforce manual update as following:
 -   Various minor fixes and improvements
 -   NEW v13.0.2: Corrected Version comparison between firmware and Web UI.
 -   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
--   **NEW v13.0.4**: Fix for reboot in case of MQTT not used
+-   NEW v13.0.4: Fix for reboot in case of MQTT not used
+-   **NEW v13.0.5**: No reboot in case of missing NTP-connection
 
 ### Removed
 
@@ -100,8 +101,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -753,7 +754,9 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.4...HEAD
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.5...HEAD
+
+[13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.5
 
 [13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.4
 

@@ -531,7 +531,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         int _result = stat(fn.c_str(), &file_stat);
         ESP_LOGD(TAG, "Ergebnis %d\n", _result);
         if (_result == 0) {
-            ESP_LOGD(TAG, "Deleting file : %s", fn.c_str());
+            ESP_LOGD(TAG, "Deleting file: %s", fn.c_str());
             /* Delete file */
             unlink(fn.c_str());
         }

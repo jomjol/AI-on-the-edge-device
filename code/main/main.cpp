@@ -214,7 +214,6 @@ extern "C" void app_main(void)
 
     if (!setup_time()) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed!");
-        initSucessful = false;
     }
 
     setBootTime();
