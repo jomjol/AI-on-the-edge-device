@@ -195,7 +195,7 @@ extern "C" void app_main(void)
         ESP_LOGD(TAG, "No SSID and PASSWORD set!!!");
 
     if (hostname != NULL)
-        ESP_LOGD(TAG, "Hostename: %s", hostname);
+        ESP_LOGD(TAG, "Hostname: %s", hostname);
     else
         ESP_LOGD(TAG, "Hostname not set");
 
