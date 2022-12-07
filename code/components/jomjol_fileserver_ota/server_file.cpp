@@ -829,7 +829,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             return ESP_FAIL;
         }
 
-        if (filename == 'wlan.ini') {
+        if (filename == "wlan.ini") {
             ESP_LOGE(TAG, "Trying to delete protected file : %s", filename);
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Not allowed to delete wlan.ini");
             return ESP_FAIL;
