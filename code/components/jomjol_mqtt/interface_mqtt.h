@@ -5,7 +5,7 @@
 #include <map>
 #include <functional>
 
-void MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
+bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
         std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
         int _keepalive, int SetRetainFlag, void *callbackOnConnected);
 bool MQTT_Init();
@@ -20,7 +20,5 @@ void MQTTunregisterConnectFunction(std::string name);
 void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::string, char*, int)> func);
 void MQTTdestroySubscribeFunction();
 void MQTTconnected();
-
-void MQTTdisable();
 
 #endif //INTERFACE_MQTT_H

@@ -127,7 +127,10 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     MQTTPublish(topicFull, payload, true);
 }
 
-void MQTThomeassistantDiscovery() {    
+void MQTThomeassistantDiscovery() {  
+    if (!MQTTisConnected())
+    return;
+    
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
@@ -160,6 +163,9 @@ void MQTThomeassistantDiscovery() {
 }
 
 void publishSystemData() {
+    if (!MQTTisConnected())
+        return;
+
     char tmp_char[50];
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
@@ -179,6 +185,9 @@ void publishSystemData() {
 
 
 void publishStaticData() {
+    if (!MQTTisConnected())
+    return;
+
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
