@@ -211,7 +211,8 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
     bool roundedUp = false;
 
     // Innerhalb der digitalen Unschaefe 
-    if (ergebnis_nachkomma >= (10-DigitalUnschaerfe * 10))  {   // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+    if ((ergebnis_nachkomma >= (10-DigitalUnschaerfe * 10))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
+        || (eval_vorgaenger <= 4 && ergebnis_nachkomma>=6))  {   // oder digit läuft nach (analog =0..4, digit >=6)
         result = (int) (round(zahl) + 10) % 10;
         roundedUp = true;
         // vor/nachkomma neu berechnen, da wir anhand der Unschaefe die Zahl anpassen.
@@ -230,11 +231,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
     // Kein Nulldurchgang hat stattgefunden.
     // Nur eval_vorgaenger verwendet, da ziffer_vorgaenger hier falsch sein könnte.
     // ziffer_vorgaenger<=0.1 & eval_vorgaenger=9 entspricht analog wurde zurückgesetzt wegen vorhergehender analog, die noch nicht auf 0 sind.
-    if ((eval_vorgaenger>=6 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp)
-        // digit läuft dem Analog vor. Darf aber erst passieren, wenn 
-        // digit wirklich schnon los läuft, deshalb 9
-        || (eval_vorgaenger>9 && ziffer_vorgaenger>analogDigitalTransitionStart && ergebnis_nachkomma<=1))
-
+    if ((eval_vorgaenger>=6 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp))
     {
         result =  ((ergebnis_vorkomma+10) - 1) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
