@@ -23,7 +23,7 @@
 #include "server_file.h"
 #include "connect_wlan.h"
 
-#define DEBUG_DETAIL_ON       
+//#define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
@@ -103,6 +103,8 @@ void doInit(void)
 #ifdef DEBUG_DETAIL_ON      
     ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
 #endif
+    
+    tfliteflow.StartMQTTService();
 }
 
 
@@ -734,7 +736,7 @@ void task_autodoFlow(void *pvParameter)
     while (auto_isrunning)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
-        std::string _zw = "task_autodoFlow - next round - Round #" + std::to_string(++countRounds);
+        std::string _zw = "task_autodoFlow - Starting Round #" + std::to_string(++countRounds);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
 
@@ -758,13 +760,15 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOldDataLog();
         }
         
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "task_autodoFlow - round #" + std::to_string(countRounds) + " done");
         //CPU Temp
         float cputmp = temperatureRead();
         std::stringstream stream;
         stream << std::fixed << std::setprecision(1) << cputmp;
         string zwtemp = "CPU Temperature: " + stream.str();
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, zwtemp); 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zwtemp); 
+
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "task_autodoFlow - round #" + std::to_string(countRounds) + " completed");
+
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
         {

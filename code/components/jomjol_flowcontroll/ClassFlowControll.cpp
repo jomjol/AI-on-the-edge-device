@@ -19,6 +19,8 @@ extern "C" {
 #include "time_sntp.h"
 #include "Helper.h"
 #include "server_ota.h"
+#include "interface_mqtt.h"
+#include "server_mqtt.h"
 
 
 //#include "CImg.h"
@@ -28,7 +30,6 @@ extern "C" {
 //#define DEBUG_DETAIL_ON  
 
 static const char* TAG = "FLOW CTRL";
-
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
@@ -139,6 +140,15 @@ string ClassFlowControll::GetMQTTMainTopic()
     return "";
 }
 
+bool ClassFlowControll::StartMQTTService() {
+    /* Start the MQTT service */
+        for (int i = 0; i < FlowControll.size(); ++i) {
+            if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {
+                return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
+            }  
+        } 
+    return false;
+}
 
 
 void ClassFlowControll::SetInitialParameter(void)
@@ -275,7 +285,10 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
         if (FlowControll[i]->name() == "ClassFlowMakeImage") {
 //            zw_time = gettimestring("%Y%m%d-%H%M%S");
             zw_time = gettimestring("%H:%M:%S");
-            aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
+            std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
+            aktstatus = flowStatus + " (" + zw_time + ")";
+            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+
             FlowControll[i]->doFlow(time);
         }
     }
@@ -302,14 +315,14 @@ bool ClassFlowControll::doFlow(string time)
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%H:%M:%S");
-        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
+        std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
+        aktstatus = flowStatus + " (" + zw_time + ")";
+        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 
-//        zw_time = gettimestring("%Y%m%d-%H%M%S");
-//        aktstatus = zw_time + ": " + FlowControll[i]->name();
-        
-       
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
-        LogFile.WriteHeapInfo(zw);
+        #ifdef DEBUG_DETAIL_ON 
+            LogFile.WriteHeapInfo(zw);
+        #endif
 
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
@@ -333,7 +346,9 @@ bool ClassFlowControll::doFlow(string time)
 
     }
     zw_time = gettimestring("%H:%M:%S");
-    aktstatus = "Flow finished (" + zw_time + ")";
+    std::string flowStatus = "Flow finished";
+    aktstatus = flowStatus + " (" + zw_time + ")";
+    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
     return result;
 }
 
@@ -547,12 +562,6 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }        
         }
     }
-
-    /* Start the MQTT service */
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
-            return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
-
     return true;
 }
 
@@ -560,10 +569,10 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 int ClassFlowControll::CleanTempFolder() {
     const char* folderPath = "/sdcard/img_tmp";
     
-    ESP_LOGI(TAG, "Clean up temporary folder to avoid damage of sdcard sectors : %s", folderPath);
+    ESP_LOGD(TAG, "Clean up temporary folder to avoid damage of sdcard sectors: %s", folderPath);
     DIR *dir = opendir(folderPath);
     if (!dir) {
-        ESP_LOGE(TAG, "Failed to stat dir : %s", folderPath);
+        ESP_LOGE(TAG, "Failed to stat dir: %s", folderPath);
         return -1;
     }
 
@@ -575,14 +584,14 @@ int ClassFlowControll::CleanTempFolder() {
 			if (unlink(path.c_str()) == 0) {
 				deleted ++;
 			} else {
-				ESP_LOGE(TAG, "can't delete file : %s", path.c_str());
+				ESP_LOGE(TAG, "can't delete file: %s", path.c_str());
 			}
         } else if (entry->d_type == DT_DIR) {
 			deleted += removeFolder(path.c_str(), TAG);
 		}
     }
     closedir(dir);
-    ESP_LOGI(TAG, "%d files deleted", deleted);
+    ESP_LOGD(TAG, "%d files deleted", deleted);
     
     return 0;
 }
@@ -670,10 +679,10 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
     if (_send)
     {
-        ESP_LOGI(TAG, "Sending file : %s ...", _fn.c_str());
+        ESP_LOGD(TAG, "Sending file: %s ...", _fn.c_str());
         set_content_type_from_file(req, _fn.c_str());
         result = _send->SendJPGtoHTTP(req);
-        ESP_LOGI(TAG, "File sending complete");    
+        ESP_LOGD(TAG, "File sending complete");    
         /* Respond with an empty chunk to signal HTTP response completion */
         httpd_resp_send_chunk(req, NULL, 0);
     }

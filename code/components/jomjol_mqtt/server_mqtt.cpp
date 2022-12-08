@@ -139,6 +139,9 @@ void MQTThomeassistantDiscovery() {
     sendHomeAssistantDiscoveryTopic("",     "CPUtemp",         "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
     sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
+    sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic");
+
+
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
          std::string group = (*NUMBERS)[i]->name;
@@ -150,11 +153,7 @@ void MQTThomeassistantDiscovery() {
         // sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
         sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit", "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,  "",            "",                 "");        
         sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round", "arrow-expand-vertical", valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
-        /* The timestamp string misses the Timezone, see PREVALUE_TIME_FORMAT_OUTPUT!
-           We need to know the timezone and append it! Until we do this, we simply
-           do not set the device class to "timestamp" to avoid errors in Homeassistant! */
-        // sendHomeAssistantDiscoveryTopic(group,   "timestamp",       "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "",            "",                 "diagnostic");
+        sendHomeAssistantDiscoveryTopic(group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                "diagnostic");
         sendHomeAssistantDiscoveryTopic(group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "diagnostic");
         sendHomeAssistantDiscoveryTopic(group,   "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
     }
@@ -163,7 +162,7 @@ void MQTThomeassistantDiscovery() {
 void publishSystemData() {
     char tmp_char[50];
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing system MQTT topics...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
 
     sprintf(tmp_char, "%ld", (long)getUpTime());
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
@@ -180,7 +179,7 @@ void publishSystemData() {
 
 
 void publishStaticData() {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing static MQTT topics...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
     MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);
@@ -239,4 +238,8 @@ void setMqtt_Server_Retain(int _retainFlag) {
 
 void mqttServer_setMainTopic( std::string _maintopic) {
     maintopic = _maintopic;
+}
+
+std::string mqttServer_getMainTopic() {
+    return maintopic;
 }

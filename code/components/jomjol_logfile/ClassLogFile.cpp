@@ -23,10 +23,10 @@ ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/dat
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
     std::string _zw = _id;
-    if (loglevel > ESP_LOG_WARN) 
+    if (loglevel >= ESP_LOG_DEBUG) {
         _zw =  _zw + "\t" + getESPHeapInfo();
-
-    WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+        WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
+    }
 }
 
 
@@ -164,7 +164,9 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
                 break;
         }
         
-        logline = logline + "\t<" + loglevelString + ">\t" + message.c_str() + "\n";
+        char uptime[20];
+        snprintf(uptime, sizeof(uptime), "%8d", (uint32_t)(esp_timer_get_time()/1000/1000)); // in seconds
+        logline = "[" + std::string(uptime) + "] "  + logline + "\t<" + loglevelString + ">\t" + message + "\n";
         fputs(logline.c_str(), pFile);
         fclose(pFile);    
     } else {
@@ -313,7 +315,7 @@ void ClassLogFile::RemoveOldLogFile()
 
     DIR *dir = opendir(logroot.c_str());
     if (!dir) {
-        ESP_LOGE(TAG, "Failed to stat dir : %s", logroot.c_str());
+        ESP_LOGE(TAG, "Failed to stat dir: %s", logroot.c_str());
         return;
     }
 
@@ -322,14 +324,14 @@ void ClassLogFile::RemoveOldLogFile()
     int notDeleted = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
-            //ESP_LOGD(TAG, "compare log file : %s to %s", entry->d_name, cmpfilename);
+            //ESP_LOGD(TAG, "compare log file: %s to %s", entry->d_name, cmpfilename);
             if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
-                //ESP_LOGD(TAG, "delete log file : %s", entry->d_name);
+                //ESP_LOGD(TAG, "delete log file: %s", entry->d_name);
                 std::string filepath = logroot + "/" + entry->d_name; 
                 if (unlink(filepath.c_str()) == 0) {
                     deleted ++;
                 } else {
-                    ESP_LOGE(TAG, "can't delete file : %s", entry->d_name);
+                    ESP_LOGE(TAG, "can't delete file: %s", entry->d_name);
                     notDeleted ++;
                 }
             } else {
@@ -337,7 +339,7 @@ void ClassLogFile::RemoveOldLogFile()
             }
         }
     }
-    ESP_LOGI(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "log files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 
@@ -364,7 +366,7 @@ void ClassLogFile::RemoveOldDataLog()
 
     DIR *dir = opendir(dataroot.c_str());
     if (!dir) {
-        ESP_LOGE(TAG, "Failed to stat dir : %s", dataroot.c_str());
+        ESP_LOGE(TAG, "Failed to stat dir: %s", dataroot.c_str());
         return;
     }
 
@@ -373,14 +375,14 @@ void ClassLogFile::RemoveOldDataLog()
     int notDeleted = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
-            //ESP_LOGD(TAG, "Compare data file : %s to %s", entry->d_name, cmpfilename);
+            //ESP_LOGD(TAG, "Compare data file: %s to %s", entry->d_name, cmpfilename);
             if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
-                //ESP_LOGD(TAG, "delete data file : %s", entry->d_name);
+                //ESP_LOGD(TAG, "delete data file: %s", entry->d_name);
                 std::string filepath = dataroot + "/" + entry->d_name; 
                 if (unlink(filepath.c_str()) == 0) {
                     deleted ++;
                 } else {
-                    ESP_LOGE(TAG, "can't delete file : %s", entry->d_name);
+                    ESP_LOGE(TAG, "can't delete file: %s", entry->d_name);
                     notDeleted ++;
                 }
             } else {
@@ -388,7 +390,7 @@ void ClassLogFile::RemoveOldDataLog()
             }
         }
     }
-    ESP_LOGI(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "data files deleted: %d | files not deleted (incl. leer.txt): %d", deleted, notDeleted);	
     closedir(dir);
 }
 

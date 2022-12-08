@@ -17,7 +17,7 @@ static const char* TAG = "FLOW POSTPROC";
 //#define SERIAL_DEBUG // testing debug on serial enabled
 
 
-#define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S"
+#define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
 #define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
 
 
@@ -858,7 +858,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
         ESP_LOGD(TAG, "%s", zw.c_str());
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
         WriteDataLog(j);
     }
 

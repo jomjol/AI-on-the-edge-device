@@ -43,7 +43,8 @@ implementation
 procedure TForm1.btnDownloadLogfilesClick(Sender: TObject);
 var
   lclDateString: string;
-  lclFilename: string;
+  lclFilenameCsv: string;
+  lclFilenameTxtOld: string;
   i: Integer;
   lclValue: Extended;
 begin
@@ -51,13 +52,19 @@ begin
   LoadCSV(lbledtCsvFile.Text);
   for i := StrToInt(lbledtMaxLogfilesOnServer.Text) downto 1 do
   begin
-    DateTimeToString(lclDateString, 'yyyy-mm-dd', incDay(Now, -i));
-    lclFilename := 'log_' + lclDateString + '.txt';
+    DateTimeToString(lclDateString, 'yyyy-mm-dd', incDay(Now, - i));
+    lclFilenameCsv := 'data_' + lclDateString + '.csv'; // http://192.168.10.65/fileserver/log/data/data_2022-11-28.csv
+    lclFilenameTxtOld := 'log_' + lclDateString + '.txt'; // http://192.168.10.65/fileserver/log/message/log_2022-11-10.txt
     if (redtLog.FindText(lclDateString, 0, Length(redtLog.Lines.Text), [stWholeWord]) = -1) then
     begin
-      if DownloadFile(lbledtURL.Text + lclFilename, lbledtTargetDirectory.Text + lclFilename) then
+      if DownloadFile(lbledtURL.Text + 'data/' + lclFilenameCsv, lbledtTargetDirectory.Text + lclFilenameCsv) then
       begin
-        lclValue := LoadValue(lbledtTargetDirectory.Text + lclFilename);
+        lclValue := LoadValue(lbledtTargetDirectory.Text + lclFilenameCsv);
+        redtLog.Lines.Add(lclDateString + ';' + FloatToStrF(lclValue, ffFixed, 8, 2));
+      end
+      else if DownloadFile(lbledtURL.Text + 'message/' + lclFilenameTxtOld, lbledtTargetDirectory.Text + lclFilenameTxtOld) then
+      begin
+        lclValue := LoadValue(lbledtTargetDirectory.Text + lclFilenameTxtOld);
         redtLog.Lines.Add(lclDateString + ';' + FloatToStrF(lclValue, ffFixed, 8, 2));
       end;
     end;
@@ -99,24 +106,45 @@ function TForm1.LoadValue(const pFileName: string): Extended;
 var
   Txt: TextFile;
   s: string;
+  lclStringList: TStringList;
   lclStartPos: Integer;
   lclEndPos: Integer;
 begin
   Result := 0;
-  AssignFile(Txt, pFileName);
-  Reset(Txt);
-  while not Eof(Txt) do
-  begin
-    Readln(Txt, s);
-    if (AnsiPos('Value: ', s) <> 0) and (AnsiPos(' Error: no error', s) <> 0) then
+  lclStringList := TStringList.Create;
+  try
+    AssignFile(Txt, pFileName);
+    Reset(Txt);
+    while not Eof(Txt) do
     begin
-      lclStartPos := AnsiPos('Value: ', s) + 7;
-      lclEndPos := AnsiPos(' Error: no error', s) - lclStartPos;
-      s := StringReplace(s, '.', ',', [rfReplaceAll, rfIgnoreCase]);
-      Result := StrToFloat(Copy(s, lclStartPos, lclEndPos));
+      Readln(Txt, s);
+      if ExtractFileExt(pFileName) = '.csv' then
+      begin
+        if (AnsiPos('no error', s) <> 0) then
+        begin
+          lclStringList.Clear;
+          lclStringList.Delimiter := ';';
+          s := StringReplace(s, ',', ';', [rfReplaceAll, rfIgnoreCase]);
+          s := StringReplace(s, '.', ',', [rfReplaceAll, rfIgnoreCase]);
+          lclStringList.DelimitedText := s;
+          Result := lclStringList[2].ToExtended;
+        end;
+      end
+      else
+      begin
+        if (AnsiPos('Value: ', s) <> 0) and (AnsiPos(' Error: no error', s) <> 0) then
+        begin
+          lclStartPos := AnsiPos('Value: ', s) + 7;
+          lclEndPos := AnsiPos(' Error: no error', s) - lclStartPos;
+          s := StringReplace(s, '.', ',', [rfReplaceAll, rfIgnoreCase]);
+          Result := StrToFloat(Copy(s, lclStartPos, lclEndPos));
+        end;
+      end;
     end;
+  finally
+    CloseFile(Txt);
+    FreeAndNil(lclStringList);
   end;
-  CloseFile(Txt);
 end;
 
 procedure TForm1.SaveCSV(const pFileName: string);

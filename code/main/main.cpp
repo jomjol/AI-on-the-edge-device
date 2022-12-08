@@ -35,7 +35,8 @@ extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
 extern const char* BUILD_TIME;
 
-extern const char* getHTMLversion(void);
+extern std::string getHTMLversion(void);
+extern std::string getHTMLcommit(void);
 
 #define __HIDE_PASSWORD
 
@@ -169,26 +170,16 @@ extern "C" void app_main(void)
         string versionFormated = "Tag: '" + std::string(GIT_TAG) + "', " + versionFormated;
     }
 
-    ESP_LOGD(TAG, "=============================================================================================");
-    ESP_LOGD(TAG, "%s", versionFormated.c_str());
-    ESP_LOGD(TAG, "=============================================================================================");
-    ESP_LOGD(TAG, "Reset reason: %s", getResetReason().c_str());
+    LogFile.CreateLogDirectories();
 
-
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Startup ====================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
     CheckOTAUpdate();
-
-    LogFile.CreateLogDirectories();
     CheckUpdate();
-/*
-    int mk_ret = mkdir("/sdcard/new_fd_mkdir", 0775);
-    ESP_LOGI(TAG, "mkdir ret %d", mk_ret);
-    mk_ret = mkdir("/sdcard/new_fd_mkdir/test", 0775);
-    ESP_LOGI(TAG, "mkdir ret %d", mk_ret);
-    MakeDir("/sdcard/test2");
-    MakeDir("/sdcard/test2/intern");
-*/
-
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
@@ -222,20 +213,17 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );   
 
     if (!setup_time()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed. Will restart in 5 minutes!");
-        initSucessful = false;
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed!");
     }
 
     setBootTime();
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================== Main Started ============================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=============================================================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    if (std::string(getHTMLversion()) != std::string(GIT_REV)) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Web UI version does not match firmware version!");
+    if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
@@ -259,14 +247,14 @@ extern "C" void app_main(void)
             vTaskDelay( xDelay ); 
 
             if (camStatus != ESP_OK) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module!");
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
                 initSucessful = false;
             }
         } else { // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialzed. Will restart in 5 minutes!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
                 initSucessful = false;
             }
             else {

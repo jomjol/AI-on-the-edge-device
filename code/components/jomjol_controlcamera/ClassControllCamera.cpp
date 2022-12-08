@@ -425,7 +425,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     nm = FormatFileName(nm);
 
 #ifdef DEBUG_DETAIL_ON
-    ESP_LOGD(TAG, "Save Camera to : %s", nm.c_str());
+    ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
 #endif
 
     ftype = toUpper(getFileType(nm));
@@ -675,6 +675,7 @@ esp_err_t CCamera::InitCam()
     ActualQuality = camera_config.jpeg_quality;
     ActualResolution = camera_config.frame_size;
     //initialize the camera
+    esp_camera_deinit(); // De-init in case it was already initialized
     esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Camera Init Failed");
