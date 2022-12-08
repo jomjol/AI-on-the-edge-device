@@ -71,7 +71,7 @@ string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend) {
 	json += "    \"error\": \"" + NUMBERS[i]->ErrorMessageText + "\"," + _lineend;
 
 	if (NUMBERS[i]->ReturnRateValue.length() > 0)
-		json += "    \"rate\": " + NUMBERS[i]->ReturnRateValue + "," + _lineend;
+		json += "    \"rate\": \"" + NUMBERS[i]->ReturnRateValue + "\"," + _lineend;
 	else
 		json += "    \"rate\": \"\"," + _lineend;
 
