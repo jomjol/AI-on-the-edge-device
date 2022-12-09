@@ -20,7 +20,7 @@ void test_getReadoutRawString() {
     gen_analog->ROI.push_back(anaROI);
 
     result = _undertestPost->flowAnalog->getReadoutRawString(0);
-    TEST_ASSERT_EQUAL_STRING("\t5.5", result.c_str());
+    TEST_ASSERT_EQUAL_STRING(",5.5", result.c_str());
 
 
 

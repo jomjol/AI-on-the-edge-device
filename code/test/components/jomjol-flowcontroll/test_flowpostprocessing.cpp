@@ -522,4 +522,24 @@ void test_doFlowPP3() {
         delete undertestPost;
 }
 
+void test_doFlowPP4() {
+
+        // Fehler  V13.0.4 
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1503#issuecomment-1343335855
+         std::vector<float> digits = {  0.0, 0.0, 6.9, 1.0, 6.6};  // 716.0199 als falsches Ergebnis. 
+        // Test ist nur erfolgreich mit Veränderung des AnalogdigitTransistionStart
+         std::vector<float> analogs = {9.9, 1.8, 6.6, 5.8};
+        const char* expected = "717.0165";
+        const char* expected_extended= "717.01658";
+        
+        // extendResolution=false
+        std::string result = process_doFlow(analogs, digits, Digital100, false, false);
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+
+        // checkConsistency=false und extendResolution=true
+        result = process_doFlow(analogs, digits, Digital100, false, true);
+        TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+
+}
+
 
