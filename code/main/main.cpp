@@ -255,7 +255,10 @@ extern "C" void app_main(void)
             camera_fb_t * fb = esp_camera_fb_get();
             if (!fb) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
-                initSucessful = false;
+                /* Easiest would be to simply restart here and try again,
+                   how ever there seem to be systems where it fails at startup but still work corectly later.
+                   Therefore we treat it still as successed!
+                   //initSucessful = false; */
             }
             else {
                 esp_camera_fb_return(fb);   
