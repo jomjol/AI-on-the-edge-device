@@ -865,9 +865,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ErrorMessageText = "no error";
         UpdatePreValueINI = true;
 
-        string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
+        string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
         ESP_LOGD(TAG, "%s", zw.c_str());
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
     }
 
