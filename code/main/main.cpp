@@ -195,7 +195,7 @@ extern "C" void app_main(void)
         ESP_LOGD(TAG, "No SSID and PASSWORD set!!!");
 
     if (hostname != NULL)
-        ESP_LOGD(TAG, "Hostename: %s", hostname);
+        ESP_LOGD(TAG, "Hostname: %s", hostname);
     else
         ESP_LOGD(TAG, "Hostname not set");
 
@@ -230,10 +230,10 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "time %s", zw.c_str());
 
     size_t _hsize = getESPHeapSize();
-    if (_hsize < 4000000)
+    if (_hsize < 4000000) // Check for a bit less than 4 MB (but clearly over 2 MB)
     {
-        std::string _zws = "Not enough PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
-        _zws = _zws + "\nEither not initialized, too small (2MByte only) or not present at all. Firmware cannot start!!";
+        std::string _zws = "Not enough PSRAM available. Expected around 4 MBytes - available: " + std::to_string((float)_hsize/1024/1024) + " MBytes!";
+        _zws = _zws + "\nEither not initialized, too small (2 MByte only) or not present at all. Firmware cannot start!!";
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zws);
     } else { // Bad Camera Status, retry init   
         if (camStatus != ESP_OK) {

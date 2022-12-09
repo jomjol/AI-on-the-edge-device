@@ -701,7 +701,7 @@ string ClassFlowControll::getNumbersName()
     return flowpostprocessing->getNumbersName();
 }
 
-string ClassFlowControll::getJSON(std::string _id, std::string _mac)
+string ClassFlowControll::getJSON()
 {
-    return flowpostprocessing->GetJSON(_id, _mac);
+    return flowpostprocessing->GetJSON();
 }
