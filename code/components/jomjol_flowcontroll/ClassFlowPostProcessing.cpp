@@ -37,41 +37,50 @@ std::string ClassFlowPostProcessing::getNumbersName()
     return ret;
 }
 
-std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, std::string _lineend)
+std::string ClassFlowPostProcessing::GetJSON(std::string _lineend)
 {
     std::string json="{" + _lineend;
 
     for (int i = 0; i < NUMBERS.size(); ++i)
     {
         json += "\"" + NUMBERS[i]->name + "\":"  + _lineend;
-        json += "  {"  + _lineend;
 
-        if (_id.length() > 0)
-            json += "    \"ID\": \"" + _id + "\","  + _lineend;
-        if (_mac.length() > 0)
-            json += "    \"MAC\": \"" + _mac + "\","  + _lineend;
+        json += getJsonFromNumber(i, _lineend) + _lineend;
 
-        if (NUMBERS[i]->ReturnValue.length() > 0)
-            json += "    \"value\": \""      + NUMBERS[i]->ReturnValue          + "\"," + _lineend;
-        else
-            json += "    \"value\": \"\","  + _lineend;
-        json += "    \"raw\": \""        + NUMBERS[i]->ReturnRawValue              + "\","  + _lineend;
-        json += "    \"error\": \""     + NUMBERS[i]->ErrorMessageText             + "\","  + _lineend;
-        if (NUMBERS[i]->ReturnRateValue.length() > 0)
-            json += "    \"rate\": "      + NUMBERS[i]->ReturnRateValue                + ","  + _lineend;
-        else
-            json += "    \"rate\": \"\","  + _lineend;
-
-        json += "    \"timestamp\": \"" + NUMBERS[i]->timeStamp                    + "\""  + _lineend;
         if ((i+1) < NUMBERS.size())
-            json += "  }," + _lineend;
-        else
-            json += "  }" + _lineend;
+            json += "," + _lineend;
     }
     json += "}";
 
     return json;
 }
+
+
+string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend) {
+	std::string json = "";
+
+	json += "  {" + _lineend;
+
+	if (NUMBERS[i]->ReturnValue.length() > 0)
+		json += "    \"value\": \"" + NUMBERS[i]->ReturnValue + "\"," + _lineend;
+	else
+		json += "    \"value\": \"\"," + _lineend;
+
+	json += "    \"raw\": \"" + NUMBERS[i]->ReturnRawValue + "\"," + _lineend;
+	json += "    \"pre\": \"" + NUMBERS[i]->ReturnPreValue + "\"," + _lineend;
+	json += "    \"error\": \"" + NUMBERS[i]->ErrorMessageText + "\"," + _lineend;
+
+	if (NUMBERS[i]->ReturnRateValue.length() > 0)
+		json += "    \"rate\": \"" + NUMBERS[i]->ReturnRateValue + "\"," + _lineend;
+	else
+		json += "    \"rate\": \"\"," + _lineend;
+
+	json += "    \"timestamp\": \"" + NUMBERS[i]->timeStamp + "\"" + _lineend;
+	json += "  }" + _lineend;
+
+	return json;
+}
+
 
 string ClassFlowPostProcessing::GetPreValue(std::string _number)
 {

@@ -239,7 +239,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing MQTT topics...");
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
@@ -288,26 +288,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             if (resulttimestamp.length() > 0)
                 MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
-            std::string json = "";
-            
-            if (result.length() > 0)
-                json += "{\"value\": "+result;
-            else
-                json += "{\"value\": \"\"";
-
-            json += ", \"raw\": \""+resultraw;
-
-            json += ", \"pre\": \"" + resultpre;
-
-            json += "\", \"error\": \""+resulterror;
-
-            if (resultrate.length() > 0)
-                json += "\", \"rate\": "+resultrate;
-            else
-                json += "\", \"rate\": \"\"";
-
-            json += ", \"timestamp\": \""+resulttimestamp+"\"}";
-
+            std::string json = flowpostprocessing->getJsonFromNumber(i, "\n");
             MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }

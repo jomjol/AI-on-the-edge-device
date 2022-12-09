@@ -50,7 +50,7 @@ public:
 	string UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
-	string getJSON(std::string _id = "", std::string _mac = "");
+	string getJSON();
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);

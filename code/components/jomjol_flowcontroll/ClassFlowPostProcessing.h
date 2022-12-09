@@ -61,10 +61,11 @@ public:
     string getReadoutRate(int _number = 0);
     string getReadoutTimeStamp(int _number = 0);
     void SavePreValue();
+    string getJsonFromNumber(int i, std::string _lineend);
     string GetPreValue(std::string _number = "");
     void SetPreValue(double zw, string _numbers, bool _extern = false);
 
-    std::string GetJSON(std::string _id = "", std::string _mac = "", std::string _lineend = "\n");
+    std::string GetJSON(std::string _lineend = "\n");
     std::string getNumbersName();
 
     void UpdateNachkommaDecimalShift();
