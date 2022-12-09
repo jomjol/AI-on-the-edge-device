@@ -707,6 +707,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
+        NUMBERS[j]->lastvalue = imagetime;
 
         UpdateNachkommaDecimalShift();
 
@@ -761,6 +762,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
             else
             {
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
                 WriteDataLog(j);
                 continue; // es gibt keinen Zahl, da noch ein N vorhanden ist.
             }
@@ -818,6 +821,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
+
+                    string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
                     WriteDataLog(j);
                     continue;
                 }
@@ -846,6 +852,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
+
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
                 WriteDataLog(j);
                 continue;
             }
@@ -853,8 +862,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
            ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
-        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
-        NUMBERS[j]->lastvalue = imagetime;
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
 
@@ -866,7 +874,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         UpdatePreValueINI = true;
 
         string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-        ESP_LOGD(TAG, "%s", zw.c_str());
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
     }
