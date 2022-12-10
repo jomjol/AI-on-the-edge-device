@@ -9,7 +9,7 @@
 #include "ClassLogFile.h"
 
 
-static const char *TAG = "FLOW ALIGN";
+static const char *TAG = "ALIGN";
 
 bool AlignmentExtendedDebugging = true;
 

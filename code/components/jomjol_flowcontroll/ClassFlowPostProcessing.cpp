@@ -12,7 +12,7 @@
 
 #include "esp_log.h"
 
-static const char* TAG = "FLOW POSTPROC";
+static const char* TAG = "POSTPROC";
 
 //#define SERIAL_DEBUG // testing debug on serial enabled
 
