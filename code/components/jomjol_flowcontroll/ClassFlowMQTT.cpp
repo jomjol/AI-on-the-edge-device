@@ -17,7 +17,7 @@
 
 #define __HIDE_PASSWORD
 
-static const char *TAG = "FLOW MQTT";
+static const char *TAG = "MQTT";
 #define LWT_TOPIC        "connection"
 #define LWT_CONNECTED    "connected"
 #define LWT_DISCONNECTED "connection lost"

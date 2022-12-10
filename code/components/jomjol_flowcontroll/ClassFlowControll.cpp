@@ -29,7 +29,7 @@ extern "C" {
 
 //#define DEBUG_DETAIL_ON  
 
-static const char* TAG = "FLOW CTRL";
+static const char* TAG = "CTRL";
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
@@ -83,9 +83,9 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     if (_input.compare("ClassFlowInfluxDB") == 0)
         return ("Sending InfluxDB");
     if (_input.compare("ClassFlowPostProcessing") == 0)
-        return ("Processing");
+        return ("Post-Processing");
     if (_input.compare("ClassFlowWriteList") == 0)
-        return ("Processing");
+        return ("Writing List");
 
     return "Unkown Status";
 }
@@ -287,6 +287,7 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
             zw_time = gettimestring("%H:%M:%S");
             std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatus = flowStatus + " (" + zw_time + ")";
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 
             FlowControll[i]->doFlow(time);
@@ -317,6 +318,7 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = gettimestring("%H:%M:%S");
         std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatus = flowStatus + " (" + zw_time + ")";
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
@@ -348,6 +350,7 @@ bool ClassFlowControll::doFlow(string time)
     zw_time = gettimestring("%H:%M:%S");
     std::string flowStatus = "Flow finished";
     aktstatus = flowStatus + " (" + zw_time + ")";
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
     return result;
 }

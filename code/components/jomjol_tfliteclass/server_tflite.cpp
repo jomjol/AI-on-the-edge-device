@@ -39,7 +39,7 @@ bool auto_isrunning = false;
 
 int countRounds = 0;
 
-static const char *TAG = "TFLITE";
+static const char *TAG = "TFLITE SERVER";
 
 
 int getCountFlowRounds() {
