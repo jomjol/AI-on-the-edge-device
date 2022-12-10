@@ -620,14 +620,17 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     } 
     tflite->MakeAllocate();
 
-    for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
+    for (int _ana = 0; _ana < GENERAL.size(); ++_ana) // For each NUMBER
     {
-        for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Processing Number #" + std::to_string(_ana));
+        for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i) // For each ROI
         {
-            ESP_LOGD(TAG, "General %d - TfLite", i);
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ROI #" + std::to_string(i) + " - TfLite");
+            //ESP_LOGD(TAG, "General %d - TfLite", i);
 
             switch (CNNType) {
                 case Analogue:
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Analogue");
                     {
                         float f1, f2;
                         f1 = 0; f2 = 0;
@@ -651,6 +654,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     } break;
 
                 case Digital:
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital");
                     {
                         GENERAL[_ana]->ROI[i]->result_klasse = 0;
                         GENERAL[_ana]->ROI[i]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image);
@@ -673,6 +677,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 /*
                 case DigitalHyprid:
                     {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DigitalHyprid");
                         int _num, _nachkomma;
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
@@ -713,6 +718,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 /*
                 case DigitalHyprid10:
                     {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DigitalHyprid10");
                         int _num, _nachkomma;
 
                         tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
@@ -750,6 +756,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                 case DoubleHyprid10:
                     {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DoubleHyprid10");
                         int _num, _numplus, _numminus;
                         float _val, _valplus, _valminus;
                         float _fit;
@@ -828,6 +835,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                 case Digital100:
                 case Analogue100:
                     {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital100 or Analogue100");
                         int _num;
                         float _result_save_file;
                         
