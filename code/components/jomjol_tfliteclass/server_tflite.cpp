@@ -612,7 +612,7 @@ esp_err_t handler_cputemp(httpd_req_t *req)
     const char* resp_str;
     char cputemp[20];
     
-    sprintf(cputemp, "CPU Temp: %4.1f°C", temperatureRead());
+    sprintf(cputemp, "%4.1f°C", temperatureRead());
 
     resp_str = cputemp;
 
@@ -637,7 +637,7 @@ esp_err_t handler_rssi(httpd_req_t *req)
     const char* resp_str;
     char rssi[20];
 
-    sprintf(rssi, "RSSI: %idBm", get_WIFI_RSSI());
+    sprintf(rssi, "%idBm", get_WIFI_RSSI());
 
     resp_str = rssi;
 
@@ -652,6 +652,41 @@ esp_err_t handler_rssi(httpd_req_t *req)
 
     return ESP_OK;
 };
+
+
+esp_err_t handler_uptime(httpd_req_t *req)
+{
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_uptime - Start");       
+#endif
+
+    const char* resp_str;
+    std::string formated = "";
+
+    int uptime = (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+
+    int days = int(floor(uptime / (3600*24)));
+    int hours = int(floor((uptime - days * 3600*24) / (3600)));
+    int minutes = int(floor((uptime - days * 3600*24 - hours * 3600) / (60)));
+    
+    formated = std::to_string(days) + "d " + std::to_string(hours) + "h " + std::to_string(minutes) + "m"; 
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, formated.c_str(), strlen(formated.c_str()));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_uptime - End");       
+#endif
+
+    return ESP_OK;
+}
+
+
+
+
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
@@ -719,6 +754,7 @@ void task_autodoFlow(void *pvParameter)
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
         LogFile.setLogLevel(ESP_LOG_DEBUG);
+        //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
         vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
     }
 
@@ -867,6 +903,11 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/rssi";
     camuri.handler   = handler_rssi;
+    camuri.user_ctx  = (void*) "Light Off";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/uptime";
+    camuri.handler   = handler_uptime;
     camuri.user_ctx  = (void*) "Light Off";
     httpd_register_uri_handler(server, &camuri);
 
