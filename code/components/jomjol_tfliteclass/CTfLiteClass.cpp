@@ -8,7 +8,7 @@
 // #define DEBUG_DETAIL_ON
 
 
-static const char *TAG = "C TFLITE";
+static const char *TAG = "TFLITE";
 
 float CTfLiteClass::GetOutputValue(int nr)
 {

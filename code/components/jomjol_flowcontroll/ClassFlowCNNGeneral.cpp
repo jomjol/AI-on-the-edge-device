@@ -622,7 +622,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
     for (int n = 0; n < GENERAL.size(); ++n) // For each NUMBER
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Processing Number #" + std::to_string(n));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Processing Number '" + GENERAL[n]->name + "'");
         for (int roi = 0; roi < GENERAL[n]->ROI.size(); ++roi) // For each ROI
         {
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ROI #" + std::to_string(roi) + " - TfLite");
