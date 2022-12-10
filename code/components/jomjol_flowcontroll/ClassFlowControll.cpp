@@ -83,9 +83,9 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     if (_input.compare("ClassFlowInfluxDB") == 0)
         return ("Sending InfluxDB");
     if (_input.compare("ClassFlowPostProcessing") == 0)
-        return ("Processing");
+        return ("Post-Processing");
     if (_input.compare("ClassFlowWriteList") == 0)
-        return ("Processing");
+        return ("Writing List");
 
     return "Unkown Status";
 }
