@@ -620,12 +620,12 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     } 
     tflite->MakeAllocate();
 
-    for (int _ana = 0; _ana < GENERAL.size(); ++_ana) // For each NUMBER
+    for (int n = 0; n < GENERAL.size(); ++n) // For each NUMBER
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Processing Number #" + std::to_string(_ana));
-        for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i) // For each ROI
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Processing Number #" + std::to_string(n));
+        for (int roi = 0; roi < GENERAL[n]->ROI.size(); ++roi) // For each ROI
         {
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ROI #" + std::to_string(i) + " - TfLite");
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ROI #" + std::to_string(roi) + " - TfLite");
             //ESP_LOGD(TAG, "General %d - TfLite", i);
 
             switch (CNNType) {
@@ -635,7 +635,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         float f1, f2;
                         f1 = 0; f2 = 0;
 
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
+                        tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
                         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
 
@@ -643,34 +643,34 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         f2 = tflite->GetOutputValue(1);
                         float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
                               
-                        if(GENERAL[_ana]->ROI[i]->CCW)
-                            GENERAL[_ana]->ROI[i]->result_float = 10 - (result * 10);
+                        if(GENERAL[n]->ROI[roi]->CCW)
+                            GENERAL[n]->ROI[roi]->result_float = 10 - (result * 10);
                         else
-                            GENERAL[_ana]->ROI[i]->result_float = result * 10;
+                            GENERAL[n]->ROI[roi]->result_float = result * 10;
                               
-                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float);
+                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
                         if (isLogImage)
-                            LogImage(logPath, GENERAL[_ana]->ROI[i]->name, &GENERAL[_ana]->ROI[i]->result_float, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                            LogImage(logPath, GENERAL[n]->ROI[roi]->name, &GENERAL[n]->ROI[roi]->result_float, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                     } break;
 
                 case Digital:
                     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital");
                     {
-                        GENERAL[_ana]->ROI[i]->result_klasse = 0;
-                        GENERAL[_ana]->ROI[i]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[_ana]->ROI[i]->image);
-                        ESP_LOGD(TAG, "Result General(Digit)%i: %d", i, GENERAL[_ana]->ROI[i]->result_klasse);
+                        GENERAL[n]->ROI[roi]->result_klasse = 0;
+                        GENERAL[n]->ROI[roi]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[n]->ROI[roi]->image);
+                        ESP_LOGD(TAG, "Result General(Digit)%i: %d", roi, GENERAL[n]->ROI[roi]->result_klasse);
 
                         if (isLogImage)
                         {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            string _imagename = GENERAL[n]->name +  "_" + GENERAL[n]->ROI[roi]->name;
                             if (isLogImageSelect)
                             {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                                if (LogImageSelect.find(GENERAL[n]->ROI[roi]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, NULL, &GENERAL[n]->ROI[roi]->result_klasse, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                             else
                             {
-                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
+                                LogImage(logPath, _imagename, NULL, &GENERAL[n]->ROI[roi]->result_klasse, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                         }
                     } break;
@@ -762,7 +762,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         float _fit;
                         float _result_save_file;
 
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
+                        tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
                         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
 
@@ -802,7 +802,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         if (_fit < CNNGoodThreshold)
                         {
-                            GENERAL[_ana]->ROI[i]->isReject = true;
+                            GENERAL[n]->ROI[roi]->isReject = true;
                             result = -1;
                             _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
                             string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
@@ -810,24 +810,24 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         }
                         else
                         {
-                            GENERAL[_ana]->ROI[i]->isReject = false;
+                            GENERAL[n]->ROI[roi]->isReject = false;
                         }
 
 
-                        GENERAL[_ana]->ROI[i]->result_float = result;
-                        ESP_LOGD(TAG, "Result General(Analog)%i: %f", i, GENERAL[_ana]->ROI[i]->result_float);
+                        GENERAL[n]->ROI[roi]->result_float = result;
+                        ESP_LOGD(TAG, "Result General(Analog)%i: %f", roi, GENERAL[n]->ROI[roi]->result_float);
 
                         if (isLogImage)
                         {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            string _imagename = GENERAL[n]->name +  "_" + GENERAL[n]->ROI[roi]->name;
                             if (isLogImageSelect)
                             {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                                if (LogImageSelect.find(GENERAL[n]->ROI[roi]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                             else
                             {
-                                LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                                LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                         }
                     }
@@ -839,34 +839,34 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         int _num;
                         float _result_save_file;
                         
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
+                        tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
     
                         _num = tflite->GetOutClassification();
                         
-                        if(GENERAL[_ana]->ROI[i]->CCW)
-                            GENERAL[_ana]->ROI[i]->result_float = 10 - ((float)_num / 10.0);                              
+                        if(GENERAL[n]->ROI[roi]->CCW)
+                            GENERAL[n]->ROI[roi]->result_float = 10 - ((float)_num / 10.0);                              
                         else
-                            GENERAL[_ana]->ROI[i]->result_float = (float)_num / 10.0;
+                            GENERAL[n]->ROI[roi]->result_float = (float)_num / 10.0;
 
-                        _result_save_file = GENERAL[_ana]->ROI[i]->result_float;
+                        _result_save_file = GENERAL[n]->ROI[roi]->result_float;
 
                         
-                        GENERAL[_ana]->ROI[i]->isReject = false;
+                        GENERAL[n]->ROI[roi]->isReject = false;
                         
-                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", i, GENERAL[_ana]->ROI[i]->CCW, GENERAL[_ana]->ROI[i]->result_float);
+                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
 
                         if (isLogImage)
                         {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
+                            string _imagename = GENERAL[n]->name +  "_" + GENERAL[n]->ROI[roi]->name;
                             if (isLogImageSelect)
                             {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                                if (LogImageSelect.find(GENERAL[n]->ROI[roi]->name) != std::string::npos)
+                                    LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                             else
                             {
-                                LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[_ana]->ROI[i]->image_org);
+                                LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                         }
 
