@@ -1,3 +1,4 @@
+#ifdef ENABLE_MQTT
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -243,3 +244,5 @@ void mqttServer_setMainTopic( std::string _maintopic) {
 std::string mqttServer_getMainTopic() {
     return maintopic;
 }
+
+#endif //ENABLE_MQTT

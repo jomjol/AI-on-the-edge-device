@@ -1,3 +1,5 @@
+#ifdef ENABLE_MQTT
+
 #include <sstream>
 #include <iomanip>
 #include "ClassFlowMQTT.h"
@@ -314,3 +316,6 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     
     return true;
 }
+
+
+#endif //ENABLE_MQTT

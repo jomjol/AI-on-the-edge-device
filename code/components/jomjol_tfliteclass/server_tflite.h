@@ -15,7 +15,9 @@ void TFliteDoAutoStart();
 
 bool isSetupModusActive();
 
+#ifdef ENABLE_MQTT
 std::string GetMQTTMainTopic();
+#endif //ENABLE_MQTT
 
 int getCountFlowRounds();
 

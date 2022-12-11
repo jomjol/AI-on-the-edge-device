@@ -1,3 +1,4 @@
+#ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
 
 //#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
@@ -346,3 +347,4 @@ void MQTTdestroySubscribeFunction(){
         subscribeFunktionMap = NULL;
     }
 }
+#endif //ENABLE_MQTT

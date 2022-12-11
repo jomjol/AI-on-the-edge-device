@@ -39,7 +39,9 @@ extern "C" {
 #include "server_tflite.h"
 
 #include "server_help.h"
-#include "interface_mqtt.h"
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 #include "server_GPIO.h"
 
 #include "Helper.h"

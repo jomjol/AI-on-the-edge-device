@@ -25,7 +25,9 @@
 #include "ClassLogFile.h"
 #include "configFile.h"
 #include "Helper.h"
-#include "interface_mqtt.h"
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 
 static const char *TAG = "GPIO";
 QueueHandle_t gpio_queue_handle = NULL;
@@ -83,12 +85,14 @@ static void gpioHandlerTask(void *arg) {
 }
 
 void GpioPin::gpioInterrupt(int value) {
+#ifdef ENABLE_MQTT    
     if (_mqttTopic != "") {
         ESP_LOGD(TAG, "gpioInterrupt %s %d", _mqttTopic.c_str(), value);
 
-        MQTTPublish(_mqttTopic, value ? "true" : "false");
-        currentState = value;
+        MQTTPublish(_mqttTopic, value ? "true" : "false");        
     }
+#endif //ENABLE_MQTT
+    currentState = value;
 }
 
 void GpioPin::init()
@@ -114,10 +118,12 @@ void GpioPin::init()
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void*)&_gpio);
     }
 
+#ifdef ENABLE_MQTT
     if ((_mqttTopic != "") && ((_mode == GPIO_PIN_MODE_OUTPUT) || (_mode == GPIO_PIN_MODE_OUTPUT_PWM) || (_mode == GPIO_PIN_MODE_BUILT_IN_FLASH_LED))) {
         std::function<bool(std::string, char*, int)> f = std::bind(&GpioPin::handleMQTT, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
         MQTTregisterSubscribeFunction(_mqttTopic, f);
     }
+#endif //ENABLE_MQTT
 }
 
 bool GpioPin::getValue(std::string* errorText)
@@ -138,9 +144,11 @@ void GpioPin::setValue(bool value, gpio_set_source setSource, std::string* error
     } else {
         gpio_set_level(_gpio, value);
 
+#ifdef ENABLE_MQTT
         if ((_mqttTopic != "") && (setSource != GPIO_SET_SOURCE_MQTT)) {
             MQTTPublish(_mqttTopic, value ? "true" : "false");
         }
+#endif //ENABLE_MQTT
     }
 }
 
@@ -148,11 +156,14 @@ void GpioPin::publishState() {
     int newState = gpio_get_level(_gpio);
     if (newState != currentState) {
         ESP_LOGD(TAG,"publish state of GPIO %d new state %d", _gpio, newState);
+#ifdef ENABLE_MQTT
         MQTTPublish(_mqttTopic, newState ? "true" : "false");
+#endif //ENABLE_MQTT
         currentState = newState;
     }
 }
 
+#ifdef ENABLE_MQTT
 bool GpioPin::handleMQTT(std::string, char* data, int data_len) {
     ESP_LOGD(TAG, "GpioPin::handleMQTT data %.*s", data_len, data);
 
@@ -174,7 +185,7 @@ bool GpioPin::handleMQTT(std::string, char* data, int data_len) {
 
     return (errorText == "");
 }
-
+#endif //ENABLE_MQTT
 
 esp_err_t callHandleHttpRequest(httpd_req_t *req)
 {
@@ -236,8 +247,10 @@ void GpioHandler::init()
         it->second->init();
     }
 
+#ifdef ENABLE_MQTT
     std::function<void()> f = std::bind(&GpioHandler::handleMQTTconnect, this);
     MQTTregisterConnectFunction("gpio-handler", f);
+#endif //ENABLE_MQTT
 
     if (xHandleTaskGpio == NULL) {
         gpio_queue_handle = xQueueCreate(10,sizeof(GpioResult));
@@ -261,7 +274,7 @@ void GpioHandler::taskHandler() {
     }
 }
 
-
+#ifdef ENABLE_MQTT
 void GpioHandler::handleMQTTconnect()
 {
     if (gpioMap != NULL) {
@@ -271,9 +284,12 @@ void GpioHandler::handleMQTTconnect()
         }
     }
 }
+#endif //ENABLE_MQTT
 
 void GpioHandler::deinit() {
+#ifdef ENABLE_MQTT
     MQTTunregisterConnectFunction("gpio-handler");
+#endif //ENABLE_MQTT
     clear();
     if (xHandleTaskGpio != NULL) {
         vTaskDelete(xHandleTaskGpio);
@@ -316,6 +332,7 @@ bool GpioHandler::readConfig()
 
 //    ESP_LOGD(TAG, "readConfig - Start 3");
 
+#ifdef ENABLE_MQTT
 //    std::string mainTopicMQTT = "";
     std::string mainTopicMQTT = GetMQTTMainTopic();
     if (mainTopicMQTT.length() > 0)
@@ -323,7 +340,7 @@ bool GpioHandler::readConfig()
         mainTopicMQTT = mainTopicMQTT + "/GPIO";
         ESP_LOGD(TAG, "MAINTOPICMQTT found");
     }
-
+#endif // ENABLE_MQTT
     bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
@@ -345,7 +362,9 @@ bool GpioHandler::readConfig()
             gpio_pin_mode_t pinMode = resolvePinMode(toLower(zerlegt[1]));
             gpio_int_type_t intType = resolveIntType(toLower(zerlegt[2]));
             uint16_t dutyResolution = (uint8_t)atoi(zerlegt[3].c_str());
+#ifdef ENABLE_MQTT 
             bool mqttEnabled = toLower(zerlegt[4]) == "true";
+#endif // ENABLE_MQTT
             bool httpEnabled = toLower(zerlegt[5]) == "true";
             char gpioName[100];
             if (zerlegt.size() >= 7) {
@@ -353,7 +372,11 @@ bool GpioHandler::readConfig()
             } else {
                 sprintf(gpioName, "GPIO%d", gpioNr);
             }
+#ifdef ENABLE_MQTT            
             std::string mqttTopic = mqttEnabled ? (mainTopicMQTT + "/" + gpioName) : "";
+#else // ENABLE_MQTT
+            std::string mqttTopic = "";
+#endif // ENABLE_MQTT
             GpioPin* gpioPin = new GpioPin(gpioNr, gpioName, pinMode, intType,dutyResolution, mqttTopic, httpEnabled);
             (*gpioMap)[gpioNr] = gpioPin;
 
