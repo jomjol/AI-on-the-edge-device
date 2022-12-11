@@ -133,13 +133,13 @@ static bool obtain_time(void)
 
 void logNtpStatus(sntp_sync_status_t status) {
     if (status == SNTP_SYNC_STATUS_COMPLETED) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "NTP Status OK");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Status OK");
     }
     else if (status == SNTP_SYNC_STATUS_IN_PROGRESS) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "NTP Status: In Progress");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Status: In Progress");
     }
     else { // SNTP_SYNC_STATUS_RESET
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "NTP Status: Reset");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Status: Reset");
     }
 }
 

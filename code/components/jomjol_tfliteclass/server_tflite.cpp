@@ -39,7 +39,7 @@ bool auto_isrunning = false;
 
 int countRounds = 0;
 
-static const char *TAG = "TFLITE";
+static const char *TAG = "TFLITE SERVER";
 
 
 int getCountFlowRounds() {
@@ -104,7 +104,9 @@ void doInit(void)
     ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
 #endif
     
+#ifdef ENABLE_MQTT
     tfliteflow.StartMQTTService();
+#endif //ENABLE_MQTT
 }
 
 
@@ -803,11 +805,12 @@ void TFliteDoAutoStart()
 
 }
 
+#ifdef ENABLE_MQTT
 std::string GetMQTTMainTopic()
 {
     return tfliteflow.GetMQTTMainTopic();
 }
-
+#endif//ENABLE_MQTT
 
 
 void register_server_tflite_uri(httpd_handle_t server)

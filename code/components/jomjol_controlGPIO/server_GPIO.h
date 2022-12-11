@@ -45,7 +45,9 @@ public:
     void init();
     bool getValue(std::string* errorText);
     void setValue(bool value, gpio_set_source setSource, std::string* errorText);
+#ifdef ENABLE_MQTT
     bool handleMQTT(std::string, char* data, int data_len);
+#endif //ENABLE_MQTT
     void publishState();
     void gpioInterrupt(int value);
     gpio_int_type_t getInterruptType() { return _interruptType; }
@@ -77,7 +79,9 @@ public:
     void gpioInterrupt(GpioResult* gpioResult);  
     void flashLightEnable(bool value);
     bool isEnabled() { return _isEnabled; }
+#ifdef ENABLE_MQTT
     void handleMQTTconnect();
+#endif //ENABLE_MQTT
 
 private:
     std::string _configFile;
@@ -110,3 +114,4 @@ GpioHandler* gpio_handler_get();
 
 
 #endif //SERVER_GPIO_H
+

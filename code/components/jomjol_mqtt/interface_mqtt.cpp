@@ -1,3 +1,4 @@
+#ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
 
 #include "esp_log.h"
@@ -380,3 +381,4 @@ void MQTTdestroySubscribeFunction(){
         subscribeFunktionMap = NULL;
     }
 }
+#endif //ENABLE_MQTT

@@ -1,3 +1,5 @@
+
+
 #ifndef __FLOWCONTROLL__
 #define __FLOWCONTROLL__
 
@@ -8,8 +10,12 @@
 #include "ClassFlowAlignment.h"
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
-#include "ClassFlowMQTT.h"
-#include "ClassFlowInfluxDB.h"
+#ifdef ENABLE_MQTT
+	#include "ClassFlowMQTT.h"
+#endif //ENABLE_MQTT
+#ifdef ENABLE_INFLUXDB
+	#include "ClassFlowInfluxDB.h"
+#endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowWriteList.h"
 
@@ -54,8 +60,9 @@ public:
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);
-
+#ifdef ENABLE_MQTT
 	string GetMQTTMainTopic();
+#endif //ENABLE_MQTT
 
 	esp_err_t GetJPGStream(std::string _fn, httpd_req_t *req);
 	esp_err_t SendRawJPG(httpd_req_t *req);
@@ -71,7 +78,9 @@ public:
 
 	t_CNNType GetTypeDigital();
 	t_CNNType GetTypeAnalog();
+#ifdef ENABLE_MQTT
 	bool StartMQTTService();
+#endif //ENABLE_MQTT
 
 	int CleanTempFolder();
 
@@ -79,5 +88,6 @@ public:
 };
 
 #endif
+
 
 

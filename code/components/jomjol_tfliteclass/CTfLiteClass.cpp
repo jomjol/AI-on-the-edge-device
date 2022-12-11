@@ -8,7 +8,7 @@
 // #define DEBUG_DETAIL_ON
 
 
-static const char *TAG = "C TFLITE";
+static const char *TAG = "TFLITE";
 
 float CTfLiteClass::GetOutputValue(int nr)
 {
@@ -179,6 +179,8 @@ void CTfLiteClass::MakeAllocate()
     static tflite::AllOpsResolver resolver;
 
 //    ESP_LOGD(TAG, "%s", LogFile.getESPHeapInfo().c_str());
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Make Allocate");
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 //    ESP_LOGD(TAG, "%s", LogFile.getESPHeapInfo().c_str());
 
