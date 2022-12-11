@@ -2,11 +2,14 @@
 
 ## [Unreleased]
 
+
+## [13.0.7] 2022-12-11
+
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
 
-:bangbang: **Make sure to read the instructions below carfully!**.
+:bangbang: **Make sure to read the instructions below carfully!**
 
 1.  Backup your configuration (use the `System -> Backup/Restore` page)!
 
@@ -23,6 +26,8 @@
 6.  Please go to `Settings -> Configuration` and address the changed parameters:
     -   DataLogging (storing the values for data graph)
     -   Debug (extended by different debug reporting levels)
+
+7.  Make sure it starts to do the digitalization (check the Error field on the overview page). If it does not start a round within a minute, restart the device.
 
 If anything breaks you can try to enforce manual update as following:
 
@@ -63,7 +68,7 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.2: Update Tool "Logfile downloader and combiner" to handle the new csv file format.
 -   NEW v13.0.2: MQTT: Added MQTT topic `status` (Digitalization Status), Timezone to MQTT topic `timestamp`.#
 -   NEW v13.0.2: Logging: Disable heap logs by default, cleanup
--   **NEW v13.0.5**: 
+-   **NEW v13.0.7**: 
     - log NTP server name
     - Improved log messages
     - Various preparations for next release
@@ -82,7 +87,7 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
 -   NEW v13.0.4: Fix for reboot in case of MQTT not used
 -   NEW v13.0.5: No reboot in case of missing NTP-connection
--   **NEW v13.0.5**:
+-   **NEW v13.0.7**:
     - Prevent autoreboot on cam framebuffer init error
     - Properly protect `wlan.ini` against deletion
     - Fixed various MQTT topic content issues
