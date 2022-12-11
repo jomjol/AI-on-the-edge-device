@@ -10,6 +10,7 @@ void wifi_init_sta(const char *_ssid, const char *_password);
 std::string* getIPAddress();
 std::string* getSSID();
 int get_WIFI_RSSI();
+bool getWIFIisConnected();
 
 extern std::string hostname;
 extern std::string std_hostname;

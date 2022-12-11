@@ -206,12 +206,7 @@ bool ClassFlowMQTT::Start(float AutoIntervall)
         return false;
     }
 
-    if (!MQTT_Init()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init at startup failed! Retry with next publish");
-        return false;
-    }
-
-    return true;
+    return (MQTT_Init() == 1);
 }
 
 
@@ -230,11 +225,11 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     publishSystemData();
 
-    if (flowpostprocessing && MQTTisConnected())
+    if (flowpostprocessing && getMQTTisConnected())
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing MQTT topics...");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {

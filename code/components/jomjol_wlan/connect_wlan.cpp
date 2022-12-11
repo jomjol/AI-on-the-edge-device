@@ -13,6 +13,7 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "interface_mqtt.h"
 
 #include <fstream>
 #include <string>
@@ -38,6 +39,7 @@ static EventGroupHandle_t s_wifi_event_group;
 static const char *TAG = "WIFI";
 
 static int s_retry_num = 0;
+bool WIFIConnected = false;
 
 ///////////////////////////////////////////////////////////
 #define BLINK_GPIO GPIO_NUM_33
@@ -113,9 +115,11 @@ static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+        WIFIConnected = false;
         LEDBlinkTask(200, 1, true);
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        WIFIConnected = false;
 //        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
             esp_wifi_connect();
             s_retry_num++;
@@ -131,6 +135,12 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         s_retry_num = 0;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
         LEDBlinkTask(1000, 5, true);
+
+        WIFIConnected = true;
+        if (getMQTTisEnabled()) {
+            vTaskDelay(5000 / portTICK_PERIOD_MS); 
+            MQTT_Init();    // Init when WIFI is getting connected    
+        }
     }
 }
 
@@ -249,17 +259,17 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */
     if (bits & WIFI_CONNECTED_BIT) {
-#ifdef __HIDE_PASSWORD
-        ESP_LOGI(TAG, "connected to ap SSID: %s, password: XXXXXXX", _ssid);
-#else
-        ESP_LOGI(TAG, "connected to ap SSID: %s, password: %s", _ssid, _password);
-#endif        
+        #ifdef __HIDE_PASSWORD
+            ESP_LOGI(TAG, "connected to ap SSID: %s, password: XXXXXXX", _ssid);
+        #else
+            ESP_LOGI(TAG, "connected to ap SSID: %s, password: %s", _ssid, _password);
+        #endif        
     } else if (bits & WIFI_FAIL_BIT) {
-#ifdef __HIDE_PASSWORD
-        ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: XXXXXXXX", _ssid);
-#else
-        ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: %s", _ssid, _password);
-#endif        
+        #ifdef __HIDE_PASSWORD
+            ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: XXXXXXXX", _ssid);
+        #else
+            ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: %s", _ssid, _password);
+        #endif        
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
@@ -287,5 +297,9 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 void wifi_init_sta(const char *_ssid, const char *_password)
 {
     wifi_init_sta(_ssid, _password, NULL, NULL, NULL, NULL, NULL);
+}
+
+bool getWIFIisConnected() {
+    return WIFIConnected;
 }
 

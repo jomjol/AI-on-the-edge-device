@@ -128,9 +128,9 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
 }
 
 void MQTThomeassistantDiscovery() {  
-    if (!MQTTisConnected())
-    return;
-    
+    if (!getMQTTisConnected()) 
+        return;
+
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
@@ -163,7 +163,7 @@ void MQTThomeassistantDiscovery() {
 }
 
 void publishSystemData() {
-    if (!MQTTisConnected())
+    if (!getMQTTisConnected()) 
         return;
 
     char tmp_char[50];
@@ -185,8 +185,8 @@ void publishSystemData() {
 
 
 void publishStaticData() {
-    if (!MQTTisConnected())
-    return;
+    if (!getMQTTisConnected()) 
+        return;
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
@@ -212,6 +212,7 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
 }
 
 void GotConnected(std::string maintopic, int retainFlag) {
+    vTaskDelay(10000 / portTICK_PERIOD_MS);     // Delay execution by 10s after connection got established   
     if (HomeassistantDiscovery) {
         MQTThomeassistantDiscovery();
     }
