@@ -294,11 +294,7 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
             zw_time = gettimestring("%H:%M:%S");
             std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatus = flowStatus + " (" + zw_time + ")";
-<<<<<<< HEAD
 #ifdef ENABLE_MQTT
-=======
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
->>>>>>> 3f85f9b755be3a56e14599931e3c2ede0ec386d8
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 #endif //ENABLE_MQTT
 
@@ -330,11 +326,7 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = gettimestring("%H:%M:%S");
         std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatus = flowStatus + " (" + zw_time + ")";
-<<<<<<< HEAD
 #ifdef ENABLE_MQTT
-=======
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
->>>>>>> 3f85f9b755be3a56e14599931e3c2ede0ec386d8
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 #endif //ENABLE_MQTT
 
@@ -367,11 +359,7 @@ bool ClassFlowControll::doFlow(string time)
     zw_time = gettimestring("%H:%M:%S");
     std::string flowStatus = "Flow finished";
     aktstatus = flowStatus + " (" + zw_time + ")";
-<<<<<<< HEAD
 #ifdef ENABLE_MQTT
-=======
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
->>>>>>> 3f85f9b755be3a56e14599931e3c2ede0ec386d8
     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 #endif //ENABLE_MQTT
     return result;
