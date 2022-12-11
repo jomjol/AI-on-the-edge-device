@@ -254,8 +254,8 @@ extern "C" void app_main(void)
 
     /* Check available Heap memory */
     size_t _hsize = getESPHeapSize();
-    if (_hsize < 4*1024*1024) { // Check available Heap memory for 4 MB
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Not enough Heap memory available. Expected around 4 MBytes, but only " + std::to_string((float)_hsize/1024/1024) + " MBytes are available! That is not enough for this firmware!");
+    if (_hsize < 4000000) { // Check available Heap memory for a bit less than 4 MB (a test on a good device showed 4187558 bytes to be available)
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Not enough Heap memory available. Expected around 4 MBytes, but only " + std::to_string(_hsize) + " Bytes are available! That is not enough for this firmware!");
         setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
     } else { // Heap memory is ok
         if (camStatus != ESP_OK) {
