@@ -225,15 +225,21 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
+    ESP_LOGI(TAG, "A1");
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
+        ESP_LOGI(TAG, "A2");
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
+    ESP_LOGI(TAG, "A3");
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
 
-
+    
+    ESP_LOGI(TAG, "A4");
     size_t psram_size = esp_spiram_get_size();
+    
+    ESP_LOGI(TAG, "A5");
    // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has %0.1f MBytes in the PSRAM", psram_size/1024/1024);
     if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
