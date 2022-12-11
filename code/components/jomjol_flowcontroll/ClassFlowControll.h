@@ -13,7 +13,9 @@
 #ifdef ENABLE_MQTT
 	#include "ClassFlowMQTT.h"
 #endif //ENABLE_MQTT
-#include "ClassFlowInfluxDB.h"
+#ifdef ENABLE_INFLUXDB
+	#include "ClassFlowInfluxDB.h"
+#endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowWriteList.h"
 
