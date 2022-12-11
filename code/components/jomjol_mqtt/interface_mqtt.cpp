@@ -55,7 +55,7 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag)
         #endif
         int msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
         #ifdef DEBUG_DETAIL_ON 
-            ESP_LOGI(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
+            ESP_LOGD(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
         #endif
         if (msg_id == -1) {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to publish topic '" + _key + "', re-trying...");   
@@ -64,7 +64,7 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag)
             #endif
             msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
             #ifdef DEBUG_DETAIL_ON 
-                ESP_LOGI(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
+                ESP_LOGD(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
             #endif
             if (msg_id == -1) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to publish topic '" + _key + "', skipping all MQTT publishings in this round!");
