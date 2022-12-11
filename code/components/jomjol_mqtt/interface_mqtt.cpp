@@ -224,7 +224,7 @@ int MQTT_Init() {
         .disable_auto_reconnect = false,        // Reconnection routine active (Default: false)
         .buffer_size = 1536,                    // size of MQTT send/receive buffer (Default: 1024)
         .reconnect_timeout_ms = 15000,          // Try to reconnect to broker (Default: 10000ms)
-        .network_timeout_ms = 15000,            // Network Timeout (Default: 10000ms)
+        .network_timeout_ms = 20000,            // Network Timeout (Default: 10000ms)
         .message_retransmit_timeout = 3000      // Tiem after message resent when broker not acknowledged (QoS1, QoS2)
 
     };
