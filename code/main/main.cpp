@@ -225,43 +225,39 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    ESP_LOGI(TAG, "A1");
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
-        ESP_LOGI(TAG, "A2");
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
-    ESP_LOGI(TAG, "A3");
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
 
-    
-    ESP_LOGI(TAG, "A4");
+    /* Check if PSRAM can be initalized */
     esp_err_t ret;
     ret = esp_spiram_init();
-
-    ESP_LOGI(TAG, "esp_spiram_init: %d", ret);
-
-    ESP_LOGI(TAG, "A4b");
-    size_t psram_size = esp_spiram_get_size();
-    
-    ESP_LOGI(TAG, "A5");
-   // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has " + std::to_string(psram_size/1024/1024) + " MBytes in the PSRAM");
-    if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "4 or more MBytes of PSRAM required, but found only " + std::to_string(psram_size/1024/1024) + " MBytes!");
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Does the device really have 4 Mbytes PSRAM?");
+    if (esp_spiram_init() == ESP_FAIL) { // Failed to init PSRAM, most likely not available or broken
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize PSRAM (" + std::to_string(ret) + "!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Either your device misses the PSRAM chip or it is broken!");
         setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
     }
+    else { // PSRAM init ok
+        /* Check if PSRAM provides at least 4 MB */
+        size_t psram_size = esp_spiram_get_size();        
+        // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has " + std::to_string(psram_size/1024/1024) + " MBytes of PSRAM");
+        if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "At least 4 MBytes are required!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Does the device really have a 4 Mbytes PSRAM?");
+            setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+        }
+    }
 
+    /* Check available Heap memory */
     size_t _hsize = getESPHeapSize();
-    if (_hsize < 4000000) // Check for a bit less than 4 MB (but clearly over 2 MB)
-    {
-        std::string _zws = "Not enough PSRAM available. Expected around 4 MBytes - available: " + std::to_string((float)_hsize/1024/1024) + " MBytes!";
-        _zws = _zws + "\nEither not initialized, too small (2 MByte only) or not present at all. Firmware cannot start!!";
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zws);
-        setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
-    } else { // Bad Camera Status, retry init   
+    if (_hsize < 4*1024*1024) { // Check available Heap memory for 4 MB
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Not enough Heap memory available. Expected around 4 MBytes, but only " + std::to_string((float)_hsize/1024/1024) + " MBytes are available! That is not enough for this firmware!");
+        setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
+    } else { // Heap memory is ok
         if (camStatus != ESP_OK) {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to initialize camera module, retrying...");
 
@@ -322,13 +318,13 @@ extern "C" void app_main(void)
         ESP_LOGD(TAG, "vor do autostart");
         TFliteDoAutoStart();
     }
-    else if (isSetSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD) || // Initialization failed with crritical errors, not starting flows
-             isSetSystemStatusFlag(SYSTEM_STATUS_CAM_BAD)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
-    }
-    else {  // Non critical errors occured, we try to continue...
+    else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
+        isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors, but trying to continue...");
         ESP_LOGD(TAG, "vor do autostart");
         TFliteDoAutoStart();
-    }  
+    }
+    else { // Any other error is critical and makes running the flow impossible.
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
+    }
 }

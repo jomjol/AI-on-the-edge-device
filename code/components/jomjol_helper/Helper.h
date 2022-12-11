@@ -68,12 +68,12 @@ string getMac(void);
 /* Error bit fields
    One bit per error
    Make sure it matches https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes */
-enum SystemStatusFlag_t { // One bit per error
-    SYSTEM_STATUS_SD_CARD_BAD       = 1 << 0, //  1
-    SYSTEM_STATUS_CAM_BAD           = 1 << 1, //  2
-    SYSTEM_STATUS_CAM_FB_BAD        = 1 << 2, //  4
-    SYSTEM_STATUS_PSRAM_BAD         = 1 << 3, //  8
-    SYSTEM_STATUS_NTP_BAD           = 1 << 4, // 16
+enum SystemStatusFlag_t {          // One bit per error
+    SYSTEM_STATUS_CAM_BAD           = 1 << 0, //  1, Critical Error
+    SYSTEM_STATUS_CAM_FB_BAD        = 1 << 1, //  2, Flow still might work
+    SYSTEM_STATUS_PSRAM_BAD         = 1 << 2, //  4, Critical Error
+    SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 3, //  8, Critical Error
+    SYSTEM_STATUS_NTP_BAD           = 1 << 4, // 16, Flow will work but time will be wrong
 };
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);
