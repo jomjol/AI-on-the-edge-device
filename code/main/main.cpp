@@ -237,13 +237,19 @@ extern "C" void app_main(void)
 
     
     ESP_LOGI(TAG, "A4");
+    esp_err_t ret;
+    ret = esp_spiram_init();
+
+    ESP_LOGI(TAG, "esp_spiram_init: %d", ret);
+
+    ESP_LOGI(TAG, "A4b");
     size_t psram_size = esp_spiram_get_size();
     
     ESP_LOGI(TAG, "A5");
    // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has %0.1f MBytes in the PSRAM", psram_size/1024/1024);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has " + std::to_string(psram_size/1024/1024) + " MBytes in the PSRAM");
     if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "4 or more MBytes of PSRAM required, but found only %0.1f MBytes!", psram_size/1024/1024);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "4 or more MBytes of PSRAM required, but found only " + std::to_string(psram_size/1024/1024) + " MBytes!");
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Does the device really have 4 Mbytes PSRAM?");
         setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
     }
