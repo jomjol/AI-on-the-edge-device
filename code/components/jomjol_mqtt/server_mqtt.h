@@ -1,3 +1,5 @@
+#ifdef ENABLE_MQTT
+
 #include "ClassFlowDefineTypes.h"
 
 #define LWT_TOPIC        "connection"
@@ -18,3 +20,5 @@ void publishSystemData();
 
 std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, int SetRetainFlag);
+
+#endif //ENABLE_MQTT

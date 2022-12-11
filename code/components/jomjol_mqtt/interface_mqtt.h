@@ -1,3 +1,4 @@
+#ifdef ENABLE_MQTT
 #ifndef INTERFACE_MQTT_H
 #define INTERFACE_MQTT_H
 
@@ -22,5 +23,5 @@ void MQTTdestroySubscribeFunction();
 void MQTTconnected();
 
 void MQTTdisable();
-
 #endif //INTERFACE_MQTT_H
+#endif //#ENABLE_MQTT

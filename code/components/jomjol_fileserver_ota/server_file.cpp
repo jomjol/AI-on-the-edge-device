@@ -39,7 +39,9 @@ extern "C" {
 #include "server_tflite.h"
 
 #include "server_help.h"
-#include "interface_mqtt.h"
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 #include "server_GPIO.h"
 
 #include "Helper.h"
@@ -219,7 +221,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     ESP_LOGD(TAG, "entrypath: <%s>", entrypath);
 
     if (!dir) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat dir: %s", dirpath);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat dir: " + std::string(dirpath) + "!");
         /* Respond with 404 Not Found */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -361,7 +363,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: %s", filepath);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -446,7 +448,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 
     fd = OpenFileAndWait(currentfilename.c_str(), "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: %s", filepath);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -566,7 +568,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
         /* If file not present on SPIFFS check if URI
          * corresponds to one of the hardcoded paths */
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat file: %s!", filepath);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat file: " + std::string(filepath) + "!");
         /* Respond with 404 Not Found */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -574,7 +576,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     fd = OpenFileAndWait(filepath, "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: %s!", filepath);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -828,6 +830,12 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             ESP_LOGE(TAG, "Invalid filename: %s", filename);
             /* Respond with 400 Bad Request */
             httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid filename");
+            return ESP_FAIL;
+        }
+
+        if (strcmp(filename, "wlan.ini") == 0) {
+            ESP_LOGE(TAG, "Trying to delete protected file : %s", filename);
+            httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Not allowed to delete wlan.ini");
             return ESP_FAIL;
         }
 

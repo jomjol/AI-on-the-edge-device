@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [13.0.5] - 2022-12-06
-
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
@@ -65,6 +63,10 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.2: Update Tool "Logfile downloader and combiner" to handle the new csv file format.
 -   NEW v13.0.2: MQTT: Added MQTT topic `status` (Digitalization Status), Timezone to MQTT topic `timestamp`.#
 -   NEW v13.0.2: Logging: Disable heap logs by default, cleanup
+-   **NEW v13.0.5**: 
+    - log NTP server name
+    - Improved log messages
+    - Various preparations for next release
 
 ### Fixed
 
@@ -79,7 +81,14 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.2: Corrected Version comparison between firmware and Web UI.
 -   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
 -   NEW v13.0.4: Fix for reboot in case of MQTT not used
--   **NEW v13.0.5**: No reboot in case of missing NTP-connection
+-   NEW v13.0.5: No reboot in case of missing NTP-connection
+-   **NEW v13.0.5**:
+    - Prevent autoreboot on cam framebuffer init error
+    - Properly protect `wlan.ini` against deletion
+    - Fixed various MQTT topic content issues
+    - Fix Digit detected as 10 (https://github.com/jomjol/AI-on-the-edge-device/pull/1525)
+    - Fix frozen time in datafile on error
+    - Various minor fixes
 
 ### Removed
 

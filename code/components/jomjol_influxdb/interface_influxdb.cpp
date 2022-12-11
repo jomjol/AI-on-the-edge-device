@@ -1,3 +1,4 @@
+#ifdef ENABLE_INFLUXDB
 #include "interface_influxdb.h"
 
 //#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
@@ -111,4 +112,4 @@ void InfluxDBInit(std::string _uri, std::string _database, std::string _measurem
 void InfluxDBdestroy() {
 }
 
-
+#endif //ENABLE_INFLUXDB

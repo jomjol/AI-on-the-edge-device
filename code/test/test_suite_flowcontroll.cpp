@@ -11,7 +11,7 @@
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 #include "driver/sdmmc_defs.h"
-static const char *TAG = "MAIN TEST";
+//static const char *TAG = "MAIN TEST";
 #define __SD_USE_ONE_LINE_MODE__
 #include "server_GPIO.h"
 
@@ -117,6 +117,7 @@ extern "C" void app_main()
     RUN_TEST(test_doFlowPP1);
     RUN_TEST(test_doFlowPP2);
     RUN_TEST(test_doFlowPP3);
+    RUN_TEST(test_doFlowPP4);
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
