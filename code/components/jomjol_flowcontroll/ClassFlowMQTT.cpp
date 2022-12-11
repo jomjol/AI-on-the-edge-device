@@ -231,7 +231,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing MQTT topics...");
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
