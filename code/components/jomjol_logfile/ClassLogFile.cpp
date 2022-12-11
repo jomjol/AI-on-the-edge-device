@@ -298,7 +298,7 @@ void ClassLogFile::RemoveOldLogFile()
         return;
     }
 
-    ESP_LOGI(TAG, "Remove old log files");
+    ESP_LOGD(TAG, "Remove old log files");
 
     time_t rawtime;
     struct tm* timeinfo;
