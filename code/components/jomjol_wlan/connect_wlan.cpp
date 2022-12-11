@@ -13,7 +13,9 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
-#include "interface_mqtt.h"
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 
 #include <fstream>
 #include <string>
@@ -137,10 +139,12 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         LEDBlinkTask(1000, 5, true);
 
         WIFIConnected = true;
-        if (getMQTTisEnabled()) {
-            vTaskDelay(5000 / portTICK_PERIOD_MS); 
-            MQTT_Init();    // Init when WIFI is getting connected    
-        }
+        #ifdef ENABLE_MQTT
+            if (getMQTTisEnabled()) {
+                vTaskDelay(5000 / portTICK_PERIOD_MS); 
+                MQTT_Init();    // Init when WIFI is getting connected    
+            }
+        #endif //ENABLE_MQTT
     }
 }
 

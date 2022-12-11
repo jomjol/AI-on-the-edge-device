@@ -29,7 +29,9 @@
 #include "server_tflite.h"
 #include "server_file.h"
 #include "server_GPIO.h"
-#include "interface_mqtt.h"
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 
 
 #include "ClassLogFile.h"
@@ -602,7 +604,9 @@ void doReboot(){
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     // KillTFliteTasks(); // kills itself 
     gpio_handler_destroy();
-    MQTTdestroy_client();
+    #ifdef ENABLE_MQTT
+        MQTTdestroy_client();
+    #endif //ENABLE_MQTT
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart();
     hard_restart();
