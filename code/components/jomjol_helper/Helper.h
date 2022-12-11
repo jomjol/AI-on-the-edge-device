@@ -63,6 +63,24 @@ string getSDCardCapacity();
 string getSDCardSectorSize();
 
 string getMac(void);
+
+
+/* Error bit fields
+   One bit per error
+   Make sure it matches https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes */
+enum SystemStatusFlag_t { // One bit per error
+    SYSTEM_STATUS_SD_CARD_BAD       = 1 << 0, //  1
+    SYSTEM_STATUS_CAM_BAD           = 1 << 1, //  2
+    SYSTEM_STATUS_CAM_FB_BAD        = 1 << 2, //  4
+    SYSTEM_STATUS_PSRAM_BAD         = 1 << 3, //  8
+    SYSTEM_STATUS_NTP_BAD           = 1 << 4, // 16
+};
+
+void setSystemStatusFlag(SystemStatusFlag_t flag);
+void clearSystemStatusFlag(SystemStatusFlag_t flag);
+int getSystemStatus(void);
+bool isSetSystemStatusFlag(SystemStatusFlag_t flag);
+
 string getResetReason(void);
 
 const char* get404(void);
