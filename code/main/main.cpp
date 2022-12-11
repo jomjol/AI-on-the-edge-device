@@ -235,8 +235,8 @@ extern "C" void app_main(void)
     /* Check if PSRAM can be initalized */
     esp_err_t ret;
     ret = esp_spiram_init();
-    if (esp_spiram_init() == ESP_FAIL) { // Failed to init PSRAM, most likely not available or broken
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize PSRAM (" + std::to_string(ret) + "!");
+    if (ret == ESP_FAIL) { // Failed to init PSRAM, most likely not available or broken
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize PSRAM (" + std::to_string(ret) + ")!");
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Either your device misses the PSRAM chip or it is broken!");
         setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
     }
