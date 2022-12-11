@@ -75,8 +75,8 @@ enum SystemStatusFlag_t {          // One bit per error
     SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  1, Critical Error
 
     // Second Byte
-    SYSTEM_STATUS_CAM_FB_BAD        = 1 << 0+8, //  2, Flow still might work
-    SYSTEM_STATUS_NTP_BAD           = 1 << 1+8, // 16, Flow will work but time will be wrong
+    SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  2, Flow still might work
+    SYSTEM_STATUS_NTP_BAD           = 1 << (1+8), // 16, Flow will work but time will be wrong
 };
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);
