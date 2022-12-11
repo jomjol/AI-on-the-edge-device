@@ -350,7 +350,7 @@ void ClassLogFile::RemoveOldDataLog()
         return;
     }
 
-    ESP_LOGI(TAG, "Remove old data files");
+    ESP_LOGD(TAG, "Remove old data files");
 
     time_t rawtime;
     struct tm* timeinfo;
