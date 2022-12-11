@@ -705,3 +705,4 @@ GpioHandler* gpio_handler_get()
 {
     return gpioHandler;
 }
+
