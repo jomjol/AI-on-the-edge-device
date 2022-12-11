@@ -1,3 +1,4 @@
+#ifdef ENABLE_INFLUXDB
 #pragma once
 #include "ClassFlow.h"
 
@@ -29,3 +30,4 @@ public:
     string name(){return "ClassFlowInfluxDB";};
 };
 
+#endif //ENABLE_INFLUXDB

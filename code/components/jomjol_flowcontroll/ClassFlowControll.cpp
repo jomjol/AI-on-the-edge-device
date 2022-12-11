@@ -56,9 +56,12 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
         _classname = "ClassFlowMQTT";
     }
 #endif //ENABLE_MQTT
+
+#ifdef ENABLE_INFLUXDB
     if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)){
         _classname = "ClassFlowInfluxDB";
     }
+#endif //ENABLE_INFLUXDB
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
@@ -85,8 +88,10 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     if (_input.compare("ClassFlowMQTT") == 0)
         return ("Sending MQTT");
 #endif //ENABLE_MQTT
+#ifdef ENABLE_INFLUXDB
     if (_input.compare("ClassFlowInfluxDB") == 0)
         return ("Sending InfluxDB");
+#endif //ENABLE_INFLUXDB
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
     if (_input.compare("ClassFlowWriteList") == 0)
@@ -205,10 +210,10 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
 #endif //ENABLE_MQTT
-
+#ifdef ENABLE_INFLUXDB
     if (toUpper(_type).compare("[INFLUXDB]") == 0)
         cfc = new ClassFlowInfluxDB(&FlowControll);
-        
+#endif //ENABLE_INFLUXDB        
     if (toUpper(_type).compare("[WRITELIST]") == 0)
         cfc = new ClassFlowWriteList(&FlowControll);
 

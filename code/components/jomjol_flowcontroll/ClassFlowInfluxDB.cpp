@@ -1,3 +1,4 @@
+#ifdef ENABLE_INFLUXDB
 #include <sstream>
 #include "ClassFlowInfluxDB.h"
 #include "Helper.h"
@@ -5,6 +6,7 @@
 
 #include "time_sntp.h"
 #include "interface_influxdb.h"
+
 #include "ClassFlowPostProcessing.h"
 #include "esp_log.h"
 
@@ -162,3 +164,5 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
     
     return true;
 }
+
+#endif //ENABLE_INFLUXDB
