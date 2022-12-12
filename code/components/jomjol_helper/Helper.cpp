@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -824,6 +825,30 @@ string getResetReason(void) {
 			reasonText = "Unknown";
 	}
     return reasonText;
+}
+
+/**
+ * Returns the current uptime  formated ad xxf xxh xxm [xxs]
+ */
+std::string getFormatedUptime(bool compact) {
+	char buf[20];
+	#pragma GCC diagnostic ignored "-Wformat-truncation"
+
+    int uptime = (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+
+    int days = int(floor(uptime / (3600*24)));
+    int hours = int(floor((uptime - days * 3600*24) / (3600)));
+    int minutes = int(floor((uptime - days * 3600*24 - hours * 3600) / (60)));
+    int seconds = uptime - days * 3600*24 - hours * 3600 - minutes * 60;
+    
+	if (compact) {
+		snprintf(buf, sizeof(buf), "%dd%02dh%02dm%02ds", days, hours, minutes, seconds);
+	}
+	else {
+		snprintf(buf, sizeof(buf), "%3dd %02dh %02dm %02ds", days, hours, minutes, seconds);
+	}
+
+	return std::string(buf);
 }
 
 const char* get404(void) {

@@ -5,6 +5,9 @@
 
 #include "driver/gpio.h"
 #include "sdkconfig.h"
+//#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
+#include "spiram.h"
+#include "esp_spiram.h"
 
 // SD-Card ////////////////////
 #include "nvs_flash.h"
@@ -27,7 +30,9 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
-#include "server_mqtt.h"
+#ifdef ENABLE_MQTT
+    #include "server_mqtt.h"
+#endif //ENABLE_MQTT
 #include "Helper.h"
 
 extern const char* GIT_TAG;
@@ -229,14 +234,32 @@ extern "C" void app_main(void)
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
 
-    size_t _hsize = getESPHeapSize();
-    if (_hsize < 4000000) // Check for a bit less than 4 MB (but clearly over 2 MB)
-    {
-        std::string _zws = "Not enough PSRAM available. Expected around 4 MBytes - available: " + std::to_string((float)_hsize/1024/1024) + " MBytes!";
-        _zws = _zws + "\nEither not initialized, too small (2 MByte only) or not present at all. Firmware cannot start!!";
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zws);
+    /* Check if PSRAM can be initalized */
+    esp_err_t ret;
+    ret = esp_spiram_init();
+    if (ret == ESP_FAIL) { // Failed to init PSRAM, most likely not available or broken
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize PSRAM (" + std::to_string(ret) + ")!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Either your device misses the PSRAM chip or it is broken!");
         setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
-    } else { // Bad Camera Status, retry init   
+    }
+    else { // PSRAM init ok
+        /* Check if PSRAM provides at least 4 MB */
+        size_t psram_size = esp_spiram_get_size();        
+        // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has " + std::to_string(psram_size/1024/1024) + " MBytes of PSRAM");
+        if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "At least 4 MBytes are required!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Does the device really have a 4 Mbytes PSRAM?");
+            setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+        }
+    }
+
+    /* Check available Heap memory */
+    size_t _hsize = getESPHeapSize();
+    if (_hsize < 4000000) { // Check available Heap memory for a bit less than 4 MB (a test on a good device showed 4187558 bytes to be available)
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Not enough Heap memory available. Expected around 4 MBytes, but only " + std::to_string(_hsize) + " Bytes are available! That is not enough for this firmware!");
+        setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
+    } else { // Heap memory is ok
         if (camStatus != ESP_OK) {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to initialize camera module, retrying...");
 
@@ -279,7 +302,9 @@ extern "C" void app_main(void)
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
-    register_server_mqtt_uri(server);
+    #ifdef ENABLE_MQTT
+        register_server_mqtt_uri(server);
+    #endif //ENABLE_MQTT
 
     gpio_handler_create(server);
 
@@ -297,8 +322,13 @@ extern "C" void app_main(void)
         ESP_LOGD(TAG, "vor do autostart");
         TFliteDoAutoStart();
     }
-    else if (isSetSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD) || // Initialization failed with crritical errors, not starting flows
-             isSetSystemStatusFlag(SYSTEM_STATUS_CAM_BAD)) {
+    else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
+        isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors, but trying to continue...");
+        ESP_LOGD(TAG, "vor do autostart");
+        TFliteDoAutoStart();
+    }
+    else { // Any other error is critical and makes running the flow impossible.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
     else {  // Non critical errors occured, we try to continue...

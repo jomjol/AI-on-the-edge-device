@@ -246,7 +246,6 @@ esp_err_t hello_main_handler(httpd_req_t *req)
             }
 
             message += "<br><button onclick=\"window.location.href='/reboot';\">Reboot</button>";
-
             message += "<br>Please check <a href=\"https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes\" target=_blank>github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes</a> for more information!";
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, message.c_str());
             return ESP_FAIL;
@@ -449,9 +448,9 @@ httpd_handle_t start_webserver(void)
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority      = tskIDLE_PRIORITY+1;         // 20210924 --> vorher +5
+    config.task_priority      = tskIDLE_PRIORITY+3; //20221211: before: tskIDLE_PRIORITY+1; // 20210924 --> vorher +5
     config.stack_size         = 32768;      //20210921 --> vorher 32768             // bei 32k stürzt das Programm beim Bilderaufnehmen ab
-    config.core_id            = tskNO_AFFINITY;
+    config.core_id            = 0;          //20221211 --> force all not flow related tasks to CPU0, before: tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;
     config.max_open_sockets   = 5;          //20210921 --> vorher 7   
@@ -459,8 +458,8 @@ httpd_handle_t start_webserver(void)
     config.max_resp_headers   = 8;                        
     config.backlog_conn       = 5;                        
     config.lru_purge_enable   = true;       // dadurch werden alte Verbindungen gekappt, falls neue benögt werden.               
-    config.recv_wait_timeout  = 5;         // default: 5         20210924 --> vorher 30              
-    config.send_wait_timeout  = 5;         // default: 5         20210924 --> vorher 30                   
+    config.recv_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30              
+    config.send_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30                   
     config.global_user_ctx = NULL;                        
     config.global_user_ctx_free_fn = NULL;                
     config.global_transport_ctx = NULL;                   

@@ -19,9 +19,10 @@ extern "C" {
 #include "time_sntp.h"
 #include "Helper.h"
 #include "server_ota.h"
-#include "interface_mqtt.h"
-#include "server_mqtt.h"
-
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+    #include "server_mqtt.h"
+#endif //ENABLE_MQTT
 
 //#include "CImg.h"
 
@@ -50,12 +51,17 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
         _classname = "ClassFlowCNNGeneral";
     }
+#ifdef ENABLE_MQTT
     if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
         _classname = "ClassFlowMQTT";
     }
+#endif //ENABLE_MQTT
+
+#ifdef ENABLE_INFLUXDB
     if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)){
         _classname = "ClassFlowInfluxDB";
     }
+#endif //ENABLE_INFLUXDB
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
@@ -78,10 +84,14 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         return ("Aligning");
     if (_input.compare("ClassFlowCNNGeneral") == 0)
         return ("Digitalization of ROIs");
+#ifdef ENABLE_MQTT
     if (_input.compare("ClassFlowMQTT") == 0)
         return ("Sending MQTT");
+#endif //ENABLE_MQTT
+#ifdef ENABLE_INFLUXDB
     if (_input.compare("ClassFlowInfluxDB") == 0)
         return ("Sending InfluxDB");
+#endif //ENABLE_INFLUXDB
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
     if (_input.compare("ClassFlowWriteList") == 0)
@@ -130,7 +140,7 @@ t_CNNType ClassFlowControll::GetTypeAnalog()
 
 
 
-
+#ifdef ENABLE_MQTT
 string ClassFlowControll::GetMQTTMainTopic()
 {
     for (int i = 0; i < FlowControll.size(); ++i)
@@ -149,7 +159,7 @@ bool ClassFlowControll::StartMQTTService() {
         } 
     return false;
 }
-
+#endif //ENABLE_MQTT
 
 void ClassFlowControll::SetInitialParameter(void)
 {
@@ -196,12 +206,14 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         cfc = new ClassFlowCNNGeneral(flowalignment);
         flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
+#ifdef ENABLE_MQTT
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
-
+#endif //ENABLE_MQTT
+#ifdef ENABLE_INFLUXDB
     if (toUpper(_type).compare("[INFLUXDB]") == 0)
         cfc = new ClassFlowInfluxDB(&FlowControll);
-        
+#endif //ENABLE_INFLUXDB        
     if (toUpper(_type).compare("[WRITELIST]") == 0)
         cfc = new ClassFlowWriteList(&FlowControll);
 
@@ -287,8 +299,9 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
             zw_time = gettimestring("%H:%M:%S");
             std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatus = flowStatus + " (" + zw_time + ")";
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
+#ifdef ENABLE_MQTT
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+#endif //ENABLE_MQTT
 
             FlowControll[i]->doFlow(time);
         }
@@ -318,8 +331,9 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = gettimestring("%H:%M:%S");
         std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatus = flowStatus + " (" + zw_time + ")";
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
+#ifdef ENABLE_MQTT
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+#endif //ENABLE_MQTT
 
         string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
         #ifdef DEBUG_DETAIL_ON 
@@ -350,8 +364,9 @@ bool ClassFlowControll::doFlow(string time)
     zw_time = gettimestring("%H:%M:%S");
     std::string flowStatus = "Flow finished";
     aktstatus = flowStatus + " (" + zw_time + ")";
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, flowStatus);
+#ifdef ENABLE_MQTT
     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+#endif //ENABLE_MQTT
     return result;
 }
 

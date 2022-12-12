@@ -1,3 +1,4 @@
+#ifdef ENABLE_INFLUXDB
 #ifndef INTERFACE_INFLUXDB_H
 #define INTERFACE_INFLUXDB_H
 
@@ -11,3 +12,4 @@ void InfluxDBdestroy();
 void InfluxDBPublish(std::string _key, std::string _content, std::string _timestamp);
 
 #endif //INTERFACE_INFLUXDB_H
+#endif //ENABLE_INFLUXDB
