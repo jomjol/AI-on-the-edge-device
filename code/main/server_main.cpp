@@ -245,6 +245,8 @@ esp_err_t hello_main_handler(httpd_req_t *req)
                 }
             }
 
+            message += "<br><button onclick=\"window.location.href='/reboot';\">Reboot</button>";
+
             message += "<br>Please check <a href=\"https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes\" target=_blank>github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes</a> for more information!";
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, message.c_str());
             return ESP_FAIL;
