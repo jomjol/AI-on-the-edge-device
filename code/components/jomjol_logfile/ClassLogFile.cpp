@@ -115,7 +115,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
 {
     FILE* pFile;
     std::string zwtime;
-    std::string logline = "";
+    std::string ntpTime = "";
 
     if (level > loglevel) {// Only write to file if loglevel is below threshold
         return;
@@ -138,7 +138,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
             strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
 
             zwtime = std::string(buffer);
-            logline = zwtime;
+            ntpTime = zwtime;
         }
 
         std::string loglevelString; 
@@ -163,11 +163,11 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
                 loglevelString = "NONE";
                 break;
         }
-        
-        char uptime[20];
-        snprintf(uptime, sizeof(uptime), "%8d", (uint32_t)(esp_timer_get_time()/1000/1000)); // in seconds
-        logline = "[" + std::string(uptime) + "] "  + logline + "\t<" + loglevelString + ">\t" + message + "\n";
-        fputs(logline.c_str(), pFile);
+
+        std::string formatedUptime = getFormatedUptime(true);
+
+        ntpTime = "[" + formatedUptime + "] "  + ntpTime + "\t<" + loglevelString + ">\t" + message + "\n";
+        fputs(ntpTime.c_str(), pFile);
         fclose(pFile);    
     } else {
         ESP_LOGE(TAG, "Can't open log file %s", _fn.c_str());

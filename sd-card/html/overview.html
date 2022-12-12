@@ -46,7 +46,7 @@
 	</td>	
   </tr>
   <tr>
-    <th class="th">Error:</th>
+    <th class="th">Status:</th>
   </tr>	
   <tr>	
     <td class="tg-2">
@@ -59,6 +59,7 @@
 	<div id="statusflow" ></div>	
 	<div id="cputemp" ></div>	
 	<div id="rssi" ></div>	
+	<div id="uptime" ></div>
 	</td>	
   </tr>    
 </table>
@@ -87,6 +88,7 @@ function addZero(i) {
 	loadStatus();
 	loadCPUTemp();
 	loadRSSI();
+	loadUptime();
 	refresh();
 	});
 
@@ -117,11 +119,11 @@ function refresh() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
 				_rsp = "Status: " + _rsp;
-				$('#statusflow').html(_rsp);
+				$('#statusflow').html("Status: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
-		xhttp.send();		
+		xhttp.send();
 	}
 
 	function loadCPUTemp() {
@@ -130,11 +132,11 @@ function refresh() {
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#cputemp').html(_rsp);
+				$('#cputemp').html("CPU Temperature: " +_rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
-		xhttp.send();		
+		xhttp.send();
 	}
 
 	function loadRSSI() {
@@ -143,11 +145,24 @@ function refresh() {
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#rssi').html(_rsp);
+				$('#rssi').html("RSSI: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
 		xhttp.send();		
+	}
+
+	function loadUptime() {
+		url = basepath + '/uptime';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				$('#uptime').html("Uptime: " + _rsp);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
 	}
 		
 	function loadValue(_type, _div, _style) {
@@ -199,6 +214,7 @@ function refresh() {
 		loadStatus();
 		loadCPUTemp();
 		loadRSSI();
+		loadUptime();
 	}
 
 	init();
