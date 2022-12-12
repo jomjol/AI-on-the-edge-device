@@ -12,7 +12,7 @@
 
 #include "esp_log.h"
 
-static const char* TAG = "FLOW POSTPROC";
+static const char* TAG = "POSTPROC";
 
 //#define SERIAL_DEBUG // testing debug on serial enabled
 
@@ -37,41 +37,50 @@ std::string ClassFlowPostProcessing::getNumbersName()
     return ret;
 }
 
-std::string ClassFlowPostProcessing::GetJSON(std::string _id, std::string _mac, std::string _lineend)
+std::string ClassFlowPostProcessing::GetJSON(std::string _lineend)
 {
     std::string json="{" + _lineend;
 
     for (int i = 0; i < NUMBERS.size(); ++i)
     {
         json += "\"" + NUMBERS[i]->name + "\":"  + _lineend;
-        json += "  {"  + _lineend;
 
-        if (_id.length() > 0)
-            json += "    \"ID\": \"" + _id + "\","  + _lineend;
-        if (_mac.length() > 0)
-            json += "    \"MAC\": \"" + _mac + "\","  + _lineend;
+        json += getJsonFromNumber(i, _lineend) + _lineend;
 
-        if (NUMBERS[i]->ReturnValue.length() > 0)
-            json += "    \"value\": \""      + NUMBERS[i]->ReturnValue          + "\"," + _lineend;
-        else
-            json += "    \"value\": \"\","  + _lineend;
-        json += "    \"raw\": \""        + NUMBERS[i]->ReturnRawValue              + "\","  + _lineend;
-        json += "    \"error\": \""     + NUMBERS[i]->ErrorMessageText             + "\","  + _lineend;
-        if (NUMBERS[i]->ReturnRateValue.length() > 0)
-            json += "    \"rate\": "      + NUMBERS[i]->ReturnRateValue                + ","  + _lineend;
-        else
-            json += "    \"rate\": \"\","  + _lineend;
-
-        json += "    \"timestamp\": \"" + NUMBERS[i]->timeStamp                    + "\""  + _lineend;
         if ((i+1) < NUMBERS.size())
-            json += "  }," + _lineend;
-        else
-            json += "  }" + _lineend;
+            json += "," + _lineend;
     }
     json += "}";
 
     return json;
 }
+
+
+string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend) {
+	std::string json = "";
+
+	json += "  {" + _lineend;
+
+	if (NUMBERS[i]->ReturnValue.length() > 0)
+		json += "    \"value\": \"" + NUMBERS[i]->ReturnValue + "\"," + _lineend;
+	else
+		json += "    \"value\": \"\"," + _lineend;
+
+	json += "    \"raw\": \"" + NUMBERS[i]->ReturnRawValue + "\"," + _lineend;
+	json += "    \"pre\": \"" + NUMBERS[i]->ReturnPreValue + "\"," + _lineend;
+	json += "    \"error\": \"" + NUMBERS[i]->ErrorMessageText + "\"," + _lineend;
+
+	if (NUMBERS[i]->ReturnRateValue.length() > 0)
+		json += "    \"rate\": \"" + NUMBERS[i]->ReturnRateValue + "\"," + _lineend;
+	else
+		json += "    \"rate\": \"\"," + _lineend;
+
+	json += "    \"timestamp\": \"" + NUMBERS[i]->timeStamp + "\"" + _lineend;
+	json += "  }" + _lineend;
+
+	return json;
+}
+
 
 string ClassFlowPostProcessing::GetPreValue(std::string _number)
 {
@@ -698,6 +707,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
+        NUMBERS[j]->lastvalue = imagetime;
 
         UpdateNachkommaDecimalShift();
 
@@ -752,6 +762,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             }
             else
             {
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
                 WriteDataLog(j);
                 continue; // es gibt keinen Zahl, da noch ein N vorhanden ist.
             }
@@ -809,6 +821,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
+
+                    string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
                     WriteDataLog(j);
                     continue;
                 }
@@ -837,6 +852,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
+
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
                 WriteDataLog(j);
                 continue;
             }
@@ -844,8 +862,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
            ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
-        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);                                                
-        NUMBERS[j]->lastvalue = imagetime;
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
 
@@ -856,9 +873,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ErrorMessageText = "no error";
         UpdatePreValueINI = true;
 
-        string _zw = "PostProcessing - Raw: " + NUMBERS[j]->ReturnRawValue + " Value: " + NUMBERS[j]->ReturnValue + " Error: " + NUMBERS[j]->ErrorMessageText;
+        string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
         ESP_LOGD(TAG, "%s", zw.c_str());
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
     }
 

@@ -39,7 +39,7 @@ bool auto_isrunning = false;
 
 int countRounds = 0;
 
-static const char *TAG = "TFLITE";
+static const char *TAG = "TFLITE SERVER";
 
 
 int getCountFlowRounds() {
@@ -104,7 +104,9 @@ void doInit(void)
     ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
 #endif
     
+#ifdef ENABLE_MQTT
     tfliteflow.StartMQTTService();
+#endif //ENABLE_MQTT
 }
 
 
@@ -612,7 +614,7 @@ esp_err_t handler_cputemp(httpd_req_t *req)
     const char* resp_str;
     char cputemp[20];
     
-    sprintf(cputemp, "CPU Temp: %4.1f°C", temperatureRead());
+    sprintf(cputemp, "%4.1f°C", temperatureRead());
 
     resp_str = cputemp;
 
@@ -637,7 +639,7 @@ esp_err_t handler_rssi(httpd_req_t *req)
     const char* resp_str;
     char rssi[20];
 
-    sprintf(rssi, "RSSI: %idBm", get_WIFI_RSSI());
+    sprintf(rssi, "%idBm", get_WIFI_RSSI());
 
     resp_str = rssi;
 
@@ -652,6 +654,34 @@ esp_err_t handler_rssi(httpd_req_t *req)
 
     return ESP_OK;
 };
+
+
+esp_err_t handler_uptime(httpd_req_t *req)
+{
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_uptime - Start");       
+#endif
+
+    const char* resp_str;
+    
+    std::string formatedUptime = getFormatedUptime(false);
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, formatedUptime.c_str(), strlen(formatedUptime.c_str()));   
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);      
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_uptime - End");       
+#endif
+
+    return ESP_OK;
+}
+
+
+
+
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
@@ -719,6 +749,7 @@ void task_autodoFlow(void *pvParameter)
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
         LogFile.setLogLevel(ESP_LOG_DEBUG);
+        //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
         vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
     }
 
@@ -736,7 +767,7 @@ void task_autodoFlow(void *pvParameter)
     while (auto_isrunning)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
-        std::string _zw = "task_autodoFlow - Starting Round #" + std::to_string(++countRounds);
+        std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
 
@@ -767,7 +798,7 @@ void task_autodoFlow(void *pvParameter)
         string zwtemp = "CPU Temperature: " + stream.str();
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zwtemp); 
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "task_autodoFlow - round #" + std::to_string(countRounds) + " completed");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + " completed");
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
@@ -803,11 +834,12 @@ void TFliteDoAutoStart()
 
 }
 
+#ifdef ENABLE_MQTT
 std::string GetMQTTMainTopic()
 {
     return tfliteflow.GetMQTTMainTopic();
 }
-
+#endif//ENABLE_MQTT
 
 
 void register_server_tflite_uri(httpd_handle_t server)
@@ -867,6 +899,11 @@ void register_server_tflite_uri(httpd_handle_t server)
 
     camuri.uri       = "/rssi";
     camuri.handler   = handler_rssi;
+    camuri.user_ctx  = (void*) "Light Off";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/uptime";
+    camuri.handler   = handler_uptime;
     camuri.user_ctx  = (void*) "Light Off";
     httpd_register_uri_handler(server, &camuri);
 

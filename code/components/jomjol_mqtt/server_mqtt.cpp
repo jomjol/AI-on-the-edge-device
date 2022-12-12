@@ -1,3 +1,4 @@
+#ifdef ENABLE_MQTT
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -127,7 +128,10 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     MQTTPublish(topicFull, payload, true);
 }
 
-void MQTThomeassistantDiscovery() {    
+void MQTThomeassistantDiscovery() {  
+    if (!getMQTTisConnected()) 
+        return;
+
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
 
     //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
@@ -155,11 +159,14 @@ void MQTThomeassistantDiscovery() {
         sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round", "arrow-expand-vertical", valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
         sendHomeAssistantDiscoveryTopic(group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                "diagnostic");
         sendHomeAssistantDiscoveryTopic(group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "problem",            "Problem",                    "alert-outline",            "",        "",            "",                 ""); // Special binary sensor which is based on error topic
+        sendHomeAssistantDiscoveryTopic(group,   "problem",            "Problem",                    "alert-outline",            "",        "problem",            "",                 ""); // Special binary sensor which is based on error topic
     }
 }
 
 void publishSystemData() {
+    if (!getMQTTisConnected()) 
+        return;
+
     char tmp_char[50];
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
@@ -179,6 +186,9 @@ void publishSystemData() {
 
 
 void publishStaticData() {
+    if (!getMQTTisConnected()) 
+        return;
+
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
@@ -203,6 +213,7 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
 }
 
 void GotConnected(std::string maintopic, int retainFlag) {
+    vTaskDelay(10000 / portTICK_PERIOD_MS);     // Delay execution by 10s after connection got established   
     if (HomeassistantDiscovery) {
         MQTThomeassistantDiscovery();
     }
@@ -243,3 +254,5 @@ void mqttServer_setMainTopic( std::string _maintopic) {
 std::string mqttServer_getMainTopic() {
     return maintopic;
 }
+
+#endif //ENABLE_MQTT

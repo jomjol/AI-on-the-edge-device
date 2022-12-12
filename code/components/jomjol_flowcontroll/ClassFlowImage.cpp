@@ -16,7 +16,7 @@ extern "C" {
 #include "CImageBasis.h"
 #include "esp_log.h"
 
-static const char* TAG = "FLOW IMG";
+static const char* TAG = "IMG";
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {
@@ -93,7 +93,7 @@ void ClassFlowImage::RemoveOldLogs()
 	if (!isLogImage)
 		return;
 	
-	ESP_LOGI(TAG, "remove old images");
+	ESP_LOGD(TAG, "remove old images");
     if (logfileRetentionInDays == 0) {
         return;
     }
@@ -132,7 +132,7 @@ void ClassFlowImage::RemoveOldLogs()
             }
 		}
     }
-    ESP_LOGI(TAG, "Image folder deleted: %d | Image folder not deleted: %d", deleted, notDeleted);	
+    ESP_LOGD(TAG, "Image folder deleted: %d | Image folder not deleted: %d", deleted, notDeleted);	
     closedir(dir);
 }
 

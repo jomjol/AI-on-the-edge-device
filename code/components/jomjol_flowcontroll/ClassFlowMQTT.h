@@ -1,3 +1,4 @@
+#ifdef ENABLE_MQTT
 #pragma once
 #include "ClassFlow.h"
 
@@ -33,3 +34,4 @@ public:
     string name(){return "ClassFlowMQTT";};
 };
 
+#endif //ENABLE_MQTT

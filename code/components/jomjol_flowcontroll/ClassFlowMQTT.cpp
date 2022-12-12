@@ -1,3 +1,5 @@
+#ifdef ENABLE_MQTT
+
 #include <sstream>
 #include <iomanip>
 #include "ClassFlowMQTT.h"
@@ -17,7 +19,7 @@
 
 #define __HIDE_PASSWORD
 
-static const char *TAG = "FLOW MQTT";
+static const char *TAG = "MQTT";
 #define LWT_TOPIC        "connection"
 #define LWT_CONNECTED    "connected"
 #define LWT_DISCONNECTED "connection lost"
@@ -187,36 +189,26 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 }
 
 
-bool ClassFlowMQTT::Start(float AutoIntervall) {
-
-//    printf("URI: %s, MAINTOPIC: %s", uri.c_str(), maintopic.c_str());
-
-    if ((uri.length() == 0) || (maintopic.length() == 0)) 
-    {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT not started because URI or Maintopic is not set. MQTT will be disabled.");
-        MQTTdisable();
-        return false;
-    }
-
+bool ClassFlowMQTT::Start(float AutoIntervall) 
+{
     roundInterval = AutoIntervall; // Minutes
     keepAlive = roundInterval * 60 * 2.5; // Seconds, make sure it is greater thatn 2 rounds!
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << "Digitizer interval is " << roundInterval <<
             " minutes => setting MQTT LWT timeout to " << ((float)keepAlive/60) << " minutes.";
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, stream.str());
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, stream.str());
 
     mqttServer_setParameter(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
 
-    MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED, LWT_DISCONNECTED,
-            keepAlive, SetRetainFlag, (void *)&GotConnected);
+    bool MQTTConfigCheck = MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED,
+                                     LWT_DISCONNECTED, keepAlive, SetRetainFlag, (void *)&GotConnected);
 
-    if (!MQTT_Init()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init at startup failed! Retry with next publish call");
+    if (!MQTTConfigCheck) {
         return false;
     }
 
-    return true;
+    return (MQTT_Init() == 1);
 }
 
 
@@ -235,11 +227,11 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     publishSystemData();
 
-    if (flowpostprocessing)
+    if (flowpostprocessing && getMQTTisConnected())
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing MQTT topics...");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing MQTT topics...");
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
@@ -288,26 +280,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             if (resulttimestamp.length() > 0)
                 MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
-            std::string json = "";
-            
-            if (result.length() > 0)
-                json += "{\"value\": "+result;
-            else
-                json += "{\"value\": \"\"";
-
-            json += ", \"raw\": \""+resultraw;
-
-            json += ", \"pre\": \"" + resultpre;
-
-            json += "\", \"error\": \""+resulterror;
-
-            if (resultrate.length() > 0)
-                json += "\", \"rate\": "+resultrate;
-            else
-                json += "\", \"rate\": \"\"";
-
-            json += ", \"timestamp\": \""+resulttimestamp+"\"}";
-
+            std::string json = flowpostprocessing->getJsonFromNumber(i, "\n");
             MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
@@ -333,3 +306,6 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     
     return true;
 }
+
+
+#endif //ENABLE_MQTT
