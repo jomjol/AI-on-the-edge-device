@@ -183,16 +183,6 @@ jobs:
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
-
     # import the changes from 
     - name: Get generated files from cache
       uses: actions/cache@v3
