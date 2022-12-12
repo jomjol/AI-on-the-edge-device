@@ -36,6 +36,8 @@ static const char* TAG = "HELPER";
 
 using namespace std;
 
+unsigned int systemStatus = 0;
+
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
 
@@ -769,6 +771,38 @@ string getMac(void) {
     sprintf(macFormated, "%02X:%02X:%02X:%02X:%02X:%02X", macInt[0], macInt[1], macInt[2], macInt[3], macInt[4], macInt[5]); 
 
     return macFormated;
+}
+
+
+void setSystemStatusFlag(SystemStatusFlag_t flag) {
+	systemStatus = systemStatus | flag; // set bit
+
+	char buf[20];
+	snprintf(buf, sizeof(buf), "0x%08X", getSystemStatus());
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
+}
+
+void clearSystemStatusFlag(SystemStatusFlag_t flag) {
+	systemStatus = systemStatus | ~flag; // clear bit
+
+	char buf[20];
+	snprintf(buf, sizeof(buf), "0x%08X", getSystemStatus());
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
+}
+
+int getSystemStatus(void) {
+    return systemStatus;
+}
+
+bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
+	//ESP_LOGE(TAG, "Flag (0x%08X) is set (0x%08X): %d", flag, systemStatus , ((systemStatus & flag) == flag));
+
+	if ((systemStatus & flag) == flag) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 string getResetReason(void) {

@@ -230,9 +230,29 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         }
     }
 
-    if (filetosend == "/sdcard/html/index.html" && isSetupModusActive()) {
-        ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");
-        filetosend = "/sdcard/html/setup.html";
+    if (filetosend == "/sdcard/html/index.html") {
+        if (isSetSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD) || // Initialization failed with crritical errors!
+                isSetSystemStatusFlag(SYSTEM_STATUS_CAM_BAD)) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "We have a critical error, not serving main page!");
+
+            char buf[20];
+            std::string message = "<h1>AI on the Edge Device</h1><b>We have one or more critical errors:</b><br>";
+
+            for (int i = 0; i < 32; i++) {
+                if (isSetSystemStatusFlag((SystemStatusFlag_t)(1<<i))) {
+                    snprintf(buf, sizeof(buf), "0x%08X", 1<<i);
+                    message += std::string(buf) + "<br>";
+                }
+            }
+
+            message += "<br>Please check <a href=\"https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes\" target=_blank>github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes</a> for more information!";
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, message.c_str());
+            return ESP_FAIL;
+        }
+        else if (isSetupModusActive()) {
+            ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");
+            filetosend = "/sdcard/html/setup.html";
+        }
     }
 
     ESP_LOGD(TAG, "Filename: %s", filename);
