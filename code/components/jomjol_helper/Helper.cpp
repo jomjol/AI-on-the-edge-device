@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,6 +35,8 @@ static const char* TAG = "HELPER";
 #define PATH_MAX_STRING_SIZE 256
 
 using namespace std;
+
+unsigned int systemStatus = 0;
 
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
@@ -770,6 +773,38 @@ string getMac(void) {
     return macFormated;
 }
 
+
+void setSystemStatusFlag(SystemStatusFlag_t flag) {
+	systemStatus = systemStatus | flag; // set bit
+
+	char buf[20];
+	snprintf(buf, sizeof(buf), "0x%08X", getSystemStatus());
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
+}
+
+void clearSystemStatusFlag(SystemStatusFlag_t flag) {
+	systemStatus = systemStatus | ~flag; // clear bit
+
+	char buf[20];
+	snprintf(buf, sizeof(buf), "0x%08X", getSystemStatus());
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
+}
+
+int getSystemStatus(void) {
+    return systemStatus;
+}
+
+bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
+	//ESP_LOGE(TAG, "Flag (0x%08X) is set (0x%08X): %d", flag, systemStatus , ((systemStatus & flag) == flag));
+
+	if ((systemStatus & flag) == flag) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 string getResetReason(void) {
 	std::string reasonText;
 
@@ -790,6 +825,30 @@ string getResetReason(void) {
 			reasonText = "Unknown";
 	}
     return reasonText;
+}
+
+/**
+ * Returns the current uptime  formated ad xxf xxh xxm [xxs]
+ */
+std::string getFormatedUptime(bool compact) {
+	char buf[20];
+	#pragma GCC diagnostic ignored "-Wformat-truncation"
+
+    int uptime = (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+
+    int days = int(floor(uptime / (3600*24)));
+    int hours = int(floor((uptime - days * 3600*24) / (3600)));
+    int minutes = int(floor((uptime - days * 3600*24 - hours * 3600) / (60)));
+    int seconds = uptime - days * 3600*24 - hours * 3600 - minutes * 60;
+    
+	if (compact) {
+		snprintf(buf, sizeof(buf), "%dd%02dh%02dm%02ds", days, hours, minutes, seconds);
+	}
+	else {
+		snprintf(buf, sizeof(buf), "%3dd %02dh %02dm %02ds", days, hours, minutes, seconds);
+	}
+
+	return std::string(buf);
 }
 
 const char* get404(void) {
