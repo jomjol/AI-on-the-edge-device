@@ -57,7 +57,7 @@ jobs:
 #########################################################################################
 ## Pack for new OTA 
 #########################################################################################
-  pack-for-OTA-v2:
+  pack-for-OTA:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
