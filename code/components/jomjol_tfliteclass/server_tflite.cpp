@@ -662,18 +662,11 @@ esp_err_t handler_uptime(httpd_req_t *req)
 #endif
 
     const char* resp_str;
-    std::string formated = "";
-
-    int uptime = (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
-
-    int days = int(floor(uptime / (3600*24)));
-    int hours = int(floor((uptime - days * 3600*24) / (3600)));
-    int minutes = int(floor((uptime - days * 3600*24 - hours * 3600) / (60)));
     
-    formated = std::to_string(days) + "d " + std::to_string(hours) + "h " + std::to_string(minutes) + "m"; 
+    std::string formatedUptime = getFormatedUptime(false);
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_send(req, formated.c_str(), strlen(formated.c_str()));   
+    httpd_resp_send(req, formatedUptime.c_str(), strlen(formatedUptime.c_str()));   
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);      
 

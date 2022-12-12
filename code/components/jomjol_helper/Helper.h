@@ -64,5 +64,6 @@ string getSDCardSectorSize();
 
 string getMac(void);
 string getResetReason(void);
+std::string getFormatedUptime(bool compact);
 
 const char* get404(void);
