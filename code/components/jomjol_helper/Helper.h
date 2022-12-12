@@ -70,13 +70,13 @@ string getMac(void);
    Make sure it matches https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes */
 enum SystemStatusFlag_t {          // One bit per error
     // First Byte
-    SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  4, Critical Error
-    SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 1, //  8, Critical Error
-    SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  1, Critical Error
+    SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
+    SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 1, //  2, Critical Error
+    SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  4, Critical Error
 
     // Second Byte
-    SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  2, Flow still might work
-    SYSTEM_STATUS_NTP_BAD           = 1 << (1+8), // 16, Flow will work but time will be wrong
+    SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  8, Flow still might work
+    SYSTEM_STATUS_NTP_BAD           = 1 << (1+8), //  9, Flow will work but time will be wrong
 };
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);

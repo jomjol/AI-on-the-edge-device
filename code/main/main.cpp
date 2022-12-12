@@ -331,9 +331,4 @@ extern "C" void app_main(void)
     else { // Any other error is critical and makes running the flow impossible.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
-    else {  // Non critical errors occured, we try to continue...
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors, but trying to continue...");
-        ESP_LOGD(TAG, "vor do autostart");
-        TFliteDoAutoStart();
-    }  
 }
