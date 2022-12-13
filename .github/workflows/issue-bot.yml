@@ -6,9 +6,9 @@
 name: Issue Reply
 
 on:
-  issue_comment:
+  issues:
     types: [labeled]
-  discussion_comment:
+  discussion:
     types: [labeled]
 
 jobs:
