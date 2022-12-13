@@ -40,7 +40,7 @@ jobs:
           actions: 'create-comment'
           body: |
             You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
-            Pick the most top entry with a :heavy_check_mark:, then scoll down to the **Artifacts** and download the file named `update_*`.
+            Pick the most top passing entry (it has a green circle with a tick in it), then scoll down to the **Artifacts** and download the file named `update_*`.
             
 
       - name: Remove label again
