@@ -54,60 +54,10 @@ jobs:
         key: ${{ github.run_number }}
 
 
-
 #########################################################################################
-## Pack for old OTA (v1)
+## Pack for new OTA 
 #########################################################################################
-  pack-for-OTA-v1:
-    # Old OTA concept
-    # firmware__*.zip needs to be unpacked before attaching to the release!
-    # The bin filename can contain versioning.
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
-
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
-
-    - name: Rename firmware file to contain versioning (old ota)
-      run: |
-        mkdir -p ./dist_old_ota
-        cp "./code/.pio/build/esp32cam/firmware.bin" "./dist_old_ota/firmware__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }}).bin"
-
-    - name: Upload Firmware artifact (old OTA concept)
-      uses: actions/upload-artifact@v3
-      with:
-#        name: "firmware__${{ github.ref_name }}__(${{ steps.vars.outputs.sha_short }})__(extract_before_upload__only_needed_for_migration_from_11.3.1)"
-        name: "firmware__(extract_before_upload)__${{ steps.vars.outputs.branch }}__(${{ steps.vars.outputs.sha_short }})"
-        path: ./dist_old_ota/*
-
-    - name: Upload Web interface artifact (old OTA concept)
-      uses: actions/upload-artifact@v3
-      with:
-        name: "html__${{ steps.vars.outputs.branch }}__(${{ steps.vars.outputs.sha_short }})"
-        path: ./sd-card/html/*
-
-
-
-#########################################################################################
-## Pack for new OTA (v2)
-#########################################################################################
-  pack-for-OTA-v2:
+  pack-for-OTA:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
@@ -140,21 +90,9 @@ jobs:
         mkdir -p ./dist
         cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
 
-#    - name: Upload update.zip Artifact (Firmware only)
-#      uses: actions/upload-artifact@v3
-#      with:
-#        name: "update_firmware_only__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-#        path: ./dist/*
-        
     - name: Add Web UI to dist
       run: cp -r ./sd-card/html ./dist/
 
-#    - name: Upload update.zip artifact (Firmware + Web UI)
-#      uses: actions/upload-artifact@v3
-#      with:
-#        name: "update_firmware+webinterface__${{ github.ref_name }}_(${{ steps.vars.outputs.sha_short }})"
-#        path: ./dist/*
-        
     - name: Add CNN to dist
       run: |
         mkdir ./dist/config/
@@ -171,7 +109,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: dist
-        key: ${{ github.run_number }}-pack-for-OTA-v2
+        key: ${{ github.run_number }}-pack-for-OTA
 
 
 
@@ -235,7 +173,7 @@ jobs:
 #########################################################################################
   release: 
     runs-on: ubuntu-latest
-    needs: [pack-for-OTA-v2, pack-for-fresh-install]
+    needs: [pack-for-OTA, pack-for-fresh-install]
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
@@ -245,22 +183,12 @@ jobs:
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
-        key: ${{ github.run_number }}
-
     # import the changes from 
     - name: Get generated files from cache
       uses: actions/cache@v3
       with:
         path: dist
-        key: ${{ github.run_number }}-pack-for-OTA-v2
+        key: ${{ github.run_number }}-pack-for-OTA
 
     # import cached artifacts from pack-for-fresh-install
     - name: Get generated files from cache
@@ -269,23 +197,16 @@ jobs:
         path: firmware
         key: ${{ github.run_number }}-pack-for-fresh-install
 
-
-
     - name: Prepare artifacts for release
       run: |
         mkdir -p release
         mkdir -p dist
         # create a update.zip like "update__rolling"
         pwd
-        ls ./dist
         cd ./dist
         zip -r ../release/update.zip .
         cd ../firmware
         zip -r ../release/initial_esp32_setup.zip .
-        cd ../sd-card/html
-        zip -r ../../firmware/html-from-11.3.1.zip .
-
-        
     # extract the version used in next step
     - id: get_version
       if: startsWith(github.ref, 'refs/tags/') 
@@ -318,8 +239,6 @@ jobs:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
           release/*
-          firmware/firmware.bin
-          firmware/html-from-11.3.1.zip   
           
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling
