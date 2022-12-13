@@ -8,7 +8,7 @@ jobs:
   reply-helper:
     runs-on: ubuntu-latest
     steps:
-      - name: Web Console
+      - name: Add Response
         if: github.event.label.name == 'bot-reply Web Console'
         uses: actions-cool/issues-helper@v2
         with:
@@ -16,3 +16,12 @@ jobs:
           
           body: |
             You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB logs from the device.
+
+
+
+      - name: Remove label again
+        if: github.event.label.name == 'bot-reply Web Console'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Web Console'
