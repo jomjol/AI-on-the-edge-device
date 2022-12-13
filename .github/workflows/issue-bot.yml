@@ -1,7 +1,14 @@
+# Reply Bot
+# See 
+ # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+ # Uses https://github.com/marketplace/actions/issues-helper to write auto-generated replys based on labels
+ 
 name: Issue Reply
 
 on:
-  issues:
+  issue_comment:
+    types: [labeled]
+  discussion_comment:
     types: [labeled]
 
 jobs:
@@ -49,14 +56,4 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Rolling Build'
-
-
-
-
-
-
-
-
-
-
 
