@@ -1,0 +1,18 @@
+name: Issue Reply
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  reply-helper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Web Console
+        if: github.event.label.name == 'bot-reply Web Consoled'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'create-comment'
+          
+          body: |
+            You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB logs from the device.
