@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Web Console
-        if: github.event.label.name == 'bot-reply Web Consoled'
+        if: github.event.label.name == 'bot-reply Web Console'
         uses: actions-cool/issues-helper@v2
         with:
           actions: 'create-comment'
