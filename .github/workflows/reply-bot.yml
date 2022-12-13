@@ -1,0 +1,59 @@
+# Reply Bot
+# See 
+ # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+ # Uses https://github.com/marketplace/actions/issues-helper to write auto-generated replys based on labels
+ 
+name: Issue Reply
+
+on:
+  issues:
+    types: [labeled]
+  discussions:
+    types: [labeled]
+
+jobs:
+  reply-helper:
+    runs-on: ubuntu-latest
+    steps:
+      #######################################################################
+      # Bot Response: Web Console
+      #######################################################################
+      - name: Add Response
+        if: github.event.label.name == 'bot-reply Web Console'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'create-comment'
+          body: |
+            You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
+            The USB log contains more information about the startup and operation of the device than the normal Web UI log
+
+      - name: Remove label again
+        if: github.event.label.name == 'bot-reply Web Console'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Web Console'
+
+
+
+
+      #######################################################################
+      # Bot Response: Rolling Build
+      #######################################################################
+      - name: Add Response
+        if: github.event.label.name == 'bot-reply Rolling Build'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'create-comment'
+          body: |
+            You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
+            Pick the most top passing entry (it has a green circle with a tick in it), then scoll down to the **Artifacts** and download the file named `update_*`.
+            
+
+      - name: Remove label again
+        if: github.event.label.name == 'bot-reply Rolling Build'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Rolling Build'
+
