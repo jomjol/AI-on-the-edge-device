@@ -58,6 +58,9 @@ There are different ways to flash your ESP32:
 
 See the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation) for more information.
 
+### Flashing the SD-Card
+The SD-Card must be flashed separately, see the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation) for details.
+
 ## Casing
 
 A 3d-printable housing can be found here:
