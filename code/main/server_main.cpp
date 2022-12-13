@@ -128,6 +128,14 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
+    else if (_task.compare("Round") == 0)
+    {
+        char formated[10] = "";    
+        snprintf(formated, sizeof(formated), "%d", getCountFlowRounds());
+        httpd_resp_sendstr_chunk(req, formated);
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
     else if (_task.compare("SDCardPartitionSize") == 0)
     {
         std::string zw;
