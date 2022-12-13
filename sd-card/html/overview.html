@@ -9,7 +9,7 @@
 .tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:585px;}
 .tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg th{height: 50px;font-size:24px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
-.tg .tg-1{width:77%;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
+.tg .tg-1{width:700px;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-2{font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-3{height: 15px;font-size:14px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}		
 </style>
@@ -60,6 +60,7 @@
 	<div id="cputemp" ></div>	
 	<div id="rssi" ></div>	
 	<div id="uptime" ></div>
+	<div id="round" ></div>
 	</td>	
   </tr>    
 </table>
@@ -89,6 +90,7 @@ function addZero(i) {
 	loadCPUTemp();
 	loadRSSI();
 	loadUptime();
+	loadRoundCounter();
 	refresh();
 	});
 
@@ -164,6 +166,19 @@ function refresh() {
 		xhttp.open("GET", url, true);
 		xhttp.send();
 	}
+
+	function loadRoundCounter() {
+		url = basepath + '/info?type=Round';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				$('#round').html("(Round: " + _rsp + ")");
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
 		
 	function loadValue(_type, _div, _style) {
 		url = basepath + '/value?all=true&type=' + _type;     
@@ -215,6 +230,7 @@ function refresh() {
 		loadCPUTemp();
 		loadRSSI();
 		loadUptime();
+		loadRoundCounter();
 	}
 
 	init();
