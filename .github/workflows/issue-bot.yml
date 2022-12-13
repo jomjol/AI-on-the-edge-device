@@ -18,7 +18,7 @@ jobs:
           actions: 'create-comment'
           body: |
             You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
-            The USB log contains more information about then startup and operation of the device than the normal Web UI log
+            The USB log contains more information about the startup and operation of the device than the normal Web UI log
 
       - name: Remove label again
         if: github.event.label.name == 'bot-reply Web Console'
@@ -40,6 +40,7 @@ jobs:
           actions: 'create-comment'
           body: |
             You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the rolling` branch. It might already contain a fix for your issue.
+            Pick the most top entry with a :heavy_check_mark:, then scoll down to the **Artifacts** and download the file named `update_*`.
             
 
       - name: Remove label again
