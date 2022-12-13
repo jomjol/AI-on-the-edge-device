@@ -39,7 +39,7 @@ jobs:
         with:
           actions: 'create-comment'
           body: |
-            You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the rolling` branch. It might already contain a fix for your issue.
+            You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
             Pick the most top entry with a :heavy_check_mark:, then scoll down to the **Artifacts** and download the file named `update_*`.
             
 
