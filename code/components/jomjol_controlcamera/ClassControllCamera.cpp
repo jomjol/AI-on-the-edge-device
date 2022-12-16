@@ -90,8 +90,8 @@ static camera_config_t camera_config = {
     .pin_pclk = CAM_PIN_PCLK,
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,             // Orginalwert
-//    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!! Hängt in Version 9.2 !!!!
+    .xclk_freq_hz = 20000000,             // Orginal value
+//    .xclk_freq_hz =    5000000,         // Test to get rid of the image errors !!!! Hangs in version 9.2 !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
@@ -101,8 +101,7 @@ static camera_config_t camera_config = {
     .jpeg_quality = 12, //0-63 lower number means higher quality
     .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
     .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
-//    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
-    .grab_mode = CAMERA_GRAB_LATEST,      // erst ab neuer esp32cam-version
+    .grab_mode = CAMERA_GRAB_LATEST,      // only from new esp32cam version
     
 };
 
@@ -222,39 +221,17 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
         image_height = 480;
         image_width = 640;             
     }
-    // No higher Mode than VGA, damit der Kameraspeicher ausreicht.
-/*
-    if (resol == FRAMESIZE_SVGA)
-    {
-        image_height = 600;
-        image_width = 800;             
-    }
-    if (resol == FRAMESIZE_XGA)
-    {
-        image_height = 768;
-        image_width = 1024;             
-    }
-    if (resol == FRAMESIZE_SXGA)
-    {
-        image_height = 1024;
-        image_width = 1280;             
-    }
-    if (resol == FRAMESIZE_UXGA)
-    {
-        image_height = 1200;
-        image_width = 1600;             
-    }
-*/
+
 }
 
 
-void CCamera::EnableAutoExposure(int flashdauer)
+void CCamera::EnableAutoExposure(int flash_duration)
 {
     ESP_LOGD(TAG, "EnableAutoExposure");
     LEDOnOff(true);
-    if (flashdauer > 0)
+    if (flash_duration > 0)
         LightOnOff(true);
-    const TickType_t xDelay = flashdauer / portTICK_PERIOD_MS;
+    const TickType_t xDelay = flash_duration / portTICK_PERIOD_MS;
     vTaskDelay( xDelay );
 
     camera_fb_t * fb = esp_camera_fb_get();
@@ -278,7 +255,7 @@ void CCamera::EnableAutoExposure(int flashdauer)
     LEDOnOff(false);  
     LightOnOff(false);
     isFixedExposure = true;
-    waitbeforepicture_org = flashdauer;
+    waitbeforepicture_org = flash_duration;
 }
 
 
@@ -394,7 +371,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
     string ftype;
 
-     LEDOnOff(true);              // Abgeschaltet, um Strom zu sparen !!!!!!
+     LEDOnOff(true);              // Switched off to save power !
 
     if (delay > 0) 
     {
