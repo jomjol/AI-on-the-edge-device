@@ -76,7 +76,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         if (zahl >= 0)       // NaN?
         {
-            if (_extendedResolution)            // ist nur gesetzt, falls es die erste Ziffer ist (kein Analog vorher!)
+            if (_extendedResolution)            // is only set if it is the first digit (no analogue before!)
             {
                 int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
                 int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
@@ -87,7 +87,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             }
             else
             {
-//                prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
                 if (_vorgaengerAnalog >= 0)
                     prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _vorgaengerAnalog, prev, true, analogDigitalTransitionStart);
                 else
@@ -291,7 +290,7 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
 
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> dismantled;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -317,53 +316,53 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(zerlegt[0]) == "LOGIMAGELOCATION") && (zerlegt.size() > 1))
+        dismantled = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(dismantled[0]) == "LOGIMAGELOCATION") && (dismantled.size() > 1))
         {
-            this->LogImageLocation = "/sdcard" + zerlegt[1];
+            this->LogImageLocation = "/sdcard" + dismantled[1];
             this->isLogImage = true;
         }
-        if ((toUpper(zerlegt[0]) == "LOGIMAGESELECT") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "LOGIMAGESELECT") && (dismantled.size() > 1))
         {
-            LogImageSelect = zerlegt[1];
+            LogImageSelect = dismantled[1];
             isLogImageSelect = true;            
         }
 
-        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "LOGFILERETENTIONINDAYS") && (dismantled.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(zerlegt[1]);
+            this->logfileRetentionInDays = std::stoi(dismantled[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "MODEL") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "MODEL") && (dismantled.size() > 1))
         {
-            this->cnnmodelfile = zerlegt[1];
+            this->cnnmodelfile = dismantled[1];
         }
         
-        if ((toUpper(zerlegt[0]) == "CNNGOODTHRESHOLD") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "CNNGOODTHRESHOLD") && (dismantled.size() > 1))
         {
-            CNNGoodThreshold = std::stof(zerlegt[1]);
+            CNNGoodThreshold = std::stof(dismantled[1]);
         }
-        if (zerlegt.size() >= 5)
+        if (dismantled.size() >= 5)
         {
-            general* _analog = GetGENERAL(zerlegt[0], true);
+            general* _analog = GetGENERAL(dismantled[0], true);
             roi* neuroi = _analog->ROI[_analog->ROI.size()-1];
-            neuroi->posx = std::stoi(zerlegt[1]);
-            neuroi->posy = std::stoi(zerlegt[2]);
-            neuroi->deltax = std::stoi(zerlegt[3]);
-            neuroi->deltay = std::stoi(zerlegt[4]);
+            neuroi->posx = std::stoi(dismantled[1]);
+            neuroi->posy = std::stoi(dismantled[2]);
+            neuroi->deltax = std::stoi(dismantled[3]);
+            neuroi->deltay = std::stoi(dismantled[4]);
             neuroi->CCW = false;
-            if (zerlegt.size() >= 6)
+            if (dismantled.size() >= 6)
             {
-                neuroi->CCW = toUpper(zerlegt[5]) == "TRUE";
+                neuroi->CCW = toUpper(dismantled[5]) == "TRUE";
             }
             neuroi->result_float = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;
         }
 
-        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "SAVEALLFILES") && (dismantled.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(dismantled[1]) == "TRUE")
                 SaveAllFiles = true;
         }
     }
@@ -413,7 +412,7 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
         if (GENERAL[i]->name == _analog)
             _ret = GENERAL[i];
 
-    if (!_create)         // nicht gefunden und soll auch nicht erzeugt werden
+    if (!_create)         // not found and should not be created
         return _ret;
 
     if (_ret == NULL)
@@ -469,7 +468,7 @@ bool ClassFlowCNNGeneral::doFlow(string time)
         return false;
     };
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow nach Alignment");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow after alignment");
 
     doNeuralNetwork(time);
 
@@ -593,7 +592,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 }
                 break;
             default:
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "tflite passt nicht zur Firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "tflite does not fit the firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
         }
     }
 
@@ -637,7 +636,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After Invoke");
 
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
@@ -648,7 +647,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         else
                             GENERAL[n]->ROI[roi]->result_float = result * 10;
                               
-                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
+                        ESP_LOGD(TAG, "General result (Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
                         if (isLogImage)
                             LogImage(logPath, GENERAL[n]->ROI[roi]->name, &GENERAL[n]->ROI[roi]->result_float, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                     } break;
@@ -658,7 +657,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     {
                         GENERAL[n]->ROI[roi]->result_klasse = 0;
                         GENERAL[n]->ROI[roi]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[n]->ROI[roi]->image);
-                        ESP_LOGD(TAG, "Result General(Digit)%i: %d", roi, GENERAL[n]->ROI[roi]->result_klasse);
+                        ESP_LOGD(TAG, "General result (Digit)%i: %d", roi, GENERAL[n]->ROI[roi]->result_klasse);
 
                         if (isLogImage)
                         {
@@ -674,85 +673,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             }
                         }
                     } break;
-/*
-                case DigitalHyprid:
-                    {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DigitalHyprid");
-                        int _num, _nachkomma;
 
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
-                        tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
-
-                        _num = tflite->GetOutClassification(0, 10);
-                        _nachkomma = tflite->GetOutClassification(11, 21);
-
-
-                        string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        if ((_num == 10) || (_nachkomma == 10))                      // NaN detektiert
-                            GENERAL[_ana]->ROI[i]->result_float = -1;
-                        else
-                            GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
-
-                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
-                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        if (isLogImage)
-                        {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
-                            if (isLogImageSelect)
-                            {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                            else
-                            {
-                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                        }
-                    } break;
-*/
-/*
-                case DigitalHyprid10:
-                    {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DigitalHyprid10");
-                        int _num, _nachkomma;
-
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
-                        tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
-
-                        _num = tflite->GetOutClassification(0, 9);
-                        _nachkomma = tflite->GetOutClassification(10, 19);
-
-
-                        string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
-
-                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
-                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        if (isLogImage)
-                        {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
-                            if (isLogImageSelect)
-                            {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                            else
-                            {
-                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                        }
-                    } break;
-*/
 
                 case DoubleHyprid10:
                     {
@@ -764,7 +685,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After Invoke");
 
                         _num = tflite->GetOutClassification(0, 9);
                         _numplus = (_num + 1) % 10;

@@ -229,7 +229,7 @@ esp_err_t handler_json(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
+    LogFile.WriteHeapInfo("handler_water counter - Start");    
 #endif
 
     bool _rawValue = false;
@@ -238,7 +238,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     std::string _type = "value";
     string zw;
 
-    ESP_LOGD(TAG, "handler_wasserzaehler uri: %s", req->uri);
+    ESP_LOGD(TAG, "handler_water counter - uri: %s", req->uri);
 
     char _query[100];
     char _size[10];
@@ -370,7 +370,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     httpd_resp_sendstr_chunk(req, NULL);   
 
 #ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
+    LogFile.WriteHeapInfo("handler_water counter - Done");   
 #endif
     return ESP_OK;
 };

@@ -65,7 +65,7 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
-            if (!(FlowControll[i]->name().compare("ClassFlowMakeImage") == 0))      // falls es ein MakeImage ist, braucht das Bild nicht extra aufgenommen zu werden, dass passiert bei html-Abfrage automatisch
+            if (!(FlowControll[i]->name().compare("ClassFlowMakeImage") == 0))      // if it is a MakeImage, the image does not need to be included, this happens automatically with the html query.
                 FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
@@ -176,7 +176,7 @@ void ClassFlowControll::SetInitialParameter(void)
 
 bool ClassFlowControll::isAutoStart(long &_intervall)
 {
-    _intervall = AutoIntervall * 60 * 1000; // AutoIntervall: Minuten -> ms
+    _intervall = AutoIntervall * 60 * 1000; // AutoInterval: minutes -> ms
     return AutoStart;
 }
 
@@ -223,7 +223,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
     }
 
-    if (cfc)                            // Wird nur angehangen, falls es nicht [AutoTimer] ist, denn dieses ist für FlowControll
+    if (cfc)                            // Attached only if it is not [AutoTimer], because this is for FlowControll
         FlowControll.push_back(cfc);
 
     if (toUpper(_type).compare("[AUTOTIMER]") == 0)
@@ -295,7 +295,6 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         if (FlowControll[i]->name() == "ClassFlowMakeImage") {
-//            zw_time = gettimestring("%Y%m%d-%H%M%S");
             zw_time = gettimestring("%H:%M:%S");
             std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatus = flowStatus + " (" + zw_time + ")";
@@ -310,8 +309,6 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
 
 bool ClassFlowControll::doFlow(string time)
 {
-//    CleanTempFolder();            // dazu muss man noch eine Rolling einführen
-
     bool result = true;
     std::string zw_time;
     int repeat = 0;
@@ -343,12 +340,12 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            if (i) i -= 1;    // vPrevious step must be repeated (probably take pictures)
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
                 doReboot();
-                // Schritt wurde 5x wiederholt --> reboot
+                //Step was repeated 5x --> reboot
             }
         }
         else
@@ -477,7 +474,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string
 
 bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> dismantled;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -492,23 +489,23 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph, " =");
-        if ((toUpper(zerlegt[0]) == "AUTOSTART") && (zerlegt.size() > 1))
+        dismantled = ZerlegeZeile(aktparamgraph, " =");
+        if ((toUpper(dismantled[0]) == "AUTOSTART") && (dismantled.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(dismantled[1]) == "TRUE")
             {
                 AutoStart = true;
             }
         }
 
-        if ((toUpper(zerlegt[0]) == "INTERVALL") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "INTERVALL") && (dismantled.size() > 1))
         {
-            AutoIntervall = std::stof(zerlegt[1]);
+            AutoIntervall = std::stof(dismantled[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "DATALOGACTIVE") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "DATALOGACTIVE") && (dismantled.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(dismantled[1]) == "TRUE")
             {
                 LogFile.SetDataLogToSD(true);
             }
@@ -517,53 +514,53 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(zerlegt[0]) == "DATALOGRETENTIONINDAYS") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "DATALOGRETENTIONINDAYS") && (dismantled.size() > 1))
         {
-            LogFile.SetDataLogRetention(std::stoi(zerlegt[1]));
+            LogFile.SetDataLogRetention(std::stoi(dismantled[1]));
         }
 
-        if ((toUpper(zerlegt[0]) == "LOGFILE") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "LOGFILE") && (dismantled.size() > 1))
         {
             /* matches esp_log_level_t */
-            if ((toUpper(zerlegt[1]) == "TRUE") || (toUpper(zerlegt[1]) == "2"))
+            if ((toUpper(dismantled[1]) == "TRUE") || (toUpper(dismantled[1]) == "2"))
             {
                 LogFile.setLogLevel(ESP_LOG_WARN);
             }
-            else if ((toUpper(zerlegt[1]) == "FALSE") || (toUpper(zerlegt[1]) == "0") || (toUpper(zerlegt[1]) == "1"))
+            else if ((toUpper(dismantled[1]) == "FALSE") || (toUpper(dismantled[1]) == "0") || (toUpper(dismantled[1]) == "1"))
             {
                 LogFile.setLogLevel(ESP_LOG_ERROR);
             }
-            else if (toUpper(zerlegt[1]) == "3")
+            else if (toUpper(dismantled[1]) == "3")
             {
                 LogFile.setLogLevel(ESP_LOG_INFO);
             }
-            else if (toUpper(zerlegt[1]) == "4")
+            else if (toUpper(dismantled[1]) == "4")
             {
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
             }
         }
-        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "LOGFILERETENTIONINDAYS") && (dismantled.size() > 1))
         {
-            LogFile.SetLogFileRetention(std::stoi(zerlegt[1]));
+            LogFile.SetLogFileRetention(std::stoi(dismantled[1]));
         }
 
-        if ((toUpper(zerlegt[0]) == "TIMEZONE") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "TIMEZONE") && (dismantled.size() > 1))
         {
-            string zw = "Set TimeZone: " + zerlegt[1];
-            setTimeZone(zerlegt[1]);
+            string zw = "Set TimeZone: " + dismantled[1];
+            setTimeZone(dismantled[1]);
         }      
 
-        if ((toUpper(zerlegt[0]) == "TIMESERVER") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "TIMESERVER") && (dismantled.size() > 1))
         {
-            string zw = "Set TimeZone: " + zerlegt[1];
-            reset_servername(zerlegt[1]);
+            string zw = "Set TimeZone: " + dismantled[1];
+            reset_servername(dismantled[1]);
         }  
 
-        if ((toUpper(zerlegt[0]) == "HOSTNAME") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "HOSTNAME") && (dismantled.size() > 1))
         {
-            if (ChangeHostName("/sdcard/wlan.ini", zerlegt[1]))
+            if (ChangeHostName("/sdcard/wlan.ini", dismantled[1]))
             {
-                // reboot notwendig damit die neue wlan.ini auch benutzt wird !!!
+                // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Rebooting to activate new HOSTNAME...");
                 esp_restart();
@@ -572,9 +569,9 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(zerlegt[0]) == "SETUPMODE") && (zerlegt.size() > 1))
+        if ((toUpper(dismantled[0]) == "SETUPMODE") && (dismantled.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(dismantled[1]) == "TRUE")
             {
                 SetupModeActive = true;
             }        

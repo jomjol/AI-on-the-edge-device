@@ -41,7 +41,7 @@ class CCamera {
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
         void SetLEDIntensity(float _intrel);
 
-        void EnableAutoExposure(int flashdauer);
+        void EnableAutoExposure(int flash_duration);
         
 
         framesize_t TextToFramesize(const char * text);

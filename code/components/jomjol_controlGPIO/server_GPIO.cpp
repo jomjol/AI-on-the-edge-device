@@ -310,7 +310,7 @@ bool GpioHandler::readConfig()
 
     ConfigFile configFile = ConfigFile(_configFile); 
 
-    std::vector<std::string> zerlegt;
+    std::vector<std::string> dismantled;
     std::string line = "";
     bool disabledLine = false;
     bool eof = false;
@@ -344,31 +344,31 @@ bool GpioHandler::readConfig()
     bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
-        zerlegt = ZerlegeZeile(line);
+        dismantled = ZerlegeZeile(line);
         // const std::regex pieces_regex("IO([0-9]{1,2})");
         // std::smatch pieces_match;
-        // if (std::regex_match(zerlegt[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
+        // if (std::regex_match(dismantled[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
         // {
         //     std::string gpioStr = pieces_match[1];
-        ESP_LOGD(TAG, "conf param %s", toUpper(zerlegt[0]).c_str());
-        if (toUpper(zerlegt[0]) == "MAINTOPICMQTT") {
+        ESP_LOGD(TAG, "conf param %s", toUpper(dismantled[0]).c_str());
+        if (toUpper(dismantled[0]) == "MAINTOPICMQTT") {
 //            ESP_LOGD(TAG, "MAINTOPICMQTT found");
-//            mainTopicMQTT = zerlegt[1];
-        } else if ((zerlegt[0].rfind("IO", 0) == 0) && (zerlegt.size() >= 6))
+//            mainTopicMQTT = dismantled[1];
+        } else if ((dismantled[0].rfind("IO", 0) == 0) && (dismantled.size() >= 6))
         {
-            ESP_LOGI(TAG,"Enable GP%s in %s mode", zerlegt[0].c_str(), zerlegt[1].c_str());
-            std::string gpioStr = zerlegt[0].substr(2, 2);
+            ESP_LOGI(TAG,"Enable GP%s in %s mode", dismantled[0].c_str(), dismantled[1].c_str());
+            std::string gpioStr = dismantled[0].substr(2, 2);
             gpio_num_t gpioNr = (gpio_num_t)atoi(gpioStr.c_str());
-            gpio_pin_mode_t pinMode = resolvePinMode(toLower(zerlegt[1]));
-            gpio_int_type_t intType = resolveIntType(toLower(zerlegt[2]));
-            uint16_t dutyResolution = (uint8_t)atoi(zerlegt[3].c_str());
+            gpio_pin_mode_t pinMode = resolvePinMode(toLower(dismantled[1]));
+            gpio_int_type_t intType = resolveIntType(toLower(dismantled[2]));
+            uint16_t dutyResolution = (uint8_t)atoi(dismantled[3].c_str());
 #ifdef ENABLE_MQTT 
-            bool mqttEnabled = toLower(zerlegt[4]) == "true";
+            bool mqttEnabled = toLower(dismantled[4]) == "true";
 #endif // ENABLE_MQTT
-            bool httpEnabled = toLower(zerlegt[5]) == "true";
+            bool httpEnabled = toLower(dismantled[5]) == "true";
             char gpioName[100];
-            if (zerlegt.size() >= 7) {
-                strcpy(gpioName, trim(zerlegt[6]).c_str());
+            if (dismantled.size() >= 7) {
+                strcpy(gpioName, trim(dismantled[6]).c_str());
             } else {
                 sprintf(gpioName, "GPIO%d", gpioNr);
             }
@@ -390,28 +390,28 @@ bool GpioHandler::readConfig()
                 registerISR = true;
             }
         }
-        if (toUpper(zerlegt[0]) == "LEDNUMBERS")
+        if (toUpper(dismantled[0]) == "LEDNUMBERS")
         {
-            LEDNumbers = stoi(zerlegt[1]);
+            LEDNumbers = stoi(dismantled[1]);
         }
-        if (toUpper(zerlegt[0]) == "LEDCOLOR")
+        if (toUpper(dismantled[0]) == "LEDCOLOR")
         {
             uint8_t _r, _g, _b;
-            _r = stoi(zerlegt[1]);
-            _g = stoi(zerlegt[2]);
-            _b = stoi(zerlegt[3]);
+            _r = stoi(dismantled[1]);
+            _g = stoi(dismantled[2]);
+            _b = stoi(dismantled[3]);
 
             LEDColor = Rgb{_r, _g, _b};
         }
-        if (toUpper(zerlegt[0]) == "LEDTYPE")
+        if (toUpper(dismantled[0]) == "LEDTYPE")
         {
-            if (zerlegt[1] == "WS2812")
+            if (dismantled[1] == "WS2812")
                 LEDType = LED_WS2812;
-            if (zerlegt[1] == "WS2812B")
+            if (dismantled[1] == "WS2812B")
                 LEDType = LED_WS2812B;
-            if (zerlegt[1] == "SK6812")
+            if (dismantled[1] == "SK6812")
                 LEDType = LED_SK6812;
-            if (zerlegt[1] == "WS2813")
+            if (dismantled[1] == "WS2813")
                 LEDType = LED_WS2813;
         }
     }

@@ -105,7 +105,7 @@ bool ClassFlow::getNextLine(FILE* pfile, string *rt)
 	ESP_LOGD(TAG, "%s", zw);
 	*rt = zw;
 	*rt = trim(*rt);
-	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph
+	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))
 	{
 		*rt = "";
 		if (!fgets(zw, 1024, pfile))
