@@ -47,14 +47,14 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     r0_x = _temp1->target_x;
     r0_y = _temp1->target_y;
-    ESP_LOGD(TAG, "Vor ft->FindTemplate(_temp1); %s", _temp1->image_file.c_str());
+    ESP_LOGD(TAG, "Before ft->FindTemplate(_temp1); %s", _temp1->image_file.c_str());
     isSimilar1 = ft->FindTemplate(_temp1);
     _temp1->width = ft->tpl_width;
     _temp1->height = ft->tpl_height; 
 
     r1_x = _temp2->target_x;
     r1_y = _temp2->target_y;
-    ESP_LOGD(TAG, "Vor ft->FindTemplate(_temp2); %s", _temp2->image_file.c_str());
+    ESP_LOGD(TAG, "Before ft->FindTemplate(_temp2); %s", _temp2->image_file.c_str());
     isSimilar2 = ft->FindTemplate(_temp2);
     _temp2->width = ft->tpl_width;
     _temp2->height = ft->tpl_height; 

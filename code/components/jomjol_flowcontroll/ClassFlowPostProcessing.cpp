@@ -564,12 +564,12 @@ void ClassFlowPostProcessing::InitNUMBERS()
 
     if (flowDigit)
     {
-        anzDIGIT = flowDigit->getAnzahlGENERAL();
+        anzDIGIT = flowDigit->getNumberGENERAL();
         flowDigit->UpdateNameNumbers(&name_numbers);
     }
     if (flowAnalog)
     {
-        anzANALOG = flowAnalog->getAnzahlGENERAL();
+        anzANALOG = flowAnalog->getNumberGENERAL();
         flowAnalog->UpdateNameNumbers(&name_numbers);
     }
 

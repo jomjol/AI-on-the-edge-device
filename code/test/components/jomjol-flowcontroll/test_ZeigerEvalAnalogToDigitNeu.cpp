@@ -6,7 +6,7 @@ class UnderTestCNNGeneral : public ClassFlowCNNGeneral {
         UnderTestCNNGeneral( ClassFlowAlignment *_flowalign, t_CNNType _cnntype) :
             ClassFlowCNNGeneral(_flowalign, _cnntype) {};
         
-        using ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu;
+        using ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew;
        
 
 };
@@ -26,34 +26,34 @@ void test_analogToDigit_Standard() {
     // ab Transition sollte trotzdem ein "hängendes Digit" gerundet werden.
     // Transition = ja
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(5,  undertest->ZeigerEvalAnalogToDigitNeu(4.8, 8.0, 8, 9.2));
+    TEST_ASSERT_EQUAL_INT(5,  undertest->PointerEvalAnalogToDigitNew(4.8, 8.0, 8, 9.2));
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issue-1344032217
     // Standard: dig=9.6, ana=6.8 => erg=9
     // Transition = nein
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(9,  undertest->ZeigerEvalAnalogToDigitNeu( 9.6, 6.8, 6, 9.2));
+    TEST_ASSERT_EQUAL_INT(9,  undertest->PointerEvalAnalogToDigitNew( 9.6, 6.8, 6, 9.2));
 
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1220365920
     // Standard: dig=4.6, ana=6.2 => erg=4
     // Transition = nein
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(4,  undertest->ZeigerEvalAnalogToDigitNeu( 4.6, 6.2, 6, 9.2));
+    TEST_ASSERT_EQUAL_INT(4,  undertest->PointerEvalAnalogToDigitNew( 4.6, 6.2, 6, 9.2));
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/1143#issuecomment-1274434805
     // Hängendes digit ()
     // Standard: dig=6.8, ana=8.6 => erg=7
     // Transition = nein
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(7,  undertest->ZeigerEvalAnalogToDigitNeu( 6.8, 8.6, 6, 9.2));
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 6.8, 8.6, 6, 9.2));
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/1143#issuecomment-1274434805
     // Ebenfalls Hängendes digit () bei kleinem Zeiger nach 0-Durchlauf
     // Standard: dig=6.8, ana=1.0 => erg=7
     // Transition = nein
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(7,  undertest->ZeigerEvalAnalogToDigitNeu( 6.8, 1.0, 1, 9.2));
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 6.8, 1.0, 1, 9.2));
 
 
 }
@@ -66,7 +66,7 @@ void test_analogToDigit_Transition() {
     // Transition = ja
     // Nulldurchgang = nein
     // Versatz = nein
-    TEST_ASSERT_EQUAL_INT(3,  undertest->ZeigerEvalAnalogToDigitNeu( 3.9, 9.7, 9, 9.2));
+    TEST_ASSERT_EQUAL_INT(3,  undertest->PointerEvalAnalogToDigitNew( 3.9, 9.7, 9, 9.2));
   
     // ohne Referenz
     // Standard: dig=4.0, ana=9.1 => erg=4
@@ -74,7 +74,7 @@ void test_analogToDigit_Transition() {
     // Nulldurchgang = nein
     // Versatz = nein
     // Besonderheit: Digit ist bei analog 9.1 noch nicht losgelaufen
-    TEST_ASSERT_EQUAL_INT(4,  undertest->ZeigerEvalAnalogToDigitNeu( 4.0, 9.1, 9, 9.2));
+    TEST_ASSERT_EQUAL_INT(4,  undertest->PointerEvalAnalogToDigitNew( 4.0, 9.1, 9, 9.2));
 
     // ohne Referenz
     // Standard: dig=9.8, ana=0.1, ana_2=9.9 => erg=9
@@ -82,7 +82,7 @@ void test_analogToDigit_Transition() {
     // Nulldurchgang = nein
     // Versatz = nein
     // Besonderheit: analog wird durch vorherigen analog wieder auf 9 gesetzt
-    TEST_ASSERT_EQUAL_INT(9,  undertest->ZeigerEvalAnalogToDigitNeu( 9.8, 0.1, 9, 9.2));
+    TEST_ASSERT_EQUAL_INT(9,  undertest->PointerEvalAnalogToDigitNew( 9.8, 0.1, 9, 9.2));
 
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1277425333
@@ -91,7 +91,7 @@ void test_analogToDigit_Transition() {
     // Nulldurchgang = nein
     // Versatz = nein
     // Besonderheit: 
-    TEST_ASSERT_EQUAL_INT(5,  undertest->ZeigerEvalAnalogToDigitNeu( 5.9, 9.4, 9, 9.2));
+    TEST_ASSERT_EQUAL_INT(5,  undertest->PointerEvalAnalogToDigitNew( 5.9, 9.4, 9, 9.2));
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1282168030
     // Standard: dig=1.8, ana=7.8 => erg=9
@@ -99,6 +99,6 @@ void test_analogToDigit_Transition() {
     // Nulldurchgang = nein
     // Versatz = nein
     // Besonderheit: Digit läuft mit Analog mit. Deshalb 1.8 (vs. 7.8)
-    TEST_ASSERT_EQUAL_INT(1,  undertest->ZeigerEvalAnalogToDigitNeu( 1.8, 7.8, 7, 7.7));
+    TEST_ASSERT_EQUAL_INT(1,  undertest->PointerEvalAnalogToDigitNew( 1.8, 7.8, 7, 7.7));
 
 }
