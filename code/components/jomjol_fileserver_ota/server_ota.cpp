@@ -556,27 +556,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     ESP_LOGE(TAG, "ota without parameter - should not be the case!");
 
-/*  
-    const char* resp_str;    
-
-    KillTFliteTasks();
-    gpio_handler_deinit();
-    if (ota_update_task(fn))
-    {
-        resp_str = "Firmware Update Successfull! You can restart now.";
-    }
-    else
-    {
-        resp_str = "Error during Firmware Update!!! Please check console output.";
-    }
-
-    httpd_resp_send(req, resp_str, strlen(resp_str));  
-
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("handler_ota_update - Done");    
-#endif
-*/
-
     return ESP_OK;
 };
 
