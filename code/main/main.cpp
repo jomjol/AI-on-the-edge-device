@@ -7,7 +7,7 @@
 #include "sdkconfig.h"
 //#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
 #include "spiram.h"
-#include "esp_spiram.h"
+#include "esp32/spiram.h"
 
 // SD-Card ////////////////////
 #include "nvs_flash.h"
