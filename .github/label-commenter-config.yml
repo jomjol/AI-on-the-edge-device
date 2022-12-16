@@ -1,0 +1,36 @@
+# Reply Bot Configuration
+# See https://github.com/peaceiris/actions-label-commenter
+  
+ labels:
+  #######################################################################
+  # Bot Response: Web Console
+  #######################################################################
+  - name: bot-reply Web Console
+    labeled:
+      issue:
+          body: |
+            You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
+            The USB log contains more information about the startup and operation of the device than the normal Web UI log
+      discussion:
+          body: |
+            You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
+            The USB log contains more information about the startup and operation of the device than the normal Web UI log
+     
+
+  #######################################################################
+  # Bot Response: Rolling Build
+  #######################################################################
+  - name: bot-reply Rolling Build
+    labeled:
+      issue:
+          body: |
+            You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
+            Pick the most top passing entry (it has a green circle with a tick in it), then scoll down to the **Artifacts** and download the file named `update_*`.
+      discussion:
+          body: |
+            You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
+            Pick the most top passing entry (it has a green circle with a tick in it), then scoll down to the **Artifacts** and download the file named `update_*`.
+
+
+
+

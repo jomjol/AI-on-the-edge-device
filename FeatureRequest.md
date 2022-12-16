@@ -10,6 +10,14 @@
    
 
 ____
+#### #34 implement state and Roi for water leak detection
+for example see Roi on the next picture..
+![grafik](https://user-images.githubusercontent.com/38385805/207858812-2a6ba41d-1a8c-4fa1-9b6a-53cdd113c106.png)
+in case of position change between the measurments set this state to true, if there is no change set it back to false.
+In a defined time window this movement can lead into an alarm state / water leak..
+haveing this state in the mqtt broker can trigger functions like closing the ater pipe walve and so on...
+
+
 
 #### #33 Implement MATTER protocoll
 

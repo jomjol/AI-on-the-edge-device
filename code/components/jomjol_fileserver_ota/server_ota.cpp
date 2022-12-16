@@ -58,6 +58,18 @@ esp_err_t handler_reboot(httpd_req_t *req);
 std::string _file_name_update;
 
 
+
+static void infinite_loop(void)
+{
+    int i = 0;
+    ESP_LOGI(TAG, "When a new firmware is available on the server, press the reset button to download it");
+    while(1) {
+        ESP_LOGI(TAG, "Waiting for a new firmware... %d", ++i);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+
+
 void task_do_Update_ZIP(void *pvParameter)
 {
     std::string filetype = toUpper(getFileType(_file_name_update));
@@ -110,23 +122,11 @@ void CheckUpdate()
     BaseType_t xReturned;
     int _i = configMINIMAL_STACK_SIZE;
     xReturned = xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
-    TickType_t xDelay;
-    xDelay = 2000000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAG, "Wait for Update to be finished: sleep for: %ldms", (long) xDelay);
-    vTaskDelay( xDelay );   
-}
-
-
-
-static void infinite_loop(void)
-{
-    int i = 0;
-    ESP_LOGI(TAG, "When a new firmware is available on the server, press the reset button to download it");
-    while(1) {
-        ESP_LOGI(TAG, "Waiting for a new firmware... %d", ++i);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    while(1) { // wait until reboot within task_do_Update_ZIP
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
+
 
 
 

@@ -662,8 +662,6 @@ esp_err_t handler_uptime(httpd_req_t *req)
 #ifdef DEBUG_DETAIL_ON       
     LogFile.WriteHeapInfo("handler_uptime - Start");       
 #endif
-
-    const char* resp_str;
     
     std::string formatedUptime = getFormatedUptime(false);
 
@@ -678,9 +676,6 @@ esp_err_t handler_uptime(httpd_req_t *req)
 
     return ESP_OK;
 }
-
-
-
 
 
 esp_err_t handler_prevalue(httpd_req_t *req)

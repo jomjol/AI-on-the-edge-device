@@ -87,13 +87,16 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
 -   NEW v13.0.4: Fix for reboot in case of MQTT not used
 -   NEW v13.0.5: No reboot in case of missing NTP-connection
--   **NEW v13.0.7**:
+-   NEW v13.0.7:
     - Prevent autoreboot on cam framebuffer init error
     - Properly protect `wlan.ini` against deletion
     - Fixed various MQTT topic content issues
     - Fix Digit detected as 10 (https://github.com/jomjol/AI-on-the-edge-device/pull/1525)
     - Fix frozen time in datafile on error
     - Various minor fixes
+-   **NEW Rolling**:
+    -   Fix Rate Problem ([#1578](https://github.com/jomjol/AI-on-the-edge-device/issues/1578), [#1572](https://github.com/jomjol/AI-on-the-edge-device/issues/1572))
+
 
 ### Removed
 
