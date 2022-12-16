@@ -3,7 +3,7 @@
 #include "components/jomjol-flowcontroll/test_flow_postrocess_helper.cpp"
 #include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
 #include "components/jomjol-flowcontroll/test_flow_pp_negative.cpp"
-#include "components/jomjol-flowcontroll/test_ZeigerEvalAnalogToDigitNeu.cpp"
+#include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
 #include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"

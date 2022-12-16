@@ -40,11 +40,11 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
  
     if (CNNType == Analogue || CNNType == Analogue100)
     {
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
-        int result_after_decimal_point = ((int) floor(zahl * 10) + 10) % 10;
+        float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
+        int result_after_decimal_point = ((int) floor(number * 10) + 10) % 10;
         
         prev = PointerEvalAnalogNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(analog) zahl=" + std::to_string(zahl) + ", result_after_decimal_point=" + std::to_string(result_after_decimal_point) + ", prev=" + std::to_string(prev));
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(analog) number=" + std::to_string(number) + ", result_after_decimal_point=" + std::to_string(result_after_decimal_point) + ", prev=" + std::to_string(prev));
         result = std::to_string(prev);
 
         if (_extendedResolution && (CNNType != Digital))
@@ -73,13 +73,13 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
     {
 
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
-        if (zahl >= 0)       // NaN?
+        float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
+        if (number >= 0)       // NaN?
         {
             if (_extendedResolution)            // is only set if it is the first digit (no analogue before!)
             {
-                int result_after_decimal_point = ((int) floor(zahl * 10)) % 10;
-                int result_before_decimal_point = ((int) floor(zahl)) % 10;
+                int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+                int result_before_decimal_point = ((int) floor(number)) % 10;
 
                 result = std::to_string(result_before_decimal_point) + std::to_string(result_after_decimal_point);
                 prev = result_before_decimal_point;
@@ -128,115 +128,115 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
-int ClassFlowCNNGeneral::PointerEvalHybridNew(float zahl, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
+int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
 {
     int result;
-    int result_after_decimal_point = ((int) floor(zahl * 10)) % 10;
-    int result_before_decimal_point = ((int) floor(zahl) + 10) % 10;
+    int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+    int result_before_decimal_point = ((int) floor(number) + 10) % 10;
 
     if (eval_predecessors < 0)
     {
         if ((result_after_decimal_point <= Digital_Uncertainty * 10) || (result_after_decimal_point >= Digital_Uncertainty * 10))     // Band around the digit --> Rounding, as digit reaches inaccuracy in the frame
-            result = (int) (round(zahl) + 10) % 10;
+            result = (int) (round(number) + 10) % 10;
         else
-            result = (int) ((int) trunc(zahl) + 10) % 10;
+            result = (int) ((int) trunc(number) + 10) % 10;
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - kein Vorgänger - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }
 
     if (Analog_Predecessors)
     {
-        result = ZeigerEvalAnalogToDigitNeu(zahl, number_of_predecessors, eval_predecessors, digitalAnalogTransitionStart);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - Analoger Vorgänger, Bewertung über PointerEvalAnalogNew = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+        result = PointerEvalAnalogToDigitNew(number, number_of_predecessors, eval_predecessors, digitalAnalogTransitionStart);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - Analog predecessor, evaluation over PointerEvalAnalogNew = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }
 
-    if ((number_of_predecessors >= DigitalUebergangsbereichVorgaenger ) && (number_of_predecessors <= (10.0 - DigitalUebergangsbereichVorgaenger)))
+    if ((number_of_predecessors >= Digital_Transition_Area_Predecessor ) && (number_of_predecessors <= (10.0 - Digital_Transition_Area_Predecessor)))
     {
-        // kein Ziffernwechsel, da Vorgänger weit genug weg ist (0+/-DigitalUebergangsbereichVorgaenger) --> zahl wird gerundet
-        if ((result_after_decimal_point <= DigitalBand) || (result_after_decimal_point >= (10-DigitalBand)))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            result = ((int) round(zahl) + 10) % 10;
+        // no digit change, because predecessor is far enough away (0+/-DigitalTransitionRangePredecessor) --> number is rounded
+        if ((result_after_decimal_point <= DigitalBand) || (result_after_decimal_point >= (10-DigitalBand)))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+            result = ((int) round(number) + 10) % 10;
         else
-            result = ((int) trunc(zahl) + 10) % 10;
+            result = ((int) trunc(number) + 10) % 10;
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - KEIN Analoger Vorgänger, kein Ziffernwechsel, da Vorkomma weit genug weg = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - NO analogue predecessor, no change of digits, as pre-decimal point far enough away = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }  
 
-    if (eval_predecessors <= 1)  // Nulldurchgang beim Vorgänger hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+    if (eval_predecessors <= 1)  // Zero crossing at the predecessor has taken place (! evaluation via Prev_value and not number!) --> round up here (2.8 --> 3, but also 3.1 --> 3)
     {
-        // Wir nehmen einfach an, dass das aktuelle Digit nach dem Nulldurchgang des Vorgängers
-        // mindestens zur Hälfte (x.5) durchlaufen hat
+        // We simply assume that the current digit after the zero crossing of the predecessor
+        // has passed through at least half (x.5)
         if (result_after_decimal_point > 5)
-            // Das akt. digit hat noch keinen Nulldurchgang, aber der Vorgänger schon.
+            // The current digit does not yet have a zero crossing, but the predecessor does..
             result =  (result_before_decimal_point + 1) % 10;
         else
-            // Akt. digit und Vorgänger haben Nulldurchgang
+            // Act. digit and predecessor have zero crossing
             result =  result_before_decimal_point % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - KEIN Analoger Vorgänger, Nulldurchgang hat stattgefunden = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - NO analogue predecessor, zero crossing has taken placen = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }
 
     
-    // bleibt nur >= 9.x --> noch kein Nulldurchgang --> 2.8 --> 2, 
-    // und ab 9.7(DigitalUebergangsbereichVorlauf) 3.1 --> 2
-    // alles >=x.4 kann als aktuelle Zahl gelten im Übergang. Bei 9.x Vorgänger kann die aktuelle
-    // Zahl noch x.6 - x.7 sein. 
-    // Vorlauf (else - Zweig) passiert nicht bereits ab 9.
-    if (DigitalUebergangsbereichVorlauf>=number_of_predecessors || result_after_decimal_point >= 4)
-        // aktuelles digit hat genauso wie das Vorgängerdigit noch keinen Nulldurchgang. 
+    // remains only >= 9.x --> no zero crossing yet --> 2.8 --> 2, 
+    // and from 9.7(DigitalTransitionRangeLead) 3.1 --> 2
+    // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
+    // number can still be x.6 - x.7. 
+    // Preceding (else - branch) does not already happen from 9.
+    if (Digital_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4)
+        // The current digit, like the previous digit, does not yet have a zero crossing. 
         result =  result_before_decimal_point % 10;
     else
-        // aktuelles digit läuft dem kleineren digit (9.x) vor. Also schon >=x.0 während das vorherige Digit noch
-        // keinen Nulldurchgang hat. Daher wird um 1 reduziert.
+        // current digit precedes the smaller digit (9.x). So already >=x.0 while the previous digit has not yet
+        // has no zero crossing. Therefore, it is reduced by 1.
         result =  (result_before_decimal_point - 1 + 10) % 10;
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +
-                                                " zahl: " + std::to_string(zahl) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - O analogue predecessor, >= 9.5 --> no zero crossing yet = " + std::to_string(result) +
+                                                " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
     return result;
 }
 
 
-int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_predecessors, float analogDigitalTransitionStart)
+int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float analogDigitalTransitionStart)
 {
     int result;
-    int result_after_decimal_point = ((int) floor(zahl * 10)) % 10;
-    int result_before_decimal_point = ((int) floor(zahl) + 10) % 10;
+    int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+    int result_before_decimal_point = ((int) floor(number) + 10) % 10;
     bool roundedUp = false;
 
-    // Innerhalb der digitalen Unschaefe 
-    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-        || (eval_predecessors <= 4 && result_after_decimal_point>=6))  {   // oder digit läuft nach (analog =0..4, digit >=6)
-        result = (int) (round(zahl) + 10) % 10;
+    // Within the digital inequalities 
+    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+        || (eval_predecessors <= 4 && result_after_decimal_point>=6))  {   // or digit runs after (analogue =0..4, digit >=6)
+        result = (int) (round(number) + 10) % 10;
         roundedUp = true;
-        // vor/nachkomma neu berechnen, da wir anhand der Unschaefe die Zahl anpassen.
+        // before/ after decimal point, because we adjust the number based on the uncertainty.
         result_after_decimal_point = ((int) floor(result * 10)) % 10;
         result_before_decimal_point = ((int) floor(result) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger: " + std::to_string(ziffer_vorgaenger) +
-                                                    " erg_vorkomma: " + std::to_string(result_before_decimal_point) + 
-                                                    " erg_nachkomma: " + std::to_string(result_after_decimal_point));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Digital Uncertainty - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
+                                                    " erg before comma: " + std::to_string(result_before_decimal_point) + 
+                                                    " erg after comma: " + std::to_string(result_after_decimal_point));
     } else {
-        result = (int) ((int) trunc(zahl) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - KEINE digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger));
+        result = (int) ((int) trunc(number) + 10) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digital Uncertainty - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder));
     }
 
-    // Kein Nulldurchgang hat stattgefunden.
-    // Nur eval_predecessors verwendet, da ziffer_vorgaenger hier falsch sein könnte.
-    // ziffer_vorgaenger<=0.1 & eval_predecessors=9 entspricht analog wurde zurückgesetzt wegen vorhergehender analog, die noch nicht auf 0 sind.
-    if ((eval_predecessors>=6 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp))
+    // No zero crossing has taken place.
+    // Only eval_predecessors used because numeral_preceder could be wrong here.
+    // numeral_preceder<=0.1 & eval_predecessors=9 corresponds to analogue was reset because of previous analogue that are not yet at 0.
+    if ((eval_predecessors>=6 && (numeral_preceder>analogDigitalTransitionStart || numeral_preceder<=0.2) && roundedUp))
     {
         result =  ((result_before_decimal_point+10) - 1) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
-                                    " zahl: " + std::to_string(zahl) + 
-                                    " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + 
-                                    " erg_nachkomma = " +  std::to_string(result_after_decimal_point));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
+                                    " number: " + std::to_string(number) + 
+                                    " numeral_preceder = " + std::to_string(numeral_preceder) + 
+                                    " eerg after comma = " +  std::to_string(result_after_decimal_point));
 
     }
 
@@ -244,44 +244,44 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
 
 }
 
-int ClassFlowCNNGeneral::PointerEvalAnalogNew(float zahl, int ziffer_vorgaenger)
+int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder)
 {
-    float zahl_min, zahl_max;
+    float number_min, number_max;
     int result;
 
-    if (ziffer_vorgaenger == -1)
+    if (numeral_preceder == -1)
     {
-        result = (int) floor(zahl);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - kein Vorgänger - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+        result = (int) floor(number);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - No predecessor - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
         return result;
     }
 
-    zahl_min = zahl - AnalogFehler / 10.0;
-    zahl_max = zahl + AnalogFehler / 10.0;
+    number_min = number - Analog_error / 10.0;
+    number_max = number + Analog_error / 10.0;
 
-    if ((int) floor(zahl_max) - (int) floor(zahl_min) != 0)
+    if ((int) floor(number_max) - (int) floor(number_min) != 0)
     {
-        if (ziffer_vorgaenger <= AnalogFehler)
+        if (numeral_preceder <= Analog_error)
         {
-            result = ((int) floor(zahl_max) + 10) % 10;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - Zahl uneindeutig, Korrektur nach oben - Ergebnis = " + std::to_string(result) +
-                                                        " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+            result = ((int) floor(number_max) + 10) % 10;
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - number ambiguous, correction upwards - result = " + std::to_string(result) +
+                                                        " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
             return result;
         }
-        if (ziffer_vorgaenger >= 10 - AnalogFehler)
+        if (numeral_preceder >= 10 - Analog_error)
         {
-            result = ((int) floor(zahl_min) + 10) % 10;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - Zahl uneindeutig, Korrektur nach unten - Ergebnis = " + std::to_string(result) +
-                                                        " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+            result = ((int) floor(number_min) + 10) % 10;
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - number ambiguous, downward correction - result = " + std::to_string(result) +
+                                                        " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
             return result;
         }
     }
     
 
-    result = ((int) floor(zahl) + 10) % 10;
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - Zahl eindeutig, keine Korrektur notwendig - Ergebnis = " + std::to_string(result) +
-                                                " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+    result = ((int) floor(number) + 10) % 10;
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - number unambiguous, no correction necessary - result = " + std::to_string(result) +
+                                                " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
 
     return result;
 
@@ -725,7 +725,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         {
                             GENERAL[n]->ROI[roi]->isReject = true;
                             result = -1;
-                            _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
+                            _result_save_file+= 100;     // In case fit is not sufficient, the result should still be saved with "-10x.y".
                             string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
                             LogFile.WriteToFile(ESP_LOG_WARN, TAG, zw);
                         }
@@ -855,7 +855,7 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     return result;
 }
 
-int ClassFlowCNNGeneral::getAnzahlGENERAL()
+int ClassFlowCNNGeneral::getNumberGENERAL()
 {
     return GENERAL.size();
 }
