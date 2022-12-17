@@ -196,6 +196,30 @@ esp_err_t handler_doflow(httpd_req_t *req)
 };
 
 
+esp_err_t handler_doFlow_Start(httpd_req_t *req) {
+
+    #ifdef DEBUG_DETAIL_ON          
+    LogFile.WriteHeapInfo("handler_doflow_Start - Start");       
+    #endif
+
+    ESP_LOGD(TAG, "handler_doFlow_Start uri: %s", req->uri);
+
+    if (auto_isrunning) {
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
+    }
+    else {
+       LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!"); 
+       return ESP_FAIL;
+    }
+
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_doflow_Start - Done");       
+    #endif
+
+    return ESP_OK;
+}
+
+
 esp_err_t handler_json(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON       
@@ -864,6 +888,11 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_doflow;
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
+
+    camuri.uri       = "/doflow_start";
+    camuri.handler   = handler_doFlow_Start;
+    camuri.user_ctx  = (void*) "DoFlow Start"; 
+    httpd_register_uri_handler(server, &camuri);     
 
     camuri.uri       = "/statusflow.html";
     camuri.handler   = handler_statusflow;
