@@ -23,6 +23,7 @@ class CCamera {
         int led_intensity = 4095;
 
         void ledc_init(void);
+        bool CameraInitSuccessful = false;
 
     public:
         int image_height, image_width;
@@ -37,8 +38,10 @@ class CCamera {
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
         void SetLEDIntensity(float _intrel);
-
         void EnableAutoExposure(int flash_duration);
+
+        bool getCameraInitSuccessful();
+
         
 
         framesize_t TextToFramesize(const char * text);

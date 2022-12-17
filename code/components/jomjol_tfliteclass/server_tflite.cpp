@@ -28,6 +28,7 @@ ClassFlowControll tfliteflow;
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
+bool FlowInitDone = false;
 bool flowisrunning = false;
 
 long auto_intervall = 0;
@@ -44,16 +45,17 @@ int getCountFlowRounds() {
 }
 
 
-
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req)
 {
     return tfliteflow.GetJPGStream(_filename, req);
 }
 
+
 esp_err_t GetRawJPG(httpd_req_t *req)
 {
     return tfliteflow.SendRawJPG(req);
 }
+
 
 bool isSetupModusActive() {
     return tfliteflow.getStatusSetupModus();
@@ -63,70 +65,72 @@ bool isSetupModusActive() {
 
 void KillTFliteTasks()
 {
-#ifdef DEBUG_DETAIL_ON          
-    ESP_LOGD(TAG, "Handle: xHandleblink_task_doFlow: %ld", (long) xHandleblink_task_doFlow);
-#endif  
+    #ifdef DEBUG_DETAIL_ON          
+        ESP_LOGD(TAG, "Handle: xHandleblink_task_doFlow: %ld", (long) xHandleblink_task_doFlow);
+    #endif  
     if (xHandleblink_task_doFlow != NULL)
     {
         TaskHandle_t xHandleblink_task_doFlowTmp = xHandleblink_task_doFlow;
         xHandleblink_task_doFlow = NULL;
         vTaskDelete(xHandleblink_task_doFlowTmp);
-#ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "Killed: xHandleblink_task_doFlow");
-#endif
+        #ifdef DEBUG_DETAIL_ON      
+            ESP_LOGD(TAG, "Killed: xHandleblink_task_doFlow");
+        #endif
     }
 
-#ifdef DEBUG_DETAIL_ON      
-    ESP_LOGD(TAG, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        ESP_LOGD(TAG, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
+    #endif
     if (xHandletask_autodoFlow != NULL)
     {
         TaskHandle_t xHandletask_autodoFlowTmp = xHandletask_autodoFlow;
         xHandletask_autodoFlow = NULL;
         vTaskDelete(xHandletask_autodoFlowTmp);
-#ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
-#endif
+        #ifdef DEBUG_DETAIL_ON      
+            ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
+        #endif
     }
 
 }
 
+
 void doInit(void)
 {
-#ifdef DEBUG_DETAIL_ON             
-    ESP_LOGD(TAG, "Start tfliteflow.InitFlow(config);");
-#endif
+    #ifdef DEBUG_DETAIL_ON             
+        ESP_LOGD(TAG, "Start tfliteflow.InitFlow(config);");
+    #endif
     tfliteflow.InitFlow(CONFIG_FILE);
-#ifdef DEBUG_DETAIL_ON      
-    ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
-#endif
+    FlowInitDone = true;
+    #ifdef DEBUG_DETAIL_ON      
+        ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
+    #endif
     
-#ifdef ENABLE_MQTT
-    tfliteflow.StartMQTTService();
-#endif //ENABLE_MQTT
+    #ifdef ENABLE_MQTT
+        tfliteflow.StartMQTTService();
+    #endif //ENABLE_MQTT
 }
 
 
 bool doflow(void)
-{
-    
+{   
     std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
     ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
     flowisrunning = true;
     tfliteflow.doFlow(zw_time);
     flowisrunning = false;
 
-#ifdef DEBUG_DETAIL_ON      
-    ESP_LOGD(TAG, "doflow - end %s", zw_time.c_str());
-#endif    
+    #ifdef DEBUG_DETAIL_ON      
+        ESP_LOGD(TAG, "doflow - end %s", zw_time.c_str());
+    #endif    
     return true;
 }
 
+
 void blink_task_doFlow(void *pvParameter)
 {
-#ifdef DEBUG_DETAIL_ON          
-    ESP_LOGD(TAG, "blink_task_doFlow");
-#endif
+    #ifdef DEBUG_DETAIL_ON          
+        ESP_LOGD(TAG, "blink_task_doFlow");
+    #endif
     if (!flowisrunning)
     {
         flowisrunning = true;
@@ -140,10 +144,10 @@ void blink_task_doFlow(void *pvParameter)
 
 esp_err_t handler_init(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("handler_init - Start");       
-    ESP_LOGD(TAG, "handler_doinit uri: %s", req->uri);
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("handler_init - Start");       
+        ESP_LOGD(TAG, "handler_doinit uri: %s", req->uri);
+    #endif
 
     const char* resp_str = "Init started<br>";
     httpd_resp_send(req, resp_str, strlen(resp_str));     
@@ -155,18 +159,19 @@ esp_err_t handler_init(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);    
 
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("handler_init - Done");       
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("handler_init - Done");       
+    #endif
 
     return ESP_OK;
-};
+}
+
 
 esp_err_t handler_doflow(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON          
-    LogFile.WriteHeapInfo("handler_doflow - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON          
+        LogFile.WriteHeapInfo("handler_doflow - Start");       
+    #endif
 
     ESP_LOGD(TAG, "handler_doFlow uri: %s", req->uri);
 
@@ -185,182 +190,197 @@ esp_err_t handler_doflow(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);       
 
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_doflow - Done");       
-#endif
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_doflow - Done");       
+    #endif
 
     return ESP_OK;
-};
+}
 
 
 esp_err_t handler_json(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_json - Start");    
-#endif
-
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_json - Start");    
+    #endif
 
     ESP_LOGD(TAG, "handler_JSON uri: %s", req->uri);
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_set_type(req, "application/json");
-
-    std::string zw = tfliteflow.getJSON();
-    if (zw.length() > 0)
+    
+    if (FlowInitDone) 
     {
-        httpd_resp_send(req, zw.c_str(), zw.length());
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_set_type(req, "application/json");
+
+        std::string zw = tfliteflow.getJSON();
+        if (zw.length() > 0) 
+        {
+            httpd_resp_send(req, zw.c_str(), zw.length());
+        }
+        else 
+        {
+            httpd_resp_send(req, NULL, 0);
+        }
     }
-    else
+    else 
     {
-        httpd_resp_send(req, NULL, 0);
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "JSON API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
     }
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_JSON - Done");   
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_JSON - Done");   
+    #endif
     return ESP_OK;
-};
-
+}
 
 
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
+
 #ifdef DEBUG_DETAIL_ON       
     LogFile.WriteHeapInfo("handler_water counter - Start");    
 #endif
 
-    bool _rawValue = false;
-    bool _noerror = false;
-    bool _all = false;
-    std::string _type = "value";
-    string zw;
+    if (FlowInitDone) 
+    {
+        bool _rawValue = false;
+        bool _noerror = false;
+        bool _all = false;
+        std::string _type = "value";
+        string zw;
+
 
     ESP_LOGD(TAG, "handler_water counter - uri: %s", req->uri);
 
-    char _query[100];
-    char _size[10];
+        char _query[100];
+        char _size[10];
 
-    if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
-    {
-//        ESP_LOGD(TAG, "Query: %s", _query);
-        if (httpd_query_key_value(_query, "all", _size, 10) == ESP_OK)
+        if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "all is found%s", _size);
-#endif
-            _all = true;
+    //        ESP_LOGD(TAG, "Query: %s", _query);
+            if (httpd_query_key_value(_query, "all", _size, 10) == ESP_OK)
+            {
+                #ifdef DEBUG_DETAIL_ON       
+                    ESP_LOGD(TAG, "all is found%s", _size);
+                #endif
+                _all = true;
+            }
+
+            if (httpd_query_key_value(_query, "type", _size, 10) == ESP_OK)
+            {
+                #ifdef DEBUG_DETAIL_ON       
+                    ESP_LOGD(TAG, "all is found: %s", _size);
+                #endif
+                _type = std::string(_size);
+            }
+
+            if (httpd_query_key_value(_query, "rawvalue", _size, 10) == ESP_OK)
+            {
+                #ifdef DEBUG_DETAIL_ON       
+                    ESP_LOGD(TAG, "rawvalue is found: %s", _size);
+                #endif
+                _rawValue = true;
+            }
+            if (httpd_query_key_value(_query, "noerror", _size, 10) == ESP_OK)
+            {
+                #ifdef DEBUG_DETAIL_ON       
+                    ESP_LOGD(TAG, "noerror is found: %s", _size);
+                #endif
+                _noerror = true;
+            }        
+        }  
+
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+        if (_all)
+        {
+            httpd_resp_set_type(req, "text/plain");
+            ESP_LOGD(TAG, "TYPE: %s", _type.c_str());
+            int _intype = READOUT_TYPE_VALUE;
+            if (_type == "prevalue")
+                _intype = READOUT_TYPE_PREVALUE;
+            if (_type == "raw")
+                _intype = READOUT_TYPE_RAWVALUE;
+            if (_type == "error")
+                _intype = READOUT_TYPE_ERROR;
+
+
+            zw = tfliteflow.getReadoutAll(_intype);
+            ESP_LOGD(TAG, "ZW: %s", zw.c_str());
+            if (zw.length() > 0)
+                httpd_resp_sendstr_chunk(req, zw.c_str()); 
+            httpd_resp_sendstr_chunk(req, NULL);   
+            return ESP_OK;
         }
 
-        if (httpd_query_key_value(_query, "type", _size, 10) == ESP_OK)
-        {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "all is found: %s", _size);
-#endif
-            _type = std::string(_size);
-        }
-
-        if (httpd_query_key_value(_query, "rawvalue", _size, 10) == ESP_OK)
-        {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "rawvalue is found: %s", _size);
-#endif
-            _rawValue = true;
-        }
-        if (httpd_query_key_value(_query, "noerror", _size, 10) == ESP_OK)
-        {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "noerror is found: %s", _size);
-#endif
-            _noerror = true;
-        }        
-    }  
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-
-    if (_all)
-    {
-        httpd_resp_set_type(req, "text/plain");
-        ESP_LOGD(TAG, "TYPE: %s", _type.c_str());
-        int _intype = READOUT_TYPE_VALUE;
-        if (_type == "prevalue")
-            _intype = READOUT_TYPE_PREVALUE;
-        if (_type == "raw")
-            _intype = READOUT_TYPE_RAWVALUE;
-        if (_type == "error")
-            _intype = READOUT_TYPE_ERROR;
-
-
-        zw = tfliteflow.getReadoutAll(_intype);
-        ESP_LOGD(TAG, "ZW: %s", zw.c_str());
+        zw = tfliteflow.getReadout(_rawValue, _noerror);
         if (zw.length() > 0)
             httpd_resp_sendstr_chunk(req, zw.c_str()); 
-        httpd_resp_sendstr_chunk(req, NULL);   
-        return ESP_OK;
-    }
 
-    zw = tfliteflow.getReadout(_rawValue, _noerror);
-    if (zw.length() > 0)
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-
-    string query = std::string(_query);
-//    ESP_LOGD(TAG, "Query: %s, query.c_str());
-    if (query.find("full") != std::string::npos)
-    {
-        string txt, zw;
-        
-        txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
-        txt = txt + "Digital Counter: <p> ";
-        httpd_resp_sendstr_chunk(req, txt.c_str()); 
-        
-        std::vector<HTMLInfo*> htmlinfodig;
-        htmlinfodig = tfliteflow.GetAllDigital();  
-
-        for (int i = 0; i < htmlinfodig.size(); ++i)
+        string query = std::string(_query);
+    //    ESP_LOGD(TAG, "Query: %s, query.c_str());
+        if (query.find("full") != std::string::npos)
         {
-            if (tfliteflow.GetTypeDigital() == Digital)
-            {
-                if (htmlinfodig[i]->val == 10)
-                    zw = "NaN";
-                else
-                    zw = to_string((int) htmlinfodig[i]->val);
+            string txt, zw;
+            
+            txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
+            txt = txt + "Digital Counter: <p> ";
+            httpd_resp_sendstr_chunk(req, txt.c_str()); 
+            
+            std::vector<HTMLInfo*> htmlinfodig;
+            htmlinfodig = tfliteflow.GetAllDigital();  
 
-                txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+            for (int i = 0; i < htmlinfodig.size(); ++i)
+            {
+                if (tfliteflow.GetTypeDigital() == Digital)
+                {
+                    if (htmlinfodig[i]->val == 10)
+                        zw = "NaN";
+                    else
+                        zw = to_string((int) htmlinfodig[i]->val);
+
+                    txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                }
+                else
+                {
+                    std::stringstream stream;
+                    stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                    zw = stream.str();
+
+                    txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                }
+                httpd_resp_sendstr_chunk(req, txt.c_str()); 
+                delete htmlinfodig[i];
             }
-            else
+            htmlinfodig.clear();
+        
+            txt = " <p> Analog Meter: <p> ";
+            httpd_resp_sendstr_chunk(req, txt.c_str()); 
+            
+            std::vector<HTMLInfo*> htmlinfoana;
+            htmlinfoana = tfliteflow.GetAllAnalog();
+            for (int i = 0; i < htmlinfoana.size(); ++i)
             {
                 std::stringstream stream;
-                stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
                 zw = stream.str();
 
-                txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                txt = "<img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"> " + zw;
+                httpd_resp_sendstr_chunk(req, txt.c_str()); 
+                delete htmlinfoana[i];
             }
-            httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            delete htmlinfodig[i];
-        }
-        htmlinfodig.clear();
-      
-        txt = " <p> Analog Meter: <p> ";
-        httpd_resp_sendstr_chunk(req, txt.c_str()); 
-        
-        std::vector<HTMLInfo*> htmlinfoana;
-        htmlinfoana = tfliteflow.GetAllAnalog();
-        for (int i = 0; i < htmlinfoana.size(); ++i)
-        {
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
-            zw = stream.str();
+            htmlinfoana.clear();   
 
-            txt = "<img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"> " + zw;
-            httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            delete htmlinfoana[i];
-        }
-        htmlinfoana.clear();   
+        }   
 
-    }   
-
-  
-
-
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_sendstr_chunk(req, NULL);   
+    }
+    else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Value API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
+    }
 
 
     /* Respond with an empty chunk to signal HTTP response completion */
@@ -369,15 +389,16 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 #ifdef DEBUG_DETAIL_ON       
     LogFile.WriteHeapInfo("handler_water counter - Done");   
 #endif
+
     return ESP_OK;
-};
+}
 
 
 esp_err_t handler_editflow(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_editflow - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_editflow - Start");       
+    #endif
 
     ESP_LOGD(TAG, "handler_editflow uri: %s", req->uri);
 
@@ -389,9 +410,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
     {
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "task is found: %s", _valuechar);
-#endif
+            #ifdef DEBUG_DETAIL_ON       
+                ESP_LOGD(TAG, "task is found: %s", _valuechar);
+            #endif
             _task = string(_valuechar);
         }
     }  
@@ -424,10 +445,10 @@ esp_err_t handler_editflow(httpd_req_t *req)
         httpd_query_key_value(_query, "out", _valuechar, 30);         
         out = string(_valuechar);  
 
-#ifdef DEBUG_DETAIL_ON       
-        ESP_LOGD(TAG, "in: %s", in.c_str());
-        ESP_LOGD(TAG, "out: %s", out.c_str());
-#endif
+        #ifdef DEBUG_DETAIL_ON       
+            ESP_LOGD(TAG, "in: %s", in.c_str());
+            ESP_LOGD(TAG, "out: %s", out.c_str());
+        #endif
 
         in = "/sdcard" + in;
         out = "/sdcard" + out;
@@ -466,14 +487,14 @@ esp_err_t handler_editflow(httpd_req_t *req)
         zw = string(_valuechar);  
         dy = stoi(zw);          
 
-#ifdef DEBUG_DETAIL_ON       
-        ESP_LOGD(TAG, "in: %s", in.c_str());
-        ESP_LOGD(TAG, "out: %s", out.c_str());
-        ESP_LOGD(TAG, "x: %s", zw.c_str());
-        ESP_LOGD(TAG, "y: %s", zw.c_str());
-        ESP_LOGD(TAG, "dx: %s", zw.c_str());
-        ESP_LOGD(TAG, "dy: %s", zw.c_str());
-#endif
+        #ifdef DEBUG_DETAIL_ON       
+            ESP_LOGD(TAG, "in: %s", in.c_str());
+            ESP_LOGD(TAG, "out: %s", out.c_str());
+            ESP_LOGD(TAG, "x: %s", zw.c_str());
+            ESP_LOGD(TAG, "y: %s", zw.c_str());
+            ESP_LOGD(TAG, "dx: %s", zw.c_str());
+            ESP_LOGD(TAG, "dy: %s", zw.c_str());
+        #endif
 
         if (httpd_query_key_value(_query, "enhance", _valuechar, 10) == ESP_OK)
         {
@@ -567,46 +588,55 @@ esp_err_t handler_editflow(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_editflow - Done");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_editflow - Done");       
+    #endif
 
     return ESP_OK;
-};
+}
 
 
 esp_err_t handler_statusflow(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_prevalue - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_prevalue - Start");       
+    #endif
 
-    const char* resp_str;
+    if (FlowInitDone) 
+    {
+        const char* resp_str;
 
-#ifdef DEBUG_DETAIL_ON       
-    ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
-#endif
+        #ifdef DEBUG_DETAIL_ON       
+            ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
+        #endif
 
-    string* zw = tfliteflow.getActStatus();
-    resp_str = zw->c_str();
+        string* zw = tfliteflow.getActStatus();
+        resp_str = zw->c_str();
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_send(req, resp_str, strlen(resp_str));   
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);      
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_send(req, resp_str, strlen(resp_str));   
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_send_chunk(req, NULL, 0); 
+    }
+    else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flowstatus API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
+    }  
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_prevalue - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_prevalue - Done");       
+    #endif
 
     return ESP_OK;
-};
+}
+
 
 esp_err_t handler_cputemp(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_cputemp - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_cputemp - Start");       
+    #endif
 
     const char* resp_str;
     char cputemp[20];
@@ -618,39 +648,48 @@ esp_err_t handler_cputemp(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, resp_str, strlen(resp_str));   
     /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);      
+    httpd_resp_send_chunk(req, NULL, 0);  
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_cputemp - End");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_cputemp - End");       
+    #endif
 
     return ESP_OK;
-};
+}
+
 
 esp_err_t handler_rssi(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_rssi - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_rssi - Start");       
+    #endif
 
-    const char* resp_str;
-    char rssi[20];
+    if (getWIFIisConnected()) 
+    {
+        const char* resp_str;
+        char rssi[20];
 
-    sprintf(rssi, "%idBm", get_WIFI_RSSI());
+        sprintf(rssi, "%idBm", get_WIFI_RSSI());
 
-    resp_str = rssi;
+        resp_str = rssi;
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_send(req, resp_str, strlen(resp_str));   
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);      
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_send(req, resp_str, strlen(resp_str));   
+        /* Respond with an empty chunk to signal HTTP response completion */
+        httpd_resp_send_chunk(req, NULL, 0);
+    }
+    else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "RSSI API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
+    }      
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_rssi - End");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_rssi - End");       
+    #endif
 
     return ESP_OK;
-};
+}
 
 
 esp_err_t handler_uptime(httpd_req_t *req)
@@ -677,16 +716,16 @@ esp_err_t handler_uptime(httpd_req_t *req)
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_prevalue - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_prevalue - Start");       
+    #endif
 
     const char* resp_str;
     string zw;
 
-#ifdef DEBUG_DETAIL_ON       
-    ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
+    #endif
 
     char _query[100];
     char _size[10] = "";
@@ -694,15 +733,15 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
-#ifdef DEBUG_DETAIL_ON       
-        ESP_LOGD(TAG, "Query: %s", _query);
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+            ESP_LOGD(TAG, "Query: %s", _query);
+    #endif
 
         if (httpd_query_key_value(_query, "value", _size, 10) == ESP_OK)
         {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "Value: %s", _size);
-#endif
+            #ifdef DEBUG_DETAIL_ON       
+                ESP_LOGD(TAG, "Value: %s", _size);
+            #endif
         }
 
         httpd_query_key_value(_query, "numbers", _numbers, 50);
@@ -726,12 +765,13 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);      
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_prevalue - End");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_prevalue - End");       
+    #endif
 
     return ESP_OK;
-};
+}
+
 
 void task_autodoFlow(void *pvParameter)
 {
@@ -765,20 +805,20 @@ void task_autodoFlow(void *pvParameter)
 
         if (flowisrunning)
         {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "Autoflow: doFlow is already running!");
-#endif
+            #ifdef DEBUG_DETAIL_ON       
+                ESP_LOGD(TAG, "Autoflow: doFlow is already running!");
+            #endif
         }
         else
         {
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "Autoflow: doFlow is started");
-#endif
+            #ifdef DEBUG_DETAIL_ON       
+                ESP_LOGD(TAG, "Autoflow: doFlow is started");
+            #endif
             flowisrunning = true;
             doflow();
-#ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "Remove older log files");
-#endif
+            #ifdef DEBUG_DETAIL_ON       
+                ESP_LOGD(TAG, "Remove older log files");
+            #endif
             LogFile.RemoveOldLogFile();
             LogFile.RemoveOldDataLog();
         }
@@ -805,6 +845,7 @@ void task_autodoFlow(void *pvParameter)
     ESP_LOGD(TAG, "task_autodoFlow: end");
 }
 
+
 void TFliteDoAutoStart()
 {
     BaseType_t xReturned;
@@ -822,9 +863,8 @@ void TFliteDoAutoStart()
        ESP_LOGD(TAG, "ERROR task_autodoFlow konnte nicht erzeugt werden!");
     }
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
-
-
 }
+
 
 #ifdef ENABLE_MQTT
 std::string GetMQTTMainTopic()
