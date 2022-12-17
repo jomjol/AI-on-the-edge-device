@@ -23,7 +23,8 @@
 #include <sstream>
 #include <iostream>
 
-#define __HIDE_PASSWORD
+#include "../../include/defines.h"
+
 
 
 
@@ -44,7 +45,7 @@ static int s_retry_num = 0;
 bool WIFIConnected = false;
 
 ///////////////////////////////////////////////////////////
-#define BLINK_GPIO GPIO_NUM_33
+//#define BLINK_GPIO GPIO_NUM_33
 
 int BlinkDauer;
 int BlinkAnzahl;

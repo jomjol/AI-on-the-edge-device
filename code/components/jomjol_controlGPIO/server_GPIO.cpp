@@ -18,7 +18,7 @@
 #include <vector>
 //#include <regex>
 
-#include "defines.h"
+#include "../../include/defines.h"
 
 #include "server_GPIO.h"
 
@@ -28,6 +28,7 @@
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
+
 
 static const char *TAG = "GPIO";
 QueueHandle_t gpio_queue_handle = NULL;

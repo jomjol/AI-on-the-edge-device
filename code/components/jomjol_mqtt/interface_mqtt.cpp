@@ -6,8 +6,9 @@
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
 #include "server_tflite.h"
+#include "../../include/defines.h"
 
-#define __HIDE_PASSWORD
+//#define __HIDE_PASSWORD
 
 //#define DEBUG_DETAIL_ON 
 

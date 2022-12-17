@@ -1,12 +1,13 @@
 #pragma once
 #include "ClassFlowImage.h"
 #include "ClassControllCamera.h"
+#include "../../include/defines.h"
 
 #include <string>
 
-#define BLINK_GPIO GPIO_NUM_4
+//#define BLINK_GPIO GPIO_NUM_4
 
-#define CAMERA_MODEL_AI_THINKER
+//#define CAMERA_MODEL_AI_THINKER
 
 
 

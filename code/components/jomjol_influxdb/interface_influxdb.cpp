@@ -6,6 +6,7 @@
 #include <time.h>
 #include "ClassLogFile.h"
 #include "esp_http_client.h"
+#include "../../include/defines.h"
 
 #define MAX_HTTP_OUTPUT_BUFFER 2048
 

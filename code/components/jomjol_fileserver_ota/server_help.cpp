@@ -21,10 +21,12 @@ extern "C" {
 
 #include "esp_http_server.h"
 
+#include "../../include/defines.h"
+
 
 static const char *TAG = "SERVER HELP";
 
-#define SCRATCH_BUFSIZE  8192 
+//#define SCRATCH_BUFSIZE  8192 
 char scratch[SCRATCH_BUFSIZE];
 
 

@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "defines.h"
+#include "../../include/defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -22,6 +22,7 @@
 
 #include "server_file.h"
 #include "connect_wlan.h"
+
 
 //#define DEBUG_DETAIL_ON       
 

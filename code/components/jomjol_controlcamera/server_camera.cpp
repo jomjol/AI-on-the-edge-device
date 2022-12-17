@@ -9,10 +9,12 @@
 #include "ClassLogFile.h"
 #include "esp_log.h"
 
+#include "../../include/defines.h"
+
 static const char *TAG = "server_cam";
 
-#define SCRATCH_BUFSIZE2  8192 
-char scratch2[SCRATCH_BUFSIZE2];
+//#define SCRATCH_BUFSIZE2  8192 
+//char scratch2[SCRATCH_BUFSIZE2];
 
 //#define DEBUG_DETAIL_ON   
 

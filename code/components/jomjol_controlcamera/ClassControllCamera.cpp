@@ -12,8 +12,10 @@
 #include "server_ota.h"
 #include "server_GPIO.h"
 
+#include "../../include/defines.h"
 
-#define BOARD_ESP32CAM_AITHINKER
+
+//#define BOARD_ESP32CAM_AITHINKER
 
 
 #include <esp_event.h>
@@ -28,10 +30,13 @@
 
 #include "esp_camera.h"
 
+#include "driver/ledc.h"
+
 // #define DEBUG_DETAIL_ON
 
-#define USE_PWM_LEDFLASH
+//#define USE_PWM_LEDFLASH
 
+/*
 #ifdef USE_PWM_LEDFLASH
 
 //// PWM für Flash-LED
@@ -44,11 +49,11 @@
 #define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
 
 #endif
-
+*/
 
 
 // ESP32Cam (AiThinker) PIN Map
-
+/*
 #define CAM_PIN_PWDN 32
 #define CAM_PIN_RESET -1 //software reset will be performed
 #define CAM_PIN_XCLK 0
@@ -66,7 +71,7 @@
 #define CAM_PIN_VSYNC 25
 #define CAM_PIN_HREF 23
 #define CAM_PIN_PCLK 22
-
+*/
 
 static const char *TAG = "CAM"; 
 
@@ -106,12 +111,12 @@ static camera_config_t camera_config = {
 };
 
 
-#include "driver/ledc.h"
+
 
 CCamera Camera;
 
-#define FLASH_GPIO GPIO_NUM_4
-#define BLINK_GPIO GPIO_NUM_33
+//#define FLASH_GPIO GPIO_NUM_4
+//#define BLINK_GPIO GPIO_NUM_33
 
 typedef struct {
         httpd_req_t *req;

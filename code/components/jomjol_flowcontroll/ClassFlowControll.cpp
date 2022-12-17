@@ -27,6 +27,7 @@ extern "C" {
 //#include "CImg.h"
 
 #include "server_help.h"
+#include "../../include/defines.h"
 
 //#define DEBUG_DETAIL_ON  
 

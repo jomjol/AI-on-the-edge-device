@@ -4,6 +4,7 @@
 #include "server_ota.h"
 
 #include <esp_log.h>
+#include "../../include/defines.h"
 
 #include "esp_system.h"
 

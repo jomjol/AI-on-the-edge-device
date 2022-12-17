@@ -2,6 +2,7 @@
 
 #include "ClassLogFile.h"
 #include "Helper.h"
+#include "../../include/defines.h"
 
 #include <esp_log.h>
 
