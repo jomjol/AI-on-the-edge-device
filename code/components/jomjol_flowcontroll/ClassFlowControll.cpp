@@ -475,7 +475,7 @@ std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string
 
 bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -490,23 +490,23 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        dismantled = ZerlegeZeile(aktparamgraph, " =");
-        if ((toUpper(dismantled[0]) == "AUTOSTART") && (dismantled.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph, " =");
+        if ((toUpper(splitted[0]) == "AUTOSTART") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
             {
                 AutoStart = true;
             }
         }
 
-        if ((toUpper(dismantled[0]) == "INTERVALL") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "INTERVALL") && (splitted.size() > 1))
         {
-            AutoIntervall = std::stof(dismantled[1]);
+            AutoIntervall = std::stof(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "DATALOGACTIVE") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
             {
                 LogFile.SetDataLogToSD(true);
             }
@@ -515,51 +515,51 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(dismantled[0]) == "DATALOGRETENTIONINDAYS") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "DATALOGRETENTIONINDAYS") && (splitted.size() > 1))
         {
-            LogFile.SetDataLogRetention(std::stoi(dismantled[1]));
+            LogFile.SetDataLogRetention(std::stoi(splitted[1]));
         }
 
-        if ((toUpper(dismantled[0]) == "LOGFILE") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILE") && (splitted.size() > 1))
         {
             /* matches esp_log_level_t */
-            if ((toUpper(dismantled[1]) == "TRUE") || (toUpper(dismantled[1]) == "2"))
+            if ((toUpper(splitted[1]) == "TRUE") || (toUpper(splitted[1]) == "2"))
             {
                 LogFile.setLogLevel(ESP_LOG_WARN);
             }
-            else if ((toUpper(dismantled[1]) == "FALSE") || (toUpper(dismantled[1]) == "0") || (toUpper(dismantled[1]) == "1"))
+            else if ((toUpper(splitted[1]) == "FALSE") || (toUpper(splitted[1]) == "0") || (toUpper(splitted[1]) == "1"))
             {
                 LogFile.setLogLevel(ESP_LOG_ERROR);
             }
-            else if (toUpper(dismantled[1]) == "3")
+            else if (toUpper(splitted[1]) == "3")
             {
                 LogFile.setLogLevel(ESP_LOG_INFO);
             }
-            else if (toUpper(dismantled[1]) == "4")
+            else if (toUpper(splitted[1]) == "4")
             {
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
             }
         }
-        if ((toUpper(dismantled[0]) == "LOGFILERETENTIONINDAYS") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
         {
-            LogFile.SetLogFileRetention(std::stoi(dismantled[1]));
+            LogFile.SetLogFileRetention(std::stoi(splitted[1]));
         }
 
-        if ((toUpper(dismantled[0]) == "TIMEZONE") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "TIMEZONE") && (splitted.size() > 1))
         {
-            string zw = "Set TimeZone: " + dismantled[1];
-            setTimeZone(dismantled[1]);
+            string zw = "Set TimeZone: " + splitted[1];
+            setTimeZone(splitted[1]);
         }      
 
-        if ((toUpper(dismantled[0]) == "TIMESERVER") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "TIMESERVER") && (splitted.size() > 1))
         {
-            string zw = "Set TimeZone: " + dismantled[1];
-            reset_servername(dismantled[1]);
+            string zw = "Set TimeZone: " + splitted[1];
+            reset_servername(splitted[1]);
         }  
 
-        if ((toUpper(dismantled[0]) == "HOSTNAME") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "HOSTNAME") && (splitted.size() > 1))
         {
-            if (ChangeHostName("/sdcard/wlan.ini", dismantled[1]))
+            if (ChangeHostName("/sdcard/wlan.ini", splitted[1]))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
@@ -570,9 +570,9 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(dismantled[0]) == "SETUPMODE") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SETUPMODE") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
             {
                 SetupModeActive = true;
             }        

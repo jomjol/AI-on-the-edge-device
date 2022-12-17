@@ -129,7 +129,7 @@ void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _exte
 
 bool ClassFlowPostProcessing::LoadPreValue(void)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
     FILE* pFile;
     char zw[1024];
     string zwtime, zwvalue, name;
@@ -148,14 +148,14 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     if (zwtime.length() == 0)
         return false;
 
-    dismantled = HelperZerlegeZeile(zwtime, "\t");
-    if (dismantled.size() > 1)     //  Conversion to the new format
+    splitted = HelperZerlegeZeile(zwtime, "\t");
+    if (splitted.size() > 1)     //  Conversion to the new format
     {
-        while ((dismantled.size() > 1) && !_done)
+        while ((splitted.size() > 1) && !_done)
         {
-            name = trim(dismantled[0]);
-            zwtime = trim(dismantled[1]);
-            zwvalue = trim(dismantled[2]);
+            name = trim(splitted[0]);
+            zwtime = trim(splitted[1]);
+            zwvalue = trim(splitted[2]);
 
             for (int j = 0; j < NUMBERS.size(); ++j)
             {
@@ -195,12 +195,12 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
             else
             {
                 ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
-                dismantled = HelperZerlegeZeile(trim(std::string(zw)), "\t");
-                if (dismantled.size() > 1)
+                splitted = HelperZerlegeZeile(trim(std::string(zw)), "\t");
+                if (splitted.size() > 1)
                 {
-                    name = trim(dismantled[0]);
-                    zwtime = trim(dismantled[1]);
-                    zwvalue = trim(dismantled[2]);
+                    name = trim(splitted[0]);
+                    zwtime = trim(splitted[1]);
+                    zwvalue = trim(splitted[2]);
                 }
             }
         }
@@ -470,7 +470,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
     int _n;
 
     aktparamgraph = trim(aktparamgraph);
@@ -488,65 +488,65 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        dismantled = ZerlegeZeile(aktparamgraph);
-        std::string _param = GetParameterName(dismantled[0]);
+        splitted = ZerlegeZeile(aktparamgraph);
+        std::string _param = GetParameterName(splitted[0]);
 
-        if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (splitted.size() > 1))
         {
-            handleDecimalExtendedResolution(dismantled[0], dismantled[1]);
-        }
-
-        if ((toUpper(_param) == "DECIMALSHIFT") && (dismantled.size() > 1))
-        {
-            handleDecimalSeparator(dismantled[0], dismantled[1]);
-        }
-        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (dismantled.size() > 1))
-        {
-            handleAnalogDigitalTransitionStart(dismantled[0], dismantled[1]);
-        }
-        if ((toUpper(_param) == "MAXRATEVALUE") && (dismantled.size() > 1))
-        {
-            handleMaxRateValue(dismantled[0], dismantled[1]);
-        }
-        if ((toUpper(_param) == "MAXRATETYPE") && (dismantled.size() > 1))
-        {
-            handleMaxRateType(dismantled[0], dismantled[1]);
+            handleDecimalExtendedResolution(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "PREVALUEUSE") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "DECIMALSHIFT") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            handleDecimalSeparator(splitted[0], splitted[1]);
+        }
+        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (splitted.size() > 1))
+        {
+            handleAnalogDigitalTransitionStart(splitted[0], splitted[1]);
+        }
+        if ((toUpper(_param) == "MAXRATEVALUE") && (splitted.size() > 1))
+        {
+            handleMaxRateValue(splitted[0], splitted[1]);
+        }
+        if ((toUpper(_param) == "MAXRATETYPE") && (splitted.size() > 1))
+        {
+            handleMaxRateType(splitted[0], splitted[1]);
+        }
+
+        if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1))
+        {
+            if (toUpper(splitted[1]) == "TRUE")
             {
                 PreValueUse = true;
             }
         }
-        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
         }        
-        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->AllowNegativeRates = true;
         }
-        if ((toUpper(_param) == "ERRORMESSAGE") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 ErrorMessage = true;
         }
-        if ((toUpper(_param) == "IGNORELEADINGNAN") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 IgnoreLeadingNaN = true;
         }
 
         
-        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (dismantled.size() > 1))
+        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1))
         {
-            PreValueAgeStartup = std::stoi(dismantled[1]);
+            PreValueAgeStartup = std::stoi(splitted[1]);
         }
     }
 

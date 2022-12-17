@@ -291,7 +291,7 @@ int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder
 
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -317,53 +317,53 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        dismantled = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(dismantled[0]) == "LOGIMAGELOCATION") && (dismantled.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "LOGIMAGELOCATION") && (splitted.size() > 1))
         {
-            this->LogImageLocation = "/sdcard" + dismantled[1];
+            this->LogImageLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
         }
-        if ((toUpper(dismantled[0]) == "LOGIMAGESELECT") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGIMAGESELECT") && (splitted.size() > 1))
         {
-            LogImageSelect = dismantled[1];
+            LogImageSelect = splitted[1];
             isLogImageSelect = true;            
         }
 
-        if ((toUpper(dismantled[0]) == "LOGFILERETENTIONINDAYS") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(dismantled[1]);
+            this->logfileRetentionInDays = std::stoi(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "MODEL") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "MODEL") && (splitted.size() > 1))
         {
-            this->cnnmodelfile = dismantled[1];
+            this->cnnmodelfile = splitted[1];
         }
         
-        if ((toUpper(dismantled[0]) == "CNNGOODTHRESHOLD") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "CNNGOODTHRESHOLD") && (splitted.size() > 1))
         {
-            CNNGoodThreshold = std::stof(dismantled[1]);
+            CNNGoodThreshold = std::stof(splitted[1]);
         }
-        if (dismantled.size() >= 5)
+        if (splitted.size() >= 5)
         {
-            general* _analog = GetGENERAL(dismantled[0], true);
+            general* _analog = GetGENERAL(splitted[0], true);
             roi* neuroi = _analog->ROI[_analog->ROI.size()-1];
-            neuroi->posx = std::stoi(dismantled[1]);
-            neuroi->posy = std::stoi(dismantled[2]);
-            neuroi->deltax = std::stoi(dismantled[3]);
-            neuroi->deltay = std::stoi(dismantled[4]);
+            neuroi->posx = std::stoi(splitted[1]);
+            neuroi->posy = std::stoi(splitted[2]);
+            neuroi->deltax = std::stoi(splitted[3]);
+            neuroi->deltay = std::stoi(splitted[4]);
             neuroi->CCW = false;
-            if (dismantled.size() >= 6)
+            if (splitted.size() >= 6)
             {
-                neuroi->CCW = toUpper(dismantled[5]) == "TRUE";
+                neuroi->CCW = toUpper(splitted[5]) == "TRUE";
             }
             neuroi->result_float = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;
         }
 
-        if ((toUpper(dismantled[0]) == "SAVEALLFILES") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
         }
     }

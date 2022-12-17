@@ -69,7 +69,7 @@ ClassFlowInfluxDB::ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc, ClassFlow *_p
 
 bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -83,26 +83,26 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
-        dismantled = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(dismantled[0]) == "USER") && (dismantled.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "USER") && (splitted.size() > 1))
         {
-            this->user = dismantled[1];
+            this->user = splitted[1];
         }  
-        if ((toUpper(dismantled[0]) == "PASSWORD") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "PASSWORD") && (splitted.size() > 1))
         {
-            this->password = dismantled[1];
+            this->password = splitted[1];
         }               
-        if ((toUpper(dismantled[0]) == "URI") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
         {
-            this->uri = dismantled[1];
+            this->uri = splitted[1];
         }
-        if (((toUpper(dismantled[0]) == "MEASUREMENT")) && (dismantled.size() > 1))
+        if (((toUpper(splitted[0]) == "MEASUREMENT")) && (splitted.size() > 1))
         {
-            this->measurement = dismantled[1];
+            this->measurement = splitted[1];
         }
-        if (((toUpper(dismantled[0]) == "DATABASE")) && (dismantled.size() > 1))
+        if (((toUpper(splitted[0]) == "DATABASE")) && (splitted.size() > 1))
         {
-            this->database = dismantled[1];
+            this->database = splitted[1];
         }
     }
 

@@ -26,7 +26,7 @@ std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter =
 	input = trim(input, delimiter);
 	size_t pos = findDelimiterPos(input, delimiter);
 	std::string token;
-    if (pos != std::string::npos)           // dismantled only up to first equal sign !!! Special case for WLAN.ini
+    if (pos != std::string::npos)           // splitted only up to first equal sign !!! Special case for WLAN.ini
     {
 		token = input.substr(0, pos);
 		token = trim(token, delimiter);
@@ -51,7 +51,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     std::string dns = "";
 
     std::string line = "";
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
     hostname = std_hostname;
 
     FILE* pFile;
@@ -70,53 +70,53 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     while ((line.size() > 0) || !(feof(pFile)))
     {
 //        ESP_LOGD(TAG, "%s", line.c_str());
-        dismantled = ZerlegeZeileWLAN(line, "=");
-        dismantled[0] = trim(dismantled[0], " ");
+        splitted = ZerlegeZeileWLAN(line, "=");
+        splitted[0] = trim(splitted[0], " ");
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "HOSTNAME")){
-            hostname = trim(dismantled[1]);
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HOSTNAME")){
+            hostname = trim(splitted[1]);
             if ((hostname[0] == '"') && (hostname[hostname.length()-1] == '"')){
                 hostname = hostname.substr(1, hostname.length()-2);
             }
         }
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "SSID")){
-            ssid = trim(dismantled[1]);
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "SSID")){
+            ssid = trim(splitted[1]);
             if ((ssid[0] == '"') && (ssid[ssid.length()-1] == '"')){
                 ssid = ssid.substr(1, ssid.length()-2);
             }
         }
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "PASSWORD")){
-            passphrase = dismantled[1];
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD")){
+            passphrase = splitted[1];
             if ((passphrase[0] == '"') && (passphrase[passphrase.length()-1] == '"')){
                 passphrase = passphrase.substr(1, passphrase.length()-2);
             }
         }
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "IP")){
-            ipaddress = dismantled[1];
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "IP")){
+            ipaddress = splitted[1];
             if ((ipaddress[0] == '"') && (ipaddress[ipaddress.length()-1] == '"')){
                 ipaddress = ipaddress.substr(1, ipaddress.length()-2);
             }
         }
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "GATEWAY")){
-            gw = dismantled[1];
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "GATEWAY")){
+            gw = splitted[1];
             if ((gw[0] == '"') && (gw[gw.length()-1] == '"')){
                 gw = gw.substr(1, gw.length()-2);
             }
         }
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "NETMASK")){
-            netmask = dismantled[1];
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "NETMASK")){
+            netmask = splitted[1];
             if ((netmask[0] == '"') && (netmask[netmask.length()-1] == '"')){
                 netmask = netmask.substr(1, netmask.length()-2);
             }
         }
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "DNS")){
-            dns = dismantled[1];
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "DNS")){
+            dns = splitted[1];
             if ((dns[0] == '"') && (dns[dns.length()-1] == '"')){
                 dns = dns.substr(1, dns.length()-2);
             }
@@ -191,7 +191,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
         return false;
 
     string line = "";
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
 
     bool found = false;
 
@@ -213,10 +213,10 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     while ((line.size() > 0) || !(feof(pFile)))
     {
         ESP_LOGD(TAG, "%s", line.c_str());
-        dismantled = ZerlegeZeileWLAN(line, "=");
-        dismantled[0] = trim(dismantled[0], " ");
+        splitted = ZerlegeZeileWLAN(line, "=");
+        splitted[0] = trim(splitted[0], " ");
 
-        if ((dismantled.size() > 1) && (toUpper(dismantled[0]) == "HOSTNAME")){
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HOSTNAME")){
             line = "hostname = \"" + _newhostname + "\"\n";
             found = true;
         }
