@@ -43,15 +43,15 @@
 // #define DEBUG_DETAIL_ON 
 
 
-#define BUFFSIZE 1024
-#define HASH_LEN 32 /* SHA-256 digest length */
+//#define BUFFSIZE 1024
+//#define HASH_LEN 32 /* SHA-256 digest length */
 
 
 /*an ota data write buffer ready to write to the flash*/
-static char ota_write_data[BUFFSIZE + 1] = { 0 };
+static char ota_write_data[SERVER_OTA_SCRATCH_BUFSIZE + 1] = { 0 };
 
 
-#define OTA_URL_SIZE 256
+//#define OTA_URL_SIZE 256
 static const char *TAG = "OTA";
 
 esp_err_t handler_reboot(httpd_req_t *req);
@@ -170,7 +170,7 @@ static bool ota_update_task(std::string fn)
         return false;
     }
 
-    data_read = fread(ota_write_data, 1, BUFFSIZE, f);
+    data_read = fread(ota_write_data, 1, SERVER_OTA_SCRATCH_BUFSIZE, f);
 
     while (data_read > 0) {
         if (data_read < 0) {
@@ -240,7 +240,7 @@ static bool ota_update_task(std::string fn)
                 break;
             }
         }
-        data_read = fread(ota_write_data, 1, BUFFSIZE, f);
+        data_read = fread(ota_write_data, 1, SERVER_OTA_SCRATCH_BUFSIZE, f);
     }
     fclose(f);  
 

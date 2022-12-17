@@ -8,7 +8,7 @@
 #include "esp_http_client.h"
 #include "../../include/defines.h"
 
-#define MAX_HTTP_OUTPUT_BUFFER 2048
+//#define MAX_HTTP_OUTPUT_BUFFER 2048
 
 static const char *TAG = "INFLUXDB";
 

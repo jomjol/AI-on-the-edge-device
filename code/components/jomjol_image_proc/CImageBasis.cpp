@@ -11,11 +11,11 @@
 #include <cstring>
 
 
-#define _USE_MATH_DEFINES
+//#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
 
-#define _ESP32_PSRAM
+//#define _ESP32_PSRAM
 
 using namespace std;
 
@@ -88,7 +88,7 @@ ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
     return ii;
 }
 
-#define HTTP_BUFFER_SENT 1024
+//#define HTTP_BUFFER_SENT 1024
 
 struct SendJPGHTTP
 {
