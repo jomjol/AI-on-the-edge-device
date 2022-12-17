@@ -196,26 +196,31 @@ esp_err_t handler_doflow(httpd_req_t *req)
 };
 
 
-esp_err_t handler_doFlow_Start(httpd_req_t *req) {
+esp_err_t handler_flow_start(httpd_req_t *req) {
 
     #ifdef DEBUG_DETAIL_ON          
-    LogFile.WriteHeapInfo("handler_doflow_Start - Start");       
+    LogFile.WriteHeapInfo("handler_flow_start - Start");       
     #endif
 
-    ESP_LOGD(TAG, "handler_doFlow_Start uri: %s", req->uri);
+    ESP_LOGD(TAG, "handler_flow_start uri: %s", req->uri);
 
     if (auto_isrunning) {
-        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action 
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API.");
+        const char* resp_str = "INFO: Flow is going to be started imediately or is already running.";
+        httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
     else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!");
+        const char* resp_str = "WARNING: Flow start triggered by REST API, but flow is not active.";
+        httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);    
 
     #ifdef DEBUG_DETAIL_ON   
-        LogFile.WriteHeapInfo("handler_doflow_Start - Done");       
+        LogFile.WriteHeapInfo("handler_flow_start - Done");       
     #endif
 
     return ESP_OK;
@@ -891,9 +896,9 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light Off"; 
     httpd_register_uri_handler(server, &camuri);  
 
-    camuri.uri       = "/doflow_start";
-    camuri.handler   = handler_doFlow_Start;
-    camuri.user_ctx  = (void*) "DoFlow Start"; 
+    camuri.uri       = "/flow_start";
+    camuri.handler   = handler_flow_start;
+    camuri.user_ctx  = (void*) "Flow Start"; 
     httpd_register_uri_handler(server, &camuri);     
 
     camuri.uri       = "/statusflow.html";
