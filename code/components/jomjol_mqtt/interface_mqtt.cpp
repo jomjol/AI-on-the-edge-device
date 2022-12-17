@@ -8,10 +8,6 @@
 #include "server_tflite.h"
 #include "../../include/defines.h"
 
-//#define __HIDE_PASSWORD
-
-//#define DEBUG_DETAIL_ON 
-
 static const char *TAG = "MQTT IF";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  

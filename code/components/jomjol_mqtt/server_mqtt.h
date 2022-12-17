@@ -2,11 +2,6 @@
 
 #include "ClassFlowDefineTypes.h"
 
-//#define LWT_TOPIC        "connection"
-//#define LWT_CONNECTED    "connected"
-//#define LWT_DISCONNECTED "connection lost"
-
-
 void SetHomeassistantDiscoveryEnabled(bool enabled);
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int interval, float roundInterval);
 void mqttServer_setMeterType(std::string meterType, std::string valueUnit, std::string timeUnit,std::string rateUnit);

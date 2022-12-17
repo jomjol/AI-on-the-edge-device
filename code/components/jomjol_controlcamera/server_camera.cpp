@@ -13,14 +13,9 @@
 
 static const char *TAG = "server_cam";
 
-//#define SCRATCH_BUFSIZE2  8192 
-//char scratch2[SCRATCH_BUFSIZE2];
 
-//#define DEBUG_DETAIL_ON   
+void PowerResetCamera(){
 
-
-void PowerResetCamera()
-{
         ESP_LOGD(TAG, "Resetting camera by power down line");
         gpio_config_t conf;
         conf.intr_type = GPIO_INTR_DISABLE;

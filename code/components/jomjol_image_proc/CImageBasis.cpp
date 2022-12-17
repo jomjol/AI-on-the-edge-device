@@ -10,20 +10,13 @@
 
 #include <cstring>
 
-
-//#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
 
-//#define _ESP32_PSRAM
 
 using namespace std;
 
 static const char *TAG = "C IMG BASIS";
-
-//#define DEBUG_DETAIL_ON   
-
-
 
 uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
 {
@@ -88,7 +81,6 @@ ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
     return ii;
 }
 
-//#define HTTP_BUFFER_SENT 1024
 
 struct SendJPGHTTP
 {

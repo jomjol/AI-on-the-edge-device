@@ -9,7 +9,6 @@
 
 #include "../../include/defines.h"
 
-//#define _USE_MATH_DEFINES
 #include <math.h>
 
 #include "stb_image.h"
@@ -17,13 +16,6 @@
 #include "stb_image_resize.h"
 
 #include "esp_heap_caps.h"
-
-//#define GET_MEMORY malloc
-//#define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
-
-
-//#define MAX_JPG_SIZE 128000
-
 
 struct ImageData
 {

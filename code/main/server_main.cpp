@@ -18,10 +18,6 @@
 
 #include "Helper.h"
 
-//#define DEBUG_DETAIL_ON      
-
-
-
 httpd_handle_t server = NULL;   
 std::string starttime = "";
 

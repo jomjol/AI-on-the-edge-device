@@ -9,11 +9,6 @@
 
 #include "SmartLeds.h"
 
-//#include "ClassControllCamera.h"
-
-// wenn __LEDGLOBAL definiert ist, wird eine globale Variable für die LED-Ansteuerung verwendet, ansonsten lokal und jedesmal neu
-//#define __LEDGLOBAL
-
 typedef enum {
     GPIO_PIN_MODE_DISABLED              = 0x0,
     GPIO_PIN_MODE_INPUT                 = 0x1,

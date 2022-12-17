@@ -77,6 +77,7 @@
 
     //CAlignAdnCutImage + CImageBasis
     #define _USE_MATH_DEFINES
+    #define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
 
     //make_stb + stb_image_resize + stb_image_write + stb_image //do not work if not in make_stb.cpp
     //#define STB_IMAGE_IMPLEMENTATION

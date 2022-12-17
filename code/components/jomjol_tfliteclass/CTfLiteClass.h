@@ -17,10 +17,6 @@
 
 #include "CImageBasis.h"
 
-
-
-//#define SUPRESS_TFLITE_ERRORS           // use, to avoid error messages from TFLITE
-
 #ifdef SUPRESS_TFLITE_ERRORS
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/micro/compatibility.h"

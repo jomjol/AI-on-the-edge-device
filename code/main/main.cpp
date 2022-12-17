@@ -35,9 +35,7 @@
 #endif //ENABLE_MQTT
 #include "Helper.h"
 #include "../../include/defines.h"
-
-//#define FLASH_GPIO GPIO_NUM_4
-//#define BLINK_GPIO GPIO_NUM_33
+#include "server_GPIO.h"
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -47,18 +45,7 @@ extern const char* BUILD_TIME;
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
-// #include "jomjol_WS2812Slow.h"
-// #include "SmartLeds.h"
-
-
-//#define __SD_USE_ONE_LINE_MODE__
-
-#include "server_GPIO.h"
-
-
 static const char *TAG = "MAIN";
-
-//#define FLASH_GPIO GPIO_NUM_4
 
 bool Init_NVS_SDCard()
 {

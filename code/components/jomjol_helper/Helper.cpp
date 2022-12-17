@@ -32,9 +32,6 @@ extern "C" {
 
 static const char* TAG = "HELPER";
 
-//#define ISWINDOWS_TRUE
-//#define FILE_PATH_MAX 256 //old PATH_MAX_STRING_SIZE
-
 using namespace std;
 
 unsigned int systemStatus = 0;

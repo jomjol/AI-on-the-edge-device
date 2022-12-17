@@ -10,13 +10,10 @@
 
 #include "server_tflite.h"
 
-//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
-//#include "errno.h"
 
 #include <sys/stat.h>
 #include <vector>
-//#include <regex>
 
 #include "../../include/defines.h"
 
@@ -32,8 +29,6 @@
 
 static const char *TAG = "GPIO";
 QueueHandle_t gpio_queue_handle = NULL;
-
-//#define DEBUG_DETAIL_ON 
 
 GpioPin::GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, std::string mqttTopic, bool httpEnable) 
 {

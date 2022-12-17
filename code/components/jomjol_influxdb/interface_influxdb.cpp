@@ -1,14 +1,12 @@
 #ifdef ENABLE_INFLUXDB
 #include "interface_influxdb.h"
 
-//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 #include <time.h>
 #include "ClassLogFile.h"
 #include "esp_http_client.h"
 #include "../../include/defines.h"
 
-//#define MAX_HTTP_OUTPUT_BUFFER 2048
 
 static const char *TAG = "INFLUXDB";
 

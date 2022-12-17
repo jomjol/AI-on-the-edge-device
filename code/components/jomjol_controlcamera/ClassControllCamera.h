@@ -13,10 +13,6 @@
 #include "CImageBasis.h"
 #include "../../include/defines.h"
 
-
-//#define CAMERA_MODEL_AI_THINKER
-
-
 class CCamera {
     protected:
         int ActualQuality;
