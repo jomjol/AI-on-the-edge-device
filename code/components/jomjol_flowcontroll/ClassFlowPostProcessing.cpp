@@ -15,13 +15,6 @@
 
 static const char* TAG = "POSTPROC";
 
-//#define SERIAL_DEBUG // testing debug on serial enabled
-
-
-//#define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
-//#define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
-
-
 std::string ClassFlowPostProcessing::getNumbersName()
 {
     std::string ret="";

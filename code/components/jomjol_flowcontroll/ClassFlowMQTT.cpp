@@ -17,13 +17,7 @@
 #include <time.h>
 #include "../../include/defines.h"
 
-
-//#define __HIDE_PASSWORD
-
 static const char *TAG = "MQTT";
-//#define LWT_TOPIC        "connection"
-//#define LWT_CONNECTED    "connected"
-//#define LWT_DISCONNECTED "connection lost"
 
 extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);

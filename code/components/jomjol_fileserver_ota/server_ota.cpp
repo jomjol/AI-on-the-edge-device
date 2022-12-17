@@ -39,19 +39,9 @@
 #include "Helper.h"
 #include "../../include/defines.h"
 
-
-// #define DEBUG_DETAIL_ON 
-
-
-//#define BUFFSIZE 1024
-//#define HASH_LEN 32 /* SHA-256 digest length */
-
-
 /*an ota data write buffer ready to write to the flash*/
 static char ota_write_data[SERVER_OTA_SCRATCH_BUFSIZE + 1] = { 0 };
 
-
-//#define OTA_URL_SIZE 256
 static const char *TAG = "OTA";
 
 esp_err_t handler_reboot(httpd_req_t *req);

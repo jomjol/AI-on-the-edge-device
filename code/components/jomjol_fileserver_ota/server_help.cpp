@@ -26,13 +26,7 @@ extern "C" {
 
 static const char *TAG = "SERVER HELP";
 
-//#define SERVER_HELPER_SCRATCH_BUFSIZE  8192 
 char scratch[SERVER_HELPER_SCRATCH_BUFSIZE];
-
-/*
-#define IS_FILE_EXT(filename, ext) \
-    (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
-*/
 
 esp_err_t send_file(httpd_req_t *req, std::string filename)
 {

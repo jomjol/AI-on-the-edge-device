@@ -50,22 +50,6 @@ extern "C" {
 
 static const char *TAG = "OTA FILE";
 
-/* Max length a file path can have on storage */
-// #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
-//#define FILE_PATH_MAX (255)
-
-/* Max size of an individual file. Make sure this
- * value is same as that set in upload_script.html */
-//#define MAX_FILE_SIZE   (8000*1024) // 8 MB
-//#define MAX_FILE_SIZE_STR "8MB"
-
-
-/* Scratch buffer size */
-//#define SCRATCH_BUFSIZE  4096 
-
-/* Size of partial log file to return */
-//#define LOGFILE_LAST_PART_BYTES SCRATCH_BUFSIZE * 20 /* 80 kBytes */
-
 struct file_server_data {
     /* Base path of file storage */
     char base_path[ESP_VFS_PATH_MAX + 1];
