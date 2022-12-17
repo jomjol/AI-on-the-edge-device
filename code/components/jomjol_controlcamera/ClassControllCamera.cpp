@@ -164,6 +164,7 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+
 bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation)
 {
     bool result = false;
@@ -279,7 +280,6 @@ void CCamera::EnableAutoExposure(int flashdauer)
     isFixedExposure = true;
     waitbeforepicture_org = flashdauer;
 }
-
 
 
 esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
@@ -543,6 +543,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     return res;
 }
 
+
 void CCamera::LightOnOff(bool status)
 {
     GpioHandler* gpioHandler = gpio_handler_get();
@@ -577,6 +578,7 @@ void CCamera::LightOnOff(bool status)
     #endif
     }
 }
+
 
 void CCamera::LEDOnOff(bool status)
 {
@@ -638,6 +640,7 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
     };
 }
 
+
 framesize_t CCamera::TextToFramesize(const char * _size)
 {
     if (strcmp(_size, "QVGA") == 0)
@@ -669,6 +672,7 @@ CCamera::CCamera()
     ledc_init();    
 }
 
+
 esp_err_t CCamera::InitCam()
 {
     ESP_LOGD(TAG, "Init Camera");
@@ -682,8 +686,10 @@ esp_err_t CCamera::InitCam()
         return err;
     }
 
+    CameraInitSuccessful = true;
     return ESP_OK;
 }
+
 
 void CCamera::SetLEDIntensity(float _intrel)
 {
@@ -693,4 +699,10 @@ void CCamera::SetLEDIntensity(float _intrel)
     led_intensity = (int) (_intrel * 8191);
     ESP_LOGD(TAG, "Set led_intensity to %d of 8191", led_intensity);
 
+}
+
+
+bool CCamera::getCameraInitSuccessful() 
+{
+    return CameraInitSuccessful;
 }
