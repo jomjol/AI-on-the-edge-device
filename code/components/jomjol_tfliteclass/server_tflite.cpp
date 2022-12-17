@@ -31,7 +31,7 @@ ClassFlowControll tfliteflow;
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
-bool flowisrunning = false;
+static bool flowisrunning = false;
 
 long auto_intervall = 0;
 bool auto_isrunning = false;
@@ -225,7 +225,8 @@ esp_err_t handler_json(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Service not yet fully initialized. Please retry later.");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "JSON API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
     }
 
     #ifdef DEBUG_DETAIL_ON       
@@ -377,7 +378,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Service not yet fully initialized. Please retry later.");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Value API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
     }
 
     #ifdef DEBUG_DETAIL_ON       
@@ -613,7 +615,8 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow not yet fully started. Please retry later.");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow status API not yet started. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
     }  
 
     #ifdef DEBUG_DETAIL_ON       
@@ -672,7 +675,8 @@ esp_err_t handler_rssi(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Service not yet fully initialized. Please retry later.");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "RSSI API not yet initialized. Please retry later...");
+        return ESP_ERR_NOT_FOUND;
     }      
 
     #ifdef DEBUG_DETAIL_ON       
