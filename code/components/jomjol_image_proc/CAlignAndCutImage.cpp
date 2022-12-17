@@ -2,7 +2,7 @@
 #include "CRotateImage.h"
 #include "ClassLogFile.h"
 
-#define _USE_MATH_DEFINES
+//#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
 #include <esp_log.h>

@@ -20,10 +20,10 @@
 #include "ClassFlowWriteList.h"
 
 
-#define READOUT_TYPE_VALUE 0
-#define READOUT_TYPE_PREVALUE 1
-#define READOUT_TYPE_RAWVALUE 2
-#define READOUT_TYPE_ERROR 3
+//#define READOUT_TYPE_VALUE 0
+//#define READOUT_TYPE_PREVALUE 1
+//#define READOUT_TYPE_RAWVALUE 2
+//#define READOUT_TYPE_ERROR 3
 
 
 class ClassFlowControll :

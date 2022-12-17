@@ -2,9 +2,9 @@
 
 #include "ClassFlowDefineTypes.h"
 
-#define LWT_TOPIC        "connection"
-#define LWT_CONNECTED    "connected"
-#define LWT_DISCONNECTED "connection lost"
+//#define LWT_TOPIC        "connection"
+//#define LWT_CONNECTED    "connected"
+//#define LWT_DISCONNECTED "connection lost"
 
 
 void SetHomeassistantDiscoveryEnabled(bool enabled);

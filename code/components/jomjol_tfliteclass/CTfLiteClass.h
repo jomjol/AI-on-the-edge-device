@@ -1,9 +1,11 @@
 
+/*
 #define TFLITE_MINIMAL_CHECK(x)                              \
   if (!(x)) {                                                \
     fprintf(stderr, "Error at %s:%d\n", __FILE__, __LINE__); \
     exit(1);                                                 \
   }
+*/
 
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
@@ -17,7 +19,7 @@
 
 
 
-#define SUPRESS_TFLITE_ERRORS           // use, to avoid error messages from TFLITE
+//#define SUPRESS_TFLITE_ERRORS           // use, to avoid error messages from TFLITE
 
 #ifdef SUPRESS_TFLITE_ERRORS
 #include "tensorflow/lite/core/api/error_reporter.h"
