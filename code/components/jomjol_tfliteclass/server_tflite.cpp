@@ -31,7 +31,8 @@ ClassFlowControll tfliteflow;
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
-static bool flowisrunning = false;
+bool FlowInitDone = false;
+bool flowisrunning = false;
 
 long auto_intervall = 0;
 bool auto_isrunning = false;
@@ -109,6 +110,7 @@ void doInit(void)
     #ifdef ENABLE_MQTT
         tfliteflow.StartMQTTService();
     #endif //ENABLE_MQTT
+    FlowInitDone = true;
 }
 
 
@@ -208,7 +210,7 @@ esp_err_t handler_json(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_JSON uri: %s", req->uri);
     
-    if (flowisrunning) 
+    if (FlowInitDone) 
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "application/json");
@@ -242,7 +244,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
     #endif
 
-    if (flowisrunning) 
+    if (FlowInitDone) 
     {
         bool _rawValue = false;
         bool _noerror = false;
@@ -597,7 +599,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_prevalue - Start");       
     #endif
 
-    if (flowisrunning) 
+    if (FlowInitDone) 
     {
         const char* resp_str;
 
@@ -664,7 +666,7 @@ esp_err_t handler_rssi(httpd_req_t *req)
         const char* resp_str;
         char rssi[20];
 
-    sprintf(rssi, "%idBm", get_WIFI_RSSI());
+        sprintf(rssi, "%idBm", get_WIFI_RSSI());
 
         resp_str = rssi;
 
