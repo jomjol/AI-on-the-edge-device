@@ -205,12 +205,14 @@ esp_err_t handler_doFlow_Start(httpd_req_t *req) {
     ESP_LOGD(TAG, "handler_doFlow_Start uri: %s", req->uri);
 
     if (auto_isrunning) {
-        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action 
     }
     else {
-       LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!"); 
-       return ESP_FAIL;
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!");
     }
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);    
 
     #ifdef DEBUG_DETAIL_ON   
         LogFile.WriteHeapInfo("handler_doflow_Start - Done");       
