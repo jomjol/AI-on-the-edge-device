@@ -23,6 +23,7 @@ protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
+    //moved to defines.h
     //float Analog_error = 3.0;
     //float AnalogToDigtalFehler = 0.8;
     //float Digital_Uncertainty = 0.2;
