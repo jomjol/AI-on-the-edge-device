@@ -17,7 +17,8 @@ char scratch2[SCRATCH_BUFSIZE2];
 //#define DEBUG_DETAIL_ON   
 
 
-void PowerResetCamera(){
+void PowerResetCamera()
+{
         ESP_LOGD(TAG, "Resetting camera by power down line");
         gpio_config_t conf;
         conf.intr_type = GPIO_INTR_DISABLE;
@@ -37,182 +38,223 @@ void PowerResetCamera(){
 
 esp_err_t handler_lightOn(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_lightOn - Start");
-    ESP_LOGD(TAG, "handler_lightOn uri: %s", req->uri);
-#endif
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_lightOn - Start");
+        ESP_LOGD(TAG, "handler_lightOn uri: %s", req->uri);
+    #endif
 
-    Camera.LightOnOff(true);
-    const char* resp_str = (const char*) req->user_ctx;
-    httpd_resp_send(req, resp_str, strlen(resp_str));  
+    if (Camera.getCameraInitSuccessful()) 
+    {
+        Camera.LightOnOff(true);
+        const char* resp_str = (const char*) req->user_ctx;
+        httpd_resp_send(req, resp_str, strlen(resp_str));
+    }
+    else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not yet fully initialized. Please retry later.");
+        return ESP_ERR_NOT_FOUND;
+    }
 
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_lightOn - Done");
-#endif
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_lightOn - Done");
+    #endif
 
     return ESP_OK;
-};
+}
+
 
 esp_err_t handler_lightOff(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_lightOff - Start");
-    ESP_LOGD(TAG, "handler_lightOff uri: %s", req->uri);
-#endif
-    Camera.LightOnOff(false);
-    const char* resp_str = (const char*) req->user_ctx;
-    httpd_resp_send(req, resp_str, strlen(resp_str));       
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_lightOff - Start");
+        ESP_LOGD(TAG, "handler_lightOff uri: %s", req->uri);
+    #endif
 
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_lightOff - Done");
-#endif
+    if (Camera.getCameraInitSuccessful()) 
+    {
+        Camera.LightOnOff(false);
+        const char* resp_str = (const char*) req->user_ctx;
+        httpd_resp_send(req, resp_str, strlen(resp_str));       
+    }
+    else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not yet fully initialized. Please retry later.");
+        return ESP_ERR_NOT_FOUND;
+    }
+
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_lightOff - Done");
+    #endif
 
     return ESP_OK;
-};
+}
+
 
 esp_err_t handler_capture(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_capture - Start");
-#endif
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_capture - Start");
+    #endif
 
-    int quality;
-    framesize_t res;
+    if (Camera.getCameraInitSuccessful()) 
+    {
+        int quality;
+        framesize_t res;
 
-    Camera.GetCameraParameter(req, quality, res);
+        Camera.GetCameraParameter(req, quality, res);
 
-#ifdef DEBUG_DETAIL_ON   
-    ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
-#endif
+        #ifdef DEBUG_DETAIL_ON   
+            ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
+        #endif
 
-    Camera.SetQualitySize(quality, res);
+        Camera.SetQualitySize(quality, res);
 
-    esp_err_t ressult;
-    ressult = Camera.CaptureToHTTP(req);
+        esp_err_t result;
+        result = Camera.CaptureToHTTP(req);
 
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_capture - Done");
-#endif
+        #ifdef DEBUG_DETAIL_ON   
+            LogFile.WriteHeapInfo("handler_capture - Done");
+        #endif
 
-    return ressult;
-};
+        return result;
+    }
+        else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not yet fully initialized. Please retry later.");
+        return ESP_ERR_NOT_FOUND;
+    }
+}
 
 
 esp_err_t handler_capture_with_ligth(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON  
-    LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
-#endif
-    char _query[100];
-    char _delay[10];
-
-    int quality;
-    framesize_t res;    
-    int delay = 2500;
-
-    if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
+    #ifdef DEBUG_DETAIL_ON  
+        LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
+    #endif
+    
+    if (Camera.getCameraInitSuccessful()) 
     {
-        ESP_LOGD(TAG, "Query: %s", _query);
-        if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
+        char _query[100];
+        char _delay[10];
+
+        int quality;
+        framesize_t res;    
+        int delay = 2500;
+
+        if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
-#ifdef DEBUG_DETAIL_ON   
-            ESP_LOGD(TAG, "Delay: %s", _delay);
-#endif        
-            delay = atoi(_delay);
+            ESP_LOGD(TAG, "Query: %s", _query);
+            if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
+            {
+                #ifdef DEBUG_DETAIL_ON   
+                    ESP_LOGD(TAG, "Delay: %s", _delay);
+                #endif        
+                delay = atoi(_delay);
 
-            if (delay < 0)
-                delay = 0;
+                if (delay < 0)
+                    delay = 0;
+            }
         }
-    };
 
-    Camera.GetCameraParameter(req, quality, res);
+        Camera.GetCameraParameter(req, quality, res);
 
-#ifdef DEBUG_DETAIL_ON   
-    ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
-#endif
+        #ifdef DEBUG_DETAIL_ON   
+            ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
+        #endif
 
-    Camera.SetQualitySize(quality, res);
-    Camera.LightOnOff(true);
-    const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-    vTaskDelay( xDelay );
+        Camera.SetQualitySize(quality, res);
+        Camera.LightOnOff(true);
+        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
+        vTaskDelay( xDelay );
 
-    esp_err_t ressult;
-    ressult = Camera.CaptureToHTTP(req);  
+        esp_err_t result;
+        result = Camera.CaptureToHTTP(req);  
 
-    Camera.LightOnOff(false);
+        Camera.LightOnOff(false);
 
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
-#endif
+        #ifdef DEBUG_DETAIL_ON   
+            LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
+        #endif
 
-    return ressult;
-};
-
+        return result;
+    }
+        else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not yet fully initialized. Please retry later.");
+        return ESP_ERR_NOT_FOUND;
+    }
+}
 
 
 esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
-#endif
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
+    #endif
 
-    char _query[100];
-    char _delay[10];
-    int delay = 0;
-    char filename[100];
-    std::string fn = "/sdcard/";
-
-
-    int quality;
-    framesize_t res;    
-
-    if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
+    if (Camera.getCameraInitSuccessful()) 
     {
-        ESP_LOGD(TAG, "Query: %s", _query);
-        if (httpd_query_key_value(_query, "filename", filename, 100) == ESP_OK)
+        char _query[100];
+        char _delay[10];
+        int delay = 0;
+        char filename[100];
+        std::string fn = "/sdcard/";
+
+
+        int quality;
+        framesize_t res;    
+
+        if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
-            fn.append(filename);
-#ifdef DEBUG_DETAIL_ON   
-            ESP_LOGD(TAG, "Filename: %s", fn.c_str());
-#endif
+            ESP_LOGD(TAG, "Query: %s", _query);
+            if (httpd_query_key_value(_query, "filename", filename, 100) == ESP_OK)
+            {
+                fn.append(filename);
+                #ifdef DEBUG_DETAIL_ON   
+                    ESP_LOGD(TAG, "Filename: %s", fn.c_str());
+                #endif
+            }
+            else
+                fn.append("noname.jpg");
+
+            if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
+            {
+                #ifdef DEBUG_DETAIL_ON   
+                    ESP_LOGD(TAG, "Delay: %s", _delay);
+                #endif
+                delay = atoi(_delay);
+
+                if (delay < 0)
+                    delay = 0;
+            }
         }
         else
             fn.append("noname.jpg");
 
-        if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
-        {
-#ifdef DEBUG_DETAIL_ON   
-            ESP_LOGD(TAG, "Delay: %s", _delay);
-#endif
-            delay = atoi(_delay);
+        Camera.GetCameraParameter(req, quality, res);
+        #ifdef DEBUG_DETAIL_ON   
+            ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
+        #endif
+        Camera.SetQualitySize(quality, res);
 
-            if (delay < 0)
-                delay = 0;
-        }
+        esp_err_t result;
+        result = Camera.CaptureToFile(fn, delay);  
 
+        const char* resp_str = (const char*) fn.c_str();
+        httpd_resp_send(req, resp_str, strlen(resp_str));
+
+        #ifdef DEBUG_DETAIL_ON   
+            LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
+        #endif
+
+        return result;
     }
-    else
-        fn.append("noname.jpg");
-
-    Camera.GetCameraParameter(req, quality, res);
-#ifdef DEBUG_DETAIL_ON   
-    ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
-#endif
-    Camera.SetQualitySize(quality, res);
-
-    esp_err_t ressult;
-    ressult = Camera.CaptureToFile(fn, delay);  
-
-    const char* resp_str = (const char*) fn.c_str();
-    httpd_resp_send(req, resp_str, strlen(resp_str));  
-  
-#ifdef DEBUG_DETAIL_ON   
-    LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
-#endif
-
-    return ressult;
-};
-
+    else 
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not yet fully initialized. Please retry later.");
+        return ESP_ERR_NOT_FOUND;
+    }
+}
 
 
 void register_server_camera_uri(httpd_handle_t server)
