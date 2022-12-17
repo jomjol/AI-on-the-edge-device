@@ -906,11 +906,11 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Light Off";
     httpd_register_uri_handler(server, &camuri);
 
-    /*// Legacy API => New: "/cpu_temperature"
+    // Legacy API => New: "/cpu_temperature"
     camuri.uri       = "/cputemp.html";
     camuri.handler   = handler_cputemp;
     camuri.user_ctx  = (void*) "Light Off";
-    httpd_register_uri_handler(server, &camuri);*/
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/cpu_temperature";
     camuri.handler   = handler_cputemp;
