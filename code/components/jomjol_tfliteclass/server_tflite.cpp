@@ -103,6 +103,7 @@ void doInit(void)
         ESP_LOGD(TAG, "Start tfliteflow.InitFlow(config);");
     #endif
     tfliteflow.InitFlow(CONFIG_FILE);
+    FlowInitDone = true;
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
     #endif
@@ -110,13 +111,11 @@ void doInit(void)
     #ifdef ENABLE_MQTT
         tfliteflow.StartMQTTService();
     #endif //ENABLE_MQTT
-    FlowInitDone = true;
 }
 
 
 bool doflow(void)
-{
-    
+{   
     std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
     ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
     flowisrunning = true;
@@ -617,7 +616,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow status API not yet started. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flowstatus API not yet initialized. Please retry later...");
         return ESP_ERR_NOT_FOUND;
     }  
 
