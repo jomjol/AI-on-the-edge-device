@@ -11,6 +11,7 @@
 #include "time_sntp.h"
 
 #include "esp_log.h"
+#include "../../include/defines.h"
 
 static const char* TAG = "POSTPROC";
 

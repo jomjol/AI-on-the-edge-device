@@ -23,6 +23,7 @@ extern "C" {
 
 #include <string.h>
 #include <esp_log.h>
+#include "../../include/defines.h"
 
 
 #include "ClassLogFile.h"
@@ -32,7 +33,7 @@ extern "C" {
 static const char* TAG = "HELPER";
 
 //#define ISWINDOWS_TRUE
-#define PATH_MAX_STRING_SIZE 256
+//#define FILE_PATH_MAX 256 //old PATH_MAX_STRING_SIZE
 
 using namespace std;
 
@@ -426,14 +427,14 @@ string getFileType(string filename)
 
 /* recursive mkdir */
 int mkdir_r(const char *dir, const mode_t mode) {
-    char tmp[PATH_MAX_STRING_SIZE];
+    char tmp[FILE_PATH_MAX];
     char *p = NULL;
     struct stat sb;
     size_t len;
     
     /* copy path */
-    len = strnlen (dir, PATH_MAX_STRING_SIZE);
-    if (len == 0 || len == PATH_MAX_STRING_SIZE) {
+    len = strnlen (dir, FILE_PATH_MAX);
+    if (len == 0 || len == FILE_PATH_MAX) {
         return -1;
     }
     memcpy (tmp, dir, len);

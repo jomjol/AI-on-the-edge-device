@@ -6,6 +6,7 @@
 #include <math.h>
 #include <algorithm>
 #include <esp_log.h>
+#include "../../include/defines.h"
 
 static const char* TAG = "c_align_and_cut_image";
 

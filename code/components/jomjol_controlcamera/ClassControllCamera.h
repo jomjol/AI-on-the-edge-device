@@ -11,9 +11,10 @@
 #include <string>
 #include <esp_http_server.h>
 #include "CImageBasis.h"
+#include "../../include/defines.h"
 
 
-#define CAMERA_MODEL_AI_THINKER
+//#define CAMERA_MODEL_AI_THINKER
 
 
 class CCamera {

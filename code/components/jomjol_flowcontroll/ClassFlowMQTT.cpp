@@ -15,9 +15,10 @@
 #include "server_mqtt.h"
 
 #include <time.h>
+#include "../../include/defines.h"
 
 
-#define __HIDE_PASSWORD
+//#define __HIDE_PASSWORD
 
 static const char *TAG = "MQTT";
 #define LWT_TOPIC        "connection"
