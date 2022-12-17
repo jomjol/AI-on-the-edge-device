@@ -37,7 +37,7 @@ ClassFlowWriteList::ClassFlowWriteList(std::vector<ClassFlow*>* lfc)
 
 bool ClassFlowWriteList::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -50,7 +50,7 @@ bool ClassFlowWriteList::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        dismantled = ZerlegeZeile(aktparamgraph);
+        splitted = ZerlegeZeile(aktparamgraph);
     }
    
     return true;

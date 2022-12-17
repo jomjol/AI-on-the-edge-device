@@ -58,7 +58,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 
 bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
     int suchex = 40;
     int suchey = 40;
     int alg_algo = 0;
@@ -75,56 +75,56 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        dismantled = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(dismantled[0]) == "FLIPIMAGESIZE") && (dismantled.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "FLIPIMAGESIZE") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 initialflip = true;
         }
-        if ((toUpper(dismantled[0]) == "INITIALMIRROR") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "INITIALMIRROR") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 initialmirror = true;
         }
-        if (((toUpper(dismantled[0]) == "INITALROTATE") || (toUpper(dismantled[0]) == "INITIALROTATE")) && (dismantled.size() > 1))
+        if (((toUpper(splitted[0]) == "INITALROTATE") || (toUpper(splitted[0]) == "INITIALROTATE")) && (splitted.size() > 1))
         {
-            this->initalrotate = std::stod(dismantled[1]);
+            this->initalrotate = std::stod(splitted[1]);
         }
-        if ((toUpper(dismantled[0]) == "SEARCHFIELDX") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SEARCHFIELDX") && (splitted.size() > 1))
         {
-            suchex = std::stod(dismantled[1]);
+            suchex = std::stod(splitted[1]);
         }   
-        if ((toUpper(dismantled[0]) == "SEARCHFIELDY") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SEARCHFIELDY") && (splitted.size() > 1))
         {
-            suchey = std::stod(dismantled[1]);
+            suchey = std::stod(splitted[1]);
         }   
-        if ((toUpper(dismantled[0]) == "ANTIALIASING") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "ANTIALIASING") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 use_antialiasing = true;
         }   
-        if ((dismantled.size() == 3) && (anz_ref < 2))
+        if ((splitted.size() == 3) && (anz_ref < 2))
         {
-            References[anz_ref].image_file = FormatFileName("/sdcard" + dismantled[0]);
-            References[anz_ref].target_x = std::stod(dismantled[1]);
-            References[anz_ref].target_y = std::stod(dismantled[2]);
+            References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
+            References[anz_ref].target_x = std::stod(splitted[1]);
+            References[anz_ref].target_y = std::stod(splitted[2]);
             anz_ref++;
         }
 
-        if ((toUpper(dismantled[0]) == "SAVEALLFILES") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
         }
-        if ((toUpper(dismantled[0]) == "ALIGNMENTALGO") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "ALIGNMENTALGO") && (splitted.size() > 1))
         {
 #ifdef DEBUG_DETAIL_ON
-            std::string zw2 = "Alignment mode selected: " + dismantled[1];
+            std::string zw2 = "Alignment mode selected: " + splitted[1];
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
 #endif
-            if (toUpper(dismantled[1]) == "HIGHACCURACY")
+            if (toUpper(splitted[1]) == "HIGHACCURACY")
                 alg_algo = 1;
-            if (toUpper(dismantled[1]) == "FAST")
+            if (toUpper(splitted[1]) == "FAST")
                 alg_algo = 2;
         }
     }
@@ -269,7 +269,7 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     FILE* pFile;
     char zw[1024];
     string zwvalue;
-    std::vector<string> dismantled;  
+    std::vector<string> splitted;  
 
 
 //    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues01");      
@@ -290,8 +290,8 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 //    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues02");      
 
     fgets(zw, 1024, pFile);
-    dismantled = ZerlegeZeile(std::string(zw), " \t");
-    if (dismantled.size() < 6)
+    splitted = ZerlegeZeile(std::string(zw), " \t");
+    if (splitted.size() < 6)
     {
 //        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "Exit 01");      
         fclose(pFile);
@@ -300,16 +300,16 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 
 //    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues03");      
 
-    References[0].fastalg_x = stoi(dismantled[0]);
-    References[0].fastalg_y = stoi(dismantled[1]);
-    References[0].fastalg_SAD = stof(dismantled[2]);
-    References[0].fastalg_min = stoi(dismantled[3]);
-    References[0].fastalg_max = stoi(dismantled[4]);
-    References[0].fastalg_avg = stof(dismantled[5]);
+    References[0].fastalg_x = stoi(splitted[0]);
+    References[0].fastalg_y = stoi(splitted[1]);
+    References[0].fastalg_SAD = stof(splitted[2]);
+    References[0].fastalg_min = stoi(splitted[3]);
+    References[0].fastalg_max = stoi(splitted[4]);
+    References[0].fastalg_avg = stof(splitted[5]);
 
     fgets(zw, 1024, pFile);
-    dismantled = ZerlegeZeile(std::string(zw));
-    if (dismantled.size() < 6)
+    splitted = ZerlegeZeile(std::string(zw));
+    if (splitted.size() < 6)
     {
 //        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "Exit 02");      
         fclose(pFile);
@@ -318,12 +318,12 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 
 //    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues03");      
 
-    References[1].fastalg_x = stoi(dismantled[0]);
-    References[1].fastalg_y = stoi(dismantled[1]);
-    References[1].fastalg_SAD = stof(dismantled[2]);
-    References[1].fastalg_min = stoi(dismantled[3]);
-    References[1].fastalg_max = stoi(dismantled[4]);
-    References[1].fastalg_avg = stof(dismantled[5]);
+    References[1].fastalg_x = stoi(splitted[0]);
+    References[1].fastalg_y = stoi(splitted[1]);
+    References[1].fastalg_SAD = stof(splitted[2]);
+    References[1].fastalg_min = stoi(splitted[3]);
+    References[1].fastalg_max = stoi(splitted[4]);
+    References[1].fastalg_avg = stof(splitted[5]);
 
     fclose(pFile);
 

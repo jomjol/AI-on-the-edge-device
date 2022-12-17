@@ -64,7 +64,7 @@ ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlow
 
 bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> dismantled;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
     int _brightness = -100;
@@ -80,61 +80,61 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        dismantled = ZerlegeZeile(aktparamgraph);
-        if ((dismantled[0] ==  "LogImageLocation") && (dismantled.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((splitted[0] ==  "LogImageLocation") && (splitted.size() > 1))
         {
-            LogImageLocation = "/sdcard" + dismantled[1];
+            LogImageLocation = "/sdcard" + splitted[1];
             isLogImage = true;
         }
-        if ((dismantled[0] == "ImageQuality") && (dismantled.size() > 1))
-            ImageQuality = std::stod(dismantled[1]);
+        if ((splitted[0] == "ImageQuality") && (splitted.size() > 1))
+            ImageQuality = std::stod(splitted[1]);
 
-        if ((dismantled[0] == "ImageSize") && (dismantled.size() > 1))
+        if ((splitted[0] == "ImageSize") && (splitted.size() > 1))
         {
-            ImageSize = Camera.TextToFramesize(dismantled[1].c_str());
+            ImageSize = Camera.TextToFramesize(splitted[1].c_str());
             isImageSize = true;
         }
 
-        if ((toUpper(dismantled[0]) == "SAVEALLFILES") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
         }
         
-        if ((toUpper(dismantled[0]) == "WAITBEFORETAKINGPICTURE") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
         {
-            waitbeforepicture = stoi(dismantled[1]);
+            waitbeforepicture = stoi(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "LOGFILERETENTIONINDAYS") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(dismantled[1]);
+            this->logfileRetentionInDays = std::stoi(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "BRIGHTNESS") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "BRIGHTNESS") && (splitted.size() > 1))
         {
-            _brightness = stoi(dismantled[1]);
+            _brightness = stoi(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "CONTRAST") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "CONTRAST") && (splitted.size() > 1))
         {
-            _contrast = stoi(dismantled[1]);
+            _contrast = stoi(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "SATURATION") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "SATURATION") && (splitted.size() > 1))
         {
-            _saturation = stoi(dismantled[1]);
+            _saturation = stoi(splitted[1]);
         }
 
-        if ((toUpper(dismantled[0]) == "FIXEDEXPOSURE") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "FIXEDEXPOSURE") && (splitted.size() > 1))
         {
-            if (toUpper(dismantled[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 FixedExposure = true;  
         }
 
-        if ((toUpper(dismantled[0]) == "LEDINTENSITY") && (dismantled.size() > 1))
+        if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
         {
-            float ledintensity = stof(dismantled[1]);
+            float ledintensity = stof(splitted[1]);
             ledintensity = min((float) 100, ledintensity);
             ledintensity = max((float) 0, ledintensity);
             Camera.SetLEDIntensity(ledintensity);
