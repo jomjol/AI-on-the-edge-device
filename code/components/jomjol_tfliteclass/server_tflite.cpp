@@ -212,7 +212,7 @@ esp_err_t handler_flow_start(httpd_req_t *req) {
     if (auto_isrunning) {
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start");
-        const char* resp_str = "Flow is going to be started imediately or is already running";
+        const char* resp_str = "The flow is going to be started immediately or is already running";
         httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
     else {

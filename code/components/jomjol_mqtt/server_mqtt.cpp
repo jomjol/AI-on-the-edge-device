@@ -213,7 +213,6 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
 }
 
 void GotConnected(std::string maintopic, int retainFlag) {
-    vTaskDelay(1000 / portTICK_PERIOD_MS);     // Delay execution by 10s after connection got established   
     if (HomeassistantDiscovery) {
         MQTThomeassistantDiscovery();
     }

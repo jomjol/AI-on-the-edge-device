@@ -88,7 +88,6 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag)
 
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
-    int msg_id;
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
@@ -147,6 +146,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     }
     return ESP_OK;
 }
+
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
@@ -333,7 +333,8 @@ void MQTTconnected(){
         }
     }
     
-    if (callbackOnConnected) {                                          // Call onConnected callback routine
+    vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
+    if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
         callbackOnConnected(maintopic, SetRetainFlag);
     }
 }
