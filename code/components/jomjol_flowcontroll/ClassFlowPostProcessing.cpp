@@ -859,6 +859,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                WriteDataLog(j);
                 continue;
             }
         }
