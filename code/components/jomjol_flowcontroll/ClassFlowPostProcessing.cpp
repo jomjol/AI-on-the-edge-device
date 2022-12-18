@@ -707,7 +707,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
+        /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
 //        NUMBERS[j]->lastvalue = imagetime;    // must only be set in case of good value !!! --> move to the end
+        NUMBERS[j]->lastvalue = imagetime;
 
         UpdateNachkommaDecimalShift();
 
@@ -764,6 +766,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             {
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+               /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
                 NUMBERS[j]->lastvalue = imagetime;
 
                 WriteDataLog(j);
@@ -859,6 +862,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                WriteDataLog(j);
                 continue;
             }
         }

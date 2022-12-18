@@ -2,7 +2,6 @@
 
 ## [Unreleased]
 
-
 ## [13.0.7] 2022-12-11
 
 **Home Assistant MQTT Discovery Support**
@@ -32,11 +31,11 @@
 If anything breaks you can try to enforce manual update as following:
 
 **OTA:**
-  1\. Make sure the last run of the update completed the **Uploading** step.
-  1\. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
+  1. Make sure the last run of the update completed the **Uploading** step.
+  1. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
 
 **Initial Setup:**
-  1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+  1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 ### Added
 
@@ -97,7 +96,6 @@ If anything breaks you can try to enforce manual update as following:
 -   **NEW Rolling**:
     -   Fix Rate Problem ([#1578](https://github.com/jomjol/AI-on-the-edge-device/issues/1578), [#1572](https://github.com/jomjol/AI-on-the-edge-device/issues/1572))
 
-
 ### Removed
 
 -   n.a.
@@ -118,8 +116,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -771,7 +769,9 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.5...HEAD
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.7...HEAD
+
+[13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.7
 
 [13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.5
 
