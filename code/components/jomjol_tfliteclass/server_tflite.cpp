@@ -211,13 +211,13 @@ esp_err_t handler_flow_start(httpd_req_t *req) {
 
     if (auto_isrunning) {
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API.");
-        const char* resp_str = "INFO: Flow is going to be started imediately or is already running.";
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start");
+        const char* resp_str = "Flow is going to be started imediately or is already running";
         httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
     else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!");
-        const char* resp_str = "WARNING: Flow start triggered by REST API, but flow is not active.";
+        const char* resp_str = "WARNING: Flow start triggered by REST API, but flow is not active";
         httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
 
@@ -230,6 +230,32 @@ esp_err_t handler_flow_start(httpd_req_t *req) {
 
     return ESP_OK;
 }
+
+
+#ifdef ENABLE_MQTT
+esp_err_t MQTTCtrlFlowStart(std::string _topic) {
+
+    #ifdef DEBUG_DETAIL_ON          
+    LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Start");       
+    #endif
+
+    ESP_LOGD(TAG, "MQTTCtrlFlowStart: topic %s", _topic.c_str());
+
+    if (auto_isrunning) {
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic " + _topic);
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by MQTT topic " + _topic + ", but flow is not active!");
+    }  
+
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Done");       
+    #endif
+
+    return ESP_OK;
+}
+#endif //ENABLE_MQTT
 
 
 esp_err_t handler_json(httpd_req_t *req)
