@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <string>
 
+#define STBI_ONLY_JPEG // (save 2% of Flash)
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
