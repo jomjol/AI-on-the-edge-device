@@ -26,14 +26,14 @@ esp_err_t ClassFlowMakeImage::camera_capture(){
     return ESP_OK;
 }
 
-void ClassFlowMakeImage::takePictureWithFlash(int flashdauer)
+void ClassFlowMakeImage::takePictureWithFlash(int flash_duration)
 {
-    // für den Fall, dass das Bild geflippt wird, muss es hier zurück gesetzt werden ////
+    // in case the image is flipped, it must be reset here //
     rawImage->width = image_width;          
     rawImage->height = image_height;
     /////////////////////////////////////////////////////////////////////////////////////
-    ESP_LOGD(TAG, "Flashdauer: %d", flashdauer);
-    Camera.CaptureToBasisImage(rawImage, flashdauer);
+    ESP_LOGD(TAG, "flash_duration: %d", flash_duration);
+    Camera.CaptureToBasisImage(rawImage, flash_duration);
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
@@ -65,7 +65,7 @@ ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlow
 
 bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
     int _brightness = -100;
@@ -76,66 +76,66 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (aktparamgraph.compare("[MakeImage]") != 0)       // Paragraph passt nich zu MakeImage
+    if (aktparamgraph.compare("[MakeImage]") != 0)       // Paragraph does not fit MakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph);
-        if ((zerlegt[0] ==  "LogImageLocation") && (zerlegt.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((splitted[0] ==  "LogImageLocation") && (splitted.size() > 1))
         {
-            LogImageLocation = "/sdcard" + zerlegt[1];
+            LogImageLocation = "/sdcard" + splitted[1];
             isLogImage = true;
         }
-        if ((zerlegt[0] == "ImageQuality") && (zerlegt.size() > 1))
-            ImageQuality = std::stod(zerlegt[1]);
+        if ((splitted[0] == "ImageQuality") && (splitted.size() > 1))
+            ImageQuality = std::stod(splitted[1]);
 
-        if ((zerlegt[0] == "ImageSize") && (zerlegt.size() > 1))
+        if ((splitted[0] == "ImageSize") && (splitted.size() > 1))
         {
-            ImageSize = Camera.TextToFramesize(zerlegt[1].c_str());
+            ImageSize = Camera.TextToFramesize(splitted[1].c_str());
             isImageSize = true;
         }
 
-        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
         }
         
-        if ((toUpper(zerlegt[0]) == "WAITBEFORETAKINGPICTURE") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
         {
-            waitbeforepicture = stoi(zerlegt[1]);
+            waitbeforepicture = stoi(splitted[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(zerlegt[1]);
+            this->logfileRetentionInDays = std::stoi(splitted[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "BRIGHTNESS") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "BRIGHTNESS") && (splitted.size() > 1))
         {
-            _brightness = stoi(zerlegt[1]);
+            _brightness = stoi(splitted[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "CONTRAST") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "CONTRAST") && (splitted.size() > 1))
         {
-            _contrast = stoi(zerlegt[1]);
+            _contrast = stoi(splitted[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "SATURATION") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "SATURATION") && (splitted.size() > 1))
         {
-            _saturation = stoi(zerlegt[1]);
+            _saturation = stoi(splitted[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "FIXEDEXPOSURE") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "FIXEDEXPOSURE") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 FixedExposure = true;  
         }
 
-        if ((toUpper(zerlegt[0]) == "LEDINTENSITY") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
         {
-            float ledintensity = stof(zerlegt[1]);
+            float ledintensity = stof(splitted[1]);
             ledintensity = min((float) 100, ledintensity);
             ledintensity = max((float) 0, ledintensity);
             Camera.SetLEDIntensity(ledintensity);
@@ -154,11 +154,11 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     if (FixedExposure && (waitbeforepicture > 0))
     {
 //        ESP_LOGD(TAG, "Fixed Exposure enabled!");
-        int flashdauer = (int) (waitbeforepicture * 1000);
-        Camera.EnableAutoExposure(flashdauer);
+        int flash_duration = (int) (waitbeforepicture * 1000);
+        Camera.EnableAutoExposure(flash_duration);
         waitbeforepicture = 0.2;
-//        flashdauer = (int) (waitbeforepicture * 1000);
-//        takePictureWithFlash(flashdauer);
+//        flash_duration = (int) (waitbeforepicture * 1000);
+//        takePictureWithFlash(flash_duration);
 //        rawImage->SaveToFile("/sdcard/init2.jpg");
     }
 
@@ -176,7 +176,7 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 {
     string logPath = CreateLogFolder(zwtime);
 
-    int flashdauer = (int) (waitbeforepicture * 1000);
+    int flash_duration = (int) (waitbeforepicture * 1000);
  
  #ifdef DEBUG_DETAIL_ON  
     LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
@@ -187,7 +187,7 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
     esp_wifi_stop();        // to save power usage and 
 #endif
 
-    takePictureWithFlash(flashdauer);
+    takePictureWithFlash(flash_duration);
 
 #ifdef WIFITURNOFF
      esp_wifi_start();
@@ -211,11 +211,11 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 
 esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
 {
-    int flashdauer = (int) (waitbeforepicture * 1000);
+    int flash_duration = (int) (waitbeforepicture * 1000);
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
-    return Camera.CaptureToHTTP(req, flashdauer);
+    return Camera.CaptureToHTTP(req, flash_duration);
 }
 
 
@@ -223,8 +223,8 @@ ImageData* ClassFlowMakeImage::SendRawImage()
 {
     CImageBasis *zw = new CImageBasis(rawImage);
     ImageData *id;
-    int flashdauer = (int) (waitbeforepicture * 1000);
-    Camera.CaptureToBasisImage(zw, flashdauer);
+    int flash_duration = (int) (waitbeforepicture * 1000);
+    Camera.CaptureToBasisImage(zw, flash_duration);
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 

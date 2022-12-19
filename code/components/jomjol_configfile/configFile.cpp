@@ -67,7 +67,7 @@ bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 	}
 	*rt = zw;
 	*rt = trim(*rt);
-	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))			// Kommentarzeilen (; oder #) und Leerzeilen überspringen, es sei denn es ist ein neuer auskommentierter Paragraph
+	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))
 	{
 		fgets(zw, 1024, pFile);
 		ESP_LOGD(TAG, "%s", zw);

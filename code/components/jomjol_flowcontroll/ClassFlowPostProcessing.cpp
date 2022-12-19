@@ -122,13 +122,13 @@ void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _exte
 
 bool ClassFlowPostProcessing::LoadPreValue(void)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> splitted;
     FILE* pFile;
     char zw[1024];
     string zwtime, zwvalue, name;
     bool _done = false;
 
-    UpdatePreValueINI = false;       // Konvertierung ins neue Format
+    UpdatePreValueINI = false;       // Conversion to the new format
 
 
     pFile = fopen(FilePreValue.c_str(), "r");
@@ -141,21 +141,21 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     if (zwtime.length() == 0)
         return false;
 
-    zerlegt = HelperZerlegeZeile(zwtime, "\t");
-    if (zerlegt.size() > 1)     // neues Format
+    splitted = HelperZerlegeZeile(zwtime, "\t");
+    if (splitted.size() > 1)     //  Conversion to the new format
     {
-        while ((zerlegt.size() > 1) && !_done)
+        while ((splitted.size() > 1) && !_done)
         {
-            name = trim(zerlegt[0]);
-            zwtime = trim(zerlegt[1]);
-            zwvalue = trim(zerlegt[2]);
+            name = trim(splitted[0]);
+            zwtime = trim(splitted[1]);
+            zwvalue = trim(splitted[2]);
 
             for (int j = 0; j < NUMBERS.size(); ++j)
             {
                 if (NUMBERS[j]->name == name)
                 {
                     NUMBERS[j]->PreValue = stod(zwvalue.c_str());
-                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // SIcherheitshalber 1 Stelle mehr, da ggf. Exgtended Resolution an ist (wird erst beim ersten Durchlauf gesetzt)
+                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // To be on the safe side, 1 digit more, as Exgtended Resolution may be on (will only be set during the first run).
 
                     time_t tStart;
                     int yy, month, dd, hh, mm, ss;
@@ -188,18 +188,18 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
             else
             {
                 ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
-                zerlegt = HelperZerlegeZeile(trim(std::string(zw)), "\t");
-                if (zerlegt.size() > 1)
+                splitted = HelperZerlegeZeile(trim(std::string(zw)), "\t");
+                if (splitted.size() > 1)
                 {
-                    name = trim(zerlegt[0]);
-                    zwtime = trim(zerlegt[1]);
-                    zwvalue = trim(zerlegt[2]);
+                    name = trim(splitted[0]);
+                    zwtime = trim(splitted[1]);
+                    zwvalue = trim(splitted[2]);
                 }
             }
         }
         fclose(pFile);
     }   
-    else        // altes Format
+    else        // Old Format
     {
         fgets(zw, 1024, pFile);
         fclose(pFile);
@@ -239,7 +239,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
             NUMBERS[0]->ReturnValue = RundeOutput(NUMBERS[0]->Value, NUMBERS[0]->Nachkomma);
         }
 
-        UpdatePreValueINI = true;       // Konvertierung ins neue Format
+        UpdatePreValueINI = true;       // Conversion to the new format
         SavePreValue();
     } 
 
@@ -251,7 +251,7 @@ void ClassFlowPostProcessing::SavePreValue()
     FILE* pFile;
     string _zw;
 
-    if (!UpdatePreValueINI)         // PreValues unverändert --> File muss nicht neu geschrieben werden
+    if (!UpdatePreValueINI)         // PreValues unchanged --> File does not have to be rewritten
         return;
 
     pFile = fopen(FilePreValue.c_str(), "w");
@@ -265,7 +265,7 @@ void ClassFlowPostProcessing::SavePreValue()
 //        ESP_LOGD(TAG, "SaverPreValue %d, Value: %f, Nachkomma %d", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
         _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
-        ESP_LOGD(TAG, "Write PreValue Zeile: %s", _zw.c_str());
+        ESP_LOGD(TAG, "Write PreValue line: %s", _zw.c_str());
         if (pFile) {
             fputs(_zw.c_str(), pFile);
         }
@@ -317,7 +317,7 @@ void ClassFlowPostProcessing::handleDecimalExtendedResolution(string _decsep, st
         if (toUpper(_value) == "TRUE")
             _zwdc = true;
      
-        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        if (_digit == "default")                        // Set to default first (if nothing else is set)
         {
             NUMBERS[j]->isExtendedResolution = _zwdc;
         }
@@ -353,7 +353,7 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
             ESP_LOGD(TAG, "ERROR - Decimalshift is not a number: %s", _value.c_str());
         }
 */        
-        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
         {
             NUMBERS[j]->DecimalShift = _zwdc;
             NUMBERS[j]->DecimalShiftInitial = _zwdc;
@@ -385,7 +385,7 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
         {
             _zwdc = stof(_value);
         }
-        if (_digit == "default" || NUMBERS[j]->name == _digit)  // erstmal auf default setzen (falls sonst nichts gesetzt)
+        if (_digit == "default" || NUMBERS[j]->name == _digit)  // Set to default first (if nothing else is set)
         {
             NUMBERS[j]->AnalogDigitalTransitionStart = _zwdc;
 
@@ -411,7 +411,7 @@ void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
         if (toUpper(_value) == "RATECHANGE")
             _rt = RateChange;
 
-        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        if (_digit == "default")                        // Set to default first (if nothing else is set)
         {
             NUMBERS[j]->RateType = _rt;
         }
@@ -447,7 +447,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
             ESP_LOGD(TAG, "ERROR - MaxRateValue is not a number: %s", _value.c_str());
         }
 */
-        if (_digit == "default")                        // erstmal auf default setzen (falls sonst nichts gesetzt)
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
         {
             NUMBERS[j]->useMaxRateValue = true;
             NUMBERS[j]->MaxRateValue = _zwdc;
@@ -463,7 +463,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value)
 
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> splitted;
     int _n;
 
     aktparamgraph = trim(aktparamgraph);
@@ -473,7 +473,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph passt nich zu MakeImage
+    if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph does not fit MakeImage
         return false;
 
     InitNUMBERS();
@@ -481,65 +481,65 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph);
-        std::string _param = GetParameterName(zerlegt[0]);
+        splitted = ZerlegeZeile(aktparamgraph);
+        std::string _param = GetParameterName(splitted[0]);
 
-        if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (splitted.size() > 1))
         {
-            handleDecimalExtendedResolution(zerlegt[0], zerlegt[1]);
-        }
-
-        if ((toUpper(_param) == "DECIMALSHIFT") && (zerlegt.size() > 1))
-        {
-            handleDecimalSeparator(zerlegt[0], zerlegt[1]);
-        }
-        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (zerlegt.size() > 1))
-        {
-            handleAnalogDigitalTransitionStart(zerlegt[0], zerlegt[1]);
-        }
-        if ((toUpper(_param) == "MAXRATEVALUE") && (zerlegt.size() > 1))
-        {
-            handleMaxRateValue(zerlegt[0], zerlegt[1]);
-        }
-        if ((toUpper(_param) == "MAXRATETYPE") && (zerlegt.size() > 1))
-        {
-            handleMaxRateType(zerlegt[0], zerlegt[1]);
+            handleDecimalExtendedResolution(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "PREVALUEUSE") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "DECIMALSHIFT") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            handleDecimalSeparator(splitted[0], splitted[1]);
+        }
+        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (splitted.size() > 1))
+        {
+            handleAnalogDigitalTransitionStart(splitted[0], splitted[1]);
+        }
+        if ((toUpper(_param) == "MAXRATEVALUE") && (splitted.size() > 1))
+        {
+            handleMaxRateValue(splitted[0], splitted[1]);
+        }
+        if ((toUpper(_param) == "MAXRATETYPE") && (splitted.size() > 1))
+        {
+            handleMaxRateType(splitted[0], splitted[1]);
+        }
+
+        if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1))
+        {
+            if (toUpper(splitted[1]) == "TRUE")
             {
                 PreValueUse = true;
             }
         }
-        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
         }        
-        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->AllowNegativeRates = true;
         }
-        if ((toUpper(_param) == "ERRORMESSAGE") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 ErrorMessage = true;
         }
-        if ((toUpper(_param) == "IGNORELEADINGNAN") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 IgnoreLeadingNaN = true;
         }
 
         
-        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (zerlegt.size() > 1))
+        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1))
         {
-            PreValueAgeStartup = std::stoi(zerlegt[1]);
+            PreValueAgeStartup = std::stoi(splitted[1]);
         }
     }
 
@@ -558,12 +558,12 @@ void ClassFlowPostProcessing::InitNUMBERS()
 
     if (flowDigit)
     {
-        anzDIGIT = flowDigit->getAnzahlGENERAL();
+        anzDIGIT = flowDigit->getNumberGENERAL();
         flowDigit->UpdateNameNumbers(&name_numbers);
     }
     if (flowAnalog)
     {
-        anzANALOG = flowAnalog->getAnzahlGENERAL();
+        anzANALOG = flowAnalog->getNumberGENERAL();
         flowAnalog->UpdateNameNumbers(&name_numbers);
     }
 
@@ -594,9 +594,9 @@ void ClassFlowPostProcessing::InitNUMBERS()
         else
             _number->AnzahlAnalog = 0;
 
-        _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
-        _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-        _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
+        _number->ReturnRawValue = ""; // Raw value (with N & leading 0).    
+        _number->ReturnValue = ""; // corrected return value, possibly with error message
+        _number->ErrorMessageText = ""; // Error message for consistency check
         _number->ReturnPreValue = "";
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
@@ -610,12 +610,12 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->AnalogDigitalTransitionStart=9.2;
 
 
-        _number->FlowRateAct = 0;          // m3 / min
-        _number->PreValue = 0;             // letzter Wert, der gut ausgelesen wurde
-        _number->Value = 0;                // letzer ausgelesener Wert, inkl. Korrekturen
-        _number->ReturnRawValue = "";      // Rohwert (mit N & führenden 0)    
-        _number->ReturnValue = "";         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-        _number->ErrorMessageText = "";        // Fehlermeldung bei Consistency Check
+        _number->FlowRateAct = 0; // m3 / min
+        _number->PreValue = 0; // last value read out well
+        _number->Value = 0; // last value read out, incl. corrections
+        _number->ReturnRawValue = ""; // raw value (with N & leading 0)    
+        _number->ReturnValue = ""; // corrected return value, possibly with error message
+        _number->ErrorMessageText = ""; // Error message for consistency check
 
         _number->Nachkomma = _number->AnzahlAnalog;
 
@@ -647,7 +647,7 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
     
     _pos_dec_neu = _pos_dec_org + _decShift;
 
-    if (_pos_dec_neu <= 0) {        // Komma ist vor der ersten Ziffer
+    if (_pos_dec_neu <= 0) {        // comma is before the first digit
         for (int i = 0; i > _pos_dec_neu; --i){
             in = in.insert(0, "0");
         }
@@ -655,7 +655,7 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
         return in;
     }
 
-    if (_pos_dec_neu > in.length()){    // Komma soll hinter String (123 --> 1230)
+    if (_pos_dec_neu > in.length()){    // Comma should be after string (123 --> 1230)
         for (int i = in.length(); i < _pos_dec_neu; ++i){
             in = in.insert(in.length(), "0");
         }  
@@ -680,7 +680,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     time_t imagetime = 0;
     string rohwert;
 
-    // Update Nachkomma, da sich beim Wechsel von CNNType Auto --> xyz auch die Nachkommastellen ändern können:
+    // Update decimal point, as the decimal places can also change when changing from CNNType Auto --> xyz:
 
     imagetime = flowMakeImage->getTimeImageTaken();
     if (imagetime == 0)
@@ -692,7 +692,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
     strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%dT%H:%M:%S", timeinfo);
     zwtime = std::string(strftime_buf);
 
-    ESP_LOGD(TAG, "Anzahl NUMBERS: %d", NUMBERS.size());
+    ESP_LOGD(TAG, "Quantity NUMBERS: %d", NUMBERS.size());
 
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
@@ -729,7 +729,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             if (NUMBERS[j]->analog_roi) 
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogDigitalTransitionStart) + NUMBERS[j]->ReturnRawValue;
             else
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution nur falls es keine analogen Ziffern gibt
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits
         }
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After digital->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
@@ -763,13 +763,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->lastvalue = imagetime;
 
                 WriteDataLog(j);
-                continue; // es gibt keinen Zahl, da noch ein N vorhanden ist.
+                continue; // there is no number because there is still an N.
             }
         }
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After findDelimiterPos: ReturnValue %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
-        // Lösche führende Nullen (außer es ist nur noch einen 0)
+        // Delete leading zeros (unless there is only one 0 left)
         while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
             NUMBERS[j]->ReturnValue.erase(0, 1);
         #ifdef SERIAL_DEBUG
@@ -811,7 +811,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                      NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
                       ) ;
                 #endif
-                // Bei isExtendedResolution Ungenauigkeit von 0.2 mit einrechnen.
+                // Include inaccuracy of 0.2 for isExtendedResolution.
                 if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
@@ -831,7 +831,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
-        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in Sekunden
+        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
         difference /= 60;  
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
@@ -916,22 +916,22 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
 {
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
-        if (NUMBERS[j]->digit_roi && !NUMBERS[j]->analog_roi)            // es gibt nur digitale ziffern
+        if (NUMBERS[j]->digit_roi && !NUMBERS[j]->analog_roi)            // There are only digital digits
         {
 //            ESP_LOGD(TAG, "Nurdigital");
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
 
-            if (NUMBERS[j]->isExtendedResolution && flowDigit->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
+            if (NUMBERS[j]->isExtendedResolution && flowDigit->isExtendedResolution())  // Extended resolution is on and should also be used for this digit.
                 NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShift-1;
 
             NUMBERS[j]->Nachkomma = -NUMBERS[j]->DecimalShift;
         }
 
-        if (!NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)            // es gibt nur analoge ziffern
+        if (!NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
         {
 //            ESP_LOGD(TAG, "Nur analog");
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
-            if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
+            if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution()) 
                 NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShift-1;
 
             NUMBERS[j]->Nachkomma = -NUMBERS[j]->DecimalShift;
@@ -944,7 +944,7 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
             NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size() - NUMBERS[j]->DecimalShift;
 
-            if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution())  // extended resolution ist an und soll auch bei dieser Ziffer verwendet werden
+            if (NUMBERS[j]->isExtendedResolution && flowAnalog->isExtendedResolution())  // Extended resolution is on and should also be used for this digit.
                 NUMBERS[j]->Nachkomma = NUMBERS[j]->Nachkomma+1;
 
         }
@@ -1008,7 +1008,7 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
     bool no_nulldurchgang = false;
 
     pot = _decilamshift;
-    if (!_isanalog)             // falls es keine analogwerte gibt, kann die letzte nicht bewertet werden
+    if (!_isanalog)             // if there are no analogue values, the last one cannot be evaluated
     {
         pot++;
     }
@@ -1034,14 +1034,14 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
         {
             if (aktdigit != olddigit) 
             {
-                input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // Neue Digit wird durch alte Digit ersetzt;
+                input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // New Digit is replaced by old Digit;
             }
         }
         else
         {
-            if (aktdigit == olddigit)                   // trotz Nulldurchgang wurde Stelle nicht hochgezählt --> addiere 1
+            if (aktdigit == olddigit)                   // despite zero crossing, digit was not incremented --> add 1
             {
-                input = input + ((float) (1)) * pow(10, pot);   // addiere 1 an der Stelle
+                input = input + ((float) (1)) * pow(10, pot);   // add 1 at the point
             }
         }
         #ifdef SERIAL_DEBUG

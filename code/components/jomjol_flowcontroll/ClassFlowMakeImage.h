@@ -25,7 +25,7 @@ protected:
     void CopyFile(string input, string output);
 
     esp_err_t camera_capture();
-    void takePictureWithFlash(int flashdauer);
+    void takePictureWithFlash(int flash_duration);
 
 
     void SetInitialParameter(void);       

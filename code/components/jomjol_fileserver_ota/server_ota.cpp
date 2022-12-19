@@ -154,7 +154,7 @@ static bool ota_update_task(std::string fn)
 
     int data_read;     
 
-    FILE* f = OpenFileAndWait(fn.c_str(), "rb");     // vorher  nur "r"
+    FILE* f = OpenFileAndWait(fn.c_str(), "rb");     // previously only "r
 
     if (f == NULL) { // File does not exist
         return false;

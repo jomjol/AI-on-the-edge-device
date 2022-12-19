@@ -87,7 +87,7 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
 
 bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -95,76 +95,76 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (toUpper(aktparamgraph).compare("[MQTT]") != 0)       // Paragraph passt nich zu MakeImage
+    if (toUpper(aktparamgraph).compare("[MQTT]") != 0)       // Paragraph does not fit MakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(zerlegt[0]) == "USER") && (zerlegt.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "USER") && (splitted.size() > 1))
         {
-            this->user = zerlegt[1];
+            this->user = splitted[1];
         }  
-        if ((toUpper(zerlegt[0]) == "PASSWORD") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "PASSWORD") && (splitted.size() > 1))
         {
-            this->password = zerlegt[1];
+            this->password = splitted[1];
         }               
-        if ((toUpper(zerlegt[0]) == "URI") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
         {
-            this->uri = zerlegt[1];
+            this->uri = splitted[1];
         }
-        if ((toUpper(zerlegt[0]) == "SETRETAINFLAG") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "SETRETAINFLAG") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE") {
+            if (toUpper(splitted[1]) == "TRUE") {
                 SetRetainFlag = 1;  
                 setMqtt_Server_Retain(SetRetainFlag);
             }
         }
-        if ((toUpper(zerlegt[0]) == "HOMEASSISTANTDISCOVERY") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "HOMEASSISTANTDISCOVERY") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 SetHomeassistantDiscoveryEnabled(true);  
         }
-        if ((toUpper(zerlegt[0]) == "METERTYPE") && (zerlegt.size() > 1)) {
+        if ((toUpper(splitted[0]) == "METERTYPE") && (splitted.size() > 1)) {
         /* Use meter type for the device class 
            Make sure it is a listed one on https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes */
-            if (toUpper(zerlegt[1]) == "WATER_M3") {
+            if (toUpper(splitted[1]) == "WATER_M3") {
                 mqttServer_setMeterType("water", "m³", "h", "m³/h");
             }
-            else if (toUpper(zerlegt[1]) == "WATER_L") {
+            else if (toUpper(splitted[1]) == "WATER_L") {
                 mqttServer_setMeterType("water", "L", "h", "L/h");
             }
-            else if (toUpper(zerlegt[1]) == "WATER_FT3") {
+            else if (toUpper(splitted[1]) == "WATER_FT3") {
                 mqttServer_setMeterType("water", "ft³", "m", "ft³/m"); // Minutes
             }
-            else if (toUpper(zerlegt[1]) == "WATER_GAL") {
+            else if (toUpper(splitted[1]) == "WATER_GAL") {
                 mqttServer_setMeterType("water", "gal", "h", "gal/h");
             }
-            else if (toUpper(zerlegt[1]) == "GAS_M3") {
+            else if (toUpper(splitted[1]) == "GAS_M3") {
                 mqttServer_setMeterType("gas", "m³", "h", "m³/h");
             }
-            else if (toUpper(zerlegt[1]) == "GAS_FT3") {
+            else if (toUpper(splitted[1]) == "GAS_FT3") {
                 mqttServer_setMeterType("gas", "ft³", "m", "ft³/m"); // Minutes
             }
-            else if (toUpper(zerlegt[1]) == "ENERGY_WH") {
+            else if (toUpper(splitted[1]) == "ENERGY_WH") {
                 mqttServer_setMeterType("energy", "Wh", "h", "W");
             }
-            else if (toUpper(zerlegt[1]) == "ENERGY_KWH") {
+            else if (toUpper(splitted[1]) == "ENERGY_KWH") {
                 mqttServer_setMeterType("energy", "kWh", "h", "kW");
             }
-            else if (toUpper(zerlegt[1]) == "ENERGY_MWH") {
+            else if (toUpper(splitted[1]) == "ENERGY_MWH") {
                 mqttServer_setMeterType("energy", "MWh", "h", "MW");
             }
         }
 
-        if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "CLIENTID") && (splitted.size() > 1))
         {
-            this->clientname = zerlegt[1];
+            this->clientname = splitted[1];
         }
 
-        if (((toUpper(zerlegt[0]) == "TOPIC") || (toUpper(zerlegt[0]) == "MAINTOPIC")) && (zerlegt.size() > 1))
+        if (((toUpper(splitted[0]) == "TOPIC") || (toUpper(splitted[0]) == "MAINTOPIC")) && (splitted.size() > 1))
         {
-            maintopic = zerlegt[1];
+            maintopic = splitted[1];
             mqttServer_setMainTopic(maintopic);
         }
     }

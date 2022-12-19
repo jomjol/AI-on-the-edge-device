@@ -93,7 +93,7 @@ struct SendJPGHTTP
 inline void writejpgtohttphelp(void *context, void *data, int size)
 {
     SendJPGHTTP* _send = (SendJPGHTTP*) context;
-    if ((_send->size + size) >= HTTP_BUFFER_SENT)     // data passt nich mehr in buffer
+    if ((_send->size + size) >= HTTP_BUFFER_SENT)     // data no longer fits in buffer
     {
         httpd_req_t *_req = _send->req;
         if (httpd_resp_send_chunk(_req, _send->buf, _send->size) != ESP_OK) 
@@ -122,7 +122,7 @@ esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t *_req, const int quality)
 
     if (ii.size > 0)
     {
-        if (httpd_resp_send_chunk(_req, (char*) ii.buf, ii.size) != ESP_OK)             // verschicke noch den Rest
+        if (httpd_resp_send_chunk(_req, (char*) ii.buf, ii.size) != ESP_OK)             //still send the rest
         {
             ESP_LOGE(TAG, "File sending failed!");
             ii.res = ESP_FAIL;  
@@ -137,7 +137,7 @@ esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t *_req, const int quality)
 bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
 {
     int gr = height * width * channels;
-    if (gr != _size)            // Größe passt nicht
+    if (gr != _size)            // Size does not fit
     {
         ESP_LOGD(TAG, "Cannot copy image from memory - sizes do not match: should be %d, but is %d", _size, gr);
         return false;
@@ -506,7 +506,7 @@ void CImageBasis::SaveToFile(std::string _imageout)
 
     RGBImageLock();
 
-    if ((typ == "jpg") || (typ == "JPG"))       // ACHTUNG PROBLEMATISCH IM ESP32
+    if ((typ == "jpg") || (typ == "JPG"))       // CAUTION PROBLEMATIC IN ESP32
     {
         stbi_write_jpg(_imageout.c_str(), width, height, channels, rgb_image, 0);
     }

@@ -37,7 +37,7 @@ ClassFlowWriteList::ClassFlowWriteList(std::vector<ClassFlow*>* lfc)
 
 bool ClassFlowWriteList::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -45,18 +45,12 @@ bool ClassFlowWriteList::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (toUpper(aktparamgraph).compare("[MQTT]") != 0)       // Paragraph passt nich zu MakeImage
+    if (toUpper(aktparamgraph).compare("[MQTT]") != 0)  
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph);
-/*
-        if ((toUpper(zerlegt[0]) == "USER") && (zerlegt.size() > 1))
-        {
-            this->user = zerlegt[1];
-        }  
-*/
+        splitted = ZerlegeZeile(aktparamgraph);
     }
    
     return true;
