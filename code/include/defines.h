@@ -120,14 +120,6 @@
     #define Digital_Transition_Area_Forward 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
 
 
-    #define AnalogFehler 3
-    #define AnalogToDigtalFehler 0.8
-    #define DigitalUnschaerfe 0.2
-    #define DigitalBand 3
-    #define DigitalAnalogerVorgaengerUebergangsbereich 2
-    #define DigitalUebergangsbereichVorgaenger 0.7 // 9.3 - 0.7
-    #define DigitalUebergangsbereichVorlauf 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
-
     //#define DEBUG_DETAIL_ON 
 
 
