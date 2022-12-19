@@ -110,7 +110,7 @@
     #define WIFI_FAIL_BIT      BIT1
 
     //ClassFlowCNNGeneral
-/* //ready for translateion
+ //ready for translateion
     #define Analog_error 3
     #define AnalogToDigtalFehler 0.8
     #define Digital_Uncertainty 0.2
@@ -118,7 +118,7 @@
     #define Digital_Transition_Range_Predecessor 2
     #define Digital_Transition_Area_Predecessor 0.7 // 9.3 - 0.7
     #define Digital_Transition_Area_Forward 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
-*/
+
 
     #define AnalogFehler 3
     #define AnalogToDigtalFehler 0.8
