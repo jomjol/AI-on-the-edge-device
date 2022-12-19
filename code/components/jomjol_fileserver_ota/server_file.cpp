@@ -935,7 +935,11 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
     // Get and print information about each file in the archive.
     int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
-    for (sort_iter = 0; sort_iter < 2; sort_iter++)
+    ESP_LOGI(TAG, "Numbers of files to be extrated: %d", numberoffiles);
+
+
+    sort_iter = 0;
+//    for (sort_iter = 0; sort_iter < 2; sort_iter++)
     {
         memset(&zip_archive, 0, sizeof(zip_archive));
         status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);

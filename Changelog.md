@@ -2,13 +2,13 @@
 
 ## [Unreleased]
 
-## [13.0.7] - 2022-12-11
+## [13.0.7] 2022-12-11
 
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
 
-:bangbang: **Make sure to read the instructions below carfully!**.
+:bangbang: **Make sure to read the instructions below carfully!**
 
 1.  Backup your configuration (use the `System -> Backup/Restore` page)!
 
@@ -19,12 +19,14 @@
 4.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
 
 5.  Safe way: 
-    1.  Update first the `firmware.bin` (extract from zip file) and do the Reboot
+    1.  Update first the `firmware.bin` (extract it from one of the provided zip files) and do the Reboot
     2.  Update with the full zip file (`update-*.zip`, ignore the version warning after the reboot)
 
 6.  Please go to `Settings -> Configuration` and address the changed parameters:
     -   DataLogging (storing the values for data graph)
     -   Debug (extended by different debug reporting levels)
+
+7.  Make sure it starts to do the digitalization (check the Error field on the overview page). If it does not start a round within a minute, restart the device.
 
 If anything breaks you can try to enforce manual update as following:
 
@@ -65,10 +67,17 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.2: Update Tool "Logfile downloader and combiner" to handle the new csv file format.
 -   NEW v13.0.2: MQTT: Added MQTT topic `status` (Digitalization Status), Timezone to MQTT topic `timestamp`.#
 -   NEW v13.0.2: Logging: Disable heap logs by default, cleanup
--   **NEW v13.0.5**: 
-    -   log NTP server name
-    -   Improved log messages
-    -   Various preparations for next release
+-   NEW v13.0.7:
+    - log NTP server name
+    - Improved log messages
+    - Various preparations for next release
+-   **NEW v13.0.8**: 
+    - Continue booting on PSRAM issues, Web UI will show an error
+    - Updated models
+    - Various UI enhancements
+    - Various internal improvements
+    - Show uptime in log
+    - Show uptime and round on overview page
 
 ### Fixed
 
@@ -84,13 +93,19 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.3: Re-updated build environment to v5.2.0 (from accidental downgrad to v4.4.0)
 -   NEW v13.0.4: Fix for reboot in case of MQTT not used
 -   NEW v13.0.5: No reboot in case of missing NTP-connection
--   **NEW v13.0.5**:
-    -   Prevent autoreboot on cam framebuffer init error
-    -   Properly protect `wlan.ini` against deletion
-    -   Fixed various MQTT topic content issues
-    -   Fix Digit detected as 10 (<https://github.com/jomjol/AI-on-the-edge-device/pull/1525>)
-    -   Fix frozen time in datafile on error
-    -   Various minor fixes
+-   NEW v13.0.7:
+    - Prevent autoreboot on cam framebuffer init error
+    - Properly protect `wlan.ini` against deletion
+    - Fixed various MQTT topic content issues
+    - Fix Digit detected as 10 (https://github.com/jomjol/AI-on-the-edge-device/pull/1525)
+    - Fix frozen time in datafile on error
+    - Various minor fixes
+-   **NEW v13.0.8**: 
+    -   Fix Rate Problem ([#1578](https://github.com/jomjol/AI-on-the-edge-device/issues/1578), [#1572](https://github.com/jomjol/AI-on-the-edge-device/issues/1572))
+    -   Stabilized MQTT
+    -   Fixed redundant calls in OTA
+    -   Block REST API calls till resource is ready
+    -   Fixed number renaming ([#1635](https://github.com/jomjol/AI-on-the-edge-device/issues/1635))
 
 ### Removed
 

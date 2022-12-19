@@ -128,6 +128,14 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
+    else if (_task.compare("Round") == 0)
+    {
+        char formated[10] = "";    
+        snprintf(formated, sizeof(formated), "%d", getCountFlowRounds());
+        httpd_resp_sendstr_chunk(req, formated);
+        httpd_resp_sendstr_chunk(req, NULL);  
+        return ESP_OK;        
+    }
     else if (_task.compare("SDCardPartitionSize") == 0)
     {
         std::string zw;
@@ -230,9 +238,33 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         }
     }
 
-    if (filetosend == "/sdcard/html/index.html" && isSetupModusActive()) {
-        ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");
-        filetosend = "/sdcard/html/setup.html";
+    if (filetosend == "/sdcard/html/index.html") {
+        if (isSetSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD) || // Initialization failed with crritical errors!
+                isSetSystemStatusFlag(SYSTEM_STATUS_CAM_BAD)) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "We have a critical error, not serving main page!");
+
+            char buf[20];
+            std::string message = "<h1>AI on the Edge Device</h1><b>We have one or more critical errors:</b><br>";
+
+            for (int i = 0; i < 32; i++) {
+                if (isSetSystemStatusFlag((SystemStatusFlag_t)(1<<i))) {
+                    snprintf(buf, sizeof(buf), "0x%08X", 1<<i);
+                    message += std::string(buf) + "<br>";
+                }
+            }
+
+            message += "<br>Please check <a href=\"https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes\" target=_blank>github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes</a> for more information!";
+            message += "<br><br><button onclick=\"window.location.href='/reboot';\">Reboot</button>";
+            message += "&nbsp;<button onclick=\"window.open('/ota_page.html');\">OTA Update</button>";
+            message += "&nbsp;<button onclick=\"window.open('/log.html');\">Log Viewer</button>";
+            message += "&nbsp;<button onclick=\"window.open('/info.html');\">Show System Info</button>";
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, message.c_str());
+            return ESP_FAIL;
+        }
+        else if (isSetupModusActive()) {
+            ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");
+            filetosend = "/sdcard/html/setup.html";
+        }
     }
 
     ESP_LOGD(TAG, "Filename: %s", filename);
@@ -427,9 +459,9 @@ httpd_handle_t start_webserver(void)
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority      = tskIDLE_PRIORITY+1;         // 20210924 --> vorher +5
+    config.task_priority      = tskIDLE_PRIORITY+3; //20221211: before: tskIDLE_PRIORITY+1; // 20210924 --> vorher +5
     config.stack_size         = 32768;      //20210921 --> vorher 32768             // bei 32k stürzt das Programm beim Bilderaufnehmen ab
-    config.core_id            = tskNO_AFFINITY;
+    config.core_id            = 0;          //20221211 --> force all not flow related tasks to CPU0, before: tskNO_AFFINITY;
     config.server_port        = 80;
     config.ctrl_port          = 32768;
     config.max_open_sockets   = 5;          //20210921 --> vorher 7   
@@ -437,8 +469,8 @@ httpd_handle_t start_webserver(void)
     config.max_resp_headers   = 8;                        
     config.backlog_conn       = 5;                        
     config.lru_purge_enable   = true;       // dadurch werden alte Verbindungen gekappt, falls neue benögt werden.               
-    config.recv_wait_timeout  = 5;         // default: 5         20210924 --> vorher 30              
-    config.send_wait_timeout  = 5;         // default: 5         20210924 --> vorher 30                   
+    config.recv_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30              
+    config.send_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30                   
     config.global_user_ctx = NULL;                        
     config.global_user_ctx_free_fn = NULL;                
     config.global_transport_ctx = NULL;                   

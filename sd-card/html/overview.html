@@ -9,7 +9,7 @@
 .tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:585px;}
 .tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg th{height: 50px;font-size:24px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
-.tg .tg-1{width:77%;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
+.tg .tg-1{width:700px;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-2{font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-3{height: 15px;font-size:14px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}		
 </style>
@@ -46,7 +46,7 @@
 	</td>	
   </tr>
   <tr>
-    <th class="th">Error:</th>
+    <th class="th">Status:</th>
   </tr>	
   <tr>	
     <td class="tg-2">
@@ -58,7 +58,11 @@
 	<div id="timestamp" ></div>	
 	<div id="statusflow" ></div>	
 	<div id="cputemp" ></div>	
-	<div id="rssi" ></div>	
+	<div id="rssi" ></div>
+	<div>
+		<span id="uptime" ></span>
+		<span id="round" ></span>
+	</div>	
 	</td>	
   </tr>    
 </table>
@@ -87,6 +91,8 @@ function addZero(i) {
 	loadStatus();
 	loadCPUTemp();
 	loadRSSI();
+	loadUptime();
+	loadRoundCounter();
 	refresh();
 	});
 
@@ -116,12 +122,11 @@ function refresh() {
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				_rsp = "Status: " + _rsp;
-				$('#statusflow').html(_rsp);
+				$('#statusflow').html("Status: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
-		xhttp.send();		
+		xhttp.send();
 	}
 
 	function loadCPUTemp() {
@@ -130,11 +135,11 @@ function refresh() {
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#cputemp').html(_rsp);
+				$('#cputemp').html("CPU Temperature: " +_rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
-		xhttp.send();		
+		xhttp.send();
 	}
 
 	function loadRSSI() {
@@ -143,11 +148,37 @@ function refresh() {
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#rssi').html(_rsp);
+				$('#rssi').html("RSSI: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
 		xhttp.send();		
+	}
+
+	function loadUptime() {
+		url = basepath + '/uptime';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				$('#uptime').html("Uptime: " + _rsp);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadRoundCounter() {
+		url = basepath + '/info?type=Round';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var _rsp = xhttp.responseText;
+				$('#round').html("(Round: " + _rsp + ")");
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
 	}
 		
 	function loadValue(_type, _div, _style) {
@@ -199,6 +230,8 @@ function refresh() {
 		loadStatus();
 		loadCPUTemp();
 		loadRSSI();
+		loadUptime();
+		loadRoundCounter();
 	}
 
 	init();

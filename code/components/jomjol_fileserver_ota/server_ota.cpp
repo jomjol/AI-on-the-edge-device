@@ -29,6 +29,9 @@
 #include "server_tflite.h"
 #include "server_file.h"
 #include "server_GPIO.h"
+#ifdef ENABLE_MQTT
+    #include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 
 
 #include "ClassLogFile.h"
@@ -53,6 +56,18 @@ static const char *TAG = "OTA";
 esp_err_t handler_reboot(httpd_req_t *req);
 
 std::string _file_name_update;
+
+
+
+static void infinite_loop(void)
+{
+    int i = 0;
+    ESP_LOGI(TAG, "When a new firmware is available on the server, press the reset button to download it");
+    while(1) {
+        ESP_LOGI(TAG, "Waiting for a new firmware... %d", ++i);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
 
 
 void task_do_Update_ZIP(void *pvParameter)
@@ -107,23 +122,11 @@ void CheckUpdate()
     BaseType_t xReturned;
     int _i = configMINIMAL_STACK_SIZE;
     xReturned = xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
-    TickType_t xDelay;
-    xDelay = 2000000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAG, "Wait for Update to be finished: sleep for: %ldms", (long) xDelay);
-    vTaskDelay( xDelay );   
-}
-
-
-
-static void infinite_loop(void)
-{
-    int i = 0;
-    ESP_LOGI(TAG, "When a new firmware is available on the server, press the reset button to download it");
-    while(1) {
-        ESP_LOGI(TAG, "Waiting for a new firmware... %d", ++i);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    while(1) { // wait until reboot within task_do_Update_ZIP
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
+
 
 
 
@@ -601,6 +604,9 @@ void doReboot(){
     xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
     // KillTFliteTasks(); // kills itself 
     gpio_handler_destroy();
+    #ifdef ENABLE_MQTT
+        MQTTdestroy_client();
+    #endif //ENABLE_MQTT
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart();
     hard_restart();

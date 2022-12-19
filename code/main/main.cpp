@@ -5,6 +5,8 @@
 
 #include "driver/gpio.h"
 #include "sdkconfig.h"
+//#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
+#include "esp32/spiram.h"
 
 // SD-Card ////////////////////
 #include "nvs_flash.h"
@@ -122,7 +124,7 @@ bool Init_NVS_SDCard()
     return true;
 }
 
-void task_NoSDBlink(void *pvParameter)
+void task_MainInitError_blink(void *pvParameter)
 {
     gpio_pad_select_gpio(BLINK_GPIO);
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
@@ -147,7 +149,6 @@ void task_NoSDBlink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
-    bool initSucessful = true;
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
@@ -160,9 +161,9 @@ extern "C" void app_main(void)
 
     if (!Init_NVS_SDCard())
     {
-        xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
-        return;
-    };
+        xTaskCreate(&task_MainInitError_blink, "task_MainInitError_blink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
+        return; // No way to continue without SD-Card!
+    }
 
     string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + \
         "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME) + \
@@ -216,6 +217,7 @@ extern "C" void app_main(void)
 
     if (!setup_time()) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed!");
+        setSystemStatusFlag(SYSTEM_STATUS_NTP_BAD);
     }
 
     setBootTime();
@@ -231,13 +233,32 @@ extern "C" void app_main(void)
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
 
+    /* Check if PSRAM can be initalized */
+    esp_err_t ret;
+    ret = esp_spiram_init();
+    if (ret == ESP_FAIL) { // Failed to init PSRAM, most likely not available or broken
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize PSRAM (" + std::to_string(ret) + ")!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Either your device misses the PSRAM chip or it is broken!");
+        setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+    }
+    else { // PSRAM init ok
+        /* Check if PSRAM provides at least 4 MB */
+        size_t psram_size = esp_spiram_get_size();        
+        // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has " + std::to_string(psram_size/1024/1024) + " MBytes of PSRAM");
+        if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "At least 4 MBytes are required!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Does the device really have a 4 Mbytes PSRAM?");
+            setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+        }
+    }
+
+    /* Check available Heap memory */
     size_t _hsize = getESPHeapSize();
-    if (_hsize < 4000000) // Check for a bit less than 4 MB (but clearly over 2 MB)
-    {
-        std::string _zws = "Not enough PSRAM available. Expected around 4 MBytes - available: " + std::to_string((float)_hsize/1024/1024) + " MBytes!";
-        _zws = _zws + "\nEither not initialized, too small (2 MByte only) or not present at all. Firmware cannot start!!";
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zws);
-    } else { // Bad Camera Status, retry init   
+    if (_hsize < 4000000) { // Check available Heap memory for a bit less than 4 MB (a test on a good device showed 4187558 bytes to be available)
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Not enough Heap memory available. Expected around 4 MBytes, but only " + std::to_string(_hsize) + " Bytes are available! That is not enough for this firmware!");
+        setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
+    } else { // Heap memory is ok
         if (camStatus != ESP_OK) {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Failed to initialize camera module, retrying...");
 
@@ -251,7 +272,7 @@ extern "C" void app_main(void)
             if (camStatus != ESP_OK) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize camera module!");
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
-                initSucessful = false;
+                setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
             }
         } else { // Test Camera            
             camera_fb_t * fb = esp_camera_fb_get();
@@ -259,8 +280,8 @@ extern "C" void app_main(void)
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
                 /* Easiest would be to simply restart here and try again,
                    how ever there seem to be systems where it fails at startup but still work corectly later.
-                   Therefore we treat it still as successed!
-                   //initSucessful = false; */
+                   Therefore we treat it still as successed! */
+                   setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
             }
             else {
                 esp_camera_fb_return(fb);   
@@ -268,8 +289,6 @@ extern "C" void app_main(void)
             }
         }
     }
-
-
 
     xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay*10);
@@ -291,17 +310,24 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "vor reg server main");
     register_server_main_uri(server, "/sdcard");
 
-    if (initSucessful) {
+
+    /* Testing */
+    //setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
+    //setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+
+    /* Main Init has successed or only an error which allows to continue operation */
+    if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully!");
         ESP_LOGD(TAG, "vor do autostart");
         TFliteDoAutoStart();
     }
-    else { // Initialization failed
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart in 5 minutes!");
-        vTaskDelay(60*4000 / portTICK_RATE_MS); // Wait 4 minutes to give time to do an OTA or fetch the log
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart in 1 minute!");
-        vTaskDelay(60*1000 / portTICK_RATE_MS); // Wait 1 minute to give time to do an OTA or fetch the log
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Will restart now!");
-        doReboot();
+    else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
+        isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors, but trying to continue...");
+        ESP_LOGD(TAG, "vor do autostart");
+        TFliteDoAutoStart();
+    }
+    else { // Any other error is critical and makes running the flow impossible.
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
 }
