@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [13.0.7] 2022-12-11
-
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
