@@ -23,13 +23,15 @@ protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
-    float AnalogFehler = 3.0;
-    float AnalogToDigtalFehler = 0.8;
-    float DigitalUnschaerfe = 0.2;
-    int DigitalBand = 3;
-    float DigitalAnalogerVorgaengerUebergangsbereich = 2;
-    float DigitalUebergangsbereichVorgaenger = 0.7; // 9.3 - 0.7
-    float DigitalUebergangsbereichVorlauf = 9.7; // Vorlauf-Nulldurchgang passiert erst ab ca. 9.7
+
+	//moved to define.h
+    //float Analog_error = 3.0;
+    //float AnalogToDigtalFehler = 0.8;
+    //float Digital_Uncertainty = 0.2;
+    //int DigitalBand = 3;
+    //float Digital_Transition_Range_Predecessor = 2;
+    //float Digital_Transition_Area_Predecessor = 0.7; // 9.3 - 0.7
+    //float Digital_Transition_Area_Forward = 9.7; // Pre-run zero crossing only happens from approx. 9.7 onwards
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;
@@ -39,9 +41,9 @@ protected:
 
     bool SaveAllFiles;   
 
-    int ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger);
-    int ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger, float analogDigitalTransitionStart);
-    int ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger = false, float analogDigitalTransitionStart=9.2);
+    int PointerEvalAnalogNew(float zahl, int numeral_preceder);
+    int PointerEvalAnalogToDigitNew(float zahl, float numeral_preceder,  int eval_predecessors, float analogDigitalTransitionStart);
+    int PointerEvalHybridNew(float zahl, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors = false, float analogDigitalTransitionStart=9.2);
 
 
 
@@ -57,7 +59,7 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _vorgaengerAnalog = -1, float analogDigitalTransitionStart=9.2); 
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _before_narrow_Analog = -1, float analogDigitalTransitionStart=9.2); 
 
     string getReadoutRawString(int _analog);  
 
@@ -65,7 +67,7 @@ public:
 
    	std::vector<HTMLInfo*> GetHTMLInfo();   
 
-    int getAnzahlGENERAL();
+    int getNumberGENERAL();
     general* GetGENERAL(int _analog);
     general* GetGENERAL(string _name, bool _create);
     general* FindGENERAL(string _name_number);    

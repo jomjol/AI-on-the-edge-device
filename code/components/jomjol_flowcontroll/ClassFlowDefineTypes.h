@@ -33,20 +33,20 @@ struct NumberPost {
     bool checkDigitIncreaseConsistency;
     time_t lastvalue;
     string timeStamp;
-    double FlowRateAct;          // m3 / min
-    double PreValue;             // letzter Wert, der gut ausgelesen wurde
-    double Value;                // letzer ausgelesener Wert, inkl. Korrekturen
-    string ReturnRateValue;      // RückgabewertRate
-    string ReturnChangeAbsolute;      // RückgabewertRate
-    string ReturnRawValue;      // Rohwert (mit N & führenden 0)    
-    string ReturnValue;         // korrigierter Rückgabewert, ggf. mit Fehlermeldung
-    string ReturnPreValue;      // korrigierter Rückgabewert ohne Fehlermeldung
-    string ErrorMessageText;        // Fehlermeldung bei Consistency Check
+    double FlowRateAct; // m3 / min
+    double PreValue; // last value that was read out well
+    double Value; // last value read out, incl. corrections
+    string ReturnRateValue; // return value rate
+    string ReturnChangeAbsolute; // return value rate
+    string ReturnRawValue; // Raw value (with N & leading 0)    
+    string ReturnValue; // corrected return value, if necessary with error message
+    string ReturnPreValue; // corrected return value without error message
+    string ErrorMessageText; // Error message for consistency check
     int AnzahlAnalog;
     int AnzahlDigital;
     int DecimalShift;
     int DecimalShiftInitial;
-    float AnalogDigitalTransitionStart; // Wann ist das digit > x.1, also wann fängt es an zu kippen
+    float AnalogDigitalTransitionStart; // When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;
 
     bool isExtendedResolution;

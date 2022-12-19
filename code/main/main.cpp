@@ -6,6 +6,7 @@
 #include "driver/gpio.h"
 #include "sdkconfig.h"
 //#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
+//#include "spiram.h"
 #include "esp32/spiram.h"
 
 // SD-Card ////////////////////
@@ -33,6 +34,8 @@
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
 #include "Helper.h"
+#include "../../include/defines.h"
+#include "server_GPIO.h"
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -42,22 +45,7 @@ extern const char* BUILD_TIME;
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
-#define __HIDE_PASSWORD
-
-// #include "jomjol_WS2812Slow.h"
-#include "SmartLeds.h"
-
-
-#define __SD_USE_ONE_LINE_MODE__
-
-#include "server_GPIO.h"
-
-
-#define BLINK_GPIO GPIO_NUM_33
-
 static const char *TAG = "MAIN";
-
-//#define FLASH_GPIO GPIO_NUM_4
 
 bool Init_NVS_SDCard()
 {
@@ -307,7 +295,7 @@ extern "C" void app_main(void)
 
     gpio_handler_create(server);
 
-    ESP_LOGD(TAG, "vor reg server main");
+    ESP_LOGD(TAG, "Before reg server main");
     register_server_main_uri(server, "/sdcard");
 
 
@@ -318,13 +306,13 @@ extern "C" void app_main(void)
     /* Main Init has successed or only an error which allows to continue operation */
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully!");
-        ESP_LOGD(TAG, "vor do autostart");
+        ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
         isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors, but trying to continue...");
-        ESP_LOGD(TAG, "vor do autostart");
+        ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else { // Any other error is critical and makes running the flow impossible.

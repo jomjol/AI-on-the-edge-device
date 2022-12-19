@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "defines.h"
+#include "../../include/defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -22,9 +22,6 @@
 
 #include "server_file.h"
 #include "connect_wlan.h"
-
-//#define DEBUG_DETAIL_ON       
-
 
 ClassFlowControll tfliteflow;
 
@@ -240,8 +237,12 @@ esp_err_t handler_json(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
+        LogFile.WriteHeapInfo("handler water counter - Start");    
     #endif
+
+							 
+															   
+	  
 
     if (FlowInitDone) 
     {
@@ -251,7 +252,9 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         std::string _type = "value";
         string zw;
 
-        ESP_LOGD(TAG, "handler_wasserzaehler uri: %s", req->uri);
+        ESP_LOGD(TAG, "handler water counter uri: %s", req->uri);
+
+															   
 
         char _query[100];
         char _size[10];
@@ -383,9 +386,14 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         return ESP_ERR_NOT_FOUND;
     }
 
+
+																		
+										   
+
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
     #endif
+
     return ESP_OK;
 }
 

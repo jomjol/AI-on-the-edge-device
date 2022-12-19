@@ -1,14 +1,9 @@
 #pragma once
 #include "ClassFlowImage.h"
 #include "ClassControllCamera.h"
+#include "../../include/defines.h"
 
 #include <string>
-
-#define BLINK_GPIO GPIO_NUM_4
-
-#define CAMERA_MODEL_AI_THINKER
-
-
 
 class ClassFlowMakeImage :
     public ClassFlowImage
@@ -30,7 +25,7 @@ protected:
     void CopyFile(string input, string output);
 
     esp_err_t camera_capture();
-    void takePictureWithFlash(int flashdauer);
+    void takePictureWithFlash(int flash_duration);
 
 
     void SetInitialParameter(void);       

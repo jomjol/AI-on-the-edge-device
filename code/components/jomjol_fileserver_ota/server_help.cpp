@@ -21,16 +21,12 @@ extern "C" {
 
 #include "esp_http_server.h"
 
+#include "../../include/defines.h"
+
 
 static const char *TAG = "SERVER HELP";
 
-#define SCRATCH_BUFSIZE  8192 
-char scratch[SCRATCH_BUFSIZE];
-
-
-#define IS_FILE_EXT(filename, ext) \
-    (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
-
+char scratch[SERVER_HELPER_SCRATCH_BUFSIZE];
 
 esp_err_t send_file(httpd_req_t *req, std::string filename)
 {
@@ -51,7 +47,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     size_t chunksize;
     do {
         /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+        chunksize = fread(chunk, 1, SERVER_HELPER_SCRATCH_BUFSIZE, fd);
 
         /* Send the buffer contents as HTTP response chunk */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {

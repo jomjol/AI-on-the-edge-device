@@ -25,7 +25,7 @@
                 flex: 0 1 auto;
             }
 
-            #log {
+            #data {
                 font-family: 'Courier New', Courier, monospace;
                 font-size: small;
             }
@@ -37,54 +37,36 @@
                 <button onClick="reload();">Reload</button>
                 <button onClick="window.open('datafileact');">Show full data</button>
                 <button onClick="window.location.href = 'fileserver/log/data/'">Show older data files</button>
+                <a href="graph.html" target="_self">Show graph</a>
             </div>
-            <div class="row content" id="log"><br><br><br><b>Loading Logfile, please wait...</b></div>
+            <div class="row content" id="data"><br><br><br><b>Loading Data file, please wait...</b></div>
             <div class="row footer">
                 <button onClick="reload();">Reload</button>
                 <button onClick="window.open('datafileact');">Show full data</button>
                 <button onClick="window.location.href = 'fileserver/log/data/'">Show older data files</button>
+                <a href="graph.html" target="_self">Show graph</a>
             </div>
           </div>
     </body>
 
     <script>  
         function reload() {
-          //  document.getElementById('log').innerHTML += "<br><b>Reloading...<b><br><br>";
-            document.getElementById('log').innerHTML += "<b>Reloading...</b>";
+            document.getElementById('data').innerHTML += "<br><b>Reloading...<b><br><br>";
             window.scrollBy(0,document.body.scrollHeight);
-            funcRequest('log');
+            funcRequest('data');
         } 
-
-
-        function processLogLine(line, index, arr) {
-            if (line.includes("&lt;WRN&gt;")) {
-                arr[index] = "<span style=\"color:#e83c00\">" + line + "</span>";
-            }
-            else if (line.includes("&lt;ERR&gt;")) {
-                arr[index] = "<span style=\"color:red\"><b>" + line + "</b></span>";
-            }
-            else if (line.includes("&lt;DBG&gt;")) {
-                arr[index] = "<span style=\"color:gray\">" + line + "</span>";
-            }
-            
-            arr[index] += "<br>";
-        }
 
         async function funcRequest(url){
             await fetch(url)
             .then((res) => {
                 if (!res.ok) {
-                    document.getElementById("log").innerHTML = "HTTP error " + res.status;
+                    document.getElementById("data").innerHTML = "HTTP error " + res.status;
                 }
 
                 return res.text();
             })
-            .then((log) => {
-                log = log.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                logArr = log.split("\n");
-                logArr.forEach(processLogLine);
-
-                document.getElementById('log').innerHTML = "<br>" + logArr.join("\n") + "&nbsp;";
+            .then((data) => {
+                document.getElementById('data').innerHTML = "<br>" + data.split("\n").join("\n<br>") + "&nbsp;";
 
                 window.scrollBy(0,document.body.scrollHeight);
 
