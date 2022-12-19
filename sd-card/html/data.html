@@ -25,7 +25,7 @@
                 flex: 0 1 auto;
             }
 
-            #log {
+            #data {
                 font-family: 'Courier New', Courier, monospace;
                 font-size: small;
             }
@@ -38,7 +38,7 @@
                 <button onClick="window.open('datafileact');">Show full data</button>
                 <button onClick="window.location.href = 'fileserver/log/data/'">Show older data files</button>
             </div>
-            <div class="row content" id="data"><br><br><br><b>Loading Logfile, please wait...</b></div>
+            <div class="row content" id="data"><br><br><br><b>Loading Data file, please wait...</b></div>
             <div class="row footer">
                 <button onClick="reload();">Reload</button>
                 <button onClick="window.open('datafileact');">Show full data</button>
@@ -49,7 +49,7 @@
 
     <script>  
         function reload() {
-            document.getElementById('data').innerHTML += "<br><b>Reloading...<b><br><br>";
+            document.getElementById('data').innerHTML = "<br><b>Reloading...<b><br><br>";
             window.scrollBy(0,document.body.scrollHeight);
             funcRequest('data');
         } 
@@ -60,15 +60,21 @@
                 if (!res.ok) {
                     document.getElementById("data").innerHTML = "HTTP error " + res.status;
                 }
+
                 return res.text();
             })
             .then((data) => {
-                document.getElementById('data').innerHTML = data;
+                document.getElementById('data').innerHTML = "<br>" + data.split("\n").join("\n<br>") + "&nbsp;";
+
                 window.scrollBy(0,document.body.scrollHeight);
+
             })
             .catch((err) => {
                 document.getElementById("data").innerHTML = err;
             });
         }
+
+        funcRequest('data');
+
     </script>
 </html>
