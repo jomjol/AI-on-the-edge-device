@@ -12,6 +12,7 @@
 #include "esp_attr.h"
 #include "esp_sleep.h"
 #include "esp_sntp.h"
+#include "../../include/defines.h"
 
 #include "ClassLogFile.h"
 

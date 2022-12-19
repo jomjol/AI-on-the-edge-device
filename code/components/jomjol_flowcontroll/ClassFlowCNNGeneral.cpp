@@ -8,6 +8,7 @@
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
 #include "esp_log.h"
+#include "../../include/defines.h"
 
 static const char* TAG = "CNN";
 

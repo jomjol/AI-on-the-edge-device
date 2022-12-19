@@ -7,6 +7,7 @@
 
 
 #include "ClassLogFile.h"
+#include "../../include/defines.h"
 
 
 static const char *TAG = "ALIGN";

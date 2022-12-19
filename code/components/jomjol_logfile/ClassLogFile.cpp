@@ -15,6 +15,7 @@ extern "C" {
 #endif
 
 #include "Helper.h"
+#include "../../include/defines.h"
 
 static const char *TAG = "LOGFILE";
 
