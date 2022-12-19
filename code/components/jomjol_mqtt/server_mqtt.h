@@ -1,5 +1,10 @@
 #ifdef ENABLE_MQTT
 
+#pragma once
+
+#ifndef SERVERMQTT_H
+#define SERVERMQTT_H
+
 #include "ClassFlowDefineTypes.h"
 
 void SetHomeassistantDiscoveryEnabled(bool enabled);
@@ -16,4 +21,6 @@ void publishSystemData();
 std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, int SetRetainFlag);
 
+
+#endif //SERVERMQTT_H
 #endif //ENABLE_MQTT

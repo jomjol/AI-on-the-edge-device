@@ -1,5 +1,10 @@
 #ifdef ENABLE_MQTT
+
 #pragma once
+
+#ifndef CLASSFFLOWMQTT_H
+#define CLASSFFLOWMQTT_H
+
 #include "ClassFlow.h"
 
 #include "ClassFlowPostProcessing.h"
@@ -33,5 +38,5 @@ public:
     bool doFlow(string time);
     string name(){return "ClassFlowMQTT";};
 };
-
+#endif //CLASSFFLOWMQTT_H
 #endif //ENABLE_MQTT

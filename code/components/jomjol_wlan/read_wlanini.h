@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef READ_WLANINI_H
 #define READ_WLANINI_H
 
@@ -8,4 +10,4 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
 bool ChangeHostName(std::string fn, std::string _newhostname);
 
 
-#endif
+#endif //READ_WLANINI_H

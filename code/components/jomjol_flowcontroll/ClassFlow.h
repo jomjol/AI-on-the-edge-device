@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CLASSFLOW_H
+#define CLASSFLOW_H
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -48,3 +51,4 @@ public:
 
 };
 
+#endif //CLASSFLOW_H

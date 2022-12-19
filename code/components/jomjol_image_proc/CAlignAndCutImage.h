@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef CALIGNANDCUTIMAGE_H
+#define CALIGNANDCUTIMAGE_H
+
 #include "CImageBasis.h"
 #include "CFindTemplate.h"
 
@@ -19,3 +24,4 @@ class CAlignAndCutImage : public CImageBasis
         void GetRefSize(int *ref_dx, int *ref_dy);
 };
 
+#endif //CALIGNANDCUTIMAGE_H

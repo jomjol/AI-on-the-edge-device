@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef __CIMAGEBASIS
-#define __CIMAGEBASIS
+#ifndef CIMAGEBASIS_H
+#define CIMAGEBASIS_H
 
 #include <stdint.h>
 #include <string>
@@ -86,5 +86,5 @@ class CImageBasis
 };
 
 
-#endif
+#endif //CIMAGEBASIS_H
 

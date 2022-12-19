@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef CLASSCONTROLLCAMERA_H
 #define CLASSCONTROLLCAMERA_H
 

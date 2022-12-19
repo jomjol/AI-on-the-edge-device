@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef CLASSFFLOWMAKEIMAGE_H
+#define CLASSFFLOWMAKEIMAGE_H
+
 #include "ClassFlowImage.h"
 #include "ClassControllCamera.h"
 #include "../../include/defines.h"
@@ -48,3 +52,4 @@ public:
 };
 
 
+#endif //CLASSFFLOWMAKEIMAGE_H

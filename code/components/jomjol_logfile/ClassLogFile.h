@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef CLASSLOGFILE_H
+#define CLASSLOGFILE_H
+
 
 #include <string>
 #include "esp_log.h"
@@ -45,3 +50,5 @@ public:
 };
 
 extern ClassLogFile LogFile;
+
+#endif //CLASSLOGFILE_H

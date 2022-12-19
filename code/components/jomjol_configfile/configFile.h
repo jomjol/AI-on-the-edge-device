@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef CONFIGFILE_H
+#define CONFIGFILE_H
+
 #include <string>
 #include <vector>
 
@@ -13,3 +18,5 @@ public:
 private:
     FILE* pFile;
 };
+
+#endif //CONFIGFILE_H
