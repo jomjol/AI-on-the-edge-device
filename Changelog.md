@@ -105,6 +105,7 @@ If anything breaks you can try to enforce manual update as following:
     -   Stabilized MQTT
     -   Fixed redundant calls in OTA
     -   Block REST API calls till resource is ready
+    -   Fixed number renaming ([#1635](https://github.com/jomjol/AI-on-the-edge-device/issues/1635))
 
 ### Removed
 
