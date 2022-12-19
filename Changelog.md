@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+### Added
+
+-   n.a.
+
+### Changed
+
+-   Internal: central defined `#define`
+
+### Fixed
+
+-   n.a.
+
+### Removed
+
+-   n.a.
+
+
+
+## [13.0.8] 2022-12-19
+
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
