@@ -11,15 +11,9 @@
 #include "time_sntp.h"
 
 #include "esp_log.h"
+#include "../../include/defines.h"
 
 static const char* TAG = "POSTPROC";
-
-//#define SERIAL_DEBUG // testing debug on serial enabled
-
-
-#define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
-#define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
-
 
 std::string ClassFlowPostProcessing::getNumbersName()
 {
@@ -709,7 +703,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->Value = -1;
         /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
 //        NUMBERS[j]->lastvalue = imagetime;    // must only be set in case of good value !!! --> move to the end
-        NUMBERS[j]->lastvalue = imagetime;
 
         UpdateNachkommaDecimalShift();
 

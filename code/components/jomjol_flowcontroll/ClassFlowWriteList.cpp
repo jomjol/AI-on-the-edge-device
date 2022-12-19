@@ -3,7 +3,7 @@
 #include "Helper.h"
 
 #include "time_sntp.h"
-
+#include "../../include/defines.h"
 
 #include <time.h>
 

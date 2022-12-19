@@ -23,13 +23,15 @@ protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
-    float Analog_error = 3.0;
-    float AnalogToDigtalFehler = 0.8;
-    float Digital_Uncertainty = 0.2;
-    int DigitalBand = 3;
-    float Digital_Transition_Range_Predecessor = 2;
-    float Digital_Transition_Area_Predecessor = 0.7; // 9.3 - 0.7
-    float Digital_Transition_Area_Forward = 9.7; // Pre-run zero crossing only happens from approx. 9.7 onwards
+
+	//moved to define.h
+    //float Analog_error = 3.0;
+    //float AnalogToDigtalFehler = 0.8;
+    //float Digital_Uncertainty = 0.2;
+    //int DigitalBand = 3;
+    //float Digital_Transition_Range_Predecessor = 2;
+    //float Digital_Transition_Area_Predecessor = 0.7; // 9.3 - 0.7
+    //float Digital_Transition_Area_Forward = 9.7; // Pre-run zero crossing only happens from approx. 9.7 onwards
 
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;

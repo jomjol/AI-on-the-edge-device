@@ -6,6 +6,7 @@
 #include "driver/gpio.h"
 #include "sdkconfig.h"
 //#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
+//#include "spiram.h"
 #include "esp32/spiram.h"
 
 // SD-Card ////////////////////
@@ -33,6 +34,8 @@
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
 #include "Helper.h"
+#include "../../include/defines.h"
+#include "server_GPIO.h"
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -42,22 +45,7 @@ extern const char* BUILD_TIME;
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
-#define __HIDE_PASSWORD
-
-// #include "jomjol_WS2812Slow.h"
-#include "SmartLeds.h"
-
-
-#define __SD_USE_ONE_LINE_MODE__
-
-#include "server_GPIO.h"
-
-
-#define BLINK_GPIO GPIO_NUM_33
-
 static const char *TAG = "MAIN";
-
-//#define FLASH_GPIO GPIO_NUM_4
 
 bool Init_NVS_SDCard()
 {

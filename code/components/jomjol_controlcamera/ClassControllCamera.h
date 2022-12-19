@@ -11,10 +11,7 @@
 #include <string>
 #include <esp_http_server.h>
 #include "CImageBasis.h"
-
-
-#define CAMERA_MODEL_AI_THINKER
-
+#include "../../include/defines.h"
 
 class CCamera {
     protected:

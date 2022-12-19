@@ -24,11 +24,8 @@ extern "C" {
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
 
-//#include "CImg.h"
-
 #include "server_help.h"
-
-//#define DEBUG_DETAIL_ON  
+#include "../../include/defines.h"
 
 static const char* TAG = "CTRL";
 
