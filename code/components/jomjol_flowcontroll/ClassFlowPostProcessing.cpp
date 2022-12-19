@@ -708,8 +708,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
         /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
-        NUMBERS[j]->lastvalue = imagetime;    // must only be set in case of good value !!! --> move to the end
-//        NUMBERS[j]->lastvalue = imagetime;
+//        NUMBERS[j]->lastvalue = imagetime;    // must only be set in case of good value !!! --> move to the end
 
         UpdateNachkommaDecimalShift();
 
