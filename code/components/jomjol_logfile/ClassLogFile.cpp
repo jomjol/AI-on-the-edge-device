@@ -112,69 +112,6 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
 }
 
 
-void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string message, bool _time)
-{
-    FILE* pFile;
-    std::string zwtime;
-    std::string ntpTime = "";
-
-    if (level > loglevel) {// Only write to file if loglevel is below threshold
-        return;
-    }
-
-//    pFile = fopen(_fn.c_str(), "a"); 
-    pFile = fopen(_fn.c_str(), "a+");
-//    ESP_LOGD(TAG, "Logfile opened: %s", _fn.c_str());
-
-    if (pFile!=NULL) {
-        if (_time)
-        {
-            time_t rawtime;
-            struct tm* timeinfo;
-            char buffer[80];
-
-            time(&rawtime);
-            timeinfo = localtime(&rawtime);
-
-            strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
-
-            zwtime = std::string(buffer);
-            ntpTime = zwtime;
-        }
-
-        std::string loglevelString; 
-        switch(level) {
-            case  ESP_LOG_ERROR:
-                loglevelString = "ERR";
-                break;
-            case  ESP_LOG_WARN:
-                loglevelString = "WRN";
-                break;
-            case  ESP_LOG_INFO:
-                loglevelString = "INF";
-                break;
-            case  ESP_LOG_DEBUG:
-                loglevelString = "DBG";
-                break;
-            case  ESP_LOG_VERBOSE:
-                loglevelString = "VER";
-                break;
-            case  ESP_LOG_NONE:
-            default:
-                loglevelString = "NONE";
-                break;
-        }
-
-        std::string formatedUptime = getFormatedUptime(true);
-
-        ntpTime = "[" + formatedUptime + "] "  + ntpTime + "\t<" + loglevelString + ">\t" + message + "\n";
-        fputs(ntpTime.c_str(), pFile);
-        fclose(pFile);    
-    } else {
-        ESP_LOGE(TAG, "Can't open log file %s", _fn.c_str());
-    }
-}
-
 void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
     loglevel = _logLevel;
 
@@ -226,15 +163,6 @@ bool ClassLogFile::GetDataLogToSD(){
 
 void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
-/*
-    struct stat path_stat;
-    if (stat(logroot.c_str(), &path_stat) != 0) {
-        ESP_LOGI(TAG, "Create log folder: %s", logroot.c_str());
-        if (mkdir_r(logroot.c_str(), S_IRWXU) == -1)  {
-            ESP_LOGE(TAG, "Can't create log folder");
-        }
-    }
-*/
     time_t rawtime;
     struct tm* timeinfo;
     char buffer[30];

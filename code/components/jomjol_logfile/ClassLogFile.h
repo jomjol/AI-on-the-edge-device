@@ -35,8 +35,6 @@ public:
     void WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time);
     void WriteToFile(esp_log_level_t level, std::string tag, std::string message);
 
-    void WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string message, bool _time = true);
-
     void CreateLogDirectories();
     void RemoveOldLogFile();
     void RemoveOldDataLog();

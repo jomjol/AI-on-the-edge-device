@@ -68,11 +68,11 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
     if ((_ref->alignment_algo == 2) && (_ref->fastalg_x > -1) && (_ref->fastalg_y > -1))     // für Testzwecke immer Berechnen
     {
         isSimilar = CalculateSimularities(rgb_template, _ref->fastalg_x, _ref->fastalg_y, ow, oh, min, avg, max, SAD, _ref->fastalg_SAD, _ref->fastalg_SAD_criteria);
-#ifdef DEBUG_DETAIL_ON  
+/*#ifdef DEBUG_DETAIL_ON
         std::string zw = "\t" + _ref->image_file + "\tt1_x_y:\t" + std::to_string(_ref->fastalg_x) + "\t" + std::to_string(_ref->fastalg_y);
         zw = zw + "\tpara1_found_min_avg_max_SAD:\t" + std::to_string(min) + "\t" + std::to_string(avg) + "\t" + std::to_string(max) + "\t"+ std::to_string(SAD);
         LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
-#endif
+#endif*/
     }
 
 //    ESP_LOGD(TAG, "FindTemplate 03");
@@ -144,11 +144,11 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
     _ref->fastalg_SAD = SAD;
 
     
-#ifdef DEBUG_DETAIL_ON  
+/*#ifdef DEBUG_DETAIL_ON
     std::string zw = "\t" + _ref->image_file + "\tt1_x_y:\t" + std::to_string(_ref->fastalg_x) + "\t" + std::to_string(_ref->fastalg_y);
     zw = zw + "\tpara1_found_min_avg_max_SAD:\t" + std::to_string(min) + "\t" + std::to_string(avg) + "\t" + std::to_string(max) + "\t"+ std::to_string(SAD);
     LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
-#endif
+#endif*/
 
     RGBImageRelease();
     stbi_image_free(rgb_template);
