@@ -28,7 +28,6 @@
 
 ClassFlowControll tfliteflow;
 
-TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
 bool FlowInitDone = false;
@@ -68,19 +67,6 @@ bool isSetupModusActive() {
 
 void KillTFliteTasks()
 {
-    #ifdef DEBUG_DETAIL_ON          
-        ESP_LOGD(TAG, "Handle: xHandleblink_task_doFlow: %ld", (long) xHandleblink_task_doFlow);
-    #endif  
-    if (xHandleblink_task_doFlow != NULL)
-    {
-        TaskHandle_t xHandleblink_task_doFlowTmp = xHandleblink_task_doFlow;
-        xHandleblink_task_doFlow = NULL;
-        vTaskDelete(xHandleblink_task_doFlowTmp);
-        #ifdef DEBUG_DETAIL_ON      
-            ESP_LOGD(TAG, "Killed: xHandleblink_task_doFlow");
-        #endif
-    }
-
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
     #endif
@@ -129,22 +115,6 @@ bool doflow(void)
 }
 
 
-void blink_task_doFlow(void *pvParameter)
-{
-    #ifdef DEBUG_DETAIL_ON          
-        ESP_LOGD(TAG, "blink_task_doFlow");
-    #endif
-    if (!flowisrunning)
-    {
-        flowisrunning = true;
-        doflow();
-        flowisrunning = false;
-    }
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
-    xHandleblink_task_doFlow = NULL;
-}
-
-
 esp_err_t handler_init(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON      
@@ -164,37 +134,6 @@ esp_err_t handler_init(httpd_req_t *req)
 
     #ifdef DEBUG_DETAIL_ON      
         LogFile.WriteHeapInfo("handler_init - Done");       
-    #endif
-
-    return ESP_OK;
-}
-
-
-esp_err_t handler_doflow(httpd_req_t *req)
-{
-    #ifdef DEBUG_DETAIL_ON          
-        LogFile.WriteHeapInfo("handler_doflow - Start");       
-    #endif
-
-    ESP_LOGD(TAG, "handler_doFlow uri: %s", req->uri);
-
-    if (flowisrunning)
-    {
-        const char* resp_str = "doFlow is already running and cannot be started again";
-        httpd_resp_send(req, resp_str, strlen(resp_str));       
-        return 2;
-    }
-    else
-    {
-        xTaskCreate(&blink_task_doFlow, "blink_doFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandleblink_task_doFlow);
-    }
-    const char* resp_str = "doFlow started - takes about 60 seconds";
-    httpd_resp_send(req, resp_str, strlen(resp_str));  
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);       
-
-    #ifdef DEBUG_DETAIL_ON   
-        LogFile.WriteHeapInfo("handler_doflow - Done");       
     #endif
 
     return ESP_OK;
@@ -949,11 +888,6 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_prevalue;
     camuri.user_ctx  = (void*) "Prevalue";    
     httpd_register_uri_handler(server, &camuri);
-
-    camuri.uri       = "/doflow";
-    camuri.handler   = handler_doflow;
-    camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
 
     camuri.uri       = "/flow_start";
     camuri.handler   = handler_flow_start;
