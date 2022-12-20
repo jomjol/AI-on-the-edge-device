@@ -1,5 +1,7 @@
-#ifndef __FLOWPOSTPROCESSING__
-#define __FLOWPOSTPROCESSING__
+#pragma once
+
+#ifndef CLASSFFLOWPOSTPROCESSING_H
+#define CLASSFFLOWPOSTPROCESSING_H
 
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
@@ -76,4 +78,4 @@ public:
 };
 
 
-#endif
+#endif //CLASSFFLOWPOSTPROCESSING_H

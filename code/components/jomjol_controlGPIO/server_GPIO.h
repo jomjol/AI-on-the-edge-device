@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef SERVER_GPIO_H
 #define SERVER_GPIO_H
 

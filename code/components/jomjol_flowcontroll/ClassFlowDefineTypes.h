@@ -1,5 +1,7 @@
-#ifndef __CLASSFLOWIMAGE_CLASS__
-#define __CLASSFLOWIMAGE_CLASS__
+#pragma once
+
+#ifndef CLASSFLOWDEFINETYPES_H
+#define CLASSFLOWDEFINETYPES_H
 
 #include "ClassFlowImage.h"
 

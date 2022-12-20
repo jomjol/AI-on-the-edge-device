@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef JOMJOL_CONTROLCAMERA_H
 #define JOMJOL_CONTROLCAMERA_H
 

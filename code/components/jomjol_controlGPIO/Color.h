@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef COLOR_H
+#define COLOR_H
+
 #include <cstdint>
 #include "esp_attr.h"
 union Hsv;
@@ -67,3 +70,5 @@ union Hsv {
     bool operator==( Hsv in ) const { return in.value == value; }
     void swap( Hsv& o ) { value = o.value; }
 };
+
+#endif //COLOR_H

@@ -1,21 +1,23 @@
-#include <string>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
+//#include <string>
+//#include "freertos/FreeRTOS.h"
+//#include "freertos/task.h"
+//#include "freertos/event_groups.h"
 
-#include "driver/gpio.h"
-#include "sdkconfig.h"
+//#include "driver/gpio.h"
+//#include "sdkconfig.h"
 //#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
 //#include "spiram.h"
 #include "esp32/spiram.h"
 
+
 // SD-Card ////////////////////
-#include "nvs_flash.h"
+//#include "nvs_flash.h"
 #include "esp_vfs_fat.h"
-#include "sdmmc_cmd.h"
+//#include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
-#include "driver/sdmmc_defs.h"
+//#include "driver/sdmmc_defs.h"
 ///////////////////////////////
+
 
 #include "ClassLogFile.h"
 
@@ -27,15 +29,15 @@
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
-#include "ClassControllCamera.h"
+//#include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
 #ifdef ENABLE_MQTT
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
-#include "Helper.h"
+//#include "Helper.h"
 #include "../../include/defines.h"
-#include "server_GPIO.h"
+//#include "server_GPIO.h"
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;

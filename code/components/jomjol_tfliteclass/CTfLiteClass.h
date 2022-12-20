@@ -1,11 +1,7 @@
+#pragma once
 
-/*
-#define TFLITE_MINIMAL_CHECK(x)                              \
-  if (!(x)) {                                                \
-    fprintf(stderr, "Error at %s:%d\n", __FILE__, __LINE__); \
-    exit(1);                                                 \
-  }
-*/
+#ifndef CTFLITECLASS_H
+#define CTFLITECLASS_H
 
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
@@ -72,3 +68,4 @@ class CTfLiteClass
         int ReadInputDimenstion(int _dim);
 };
 
+#endif //CTFLITECLASS_H

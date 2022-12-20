@@ -1,5 +1,7 @@
-#ifndef __CLASSCNNGENERAL__
-#define __CLASSCNNGENERAL__
+#pragma once
+
+#ifndef CLASSFLOWCNNGENERAL_H
+#define CLASSFLOWCNNGENERAL_H
 
 #include"ClassFlowDefineTypes.h"
 #include "ClassFlowAlignment.h"

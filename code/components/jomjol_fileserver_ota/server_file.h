@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef SERVERFILE_H
+#define SERVERFILE_H
+
 #include <esp_http_server.h>
 #include <string>
 
@@ -13,3 +18,4 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req);
 esp_err_t get_data_file_handler(httpd_req_t *req);
 esp_err_t get_numbers_file_handler(httpd_req_t *req);
 
+#endif //SERVERFILE_H

@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef HELPER_H
+#define HELPER_H
+
 #include <string>
 #include <fstream>
 #include <vector>
@@ -88,3 +92,5 @@ string getResetReason(void);
 std::string getFormatedUptime(bool compact);
 
 const char* get404(void);
+
+#endif //HELPER_H

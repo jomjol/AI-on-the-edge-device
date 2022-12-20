@@ -1,7 +1,7 @@
+#pragma once
 
-
-#ifndef __FLOWCONTROLL__
-#define __FLOWCONTROLL__
+#ifndef CLASSFLOWCONTROLL_H
+#define CLASSFLOWCONTROLL_H
 
 #include <string>
 
