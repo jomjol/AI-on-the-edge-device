@@ -22,9 +22,6 @@ bool MakeDir(std::string _what);
 
 string RundeOutput(double _in, int _anzNachkomma);
 
-
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1, bool silent = true);
-
 size_t findDelimiterPos(string input, string delimiter);
 //string trim(string istring);
 string trim(string istring, string adddelimiter = "");

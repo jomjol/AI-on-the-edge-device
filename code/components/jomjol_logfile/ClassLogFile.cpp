@@ -122,7 +122,7 @@ void ClassLogFile::WriteToDedicatedFile(std::string _fn, esp_log_level_t level, 
         return;
     }
 
-//    pFile = OpenFileAndWait(_fn.c_str(), "a"); 
+//    pFile = fopen(_fn.c_str(), "a"); 
     pFile = fopen(_fn.c_str(), "a+");
 //    ESP_LOGD(TAG, "Logfile opened: %s", _fn.c_str());
 

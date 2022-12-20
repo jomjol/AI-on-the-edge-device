@@ -13,7 +13,7 @@ static const char *TAG = "CONFIG";
 ConfigFile::ConfigFile(std::string filePath)
 {
     std::string config = FormatFileName(filePath);
-    pFile = OpenFileAndWait(config.c_str(), "r");
+    pFile = fopen(config.c_str(), "r");
 }
 
 ConfigFile::~ConfigFile()

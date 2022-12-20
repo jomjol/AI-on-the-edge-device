@@ -30,7 +30,7 @@ char scratch[SERVER_HELPER_SCRATCH_BUFSIZE];
 
 esp_err_t send_file(httpd_req_t *req, std::string filename)
 {
-    FILE *fd = OpenFileAndWait(filename.c_str(), "r");
+    FILE *fd = fopen(filename.c_str(), "r");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to read existing file: %s", filename.c_str());
         /* Respond with 404 Error */
