@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CLASSFLOWALIGNMENT_H
+#define CLASSFLOWALIGNMENT_H
+
 #include "ClassFlow.h"
 #include "Helper.h"
 #include "CAlignAndCutImage.h"
@@ -44,3 +47,5 @@ public:
     string name(){return "ClassFlowAlignment";};
 };
 
+
+#endif //CLASSFLOWALIGNMENT_H

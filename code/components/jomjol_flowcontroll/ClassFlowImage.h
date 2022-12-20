@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef CLASSFLOWIMAGE_H
+#define CLASSFLOWIMAGE_H
+
 #include "ClassFlow.h"
 
 using namespace std;
@@ -22,3 +26,5 @@ public:
 	
 	void RemoveOldLogs();
 };
+
+#endif //CLASSFLOWIMAGE_H

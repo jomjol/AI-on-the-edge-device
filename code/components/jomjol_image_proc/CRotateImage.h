@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef CROTATEIMAGE_H
+#define CROTATEIMAGE_H
+
 #include "CImageBasis.h"
 
 
@@ -19,3 +24,5 @@ class CRotateImage: public CImageBasis
         void Translate(int _dx, int _dy);
         void Mirror();
 };
+
+#endif //CROTATEIMAGE_H

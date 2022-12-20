@@ -2,6 +2,7 @@
 #include "ClassLogFile.h"
 #include "Helper.h"
 #include "esp_log.h"
+#include "../../include/defines.h"
 
 #include <sys/stat.h>
 
@@ -55,7 +56,7 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
 
   if (_bis >= numeroutput)
   {
-    ESP_LOGD(TAG, "ANZAHL OUTPUT NEURONS passt nicht zu geforderter Classifizierung!");
+    ESP_LOGD(TAG, "NUMBER OF OUTPUT NEURONS does not match required classification!");
     return -1;
   }
 
@@ -167,7 +168,7 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
             }
 
 #ifdef DEBUG_DETAIL_ON          
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach dem Laden in input");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After loading in input");
 #endif
 
     return true;
@@ -225,7 +226,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
     unsigned char *result = (unsigned char*) malloc(size);
     int anz = 1;
-    while (!result && (anz < 6))    // maximal 5x versuchen (= 5s)
+    while (!result && (anz < 6))    // Try a maximum of 5x (= 5s)
     {
 #ifdef DEBUG_DETAIL_ON      
 		    ESP_LOGD(TAG, "Speicher ist voll - Versuche es erneut: %d", anz);
@@ -236,7 +237,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
   
 	  if(result != NULL) {
-        FILE* f = OpenFileAndWait(_fn.c_str(), "rb");     // vorher  nur "r"
+        FILE* f = OpenFileAndWait(_fn.c_str(), "rb");     // previously only "r
         fread(result, 1, size, f);
         fclose(f);        
 	  }else {
@@ -275,7 +276,7 @@ CTfLiteClass::CTfLiteClass()
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
-    this->kTensorArenaSize = 800 * 1024;   /// laut testfile: 108000 - bisher 600;; 2021-09-11: 200 * 1024
+    this->kTensorArenaSize = 800 * 1024;   /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
     this->tensor_arena = new uint8_t[kTensorArenaSize]; 
 }
 

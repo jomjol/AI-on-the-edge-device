@@ -15,6 +15,7 @@ extern "C" {
 #include "ClassLogFile.h"
 #include "CImageBasis.h"
 #include "esp_log.h"
+#include "../../include/defines.h"
 
 static const char* TAG = "IMG";
 

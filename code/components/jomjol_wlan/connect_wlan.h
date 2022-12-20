@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef CONNECT_WLAN_H
 #define CONNECT_WLAN_H
 
@@ -15,4 +17,4 @@ bool getWIFIisConnected();
 extern std::string hostname;
 extern std::string std_hostname;
 
-#endif
+#endif //CONNECT_WLAN_H

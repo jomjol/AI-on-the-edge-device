@@ -6,10 +6,7 @@
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
 #include "server_tflite.h"
-
-#define __HIDE_PASSWORD
-
-//#define DEBUG_DETAIL_ON 
+#include "../../include/defines.h"
 
 static const char *TAG = "MQTT IF";
 

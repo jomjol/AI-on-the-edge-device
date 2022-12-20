@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef SERVERTFLITE_H
+#define SERVERTFLITE_H
+
 #include <esp_log.h>
 #include <string>
 
@@ -22,3 +27,5 @@ esp_err_t GetRawJPG(httpd_req_t *req);
 std::string GetMQTTMainTopic();
 esp_err_t MQTTCtrlFlowStart(std::string);
 #endif //ENABLE_MQTT
+
+#endif //SERVERTFLITE_H

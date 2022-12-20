@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [13.0.7] 2022-12-11
-
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
@@ -19,7 +17,7 @@
 4.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
 
 5.  Safe way: 
-    1.  Update first the `firmware.bin` (extract from zip file) and do the Reboot
+    1.  Update first the `firmware.bin` (extract it from one of the provided zip files) and do the Reboot
     2.  Update with the full zip file (`update-*.zip`, ignore the version warning after the reboot)
 
 6.  Please go to `Settings -> Configuration` and address the changed parameters:
@@ -67,10 +65,17 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.2: Update Tool "Logfile downloader and combiner" to handle the new csv file format.
 -   NEW v13.0.2: MQTT: Added MQTT topic `status` (Digitalization Status), Timezone to MQTT topic `timestamp`.#
 -   NEW v13.0.2: Logging: Disable heap logs by default, cleanup
--   **NEW v13.0.7**: 
+-   NEW v13.0.7:
     - log NTP server name
     - Improved log messages
     - Various preparations for next release
+-   **NEW v13.0.8**: 
+    - Continue booting on PSRAM issues, Web UI will show an error
+    - Updated models
+    - Various UI enhancements
+    - Various internal improvements
+    - Show uptime in log
+    - Show uptime and round on overview page
 
 ### Fixed
 
@@ -93,8 +98,12 @@ If anything breaks you can try to enforce manual update as following:
     - Fix Digit detected as 10 (https://github.com/jomjol/AI-on-the-edge-device/pull/1525)
     - Fix frozen time in datafile on error
     - Various minor fixes
--   **NEW Rolling**:
+-   **NEW v13.0.8**: 
     -   Fix Rate Problem ([#1578](https://github.com/jomjol/AI-on-the-edge-device/issues/1578), [#1572](https://github.com/jomjol/AI-on-the-edge-device/issues/1572))
+    -   Stabilized MQTT
+    -   Fixed redundant calls in OTA
+    -   Block REST API calls till resource is ready
+    -   Fixed number renaming ([#1635](https://github.com/jomjol/AI-on-the-edge-device/issues/1635))
 
 ### Removed
 
