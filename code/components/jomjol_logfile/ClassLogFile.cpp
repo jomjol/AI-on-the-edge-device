@@ -161,18 +161,26 @@ bool ClassLogFile::GetDataLogToSD(){
     return doDataLogToSD;
 }
 
+static FILE* logFileAppendHande = NULL;
+std::string fileNameDate;
+
+
 void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
     time_t rawtime;
     struct tm* timeinfo;
-    char buffer[30];
+    std::string fileNameDateNew;
+
+    std::string zwtime;
+    std::string ntpTime = "";
+
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
+    char buf[30];
+    strftime(buf, sizeof(buf), logfile.c_str(), timeinfo);
+    fileNameDateNew = std::string(buf);
 
-    strftime(buffer, 30, logfile.c_str(), timeinfo);
-    std::string logpath = logroot + "/" + buffer; 
-    
     std::replace(message.begin(), message.end(), '\n', ' '); // Replace all newline characters
 
     if (tag != "") {
@@ -182,7 +190,75 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
     else {
         ESP_LOG_LEVEL(level, "", "%s", message.c_str());
     }
-    WriteToDedicatedFile(logpath, level, message, _time);
+    
+
+    if (level > loglevel) {// Only write to file if loglevel is below threshold
+        return;
+    }
+
+
+    if (_time)
+    {
+        char logLineDate[30];
+        strftime(logLineDate, sizeof(logLineDate), "%Y-%m-%dT%H:%M:%S", timeinfo);
+        ntpTime = std::string(logLineDate);
+    }
+
+    std::string loglevelString; 
+    switch(level) {
+        case  ESP_LOG_ERROR:
+            loglevelString = "ERR";
+            break;
+        case  ESP_LOG_WARN:
+            loglevelString = "WRN";
+            break;
+        case  ESP_LOG_INFO:
+            loglevelString = "INF";
+            break;
+        case  ESP_LOG_DEBUG:
+            loglevelString = "DBG";
+            break;
+        case  ESP_LOG_VERBOSE:
+            loglevelString = "VER";
+            break;
+        case  ESP_LOG_NONE:
+        default:
+            loglevelString = "NONE";
+            break;
+    }
+
+    std::string formatedUptime = getFormatedUptime(true);
+
+    std::string fullmessage = "[" + formatedUptime + "] "  + ntpTime + "\t<" + loglevelString + ">\t" + message + "\n";
+
+    if (fileNameDateNew != fileNameDate) { // Filename changed
+        // Make sure each day gets its own logfile
+        // Also we need to re-open it in case it needed to get closed for reading
+        std::string logpath = logroot + "/" + fileNameDateNew; 
+
+        ESP_LOGI(TAG, "Opening logfile %s for appending", logpath.c_str());
+        logFileAppendHande = fopen(logpath.c_str(), "a+");
+        if (logFileAppendHande==NULL) {
+            ESP_LOGE(TAG, "Can't open log file %s", logpath.c_str());
+            return;
+        }
+
+        fileNameDate = fileNameDateNew;
+    }
+  
+
+    fputs(fullmessage.c_str(), logFileAppendHande);
+    
+    fflush(logFileAppendHande);
+    fsync(fileno(logFileAppendHande));
+}
+
+
+void ClassLogFile::CloseLogFileAppendHandle() {
+
+    fclose(logFileAppendHande);
+    logFileAppendHande = NULL;
+    fileNameDate = "";
 }
 
 
