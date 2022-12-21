@@ -57,7 +57,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     FILE* pFile;
     fn = FormatFileName(fn);
 
-    pFile = OpenFileAndWait(fn.c_str(), "r");
+    pFile = fopen(fn.c_str(), "r");
     ESP_LOGD(TAG, "file loaded");
 
     if (pFile == NULL)
@@ -199,7 +199,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     FILE* pFile;
     fn = FormatFileName(fn);
-    pFile = OpenFileAndWait(fn.c_str(), "r");
+    pFile = fopen(fn.c_str(), "r");
 
     ESP_LOGD(TAG, "file loaded\n");
 
@@ -241,7 +241,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 
     fclose(pFile);
 
-    pFile = OpenFileAndWait(fn.c_str(), "w+");
+    pFile = fopen(fn.c_str(), "w+");
 
     for (int i = 0; i < neuesfile.size(); ++i)
     {

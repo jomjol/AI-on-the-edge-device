@@ -273,33 +273,20 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     std::vector<string> splitted;  
 
 
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues01");      
-
     pFile = fopen(FileStoreRefAlignment.c_str(), "r");
     if (pFile == NULL)
         return false;
 
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues01");      
-
     fgets(zw, 1024, pFile);
     ESP_LOGD(TAG, "%s", zw);
-
-//    zwvalue = "LoadReferenceAlignmentValues Time: " + std::string(zw);
-
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zwvalue);      
-
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues02");      
 
     fgets(zw, 1024, pFile);
     splitted = ZerlegeZeile(std::string(zw), " \t");
     if (splitted.size() < 6)
     {
-//        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "Exit 01");      
         fclose(pFile);
         return false;
     }
-
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues03");      
 
     References[0].fastalg_x = stoi(splitted[0]);
     References[0].fastalg_y = stoi(splitted[1]);
@@ -312,12 +299,9 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     splitted = ZerlegeZeile(std::string(zw));
     if (splitted.size() < 6)
     {
-//        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "Exit 02");      
         fclose(pFile);
         return false;
     }
-
-//    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", "LoadReferenceAlignmentValues03");      
 
     References[1].fastalg_x = stoi(splitted[0]);
     References[1].fastalg_y = stoi(splitted[1]);
@@ -329,7 +313,7 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     fclose(pFile);
 
 
-#ifdef DEBUG_DETAIL_ON  
+/*#ifdef DEBUG_DETAIL_ON
     std::string _zw = "\tLoadReferences[0]\tx,y:\t" + std::to_string(References[0].fastalg_x) + "\t" + std::to_string(References[0].fastalg_x);
     _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[0].fastalg_SAD) + "\t" + std::to_string(References[0].fastalg_min);
     _zw = _zw + "\t" + std::to_string(References[0].fastalg_max) + "\t" + std::to_string(References[0].fastalg_avg);
@@ -338,7 +322,7 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[1].fastalg_SAD) + "\t" + std::to_string(References[1].fastalg_min);
     _zw = _zw + "\t" + std::to_string(References[1].fastalg_max) + "\t" + std::to_string(References[1].fastalg_avg);
     LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
-#endif
+#endif*/
 
     return true;
 }

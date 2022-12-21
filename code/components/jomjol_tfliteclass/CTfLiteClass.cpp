@@ -237,7 +237,7 @@ unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
 
   
 	  if(result != NULL) {
-        FILE* f = OpenFileAndWait(_fn.c_str(), "rb");     // previously only "r
+        FILE* f = fopen(_fn.c_str(), "rb");     // previously only "r
         fread(result, 1, size, f);
         fclose(f);        
 	  }else {

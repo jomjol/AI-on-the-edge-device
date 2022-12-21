@@ -217,7 +217,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
 
 /////////////////////////////////////////////////
     if (!readonly) {
-        FILE *fd = OpenFileAndWait("/sdcard/html/upload_script.html", "r");
+        FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
         char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
         size_t chunksize;
         do {
@@ -346,7 +346,11 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    fd = OpenFileAndWait(currentfilename.c_str(), "r");
+
+    // Since the log file is still open for writing, we need to close it first
+    LogFile.CloseLogFileAppendHandle();
+
+    fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
@@ -431,7 +435,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
 
-    fd = OpenFileAndWait(currentfilename.c_str(), "r");
+    fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
@@ -559,7 +563,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = OpenFileAndWait(filepath, "r");
+    fd = fopen(filepath, "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
@@ -647,7 +651,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = OpenFileAndWait(filepath, "w");
+    fd = fopen(filepath, "w");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to create file: %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -980,7 +984,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
-                FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
+                FILE* fpTargetFile = fopen(filename_zw.c_str(), "wb");
                 uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
                 fclose(fpTargetFile);
                 
@@ -1079,7 +1083,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
             zw = std::string(archive_filename);
             zw = _target_directory + zw;
             ESP_LOGD(TAG, "Filename to extract: %s", zw.c_str());
-            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
+            FILE* fpTargetFile = fopen(zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
 

@@ -167,24 +167,6 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 }
 
 
-
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec, bool silent)
-{
-	FILE *pfile;
-
-	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
-
-	if ((pfile = fopen(nm, _mode)) != NULL) {
-		if (!silent) ESP_LOGE(TAG, "File %s successfully opened", nm);
-	}
-	else {
-		if (!silent) ESP_LOGE(TAG, "Error: file %s does not exist!", nm);
-		return NULL;
-	}
-
-	return pfile;
-}
-
 std::string FormatFileName(std::string input)
 {
 #ifdef ISWINDOWS_TRUE
@@ -307,7 +289,7 @@ bool RenameFile(string from, string to)
 {
 //	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
-	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
+	FILE* fpSourceFile = fopen(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGE(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
@@ -324,7 +306,7 @@ bool DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
-	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
+	FILE* fpSourceFile = fopen(fn.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
@@ -349,14 +331,14 @@ bool CopyFile(string input, string output)
 	}
 
 	char cTemp;
-	FILE* fpSourceFile = OpenFileAndWait(input.c_str(), "rb");
+	FILE* fpSourceFile = fopen(input.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
 		return false;
 	}
 
-	FILE* fpTargetFile = OpenFileAndWait(output.c_str(), "wb");
+	FILE* fpTargetFile = fopen(output.c_str(), "wb");
 
 	// Code Section
 
