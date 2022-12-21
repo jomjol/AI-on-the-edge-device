@@ -26,6 +26,5 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 void MQTTdestroySubscribeFunction();
 void MQTTconnected();
 
-void MQTTdisable();
 #endif //INTERFACE_MQTT_H
 #endif //#ENABLE_MQTT

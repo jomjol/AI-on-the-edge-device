@@ -461,12 +461,12 @@ httpd_handle_t start_webserver(void)
     config.server_port = 80;
     config.ctrl_port = 32768;
     config.max_open_sockets = 5; //20210921 --> previously 7   
-    config.max_uri_handlers = 37; // previously 24, 20220511: 35             
+    config.max_uri_handlers = 38; // previously 24, 20220511: 35, 20221220: 37             
     config.max_resp_headers = 8;                        
     config.backlog_conn = 5;                        
     config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               
     config.recv_wait_timeout = 5; // default: 5 20210924 --> previously 30              
-    config.send_wait_timeout = 5; // default: 5 20210924 --> previously 30                   
+    config.send_wait_timeout = 5; // default: 5 20210924 --> previously 30                    
     config.global_user_ctx = NULL;                        
     config.global_user_ctx_free_fn = NULL;                
     config.global_transport_ctx = NULL;                   
