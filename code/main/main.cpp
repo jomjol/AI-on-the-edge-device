@@ -44,6 +44,7 @@ extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
 extern const char* BUILD_TIME;
 
+extern std::string getFwVersion(void);
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
@@ -155,8 +156,7 @@ extern "C" void app_main(void)
         return; // No way to continue without SD-Card!
     }
 
-    string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + \
-        "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME) + \
+    string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
         ", Web UI: " + getHTMLversion();
 
     if (std::string(GIT_TAG) != "") { // We are on a tag, add it as prefix
