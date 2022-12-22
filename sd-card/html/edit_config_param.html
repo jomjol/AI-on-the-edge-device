@@ -1371,6 +1371,18 @@ textarea {
 				Hostname for server - will be transfered to wlan.ini at next startup)
 			</td>
 		</tr>
+		<tr class="expert"  id="System_RSSIThreashold">
+			<td class="indent1">
+				<input type="checkbox" id="System_RSSIThreashold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreashold")' unchecked >
+				<label for=System_RSSIThreashold_enabled><class id="System_RSSIThreashold_text" style="color:black;">RSSIThreashold</class></label>
+			</td>
+			<td>
+				<input type="number" name="name" id="System_RSSIThreashold_value1" min="-100"  max="0" step="1">
+			<td class="description">
+				WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.
+				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
+			</td>
+		</tr>
 
 	</table>
 
@@ -1821,6 +1833,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
+	WriteParameter(param, category, "System", "RSSIThreashold", true);
 
 	WriteModelFiles();
 }
@@ -1949,6 +1962,7 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true);	
+	ReadParameter(param, "System", "RSSIThreashold", true);	
 
 	UpdateInputIndividual();
 	

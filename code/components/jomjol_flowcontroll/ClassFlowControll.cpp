@@ -553,6 +553,19 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             reset_servername(splitted[1]);
         }  
 
+        if ((toUpper(splitted[0]) == "RSSITHREASHOLD") && (splitted.size() > 1))
+        {
+            if (ChangeRSSIThreashold("/sdcard/wlan.ini", atoi(splitted[1].c_str())))
+            {
+                // reboot necessary so that the new wlan.ini is also used !!!
+                fclose(pfile);
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Rebooting to activate new RSSITHREASHOLD ...");
+                esp_restart();
+                hard_restart();                   
+                doReboot();
+            }
+        }
+
         if ((toUpper(splitted[0]) == "HOSTNAME") && (splitted.size() > 1))
         {
             if (ChangeHostName("/sdcard/wlan.ini", splitted[1]))
