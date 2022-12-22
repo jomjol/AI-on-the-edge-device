@@ -102,6 +102,8 @@
     #define SUPRESS_TFLITE_ERRORS // use, to avoid error messages from TFLITE
 
     //connect_wlan
+    #define WLAN_USE_MESH_ROAMING
+    #define WLAN_WIFI_RSSI_THRESHOLD -50
     #define EXAMPLE_ESP_MAXIMUM_RETRY  1000
     /* The event group allows multiple bits for each event, but we only care about two events:
     * - we are connected to the AP with an IP

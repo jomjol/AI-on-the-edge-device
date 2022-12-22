@@ -174,8 +174,10 @@ extern "C" void app_main(void)
     CheckOTAUpdate();
     CheckUpdate();
 
-    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
+    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
@@ -198,7 +200,7 @@ extern "C" void app_main(void)
        ESP_LOGD(TAG, "DNS IP: %s", dns);
 
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);   
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;

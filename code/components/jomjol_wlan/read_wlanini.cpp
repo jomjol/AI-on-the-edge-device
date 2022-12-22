@@ -41,7 +41,7 @@ std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter =
 
 
 
-void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns)
+void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, int &_rssithreashold)
 {
     std::string ssid = "";
     std::string passphrase = "";
@@ -49,6 +49,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     std::string gw = "";
     std::string netmask = "";
     std::string dns = "";
+    int rssithreshold = 0;
 
     std::string line = "";
     std::vector<string> splitted;
@@ -86,6 +87,15 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
                 ssid = ssid.substr(1, ssid.length()-2);
             }
         }
+
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHREASHOLD")){
+            string _s = trim(splitted[1]);
+            if ((_s[0] == '"') && (_s[_s.length()-1] == '"')){
+                _s = _s.substr(1, ssid.length()-2);
+            }
+            rssithreshold = atoi(_s.c_str());
+        }
+
 
         if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD")){
             passphrase = splitted[1];
@@ -180,6 +190,9 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     }
     else
         _dns = NULL;
+
+    _rssithreashold = rssithreshold;
+    RSSIThreashold = rssithreshold;
 }
 
 
@@ -252,6 +265,78 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     fclose(pFile);
 
     ESP_LOGD(TAG, "*** Hostname update done ***");
+
+    return true;
+}
+
+
+bool ChangeRSSIThreashold(std::string fn, int _newrssithreashold)
+{
+    if (RSSIThreashold == _newrssithreashold)
+        return false;
+
+    string line = "";
+    std::vector<string> splitted;
+
+    bool found = false;
+
+    std::vector<string> neuesfile;
+
+    FILE* pFile;
+    fn = FormatFileName(fn);
+    pFile = fopen(fn.c_str(), "r");
+
+    ESP_LOGD(TAG, "file loaded\n");
+
+    if (pFile == NULL)
+        return false;
+
+    char zw[1024];
+    fgets(zw, 1024, pFile);
+    line = std::string(zw);
+
+    while ((line.size() > 0) || !(feof(pFile)))
+    {
+        ESP_LOGD(TAG, "%s", line.c_str());
+        splitted = ZerlegeZeileWLAN(line, "=");
+        splitted[0] = trim(splitted[0], " ");
+
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHREASHOLD")){
+            line = "RSSIThreashold = " + to_string(_newrssithreashold) + "\n";
+            found = true;
+        }
+
+        neuesfile.push_back(line);
+
+        if (fgets(zw, 1024, pFile) == NULL)
+        {
+            line = "";
+        }
+        else
+        {
+            line = std::string(zw);
+        }
+    }
+
+    if (!found)
+    {
+        line = "RSSIThreashold = " + to_string(_newrssithreashold) + "\n";
+        neuesfile.push_back(line);        
+    }
+
+    fclose(pFile);
+
+    pFile = fopen(fn.c_str(), "w+");
+
+    for (int i = 0; i < neuesfile.size(); ++i)
+    {
+        ESP_LOGD(TAG, "%s", neuesfile[i].c_str());
+        fputs(neuesfile[i].c_str(), pFile);
+    }
+
+    fclose(pFile);
+
+    ESP_LOGD(TAG, "*** RSSIThreashold update done ***");
 
     return true;
 }

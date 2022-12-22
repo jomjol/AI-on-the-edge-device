@@ -256,6 +256,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "AutoAdjustSummertime");
      ParamAddValue(param, catname, "Hostname");   
+     ParamAddValue(param, catname, "RSSIThreashold");   
      ParamAddValue(param, catname, "SetupMode"); 
      
      
