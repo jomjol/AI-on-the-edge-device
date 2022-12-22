@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef SMARTLEDS_H
+#define SMARTLEDS_H
+
 /*
  * A C++ driver for the WS2812 LEDs using the RMT peripheral on the ESP32.
  *
@@ -528,3 +531,5 @@ private:
     int _latchFrames;
     uint8_t _latchBuffer[ LATCH_FRAME_SIZE_BYTES ];
 };
+
+#endif //SMARTLEDS_H

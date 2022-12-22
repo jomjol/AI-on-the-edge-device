@@ -33,7 +33,7 @@ extern "C" {
 #include <esp_spiffs.h>
 #include "esp_http_server.h"
 
-#include "defines.h"
+#include "../../include/defines.h"
 #include "ClassLogFile.h"
 
 #include "server_tflite.h"
@@ -47,30 +47,15 @@ extern "C" {
 #include "Helper.h"
 #include "miniz.h"
 
+
 static const char *TAG = "OTA FILE";
-
-/* Max length a file path can have on storage */
-// #define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
-#define FILE_PATH_MAX (255)
-
-/* Max size of an individual file. Make sure this
- * value is same as that set in upload_script.html */
-#define MAX_FILE_SIZE   (8000*1024) // 8 MB
-#define MAX_FILE_SIZE_STR "8MB"
-
-
-/* Scratch buffer size */
-#define SCRATCH_BUFSIZE  4096 
-
-/* Size of partial log file to return */
-#define LOGFILE_LAST_PART_BYTES SCRATCH_BUFSIZE * 20 /* 80 kBytes */
 
 struct file_server_data {
     /* Base path of file storage */
     char base_path[ESP_VFS_PATH_MAX + 1];
 
     /* Scratch buffer for temporary storage during file transfer */
-    char scratch[SCRATCH_BUFSIZE];
+    char scratch[SERVER_FILER_SCRATCH_BUFSIZE];
 };
 
 
@@ -232,11 +217,11 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
 
 /////////////////////////////////////////////////
     if (!readonly) {
-        FILE *fd = OpenFileAndWait("/sdcard/html/upload_script.html", "r");
+        FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
         char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
         size_t chunksize;
         do {
-            chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+            chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
             //        ESP_LOGD(TAG, "Chunksize %d", chunksize);
             if (chunksize > 0){
                 if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
@@ -322,10 +307,10 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     httpd_resp_sendstr_chunk(req, NULL);
     return ESP_OK;
 }
-
+/*
 #define IS_FILE_EXT(filename, ext) \
     (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
-
+*/
 
 static esp_err_t logfileact_get_full_handler(httpd_req_t *req) {
     return send_logfile(req, true);
@@ -361,7 +346,11 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    fd = OpenFileAndWait(currentfilename.c_str(), "r");
+
+    // Since the log file is still open for writing, we need to close it first
+    LogFile.CloseLogFileAppendHandle();
+
+    fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
@@ -405,7 +394,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     size_t chunksize;
     do {
         /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
 
         /* Send the buffer contents as HTTP response chunk */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
@@ -446,7 +435,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
 
-    fd = OpenFileAndWait(currentfilename.c_str(), "r");
+    fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
@@ -490,7 +479,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     size_t chunksize;
     do {
         /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
 
         /* Send the buffer contents as HTTP response chunk */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
@@ -574,7 +563,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = OpenFileAndWait(filepath, "r");
+    fd = fopen(filepath, "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
@@ -592,7 +581,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
     size_t chunksize;
     do {
         /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SCRATCH_BUFSIZE, fd);
+        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
 
         /* Send the buffer contents as HTTP response chunk */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
@@ -662,7 +651,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    fd = OpenFileAndWait(filepath, "w");
+    fd = fopen(filepath, "w");
     if (!fd) {
         ESP_LOGE(TAG, "Failed to create file: %s", filepath);
         /* Respond with 500 Internal Server Error */
@@ -684,7 +673,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 
         ESP_LOGI(TAG, "Remaining size: %d", remaining);
         /* Receive the file part by part into a buffer */
-        if ((received = httpd_req_recv(req, buf, MIN(remaining, SCRATCH_BUFSIZE))) <= 0) {
+        if ((received = httpd_req_recv(req, buf, MIN(remaining, SERVER_FILER_SCRATCH_BUFSIZE))) <= 0) {
             if (received == HTTPD_SOCK_ERR_TIMEOUT) {
                 /* Retry if timeout occurred */
                 continue;
@@ -995,7 +984,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
-                FILE* fpTargetFile = OpenFileAndWait(filename_zw.c_str(), "wb");
+                FILE* fpTargetFile = fopen(filename_zw.c_str(), "wb");
                 uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
                 fclose(fpTargetFile);
                 
@@ -1094,7 +1083,7 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
             zw = std::string(archive_filename);
             zw = _target_directory + zw;
             ESP_LOGD(TAG, "Filename to extract: %s", zw.c_str());
-            FILE* fpTargetFile = OpenFileAndWait(zw.c_str(), "wb");
+            FILE* fpTargetFile = fopen(zw.c_str(), "wb");
             fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
             fclose(fpTargetFile);
 

@@ -18,10 +18,6 @@
 
 #include "Helper.h"
 
-//#define DEBUG_DETAIL_ON      
-
-
-
 httpd_handle_t server = NULL;   
 std::string starttime = "";
 
@@ -78,15 +74,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
     }
     else if (_task.compare("FirmwareVersion") == 0)
     {
-        string buf;
-        if (std::string(GIT_TAG) == "") { // Tag not set, show branch
-            buf = "Development-Branch: " + std::string(GIT_BRANCH);
-        }
-        else { // Tag is set, ignore branch
-            buf = "Release: " + std::string(GIT_TAG);
-        }
-        buf = buf + " (Commit: " + std::string(GIT_REV) + ")";
-        httpd_resp_sendstr_chunk(req, buf.c_str());
+        httpd_resp_sendstr_chunk(req, getFwVersion().c_str());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
@@ -459,18 +447,18 @@ httpd_handle_t start_webserver(void)
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority      = tskIDLE_PRIORITY+3; //20221211: before: tskIDLE_PRIORITY+1; // 20210924 --> vorher +5
-    config.stack_size         = 32768;      //20210921 --> vorher 32768             // bei 32k stürzt das Programm beim Bilderaufnehmen ab
-    config.core_id            = 0;          //20221211 --> force all not flow related tasks to CPU0, before: tskNO_AFFINITY;
-    config.server_port        = 80;
-    config.ctrl_port          = 32768;
-    config.max_open_sockets   = 5;          //20210921 --> vorher 7   
-    config.max_uri_handlers   = 37;         // vorher 24, 20220511: 35             
-    config.max_resp_headers   = 8;                        
-    config.backlog_conn       = 5;                        
-    config.lru_purge_enable   = true;       // dadurch werden alte Verbindungen gekappt, falls neue benögt werden.               
-    config.recv_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30              
-    config.send_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30                   
+    config.task_priority = tskIDLE_PRIORITY+3; //20221211: before: tskIDLE_PRIORITY+1; // 20210924 --> before +5
+    config.stack_size = 32768; //20210921 --> before 32768 // at 32k the programme crashes when taking pictures
+    config.core_id = 0; //20221211 --> force all not flow related tasks to CPU0, before: tskNO_AFFINITY;
+    config.server_port = 80;
+    config.ctrl_port = 32768;
+    config.max_open_sockets = 5; //20210921 --> previously 7   
+    config.max_uri_handlers = 38; // previously 24, 20220511: 35, 20221220: 37             
+    config.max_resp_headers = 8;                        
+    config.backlog_conn = 5;                        
+    config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               
+    config.recv_wait_timeout = 5; // default: 5 20210924 --> previously 30              
+    config.send_wait_timeout = 5; // default: 5 20210924 --> previously 30                    
     config.global_user_ctx = NULL;                        
     config.global_user_ctx_free_fn = NULL;                
     config.global_transport_ctx = NULL;                   

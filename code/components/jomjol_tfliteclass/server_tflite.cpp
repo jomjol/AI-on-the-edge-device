@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "defines.h"
+#include "../../include/defines.h"
 #include "Helper.h"
 
 #include "esp_camera.h"
@@ -23,12 +23,8 @@
 #include "server_file.h"
 #include "connect_wlan.h"
 
-//#define DEBUG_DETAIL_ON       
-
-
 ClassFlowControll tfliteflow;
 
-TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
 bool FlowInitDone = false;
@@ -37,13 +33,13 @@ bool flowisrunning = false;
 long auto_intervall = 0;
 bool auto_isrunning = false;
 
-
 int countRounds = 0;
 
 static const char *TAG = "TFLITE SERVER";
 
 
-int getCountFlowRounds() {
+int getCountFlowRounds() 
+{
     return countRounds;
 }
 
@@ -68,19 +64,6 @@ bool isSetupModusActive() {
 
 void KillTFliteTasks()
 {
-    #ifdef DEBUG_DETAIL_ON          
-        ESP_LOGD(TAG, "Handle: xHandleblink_task_doFlow: %ld", (long) xHandleblink_task_doFlow);
-    #endif  
-    if (xHandleblink_task_doFlow != NULL)
-    {
-        TaskHandle_t xHandleblink_task_doFlowTmp = xHandleblink_task_doFlow;
-        xHandleblink_task_doFlow = NULL;
-        vTaskDelete(xHandleblink_task_doFlowTmp);
-        #ifdef DEBUG_DETAIL_ON      
-            ESP_LOGD(TAG, "Killed: xHandleblink_task_doFlow");
-        #endif
-    }
-
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
     #endif
@@ -93,7 +76,6 @@ void KillTFliteTasks()
             ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
         #endif
     }
-
 }
 
 
@@ -108,6 +90,9 @@ void doInit(void)
         ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
     #endif
     
+    /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
+    gpio_handler_init();
+
     #ifdef ENABLE_MQTT
         tfliteflow.StartMQTTService();
     #endif //ENABLE_MQTT
@@ -124,24 +109,9 @@ bool doflow(void)
 
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "doflow - end %s", zw_time.c_str());
-    #endif    
-    return true;
-}
-
-
-void blink_task_doFlow(void *pvParameter)
-{
-    #ifdef DEBUG_DETAIL_ON          
-        ESP_LOGD(TAG, "blink_task_doFlow");
     #endif
-    if (!flowisrunning)
-    {
-        flowisrunning = true;
-        doflow();
-        flowisrunning = false;
-    }
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
-    xHandleblink_task_doFlow = NULL;
+
+    return true;
 }
 
 
@@ -170,35 +140,63 @@ esp_err_t handler_init(httpd_req_t *req)
 }
 
 
-esp_err_t handler_doflow(httpd_req_t *req)
-{
+esp_err_t handler_flow_start(httpd_req_t *req) {
+
     #ifdef DEBUG_DETAIL_ON          
-        LogFile.WriteHeapInfo("handler_doflow - Start");       
+    LogFile.WriteHeapInfo("handler_flow_start - Start");       
     #endif
 
-    ESP_LOGD(TAG, "handler_doFlow uri: %s", req->uri);
+    ESP_LOGD(TAG, "handler_flow_start uri: %s", req->uri);
 
-    if (flowisrunning)
-    {
-        const char* resp_str = "doFlow is already running and cannot be started again";
-        httpd_resp_send(req, resp_str, strlen(resp_str));       
-        return 2;
+    if (auto_isrunning) {
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start");
+        const char* resp_str = "The flow is going to be started immediately or is already running";
+        httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
-    else
-    {
-        xTaskCreate(&blink_task_doFlow, "blink_doFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandleblink_task_doFlow);
+    else {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!");
+        const char* resp_str = "WARNING: Flow start triggered by REST API, but flow is not active";
+        httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
-    const char* resp_str = "doFlow started - takes about 60 seconds";
-    httpd_resp_send(req, resp_str, strlen(resp_str));  
+
     /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);       
+    httpd_resp_send_chunk(req, NULL, 0);    
 
     #ifdef DEBUG_DETAIL_ON   
-        LogFile.WriteHeapInfo("handler_doflow - Done");       
+        LogFile.WriteHeapInfo("handler_flow_start - Done");       
     #endif
 
     return ESP_OK;
 }
+
+
+#ifdef ENABLE_MQTT
+esp_err_t MQTTCtrlFlowStart(std::string _topic) {
+
+    #ifdef DEBUG_DETAIL_ON          
+        LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Start");       
+    #endif
+
+    ESP_LOGD(TAG, "MQTTCtrlFlowStart: topic %s", _topic.c_str());
+
+    if (auto_isrunning) 
+    {
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic " + _topic);
+    }
+    else 
+    {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by MQTT topic " + _topic + ", but flow is not active!");
+    }  
+
+    #ifdef DEBUG_DETAIL_ON   
+        LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Done");       
+    #endif
+
+    return ESP_OK;
+}
+#endif //ENABLE_MQTT
 
 
 esp_err_t handler_json(httpd_req_t *req)
@@ -233,6 +231,7 @@ esp_err_t handler_json(httpd_req_t *req)
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_JSON - Done");   
     #endif
+
     return ESP_OK;
 }
 
@@ -240,7 +239,7 @@ esp_err_t handler_json(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_wasserzaehler - Start");    
+        LogFile.WriteHeapInfo("handler water counter - Start");    
     #endif
 
     if (FlowInitDone) 
@@ -251,7 +250,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         std::string _type = "value";
         string zw;
 
-        ESP_LOGD(TAG, "handler_wasserzaehler uri: %s", req->uri);
+        ESP_LOGD(TAG, "handler water counter uri: %s", req->uri);														   
 
         char _query[100];
         char _size[10];
@@ -386,6 +385,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_wasserzaehler - Done");   
     #endif
+
     return ESP_OK;
 }
 
@@ -691,9 +691,9 @@ esp_err_t handler_rssi(httpd_req_t *req)
 esp_err_t handler_uptime(httpd_req_t *req)
 {
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_uptime - Start");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_uptime - Start");       
+    #endif
     
     std::string formatedUptime = getFormatedUptime(false);
 
@@ -702,9 +702,9 @@ esp_err_t handler_uptime(httpd_req_t *req)
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);      
 
-#ifdef DEBUG_DETAIL_ON       
-    LogFile.WriteHeapInfo("handler_uptime - End");       
-#endif
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_uptime - End");       
+    #endif
 
     return ESP_OK;
 }
@@ -783,7 +783,6 @@ void task_autodoFlow(void *pvParameter)
 
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
-    gpio_handler_init();
 
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
     if (isSetupModusActive()) {
@@ -854,7 +853,6 @@ void TFliteDoAutoStart()
     xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
     if( xReturned != pdPASS )
     {
-
        //Memory: 64 --> 48 --> 35 --> 25
        ESP_LOGD(TAG, "ERROR task_autodoFlow konnte nicht erzeugt werden!");
     }
@@ -893,15 +891,15 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.user_ctx  = (void*) "Prevalue";    
     httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/doflow";
-    camuri.handler   = handler_doflow;
-    camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    camuri.uri       = "/flow_start";
+    camuri.handler   = handler_flow_start;
+    camuri.user_ctx  = (void*) "Flow Start"; 
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/statusflow.html";
     camuri.handler   = handler_statusflow;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/statusflow";
     camuri.handler   = handler_statusflow;
@@ -917,13 +915,13 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/cpu_temperature";
     camuri.handler   = handler_cputemp;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/rssi"
     camuri.uri       = "/rssi.html";
     camuri.handler   = handler_rssi;
     camuri.user_ctx  = (void*) "Light Off"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/rssi";
     camuri.handler   = handler_rssi;
@@ -938,7 +936,7 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/editflow";
     camuri.handler   = handler_editflow;
     camuri.user_ctx  = (void*) "EditFlow"; 
-    httpd_register_uri_handler(server, &camuri);     
+    httpd_register_uri_handler(server, &camuri);   
 
     // Legacy API => New: "/value"
     camuri.uri       = "/value.html";
@@ -949,17 +947,16 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/value";
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Value"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/value"
     camuri.uri       = "/wasserzaehler.html";
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
-    httpd_register_uri_handler(server, &camuri);  
+    httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/json";
     camuri.handler   = handler_json;
     camuri.user_ctx  = (void*) "JSON"; 
-    httpd_register_uri_handler(server, &camuri);     
-
+    httpd_register_uri_handler(server, &camuri);
 }

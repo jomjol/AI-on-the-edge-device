@@ -6,16 +6,12 @@
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
 #include "server_tflite.h"
-
-#define __HIDE_PASSWORD
-
-//#define DEBUG_DETAIL_ON 
+#include "../../include/defines.h"
 
 static const char *TAG = "MQTT IF";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
-std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;  
-
+std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;
 
 int failedOnRound = -1;
  
@@ -89,7 +85,6 @@ bool MQTTPublish(std::string _key, std::string _content, int retained_flag)
 
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
-    int msg_id;
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
@@ -109,8 +104,6 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-            msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-            ESP_LOGD(TAG, "sent publish successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_UNSUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
@@ -120,12 +113,12 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGD(TAG, "MQTT_EVENT_DATA");
-            ESP_LOGD(TAG, "TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            ESP_LOGD(TAG, "DATA=%.*s\r\n", event->data_len, event->data);
+            ESP_LOGD(TAG, "TOPIC=%.*s", event->topic_len, event->topic);
+            ESP_LOGD(TAG, "DATA=%.*s", event->data_len, event->data);
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
-                    ESP_LOGD(TAG, "call handler function\r\n");
+                    ESP_LOGD(TAG, "call subcribe function for topic %s", topic.c_str());
                     (*subscribeFunktionMap)[topic](topic, event->data, event->data_len);
                 }
             } else {
@@ -150,6 +143,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     }
     return ESP_OK;
 }
+
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
@@ -279,9 +273,10 @@ int MQTT_Init() {
 void MQTTdestroy_client() {
     if (client) {
         if (mqtt_connected) {
+            MQTTdestroySubscribeFunction();      
             esp_mqtt_client_disconnect(client);
             mqtt_connected = false;
-        }        
+        }
         esp_mqtt_client_stop(client);
         esp_mqtt_client_destroy(client);
         client = NULL;
@@ -289,13 +284,58 @@ void MQTTdestroy_client() {
     }
 }
 
+
 bool getMQTTisEnabled() {
     return mqtt_enabled;
 }
 
+
 bool getMQTTisConnected() {
     return mqtt_connected;
 }
+
+
+bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len) {
+    ESP_LOGD(TAG, "Handler called: topic %s, data %.*s", _topic.c_str(), _data_len, _data);
+
+    if (_data_len > 0) {
+        MQTTCtrlFlowStart(_topic);
+    }
+
+    return ESP_OK;
+}
+
+
+void MQTTconnected(){
+    if (mqtt_connected) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
+        MQTTPublish(lwt_topic, lwt_connected, true);                        // Publish "connected" to maintopic/connection
+
+        if (connectFunktionMap != NULL) {
+            for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
+                it->second();
+                ESP_LOGD(TAG, "call connect function %s", it->first.c_str());
+            }
+        }
+
+        /* Subcribe to topics */
+        std::function<bool(std::string topic, char* data, int data_len)> subHandler = mqtt_handler_flow_start;     
+        MQTTregisterSubscribeFunction(maintopic + "/ctrl/flow_start", subHandler);        // subcribe to maintopic/ctrl/flow_start
+
+       if (subscribeFunktionMap != NULL) {
+            for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
+                int msg_id = esp_mqtt_client_subscribe(client, it->first.c_str(), 0);
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "topic " + it->first + " subscribe successful, msg_id=" + std::to_string(msg_id));
+            }
+        }
+    }
+    
+    vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
+    if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
+        callbackOnConnected(maintopic, SetRetainFlag);
+    }
+}
+
 
 void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
     ESP_LOGD(TAG, "MQTTregisteronnectFunction %s\r\n", name.c_str());
@@ -315,6 +355,7 @@ void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
     }
 }
 
+
 void MQTTunregisterConnectFunction(std::string name){
     ESP_LOGD(TAG, "unregisterConnnectFunction %s\r\n", name.c_str());
     if ((connectFunktionMap != NULL) && (connectFunktionMap->find(name) != connectFunktionMap->end())) {
@@ -322,8 +363,9 @@ void MQTTunregisterConnectFunction(std::string name){
     }
 }
 
+
 void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::string, char*, int)> func){
-    ESP_LOGD(TAG, "registerSubscribeFunction %s\r\n", topic.c_str());
+    ESP_LOGD(TAG, "registerSubscribeFunction %s", topic.c_str());
     if (subscribeFunktionMap == NULL) {
         subscribeFunktionMap = new std::map<std::string, std::function<bool(std::string, char*, int)>>();
     }
@@ -334,45 +376,15 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
     }
 
     (*subscribeFunktionMap)[topic] = func;
-
-    if (mqtt_connected) {
-        int msg_id = esp_mqtt_client_subscribe(client, topic.c_str(), 0);
-        ESP_LOGD(TAG, "topic %s subscribe successful, msg_id=%d", topic.c_str(), msg_id);
-    }
 }
 
-void MQTTconnected(){
-    if (mqtt_connected) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
-
-        MQTTPublish(lwt_topic, lwt_connected, true);
-
-        if (connectFunktionMap != NULL) {
-            for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
-                it->second();
-                ESP_LOGD(TAG, "call connect function %s", it->first.c_str());
-            }
-        }
-
-       if (subscribeFunktionMap != NULL) {
-            for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
-                int msg_id = esp_mqtt_client_subscribe(client, it->first.c_str(), 0);
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "topic " + it->first + " subscribe successful, msg_id=" + std::to_string(msg_id));
-            }
-        }
-
-        if (callbackOnConnected) {
-            callbackOnConnected(maintopic, SetRetainFlag);
-        }
-    }
-}
 
 void MQTTdestroySubscribeFunction(){
     if (subscribeFunktionMap != NULL) {
         if (mqtt_connected) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
                 int msg_id = esp_mqtt_client_unsubscribe(client, it->first.c_str());
-                ESP_LOGI(TAG, "topic %s unsubscribe successful, msg_id=%d", it->first.c_str(), msg_id);
+                ESP_LOGD(TAG, "topic %s unsubscribe successful, msg_id=%d", it->first.c_str(), msg_id);
             }
         }
 

@@ -12,9 +12,7 @@
 #include "server_ota.h"
 #include "server_GPIO.h"
 
-
-#define BOARD_ESP32CAM_AITHINKER
-
+#include "../../include/defines.h"
 
 #include <esp_event.h>
 #include <esp_log.h>
@@ -28,45 +26,7 @@
 
 #include "esp_camera.h"
 
-// #define DEBUG_DETAIL_ON
-
-#define USE_PWM_LEDFLASH
-
-#ifdef USE_PWM_LEDFLASH
-
-//// PWM für Flash-LED
-#define LEDC_TIMER              LEDC_TIMER_1 // LEDC_TIMER_0
-#define LEDC_MODE               LEDC_LOW_SPEED_MODE
-#define LEDC_OUTPUT_IO          (4) // Define the output GPIO
-#define LEDC_CHANNEL            LEDC_CHANNEL_1
-#define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
-//#define LEDC_DUTY               (195) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
-#define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
-
-#endif
-
-
-
-// ESP32Cam (AiThinker) PIN Map
-
-#define CAM_PIN_PWDN 32
-#define CAM_PIN_RESET -1 //software reset will be performed
-#define CAM_PIN_XCLK 0
-#define CAM_PIN_SIOD 26
-#define CAM_PIN_SIOC 27
-
-#define CAM_PIN_D7 35
-#define CAM_PIN_D6 34
-#define CAM_PIN_D5 39
-#define CAM_PIN_D4 36
-#define CAM_PIN_D3 21
-#define CAM_PIN_D2 19
-#define CAM_PIN_D1 18
-#define CAM_PIN_D0 5
-#define CAM_PIN_VSYNC 25
-#define CAM_PIN_HREF 23
-#define CAM_PIN_PCLK 22
-
+#include "driver/ledc.h"
 
 static const char *TAG = "CAM"; 
 
@@ -90,8 +50,8 @@ static camera_config_t camera_config = {
     .pin_pclk = CAM_PIN_PCLK,
 
     //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,             // Orginalwert
-//    .xclk_freq_hz =    5000000,               // Test, um die Bildfehler los zu werden !!!! Hängt in Version 9.2 !!!!
+    .xclk_freq_hz = 20000000,             // Orginal value
+//    .xclk_freq_hz =    5000000,         // Test to get rid of the image errors !!!! Hangs in version 9.2 !!!!
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
@@ -101,18 +61,14 @@ static camera_config_t camera_config = {
     .jpeg_quality = 12, //0-63 lower number means higher quality
     .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
     .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
-//    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
-    .grab_mode = CAMERA_GRAB_LATEST,      // erst ab neuer esp32cam-version
+    .grab_mode = CAMERA_GRAB_LATEST,      // only from new esp32cam version
     
 };
 
 
-#include "driver/ledc.h"
+
 
 CCamera Camera;
-
-#define FLASH_GPIO GPIO_NUM_4
-#define BLINK_GPIO GPIO_NUM_33
 
 typedef struct {
         httpd_req_t *req;
@@ -222,39 +178,17 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
         image_height = 480;
         image_width = 640;             
     }
-    // No higher Mode than VGA, damit der Kameraspeicher ausreicht.
-/*
-    if (resol == FRAMESIZE_SVGA)
-    {
-        image_height = 600;
-        image_width = 800;             
-    }
-    if (resol == FRAMESIZE_XGA)
-    {
-        image_height = 768;
-        image_width = 1024;             
-    }
-    if (resol == FRAMESIZE_SXGA)
-    {
-        image_height = 1024;
-        image_width = 1280;             
-    }
-    if (resol == FRAMESIZE_UXGA)
-    {
-        image_height = 1200;
-        image_width = 1600;             
-    }
-*/
+
 }
 
 
-void CCamera::EnableAutoExposure(int flashdauer)
+void CCamera::EnableAutoExposure(int flash_duration)
 {
     ESP_LOGD(TAG, "EnableAutoExposure");
     LEDOnOff(true);
-    if (flashdauer > 0)
+    if (flash_duration > 0)
         LightOnOff(true);
-    const TickType_t xDelay = flashdauer / portTICK_PERIOD_MS;
+    const TickType_t xDelay = flash_duration / portTICK_PERIOD_MS;
     vTaskDelay( xDelay );
 
     camera_fb_t * fb = esp_camera_fb_get();
@@ -278,7 +212,7 @@ void CCamera::EnableAutoExposure(int flashdauer)
     LEDOnOff(false);  
     LightOnOff(false);
     isFixedExposure = true;
-    waitbeforepicture_org = flashdauer;
+    waitbeforepicture_org = flash_duration;
 }
 
 
@@ -394,7 +328,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
     string ftype;
 
-     LEDOnOff(true);              // Abgeschaltet, um Strom zu sparen !!!!!!
+     LEDOnOff(true);              // Switched off to save power !
 
     if (delay > 0) 
     {
@@ -457,7 +391,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         }
     }
 
-    FILE * fp = OpenFileAndWait(nm.c_str(), "wb");
+    FILE * fp = fopen(nm.c_str(), "wb");
     if (fp == NULL)  /* If an error occurs during the file creation */
     {
         fprintf(stderr, "fopen() failed for '%s'\n", nm.c_str());

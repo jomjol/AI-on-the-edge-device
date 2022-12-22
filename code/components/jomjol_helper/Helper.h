@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef HELPER_H
+#define HELPER_H
+
 #include <string>
 #include <fstream>
 #include <vector>
@@ -17,9 +21,6 @@ bool MakeDir(std::string _what);
 
 
 string RundeOutput(double _in, int _anzNachkomma);
-
-
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1, bool silent = true);
 
 size_t findDelimiterPos(string input, string delimiter);
 //string trim(string istring);
@@ -88,3 +89,5 @@ string getResetReason(void);
 std::string getFormatedUptime(bool compact);
 
 const char* get404(void);
+
+#endif //HELPER_H

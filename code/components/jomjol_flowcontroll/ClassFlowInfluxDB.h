@@ -1,5 +1,10 @@
 #ifdef ENABLE_INFLUXDB
+
 #pragma once
+
+#ifndef CLASSFINFLUXDB_H
+#define CLASSFINFLUXDB_H
+
 #include "ClassFlow.h"
 
 #include "ClassFlowPostProcessing.h"
@@ -30,4 +35,5 @@ public:
     string name(){return "ClassFlowInfluxDB";};
 };
 
+#endif //CLASSFINFLUXDB_H
 #endif //ENABLE_INFLUXDB

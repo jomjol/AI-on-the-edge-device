@@ -1,3 +1,9 @@
+#pragma once
+
+#ifndef TIMESNTP_H
+#define TIMESNTP_H
+
+
 #include <string>
 #include <time.h>
 #include <sys/time.h>
@@ -24,3 +30,5 @@ void setBootTime();
 time_t getUpTime();
 bool getTimeIsSet(void);
 void restartNtpClient(void);
+
+#endif //TIMESNTP_H

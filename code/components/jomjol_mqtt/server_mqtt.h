@@ -1,11 +1,11 @@
 #ifdef ENABLE_MQTT
 
+#pragma once
+
+#ifndef SERVERMQTT_H
+#define SERVERMQTT_H
+
 #include "ClassFlowDefineTypes.h"
-
-#define LWT_TOPIC        "connection"
-#define LWT_CONNECTED    "connected"
-#define LWT_DISCONNECTED "connection lost"
-
 
 void SetHomeassistantDiscoveryEnabled(bool enabled);
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int interval, float roundInterval);
@@ -21,4 +21,6 @@ void publishSystemData();
 std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, int SetRetainFlag);
 
+
+#endif //SERVERMQTT_H
 #endif //ENABLE_MQTT

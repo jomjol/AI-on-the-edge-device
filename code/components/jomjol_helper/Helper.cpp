@@ -23,6 +23,7 @@ extern "C" {
 
 #include <string.h>
 #include <esp_log.h>
+#include "../../include/defines.h"
 
 
 #include "ClassLogFile.h"
@@ -30,9 +31,6 @@ extern "C" {
 #include "esp_vfs_fat.h"
 
 static const char* TAG = "HELPER";
-
-//#define ISWINDOWS_TRUE
-#define PATH_MAX_STRING_SIZE 256
 
 using namespace std;
 
@@ -169,24 +167,6 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 }
 
 
-
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec, bool silent)
-{
-	FILE *pfile;
-
-	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
-
-	if ((pfile = fopen(nm, _mode)) != NULL) {
-		if (!silent) ESP_LOGE(TAG, "File %s successfully opened", nm);
-	}
-	else {
-		if (!silent) ESP_LOGE(TAG, "Error: file %s does not exist!", nm);
-		return NULL;
-	}
-
-	return pfile;
-}
-
 std::string FormatFileName(std::string input)
 {
 #ifdef ISWINDOWS_TRUE
@@ -309,7 +289,7 @@ bool RenameFile(string from, string to)
 {
 //	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
-	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
+	FILE* fpSourceFile = fopen(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGE(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
@@ -326,7 +306,7 @@ bool DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
-	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
+	FILE* fpSourceFile = fopen(fn.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
@@ -351,14 +331,14 @@ bool CopyFile(string input, string output)
 	}
 
 	char cTemp;
-	FILE* fpSourceFile = OpenFileAndWait(input.c_str(), "rb");
+	FILE* fpSourceFile = fopen(input.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
 		return false;
 	}
 
-	FILE* fpTargetFile = OpenFileAndWait(output.c_str(), "wb");
+	FILE* fpTargetFile = fopen(output.c_str(), "wb");
 
 	// Code Section
 
@@ -426,14 +406,14 @@ string getFileType(string filename)
 
 /* recursive mkdir */
 int mkdir_r(const char *dir, const mode_t mode) {
-    char tmp[PATH_MAX_STRING_SIZE];
+    char tmp[FILE_PATH_MAX];
     char *p = NULL;
     struct stat sb;
     size_t len;
     
     /* copy path */
-    len = strnlen (dir, PATH_MAX_STRING_SIZE);
-    if (len == 0 || len == PATH_MAX_STRING_SIZE) {
+    len = strnlen (dir, FILE_PATH_MAX);
+    if (len == 0 || len == FILE_PATH_MAX) {
         return -1;
     }
     memcpy (tmp, dir, len);

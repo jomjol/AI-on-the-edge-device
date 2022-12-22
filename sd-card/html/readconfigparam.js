@@ -256,6 +256,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "AutoAdjustSummertime");
      ParamAddValue(param, catname, "Hostname");   
+     ParamAddValue(param, catname, "RSSIThreashold");   
      ParamAddValue(param, catname, "SetupMode"); 
      
      
@@ -706,7 +707,7 @@ function getNUMBERInfo(){
 }
 
 function RenameNUMBER(_alt, _neu){
-     if ((_neu.search(".") >= 0) || (_neu.search(",") >= 0) || (_neu.search(" ") >= 0) || (_neu.search("\"") >= 0))
+     if ((_neu.indexOf(".") >= 0) || (_neu.indexOf(",") >= 0) || (_neu.indexOf(" ") >= 0) || (_neu.indexOf("\"") >= 0))
      {
           return "Name must not contain ',', '.', ' ' or '\"' - please change name";
      }
