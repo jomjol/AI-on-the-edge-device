@@ -285,8 +285,8 @@ CTfLiteClass::~CTfLiteClass()
   delete this->tensor_arena;
   delete this->interpreter;
   delete this->error_reporter;
-  if (modelload)
-    free(modelload);
+  
+  free(modelload);
 }        
 
 

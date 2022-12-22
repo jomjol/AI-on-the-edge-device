@@ -164,8 +164,8 @@ bool ClassFlowAlignment::doFlow(string time)
     if (!ImageTMP) 
         ImageTMP = new CImageBasis(ImageBasis, 5);
 
-    if (AlignAndCutImage)
-        delete AlignAndCutImage;
+    delete AlignAndCutImage;
+    
     AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);   
 
     CRotateImage rt(AlignAndCutImage, ImageTMP, initialflip);
