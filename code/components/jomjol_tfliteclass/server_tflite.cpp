@@ -90,6 +90,9 @@ void doInit(void)
         ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
     #endif
     
+    /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
+    gpio_handler_init();
+
     #ifdef ENABLE_MQTT
         tfliteflow.StartMQTTService();
     #endif //ENABLE_MQTT
@@ -780,7 +783,6 @@ void task_autodoFlow(void *pvParameter)
 
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
-    gpio_handler_init();
 
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
     if (isSetupModusActive()) {
