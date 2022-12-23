@@ -785,11 +785,17 @@ bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 	}
 }
 
+
+time_t getUpTime(void) {
+    return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+}
+
+
 string getResetReason(void) {
 	std::string reasonText;
 
 	switch(esp_reset_reason()) {
-		case ESP_RST_POWERON: reasonText = "Power-on event"; break;    //!< Reset due to power-on event
+		case ESP_RST_POWERON: reasonText = "Power-on event (or reset button)"; break;    //!< Reset due to power-on event
 		case ESP_RST_EXT: reasonText = "External pin"; break;        //!< Reset by external pin (not applicable for ESP32)
 		case ESP_RST_SW: reasonText = "Via esp_restart"; break;         //!< Software reset via esp_restart
 		case ESP_RST_PANIC: reasonText = "Exception/panic"; break;      //!< Software reset due to exception/panic
@@ -814,7 +820,7 @@ std::string getFormatedUptime(bool compact) {
 	char buf[20];
 	#pragma GCC diagnostic ignored "-Wformat-truncation"
 
-    int uptime = (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+    int uptime = getUpTime(); // in seconds
 
     int days = int(floor(uptime / (3600*24)));
     int hours = int(floor((uptime - days * 3600*24) / (3600)));

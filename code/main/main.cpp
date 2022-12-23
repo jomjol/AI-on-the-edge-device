@@ -156,6 +156,8 @@ extern "C" void app_main(void)
         return; // No way to continue without SD-Card!
     }
 
+    setupTime();
+
     string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
         ", Web UI: " + getHTMLversion();
 
@@ -207,13 +209,6 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
 
-    if (!setup_time()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed!");
-        setSystemStatusFlag(SYSTEM_STATUS_NTP_BAD);
-    }
-
-    setBootTime();
-
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
@@ -222,7 +217,7 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
     }
 
-    std::string zw = gettimestring("%Y%m%d-%H%M%S");
+    std::string zw = getCurrentTimeString("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
 
     /* Check if PSRAM can be initalized */

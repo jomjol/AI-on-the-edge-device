@@ -1345,7 +1345,8 @@ textarea {
 				<input type="text" id="System_TimeZone_value1">
 			</td>
 			<td class="description">
-				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)
+				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)<br>
+				Use this <a href=timezones.html target=_blank>table</a> to find the settings for your region. 
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -1357,7 +1358,11 @@ textarea {
 				<input type="text" id="System_TimeServer_value1">
 			</td>
 			<td class="description">
-				Time server to synchronize system time (default: "pool.ntp.org" - used if nothing is specified)
+				Time server to synchronize system time. If it is disabled or "undefined", "pool.ntp.org" will be used.<br>
+				You can also set it to the IP of your router. Many routers like 
+				<a href=https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-7590-AX/336_Configuring-time-synchronization-NTP-for-FRITZ-Box-and-network-devices/
+				target=_blank>Fritzboxes</a> can act as a local NTP server.<br>
+				To disable NTP, you need to activate it but set the TimeServer config to be empty. In such case the time always starts at 01.01.1970 after each power cycle!
 			</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">

@@ -101,7 +101,7 @@ void doInit(void)
 
 bool doflow(void)
 {   
-    std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
+    std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
     ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
     flowisrunning = true;
     tfliteflow.doFlow(zw_time);
@@ -787,7 +787,7 @@ void task_autodoFlow(void *pvParameter)
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
     if (isSetupModusActive()) {
         auto_isrunning = false;
-        std::string zw_time = gettimestring(LOGFILE_TIME_FORMAT);
+        std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
         tfliteflow.doFlowMakeImageOnly(zw_time);
 
     }
