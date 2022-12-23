@@ -91,7 +91,13 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         }
     }
     else {
+        if (field == "problem") { // Special binary sensor which is based on error topic
+            payload += "\"state_topic\": \"~/error\"," + nl;
+            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+        }
+        else {
             payload += "\"state_topic\": \"~/" + field + "\"," + nl;
+        }
     }
 
     if (unit != "") {
@@ -149,7 +155,11 @@ void MQTThomeassistantDiscovery() {
 
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
-         std::string group = (*NUMBERS)[i]->name;
+        std::string group = (*NUMBERS)[i]->name;
+        if (group == "default") {
+            group = "";
+        }
+
     //                                  Group | Field                 | User Friendly Name                | Icon                   | Unit     | Device Class | State Class       | Entity Category
         sendHomeAssistantDiscoveryTopic(group,   "value",              "Value",                            "gauge",                 valueUnit, meterType,     "total_increasing", "");
         sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   valueUnit, "",            "total_increasing", "diagnostic");

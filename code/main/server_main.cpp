@@ -468,7 +468,7 @@ httpd_handle_t start_webserver(void)
 //    config.uri_match_fn = NULL;                            
     config.uri_match_fn = httpd_uri_match_wildcard;
 
-    starttime = gettimestring("%Y%m%d-%H%M%S");
+    starttime = getCurrentTimeString("%Y%m%d-%H%M%S");
 
     // Start the httpd server
     ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);

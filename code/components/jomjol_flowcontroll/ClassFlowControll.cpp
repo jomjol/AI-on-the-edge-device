@@ -292,7 +292,7 @@ void ClassFlowControll::doFlowMakeImageOnly(string time){
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         if (FlowControll[i]->name() == "ClassFlowMakeImage") {
-            zw_time = gettimestring("%H:%M:%S");
+            zw_time = getCurrentTimeString("%H:%M:%S");
             std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatus = flowStatus + " (" + zw_time + ")";
 #ifdef ENABLE_MQTT
@@ -315,16 +315,19 @@ bool ClassFlowControll::doFlow(string time)
 #endif
 
     /* Check if we have a valid date/time and if not restart the NTP client */
-    if (! getTimeIsSet()) {
+   /* if (! getTimeIsSet()) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time not set, restarting NTP Client!");
         restartNtpClient();
-    }
+    }*/
+
+    //checkNtpStatus(0);
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
-        zw_time = gettimestring("%H:%M:%S");
+        zw_time = getCurrentTimeString("%H:%M:%S");
         std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatus = flowStatus + " (" + zw_time + ")";
+        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
 #ifdef ENABLE_MQTT
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 #endif //ENABLE_MQTT
@@ -355,9 +358,10 @@ bool ClassFlowControll::doFlow(string time)
 #endif
 
     }
-    zw_time = gettimestring("%H:%M:%S");
+    zw_time = getCurrentTimeString("%H:%M:%S");
     std::string flowStatus = "Flow finished";
     aktstatus = flowStatus + " (" + zw_time + ")";
+    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
 #ifdef ENABLE_MQTT
     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
 #endif //ENABLE_MQTT
@@ -541,17 +545,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             LogFile.SetLogFileRetention(std::stoi(splitted[1]));
         }
 
-        if ((toUpper(splitted[0]) == "TIMEZONE") && (splitted.size() > 1))
-        {
-            string zw = "Set TimeZone: " + splitted[1];
-            setTimeZone(splitted[1]);
-        }      
-
-        if ((toUpper(splitted[0]) == "TIMESERVER") && (splitted.size() > 1))
-        {
-            string zw = "Set TimeZone: " + splitted[1];
-            reset_servername(splitted[1]);
-        }  
+        /* TimeServer and TimeZone got already read from the config, see setupTime () */
 
         if ((toUpper(splitted[0]) == "RSSITHREASHOLD") && (splitted.size() > 1))
         {

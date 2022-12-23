@@ -45,6 +45,7 @@ static char ota_write_data[SERVER_OTA_SCRATCH_BUFSIZE + 1] = { 0 };
 static const char *TAG = "OTA";
 
 esp_err_t handler_reboot(httpd_req_t *req);
+static bool ota_update_task(std::string fn);
 
 std::string _file_name_update;
 

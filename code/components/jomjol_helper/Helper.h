@@ -85,6 +85,7 @@ void clearSystemStatusFlag(SystemStatusFlag_t flag);
 int getSystemStatus(void);
 bool isSetSystemStatusFlag(SystemStatusFlag_t flag);
 
+time_t getUpTime(void);
 string getResetReason(void);
 std::string getFormatedUptime(bool compact);
 
