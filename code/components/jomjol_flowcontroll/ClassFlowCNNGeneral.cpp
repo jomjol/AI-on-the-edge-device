@@ -727,7 +727,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             GENERAL[n]->ROI[roi]->isReject = true;
                             result = -1;
                             _result_save_file+= 100;     // In case fit is not sufficient, the result should still be saved with "-10x.y".
-                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
+                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + ", Threshold: " + to_string(CNNGoodThreshold) + ")";
                             LogFile.WriteToFile(ESP_LOG_WARN, TAG, zw);
                         }
                         else

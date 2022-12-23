@@ -15,6 +15,5 @@ void CheckOTAUpdate();
 void doReboot();
 void hard_restart();
 void CheckUpdate();
-static bool ota_update_task(std::string fn);
 
 #endif //SERVEROTA_H
