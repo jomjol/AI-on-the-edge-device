@@ -55,9 +55,9 @@ jobs:
 
 
 #########################################################################################
-## Pack for new OTA 
+## Pack for Update
 #########################################################################################
-  pack-for-OTA:
+  pack-for-update:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
@@ -173,7 +173,7 @@ jobs:
 #########################################################################################
 ## Pack for a fresh install (USB flashing) (initial_esp32_setup)
 #########################################################################################
-  pack-for-fresh-install:
+  pack-for-initial_esp32_setup:
     # creates old style binaries for fresh installation (backward compatible to wiki)
     runs-on: ubuntu-latest
     needs: build
@@ -229,7 +229,7 @@ jobs:
 #########################################################################################
   release: 
     runs-on: ubuntu-latest
-    needs: [pack-for-OTA, pack-for-fresh-install, pack-for-remote_setup]
+    needs: [pack-for-update, pack-for-initial_esp32_setup, pack-for-remote_setup]
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
