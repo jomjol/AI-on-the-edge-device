@@ -87,35 +87,35 @@ jobs:
 
     - name: Prepare update.zip artifact
       run: |
-        mkdir -p ./dist
-        cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
+        mkdir -p ./update
+        cp "./code/.pio/build/esp32cam/firmware.bin" "update/firmware.bin"
 
-    - name: Add Web UI to dist
-      run: cp -r ./sd-card/html ./dist/
+    - name: Add Web UI to update
+      run: cp -r ./sd-card/html ./update/
 
-    - name: Add CNN to dist
+    - name: Add CNN to update
       run: |
-        mkdir ./dist/config/
-        cp ./sd-card/config/*.tfl ./dist/config/ 2>/dev/null || true
-        cp ./sd-card/config/*.tflite ./dist/config/ 2>/dev/null || true
+        mkdir ./update/config/
+        cp ./sd-card/config/*.tfl ./update/config/ 2>/dev/null || true
+        cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
 
-    - name: Upload dist as update.zip artifact (Firmware + Web UI + CNN)
+    - name: Upload update as update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
         name: "update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./dist/*
+        path: ./update/*
 
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: dist
-        key: ${{ github.run_number }}-pack-for-OTA
+        path: update
+        key: ${{ github.run_number }}-update
 
 
 #########################################################################################
 ## Pack for Remote Setup 
 #########################################################################################
-  pack-for-remote-setup:
+  pack-for-remote_setup:
     # New Remote Setup concept
     # remote_setup__version.zip file with following content:
     #  - /firmware.bin
@@ -145,28 +145,28 @@ jobs:
 
     - name: Prepare remote_setup.zip artifact
       run: |
-        mkdir -p ./dist
-        cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
+        mkdir -p ./remote_setup
+        cp "./code/.pio/build/esp32cam/firmware.bin" "remote_setup/firmware.bin"
 
-    - name: Add Web UI to dist
-      run: cp -r ./sd-card/html ./dist/
+    - name: Add Web UI to remote_setup
+      run: cp -r ./sd-card/html ./remote_setup/
 
-    - name: Add CNN to dist
+    - name: Add whole config folder to remote_setup
       run: |
-        mkdir ./dist/config/
-        cp ./sd-card/config/* ./dist/config/ 2>/dev/null || true
+        mkdir ./remote_setup/config/
+        cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
 
-    - name: Upload dist as remote_setup.zip artifact (Firmware + Web UI + Config)
+    - name: Upload remote_setup as remote_setup.zip artifact (Firmware + Web UI + Config)
       uses: actions/upload-artifact@v3
       with:
         name: "remote_setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./dist/*
+        path: ./remote_setup/*
 
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: dist
-        key: ${{ github.run_number }}-pack-for-remote-setup
+        path: remote_setup
+        key: ${{ github.run_number }}-remote_setup
 
 
 
@@ -199,27 +199,27 @@ jobs:
 
     - name: Prepare artifacts for release
       run: |
-        mkdir -p firmware
-        rm -rf firmware/*.zip
+        mkdir -p initial_esp32_setup
+        rm -rf initial_esp32_setup/*.zip
         mkdir -p release
-        # copy builds to firmware folder
-        cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
-        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
-        cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
-        zip -r ./firmware/sd-card.zip sd-card
-        cd ./firmware
+        # copy builds to initial_esp32_setup folder
+        cp -f "./code/.pio/build/esp32cam/firmware.bin" "initial_esp32_setup/firmware.bin"
+        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "initial_esp32_setup/bootloader.bin"
+        cp -f "./code/.pio/build/esp32cam/partitions.bin" "initial_esp32_setup/partitions.bin"
+        zip -r ./initial_esp32_setup/sd-card.zip sd-card
+        cd ./initial_esp32_setup
   
     - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v3
       with:
         name: "initial_esp32_setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./firmware
+        path: ./initial_esp32_setup
 
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: firmware
-        key: ${{ github.run_number }}-pack-for-fresh-install
+        path: initial_esp32_setup
+        key: ${{ github.run_number }}-initial_esp32_setup
 
 
 
@@ -229,18 +229,32 @@ jobs:
 #########################################################################################
   release: 
     runs-on: ubuntu-latest
-    needs: [pack-for-OTA, pack-for-fresh-install, pack-for-remote-setup]
+    needs: [pack-for-OTA, pack-for-fresh-install, pack-for-remote_setup]
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
     - uses: actions/checkout@v3
 
-    # import the changes from 
+    # import update
+    - name: Get generated update files from cache
+      uses: actions/cache@v3
+      with:
+        path: update
+        key: ${{ github.run_number }}-update
+
+    # import remote_setup
     - name: Get generated files from cache
       uses: actions/cache@v3
       with:
-        path: dist
-        key: ${{ github.run_number }}-pack-for-OTA
+        path: remote_setup
+        key: ${{ github.run_number }}-remote_setup
+
+    # import initial_esp32_setup
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: initial_esp32_setup
+        key: ${{ github.run_number }}-initial_esp32_setup
 
     - name: Set Variables
       id: vars
@@ -248,23 +262,26 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    # import cached artifacts from pack-for-fresh-install
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: firmware
-        key: ${{ github.run_number }}-pack-for-fresh-install
 
     - name: Prepare artifacts for release
       run: |
         mkdir -p release
-        mkdir -p dist
-        # create a update__${{ steps.vars.outputs.branch }}.zip like "update__rolling"
         pwd
-        cd ./dist
+        ls -l
+
+        # create update__*.zip like "update__v13.0.5.zip"
+        cd ./update
         zip -r ../release/update__${{ steps.vars.outputs.branch }}.zip .
-        cd ../firmware
+
+        # create initial_esp32_setup__*.zip like "initial_esp32_setup__v13.0.5.zip"
+        cd ../initial_esp32_setup
         zip -r ../release/initial_esp32_setup__${{ steps.vars.outputs.branch }}.zip .
+
+        # create remote_setup__*.zip like "remote_setup__v13.0.5.zip"
+        cd ../remote_setup
+        zip -r ../release/remote_setup__${{ steps.vars.outputs.branch }}.zip .
+
+
     # extract the version used in next step
     - id: get_version
       if: startsWith(github.ref, 'refs/tags/') 
