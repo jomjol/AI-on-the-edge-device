@@ -234,10 +234,6 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     # import the changes from 
     - name: Get generated files from cache
