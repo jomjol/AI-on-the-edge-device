@@ -47,7 +47,7 @@ static const char *TAG = "OTA";
 esp_err_t handler_reboot(httpd_req_t *req);
 
 std::string _file_name_update;
-
+bool initial_setup = false;
 
 
 static void infinite_loop(void)
@@ -75,7 +75,7 @@ void task_do_Update_ZIP(void *pvParameter)
         out = "/sdcard/html";
         outbin = "/sdcard/firmware";
 
-        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/");
+        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
 
         if (retfirmware.length() > 0)
@@ -83,6 +83,12 @@ void task_do_Update_ZIP(void *pvParameter)
         	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
             ota_update_task(retfirmware);
         }
+
+        if (initial_setup)
+        {
+
+        }
+
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
         doReboot();
     }
@@ -105,6 +111,15 @@ void CheckUpdate()
 	char zw[1024] = "";
 	fgets(zw, 1024, pfile);
     _file_name_update = std::string(zw);
+    if (fgets(zw, 1024, pfile))
+	{
+		std::string _szw = std::string(zw);
+        if (_szw == "init")
+        {
+       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered.");
+            initial_setup = true;        }
+	}
+
     fclose(pfile);
     DeleteFile("/sdcard/update.txt");   // Prevent Boot Loop!!!
 	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update during boot triggered - Update File: " + _file_name_update);

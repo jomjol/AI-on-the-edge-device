@@ -39,6 +39,8 @@
 #include "../../include/defines.h"
 //#include "server_GPIO.h"
 
+#include "softAP.h"
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -175,7 +177,16 @@ extern "C" void app_main(void)
     CheckUpdate();
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
+    if (!LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold))
+    {
+        // config.ini existiert nicht! --> mache einen AP statt eines STA!
+        wifi_init_softap();
+        StartTaskWebServerAP();
+        while(1) { // wait until reboot within task_do_Update_ZIP
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+
+    };
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
 
@@ -323,3 +334,4 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
 }
+

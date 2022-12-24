@@ -582,6 +582,17 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 }
 
 
+std::string ReplaceString(std::string subject, const std::string& search,
+                          const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return subject;
+}
+
+
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
 /* SD Card Manufacturer Database */
 struct SDCard_Manufacturer_database {
