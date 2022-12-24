@@ -112,12 +112,10 @@ jobs:
         key: ${{ github.run_number }}-pack-for-OTA
 
 
-
-
 #########################################################################################
 ## Pack for Remote Setup 
 #########################################################################################
-  pack-for-OTA:
+  pack-for-remote-setup:
     # New Remote Setup concept
     # remote_setup__version.zip file with following content:
     #  - /firmware.bin
