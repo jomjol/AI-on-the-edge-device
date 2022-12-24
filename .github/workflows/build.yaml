@@ -40,8 +40,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-      #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
-      run: cd code; platformio run --environment esp32cam
+      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      #run: cd code; platformio run --environment esp32cam
 
     - name: Store generated files in cache
       uses: actions/cache@v3
@@ -85,7 +85,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare update.zip artifact
+    - name: Prepare update__*.zip artifact
       run: |
         mkdir -p ./update
         cp "./code/.pio/build/esp32cam/firmware.bin" "update/firmware.bin"
@@ -143,7 +143,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare remote_setup.zip artifact
+    - name: Prepare remote_setup__*.zip artifact
       run: |
         mkdir -p ./remote_setup
         cp "./code/.pio/build/esp32cam/firmware.bin" "remote_setup/firmware.bin"
@@ -197,7 +197,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare artifacts for release
+    - name: Prepare initial_esp32_setup__*.zip artifact
       run: |
         mkdir -p initial_esp32_setup
         rm -rf initial_esp32_setup/*.zip
