@@ -40,8 +40,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-      #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
-      run: cd code; platformio run --environment esp32cam
+      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      #run: cd code; platformio run --environment esp32cam
 
     - name: Store generated files in cache
       uses: actions/cache@v3
@@ -111,6 +111,64 @@ jobs:
         path: dist
         key: ${{ github.run_number }}-pack-for-OTA
 
+
+
+
+#########################################################################################
+## Pack for Remote Setup 
+#########################################################################################
+  pack-for-OTA:
+    # New Remote Setup concept
+    # remote_setup__version.zip file with following content:
+    #  - /firmware.bin
+    #  - /html/*
+    #  - /config/*
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
+    - name: Prepare remote_setup.zip artifact
+      run: |
+        mkdir -p ./dist
+        cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
+
+    - name: Add Web UI to dist
+      run: cp -r ./sd-card/html ./dist/
+
+    - name: Add CNN to dist
+      run: |
+        mkdir ./dist/config/
+        cp ./sd-card/config/* ./dist/config/ 2>/dev/null || true
+
+    - name: Upload dist as remote_setup.zip artifact (Firmware + Web UI + Config)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "remote_setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./dist/*
+
+    - name: Store generated files in cache
+      uses: actions/cache@v3
+      with:
+        path: dist
+        key: ${{ github.run_number }}-pack-for-remote-setup
 
 
 
