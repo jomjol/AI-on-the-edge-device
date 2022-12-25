@@ -359,6 +359,11 @@ jobs:
         cp -f docs/manifest_template.json docs/manifest.json
         sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
 
+        # Legacy, must be removed after the next release
+        mkdir docs/binary
+        cp -f docs/releases/download/v11.2.0/* docs/binary/
+        rm -rf docs/releases
+
     - name: Setup Pages
       uses: actions/configure-pages@v2
 
