@@ -355,13 +355,6 @@ jobs:
 
     - name: Add binary to Web Installer and update manifest
       run: |
-        # Legacy, can be removed after the next release (and also delete the folder docs/releases)
-        if [ ! -d "docs/binary" ] then
-          mkdir docs/binary
-          cp -f docs/releases/download/v11.2.0/* docs/binary/
-          rm -rf docs/releases
-        fi
-
         cp update/firmware.bin docs/binary/firmware.bin
         cp -f docs/manifest_template.json docs/manifest.json
         sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
