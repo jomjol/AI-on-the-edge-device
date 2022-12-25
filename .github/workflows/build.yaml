@@ -40,8 +40,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build Firmware
-      #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
-      run: cd code; platformio run --environment esp32cam
+      run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      #run: cd code; platformio run --environment esp32cam
 
     - name: Store generated files in cache
       uses: actions/cache@v3
@@ -320,3 +320,57 @@ jobs:
         git add Changelog.md
         git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
         git push origin HEAD:master
+
+
+
+
+
+  # Single deploy job since we're just deploying
+  update-web-installer:
+    needs: [release]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # import update
+    - name: Get generated update files from cache
+      uses: actions/cache@v3
+      with:
+        path: update
+        key: ${{ github.run_number }}-update
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
+    - name: Add binary to Web Installer
+      run: |
+        cp update/firmware.bin docs/binary/firmware.bin
+        cp -f docs/manifest_template.json docs/manifest.json
+        sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v2
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: 'docs'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
