@@ -169,7 +169,6 @@ jobs:
         key: ${{ github.run_number }}-remote_setup
 
 
-
 #########################################################################################
 ## Pack for a fresh install (USB flashing) (manual_setup)
 #########################################################################################
@@ -220,8 +219,6 @@ jobs:
       with:
         path: manual_setup
         key: ${{ github.run_number }}-manual_setup
-
-
 
 
 #########################################################################################
@@ -322,10 +319,9 @@ jobs:
         git push origin HEAD:master
 
 
-
-
-
-  # Single deploy job since we're just deploying
+#########################################################################################
+## Update the Web Installer on a release
+#########################################################################################
   update-web-installer:
     needs: [release]
 
@@ -357,7 +353,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Add binary to Web Installer
+    - name: Add binary to Web Installer and update manifest
       run: |
         cp update/firmware.bin docs/binary/firmware.bin
         cp -f docs/manifest_template.json docs/manifest.json
