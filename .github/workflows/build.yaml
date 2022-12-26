@@ -355,7 +355,8 @@ jobs:
 
     - name: Add binary to Web Installer and update manifest
       run: |
-        cp update/firmware.bin docs/binary/firmware.bin
+        rm -f docs/binary/firmware.bin
+        cp -f update/firmware.bin docs/binary/firmware.bin
         cp -f docs/manifest_template.json docs/manifest.json
         sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
 
