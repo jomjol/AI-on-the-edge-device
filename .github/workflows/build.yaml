@@ -55,9 +55,9 @@ jobs:
 
 
 #########################################################################################
-## Pack for new OTA 
+## Pack for Update
 #########################################################################################
-  pack-for-OTA:
+  pack-for-update:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
@@ -85,39 +85,94 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare update.zip artifact
+    - name: Prepare update__*.zip artifact
       run: |
-        mkdir -p ./dist
-        cp "./code/.pio/build/esp32cam/firmware.bin" "dist/firmware.bin"
+        mkdir -p ./update
+        cp "./code/.pio/build/esp32cam/firmware.bin" "update/firmware.bin"
 
-    - name: Add Web UI to dist
-      run: cp -r ./sd-card/html ./dist/
+    - name: Add Web UI to update
+      run: cp -r ./sd-card/html ./update/
 
-    - name: Add CNN to dist
+    - name: Add CNN to update
       run: |
-        mkdir ./dist/config/
-        cp ./sd-card/config/*.tfl ./dist/config/ 2>/dev/null || true
-        cp ./sd-card/config/*.tflite ./dist/config/ 2>/dev/null || true
+        mkdir ./update/config/
+        cp ./sd-card/config/*.tfl ./update/config/ 2>/dev/null || true
+        cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
 
-    - name: Upload dist as update.zip artifact (Firmware + Web UI + CNN)
+    - name: Upload update as update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3
       with:
-        name: "update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./dist/*
+        name: "AI-on-the-edge-device__update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./update/*
 
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: dist
-        key: ${{ github.run_number }}-pack-for-OTA
-
-
+        path: update
+        key: ${{ github.run_number }}-update
 
 
 #########################################################################################
-## Pack for a fresh install (USB flashing) (initial_esp32_setup)
+## Pack for Remote Setup 
 #########################################################################################
-  pack-for-fresh-install:
+  pack-for-remote_setup:
+    # New Remote Setup concept
+    # remote_setup__version.zip file with following content:
+    #  - /firmware.bin
+    #  - /html/*
+    #  - /config/*
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/version.txt
+        key: ${{ github.run_number }}
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
+    - name: Prepare remote_setup__*.zip artifact
+      run: |
+        mkdir -p ./remote_setup
+        cp "./code/.pio/build/esp32cam/firmware.bin" "remote_setup/firmware.bin"
+
+    - name: Add Web UI to remote_setup
+      run: cp -r ./sd-card/html ./remote_setup/
+
+    - name: Add whole config folder to remote_setup
+      run: |
+        mkdir ./remote_setup/config/
+        cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
+
+    - name: Upload remote_setup as remote_setup.zip artifact (Firmware + Web UI + Config)
+      uses: actions/upload-artifact@v3
+      with:
+        name: "AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./remote_setup/*
+
+    - name: Store generated files in cache
+      uses: actions/cache@v3
+      with:
+        path: remote_setup
+        key: ${{ github.run_number }}-remote_setup
+
+
+#########################################################################################
+## Pack for a fresh install (USB flashing) (manual_setup)
+#########################################################################################
+  pack-for-manual_setup:
     # creates old style binaries for fresh installation (backward compatible to wiki)
     runs-on: ubuntu-latest
     needs: build
@@ -141,31 +196,29 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare artifacts for release
+    - name: Prepare manual_setup__*.zip artifact
       run: |
-        mkdir -p firmware
-        rm -rf firmware/*.zip
+        mkdir -p manual_setup
+        rm -rf manual_setup/*.zip
         mkdir -p release
-        # copy builds to firmware folder
-        cp -f "./code/.pio/build/esp32cam/firmware.bin" "firmware/firmware.bin"
-        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "firmware/bootloader.bin"
-        cp -f "./code/.pio/build/esp32cam/partitions.bin" "firmware/partitions.bin"
-        zip -r ./firmware/sd-card.zip sd-card
-        cd ./firmware
+        # copy builds to manual_setup folder
+        cp -f "./code/.pio/build/esp32cam/firmware.bin" "manual_setup/firmware.bin"
+        cp -f "./code/.pio/build/esp32cam/bootloader.bin" "manual_setup/bootloader.bin"
+        cp -f "./code/.pio/build/esp32cam/partitions.bin" "manual_setup/partitions.bin"
+        zip -r ./manual_setup/sd-card.zip sd-card
+        cd ./manual_setup
   
-    - name: Upload initial_esp32_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
+    - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v3
       with:
-        name: "initial_esp32_setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./firmware
+        name: "AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./manual_setup
 
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
-        path: firmware
-        key: ${{ github.run_number }}-pack-for-fresh-install
-
-
+        path: manual_setup
+        key: ${{ github.run_number }}-manual_setup
 
 
 #########################################################################################
@@ -173,40 +226,55 @@ jobs:
 #########################################################################################
   release: 
     runs-on: ubuntu-latest
-    needs: [pack-for-OTA, pack-for-fresh-install]
+    needs: [pack-for-update, pack-for-manual_setup, pack-for-remote_setup]
     if: startsWith(github.ref, 'refs/tags/') 
       
     steps:
     - uses: actions/checkout@v3
+
+    # import update
+    - name: Get generated update files from cache
+      uses: actions/cache@v3
+      with:
+        path: update
+        key: ${{ github.run_number }}-update
+
+    # import remote_setup
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: remote_setup
+        key: ${{ github.run_number }}-remote_setup
+
+    # import manual_setup
+    - name: Get generated files from cache
+      uses: actions/cache@v3
+      with:
+        path: manual_setup
+        key: ${{ github.run_number }}-manual_setup
+
     - name: Set Variables
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-    # import the changes from 
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: dist
-        key: ${{ github.run_number }}-pack-for-OTA
-
-    # import cached artifacts from pack-for-fresh-install
-    - name: Get generated files from cache
-      uses: actions/cache@v3
-      with:
-        path: firmware
-        key: ${{ github.run_number }}-pack-for-fresh-install
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Prepare artifacts for release
       run: |
         mkdir -p release
-        mkdir -p dist
-        # create a update.zip like "update__rolling"
-        pwd
-        cd ./dist
-        zip -r ../release/update.zip .
-        cd ../firmware
-        zip -r ../release/initial_esp32_setup.zip .
+
+        # create AI-on-the-edge-device__update__*.zip like "AI-on-the-edge-device__update__v13.0.5.zip"
+        cd ./update
+        zip -r ../release/AI-on-the-edge-device__update__${{ steps.vars.outputs.branch }}.zip .
+
+        # create AI-on-the-edge-device__manual-setup__*.zip like "AI-on-the-edge-device__manual-setup__v13.0.5.zip"
+        cd ../manual_setup
+        zip -r ../release/AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}.zip .
+
+        # create AI-on-the-edge-device__remote-setup__*.zip like "AI-on-the-edge-device__remote-setup__v13.0.5.zip"
+        cd ../manual_setup
+        zip -r ../release/AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}.zip .
+
     # extract the version used in next step
     - id: get_version
       if: startsWith(github.ref, 'refs/tags/') 
@@ -239,7 +307,6 @@ jobs:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
           release/*
-          
 
     # Commit&Push Changelog to master branch. Must be manually merged back to rolling
     - name: Commit changes and push changes
@@ -250,3 +317,57 @@ jobs:
         git add Changelog.md
         git commit Changelog.md -m "Update Changelog.md for ${{github.event.inputs.versionIncrement}} release"
         git push origin HEAD:master
+
+
+#########################################################################################
+## Update the Web Installer on a release
+#########################################################################################
+  update-web-installer:
+    needs: [release]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # import update
+    - name: Get generated update files from cache
+      uses: actions/cache@v3
+      with:
+        path: update
+        key: ${{ github.run_number }}-update
+
+    - name: Set Variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
+    - name: Add binary to Web Installer and update manifest
+      run: |
+        rm -f docs/binary/firmware.bin
+        cp -f update/firmware.bin docs/binary/firmware.bin
+        cp -f docs/manifest_template.json docs/manifest.json
+        sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v2
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: 'docs'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
