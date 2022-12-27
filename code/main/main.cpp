@@ -39,6 +39,8 @@
 #include "../../include/defines.h"
 //#include "server_GPIO.h"
 
+#include "softAP.h"
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -175,6 +177,8 @@ extern "C" void app_main(void)
 
     CheckOTAUpdate();
     CheckUpdate();
+    CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
+
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
     LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
@@ -318,3 +322,4 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
 }
+
