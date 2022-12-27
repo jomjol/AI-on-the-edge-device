@@ -25,6 +25,7 @@ jobs:
       
       ####################################################################
       ## Remove labels again (issues only)
+      ## Make sure to also add the reply message to .github/label-commenter-config.yml!
       ####################################################################
       - name: Remove 'Logfile' label again (issues only)
         if: github.event.label.name == 'bot-reply Logfile'
@@ -39,6 +40,13 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Web Console'
+
+      - name: Remove 'Properly Format Code' label again (issues only)
+        if: github.event.label.name == 'bot-reply Properly Format Code'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Properly Format Code'
           
       - name: Remove 'Web Installer' label again (issues only)
         if: github.event.label.name == 'bot-reply Web Installer'
@@ -53,20 +61,6 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Rolling Build'
-
-      - name: Remove 'Properly Format Code' label again (issues only)
-        if: github.event.label.name == 'bot-reply Properly Format Code'
-        uses: actions-cool/issues-helper@v2
-        with:
-          actions: 'remove-labels'
-          labels: 'bot-reply Properly Format Code'
-          
-      - name: Remove 'Show Logfile' label again (issues only)
-        if: github.event.label.name == 'bot-reply Show Logfile'
-        uses: actions-cool/issues-helper@v2
-        with:
-          actions: 'remove-labels'
-          labels: 'bot-reply Show Logfile'
           
       - name: Remove 'Show Trained Digits/Pointers' label again (issues only)
         if: github.event.label.name == 'bot-reply Show Trained Digits/Pointers'
