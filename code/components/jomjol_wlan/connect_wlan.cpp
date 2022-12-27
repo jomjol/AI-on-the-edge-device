@@ -41,16 +41,11 @@
 
 
 /////////////////////
-
-
-
-
 #include "../../include/defines.h"
 
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
-
 
 static const char *TAG = "WIFI";
 
@@ -304,12 +299,11 @@ static void esp_bss_rssi_low_handler(void* arg, esp_event_base_t event_base,
 //////////////////////////////////
 
 
-
-
 std::string* getIPAddress()
 {
     return &ipadress;
 }
+
 
 std::string* getSSID()
 {
@@ -353,6 +347,7 @@ void task_doBlink(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+
 void LEDBlinkTask(int _dauer, int _anz, bool _off)
 {
 	BlinkDauer = _dauer;
@@ -362,6 +357,7 @@ void LEDBlinkTask(int _dauer, int _anz, bool _off)
     xTaskCreate(&task_doBlink, "task_doBlink", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY+1, NULL);
 }
 /////////////////////////////////////////////////////////
+
 
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
@@ -398,12 +394,14 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
+
 void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
     std::string zw = std::string(ip);
     std::stringstream s(zw);
     char ch; //to temporarily store the '.'
     s >> a >> ch >> b >> ch >> c >> ch >> d;
 }
+
 
 void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns, int _rssithreashold)
 {
@@ -463,13 +461,13 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
                                                         NULL,
                                                         &instance_got_ip));
 
-#ifdef WLAN_USE_MESH_ROAMING
+	#ifdef WLAN_USE_MESH_ROAMING
 	ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, 
                                                         WIFI_EVENT_STA_BSS_RSSI_LOW,
                                                         &esp_bss_rssi_low_handler, 
                                                         NULL,
                                                         &instance_bss_rssi_low));
-#endif
+	#endif
 
     wifi_config_t wifi_config = { };
 
@@ -485,10 +483,10 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
         esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , _hostname);
         hostname = std::string(_hostname);
         if(ret != ESP_OK ){
-            ESP_LOGE(TAG,"failed to set hostname:%d",ret);  
+            ESP_LOGE(TAG,"Failed to set hostname: %d",ret);  
         }
         else {
-            ESP_LOGI(TAG,"Set Hostname to:%s", _hostname); 
+            ESP_LOGI(TAG,"Set hostname to: %s", _hostname); 
         }
 
     }
@@ -507,15 +505,15 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
      * happened. */
     if (bits & WIFI_CONNECTED_BIT) {
         #ifdef __HIDE_PASSWORD
-            ESP_LOGI(TAG, "connected to ap SSID: %s, password: XXXXXXX", _ssid);
+            ESP_LOGI(TAG, "Connected with AP: %s, password: XXXXXXX", _ssid);
         #else
-            ESP_LOGI(TAG, "connected to ap SSID: %s, password: %s", _ssid, _password);
+            ESP_LOGI(TAG, "Connected with AP: %s, password: %s", _ssid, _password);
         #endif        
     } else if (bits & WIFI_FAIL_BIT) {
         #ifdef __HIDE_PASSWORD
-            ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: XXXXXXXX", _ssid);
+            ESP_LOGI(TAG, "Failed to connect with AP: %s, password: XXXXXXXX", _ssid);
         #else
-            ESP_LOGI(TAG, "Failed to connect to SSID: %s, password: %s", _ssid, _password);
+            ESP_LOGI(TAG, "Failed to connect with AP: %s, password: %s", _ssid, _password);
         #endif        
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
@@ -529,6 +527,7 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 //    vEventGroupDelete(s_wifi_event_group);
 }
 
+
 int get_WIFI_RSSI()
 {
     wifi_ap_record_t ap;
@@ -536,17 +535,34 @@ int get_WIFI_RSSI()
     return ap.rssi;
 }
 
+
 void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname)
 {
     wifi_init_sta(_ssid, _password, _hostname, NULL, NULL, NULL, NULL, 0);
 }
+
 
 void wifi_init_sta(const char *_ssid, const char *_password)
 {
     wifi_init_sta(_ssid, _password, NULL, NULL, NULL, NULL, NULL, 0);
 }
 
-bool getWIFIisConnected() {
+
+bool getWIFIisConnected() 
+{
     return WIFIConnected;
+}
+
+
+void WIFIDestroy() 
+{	
+    esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, event_handler);
+    esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, event_handler);
+	#ifdef WLAN_USE_MESH_ROAMING
+	esp_event_handler_unregister(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW, esp_bss_rssi_low_handler);
+	#endif
+	
+	esp_wifi_stop();
+	esp_wifi_deinit();
 }
 
