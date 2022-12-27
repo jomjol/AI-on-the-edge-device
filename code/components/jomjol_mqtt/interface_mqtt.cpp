@@ -332,7 +332,7 @@ void MQTTconnected(){
             }
         }
 
-        vTaskDelay(2000 / portTICK_PERIOD_MS);                  // Delay execution of callback routine after connection got established   
+        vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
         if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
             callbackOnConnected(maintopic, SetRetainFlag);
         }
