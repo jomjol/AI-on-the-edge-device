@@ -34,10 +34,6 @@
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "AI-on-the-Edge"
-#define EXAMPLE_ESP_WIFI_PASS      ""
-#define EXAMPLE_ESP_WIFI_CHANNEL   11
-#define EXAMPLE_MAX_STA_CONN       1
 
 bool isConfigINI = false;
 bool isWlanINI = false;
