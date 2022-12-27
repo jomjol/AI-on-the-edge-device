@@ -58,7 +58,7 @@ CONFIG_LWIP_IPV6=n
 
 #Newlib format
 CONFIG_NEWLIB_NANO_FORMAT=y
-###### safe optimizations 
+
 
 # ESP-NN
 #
@@ -70,6 +70,8 @@ CONFIG_NN_OPTIMIZATIONS=1
 # ESP HTTP client
 #
 # CONFIG_ESP_HTTP_CLIENT_ENABLE_HTTPS is not set
+
+###### end safe optimizations
 
 CONFIG_ESP32_REV_MIN_0=y
 
