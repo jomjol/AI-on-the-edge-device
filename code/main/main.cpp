@@ -175,18 +175,11 @@ extern "C" void app_main(void)
 
     CheckOTAUpdate();
     CheckUpdate();
+    CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
+
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
-    if (!LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold))
-    {
-        // config.ini existiert nicht! --> mache einen AP statt eines STA!
-        wifi_init_softap();
-        StartTaskWebServerAP();
-        while(1) { // wait until reboot within task_do_Update_ZIP
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-
-    };
+    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
 

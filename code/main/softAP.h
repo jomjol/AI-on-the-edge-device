@@ -14,8 +14,6 @@
 #include "esp_tls_crypto.h"
 #include <esp_http_server.h>
 
-void wifi_init_softap();
-
-void StartTaskWebServerAP();
+void CheckStartAPMode();
 
 #endif

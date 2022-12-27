@@ -31,10 +31,13 @@
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "AIONEDGE"
+#define EXAMPLE_ESP_WIFI_SSID      "AI-on-the-Edge"
 #define EXAMPLE_ESP_WIFI_PASS      ""
 #define EXAMPLE_ESP_WIFI_CHANNEL   11
 #define EXAMPLE_MAX_STA_CONN       1
+
+bool isConfigINI = false;
+bool isWlanINI = false;
 
 static const char *TAG = "wifi softAP";
 
@@ -52,7 +55,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-void wifi_init_softap(void)
+void wifi_init_softAP(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -88,49 +91,97 @@ void wifi_init_softap(void)
 }
 
 
+void SendHTTPResponse(httpd_req_t *req)
+{
+    std::string message = "<h1>AI-on-the-edge - BASIC SETUP</h1><p>This is an access point with a minimal server to setup the minimum required files and information on the device and the SD-card. ";
+    message += "This mode is always startet if one of the following files is missing: /wlan.ini or the /config/config.ini.<p>";
+    message += "The setup is done in 3 steps: 1. upload full inital configuration (sd-card content), 2. store WLAN acces information, 3. reboot (and connect to WLANs)<p><p>";
+    message += "Please follow the below instructions.<p>";
+    httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+
+    isWlanINI = FileExists("/sdcard/wlan.ini");
+
+    if (!isConfigINI)
+    {
+        message = "<h3>1. Upload initial configuration to sd-card</h3><p>";
+        message += "The configuration file config.ini is missing and most propably the full configuration and html folder on the sd-card. ";
+        message += "This is normal after the first flashing of the firmware and an empty sd-card. Please upload \"remote_setup.zip\", which contains an full inital configuration.<p>";
+        message += "<input id=\"newfile\" type=\"file\">";
+        message += "<button class=\"button\" style=\"width:300px\" id=\"doUpdate\" type=\"button\" onclick=\"upload()\">Upload File</button><p>";
+        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+
+        message = "<script language=\"JavaScript\">";
+        message += "function upload() {";
+        message += "var xhttp = new XMLHttpRequest();";
+        message += "xhttp.onreadystatechange = function() {if (xhttp.readyState == 4) {if (xhttp.status == 200) {location.reload();}}};";
+        message += "var filePath = document.getElementById(\"newfile\").value.split(/[\\\\/]/).pop();";
+        message += "var file = document.getElementById(\"newfile\").files[0];";
+        message += "if (!file.name.includes(\"remote-setup\")){if (!confirm(\"The zip file name should contain '...remote-setup...'. Are you sure that you have downloaded the correct file?\"))return;};";
+        message += "var upload_path = \"/upload/firmware/\" + filePath; xhttp.open(\"POST\", upload_path, true); xhttp.send(file);document.reload();}";
+        message += "</script>";
+        isConfigINI = true;
+        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+        return;
+    }
+    if (!isWlanINI)
+    {
+        message = "<h3>2. WLAN access credentials</h3><p>";
+        message = "<table>";
+        message += "<tr><td>WLAN-SSID</td><td><input type=\"text\" name=\"ssid\" id=\"ssid\"></td><td>SSID of the WLAN</td></tr>";
+        message += "<tr><td>WLAN-Password</td><td><input type=\"text\" name=\"password\" id=\"password\"></td><td>ATTENTION: the password will not be encrypted during the sending.</td>";
+        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+
+//        message = "</tr><tr><td> Hostname</td><td><input type=\"text\" name=\"hostname\" id=\"hostname\"></td><td></td>";
+//        message += "</tr><tr><td>Fixed IP</td><td><input type=\"text\" name=\"ip\" id=\"ip\"></td><td>Leave emtpy if set by router</td></tr>";
+//        message += "<tr><td>gateway</td><td><input type=\"text\" name=\"gateway\" id=\"gateway\"></td><td>Leave emtpy if set by router</td></tr>";
+//        message += "<tr><td>netmask</td><td><input type=\"text\" name=\"netmask\" id=\"netmask\"></td><td>Leave emtpy if set by router</td>";
+//        message += "</tr><tr><td>DNS</td><td><input type=\"text\" name=\"dns\" id=\"dns\"></td><td>Leave emtpy if set by router</td></tr>";
+//        message += "<tr><td>RSSI Threashold</td><td><input type=\"number\" name=\"name\" id=\"threashold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
+//        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+
+        message = "/<table><p>";
+        message += "<h4>ATTENTION:<h4>Be sure about the WLAN settings. They cannot be reset afterwards. If ssid or password is wrong, you need to take out the sd-card and manually change them in \"wlan.ini\"!<p>";
+        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+
+        message = "<button class=\"button\" type=\"button\" onclick=\"wr()\">Write wlan.ini</button>";
+        message += "<script language=\"JavaScript\">async function wr(){";
+        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value;";
+//        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssi=\"+document.getElementById(\"threashold\").value;";
+        message += "fetch(api);await new Promise(resolve => setTimeout(resolve, 1000));location.reload();}</script>";
+        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+        return;
+    }
+
+    message = "<h3>3. Reboot</h3><p>";
+    message += "After triggering the reboot, the zip-files gets extracted and written to the sd-card.<br>The ESP32 will restart two times and then connect to your access point. Please find the IP in your router settings and access it with the new ip-address.<p>";
+    message += "The first update and initialization process can take up to 3 minutes before you find it in the wlan. Errors can be found on the console / serial logout.<p>Have fun!<p>";
+    message += "<button class=\"button\" type=\"button\" onclick=\"rb()\")>Reboot to first setup.</button>";
+    message += "<script language=\"JavaScript\">async function rb(){";
+    message += "api = \"/reboot\";";
+    message += "fetch(api);await new Promise(resolve => setTimeout(resolve, 1000));location.reload();}</script>";
+    httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
+}
+
+
 
 
 esp_err_t test_handler(httpd_req_t *req)
 {
-    std::string message = "<h1>AI-on-the-edge - BASIC SETUP</h1><p>There is no wlan.ini, therefore no connection possible.<p>";
-    message += "<table>";
-    message += "<tr><td>WLAN-SSID</td><td><input type=\"text\" name=\"ssid\" id=\"ssid\"></td><td>SSID of the WLAN</td></tr>";
-    message += "<tr><td>WLAN-Password</td><td><input type=\"text\" name=\"password\" id=\"password\"></td><td>ATTENTION: the password will not be encrypted during the sending.</td>";
-    httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-
-    message = "</tr><tr><td> Hostname</td><td><input type=\"text\" name=\"hostname\" id=\"hostname\"></td><td></td>";
-    message += "</tr><tr><td>Fixed IP</td><td><input type=\"text\" name=\"ip\" id=\"ip\"></td><td>Leave emtpy if set by router</td></tr>";
-    message += "<tr><td>gateway</td><td><input type=\"text\" name=\"gateway\" id=\"gateway\"></td><td>Leave emtpy if set by router</td></tr>";
-    message += "<tr><td>netmask</td><td><input type=\"text\" name=\"netmask\" id=\"netmask\"></td><td>Leave emtpy if set by router</td>";
-    message += "</tr><tr><td>DNS</td><td><input type=\"text\" name=\"dns\" id=\"dns\"></td><td>Leave emtpy if set by router</td></tr>";
-    message += "<tr><td>RSSI Threashold</td><td><input type=\"number\" name=\"name\" id=\"threashold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
-    message += "";
-    message += "/<table>";
-    message += "<input id=\"newfile\" type=\"file\">";
-    message += "<button class=\"button\" style=\"width:300px\" id=\"doUpdate\" type=\"button\" onclick=\"upload()\">Upload Files</button>";
-
-    httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-
-    message = "<button class=\"button\" type=\"button\" onclick=\"wr()\">Write wlan.ini</button>";
-    message += "<script language=\"JavaScript\">function wr(){";
-    message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssi=\"+document.getElementById(\"threashold\").value;";
-    message += "fetch(api);}";
-    httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-
-    message = "function upload() {";
-    message += "var xhttp = new XMLHttpRequest();xhttp.onreadystatechange = function() {";
-    message += "if (xhttp.readyState == 4) {stopProgressTimer();if (xhttp.status == 200) {extract();} }};";
-    message += "var filePath = document.getElementById(\"newfile\").value.split(/[\\\\/]/).pop();";
-    message += "var file = document.getElementById(\"newfile\").files[0];";
-    message += "var upload_path = \"/upload/firmware/\" + filePath; xhttp.open(\"POST\", upload_path, true); xhttp.send(file);}";
-    message += "</script>";
-    httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-
-
+    SendHTTPResponse(req);
     httpd_resp_send_chunk(req, NULL, 0);
-
     return ESP_OK;
 }
+
+
+esp_err_t reboot_handlerAP(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON     
+    LogFile.WriteHeapInfo("handler_ota_update - Start");    
+#endif
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+    doReboot();
+    return ESP_OK;
+};
 
 
 esp_err_t config_ini_handler(httpd_req_t *req)
@@ -289,8 +340,6 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
     MakeDir("/sdcard/log");
     printf("Nach Start des Post Handlers\n");
 
-
-
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handlerAP");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
@@ -355,35 +404,25 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
     }
 
     FILE* pfile = fopen("/sdcard/update.txt", "w");
-    fwrite(filename, strlen(filename), 1, pfile);
+    std::string _s_zw= "/sdcard" + std::string(filename);
+    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
     fclose(pfile);
 
 
     fclose(fd);
     ESP_LOGI(TAG, "File reception complete");
+    httpd_resp_set_hdr(req, "Location", "/test");
+    httpd_resp_set_status(req, "303 See Other");
+    httpd_resp_set_hdr(req, "Location", "/test");
+//    httpd_resp_sendstr(req, "File uploaded successfully");
+    httpd_resp_send_chunk(req, NULL, 0);
 
-    httpd_resp_sendstr(req, "File uploaded successfully");
+    ESP_LOGI(TAG, "Update page send out");
+
+//    httpd_resp_sendstr(req, "File uploaded successfully");
     return ESP_OK;
 }
 
-httpd_handle_t start_webserverAP(void);
-
-void task_WebServerAP(void *pvParameter)
-{
-//    start_webserverAP();
-}
-
-void StartTaskWebServerAP()
-{
-    start_webserverAP();
-/*
-    BaseType_t xReturned;
-    xReturned = xTaskCreate(&task_WebServerAP, "task_WebServerAP", configMINIMAL_STACK_SIZE * 10, NULL, tskIDLE_PRIORITY+1, NULL);
-    while(1) { // wait until reboot within task_do_Update_ZIP
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-*/
-}
 
 httpd_handle_t start_webserverAP(void)
 {
@@ -393,6 +432,14 @@ httpd_handle_t start_webserverAP(void)
     if (httpd_start(&server, &config) == ESP_OK) {
         // Do something
     }
+
+    httpd_uri_t reboot_handle = {
+        .uri       = "/reboot",  // Match all URIs of type /path/to/file
+        .method    = HTTP_GET,
+        .handler   = reboot_handlerAP,
+        .user_ctx  = NULL    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &reboot_handle);
 
     httpd_uri_t config_ini_handle = {
         .uri       = "/config",  // Match all URIs of type /path/to/file
@@ -412,7 +459,7 @@ httpd_handle_t start_webserverAP(void)
     httpd_register_uri_handler(server, &file_uploadAP);
 
     httpd_uri_t test_uri = {
-        .uri      = "/test",
+        .uri      = "*",
         .method   = HTTP_GET,
         .handler  = test_handler,
         .user_ctx = NULL
@@ -421,4 +468,22 @@ httpd_handle_t start_webserverAP(void)
 
     return NULL;
 }
+
+void CheckStartAPMode()
+{
+    isConfigINI = FileExists("/sdcard/config/config.ini");
+    isWlanINI = FileExists("/sdcard/wlan.ini");
+
+    if (!isConfigINI or !isWlanINI)
+    {
+        wifi_init_softAP();
+        start_webserverAP();
+        while(1) { // wait until reboot within task_do_Update_ZIP
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+    }
+
+
+}
+
 

@@ -20,24 +20,16 @@
     function upload() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4) {
-                stopProgressTimer();
-                if (xhttp.status == 200) {
-    //					alert("Upload successfull!")
-    //                    document.reload();
-                    extract();
-                } 
-            }
-        };
+        if (xhttp.readyState == 4) {stopProgressTimer();if (xhttp.status == 200) {extract();} }};
         var filePath = document.getElementById("newfile").value.split(/[\\\/]/).pop();
-//        filePath = nameneu.split(/[\\\/]/).pop();
-
         var file = document.getElementById("newfile").files[0];
-//        var file = fileInput[0];
-        var upload_path = "/upload/firmware/" + filePath;
-        xhttp.open("POST", upload_path, true);
-        xhttp.send(file);
-    }
+        if (!file.name.includes("remote-setup"))
+        {
+            if (!confirm("The zip file name should contain \"...remote-setup...\". Are you sure that you have downloaded the correct file?"))
+                return;
+        }
+
+        var upload_path = "/upload/firmware/" + filePath; xhttp.open("POST", upload_path, true); xhttp.send(file);}
     
     
     function extract() {

@@ -301,6 +301,17 @@ bool RenameFile(string from, string to)
 	return true;
 }
 
+bool FileExists(string filename)
+{
+	FILE* fpSourceFile = fopen(filename.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		return false;
+	}
+	fclose(fpSourceFile);
+	return true;    
+}
+
 
 bool DeleteFile(string fn)
 {
