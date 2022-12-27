@@ -1,5 +1,6 @@
 #ifdef ENABLE_SOFTAP
 //if ENABLE_SOFTAP = disabled, set CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n in sdkconfig.defaults to save 28k of flash
+#include "../../include/defines.h"
 
 #include "softAP.h"
 
@@ -98,7 +99,7 @@ void SendHTTPResponse(httpd_req_t *req)
     message += "Please follow the below instructions.<p>";
     httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
-    isWlanINI = FileExists("/sdcard/wlan.ini");
+    isWlanINI = FileExists(WLAN_CONFIG_FILE);
 
     if (!isConfigINI)
     {
@@ -263,7 +264,7 @@ esp_err_t config_ini_handler(httpd_req_t *req)
         }
     };
 
-    FILE* configfilehandle = fopen("/sdcard/wlan.ini", "w");
+    FILE* configfilehandle = fopen(WLAN_CONFIG_FILE, "w");
     
     if (ssid.length())
         ssid = "ssid = \"" + ssid + "\"\n";
@@ -470,8 +471,8 @@ httpd_handle_t start_webserverAP(void)
 
 void CheckStartAPMode()
 {
-    isConfigINI = FileExists("/sdcard/config/config.ini");
-    isWlanINI = FileExists("/sdcard/wlan.ini");
+    isConfigINI = FileExists(CONFIG_FILE);
+    isWlanINI = FileExists(WLAN_CONFIG_FILE);
 
     if (!isConfigINI or !isWlanINI)
     {

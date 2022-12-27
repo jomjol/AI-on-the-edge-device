@@ -549,7 +549,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
         if ((toUpper(splitted[0]) == "RSSITHREASHOLD") && (splitted.size() > 1))
         {
-            if (ChangeRSSIThreashold("/sdcard/wlan.ini", atoi(splitted[1].c_str())))
+            if (ChangeRSSIThreashold(WLAN_CONFIG_FILE, atoi(splitted[1].c_str())))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
@@ -562,7 +562,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
         if ((toUpper(splitted[0]) == "HOSTNAME") && (splitted.size() > 1))
         {
-            if (ChangeHostName("/sdcard/wlan.ini", splitted[1]))
+            if (ChangeHostName(WLAN_CONFIG_FILE, splitted[1]))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);

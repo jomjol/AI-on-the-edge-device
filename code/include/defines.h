@@ -23,8 +23,12 @@
     #define CAMERA_MODEL_AI_THINKER
     #define BOARD_ESP32CAM_AITHINKER
 
-    //server_GPIO + server_file
+    //server_GPIO + server_file + SoftAP
     #define CONFIG_FILE "/sdcard/config/config.ini"
+
+    //ClassFlowControll + Main + SoftAP
+    #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
+
     //main
     #define __SD_USE_ONE_LINE_MODE__
 
