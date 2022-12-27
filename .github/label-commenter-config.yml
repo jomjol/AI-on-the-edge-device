@@ -1,28 +1,7 @@
 # Reply Bot Configuration
 # See https://github.com/peaceiris/actions-label-commenter
-# Make sure to also add the response to .github/workflows/reply-bot.yml!
-# Due to the way it works, you have to add each response twice, once for the issue, once for the discussions!
   
- labels:     
-  #######################################################################
-  # Bot Response: Logfile
-  #######################################################################
-  - name: bot-reply Logfile
-    labeled:
-      issue:
-          body: |
-            Please provide a logfile!
-            Make sure to first enable the `DEBUG` level in `Settings->Configuration->Debug->Logfile Log Level`!
-            Then wait until the issue arises again.
-            When you copy the log into here, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
-      discussion:
-          body: |
-            Please provide a logfile!
-            Make sure to first enable the `DEBUG` level in `Settings->Configuration->Debug->Logfile Log Level`!
-            Then wait until the issue arises again.
-            When you copy the log into here, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
-
-
+ labels:
   #######################################################################
   # Bot Response: Web Console
   #######################################################################
@@ -32,41 +11,11 @@
           body: |
             You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
             The USB log contains more information about the startup and operation of the device than the normal Web UI log
-            When you copy the log into herm, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
       discussion:
           body: |
             You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
             The USB log contains more information about the startup and operation of the device than the normal Web UI log
-            When you copy the log into herm, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
-
-
-  #######################################################################
-  # Bot Response: Properly Format Code
-  #######################################################################
-  - name: bot-reply Properly Format Code
-    labeled:
-      issue:
-          body: |
-            Please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
-            This makes your code or log much easier to read!
-      discussion:
-          body: |
-            Please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
-            This makes your code or log much easier to read!
-
-
-  #######################################################################
-  # Bot Response: Web Installer
-  #######################################################################
-  - name: bot-reply Web Installer
-    labeled:
-      issue:
-          body: |
-            You can use the [Web Installer](https://jomjol.github.io/AI-on-the-edge-device/index.html) install the firmware onto the ESP32.
-      discussion:
-          body: |
-            You can use the [Web Installer](https://jomjol.github.io/AI-on-the-edge-device/index.html) install the firmware onto the ESP32.
-
+     
 
   #######################################################################
   # Bot Response: Rolling Build
@@ -82,17 +31,6 @@
             You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
             Pick the most top passing entry (it has a green circle with a tick in it), then scoll down to the **Artifacts** and download the file named `update_*`.
 
-     
-  #######################################################################
-  # Bot Response: Show Trained Digits/Pointers
-  #######################################################################
-  - name: bot-reply Show Trained Digits/Pointers
-    labeled:
-      issue:
-          body: |
-            See [Digital Digits](https://jomjol.github.io/neural-network-digital-counter-readout) resp. [Analogue Pointers](https://jomjol.github.io/neural-network-analog-needle-readout) for an overview of all trained data.
-            If your type is not contained it can be added to our training material, see [here](https://github.com/jomjol/AI-on-the-edge-device/wiki/Learn-models-with-your-own-images).
-      discussion:
-          body: |
-            See [Digital Digits](https://jomjol.github.io/neural-network-digital-counter-readout) resp. [Analogue Pointers](https://jomjol.github.io/neural-network-analog-needle-readout) for an overview of all trained data.
-            If your type is not contained it can be added to our training material, see [here](https://github.com/jomjol/AI-on-the-edge-device/wiki/Learn-models-with-your-own-images).
+
+
+
