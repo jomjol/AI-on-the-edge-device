@@ -1,3 +1,6 @@
+#ifdef ENABLE_SOFTAP
+//if ENABLE_SOFTAP = disabled, set CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n in sdkconfig.defaults to save 28k of flash
+
 #include "softAP.h"
 
 /*  WiFi softAP Example
@@ -486,4 +489,4 @@ void CheckStartAPMode()
 
 }
 
-
+#endif //#ifdef ENABLE_SOFTAP
