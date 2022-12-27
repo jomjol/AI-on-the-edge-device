@@ -24,7 +24,7 @@ jobs:
       
       - name: Remove 'Web Console' label again (issues only)
         if: github.event.label.name == 'bot-reply Web Console'
-        uses: actions-cool/issues-helper@v2
+        uses: actions-cool/issues-helper@v3
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Web Console'
