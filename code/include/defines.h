@@ -23,8 +23,12 @@
     #define CAMERA_MODEL_AI_THINKER
     #define BOARD_ESP32CAM_AITHINKER
 
-    //server_GPIO + server_file
+    //server_GPIO + server_file + SoftAP
     #define CONFIG_FILE "/sdcard/config/config.ini"
+
+    //ClassFlowControll + Main + SoftAP
+    #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
+
     //main
     #define __SD_USE_ONE_LINE_MODE__
 
@@ -112,7 +116,6 @@
     #define WIFI_FAIL_BIT      BIT1
 
     //ClassFlowCNNGeneral
- //ready for translateion
     #define Analog_error 3
     #define AnalogToDigtalFehler 0.8
     #define Digital_Uncertainty 0.2
@@ -120,6 +123,8 @@
     #define Digital_Transition_Range_Predecessor 2
     #define Digital_Transition_Area_Predecessor 0.7 // 9.3 - 0.7
     #define Digital_Transition_Area_Forward 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
+
+
 
 
     //#define DEBUG_DETAIL_ON 
@@ -250,5 +255,13 @@
     #define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
 
 #endif //USE_PWM_LEDFLASH
+
+//softAP
+#ifdef ENABLE_SOFTAP
+    #define EXAMPLE_ESP_WIFI_SSID      "AI-on-the-Edge"
+    #define EXAMPLE_ESP_WIFI_PASS      ""
+    #define EXAMPLE_ESP_WIFI_CHANNEL   11
+    #define EXAMPLE_MAX_STA_CONN       1
+#endif // ENABLE_SOFTAP
 
 #endif // ifndef defines_h
