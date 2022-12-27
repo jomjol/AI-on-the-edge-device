@@ -22,12 +22,30 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      
+      ####################################################################
+      ## Remove labels again (issues only)
+      ####################################################################
+      - name: Remove 'Logfile' label again (issues only)
+        if: github.event.label.name == 'bot-reply Logfile'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Logfile'
+          
       - name: Remove 'Web Console' label again (issues only)
         if: github.event.label.name == 'bot-reply Web Console'
         uses: actions-cool/issues-helper@v2
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Web Console'
+          
+      - name: Remove 'Web Installer' label again (issues only)
+        if: github.event.label.name == 'bot-reply Web Installer'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Web Installer'
 
       - name: Remove 'Rolling Build' label again (issues only)
         if: github.event.label.name == 'bot-reply Rolling Build'
@@ -35,7 +53,31 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Rolling Build'
+
+      - name: Remove 'Properly Format Code' label again (issues only)
+        if: github.event.label.name == 'bot-reply Properly Format Code'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Properly Format Code'
           
+      - name: Remove 'Show Logfile' label again (issues only)
+        if: github.event.label.name == 'bot-reply Show Logfile'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Show Logfile'
+          
+      - name: Remove 'Show Trained Digits/Pointers' label again (issues only)
+        if: github.event.label.name == 'bot-reply Show Trained Digits/Pointers'
+        uses: actions-cool/issues-helper@v2
+        with:
+          actions: 'remove-labels'
+          labels: 'bot-reply Show Trained Digits/Pointers'
+      
+      ####################################################################
+      ## Write the response
+      ####################################################################
       - name: Write Response
         uses: peaceiris/actions-label-commenter@c2d00660c86f2b9ed0fb35b372c451558eba85b3
         with:
