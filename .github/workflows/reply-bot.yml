@@ -33,6 +33,7 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Logfile'
+          issue-number: ${{ github.event.issue.number }}
           
       - name: Remove 'Web Console' label again (issues only)
         if: github.event.label.name == 'bot-reply Web Console'
@@ -40,6 +41,7 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Web Console'
+          issue-number: ${{ github.event.issue.number }}
 
       - name: Remove 'Properly Format Code' label again (issues only)
         if: github.event.label.name == 'bot-reply Properly Format Code'
@@ -47,6 +49,7 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Properly Format Code'
+          issue-number: ${{ github.event.issue.number }}
           
       - name: Remove 'Web Installer' label again (issues only)
         if: github.event.label.name == 'bot-reply Web Installer'
@@ -54,6 +57,7 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Web Installer'
+          issue-number: ${{ github.event.issue.number }}
 
       - name: Remove 'Rolling Build' label again (issues only)
         if: github.event.label.name == 'bot-reply Rolling Build'
@@ -61,6 +65,7 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Rolling Build'
+          issue-number: ${{ github.event.issue.number }}
           
       - name: Remove 'Show Trained Digits/Pointers' label again (issues only)
         if: github.event.label.name == 'bot-reply Show Trained Digits/Pointers'
@@ -68,6 +73,7 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'bot-reply Show Trained Digits/Pointers'
+          issue-number: ${{ github.event.issue.number }}
       
       ####################################################################
       ## Write the response
