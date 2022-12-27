@@ -62,13 +62,6 @@ jobs:
           actions: 'remove-labels'
           labels: 'bot-reply Rolling Build'
           
-      - name: Remove 'Show Trained Digits/Pointers' label again (issues only)
-        if: github.event.label.name == 'bot-reply Show Trained Digits/Pointers'
-        uses: actions-cool/issues-helper@v2
-        with:
-          actions: 'remove-labels'
-          labels: 'bot-reply Show Trained Digits/Pointers'
-      
       ####################################################################
       ## Write the response
       ####################################################################
