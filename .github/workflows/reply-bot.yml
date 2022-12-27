@@ -28,7 +28,7 @@ jobs:
       ## Make sure to also add the reply message to .github/label-commenter-config.yml!
       ## This currently seems no longer to work due to changes on the actions-cool/issues-helper!
       ####################################################################
-      - name: Remove 'Logfile' label again (issues only)
+#      - name: Remove 'Logfile' label again (issues only)
 #        if: github.event.label.name == 'bot-reply Logfile'
 #        uses: actions-cool/issues-helper@v3
 #        with:
