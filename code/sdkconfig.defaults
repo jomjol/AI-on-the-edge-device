@@ -5,6 +5,10 @@
 # sdkconfig.esp32cam to apply your changes!
 ##################################################
 
+#if ENABLE_SOFTAP = disabled, set 
+#CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n 
+#to save 28k of flash
+
 CONFIG_TASK_WDT=n
 CONFIG_TASK_WDT_CHECK_IDLE_TASK=n
 
