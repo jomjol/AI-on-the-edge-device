@@ -27,13 +27,13 @@
             Please provide a logfile!
             Make sure to first enable the `DEBUG` level in `Settings->Configuration->Debug->Logfile Log Level`!
             Then wait until the issue arises again.
-            When you copy the log into herm, please make sure to format it properly by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
+            When you copy the log into here, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
       discussion:
           body: |
             Please provide a logfile!
             Make sure to first enable the `DEBUG` level in `Settings->Configuration->Debug->Logfile Log Level`!
             Then wait until the issue arises again.
-            When you copy the log into here, please make sure to format it properly by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
+            When you copy the log into here, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
 
 
   #######################################################################
@@ -45,12 +45,12 @@
           body: |
             You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
             The USB log contains more information about the startup and operation of the device than the normal Web UI log
-            When you copy the log into herm, please make sure to format it properly by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
+            When you copy the log into herm, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
       discussion:
           body: |
             You can use the [Web Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) to get USB log from the device.
             The USB log contains more information about the startup and operation of the device than the normal Web UI log
-            When you copy the log into herm, please make sure to format it properly by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
+            When you copy the log into herm, please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
 
 
   #######################################################################
@@ -60,11 +60,11 @@
     labeled:
       issue:
           body: |
-            Please make sure to format it properly by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
+            Please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
             This makes your code or log much easier to read!
       discussion:
           body: |
-            Please make sure to format it properly by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
+            Please make sure to use **Fenced code blocks** by wrapping it into separate lines with ` ``` `, see https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#fenced-code-blocks
             This makes your code or log much easier to read!
 
 
