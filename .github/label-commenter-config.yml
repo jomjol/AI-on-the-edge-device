@@ -95,17 +95,3 @@
             You can use the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling) of the the `rolling` branch. It might already contain a fix for your issue.
             Pick the most top passing entry (it has a green circle with a tick in it), then scoll down to the **Artifacts** and download the file named `update_*`.
 
-     
-  #######################################################################
-  # Bot Response: Show Trained Digits/Pointers
-  #######################################################################
-  - name: bot-reply Show Trained Digits/Pointers
-    labeled:
-      issue:
-          body: |
-            See [Digital Digits](https://jomjol.github.io/neural-network-digital-counter-readout) resp. [Analogue Pointers](https://jomjol.github.io/neural-network-analog-needle-readout) for an overview of all trained data.
-            If your type is not contained it can be added to our training material, see [here](https://github.com/jomjol/AI-on-the-edge-device/wiki/Learn-models-with-your-own-images).
-      discussion:
-          body: |
-            See [Digital Digits](https://jomjol.github.io/neural-network-digital-counter-readout) resp. [Analogue Pointers](https://jomjol.github.io/neural-network-analog-needle-readout) for an overview of all trained data.
-            If your type is not contained it can be added to our training material, see [here](https://github.com/jomjol/AI-on-the-edge-device/wiki/Learn-models-with-your-own-images).
