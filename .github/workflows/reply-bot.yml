@@ -21,20 +21,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Remove 'Web Console' label again (issues only)
-        if: github.event.label.name == 'bot-reply Web Console'
-        uses: actions-cool/issues-helper@v2
-        with:
-          actions: 'remove-labels'
-          labels: 'bot-reply Web Console'
-
-      - name: Remove 'Rolling Build' label again (issues only)
-        if: github.event.label.name == 'bot-reply Rolling Build'
-        uses: actions-cool/issues-helper@v2
-        with:
-          actions: 'remove-labels'
-          labels: 'bot-reply Rolling Build'
           
       - name: Write Response
         uses: peaceiris/actions-label-commenter@c2d00660c86f2b9ed0fb35b372c451558eba85b3
