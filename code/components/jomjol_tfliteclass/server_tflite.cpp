@@ -65,17 +65,16 @@ bool isSetupModusActive() {
 void KillTFliteTasks()
 {
     #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
+        ESP_LOGD(TAG, "KillTFliteTasks: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
     #endif
-    if (xHandletask_autodoFlow != NULL)
+    if( xHandletask_autodoFlow != NULL )
     {
-        TaskHandle_t xHandletask_autodoFlowTmp = xHandletask_autodoFlow;
+        vTaskDelete(xHandletask_autodoFlow);
         xHandletask_autodoFlow = NULL;
-        vTaskDelete(xHandletask_autodoFlowTmp);
-        #ifdef DEBUG_DETAIL_ON      
-            ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
-        #endif
     }
+    #ifdef DEBUG_DETAIL_ON      
+    	ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
+    #endif
 }
 
 

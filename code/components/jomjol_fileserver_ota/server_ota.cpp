@@ -32,6 +32,8 @@
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
+#include "ClassControllCamera.h"
+#include "connect_wlan.h"
 
 
 #include "ClassLogFile.h"
@@ -133,8 +135,6 @@ void CheckUpdate()
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-
-
 
 
 static bool ota_update_task(std::string fn)
@@ -289,6 +289,7 @@ static bool diagnostic(void)
     return true;
 }
 
+
 void CheckOTAUpdate(void)
 {
     ESP_LOGI(TAG, "Start CheckOTAUpdateCheck...");
@@ -361,7 +362,6 @@ void CheckOTAUpdate(void)
 }
 
 
-
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON     
@@ -398,7 +398,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             ESP_LOGD(TAG, "Delete Default File: %s", fn.c_str());
         }
 
-    };
+    }
 
     if (_task.compare("emptyfirmwaredir") == 0)
     {
@@ -578,45 +578,51 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
-
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("handler_ota_update - Done");    
-#endif
 */
 
-    return ESP_OK;
-};
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("handler_ota_update - Done");    
+    #endif
 
-void hard_restart() {
+    return ESP_OK;
+}
+
+
+void hard_restart() 
+{
   esp_task_wdt_init(1,true);
   esp_task_wdt_add(NULL);
   while(true);
 }
 
+
 void task_reboot(void *pvParameter)
 {
-    while(1)
-    {
+    KillTFliteTasks();  // Kill autoflow task
+
+    /* Stop service tasks */
+    #ifdef ENABLE_MQTT
+        MQTTdestroy_client(true);
+    #endif //ENABLE_MQTT
+    gpio_handler_destroy();
+    esp_camera_deinit();
+    WIFIDestroy();
+
         vTaskDelay(5000 / portTICK_PERIOD_MS);
-        esp_restart();
-        hard_restart();
-    }
+    esp_restart();      // Reset type: CPU Reset (Reset both CPUs)
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
-void doReboot(){
+
+void doReboot()
+{
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
-    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
-    // KillTFliteTasks(); // kills itself 
-    gpio_handler_destroy();
-    #ifdef ENABLE_MQTT
-        MQTTdestroy_client();
-    #endif //ENABLE_MQTT
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-    esp_restart();
-    hard_restart();
+    xTaskCreate(&task_reboot, "task_reboot", 4 * 1024, NULL, 10, NULL);
 }
 
 
@@ -639,6 +645,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
     return ESP_OK;
 }
+
 
 void register_server_ota_sdcard_uri(httpd_handle_t server)
 {

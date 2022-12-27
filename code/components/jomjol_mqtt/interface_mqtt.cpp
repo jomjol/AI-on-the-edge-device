@@ -206,7 +206,7 @@ int MQTT_Init() {
     }
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init");
-    MQTTdestroy_client();
+    MQTTdestroy_client(false);
 
     esp_mqtt_client_config_t mqtt_cfg = {
         .uri = uri.c_str(),
@@ -270,7 +270,7 @@ int MQTT_Init() {
 }
 
 
-void MQTTdestroy_client() {
+void MQTTdestroy_client(bool _disable = false) {
     if (client) {
         if (mqtt_connected) {
             MQTTdestroySubscribeFunction();      
@@ -282,6 +282,9 @@ void MQTTdestroy_client() {
         client = NULL;
         mqtt_initialized = false;
     }
+
+    if (_disable) // Disable MQTT service, avoid restart with MQTTPublish
+        mqtt_configOK = false;
 }
 
 
@@ -328,11 +331,11 @@ void MQTTconnected(){
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "topic " + it->first + " subscribe successful, msg_id=" + std::to_string(msg_id));
             }
         }
-    }
-    
-    vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
-    if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
-        callbackOnConnected(maintopic, SetRetainFlag);
+
+        vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
+        if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
+            callbackOnConnected(maintopic, SetRetainFlag);
+        }
     }
 }
 
