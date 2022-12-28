@@ -257,6 +257,7 @@
 #endif //USE_PWM_LEDFLASH
 
 //softAP
+#define ENABLE_SOFTAP
 #ifdef ENABLE_SOFTAP
     #define EXAMPLE_ESP_WIFI_SSID      "AI-on-the-Edge"
     #define EXAMPLE_ESP_WIFI_PASS      ""
