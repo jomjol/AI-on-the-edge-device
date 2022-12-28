@@ -598,6 +598,12 @@ void hard_restart()
 
 void task_reboot(void *pvParameter)
 {
+    // write a reboot, to identify a reboot by purpouse
+    FILE* pfile = fopen("/sdcard/reboot.txt", "w");
+    std::string _s_zw= "reboot";
+    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
+    fclose(pfile);
+
     KillTFliteTasks();  // Kill autoflow task
 
     /* Stop service tasks */
@@ -608,7 +614,7 @@ void task_reboot(void *pvParameter)
     esp_camera_deinit();
     WIFIDestroy();
 
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart();      // Reset type: CPU Reset (Reset both CPUs)
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -634,7 +640,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
     ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch('/index.html',{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 5000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();

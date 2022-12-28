@@ -17,6 +17,14 @@
         api = "/config?"+"ssid"+document.getElementById("ssid").value+"&pwd="+document.getElementById("password").value;+"&hn="+document.getElementById("hostname").value;+"&ip="+document.getElementById("ip").value;+"&gw="+document.getElementById("gateway").value;+"&nm="+document.getElementById("netmask").value;+"&dns="+document.getElementById("dns").value;+"&rssi="+document.getElementById("threashold").value;
         fetch(api);}
 
+
+//    var xhttp = new XMLHttpRequest();
+//    xhttp.onreadystatechange = function() {if (xhttp.readyState == 4) {if (xhttp.status == 200) {document.reload();}}};
+if (!file.name.includes("remote-setup")){if (!confirm("The zip file name should contain \"...remote-setup...\". Are you sure that you have downloaded the correct file?"))return;}
+
+if (!file.name.includes("remote-setup")){if (!confirm("The zip file name should contain \"...remote-setup...\". Are you sure that you have downloaded the correct file?"))return;}
+
+
     function upload() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {

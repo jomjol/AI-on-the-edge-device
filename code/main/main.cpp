@@ -39,7 +39,9 @@
 #include "../../include/defines.h"
 //#include "server_GPIO.h"
 
+#ifdef ENABLE_SOFTAP
 #include "softAP.h"
+#endif //ENABLE_SOFTAP
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -175,13 +177,15 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
+    CheckIsPlannedReboot();
     CheckOTAUpdate();
     CheckUpdate();
-    CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
-
+    #ifdef ENABLE_SOFTAP
+        CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
+    #endif
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
+    LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
 

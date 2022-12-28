@@ -335,7 +335,7 @@ bool CopyFile(string input, string output)
 	input = FormatFileName(input);
 	output = FormatFileName(output);
 
-	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
+	if (toUpper(input).compare(WLAN_CONFIG_FILE) == 0)
 	{
 		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
 		return false;

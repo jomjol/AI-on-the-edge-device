@@ -80,41 +80,47 @@ function addZero(i) {
 	  return i;
 	}
 
-	$(document).ready(function() {
-	var d = new Date();
-	var h = addZero(d.getHours());
-	var m = addZero(d.getMinutes());
-	var s = addZero(d.getSeconds());
 
-	$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+	function LoadData(){
 	loadStatus();
 	loadCPUTemp();
 	loadRSSI();
 	loadUptime();
 	loadRoundCounter();
-	refresh();
-	});
+		loadValue("value", "value");
+		loadValue("raw", "raw");
+		loadValue("prevalue", "prevalue");
+		loadValue("error", "error", "font-size:8px");
+	}
 
-function refresh() {
+
+	function LoadROIImage(){
+		var d = new Date();
+		var h = addZero(d.getHours());
+		var m = addZero(d.getMinutes());
+		var s = addZero(d.getSeconds());
+		$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+	}
+
+
+	function Refresh() {
 	setTimeout (function() {
-	var time = new Date();
-	var timestamp = new Date().getTime();
+			LoadData();
+
 	var d = new Date();
+			var timestamp = d.getTime();
 	var h = addZero(d.getHours());
 	var m = addZero(d.getMinutes());
 	var s = addZero(d.getSeconds());	
-	
-	// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp
-	$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'"max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+			// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp to ensure image is getting reloaded
+			$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
-	init();
-	  refresh();
-	}, 300000);
 
+			Refresh();
+	}, 300000);
   }
 
-	var basepath = "http://192.168.178.22"; 
 
 	function loadStatus() {
 		url = basepath + '/statusflow';     
@@ -129,6 +135,7 @@ function refresh() {
 		xhttp.send();
 	}
 
+
 	function loadCPUTemp() {
 		url = basepath + '/cpu_temperature';     
 		var xhttp = new XMLHttpRequest();
@@ -141,6 +148,7 @@ function refresh() {
 		xhttp.open("GET", url, true);
 		xhttp.send();
 	}
+
 
 	function loadRSSI() {
 		url = basepath + '/rssi';     
@@ -155,6 +163,7 @@ function refresh() {
 		xhttp.send();		
 	}
 
+
 	function loadUptime() {
 		url = basepath + '/uptime';     
 		var xhttp = new XMLHttpRequest();
@@ -167,6 +176,7 @@ function refresh() {
 		xhttp.open("GET", url, true);
 		xhttp.send();
 	}
+
 
 	function loadRoundCounter() {
 		url = basepath + '/info?type=Round';     
@@ -181,6 +191,7 @@ function refresh() {
 		xhttp.send();
 	}
 		
+	
 	function loadValue(_type, _div, _style) {
 		url = basepath + '/value?all=true&type=' + _type;     
 		var xhttp = new XMLHttpRequest();
@@ -221,19 +232,15 @@ function refresh() {
 		xhttp.send();		
 	}
 
+
 	function init(){
 		basepath = getbasepath();
-		loadValue("value", "value");
-		loadValue("raw", "raw");
-		loadValue("prevalue", "prevalue");
-		loadValue("error", "error", "font-size:8px");
-		loadStatus();
-		loadCPUTemp();
-		loadRSSI();
-		loadUptime();
-		loadRoundCounter();
+		LoadData();
+		LoadROIImage();
+		Refresh();
 	}
 
+	
 	init();
 
 </script>

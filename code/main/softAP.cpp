@@ -1,3 +1,8 @@
+#ifdef ENABLE_SOFTAP
+//if ENABLE_SOFTAP = disabled, set CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n in sdkconfig.defaults to save 28k of flash
+#include "../../include/defines.h"
+
+
 #include "softAP.h"
 
 /*  WiFi softAP Example
@@ -31,10 +36,6 @@
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "AI-on-the-Edge"
-#define EXAMPLE_ESP_WIFI_PASS      ""
-#define EXAMPLE_ESP_WIFI_CHANNEL   11
-#define EXAMPLE_MAX_STA_CONN       1
 
 bool isConfigINI = false;
 bool isWlanINI = false;
@@ -99,7 +100,7 @@ void SendHTTPResponse(httpd_req_t *req)
     message += "Please follow the below instructions.<p>";
     httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
-    isWlanINI = FileExists("/sdcard/wlan.ini");
+    isWlanINI = FileExists(WLAN_CONFIG_FILE);
 
     if (!isConfigINI)
     {
@@ -264,7 +265,7 @@ esp_err_t config_ini_handler(httpd_req_t *req)
         }
     };
 
-    FILE* configfilehandle = fopen("/sdcard/wlan.ini", "w");
+    FILE* configfilehandle = fopen(WLAN_CONFIG_FILE, "w");
     
     if (ssid.length())
         ssid = "ssid = \"" + ssid + "\"\n";
@@ -471,8 +472,8 @@ httpd_handle_t start_webserverAP(void)
 
 void CheckStartAPMode()
 {
-    isConfigINI = FileExists("/sdcard/config/config.ini");
-    isWlanINI = FileExists("/sdcard/wlan.ini");
+    isConfigINI = FileExists(CONFIG_FILE);
+    isWlanINI = FileExists(WLAN_CONFIG_FILE);
 
     if (!isConfigINI or !isWlanINI)
     {
@@ -486,4 +487,4 @@ void CheckStartAPMode()
 
 }
 
-
+#endif //#ifdef ENABLE_SOFTAP
