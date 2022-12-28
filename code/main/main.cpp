@@ -177,6 +177,7 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
+    CheckIsPlannedReboot();
     CheckOTAUpdate();
     CheckUpdate();
     #ifdef ENABLE_SOFTAP
