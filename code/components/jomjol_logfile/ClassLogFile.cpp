@@ -19,10 +19,6 @@ extern "C" {
 
 static const char *TAG = "LOGFILE";
 
-/* Uncomment this to keep the logfile open for appending.
- * If commented out, the logfile gets opened/closed for each log measage (old behaviour) */
-//#define KEEP_LOGFILE_OPEN_FOR_APPENDING
-
 ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.csv");
 
 void ClassLogFile::WriteHeapInfo(std::string _id)

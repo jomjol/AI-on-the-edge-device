@@ -6,6 +6,12 @@
 ////          Global definitions         ////
 /////////////////////////////////////////////
 
+    /* Uncomment this to keep the logfile open for appending.
+    * If commented out, the logfile gets opened/closed for each log measage (old behaviour) */
+    // ClassLogFile
+    //#define KEEP_LOGFILE_OPEN_FOR_APPENDING
+
+
     //ClassControllCamera + ClassFlowMakeImage + connect_wlan + main
     #define FLASH_GPIO GPIO_NUM_4
     #define BLINK_GPIO GPIO_NUM_33
@@ -79,7 +85,7 @@
     #define MAX_JPG_SIZE 128000
 
 
-    //CAlignAdnCutImage + CImageBasis
+    //CAlignAndCutImage + CImageBasis
     #define _USE_MATH_DEFINES
     #define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
 
