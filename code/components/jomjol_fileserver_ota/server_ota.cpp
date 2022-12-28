@@ -598,6 +598,12 @@ void hard_restart()
 
 void task_reboot(void *pvParameter)
 {
+    // write a reboot, to identify a reboot by purpouse
+    FILE* pfile = fopen("/sdcard/reboot.txt", "w");
+    std::string _s_zw= "reboot";
+    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
+    fclose(pfile);
+
     KillTFliteTasks();  // Kill autoflow task
 
     /* Stop service tasks */
@@ -607,14 +613,6 @@ void task_reboot(void *pvParameter)
     gpio_handler_destroy();
     esp_camera_deinit();
     WIFIDestroy();
-
-
-    // write a reboot, to identify a reboot by purpouse
-    FILE* pfile = fopen("/sdcard/reboot.txt", "w");
-    std::string _s_zw= "reboot";
-    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
-    fclose(pfile);
-
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart();      // Reset type: CPU Reset (Reset both CPUs)
