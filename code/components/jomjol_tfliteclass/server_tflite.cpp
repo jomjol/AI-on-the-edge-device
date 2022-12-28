@@ -34,8 +34,28 @@ long auto_intervall = 0;
 bool auto_isrunning = false;
 
 int countRounds = 0;
+bool isPlannedReboot = false;
 
 static const char *TAG = "TFLITE SERVER";
+
+
+void CheckIsPlannedReboot()
+{
+ 	FILE *pfile;
+    if ((pfile = fopen("/sdcard/reboot.txt", "r")) == NULL)
+    {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not a planned reboot.");
+        isPlannedReboot = false;
+	}
+    else
+    {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Planned reboot.");
+        DeleteFile("/sdcard/reboot.txt");   // Prevent Boot Loop!!!
+        isPlannedReboot = true;
+	}
+
+
+}
 
 
 int getCountFlowRounds() 
@@ -772,13 +792,17 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
-    if (esp_reset_reason() == ESP_RST_PANIC) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
-        LogFile.setLogLevel(ESP_LOG_DEBUG);
-        //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
-        vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
+    if (!isPlannedReboot)
+    {
+        if (esp_reset_reason() == ESP_RST_PANIC) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
+            LogFile.setLogLevel(ESP_LOG_DEBUG);
+            //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
+            vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
+        }
     }
+
 
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();

@@ -608,7 +608,15 @@ void task_reboot(void *pvParameter)
     esp_camera_deinit();
     WIFIDestroy();
 
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+    // write a reboot, to identify a reboot by purpouse
+    FILE* pfile = fopen("/sdcard/reboot.txt", "w");
+    std::string _s_zw= "reboot";
+    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
+    fclose(pfile);
+
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart();      // Reset type: CPU Reset (Reset both CPUs)
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
