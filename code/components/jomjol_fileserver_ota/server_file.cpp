@@ -347,7 +347,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
 
-    // Since the log file is still open for writing, we need to close it first
+    // Since the log file is still could open for writing, we need to close it first
     LogFile.CloseLogFileAppendHandle();
 
     fd = fopen(currentfilename.c_str(), "r");

@@ -19,6 +19,10 @@ extern "C" {
 
 static const char *TAG = "LOGFILE";
 
+/* Uncomment this to keep the logfile open for appending.
+ * If commented out, the logfile gets opened/closed for each log measage (old behaviour) */
+//#define KEEP_LOGFILE_OPEN_FOR_APPENDING
+
 ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.csv");
 
 void ClassLogFile::WriteHeapInfo(std::string _id)
@@ -161,7 +165,7 @@ bool ClassLogFile::GetDataLogToSD(){
     return doDataLogToSD;
 }
 
-static FILE* logFileAppendHande = NULL;
+static FILE* logFileAppendHandle = NULL;
 std::string fileNameDate;
 
 
@@ -231,34 +235,48 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
 
     std::string fullmessage = "[" + formatedUptime + "] "  + ntpTime + "\t<" + loglevelString + ">\t" + message + "\n";
 
+
+#ifdef KEEP_LOGFILE_OPEN_FOR_APPENDING
     if (fileNameDateNew != fileNameDate) { // Filename changed
         // Make sure each day gets its own logfile
         // Also we need to re-open it in case it needed to get closed for reading
         std::string logpath = logroot + "/" + fileNameDateNew; 
 
         ESP_LOGI(TAG, "Opening logfile %s for appending", logpath.c_str());
-        logFileAppendHande = fopen(logpath.c_str(), "a+");
-        if (logFileAppendHande==NULL) {
+        logFileAppendHandle = fopen(logpath.c_str(), "a+");
+        if (logFileAppendHandle==NULL) {
             ESP_LOGE(TAG, "Can't open log file %s", logpath.c_str());
             return;
         }
 
         fileNameDate = fileNameDateNew;
     }
-  
+#else
+    std::string logpath = logroot + "/" + fileNameDateNew; 
+    logFileAppendHandle = fopen(logpath.c_str(), "a+");
+    if (logFileAppendHandle==NULL) {
+        ESP_LOGE(TAG, "Can't open log file %s", logpath.c_str());
+        return;
+    }
+  #endif
 
-    fputs(fullmessage.c_str(), logFileAppendHande);
+    fputs(fullmessage.c_str(), logFileAppendHandle);
     
-    fflush(logFileAppendHande);
-    fsync(fileno(logFileAppendHande));
+#ifdef KEEP_LOGFILE_OPEN_FOR_APPENDING
+    fflush(logFileAppendHandle);
+    fsync(fileno(logFileAppendHandle));
+#else
+    CloseLogFileAppendHandle();
+#endif
 }
 
 
 void ClassLogFile::CloseLogFileAppendHandle() {
-
-    fclose(logFileAppendHande);
-    logFileAppendHande = NULL;
-    fileNameDate = "";
+    if (logFileAppendHandle != NULL) {
+        fclose(logFileAppendHandle);
+        logFileAppendHandle = NULL;
+        fileNameDate = "";
+    }
 }
 
 
