@@ -121,6 +121,22 @@ textarea {
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
 			</td>
+		</tr>		
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="MakeImage_Demo_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "Demo")' unchecked >
+				<label for=MakeImage_Demo_enabled><class id="MakeImage_Demo_text" style="color:black;">Demo</class></label>
+			</td>
+			<td>
+				<select id="MakeImage_Demo_value1">
+					<option value="true">true</option>
+					<option value="false" selected>false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable to use Demo images instead of camera images.<br>
+				Make sore to have a demo folder on your SD-Card!
+			</td>
 		</tr>
 		<tr class="expert" id="ex1">
 			
@@ -1775,6 +1791,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
 	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, category, "MakeImage", "Demo", false);	
 	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
 	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
 	WriteParameter(param, category, "MakeImage", "Brightness", false);		
@@ -1894,7 +1911,8 @@ function ReadParameterAll()
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
-	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
+	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);	
+	ReadParameter(param, "MakeImage", "Demo", true);
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
 	ReadParameter(param, "MakeImage", "ImageQuality", false);		
 	ReadParameter(param, "MakeImage", "Brightness", false);		

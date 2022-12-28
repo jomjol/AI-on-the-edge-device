@@ -26,6 +26,10 @@ class CCamera {
 
         void ledc_init(void);
         bool CameraInitSuccessful = false;
+        bool demoMode = false;
+
+        bool loadNextDemoImage(camera_fb_t *fb);
+        long GetFileSize(std::string filename);
 
     public:
         int image_height, image_width;
@@ -43,6 +47,7 @@ class CCamera {
         bool testCamera(void);
         void EnableAutoExposure(int flash_duration);
         bool getCameraInitSuccessful();
+        void useDemoMode(void);
        
 
         framesize_t TextToFramesize(const char * text);
