@@ -87,7 +87,7 @@
     //#define STB_IMAGE_IMPLEMENTATION
     //#define STB_IMAGE_WRITE_IMPLEMENTATION
     //#define STB_IMAGE_RESIZE_IMPLEMENTATION
-    //#define STBI_ONLY_JPEG // (save 2% of Flash)
+    #define STBI_ONLY_JPEG // (save 2% of Flash)
 
     //interface_influxdb
     #define MAX_HTTP_OUTPUT_BUFFER 2048
