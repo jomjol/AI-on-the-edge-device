@@ -40,6 +40,7 @@ class CCamera {
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
         void SetLEDIntensity(float _intrel);
+        bool testCamera(void);
         void EnableAutoExposure(int flash_duration);
         bool getCameraInitSuccessful();
        

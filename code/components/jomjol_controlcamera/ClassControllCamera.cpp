@@ -76,6 +76,21 @@ typedef struct {
 } jpg_chunking_t;
 
 
+bool CCamera::testCamera(void) {
+    bool success;
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (fb)  {
+        success = true;
+    }
+    else {
+        success = false;
+    }
+    
+    esp_camera_fb_return(fb);
+    return success;
+}
+
+
 void CCamera::ledc_init(void)
 {
 #ifdef USE_PWM_LEDFLASH
