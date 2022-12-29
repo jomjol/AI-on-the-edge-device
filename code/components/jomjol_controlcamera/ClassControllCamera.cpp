@@ -704,7 +704,6 @@ void CCamera::useDemoMode()
 
     for (auto file : demoFiles) {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, file);
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, file); // xxx
     }
 
     demoMode = true;
@@ -719,7 +718,6 @@ bool CCamera::loadNextDemoImage(camera_fb_t *fb) {
     snprintf(filename, sizeof(filename), "/sdcard/demo/%s", demoFiles[getCountFlowRounds() % demoFiles.size()].c_str());
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Using " + std::string(filename) + " as demo image");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Using " + std::string(filename) + " as demo image");// xxx
 
     /* Inject saved image */
 
