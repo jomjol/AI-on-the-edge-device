@@ -170,6 +170,8 @@ extern "C" void app_main(void)
     }
 
     LogFile.CreateLogDirectories();
+    MakeDir("/sdcard/demo");            // needed for demo mode
+
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Startup ====================");
