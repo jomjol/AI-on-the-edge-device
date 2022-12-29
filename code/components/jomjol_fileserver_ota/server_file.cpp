@@ -920,8 +920,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
     // Get and print information about each file in the archive.
     int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
-    ESP_LOGI(TAG, "Numbers of files to be extrated: %d", numberoffiles);
-
+    ESP_LOGI(TAG, "Numbers of files to be extracted: %d", numberoffiles);
 
     sort_iter = 0;
     {
