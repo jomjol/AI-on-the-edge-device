@@ -339,6 +339,7 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
     MakeDir("/sdcard/html");
     MakeDir("/sdcard/img_tmp");
     MakeDir("/sdcard/log");
+    MakeDir("/sdcard/demo");
     printf("Nach Start des Post Handlers\n");
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handlerAP");
