@@ -596,7 +596,7 @@ void hard_restart()
 }
 
 
-void task_reboot(void *pvParameter)
+void task_reboot(void *TaskCreated)
 {
     // write a reboot, to identify a reboot by purpouse
     FILE* pfile = fopen("/sdcard/reboot.txt", "w");
@@ -604,7 +604,9 @@ void task_reboot(void *pvParameter)
     fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
     fclose(pfile);
 
-    KillTFliteTasks();  // Kill autoflow task
+    if ((bool)TaskCreated) {
+        KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
+    }
 
     /* Stop service tasks */
     #ifdef ENABLE_MQTT
@@ -614,7 +616,7 @@ void task_reboot(void *pvParameter)
     esp_camera_deinit();
     WIFIDestroy();
 
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    vTaskDelay(4000 / portTICK_PERIOD_MS);
     esp_restart();      // Reset type: CPU Reset (Reset both CPUs)
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -628,7 +630,12 @@ void doReboot()
 {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
-    xTaskCreate(&task_reboot, "task_reboot", 4 * 1024, NULL, 10, NULL);
+    BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
+    if( xReturned != pdPASS )
+    {
+        ESP_LOGE(TAG, "task_reboot not created -> force reboot without killing flow");
+        task_reboot((void*) false);
+    }
 }
 
 
