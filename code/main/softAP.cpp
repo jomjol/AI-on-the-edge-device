@@ -180,7 +180,7 @@ esp_err_t reboot_handlerAP(httpd_req_t *req)
     LogFile.WriteHeapInfo("handler_ota_update - Start");    
 #endif
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
-    doReboot();
+    doRebootOTA();
     return ESP_OK;
 };
 

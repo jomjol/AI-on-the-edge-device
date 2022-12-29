@@ -596,7 +596,7 @@ void hard_restart()
 }
 
 
-void task_reboot(void *TaskCreated)
+void task_reboot(void *KillAutoFlow)
 {
     // write a reboot, to identify a reboot by purpouse
     FILE* pfile = fopen("/sdcard/reboot.txt", "w");
@@ -604,7 +604,7 @@ void task_reboot(void *TaskCreated)
     fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
     fclose(pfile);
 
-    if ((bool)TaskCreated) {
+    if ((bool)KillAutoFlow) {
         KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
@@ -616,13 +616,14 @@ void task_reboot(void *TaskCreated)
     esp_camera_deinit();
     WIFIDestroy();
 
-    vTaskDelay(4000 / portTICK_PERIOD_MS);
-    esp_restart();      // Reset type: CPU Reset (Reset both CPUs)
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    esp_restart();      // Reset type: CPU reset (Reset both CPUs)
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
+    ESP_LOGE(TAG, "Reboot failed!");
+    vTaskDelete(NULL); //Delete this task if it comes to this point
 }
 
 
@@ -630,31 +631,47 @@ void doReboot()
 {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
+
     BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
     if( xReturned != pdPASS )
     {
         ESP_LOGE(TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void*) false);
     }
+    vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
+}
+
+
+void doRebootOTA()
+{
+    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
+
+    esp_camera_deinit();
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    esp_restart();      // Reset type: CPU reset (Reset both CPUs)
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 }
 
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON     
-    LogFile.WriteHeapInfo("handler_reboot - Start");
-#endif    
+    #ifdef DEBUG_DETAIL_ON     
+        LogFile.WriteHeapInfo("handler_reboot - Start");
+    #endif    
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
     ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch('/index.html',{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 5000);</script>";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch('/reboot_page.html',{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("handler_reboot - Done");    
-#endif
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("handler_reboot - Done");    
+    #endif
 
     return ESP_OK;
 }
