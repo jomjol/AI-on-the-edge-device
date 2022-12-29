@@ -93,7 +93,7 @@ void task_do_Update_ZIP(void *pvParameter)
         }
 
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
-        doReboot();
+        doRebootOTA();
     }
     else
     {
