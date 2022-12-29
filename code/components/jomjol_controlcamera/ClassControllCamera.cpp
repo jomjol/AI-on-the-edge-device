@@ -737,7 +737,7 @@ bool CCamera::loadNextDemoImage(camera_fb_t *fb) {
     }
 
     readBytes = fread(demoImage, 1, DEMO_IMAGE_SIZE, fp);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "read " + std::to_string(readBytes) + " bytes");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "read " + std::to_string(readBytes) + " bytes");
     fclose(fp);
 
     fb->buf = demoImage; // Update pointer
