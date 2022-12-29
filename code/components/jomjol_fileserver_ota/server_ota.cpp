@@ -604,6 +604,8 @@ void task_reboot(void *KillAutoFlow)
     fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
     fclose(pfile);
 
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+
     if ((bool)KillAutoFlow) {
         KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
