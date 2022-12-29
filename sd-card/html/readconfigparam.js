@@ -119,7 +119,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "WaitBeforeTakingPicture");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
-     ParamAddValue(param, catname, "Demo", 1, false);
+     ParamAddValue(param, catname, "Demo");
      ParamAddValue(param, catname, "Brightness");
      ParamAddValue(param, catname, "Contrast");
      ParamAddValue(param, catname, "Saturation");
