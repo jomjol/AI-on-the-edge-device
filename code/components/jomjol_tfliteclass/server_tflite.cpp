@@ -818,6 +818,7 @@ void task_autodoFlow(void *pvParameter)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
+        time_t roundStartTime = getUpTime();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
 
@@ -848,7 +849,8 @@ void task_autodoFlow(void *pvParameter)
         string zwtemp = "CPU Temperature: " + stream.str();
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zwtemp); 
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + " completed");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
+                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
