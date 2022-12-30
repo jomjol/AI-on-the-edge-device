@@ -160,6 +160,13 @@ extern "C" void app_main(void)
         return; // No way to continue without SD-Card!
     }
 
+    CheckIsPlannedReboot();
+    CheckOTAUpdate();
+    CheckUpdate();
+    #ifdef ENABLE_SOFTAP
+        CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
+    #endif
+
     setupTime();
 
     string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
@@ -179,12 +186,6 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
-    CheckIsPlannedReboot();
-    CheckOTAUpdate();
-    CheckUpdate();
-    #ifdef ENABLE_SOFTAP
-        CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
-    #endif
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
     LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
