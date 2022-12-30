@@ -81,45 +81,43 @@ function addZero(i) {
 	}
 
 
+	$(document).ready(function() {
+		LoadData();
+		LoadROIImage();
+	});
+
+
 	function LoadData(){
-	loadStatus();
-	loadCPUTemp();
-	loadRSSI();
-	loadUptime();
-	loadRoundCounter();
 		loadValue("value", "value");
 		loadValue("raw", "raw");
 		loadValue("prevalue", "prevalue");
 		loadValue("error", "error", "font-size:8px");
+		loadStatus();
+		loadCPUTemp();
+		loadRSSI();
+		loadUptime();
+		loadRoundCounter();
 	}
 
 
 	function LoadROIImage(){
 		var d = new Date();
+		var timestamp = d.getTime();
 		var h = addZero(d.getHours());
 		var m = addZero(d.getMinutes());
 		var s = addZero(d.getSeconds());
-		$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	}
 
 
 	function Refresh() {
-	setTimeout (function() {
+		setTimeout (function() {
 			LoadData();
-
-	var d = new Date();
-			var timestamp = d.getTime();
-	var h = addZero(d.getHours());
-	var m = addZero(d.getMinutes());
-	var s = addZero(d.getSeconds());	
-			// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp to ensure image is getting reloaded
-			$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
-
+			LoadROIImage();
 			Refresh();
-	}, 300000);
-  }
+		}, 300000);
+	}
 
 
 	function loadStatus() {
@@ -235,8 +233,6 @@ function addZero(i) {
 
 	function init(){
 		basepath = getbasepath();
-		LoadData();
-		LoadROIImage();
 		Refresh();
 	}
 
