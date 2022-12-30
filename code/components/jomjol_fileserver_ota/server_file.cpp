@@ -347,7 +347,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
 
-    // Since the log file is still open for writing, we need to close it first
+    // Since the log file is still could open for writing, we need to close it first
     LogFile.CloseLogFileAppendHandle();
 
     fd = fopen(currentfilename.c_str(), "r");
@@ -895,7 +895,7 @@ void delete_all_in_directory(std::string _directory)
     closedir(dir);
 }
 
-std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main)
+std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main, bool _initial_setup)
 {
     int i, sort_iter;
     mz_bool status;
@@ -905,13 +905,9 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
     char archive_filename[64];
     std::string zw, ret = "";
     std::string directory = "";
-//    static const char* s_Test_archive_filename = "testhtml.zip";
 
     ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
     ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
-//    ESP_LOGD(TAG, "Target Dir ZIP: %s", _target_zip.c_str());
-//    ESP_LOGD(TAG, "Target Dir BIN: %s", _target_bin.c_str());
-//    ESP_LOGD(TAG, "Target Dir main: %s", _main.c_str());
 
     // Now try to open the archive.
     memset(&zip_archive, 0, sizeof(zip_archive));
@@ -924,11 +920,9 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
     // Get and print information about each file in the archive.
     int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
-    ESP_LOGI(TAG, "Numbers of files to be extrated: %d", numberoffiles);
-
+    ESP_LOGI(TAG, "Numbers of files to be extracted: %d", numberoffiles);
 
     sort_iter = 0;
-//    for (sort_iter = 0; sort_iter < 2; sort_iter++)
     {
         memset(&zip_archive, 0, sizeof(zip_archive));
         status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);
@@ -966,6 +960,16 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 else
                 {
                     std::string _dir = getDirectory(zw);
+                    if ((_dir == "config-initial") && !_initial_setup)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        _dir = "config";
+                        std::string _s1 = "config-initial";
+                        FindReplace(zw, _s1, _dir);
+                    }
 
                     if (_dir.length() > 0)
                     {
@@ -1006,9 +1010,6 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 isokay = isokay && RenameFile(filename_zw, zw);
                 if (!isokay)
                     ESP_LOGE(TAG, "ERROR in Rename \"%s\" to \"%s\"", filename_zw.c_str(), zw.c_str());
-//                isokay = isokay && DeleteFile(filename_zw);
-//                if (!isokay)
-//                    ESP_LOGE(TAG, "ERROR in Delete \"%s\"", filename_zw.c_str());
 
                 if (isokay)
                     ESP_LOGI(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);

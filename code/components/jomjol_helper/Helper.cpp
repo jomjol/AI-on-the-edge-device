@@ -301,6 +301,17 @@ bool RenameFile(string from, string to)
 	return true;
 }
 
+bool FileExists(string filename)
+{
+	FILE* fpSourceFile = fopen(filename.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		return false;
+	}
+	fclose(fpSourceFile);
+	return true;    
+}
+
 
 bool DeleteFile(string fn)
 {
@@ -324,7 +335,7 @@ bool CopyFile(string input, string output)
 	input = FormatFileName(input);
 	output = FormatFileName(output);
 
-	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
+	if (toUpper(input).compare(WLAN_CONFIG_FILE) == 0)
 	{
 		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
 		return false;
@@ -579,6 +590,17 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 
 	return Output;
 
+}
+
+
+std::string ReplaceString(std::string subject, const std::string& search,
+                          const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return subject;
 }
 
 

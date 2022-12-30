@@ -39,6 +39,10 @@
 #include "../../include/defines.h"
 //#include "server_GPIO.h"
 
+#ifdef ENABLE_SOFTAP
+#include "softAP.h"
+#endif //ENABLE_SOFTAP
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -156,6 +160,13 @@ extern "C" void app_main(void)
         return; // No way to continue without SD-Card!
     }
 
+    CheckIsPlannedReboot();
+    CheckOTAUpdate();
+    CheckUpdate();
+    #ifdef ENABLE_SOFTAP
+        CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
+    #endif
+
     setupTime();
 
     string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
@@ -166,6 +177,8 @@ extern "C" void app_main(void)
     }
 
     LogFile.CreateLogDirectories();
+    MakeDir("/sdcard/demo");            // needed for demo mode
+
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Startup ====================");
@@ -173,11 +186,9 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
 
-    CheckOTAUpdate();
-    CheckUpdate();
 
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
+    LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
 
@@ -215,6 +226,7 @@ extern "C" void app_main(void)
 
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Please make sure to setup the SD-Card properly (check the wiki) or re-install using the update_*.zip!");    
     }
 
     std::string zw = getCurrentTimeString("%Y%m%d-%H%M%S");
@@ -261,9 +273,8 @@ extern "C" void app_main(void)
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
                 setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
             }
-        } else { // Test Camera            
-            camera_fb_t * fb = esp_camera_fb_get();
-            if (!fb) {
+        } else { // Test Camera    
+            if (!Camera.testCamera()) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
                 /* Easiest would be to simply restart here and try again,
                    how ever there seem to be systems where it fails at startup but still work corectly later.
@@ -271,7 +282,6 @@ extern "C" void app_main(void)
                    setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
             }
             else {
-                esp_camera_fb_return(fb);   
                 Camera.LightOnOff(false);
             }
         }
@@ -318,3 +328,4 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
 }
+

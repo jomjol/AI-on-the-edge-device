@@ -18,6 +18,7 @@ bool CopyFile(string input, string output);
 bool DeleteFile(string fn);
 bool RenameFile(string from, string to);
 bool MakeDir(std::string _what);
+bool FileExists(string filename);
 
 
 string RundeOutput(double _in, int _anzNachkomma);
@@ -30,6 +31,7 @@ bool ctype_space(const char c, string adddelimiter);
 string getFileType(string filename);
 string getFileFullFileName(string filename);
 string getDirectory(string filename);
+
 
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);

@@ -34,8 +34,28 @@ long auto_intervall = 0;
 bool auto_isrunning = false;
 
 int countRounds = 0;
+bool isPlannedReboot = false;
 
 static const char *TAG = "TFLITE SERVER";
+
+
+void CheckIsPlannedReboot()
+{
+ 	FILE *pfile;
+    if ((pfile = fopen("/sdcard/reboot.txt", "r")) == NULL)
+    {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not a planned reboot.");
+        isPlannedReboot = false;
+	}
+    else
+    {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Planned reboot.");
+        DeleteFile("/sdcard/reboot.txt");   // Prevent Boot Loop!!!
+        isPlannedReboot = true;
+	}
+
+
+}
 
 
 int getCountFlowRounds() 
@@ -65,17 +85,16 @@ bool isSetupModusActive() {
 void KillTFliteTasks()
 {
     #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "Handle: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
+        ESP_LOGD(TAG, "KillTFliteTasks: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
     #endif
-    if (xHandletask_autodoFlow != NULL)
+    if( xHandletask_autodoFlow != NULL )
     {
-        TaskHandle_t xHandletask_autodoFlowTmp = xHandletask_autodoFlow;
+        vTaskDelete(xHandletask_autodoFlow);
         xHandletask_autodoFlow = NULL;
-        vTaskDelete(xHandletask_autodoFlowTmp);
-        #ifdef DEBUG_DETAIL_ON      
-            ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
-        #endif
     }
+    #ifdef DEBUG_DETAIL_ON      
+    	ESP_LOGD(TAG, "Killed: xHandletask_autodoFlow");
+    #endif
 }
 
 
@@ -773,13 +792,17 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
-    if (esp_reset_reason() == ESP_RST_PANIC) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
-        LogFile.setLogLevel(ESP_LOG_DEBUG);
-        //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
-        vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
+    if (!isPlannedReboot)
+    {
+        if (esp_reset_reason() == ESP_RST_PANIC) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
+            LogFile.setLogLevel(ESP_LOG_DEBUG);
+            //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
+            vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
+        }
     }
+
 
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
@@ -795,6 +818,7 @@ void task_autodoFlow(void *pvParameter)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
+        time_t roundStartTime = getUpTime();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
 
@@ -825,7 +849,8 @@ void task_autodoFlow(void *pvParameter)
         string zwtemp = "CPU Temperature: " + stream.str();
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zwtemp); 
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + " completed");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
+                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)

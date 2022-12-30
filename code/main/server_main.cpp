@@ -16,6 +16,8 @@
 #include "server_tflite.h"
 #include "esp_log.h"
 
+#include <stdio.h>
+
 #include "Helper.h"
 
 httpd_handle_t server = NULL;   
@@ -350,6 +352,7 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
 
 
+
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
     const char* resp_str; 
@@ -419,6 +422,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = NULL    // Pass server data as context
     };
     httpd_register_uri_handler(server, &starttime_tmp_handle);
+
 
 
     httpd_uri_t img_tmp_handle = {

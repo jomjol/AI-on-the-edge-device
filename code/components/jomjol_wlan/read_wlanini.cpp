@@ -41,7 +41,7 @@ std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter =
 
 
 
-void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, int &_rssithreashold)
+bool LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, int &_rssithreashold)
 {
     std::string ssid = "";
     std::string passphrase = "";
@@ -59,10 +59,13 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     fn = FormatFileName(fn);
 
     pFile = fopen(fn.c_str(), "r");
+    if (!pFile)
+        return false;
+
     ESP_LOGD(TAG, "file loaded");
 
     if (pFile == NULL)
-        return;
+        return false;
 
     char zw[1024];
     fgets(zw, 1024, pFile);
@@ -193,6 +196,7 @@ void LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
 
     _rssithreashold = rssithreshold;
     RSSIThreashold = rssithreshold;
+    return true;
 }
 
 

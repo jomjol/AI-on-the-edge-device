@@ -13,6 +13,7 @@ std::string* getIPAddress();
 std::string* getSSID();
 int get_WIFI_RSSI();
 bool getWIFIisConnected();
+void WIFIDestroy();
 
 extern std::string hostname;
 extern std::string std_hostname;

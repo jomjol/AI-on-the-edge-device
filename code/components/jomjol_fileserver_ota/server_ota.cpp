@@ -32,6 +32,8 @@
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
+#include "ClassControllCamera.h"
+#include "connect_wlan.h"
 
 
 #include "ClassLogFile.h"
@@ -48,7 +50,7 @@ esp_err_t handler_reboot(httpd_req_t *req);
 static bool ota_update_task(std::string fn);
 
 std::string _file_name_update;
-
+bool initial_setup = false;
 
 
 static void infinite_loop(void)
@@ -76,7 +78,7 @@ void task_do_Update_ZIP(void *pvParameter)
         out = "/sdcard/html";
         outbin = "/sdcard/firmware";
 
-        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/");
+        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
 
         if (retfirmware.length() > 0)
@@ -84,8 +86,14 @@ void task_do_Update_ZIP(void *pvParameter)
         	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
             ota_update_task(retfirmware);
         }
+
+        if (initial_setup)
+        {
+
+        }
+
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
-        doReboot();
+        doRebootOTA();
     }
     else
     {
@@ -106,6 +114,15 @@ void CheckUpdate()
 	char zw[1024] = "";
 	fgets(zw, 1024, pfile);
     _file_name_update = std::string(zw);
+    if (fgets(zw, 1024, pfile))
+	{
+		std::string _szw = std::string(zw);
+        if (_szw == "init")
+        {
+       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered.");
+            initial_setup = true;        }
+	}
+
     fclose(pfile);
     DeleteFile("/sdcard/update.txt");   // Prevent Boot Loop!!!
 	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update during boot triggered - Update File: " + _file_name_update);
@@ -118,8 +135,6 @@ void CheckUpdate()
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-
-
 
 
 static bool ota_update_task(std::string fn)
@@ -274,6 +289,7 @@ static bool diagnostic(void)
     return true;
 }
 
+
 void CheckOTAUpdate(void)
 {
     ESP_LOGI(TAG, "Start CheckOTAUpdateCheck...");
@@ -346,7 +362,6 @@ void CheckOTAUpdate(void)
 }
 
 
-
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON     
@@ -383,7 +398,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             ESP_LOGD(TAG, "Delete Default File: %s", fn.c_str());
         }
 
-    };
+    }
 
     if (_task.compare("emptyfirmwaredir") == 0)
     {
@@ -563,67 +578,106 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     }
 
     httpd_resp_send(req, resp_str, strlen(resp_str));  
-
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("handler_ota_update - Done");    
-#endif
 */
 
-    return ESP_OK;
-};
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("handler_ota_update - Done");    
+    #endif
 
-void hard_restart() {
+    return ESP_OK;
+}
+
+
+void hard_restart() 
+{
   esp_task_wdt_init(1,true);
   esp_task_wdt_add(NULL);
   while(true);
 }
 
-void task_reboot(void *pvParameter)
+
+void task_reboot(void *KillAutoFlow)
 {
-    while(1)
-    {
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-        esp_restart();
-        hard_restart();
+    // write a reboot, to identify a reboot by purpouse
+    FILE* pfile = fopen("/sdcard/reboot.txt", "w");
+    std::string _s_zw= "reboot";
+    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
+    fclose(pfile);
+
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+
+    if ((bool)KillAutoFlow) {
+        KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
+    /* Stop service tasks */
+    #ifdef ENABLE_MQTT
+        MQTTdestroy_client(true);
+    #endif //ENABLE_MQTT
+    gpio_handler_destroy();
+    esp_camera_deinit();
+    WIFIDestroy();
+
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    esp_restart();      // Reset type: CPU reset (Reset both CPUs)
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
+
+    ESP_LOGE(TAG, "Reboot failed!");
+    vTaskDelete(NULL); //Delete this task if it comes to this point
 }
 
-void doReboot(){
+
+void doReboot()
+{
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
-    xTaskCreate(&task_reboot, "reboot", configMINIMAL_STACK_SIZE * 64, NULL, 10, NULL);
-    // KillTFliteTasks(); // kills itself 
-    gpio_handler_destroy();
-    #ifdef ENABLE_MQTT
-        MQTTdestroy_client();
-    #endif //ENABLE_MQTT
+
+    BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
+    if( xReturned != pdPASS )
+    {
+        ESP_LOGE(TAG, "task_reboot not created -> force reboot without killing flow");
+        task_reboot((void*) false);
+    }
+    vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
+}
+
+
+void doRebootOTA()
+{
+    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
+
+    esp_camera_deinit();
+
     vTaskDelay(5000 / portTICK_PERIOD_MS);
-    esp_restart();
-    hard_restart();
+    esp_restart();      // Reset type: CPU reset (Reset both CPUs)
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 }
 
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON     
-    LogFile.WriteHeapInfo("handler_reboot - Start");
-#endif    
+    #ifdef DEBUG_DETAIL_ON     
+        LogFile.WriteHeapInfo("handler_reboot - Start");
+    #endif    
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
     ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
-    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch(window.location.hostname,{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
+    const char* resp_str = "<body style='font-family: arial'> <h3 id=t></h3></body><script>var h='Rebooting!<br>The page will automatically reload in around 25..60s<br>(in case of a firmware update it can take up to 180s).<br>'; document.getElementById('t').innerHTML=h; setInterval(function (){h +='.'; document.getElementById('t').innerHTML=h; fetch('/reboot_page.html',{mode: 'no-cors'}).then(r=>{parent.location.href=('/index.html');})}, 1000);</script>";
     httpd_resp_send(req, resp_str, strlen(resp_str)); 
     
     doReboot();
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("handler_reboot - Done");    
-#endif
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("handler_reboot - Done");    
+    #endif
 
     return ESP_OK;
 }
+
 
 void register_server_ota_sdcard_uri(httpd_handle_t server)
 {

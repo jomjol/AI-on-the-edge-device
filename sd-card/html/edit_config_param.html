@@ -121,6 +121,23 @@ textarea {
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
 			</td>
+		</tr>		
+		<tr class="expert" id="ex1">
+			<td class="indent1">
+				<input type="checkbox" id="MakeImage_Demo_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "Demo")' unchecked >
+				<label for=MakeImage_Demo_enabled><class id="MakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
+			</td>
+			<td>
+				<select id="MakeImage_Demo_value1">
+					<option value="true">true</option>
+					<option value="false" selected>false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable to use demo images instead of the real camera images.<br>
+				Make sore to have a demo folder on your SD-Card!
+				See Details on <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Demo-Mode" target="_blank">Demo Mode</a>.
+			</td>
 		</tr>
 		<tr class="expert" id="ex1">
 			
@@ -457,7 +474,8 @@ textarea {
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
 			<td style="font-size: 80%;">
-				Shift the digit separator within the digital digits (positiv and negativ)
+				Shift the digit separator (positiv or negativ).<br>
+				Eg. to move from 'm3' to 'l' (Multiply by 1000), you need to set it to +3.
 			</td>
 		</tr>
 		<tr>
@@ -667,7 +685,9 @@ textarea {
 			</td>
 			<td style="font-size: 80%;">
 				Select the meter type so the sensors have the right units in Homeassistant.<br>
-				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!
+				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!<br>
+				Please also make sure that it matches the dimention of the value provided by the meter! Eg. if your meter provides m3, you need to also set it to m3.
+				Alternatively you could set 'DecimalShift' to '3' so the value is converted to 'l'!
 			</td>
 		</tr>
 
@@ -1775,6 +1795,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
 	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, category, "MakeImage", "Demo", true);
 	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
 	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
 	WriteParameter(param, category, "MakeImage", "Brightness", false);		
@@ -1894,7 +1915,8 @@ function ReadParameterAll()
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
-	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
+	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);	
+	ReadParameter(param, "MakeImage", "Demo", true);
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
 	ReadParameter(param, "MakeImage", "ImageQuality", false);		
 	ReadParameter(param, "MakeImage", "Brightness", false);		

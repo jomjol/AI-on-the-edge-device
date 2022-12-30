@@ -140,6 +140,12 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             ledintensity = max((float) 0, ledintensity);
             Camera.SetLEDIntensity(ledintensity);
         }
+
+        if ((toUpper(splitted[0]) == "DEMO") && (splitted.size() > 1))
+        {
+            if (toUpper(splitted[1]) == "TRUE")
+                Camera.useDemoMode();
+        }
     }
 
     Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation);
