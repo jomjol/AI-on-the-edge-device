@@ -3,7 +3,11 @@ name: Build and Pack
 on: [push, pull_request]
 
 jobs:
-  # This workflow contains a single job called "build"
+  
+  #########################################################################################
+  ## Build the documentation using mkdoc
+  ## It will be pushed to the gh-pages branch
+  #########################################################################################
   build-documentation:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -20,4 +24,58 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
       - name: Publish docs
-        run: cd docs; mkdocs gh-deploy
+        run: |
+          #cd docs
+          mkdocs gh-deploy
+
+
+  #########################################################################################
+  ## Publish the documentation on the Github pages
+  #########################################################################################
+  update-github-pages:
+    needs: [build-documentation]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: 'gh-pages'
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v2
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: '.'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
+
+
+  #########################################################################################
+  ## Delete the gh-pages branch again
+  #########################################################################################
+  remove-gh-pages-branch-again:
+    needs: [update-github-pages]
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Delete gh-pages branche again
+      uses: dawidd6/action-delete-branch@v3
+      with:
+        github_token: ${{github.token}}
+        branches: gh-pages
