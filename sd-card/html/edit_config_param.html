@@ -474,7 +474,8 @@ textarea {
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
 			<td style="font-size: 80%;">
-				Shift the digit separator within the digital digits (positiv and negativ)
+				Shift the digit separator (positiv or negativ).<br>
+				Eg. to move from 'm3' to 'l' (Multiply by 1000), you need to set it to +3.
 			</td>
 		</tr>
 		<tr>
@@ -685,7 +686,8 @@ textarea {
 			<td style="font-size: 80%;">
 				Select the meter type so the sensors have the right units in Homeassistant.<br>
 				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!<br>
-				Please also make sure that it matches the value! Use `DecimalShift` to set it correctly!
+				Please also make sure that it matches the dimention of the value provided by the meter! Eg. if your meter provides m3, you need to also set it to m3.
+				Alternatively you could set 'DecimalShift' to '3' so the value is converted to 'l'!
 			</td>
 		</tr>
 
