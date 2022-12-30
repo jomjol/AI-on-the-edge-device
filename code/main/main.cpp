@@ -272,9 +272,8 @@ extern "C" void app_main(void)
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
                 setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
             }
-        } else { // Test Camera            
-            camera_fb_t * fb = esp_camera_fb_get();
-            if (!fb) {
+        } else { // Test Camera    
+            if (!Camera.testCamera()) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
                 /* Easiest would be to simply restart here and try again,
                    how ever there seem to be systems where it fails at startup but still work corectly later.
@@ -282,7 +281,6 @@ extern "C" void app_main(void)
                    setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
             }
             else {
-                esp_camera_fb_return(fb);   
                 Camera.LightOnOff(false);
             }
         }

@@ -27,6 +27,7 @@
 #include "esp_camera.h"
 
 #include "driver/ledc.h"
+#include "server_tflite.h"
 
 static const char *TAG = "CAM"; 
 
@@ -66,14 +67,31 @@ static camera_config_t camera_config = {
 };
 
 
-
-
 CCamera Camera;
+
+uint8_t *demoImage = NULL; // Buffer holding the demo image in bytes
+
+#define DEMO_IMAGE_SIZE 30000 // Max size of demo image in bytes
 
 typedef struct {
         httpd_req_t *req;
         size_t len;
 } jpg_chunking_t;
+
+
+bool CCamera::testCamera(void) {
+    bool success;
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (fb)  {
+        success = true;
+    }
+    else {
+        success = false;
+    }
+    
+    esp_camera_fb_return(fb);
+    return success;
+}
 
 
 void CCamera::ledc_init(void)
@@ -219,6 +237,7 @@ void CCamera::EnableAutoExposure(int flash_duration)
 esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 {
     string ftype;
+    int _size;
 
     uint8_t *zwischenspeicher = NULL;
 
@@ -255,7 +274,12 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         return ESP_FAIL;
     }
 
-    int _size = fb->len;
+    if (demoMode) { // Use images stored on SD-Card instead of camera image
+        /* Replace Framebuffer with image from SD-Card */
+        loadNextDemoImage(fb);
+    }
+
+    _size = fb->len;
     zwischenspeicher = (uint8_t*) malloc(_size);
     if (!zwischenspeicher)
     {
@@ -454,14 +478,23 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     }
 
     if(res == ESP_OK){
-        if(fb->format == PIXFORMAT_JPEG){
-            fb_len = fb->len;
+        if (demoMode) { // Use images stored on SD-Card instead of camera image
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Using Demo image!");
+            /* Replace Framebuffer with image from SD-Card */
+            loadNextDemoImage(fb);
+
             res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
-        } else {
-            jpg_chunking_t jchunk = {req, 0};
-            res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
-            httpd_resp_send_chunk(req, NULL, 0);
-            fb_len = jchunk.len;
+        }
+        else {
+            if(fb->format == PIXFORMAT_JPEG){
+                fb_len = fb->len;
+                res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
+            } else {
+                jpg_chunking_t jchunk = {req, 0};
+                res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
+                httpd_resp_send_chunk(req, NULL, 0);
+                fb_len = jchunk.len;
+            }
         }
     }
     esp_camera_fb_return(fb);
@@ -639,4 +672,85 @@ void CCamera::SetLEDIntensity(float _intrel)
 bool CCamera::getCameraInitSuccessful() 
 {
     return CameraInitSuccessful;
+}
+
+std::vector<std::string> demoFiles;
+
+void CCamera::useDemoMode()
+{
+    char line[50];
+
+    FILE *fd = fopen("/sdcard/demo/files.txt", "r");
+    if (!fd) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Please provide the demo files first!");
+        return;
+    }
+
+    demoImage = (uint8_t*)malloc(DEMO_IMAGE_SIZE);
+    if (demoImage == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to acquire required memory for demo image!");
+        return;
+    }
+
+    while (fgets(line, sizeof(line), fd) != NULL) {
+        line[strlen(line) - 1] = '\0';
+        demoFiles.push_back(line);
+    }
+    
+    fclose(fd);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Using Demo mode (" + std::to_string(demoFiles.size()) + 
+            " files) instead of real camera image!");
+
+    for (auto file : demoFiles) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, file);
+    }
+
+    demoMode = true;
+}
+
+
+bool CCamera::loadNextDemoImage(camera_fb_t *fb) {
+    char filename[50];
+    int readBytes;
+    long fileSize;
+
+    snprintf(filename, sizeof(filename), "/sdcard/demo/%s", demoFiles[getCountFlowRounds() % demoFiles.size()].c_str());
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Using " + std::string(filename) + " as demo image");
+
+    /* Inject saved image */
+
+    FILE * fp = fopen(filename, "rb");
+    if (!fp) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(filename) +"!");
+        return false;
+    }
+
+    fileSize = GetFileSize(filename);
+    if (fileSize > DEMO_IMAGE_SIZE) {
+        char buf[100];
+        snprintf(buf, sizeof(buf), "Demo Image (%d bytes) is larger than provided buffer (%d bytes)!",
+                (int)fileSize, DEMO_IMAGE_SIZE);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, std::string(buf));
+        return false;
+    }
+
+    readBytes = fread(demoImage, 1, DEMO_IMAGE_SIZE, fp);
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "read " + std::to_string(readBytes) + " bytes");
+    fclose(fp);
+
+    fb->buf = demoImage; // Update pointer
+    fb->len = readBytes;
+    // ToDo do we also need to set height, width, format and timestamp?
+
+    return true;
+}
+
+
+long CCamera::GetFileSize(std::string filename)
+{
+    struct stat stat_buf;
+    long rc = stat(filename.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
 }
