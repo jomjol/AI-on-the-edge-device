@@ -1,7 +1,8 @@
 site_name: AI on the Edge Device
+
+#site_url: https://example.com/
 #site_url: https://jomjol.github.io/AI-on-the-edge-device/index.html
-#site_url: https://caco3.github.io/AI-on-the-edge-device/index.html
-site_url: https://example.com/
+site_url: https://caco3.github.io/AI-on-the-edge-device
 
 theme: readthedocs
 
