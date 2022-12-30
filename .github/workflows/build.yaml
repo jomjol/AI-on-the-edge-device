@@ -355,10 +355,10 @@ jobs:
 
     - name: Add binary to Web Installer and update manifest
       run: |
-        rm -f docs/binary/firmware.bin
-        cp -f update/firmware.bin docs/binary/firmware.bin
-        cp -f docs/manifest_template.json docs/manifest.json
-        sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
+        rm -f docs/webinstaller/binary/firmware.bin
+        cp -f update/firmware.bin docs/webinstaller/binary/firmware.bin
+        cp -f docs/webinstaller/manifest_template.json docs/webinstaller/manifest.json
+        sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/webinstaller/manifest.json
 
     - name: Setup Pages
       uses: actions/configure-pages@v2
