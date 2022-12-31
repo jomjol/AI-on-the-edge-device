@@ -1,0 +1,16 @@
+name: GHA Usage Audit
+on:
+  schedule:
+    - cron: "0 3 * * *" # Runs at 03:00 AM (UTC) every day
+jobs:
+  gha-usage-minutes-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub Actions Usage Audit
+        uses: fergusmacd/github-action-usage@daff7e
+        # pass user input as arguments
+        with:
+          organisation: ${{secrets.ORGANISATION}}
+          gitHubAPIKey: ${{secrets.GITHUBAPIKEY}} 
+          loglevel: error 
+          raisealarmremainingminutes: 100
