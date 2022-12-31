@@ -139,6 +139,11 @@ bool setupTime() {
 
     ConfigFile configFile = ConfigFile(CONFIG_FILE); 
 
+    if (!configFile.ConfigFileExists()){
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "No ConfigFile defined - exit setupTime() ");
+        return false;
+    }
+
     std::vector<std::string> splitted;
     std::string line = "";
     bool disabledLine = false;

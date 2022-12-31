@@ -107,8 +107,9 @@ void SendHTTPResponse(httpd_req_t *req)
         message = "<h3>1. Upload initial configuration to sd-card</h3><p>";
         message += "The configuration file config.ini is missing and most propably the full configuration and html folder on the sd-card. ";
         message += "This is normal after the first flashing of the firmware and an empty sd-card. Please upload \"remote_setup.zip\", which contains an full inital configuration.<p>";
-        message += "<input id=\"newfile\" type=\"file\">";
+        message += "<input id=\"newfile\" type=\"file\"><br>";
         message += "<button class=\"button\" style=\"width:300px\" id=\"doUpdate\" type=\"button\" onclick=\"upload()\">Upload File</button><p>";
+        message += "The upload might take up to 60s. After a succesfull upload the page will be updated.";
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
         message = "<script language=\"JavaScript\">";
@@ -118,18 +119,20 @@ void SendHTTPResponse(httpd_req_t *req)
         message += "var filePath = document.getElementById(\"newfile\").value.split(/[\\\\/]/).pop();";
         message += "var file = document.getElementById(\"newfile\").files[0];";
         message += "if (!file.name.includes(\"remote-setup\")){if (!confirm(\"The zip file name should contain '...remote-setup...'. Are you sure that you have downloaded the correct file?\"))return;};";
-        message += "var upload_path = \"/upload/firmware/\" + filePath; xhttp.open(\"POST\", upload_path, true); xhttp.send(file);document.reload();}";
+        message += "var upload_path = \"/upload/firmware/\" + filePath; xhttp.open(\"POST\", upload_path, true); xhttp.send(file);document.reload();";
+        message += "document.getElementById(\"doUpdate\").disabled = true;}";
         message += "</script>";
-        isConfigINI = true;
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
         return;
     }
     if (!isWlanINI)
     {
         message = "<h3>2. WLAN access credentials</h3><p>";
-        message = "<table>";
+        message += "<table>";
         message += "<tr><td>WLAN-SSID</td><td><input type=\"text\" name=\"ssid\" id=\"ssid\"></td><td>SSID of the WLAN</td></tr>";
-        message += "<tr><td>WLAN-Password</td><td><input type=\"text\" name=\"password\" id=\"password\"></td><td>ATTENTION: the password will not be encrypted during the sending.</td>";
+        message += "<tr><td>WLAN-Password</td><td><input type=\"text\" name=\"password\" id=\"password\"></td><td>ATTENTION: the password will not be encrypted during the sending.</td><tr>";
+        message += "</table><p>";
+        message += "<h4>ATTENTION:<h4>Be sure about the WLAN settings. They cannot be reseted afterwards. If ssid or password is wrong, you need to take out the sd-card and manually change them in \"wlan.ini\"!<p>";
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
 //        message = "</tr><tr><td> Hostname</td><td><input type=\"text\" name=\"hostname\" id=\"hostname\"></td><td></td>";
@@ -140,9 +143,6 @@ void SendHTTPResponse(httpd_req_t *req)
 //        message += "<tr><td>RSSI Threashold</td><td><input type=\"number\" name=\"name\" id=\"threashold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
 //        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
-        message = "/<table><p>";
-        message += "<h4>ATTENTION:<h4>Be sure about the WLAN settings. They cannot be reset afterwards. If ssid or password is wrong, you need to take out the sd-card and manually change them in \"wlan.ini\"!<p>";
-        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
         message = "<button class=\"button\" type=\"button\" onclick=\"wr()\">Write wlan.ini</button>";
         message += "<script language=\"JavaScript\">async function wr(){";
@@ -155,7 +155,7 @@ void SendHTTPResponse(httpd_req_t *req)
 
     message = "<h3>3. Reboot</h3><p>";
     message += "After triggering the reboot, the zip-files gets extracted and written to the sd-card.<br>The ESP32 will restart two times and then connect to your access point. Please find the IP in your router settings and access it with the new ip-address.<p>";
-    message += "The first update and initialization process can take up to 3 minutes before you find it in the wlan. Errors can be found on the console / serial logout.<p>Have fun!<p>";
+    message += "The first update and initialization process can take up to 3 minutes before you find it in the wlan. Error logs can be found on the console / serial logout.<p>Have fun!<p>";
     message += "<button class=\"button\" type=\"button\" onclick=\"rb()\")>Reboot to first setup.</button>";
     message += "<script language=\"JavaScript\">async function rb(){";
     message += "api = \"/reboot\";";
@@ -404,6 +404,8 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
 
         remaining -= received;
     }
+    fclose(fd);
+    isConfigINI = true;
 
     FILE* pfile = fopen("/sdcard/update.txt", "w");
     std::string _s_zw= "/sdcard" + std::string(filename);
@@ -411,17 +413,14 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
     fclose(pfile);
 
 
-    fclose(fd);
     ESP_LOGI(TAG, "File reception complete");
     httpd_resp_set_hdr(req, "Location", "/test");
     httpd_resp_set_status(req, "303 See Other");
     httpd_resp_set_hdr(req, "Location", "/test");
-//    httpd_resp_sendstr(req, "File uploaded successfully");
     httpd_resp_send_chunk(req, NULL, 0);
 
     ESP_LOGI(TAG, "Update page send out");
 
-//    httpd_resp_sendstr(req, "File uploaded successfully");
     return ESP_OK;
 }
 
