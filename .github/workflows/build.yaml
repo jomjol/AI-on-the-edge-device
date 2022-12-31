@@ -24,6 +24,14 @@ jobs:
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+    - name: Cache PIP
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
     - name: Cache PlatformIO
       uses: actions/cache@v3
       with:
@@ -34,14 +42,22 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade platformio
 
+    - name: Load Build Cache
+      uses: actions/cache@v3
+      with:
+        path: ./code/.pio/
+        key: ${{ runner.os }}-pio-${{ github.ref_name }}
+
     - name: Build Firmware
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
+
 
     - name: Store generated files in cache
       uses: actions/cache@v3
