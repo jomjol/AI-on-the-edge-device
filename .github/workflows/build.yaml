@@ -48,7 +48,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
 
-    - name: Load Build Cache
+    - name: Use Build Cache
       uses: actions/cache@v3
       with:
         path: ./code/.pio/
@@ -57,7 +57,6 @@ jobs:
     - name: Build Firmware
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
-
 
     - name: Store generated files in cache
       uses: actions/cache@v3
