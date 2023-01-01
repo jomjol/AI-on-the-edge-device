@@ -23,3 +23,4 @@ CTestTestfile.cmake
 _deps
 code/edgeAI.code-workspace
 .DS_Store
+docs/site

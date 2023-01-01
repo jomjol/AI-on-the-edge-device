@@ -1,0 +1,16 @@
+# Configure the navigation using following list
+# and the Awesome Pages Plugin (https://github.com/lukasgeiter/mkdocs-awesome-pages-plugin)
+
+nav:
+  # List all files in the expected order
+  - index.md
+
+  - Links:
+    - Web Installer/Console: https://jomjol.github.io/AI-on-the-edge-device/index.html
+    - Issues: https://github.com/jomjol/AI-on-the-edge-device/issues
+    - Discussions: https://github.com/jomjol/AI-on-the-edge-device/discussions
+
+  - Asorted Pages:
+    # List all pages which are not covered by above list
+    # Step by step we should migrate those page to above list
+    - ...
