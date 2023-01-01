@@ -18,7 +18,6 @@ p {font-size: 1em;}
 }
 </style>
 
-<script type="text/javascript" src="common.js"></script> 
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -36,7 +35,7 @@ p {font-size: 1em;}
 <script>
 function doReboot() {
 	// if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = getDomainname() + "/reboot";
+		var stringota = "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);

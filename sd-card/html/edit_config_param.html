@@ -1427,13 +1427,13 @@ textarea {
 
 </div>
 
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfigcommon.js"></script>  
-<script type="text/javascript" src="readconfigparam.js"></script>  
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>  
+<script type="text/javascript" src="./readconfigparam.js"></script>  
  
 <script type="text/javascript">
 	var canvas = document.getElementById('canvas'),
-		domainname = getDomainname(); 
+		basepath = "http://192.168.178.22"; 
 		param;
 		category;
 		NUNBERSAkt = -1;
@@ -1448,8 +1448,8 @@ function LoadConfigNeu() {
 	}
 
 
-	domainname = getDomainname(); 
-	if (!loadConfig(domainname)) {
+	basepath = getbasepath(); 
+	if (!loadConfig(basepath)) {
 		alert("Config.ini could not be loaded!\nPlease reload the page.");
 		return;
 	} 
@@ -2064,14 +2064,14 @@ function saveTextAsFile()
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
 		ReadParameterAll();
 		WriteConfigININew();
-	    SaveConfigToServer(domainname);
+	    SaveConfigToServer(basepath);
 		alert("Config.ini is updated!")
 	}
 }
 
 function doReboot() {
 	if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = getDomainname() + "/reboot";
+		var stringota = "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
@@ -2081,7 +2081,7 @@ function doReboot() {
 
 function editConfigDirect() {
 	if (confirm("Did you save your changes?")) {
-		var stringota = getDomainname() + "/edit_config.html";
+		var stringota = "/edit_config.html";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);

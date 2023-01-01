@@ -1,4 +1,8 @@
-function SaveConfigToServer(_domainname){
+function readconfig_Version(){
+     return "1.0.0 - 20200910";
+ }
+
+function SaveConfigToServer(_basepath){
      // leere Zeilen am Ende löschen
      var zw = config_split.length - 1;
      while (config_split[zw] == "") {
@@ -11,16 +15,16 @@ function SaveConfigToServer(_domainname){
           config_gesamt = config_gesamt + config_split[i] + "\n";
      } 
 
-     FileDeleteOnServer("/config/config.ini", _domainname);
+     FileDeleteOnServer("/config/config.ini", _basepath);
 
-     FileSendContent(config_gesamt, "/config/config.ini", _domainname);          
+     FileSendContent(config_gesamt, "/config/config.ini", _basepath);          
 }
 
-function UpdateConfig(zw, _index, _enhance, _domainname){
+function UpdateConfig(zw, _index, _enhance, _basepath){
      var namezw = zw["name"];
-     FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _domainname);
+     FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _basepath);
      var namezw = zw["name"].replace(".jpg", "_org.jpg");
-     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", namezw, _domainname);     
+     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", namezw, _basepath);     
 }
 
 
@@ -130,10 +134,10 @@ function getConfig()
 }
 
      
-function loadConfig(_domainname) {
+function loadConfig(_basepath) {
      var xhttp = new XMLHttpRequest();
      try {
-          url = _domainname + '/fileserver/config/config.ini';     
+          url = _basepath + '/fileserver/config/config.ini';     
           xhttp.open("GET", url, false);
           xhttp.send();
           config_gesamt = xhttp.responseText;
@@ -158,8 +162,8 @@ function dataURLtoBlob(dataurl) {
      return new Blob([u8arr], {type:mime});
      }	
      
-function FileCopyOnServer(_source, _target, _domainname = ""){
-     url = _domainname + "/editflow?task=copy&in=" + _source + "&out=" + _target;
+function FileCopyOnServer(_source, _target, _basepath = ""){
+     url = _basepath + "/editflow?task=copy&in=" + _source + "&out=" + _target;
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
@@ -170,7 +174,7 @@ function FileCopyOnServer(_source, _target, _domainname = ""){
      }
 }
 
-function FileDeleteOnServer(_filename, _domainname = ""){
+function FileDeleteOnServer(_filename, _basepath = ""){
      var xhttp = new XMLHttpRequest();
      var okay = false;
 
@@ -188,7 +192,7 @@ function FileDeleteOnServer(_filename, _domainname = ""){
           }
      };
      try {
-          var url = _domainname + "/delete" + _filename;
+          var url = _basepath + "/delete" + _filename;
           xhttp.open("POST", url, false);
           xhttp.send();
      }
@@ -200,7 +204,7 @@ function FileDeleteOnServer(_filename, _domainname = ""){
      return okay;
 }
 
-function FileSendContent(_content, _filename, _domainname = ""){
+function FileSendContent(_content, _filename, _basepath = ""){
      var xhttp = new XMLHttpRequest();  
      var okay = false;
 
@@ -217,7 +221,7 @@ function FileSendContent(_content, _filename, _domainname = ""){
      };
 
      try {
-          upload_path = _domainname + "/upload" + _filename;
+          upload_path = _basepath + "/upload" + _filename;
           xhttp.open("POST", upload_path, false);
           xhttp.send(_content);
      }
@@ -229,21 +233,21 @@ function FileSendContent(_content, _filename, _domainname = ""){
 }
 
 
-function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = ""){
+function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
      var JPEG_QUALITY=0.8;
      var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
      var rtn = dataURLtoBlob(dataUrl);
 
      if (_delete) {
-          FileDeleteOnServer(_filename, _domainname);
+          FileDeleteOnServer(_filename, _basepath);
      }
 	
-     FileSendContent(rtn, _filename, _domainname);
+     FileSendContent(rtn, _filename, _basepath);
 }
 
-function MakeContrastImageZW(zw, _enhance, _domainname){
+function MakeContrastImageZW(zw, _enhance, _basepath){
      _filename = zw["name"].replace("/config/", "/img_tmp/");
-     url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     url = _basepath + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      if (_enhance == true){
           url = url + "&enhance=true";
      }
@@ -260,10 +264,10 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
 
 
 
-function MakeRefZW(zw, _domainname){
+function MakeRefZW(zw, _basepath){
      _filetarget = zw["name"].replace("/config/", "/img_tmp/");
      _filetarget = _filetarget.replace(".jpg", "_org.jpg");
-     url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     url = _basepath + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
@@ -274,6 +278,6 @@ function MakeRefZW(zw, _domainname){
      }
      _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
 //     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
-     FileCopyOnServer(_filetarget, _filetarget2, _domainname);
+     FileCopyOnServer(_filetarget, _filetarget2, _basepath);
 }
 

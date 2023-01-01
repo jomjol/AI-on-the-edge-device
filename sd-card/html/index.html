@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="style.css" type="text/css" >
 
 <script type="text/javascript" src="common.js"></script>
-<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="gethost.js"></script>
 <script type="text/javascript" src="readconfigcommon.js"></script>
 <script type="text/javascript" src="readconfigparam.js"></script>
 
@@ -79,9 +79,9 @@
         </li>
       </ul>
 
-    <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
+    <li><a href="#" onclick="loadPage('value?full');">Recognition</a></li>
     <li><a href="#" onclick="loadPage('graph.html');">Data Graph</a></li>
-    <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/');">File Server</a></li>
+    <li><a href="#" onclick="loadPage('fileserver/');">File Server</a></li>
     <li><a>System <i class="arrow down"></i></a>
         <ul class="submenu">
             <li><a href="#" onclick="loadPage('backup.html');">Backup/Restore</a></li>

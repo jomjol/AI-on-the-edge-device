@@ -41,26 +41,26 @@ textarea {
 	</tr>
 </table>
 
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfigcommon.js"></script>  
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>  
  
 <script type="text/javascript">
 	var canvas = document.getElementById('canvas'),
-		domainname = getDomainname(); 
+		basepath = "http://192.168.178.26"; 
 
 
 function LoadConfigNeu() {
-	domainname = getDomainname();  
-    loadConfig(domainname); 	
+	basepath = getbasepath();  
+    loadConfig(basepath); 	
 	document.getElementById("inputTextToSave").value = getConfig();
 	}
 
 function saveTextAsFile()
 {
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
-		FileDeleteOnServer("/config/config.ini", domainname);
+		FileDeleteOnServer("/config/config.ini", basepath);
 		var textToSave = document.getElementById("inputTextToSave").value;
-		FileSendContent(textToSave, "/config/config.ini", domainname);
+		FileSendContent(textToSave, "/config/config.ini", basepath);
 		alert("Config.ini is updated!")
 	}
 }

@@ -212,8 +212,6 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
         return ESP_FAIL;
     }
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-
     /* Send HTML file header */
     httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>");
 
@@ -346,6 +344,12 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+
+    // Since the log file is still could open for writing, we need to close it first
+    LogFile.CloseLogFileAppendHandle();
+
     fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
@@ -430,8 +434,6 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 
     ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
-    // Since the log file is still could open for writing, we need to close it first
-    LogFile.CloseLogFileAppendHandle();
 
     fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
@@ -612,8 +614,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     FILE *fd = NULL;
     struct stat file_stat;
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-
     /* Skip leading "/upload" from URI to get filename */
     /* Note sizeof() counts NULL termination hence the -1 */
     const char *filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
@@ -763,8 +763,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     std::string _task;
     std::string directory;
     std::string zw; 
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {

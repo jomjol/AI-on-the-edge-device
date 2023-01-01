@@ -68,12 +68,12 @@
 </table>
 
 
-<script src="jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfigcommon.js"></script> 
+<script src="/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script> 
 <script type="text/javascript">
 
-	function addZero(i) {
+function addZero(i) {
 	  if (i < 10) {
 		i = "0" + i;
 	  }
@@ -106,7 +106,7 @@
 		var h = addZero(d.getHours());
 		var m = addZero(d.getMinutes());
 		var s = addZero(d.getSeconds());
-		$('#img').html('<img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	}
 
@@ -121,7 +121,7 @@
 
 
 	function loadStatus() {
-		url = domainname + '/statusflow';     
+		url = basepath + '/statusflow';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -135,7 +135,7 @@
 
 
 	function loadCPUTemp() {
-		url = domainname + '/cpu_temperature';     
+		url = basepath + '/cpu_temperature';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -149,7 +149,7 @@
 
 
 	function loadRSSI() {
-		url = domainname + '/rssi';     
+		url = basepath + '/rssi';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -163,7 +163,7 @@
 
 
 	function loadUptime() {
-		url = domainname + '/uptime';     
+		url = basepath + '/uptime';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -177,7 +177,7 @@
 
 
 	function loadRoundCounter() {
-		url = domainname + '/info?type=Round';     
+		url = basepath + '/info?type=Round';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -191,7 +191,7 @@
 		
 	
 	function loadValue(_type, _div, _style) {
-		url = domainname + '/value?all=true&type=' + _type;     
+		url = basepath + '/value?all=true&type=' + _type;     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -232,7 +232,7 @@
 
 
 	function init(){
-		domainname = getDomainname();
+		basepath = getbasepath();
 		Refresh();
 	}
 

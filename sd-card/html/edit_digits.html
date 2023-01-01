@@ -131,11 +131,11 @@ th, td {
 	  </tr>  
 	</table>
 
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfigcommon.js"></script>
-<script type="text/javascript" src="readconfigparam.js"></script>  
+<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="./readconfigcommon.js"></script>
+<script type="text/javascript" src="./readconfigparam.js"></script>  
 
-<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script type="text/javascript" src="./jquery-3.6.0.min.js"></script>  
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -149,11 +149,11 @@ th, td {
             lockSizes = true;
             lockSpaceEquidistant = true;
             space = 3;
-            domainname = getDomainname();
+            basepath = "http://192.168.1.151";
 
     function doReboot() {
         if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-                var stringota = getDomainname() + "/reboot";
+                var stringota = "/reboot";
                 window.location = stringota;
                 window.location.href = stringota;
                 window.location.assign(stringota);
@@ -283,7 +283,7 @@ function SaveToConfig(){
     _zwcat = getConfigCategory();
     _zwcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     WriteConfigININew();
-    SaveConfigToServer(domainname); 
+    SaveConfigToServer(basepath); 
 	alert("Config.ini is updated!");
 }
 
@@ -400,12 +400,12 @@ function UpdateROIs(_sel){
         }
     
         function init() {
-            domainname = getDomainname();
+            basepath = getbasepath();
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
-            loadCanvas(domainname + "/fileserver/config/reference.jpg");
-            loadConfig(domainname); 
+            loadCanvas(basepath + "/fileserver/config/reference.jpg");
+            loadConfig(basepath); 
             ParseConfig();
             param = getConfigParameters(); 
             UpdateNUMBERS();

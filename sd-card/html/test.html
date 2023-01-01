@@ -10,13 +10,13 @@
   <div id="value"></div>
 </html>
 
-<script type="text/javascript" src="common.js"></script> 
+<script type="text/javascript" src="./gethost.js"></script> 
 
 <script type="text/javascript">
-	var domainname = getDomainname(); 
+	var basepath = "http://192.168.178.22"; 
 	function testinit(){
-		domainname = getDomainname();
-		url = domainname + '/value?all=true';     
+		basepath = getbasepath();
+		url = basepath + '/value?all=true';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
