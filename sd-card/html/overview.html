@@ -68,12 +68,12 @@
 </table>
 
 
-<script src="/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script> 
+<script src="jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="common.js"></script> 
+<script type="text/javascript" src="readconfigcommon.js"></script> 
 <script type="text/javascript">
 
-function addZero(i) {
+	function addZero(i) {
 	  if (i < 10) {
 		i = "0" + i;
 	  }
@@ -106,7 +106,7 @@ function addZero(i) {
 		var h = addZero(d.getHours());
 		var m = addZero(d.getMinutes());
 		var s = addZero(d.getSeconds());
-		$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		$('#img').html('<img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
 		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	}
 
@@ -121,7 +121,7 @@ function addZero(i) {
 
 
 	function loadStatus() {
-		url = basepath + '/statusflow';     
+		url = domainname + '/statusflow';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -135,7 +135,7 @@ function addZero(i) {
 
 
 	function loadCPUTemp() {
-		url = basepath + '/cpu_temperature';     
+		url = domainname + '/cpu_temperature';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -149,7 +149,7 @@ function addZero(i) {
 
 
 	function loadRSSI() {
-		url = basepath + '/rssi';     
+		url = domainname + '/rssi';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -163,7 +163,7 @@ function addZero(i) {
 
 
 	function loadUptime() {
-		url = basepath + '/uptime';     
+		url = domainname + '/uptime';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -177,7 +177,7 @@ function addZero(i) {
 
 
 	function loadRoundCounter() {
-		url = basepath + '/info?type=Round';     
+		url = domainname + '/info?type=Round';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -191,7 +191,7 @@ function addZero(i) {
 		
 	
 	function loadValue(_type, _div, _style) {
-		url = basepath + '/value?all=true&type=' + _type;     
+		url = domainname + '/value?all=true&type=' + _type;     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -232,7 +232,7 @@ function addZero(i) {
 
 
 	function init(){
-		basepath = getbasepath();
+		domainname = getDomainname();
 		Refresh();
 	}
 
