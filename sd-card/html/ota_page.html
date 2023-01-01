@@ -5,7 +5,7 @@
 <title>OTA Update</title>
 <meta charset="utf-8">
 
-<script type="text/javascript" src="./gethost.js"></script> 
+<script type="text/javascript" src="common.js"></script> 
 <style>
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em;}
@@ -69,7 +69,7 @@ web interface (<i><span style="font-family:monospace">html__*.zip</span></i>). H
 
 <script language="JavaScript">
 
-var basepath = "http://192.168.178.26";
+var domainname = getDomainname();
 
 
 /* Max size of an individual file. Make sure this
@@ -82,7 +82,7 @@ var progressTimerHandle = null;
 
 
 function init(){
-    basepath = getbasepath();
+    domainname = getDomainname();
 
     document.getElementById("doUpdate").disabled = true;
 }
@@ -159,7 +159,7 @@ function prepareOnServer() {
 
     startProgressTimer("Server preparations...");
 
-    var _toDo = basepath + "/ota?task=emptyfirmwaredir";
+    var _toDo = domainname + "/ota?task=emptyfirmwaredir";
 	xhttp.open("GET", _toDo, true);
 	xhttp.send();
 }
@@ -235,7 +235,7 @@ function extract() {
 
     var nameneu = document.getElementById("newfile").value;
     filePath = nameneu.split(/[\\\/]/).pop();
-    var _toDo = basepath + "/ota?task=update&file=" + filePath;
+    var _toDo = domainname + "/ota?task=update&file=" + filePath;
     xhttp.open("GET", _toDo, true);
     xhttp.send();
 }
