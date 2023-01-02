@@ -92,9 +92,10 @@ function init(){
 
 function doRebootAfterUpdate() {
 /*	if (confirm("Upload completed!\nThe device will reboot now and complete the update.\nThis will take up to 180s!")) {*/
-        firework.launch('Upload completed! The device will reboot now and complete the update. This can take some minutes!', 'success', 9999999999); // Show forever (until page gets reloaded after restart)
+//        firework.launch('Upload completed! The device will reboot now and complete the update. This can take some minutes!', 'success', 9999999999); // Show forever (until page gets reloaded after restart)
 
-		var stringota = "/reboot";
+		//var stringota = "/reboot";
+        var stringota = "/upload_completed.html";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
