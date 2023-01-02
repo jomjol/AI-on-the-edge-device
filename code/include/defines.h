@@ -11,6 +11,10 @@
     // ClassLogFile
     //#define KEEP_LOGFILE_OPEN_FOR_APPENDING
 
+    //compiler optimization for tflite-micro-esp-examples
+    #define XTENSA
+    #define CONFIG_IDF_TARGET_ARCH_XTENSA
+
 
     //ClassControllCamera + ClassFlowMakeImage + connect_wlan + main
     #define FLASH_GPIO GPIO_NUM_4
