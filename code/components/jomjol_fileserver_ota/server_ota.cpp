@@ -678,25 +678,26 @@ esp_err_t handler_reboot(httpd_req_t *req)
                 "fetch('reboot_page.html',{mode: 'no-cors'}).then(r=>{parent.location.href=('index.html');})}, 1000);"
             "}</script></head></html><body style='font-family: arial'><h3 id=t></h3>";
 
-    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK) {
+    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
+    {
         ESP_LOGD(TAG, "Query: %s", _query);
         
-        if (httpd_query_key_value(_query, "type", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
-            ESP_LOGD(TAG, "type is found: %s", _valuechar);
+            ESP_LOGD(TAG, "task is found: %s", _valuechar);
             _task = std::string(_valuechar);
         }
-    };
+    }
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     if (_task.compare("OTA") == 0) { // Reboot after OTA upload
-        response.append("<script>m('The upload completed successfully. Rebooting and installing it now...<br>"
+        response.append("<script>m('The upload completed successfully.<br>Rebooting and installing it now...<br><br>"
                 "The page will automatically reload after the update completed.<br>"
-                "It can take several minutes!<br><br>');</script>");
+                "This can take several minutes!<br><br>');</script>");
     }
     else { // Normal reboot
-            response.append("<script>m('Rebooting!<br>The page will automatically reload in around 25..60s.<br><br>');</script>");
+        response.append("<script>m('Rebooting!<br>The page will automatically reload in around 25..60s.<br><br>');</script>");
     }    
 
     response.append("</body></html>");
