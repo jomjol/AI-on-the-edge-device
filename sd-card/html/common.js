@@ -1,8 +1,52 @@
  
-var basepath = "http://192.168.178.22";
+/* The UI can also be run locally, but you have to set the IP of your devide accordingly.
+ * And you also might have to disable CORS in your webbrowser! */
+var domainname_for_testing = "192.168.1.153";
+
+
+
+function gethost_Version(){
+    return "1.0.0 - 20200910";
+}
+
+
+/* Returns the domainname with prepended protocol.
+Eg. http://watermeter.fritz.box or http://192.168.1.5 */
+function getDomainname(){
+    var host = window.location.hostname;
+    if (((host == "127.0.0.1") || (host == "localhost") || (host == "")) 
+//       && ((window.location.port == "80") || (window.location.port == ""))
+       )
+    
+    {
+        console.log("Using pre-defined domainname for testing: " + domainname_for_testing);
+        domainname = "http://" + domainname_for_testing
+    }
+    else
+    {
+        domainname = window.location.protocol + "//" + host;
+        if (window.location.port != "") {
+            domainname = domainname + ":" + window.location.port;
+        }
+    }
+
+    return domainname;
+}
+
+function UpdatePage(_dosession = true){
+    var zw = location.href;
+    zw = zw.substr(0, zw.indexOf("?"));
+    if (_dosession) {
+        window.location = zw + '?session=' + Math.floor((Math.random() * 1000000) + 1); 
+    }
+    else {
+        window.location = zw; 
+    }
+}
+
         
 function LoadHostname() {
-    _basepath = getbasepath(); 
+    _domainname = getDomainname(); 
 
 
     var xhttp = new XMLHttpRequest();
@@ -19,7 +63,7 @@ function LoadHostname() {
 
 //     var xhttp = new XMLHttpRequest();
     try {
-            url = _basepath + '/info?type=Hostname';     
+            url = _domainname + '/info?type=Hostname';     
             xhttp.open("GET", url, true);
             xhttp.send();
 
@@ -35,7 +79,7 @@ var fwVersion = "";
 var webUiVersion = "";
 
 function LoadFwVersion() {
-    _basepath = getbasepath(); 
+    _domainname = getDomainname(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
@@ -52,7 +96,7 @@ function LoadFwVersion() {
     });
 
     try {
-        url = _basepath + '/info?type=FirmwareVersion';     
+        url = _domainname + '/info?type=FirmwareVersion';     
         xhttp.open("GET", url, true);
         xhttp.send();
     }
@@ -62,7 +106,7 @@ function LoadFwVersion() {
 }
 
 function LoadWebUiVersion() {
-    _basepath = getbasepath(); 
+    _domainname = getDomainname(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
@@ -78,7 +122,8 @@ function LoadWebUiVersion() {
     });
 
     try {
-        url = _basepath + '/info?type=HTMLVersion';     
+        url = _domainname + '/info?type=HTMLVersion';     
+        console.log("url");
         xhttp.open("GET", url, true);
         xhttp.send();
     }

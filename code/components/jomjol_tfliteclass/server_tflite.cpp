@@ -147,6 +147,7 @@ esp_err_t handler_init(httpd_req_t *req)
     doInit();
 
     resp_str = "Init done<br>";
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, resp_str, strlen(resp_str));     
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);    
@@ -178,6 +179,8 @@ esp_err_t handler_flow_start(httpd_req_t *req) {
         const char* resp_str = "WARNING: Flow start triggered by REST API, but flow is not active";
         httpd_resp_send(req, resp_str, strlen(resp_str));  
     }
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);    
@@ -420,6 +423,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
     char _query[200];
     char _valuechar[30];
     string _task;
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {

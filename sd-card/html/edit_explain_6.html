@@ -41,19 +41,19 @@ p {font-size: 1em;}
         <button class="button" onclick="reboot()">Leave Setup Modus and Reboot to Normal modus</button>
     </p>
 
-    <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfigparam.js"></script> 
-    <script type="text/javascript" src="./readconfigcommon.js"></script> 
+    <script type="text/javascript" src="common.js"></script> 
+    <script type="text/javascript" src="readconfigparam.js"></script> 
+    <script type="text/javascript" src="readconfigcommon.js"></script> 
 
     <script type="text/javascript">
         var canvas = document.getElementById('canvas'),
-            basepath = "http://192.168.178.22"; 
+            domainname = getDomainname(); 
             aktstatu = 0;
     
     function reboot() {
         if (confirm("Do you want to leave the configuration mode and restart the ESP32?\n\nPlease reload the page in about 30s.")) {
-            basepath = getbasepath(); 
-            if (!loadConfig(basepath)) {
+            domainname = getDomainname(); 
+            if (!loadConfig(domainname)) {
                 alert("Setup Modus could not be deactivated!\Please retry.");
                 return;
             } 
@@ -63,7 +63,7 @@ p {font-size: 1em;}
             param["System"]["SetupMode"]["value1"] = "false";
 
             WriteConfigININew();
-            SaveConfigToServer(basepath);    
+            SaveConfigToServer(domainname);    
 
 
             var stringota = "/reboot";

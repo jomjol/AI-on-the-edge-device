@@ -77,7 +77,7 @@ if (!file.name.includes("remote-setup")){if (!confirm("The zip file name should 
     
         var nameneu = document.getElementById("newfile").value;
         filePath = nameneu.split(/[\\\/]/).pop();
-        var _toDo = basepath + "/ota?task=update&file=" + filePath;
+        var _toDo = domainname + "/ota?task=update&file=" + filePath;
         xhttp.open("GET", _toDo, true);
         xhttp.send();
     }

@@ -69,12 +69,12 @@ input[type=number] {
 </body></html>
 
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script>  
-<script type="text/javascript" src="./readconfigparam.js"></script>  
+<script type="text/javascript" src="common.js"></script> 
+<script type="text/javascript" src="readconfigcommon.js"></script>  
+<script type="text/javascript" src="readconfigparam.js"></script>  
 
 <script type="text/javascript">
- 	var basepath = "http://192.168.178.22"; 
+ 	var domainname = getDomainname(); 
   var	NUMBERS;
 
 function setprevalue() {
@@ -84,7 +84,7 @@ function setprevalue() {
 	inputVal = inputVal.replace(",", ".");
   	var xhttp = new XMLHttpRequest();
     try {
-          url = basepath + "/setPreValue?value=" + inputVal + "&numbers=" + _number;     
+          url = domainname + "/setPreValue?value=" + inputVal + "&numbers=" + _number;     
           xhttp.open("GET", url, false);
           xhttp.send();
           response = xhttp.responseText;
@@ -96,14 +96,14 @@ function setprevalue() {
     }
 }
 
-function loadPrevalue(_basepath) {
+function loadPrevalue(_domainname) {
   // Get current Pre Value
   var sel = document.getElementById("Numbers_value1");
   var _number = sel.options[sel.selectedIndex].text;
 
   var xhttp = new XMLHttpRequest();
   try {
-      url = _basepath + '/setPreValue?numbers=' + _number;
+      url = _domainname + '/setPreValue?numbers=' + _number;
       xhttp.open("GET", url, false);
       xhttp.send();
       response = xhttp.responseText;
@@ -120,7 +120,7 @@ function loadPrevalue(_basepath) {
 
   var xhttp = new XMLHttpRequest();
   try {
-    url = _basepath + '/value?all=true&type=raw';
+    url = _domainname + '/value?all=true&type=raw';
     xhttp.open("GET", url, false);
     xhttp.send();
     response = xhttp.responseText;
@@ -144,7 +144,7 @@ function loadPrevalue(_basepath) {
 
 
 function numberChanged(){
-  loadPrevalue(basepath);
+  loadPrevalue(domainname);
 }
 
 function UpdateNUMBERS(_sel){
@@ -170,16 +170,16 @@ function UpdateNUMBERS(_sel){
     }
     _index.selectedIndex = index;
 
-    loadPrevalue(basepath);
+    loadPrevalue(domainname);
 }
 
 
 function init(){
-	basepath = getbasepath();
-  loadConfig(basepath); 
+	domainname = getDomainname();
+  loadConfig(domainname); 
   ParseConfig();
   UpdateNUMBERS();
-  loadPrevalue(basepath);
+  loadPrevalue(domainname);
 }
 
 init();

@@ -50,22 +50,22 @@ p {font-size: 1em;}
     </tr>
 </table>
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfig.js"></script>  
+<script type="text/javascript" src="common.js"></script> 
+<script type="text/javascript" src="readconfig.js"></script>  
  
 <script type="text/javascript">
-    var basepath = "http://192.168.178.26";
+    var domainname = getDomainname();
 
     function doAnalog(){
         var xhttp = new XMLHttpRequest();
-        url = basepath + "/editflow?task=test_analog";
-        if (basepath.length > 0){
-            url = url + "&host=" + basepath;
+        url = domainname + "/editflow?task=test_analog";
+        if (domainname.length > 0){
+            url = url + "&host=" + domainname;
         }        
         xhttp.open("GET", url, false);
         xhttp.send();
         var html = xhttp.responseText;
-        html = html.replace("src=\"/", "src=\"" + basepath + "/");
+        html = html.replace("src=\"/", "src=\"" + domainname + "/");
 
         document.getElementById("maincontent").src = 'data:text/html,' + encodeURIComponent(html);
     }
@@ -73,14 +73,14 @@ p {font-size: 1em;}
 
     function doDigits(){
         var xhttp = new XMLHttpRequest();
-        url = basepath + "/editflow?task=test_digits";
-        if (basepath.length > 0){
-            url = url + "&host=" + basepath;
+        url = domainname + "/editflow?task=test_digits";
+        if (domainname.length > 0){
+            url = url + "&host=" + domainname;
         }        
         xhttp.open("GET", url, false);
         xhttp.send();
         var html = xhttp.responseText;
-        html = html.replace("src=\"/", "src=\"" + basepath + "/");
+        html = html.replace("src=\"/", "src=\"" + domainname + "/");
 
         document.getElementById("maincontent").src = 'data:text/html,' + encodeURIComponent(html);
     }
@@ -88,14 +88,14 @@ p {font-size: 1em;}
 
     function doAlign(){
         var xhttp = new XMLHttpRequest();
-        url = basepath + "/editflow?task=test_align";
-        if (basepath.length > 0){
-            url = url + "&host=" + basepath;
+        url = domainname + "/editflow?task=test_align";
+        if (domainname.length > 0){
+            url = url + "&host=" + domainname;
         }        
         xhttp.open("GET", url, false);
         xhttp.send();
         var html = xhttp.responseText;
-        html = html.replace("src=\"/", "src=\"" + basepath + "/");
+        html = html.replace("src=\"/", "src=\"" + domainname + "/");
 
         document.getElementById("maincontent").src = 'data:text/html,' + encodeURIComponent(html);
 
@@ -107,9 +107,9 @@ p {font-size: 1em;}
 
     function doTake(){
         var xhttp = new XMLHttpRequest();
-        url = basepath + "/editflow?task=test_take";
-        if (basepath.length > 0){
-            url = url + "&host=" + basepath;
+        url = domainname + "/editflow?task=test_take";
+        if (domainname.length > 0){
+            url = url + "&host=" + domainname;
         }
         xhttp.open("GET", url, false);
         xhttp.send();
@@ -122,7 +122,7 @@ p {font-size: 1em;}
     }
 
     function Init(){
-        basepath = getbasepath();
+        domainname = getDomainname();
         document.getElementById("align").disabled = true;
         document.getElementById("digits").disabled = true;
         document.getElementById("analog").disabled = true;

@@ -30,21 +30,22 @@
                 font-size: small;
             }
         </style>
+        <script type="text/javascript" src="common.js"></script> 
     </head>
     <body>
         <div class="box">
             <div class="row header">
                 <button onClick="reload();">Reload</button>
-                <button onClick="window.open('datafileact');">Show full data</button>
-                <button onClick="window.location.href = 'fileserver/log/data/'">Show older data files</button>
-                <a href="graph.html" target="_self">Show graph</a>
+                <button onClick="window.open(getDomainname() + '/datafileact');">Show full data</button>
+                <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show older data files</button>
+                <button onClick="window.location.href = 'graph.html'">Show graph</button>
             </div>
             <div class="row content" id="data"><br><br><br><b>Loading Data file, please wait...</b></div>
             <div class="row footer">
                 <button onClick="reload();">Reload</button>
-                <button onClick="window.open('datafileact');">Show full data</button>
-                <button onClick="window.location.href = 'fileserver/log/data/'">Show older data files</button>
-                <a href="graph.html" target="_self">Show graph</a>
+                <button onClick="window.open(getDomainname() + '/datafileact');">Show full data</button>
+                <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show older data files</button>
+                <button onClick="window.location.href = 'graph.html'">Show graph</button>
             </div>
           </div>
     </body>
@@ -53,7 +54,7 @@
         function reload() {
             document.getElementById('data').innerHTML += "<br><b>Reloading...<b><br><br>";
             window.scrollBy(0,document.body.scrollHeight);
-            funcRequest('data');
+            funcRequest(getDomainname() + '/data');
         } 
 
         async function funcRequest(url){
@@ -76,7 +77,7 @@
             });
         }
 
-        funcRequest('data');
+        funcRequest(getDomainname() + '/data');
 
     </script>
 </html>

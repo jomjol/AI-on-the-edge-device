@@ -40,12 +40,10 @@ input[type=number] {
 </body>
 
 
+<script src="common.js"></script>
 <script src="jszip.min.js"></script>
 <script src="FileSaver.min.js"></script>
 <script>
-
-//var domain = "http://192.168.1.153"; // Testing
-var domain = "";
 
 function startBackup() {  
     document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
@@ -53,7 +51,7 @@ function startBackup() {
     // Get hostname
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", domain + "/info?type=Hostname", false);
+        xhttp.open("GET", getDomainname() + "/info?type=Hostname", false);
         xhttp.send();
         hostname = xhttp.responseText;
     }
@@ -72,7 +70,7 @@ function startBackup() {
     setStatus("Fetching File List...");
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", domain + "/fileserver/config/", false);
+        xhttp.open("GET", getDomainname() + "/fileserver/config/", false);
         xhttp.send();
         
         var parser = new DOMParser();
@@ -88,7 +86,7 @@ function startBackup() {
     
     for (a of list) {
         url = a.getAttribute("href");
-        urls.push(domain + url);
+        urls.push(getDomainname() + url);
     }
     
     // Pack as zip and download
