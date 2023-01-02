@@ -95,7 +95,8 @@ function doRebootAfterUpdate() {
 //        firework.launch('Upload completed! The device will reboot now and complete the update. This can take some minutes!', 'success', 9999999999); // Show forever (until page gets reloaded after restart)
 
 		//var stringota = "/reboot";
-        var stringota = "/upload_completed.html";
+        //var stringota = "/upload_completed.html";
+		var stringota = "/reboot?task=OTA";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
