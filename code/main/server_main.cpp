@@ -451,13 +451,13 @@ httpd_handle_t start_webserver(void)
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority = tskIDLE_PRIORITY+3; //20221211: before: tskIDLE_PRIORITY+1; // 20210924 --> before +5
-    config.stack_size = 32768; //20210921 --> before 32768 // at 32k the programme crashes when taking pictures
-    config.core_id = 0; //20221211 --> force all not flow related tasks to CPU0, before: tskNO_AFFINITY;
+    config.task_priority = tskIDLE_PRIORITY+3; // previously -> 2022-12-11: tskIDLE_PRIORITY+1; 2021-09-24: tskIDLE_PRIORITY+5
+    config.stack_size = 12288; // previously -> 2023-01-02: 32768
+    config.core_id = 1; // previously -> 2023-01-02: 0, 2022-12-11: tskNO_AFFINITY;
     config.server_port = 80;
     config.ctrl_port = 32768;
     config.max_open_sockets = 5; //20210921 --> previously 7   
-    config.max_uri_handlers = 38; // previously 24, 20220511: 35, 20221220: 37             
+    config.max_uri_handlers = 38; // previously 24, 20220511: 35, 20221220: 37, 2023-01-02:38             
     config.max_resp_headers = 8;                        
     config.backlog_conn = 5;                        
     config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               
