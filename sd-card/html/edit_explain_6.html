@@ -54,7 +54,7 @@ p {font-size: 1em;}
             aktstatu = 0;
     
     function reboot() {
-        if (confirm("Do you want to leave the configuration mode and restart the ESP32?\n\nPlease reload the page in about 30s.")) {
+        if (confirm("Do you want to leave the configuration mode and restart the ESP32?")) {
             domainname = getDomainname(); 
             if (!loadConfig(domainname)) {
                 firework.launch('Setup Modus could not be deactivated! Please try again!', 'danger', 30000);
