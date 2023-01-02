@@ -21,7 +21,9 @@ textarea {
 	font-size: 14px;
 }
 </style>
-
+<link href="firework.css" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script src="firework.js"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -61,7 +63,7 @@ function saveTextAsFile()
 		FileDeleteOnServer("/config/config.ini", domainname);
 		var textToSave = document.getElementById("inputTextToSave").value;
 		FileSendContent(textToSave, "/config/config.ini", domainname);
-		alert("Config.ini is updated!")
+		firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
 	}
 }
 

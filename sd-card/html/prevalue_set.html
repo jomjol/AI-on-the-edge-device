@@ -68,7 +68,9 @@ input[type=number] {
 
 </body></html>
 
-
+<link href="firework.css" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script src="firework.js"></script>
 <script type="text/javascript" src="common.js"></script> 
 <script type="text/javascript" src="readconfigcommon.js"></script>  
 <script type="text/javascript" src="readconfigparam.js"></script>  
@@ -92,7 +94,7 @@ function setprevalue() {
      }
     catch (error)
     {
-      alert("Failed to get data from device!");
+      firework.launch('Failed to get data from device!', 'danger', 30000);
     }
 }
 
@@ -111,7 +113,7 @@ function loadPrevalue(_domainname) {
   }
   catch (error)
   {
-    alert("Failed to get data from device!");
+    firework.launch('Failed to get data from device!', 'danger', 30000);
   }
 
   // Get current RAW Value
@@ -138,7 +140,7 @@ function loadPrevalue(_domainname) {
   }
   catch (error)
   {
-    alert("Failed to get data from device!");
+    firework.launch('Failed to get data from device!', 'danger', 30000);
   }
 }
 

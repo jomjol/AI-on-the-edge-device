@@ -211,7 +211,7 @@ function FileSendContent(_content, _filename, _domainname = ""){
                } else if (xhttp.status == 0) {
                     alert("Server closed the connection abruptly!");
                } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                }
           }
      };

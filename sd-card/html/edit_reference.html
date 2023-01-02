@@ -30,7 +30,9 @@ table {
 	padding: 5px;
 }
 </style>
-
+<link href="firework.css" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script src="firework.js"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -268,7 +270,7 @@ table {
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
                 showReference(param);
                 UpdatePage();
-                alert("Reference is updated!");
+                firework.launch('Reference got updated. Please reboot to activate changes!', 'success', 5000);
             }
         }
 

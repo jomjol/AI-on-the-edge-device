@@ -51,7 +51,9 @@ th, td {
   padding: 5px 5px 5px 0px;
 }
 </style>
-
+<link href="firework.css" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script src="firework.js"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -228,7 +230,7 @@ function newROI() {
         erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, 30, 51, 0);
 
     if (erg != "")
-        alert(erg);
+        firework.launch(erg, 'danger', 30000);
     else {
         UpdateROIs(_roinew);
         // Shift all ROIs on right side to the right
@@ -265,7 +267,7 @@ function changelockSizes(){
     lockSizes = document.getElementById("lockSizes").checked;
 
     if (!lockSizes) {
-        alert("For best results it is (in most cases) advised to keep the y, Δx and Δy identical!");
+        firework.launch("For best results it is in most cases advised to keep the y, Δx and Δy identical!", 'warning', 10000);
     }
 }
 
@@ -284,7 +286,7 @@ function SaveToConfig(){
     _zwcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     WriteConfigININew();
     SaveConfigToServer(domainname); 
-	alert("Config.ini is updated!");
+    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
 }
 
 
@@ -300,12 +302,12 @@ function UpdateROIs(_sel){
     {
         document.getElementById("Category_Digits_enabled").checked = false;
         EnDisableDigits();
-        alert("Digital ROIs are disabled - please enable (Check box top left).\n");
+        firework.launch('Digital ROIs are disabled - please enable first (Check box top left)', 'warning', 10000);
         return;
     }
 
     if (ROIInfo.length == 0){
-        alert("There are no ROIs defined.\nPlease first create a new ROI (\"New ROIs ...\").\n");
+        firework.launch('There are no ROIs defined. Please first create a new ROI ("New ROIs ...")', 'danger', 10000);
         document.getElementById("newROI").disabled = false;
         document.getElementById("deleteROI").disabled = true;
         document.getElementById("index").disabled = true;
@@ -460,7 +462,7 @@ function renameNumber(){
 
     erg = RenameNUMBER(_delte, _numbernew);
     if (erg != "")
-        alert(erg);
+        firework.launch(erg, 'danger', 30000);
     else
         UpdateNUMBERS(_numbernew);
 }
@@ -470,7 +472,7 @@ function newNumber(){
 
     erg = CreateNUMBER(_numbernew);
     if (erg != "")
-        alert(erg);
+            firework.launch(erg, 'danger', 30000);
     else
         UpdateNUMBERS(_numbernew);
 }
@@ -482,7 +484,7 @@ function removeNumber(){
         var _delte= sel.options[sel.selectedIndex].text;
         erg = DeleteNUMBER(_delte);
         if (erg != "")
-            alert(erg);
+            firework.launch(erg, 'danger', 30000);
         UpdateNUMBERS();
 	}	    
 }
@@ -747,7 +749,7 @@ function draw() {
 
         erg = RenameROI(_number, "digit", _roialt, _roinew);
         if (erg != "")
-            alert(erg);
+            firework.launch(erg, 'danger', 30000);
         else
             UpdateROIs(_roinew);
     }

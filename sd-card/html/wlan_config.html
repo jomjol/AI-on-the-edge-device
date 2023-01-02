@@ -1,4 +1,11 @@
-<table>
+<html>
+    <head>
+        <link href="firework.css" rel="stylesheet">
+        <script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+        <script src="firework.js"></script>
+    </head>
+<body>
+    <table>
 <tr><td>WLAN-SSID</td><td><input type="text" name="ssid" id="ssid"></td><td>SSID of the WLAN</td></tr>
 <tr><td>WLAN-Password</td><td><input type="text" name="password" id="password"></td><td>ATTENTION: the password will not be encrypted during the sending.</td>
 </tr><tr><td> Hostname</td><td><input type="text" name="hostname" id="hostname"></td><td></td>
@@ -60,13 +67,13 @@ if (!file.name.includes("remote-setup")){if (!confirm("The zip file name should 
                     }
                     else
                     {
-                        alert("Processing done!\n\n" + xhttp.responseText);
+                        firework.launch('Processing done! (' + xhttp.responseText + ')', 'success', 5000);
                     }
                 } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
+                    firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                     UpdatePage();
                 } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                     UpdatePage();
                 }
             }
@@ -103,3 +110,5 @@ if (!file.name.includes("remote-setup")){if (!confirm("The zip file name should 
 
     
     </script>
+</html>
+</body>
