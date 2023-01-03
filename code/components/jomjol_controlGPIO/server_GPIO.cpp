@@ -250,7 +250,7 @@ void GpioHandler::init()
 
     if (xHandleTaskGpio == NULL) {
         gpio_queue_handle = xQueueCreate(10,sizeof(GpioResult));
-        BaseType_t  xReturned = xTaskCreate(&gpioHandlerTask, "gpio_int", configMINIMAL_STACK_SIZE * 8, (void *)this, tskIDLE_PRIORITY + 2, &xHandleTaskGpio);
+        BaseType_t  xReturned = xTaskCreate(&gpioHandlerTask, "gpio_int", 3 * 1024, (void *)this, tskIDLE_PRIORITY + 4, &xHandleTaskGpio);
         if(xReturned == pdPASS ) {
             ESP_LOGD(TAG, "xHandletaskGpioHandler started");
         } else {

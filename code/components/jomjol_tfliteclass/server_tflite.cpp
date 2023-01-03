@@ -134,6 +134,45 @@ bool doflow(void)
 }
 
 
+esp_err_t handler_get_heap(httpd_req_t *req)
+{
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("handler_get_heap - Start");       
+        ESP_LOGD(TAG, "handler_get_heap uri: %s", req->uri);
+    #endif
+
+    std::string zw = "Heap info:<br>" + getESPHeapInfo();
+
+    #ifdef TASK_ANALYSIS_ON
+        char* pcTaskList = (char*) heap_caps_calloc(1, sizeof(char) * 768, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+        if (pcTaskList) {
+            vTaskList(pcTaskList);
+            zw = zw + "<br><br>Task info:<br><pre>Name | State | Prio | Lowest stacksize | Creation order | CPU (-1=NoAffinity)<br>"
+                    + std::string(pcTaskList) + "</pre>";
+            heap_caps_free(pcTaskList);
+        }
+        else {
+            zw = zw + "<br><br>Task info:<br>ERROR - Allocation of TaskList buffer in PSRAM failed";
+        }
+    #endif 
+
+    if (zw.length() > 0) 
+    {
+        httpd_resp_send(req, zw.c_str(), zw.length());
+    }
+    else 
+    {
+        httpd_resp_send(req, NULL, 0);
+    }
+
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("handler_get_heap - Done");       
+    #endif
+
+    return ESP_OK;
+}
+
+
 esp_err_t handler_init(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON      
@@ -875,15 +914,12 @@ void TFliteDoAutoStart()
 {
     BaseType_t xReturned;
 
-    int _i = configMINIMAL_STACK_SIZE;
-
-    ESP_LOGD(TAG, "task_autodoFlow configMINIMAL_STACK_SIZE: %d", _i);
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 
-    xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
+    //xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow);
     if( xReturned != pdPASS )
     {
-       //Memory: 64 --> 48 --> 35 --> 25
        ESP_LOGD(TAG, "ERROR task_autodoFlow konnte nicht erzeugt werden!");
     }
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
@@ -988,5 +1024,10 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.uri       = "/json";
     camuri.handler   = handler_json;
     camuri.user_ctx  = (void*) "JSON"; 
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/heap";
+    camuri.handler   = handler_get_heap;
+    camuri.user_ctx  = (void*) "Heap"; 
     httpd_register_uri_handler(server, &camuri);
 }

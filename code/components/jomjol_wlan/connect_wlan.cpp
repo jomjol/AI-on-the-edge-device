@@ -354,7 +354,7 @@ void LEDBlinkTask(int _dauer, int _anz, bool _off)
 	BlinkAnzahl = _anz;
 	BlinkOff = _off;
 
-    xTaskCreate(&task_doBlink, "task_doBlink", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY+1, NULL);
+    xTaskCreate(&task_doBlink, "task_doBlink", 4 * 1024, NULL, tskIDLE_PRIORITY+1, NULL);
 }
 /////////////////////////////////////////////////////////
 
