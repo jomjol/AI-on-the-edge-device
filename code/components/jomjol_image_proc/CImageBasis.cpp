@@ -364,7 +364,8 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     RGBImageRelease();
 }
 
-CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat) 
+
+CImageBasis::CImageBasis(CImageBasis *_copyfrom) 
 {
     islocked = false;
     externalImage = false;
@@ -378,15 +379,6 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     int memsize = width * height * channels;
     rgb_image = (unsigned char*)GET_MEMORY(memsize);
 
-    int anz = 1;
-    while (!rgb_image && (anz < _anzrepeat))    
-    {
-	    ESP_LOGD(TAG, "Create Image from Copy - Memory is full - try again: %d", anz);
-        rgb_image = (unsigned char*) malloc(memsize);
-        anz++;
-    }
-
-    
     if (!rgb_image)
     {
         ESP_LOGD(TAG, "%s", getESPHeapInfo().c_str());
@@ -398,6 +390,7 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom, int _anzrepeat)
     memCopy(_copyfrom->rgb_image, rgb_image, memsize);
     RGBImageRelease();
 }
+
 
 CImageBasis::CImageBasis(int _width, int _height, int _channels)
 {
