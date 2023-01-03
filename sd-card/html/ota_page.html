@@ -123,22 +123,22 @@
             xhttp.onreadystatechange = function() {
                 if (xhttp.readyState == 4) {
                     if (xhttp.status == 200) {
-                        document.getElementById("status").innerText = "Status: Upload completed, will restart in 5 seconds to process it!";
-                        firework.launch('Upload completed, will restart in 5 seconds to process it!', 'success', 5000);
-                        
                         document.cookie = "page=overview.html"; // Make sure after the reboot we go to the overview page
 
                         if (xhttp.responseText.startsWith("reboot"))
                         {
+                            document.getElementById("status").innerText = "Status: Upload completed, will restart in 5 seconds to process it!";
+                            firework.launch('Upload completed, will restart in 5 seconds to process it!', 'success', 5000);
+                        
                             // Wait a bit so we can see the status
                             setTimeout(function() {
                                 doRebootAfterUpdate();
                             }, 5000);
-
                         }
-                        else
+                        else // Legacy mode without restart
                         {
-                            firework.launch('Processing done', 'success', 5000);
+                            document.getElementById("status").innerText = "Status: Upload completed, the firmware gets installed now...";
+                            firework.launch('Upload completed, the firmware gets installed now...', 'success', 5000);
                         }
                     } else if (xhttp.status == 0) {
                         firework.launch('Server closed the connection abruptly!', 'danger', 30000);
