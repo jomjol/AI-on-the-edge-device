@@ -1,6 +1,6 @@
 <html>
     <head>
-    <script src='https://cdn.plot.ly/plotly-2.14.0.min.js'></script>
+    <script type="text/javascript" src='https://cdn.plot.ly/plotly-2.14.0.min.js'></script>
 
     <script type="text/javascript" src="common.js"></script> 
     <script type="text/javascript" src="readconfigcommon.js"></script>  
@@ -18,7 +18,9 @@
       el && eval(el.value);
     }
     </script>
-
+    <link href="firework.css" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+    <script type="text/javascript" src="firework.js"></script>
     </head>
     <body>
     <div id='chart'></div>
@@ -46,7 +48,7 @@ fetch(_domainname + '/fileserver/log/data/' + datefile)
 .then(response => {
     // handle the response
     if (response.status == 404) {
-        alert("no log data available for "+dateString);
+        firework.launch('No log data available for " + dateString, 'warning', 10000);
     }
     response.text()
     .then( result => {
@@ -79,7 +81,6 @@ fetch(_domainname + '/fileserver/log/data/' + datefile)
 }).catch((error) => {
     // handle the error
     console.log(error);
-alert("test");
 });        
 </textarea><br />
 <button onclick="run();">run</button>

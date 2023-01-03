@@ -72,7 +72,9 @@ textarea {
 }
 
 </style>
-
+<link href="firework.css" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script type="text/javascript" src="firework.js"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -1450,7 +1452,7 @@ function LoadConfigNeu() {
 
 	domainname = getDomainname(); 
 	if (!loadConfig(domainname)) {
-		alert("Config.ini could not be loaded!\nPlease reload the page.");
+		firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
 		return;
 	} 
 	ParseConfig();	
@@ -1528,8 +1530,8 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (!_isFound)
 				{
 					_zw_txt = "In the selected field the value '" + textToFind + "' in the parameter '";
-					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
-					alert(_zw_txt);
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
+					firework.launch(_zw_txt, 'warning', 10000);
 				}
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
@@ -1569,8 +1571,8 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (!_isFound)
 				{
 					_zw_txt = "In the selected field the value '" + textToFind + "' in the section '";
-					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
-					alert(_zw_txt);
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
+					firework.launch(_zw_txt, 'warning', 10000);
 				}
 
 			}
@@ -2057,7 +2059,7 @@ function saveTextAsFile()
 {
 	ReadParameterAll();
 	if (document.getElementsByClassName("invalid-input").length > 0) {
-		alert("Settings cannot be saved. Please check your entries.");
+		firework.launch("Settings cannot be saved. Please check your entries!", 'danger', 30000);
 		return;
 	}
 
@@ -2065,7 +2067,7 @@ function saveTextAsFile()
 		ReadParameterAll();
 		WriteConfigININew();
 	    SaveConfigToServer(domainname);
-		alert("Config.ini is updated!")
+		firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
 	}
 }
 

@@ -31,7 +31,7 @@ function createReader(file) {
          image.onload = function(evt) {
              var width = this.width;
              var height = this.height;
-             alert (width); // will produce something like 198
+             //alert (width); // will produce something like 198
          };
          image.src = evt.target.result; 
      };
@@ -141,7 +141,7 @@ function loadConfig(_domainname) {
      }
      catch (error)
      {
-     //          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
      return true;
 }
@@ -166,7 +166,7 @@ function FileCopyOnServer(_source, _target, _domainname = ""){
           xhttp.send();     }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
 
@@ -179,10 +179,10 @@ function FileDeleteOnServer(_filename, _domainname = ""){
                if (xhttp.status == 200) {
                     okay = true;
                } else if (xhttp.status == 0) {
-//                    alert("Server closed the connection on delete abruptly!");
+//				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
 //                    location.reload()
                } else {
-//                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+//				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
 //                    location.reload()
                }
           }
@@ -194,7 +194,7 @@ function FileDeleteOnServer(_filename, _domainname = ""){
      }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 
      return okay;
@@ -209,9 +209,9 @@ function FileSendContent(_content, _filename, _domainname = ""){
                if (xhttp.status == 200) {
                     okay = true;
                } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
+				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                }
           }
      };
@@ -223,7 +223,7 @@ function FileSendContent(_content, _filename, _domainname = ""){
      }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }     
     return okay;        
 }
@@ -254,7 +254,7 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
           xhttp.send();     }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
 
@@ -270,7 +270,7 @@ function MakeRefZW(zw, _domainname){
           xhttp.send();     }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
      _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
 //     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");

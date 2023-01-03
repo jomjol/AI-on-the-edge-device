@@ -1,3 +1,10 @@
+<html>
+    <head>
+        <link href="firework.css" rel="stylesheet">
+        <script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+        <script type="text/javascript" src="firework.js"></script>
+    </head>
+</body>
 <table class="fixed" border="0" style="font-family: arial">
     <col width="300px" /><col width="200px" />
     <tr><td>
@@ -63,19 +70,21 @@ function upload() {
 
     /* Max size of an individual file. Make sure this
      * value is same as that set in file_server.c */
-    var MAX_FILE_SIZE = 2000*1024;
-    var MAX_FILE_SIZE_STR = "2000KB";
+    var MAX_FILE_SIZE = 8000*1024;
+    var MAX_FILE_SIZE_STR = "8000KB";
 
     if (fileInput.length == 0) {
-        alert("No file selected!");
+        firework.launch('No file selected!', 'danger', 30000);
     } else if (filePath.length == 0) {
-        alert("File path on server is not set!");
+        firework.launch('File path on server is not set!', 'danger', 30000);
+    } else if (filePath.length > 100) {
+        firework.launch('Filename is to long! Max 100 characters.', 'danger', 30000);
     } else if (filePath.indexOf(' ') >= 0) {
-        alert("File path on server cannot have spaces!");
+        firework.launch('File path on server cannot have spaces!', 'danger', 30000);
     } else if (filePath[filePath.length-1] == '/') {
-        alert("File name not specified after path!");
-    } else if (fileInput[0].size > 2000*1024) {
-        alert("File size must be less than 2000KB!");
+        firework.launch('File name not specified after path!', 'danger', 30000);
+    } else if (fileInput[0].size > MAX_FILE_SIZE) {
+        firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
     } else {
         document.getElementById("newfile").disabled = true;
         document.getElementById("filepath").disabled = true;
@@ -90,10 +99,10 @@ function upload() {
                     document.write(xhttp.responseText);
                     document.close();
                 } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
+                    firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                     UpdatePage(false);
                 } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+                    firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                     UpdatePage(false);
                 }
             }
@@ -103,3 +112,6 @@ function upload() {
     }
 }
 </script>
+
+</body>
+</html>

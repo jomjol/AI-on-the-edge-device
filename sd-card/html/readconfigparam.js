@@ -28,7 +28,7 @@ function getNUMBERSList() {
 	 }
 	 catch (error)
 	 {
-               alert("Loading Hostname failed");
+//               alert("Loading Hostname failed");
 	 }
 
       datalist = datalist.split("\t");

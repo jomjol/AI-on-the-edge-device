@@ -1,0 +1,38 @@
+/* Firework JS */
+.firework {
+  background-color: #888;
+  border-color: #888;
+  border-radius: 6px;
+  color: #fff;
+  left: 200px;
+  padding: 5px;
+  position: fixed;
+  opacity: 0;
+  text-align: center;
+  top: 0px;
+  width: 600px;
+  z-index: 99;
+  font-size:120%;
+}
+.firework a {
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  float: right;
+  margin: 0 -5px 0 0;
+  padding: 0 5px;
+}
+.firework.success {
+  background-color: #669936f0;
+  border-color: #669936;
+  color: #fff
+}
+.firework.danger {
+  background-color: #E65A27f0;
+  border-color: #E65A27;
+  color: #fff
+}
+.firework.warning {
+  color: #5F612C;
+  background-color: #dbd567f0;
+  border-color: #DBD667;
+}

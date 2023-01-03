@@ -26,7 +26,9 @@ input[type=number] {
 	font-size: 16px;
 }
 </style>
-
+<link href="firework.css" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
+<script type="text/javascript" src="firework.js"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -89,13 +91,13 @@ function init(){
 
 
 function doRebootAfterUpdate() {
-	if (confirm("Upload completed!\nThe device will reboot now and complete the update.\nThis will take up to 180s!")) {
-		var stringota = "/reboot";
+/*	if (confirm("Upload completed!\nThe device will reboot now and complete the update.\nThis will take up to 180s!")) {*/
+		var stringota = "/reboot?task=OTA";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
 		window.location.replace(stringota);
-	}
+/*	}*/
 }
 
 
@@ -112,23 +114,28 @@ function prepareOnServer() {
     var nameneu = document.getElementById("newfile").value;
     filePath = nameneu.split(/[\\\/]/).pop();
 
+    /* Max size of an individual file. Make sure this
+     * value is same as that set in file_server.c */
+    var MAX_FILE_SIZE = 8000*1024;
+    var MAX_FILE_SIZE_STR = "8000KB";
+
     if (fileInput.length == 0) {
-        alert("No file selected!");
+        firework.launch('No file selected!', 'danger', 30000);
         return;
     } else if (filePath.length == 0) {
-        alert("File path on server is not set!");
+        firework.launch('File path on server is not set!', 'danger', 30000);
         return;
     } else if (filePath.length > 100) {
-        alert("Filename is to long! Max 100 characters.");
+        firework.launch('Filename is to long! Max 100 characters.', 'danger', 30000);
         return;
     } else if (filePath.indexOf(' ') >= 0) {
-        alert("File path on server cannot have spaces!");
+        firework.launch('File path on server cannot have spaces!', 'danger', 30000);
         return;
     } else if (filePath[filePath.length-1] == '/') {
-        alert("File name not specified after path!");
+        firework.launch('File name not specified after path!', 'danger', 30000);
         return;
     } else if (fileInput[0].size > MAX_FILE_SIZE) {
-        alert("File size must be less than " + MAX_FILE_SIZE_STR + "!");
+        firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
         return;
     }
 
@@ -148,10 +155,10 @@ function prepareOnServer() {
 				/* keine Reaktion, damit sich das Dokument nicht ändert */
                 upload();
 			} else if (xhttp.status == 0) {
-				alert("Server closed the connection abruptly!");
+				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                 document.getElementById("doUpdate").disabled = false;
 			} else {
-				alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                 document.getElementById("doUpdate").disabled = false;
 			}
 		}
@@ -173,14 +180,12 @@ function upload() {
         if (xhttp.readyState == 4) {
             stopProgressTimer();
             if (xhttp.status == 200) {
-//					alert("Upload successfull!")
-//                    document.reload();
                 extract();
             } else if (xhttp.status == 0) {
-                alert("Server closed the connection abruptly!");
+				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                 document.getElementById("doUpdate").disabled = false;
             } else {
-                alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                 document.getElementById("doUpdate").disabled = false;
             }
         }
@@ -218,13 +223,13 @@ function extract() {
                 }
                 else
                 {
-                    alert("Processing done!\n\n" + xhttp.responseText);
+				    firework.launch('Processing done', 'success', 5000);
                 }
             } else if (xhttp.status == 0) {
-                alert("Server closed the connection abruptly!");
+				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                 UpdatePage();
             } else {
-                alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                 UpdatePage();
             }
         }
