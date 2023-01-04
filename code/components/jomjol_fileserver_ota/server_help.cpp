@@ -28,6 +28,15 @@ static const char *TAG = "SERVER HELP";
 
 char scratch[SERVER_HELPER_SCRATCH_BUFSIZE];
 
+
+bool endsWith(std::string const &str, std::string const &suffix) {
+    if (str.length() < suffix.length()) {
+        return false;
+    }
+    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
+}
+
+
 esp_err_t send_file(httpd_req_t *req, std::string filename)
 {
     FILE *fd = fopen(filename.c_str(), "r");
@@ -40,6 +49,21 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
 
     ESP_LOGD(TAG, "Sending file: %s ...", filename.c_str());
 //    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    /* For all files with the following file extention tell
+       the webbrowser to cache them for 24h */
+    if (endsWith(filename, ".html") ||
+        endsWith(filename, ".htm") ||
+        endsWith(filename, ".css") ||
+        endsWith(filename, ".js") ||
+        endsWith(filename, ".map") ||
+        endsWith(filename, ".jpg") ||
+        endsWith(filename, ".jpeg") ||
+        endsWith(filename, ".ico") ||
+        endsWith(filename, ".png")) {
+        httpd_resp_set_hdr(req, "Cache-Control", "max-age=86400");
+    }
+
     set_content_type_from_file(req, filename.c_str());
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
