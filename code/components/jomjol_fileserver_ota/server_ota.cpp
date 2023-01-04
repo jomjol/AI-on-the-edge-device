@@ -87,11 +87,12 @@ void task_do_Update_ZIP(void *pvParameter)
             ota_update_task(retfirmware);
         }
 
-        if (initial_setup)
-        {
-
-        }
-
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        doRebootOTA();
+    } else if (filetype == "BIN")
+    {
+       	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Do firmware update - file: " + _file_name_update);
+        ota_update_task(_file_name_update);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
         doRebootOTA();
     }
@@ -443,7 +444,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         }
 
 
-        if (filetype == "ZIP")
+        if ((filetype == "ZIP") || (filetype == "BIN"))
         {
            	FILE *pfile;
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot.");
@@ -457,32 +458,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             ESP_LOGD(TAG, "Send reboot");
             return ESP_OK;                
 
-
-
-/*
-            std::string in, out, outbin, zw, retfirmware;
-
-            out = "/sdcard/html";
-            outbin = "/sdcard/firmware";
-
-            retfirmware = unzip_new(fn, out+"/", outbin+"/");
-
-            if (retfirmware.length() > 0)
-            {
-                filetype = "BIN";
-                fn = retfirmware;
-            }
-            else
-            {
-                zw = "Web Interface Update Successfull!\nNo reboot necessary.\n";
-                httpd_resp_sendstr_chunk(req, zw.c_str());
-                httpd_resp_sendstr_chunk(req, NULL);  
-                return ESP_OK;        
-            }
-*/
         }
 
-
+/*
         if (filetype == "BIN")
         {
             const char* resp_str; 
@@ -507,7 +485,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
             return ESP_OK;
         }
-
+*/
 
         std::string zw = "Update failed - no valid file specified (zip, bin, tfl, tlite)!";
         httpd_resp_sendstr_chunk(req, zw.c_str());
