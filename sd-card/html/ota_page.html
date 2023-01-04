@@ -38,11 +38,11 @@
     Then pick the <i><span style="font-family:monospace">update__*.zip</span></i> file!</p>
     <p>Alternatively you can use a file in the following format:</p>
     <ul>
-        <li><span style="font-family:monospace">update__*.zip</span></li>
-        <li><span style="font-family:monospace">firmware__*.bin</span></li>
-        <li><span style="font-family:monospace">html__*.zip</span></li>
+        <li><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></li>
+        <li><span style="font-family:monospace">AI-on-the-edge-device__firmware__*.bin</span></li>
         <li><span style="font-family:monospace">*.tfl/tflite</span></li>
     </ul>
+    <p>Make sure all letters are lower case.</p>
 
     <p><br><b>Do not reload the page or switch to another page while the update is in progress!</b><br></p>
 
@@ -83,41 +83,10 @@
         function prepareOnServer() {
             document.getElementById("status").innerText = "Status: Preparing device...";
 
-            var fileInput = document.getElementById("file_selector").files;
-            var nameneu = document.getElementById("file_selector").value;
-            filePath = nameneu.split(/[\\\/]/).pop();
-
-            /* Max size of an individual file. Make sure this
-            * value is same as that set in file_server.c */
-            var MAX_FILE_SIZE = 8000*1024;
-            var MAX_FILE_SIZE_STR = "8000KB";
-
-            if (fileInput.length == 0) {
-                firework.launch('No file selected!', 'danger', 30000);
-                return;
-            } else if (filePath.length == 0) {
-                firework.launch('File path on server is not set!', 'danger', 30000);
-                return;
-            } else if (filePath.length > 100) {
-                firework.launch('Filename is to long! Max 100 characters.', 'danger', 30000);
-                return;
-            } else if (filePath.indexOf(' ') >= 0) {
-                firework.launch('File path on server cannot have spaces!', 'danger', 30000);
-                return;
-            } else if (filePath[filePath.length-1] == '/') {
-                firework.launch('File name not specified after path!', 'danger', 30000);
-                return;
-            } else if (fileInput[0].size > MAX_FILE_SIZE) {
-                firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
-                return;
-            }
-
-            document.getElementById("status").innerText = "Status: Preparations on device";
-
             var xhttp = new XMLHttpRequest();
 
-            var nameneu = document.getElementById("file_selector").value;
-            filePath = nameneu.split(/[\\\/]/).pop();
+            var file_name = document.getElementById("file_selector").value;
+            filePath = file_name.split(/[\\\/]/).pop();
 
             /* first delete the old firmware AND empty the /firmware directory*/	
             xhttp.onreadystatechange = function() {
@@ -174,8 +143,8 @@
                 }
             };
 
-            var nameneu = document.getElementById("file_selector").value;
-            filePath = nameneu.split(/[\\\/]/).pop();
+            var file_name = document.getElementById("file_selector").value;
+            filePath = file_name.split(/[\\\/]/).pop();
             var _toDo = domainname + "/ota?task=update&file=" + filePath;
             xhttp.open("GET", _toDo, true);
             xhttp.send();
@@ -190,14 +159,69 @@
 
 
         function validate_file() {
+            document.getElementById("start_OTA_button").disabled = true;
+
+            var fileInput = document.getElementById("file_selector").files;
+            var filepath = document.getElementById("file_selector").value;
+
+            console.log("filepath: " + filepath);
+
+            filename = filepath.split(/[\\\/]/).pop();
+
+            console.log("filename: " + filename);
+
+            /* Various checks on filename length and file size */
+            if (fileInput.length == 0) {
+                firework.launch('No file selected!', 'danger', 30000);
+                return;
+            } else if (filename.length == 0) {
+                firework.launch('File path on server is not set!', 'danger', 30000);
+                return;
+            } else if (filename.length > 100) {
+                firework.launch('Filename is to long! Max 100 characters.', 'danger', 30000);
+                return;
+            } else if (filename.indexOf(' ') >= 0) {
+                firework.launch('Filename can not have spaces!', 'danger', 30000);
+                return;
+            } else if (filename[filename.length-1] == '/') {
+                firework.launch('File name not specified after path!', 'danger', 30000);
+                return;
+            } else if (fileInput[0].size > MAX_FILE_SIZE) {
+                firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
+                return;
+            }
+
+            /* Check if the fillename matches our expected pattern
+             *  - AI-on-the-edge-device__update__*.zip
+             *  - firmware__*.bin
+             *  - *.ftl
+             *  - *.tflite */
+            if ( /(^AI-on-the-edge-device__update__)[a-z0-9()_.]*(\.zip$)/.test(filename) || // OK
+               ( /(^AI-on-the-edge-device__firmware)[a-z0-9()_.]*(\.bin$)/.test(filename)) ||
+               ( /[a-z0-9()_.]*(\.tfl$)/.test(filename)) ||
+               ( /[a-z0-9()_.]*(\.tflite$)/.test(filename))) {
+                firework.launch('Great, the filename matches our expectations. You can now press "Upload and update".', 'success', 5000);
+            }
+            /* Following filenames are acceptiod but not prefered:
+             * - *.bin
+             * - *.zip */
+            else if (filename.endsWith(".zip") || filename.endsWith(".bin")) { // Warning but still accepted
+                firework.launch('The filename does not match the suggested file name pattern, but is nevertheless accepted. You can now press "Upload and update', 'warning', 10000);
+            }
+            /* Any othe rfile name format is not accepted */
+            else { // invalid
+                firework.launch('The filename does not match our expectations!', 'danger', 30000);
+                return;
+            }
+
             document.getElementById("start_OTA_button").disabled = false;
         }
 
 
         function start_OTA() {
-            var nameneu = document.getElementById("file_selector").value;
+            var file_name = document.getElementById("file_selector").value;
             document.getElementById("file_selector").disabled = true;
-            nameneu = nameneu.split(/[\\\/]/).pop();
+            file_name = file_name.split(/[\\\/]/).pop();
             document.getElementById("status").innerText = "Status: File selected";
 
             prepareOnServer();
