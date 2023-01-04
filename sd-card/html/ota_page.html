@@ -49,7 +49,7 @@
     <form id="upload_form" enctype="multipart/form-data" method="post">
         <input type="file" name="file_selector" id="file_selector" onchange="validate_file()"><br><br>
 
-        <button class="button" style="width:300px" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload and update<br>(incl. reboot - if needed)</button>
+        <button class="button" style="width:300px" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload and install</button>
         <br><br>
         <progress id="progressBar" value="0" max="100" style="width:600px;"></progress>
         <p id="loaded_n_total"></p>
@@ -206,7 +206,7 @@
              * - *.bin
              * - *.zip */
             else if (filename.endsWith(".zip") || filename.endsWith(".bin")) { // Warning but still accepted
-                firework.launch('The filename does not match the suggested file name pattern, but is nevertheless accepted. You can now press "Upload and update', 'warning', 10000);
+                firework.launch('The filename does not match the suggested file name pattern, but is nevertheless accepted. You can now press "Upload and install', 'warning', 10000);
             }
             /* Any othe rfile name format is not accepted */
             else { // invalid
