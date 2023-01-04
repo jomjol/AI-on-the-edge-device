@@ -5,6 +5,27 @@
     <title>OTA Update</title>
     <meta charset="utf-8">
 
+    <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em;}
+        h3 {font-size: 1.2em;} 
+        p {font-size: 1em;}
+        
+        input[type=number] {
+            width: 138px;
+            padding: 10px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
+        
+        .button {
+            padding: 10px 20px;
+            width: 211px;
+            font-size: 16px;
+        }
+    </style>
+
     <link href="firework.css" rel="stylesheet">
     <script type="text/javascript" src="jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="common.js"></script>
@@ -26,7 +47,7 @@
     <p><br><b>Do not reload the page or switch to another page while the update is in progress!</b><br></p>
 
     <form id="upload_form" enctype="multipart/form-data" method="post">
-        <input type="file" name="newfile" id="newfile" onchange="start_OTA()"><br><br>
+        <input type="file" name="file_selector" id="file_selector" onchange="start_OTA()"><br><br>
         <progress id="progressBar" value="0" max="100" style="width:600px;"></progress>
         <p id="loaded_n_total"></p>
         <h3><span id="status">Status: idle</span></h3>
@@ -59,8 +80,8 @@
         function prepareOnServer() {
             document.getElementById("status").innerText = "Status: Preparing device...";
 
-            var fileInput = document.getElementById("newfile").files;
-            var nameneu = document.getElementById("newfile").value;
+            var fileInput = document.getElementById("file_selector").files;
+            var nameneu = document.getElementById("file_selector").value;
             filePath = nameneu.split(/[\\\/]/).pop();
 
             /* Max size of an individual file. Make sure this
@@ -92,7 +113,7 @@
 
             var xhttp = new XMLHttpRequest();
 
-            var nameneu = document.getElementById("newfile").value;
+            var nameneu = document.getElementById("file_selector").value;
             filePath = nameneu.split(/[\\\/]/).pop();
 
             /* first delete the old firmware AND empty the /firmware directory*/	
@@ -150,7 +171,7 @@
                 }
             };
 
-            var nameneu = document.getElementById("newfile").value;
+            var nameneu = document.getElementById("file_selector").value;
             filePath = nameneu.split(/[\\\/]/).pop();
             var _toDo = domainname + "/ota?task=update&file=" + filePath;
             xhttp.open("GET", _toDo, true);
@@ -165,9 +186,10 @@
         }
 
 
+
         function start_OTA() {
-            var nameneu = document.getElementById("newfile").value;
-            document.getElementById("newfile").disabled = true;
+            var nameneu = document.getElementById("file_selector").value;
+            document.getElementById("file_selector").disabled = true;
             nameneu = nameneu.split(/[\\\/]/).pop();
             document.getElementById("status").innerText = "Status: File selected";
 
@@ -181,9 +203,9 @@
 
             var upload_path = "/upload/firmware/" + filePath;
 
-            var file = _("newfile").files[0];
+            var file = _("file_selector").files[0];
             var formdata = new FormData();
-            formdata.append("newfile", file);
+            formdata.append("file_selector", file);
             var ajax = new XMLHttpRequest();
             ajax.upload.addEventListener("progress", progressHandler, false);
             ajax.addEventListener("load", completeHandler, false);
@@ -216,14 +238,14 @@
         function errorHandler(event) {
             _("status").innerHTML = "Status: Upload Failed";
             firework.launch('Upload failed!', 'danger', 30000);
-            document.getElementById("newfile").disabled = false;
+            document.getElementById("file_selector").disabled = false;
         }
 
 
         function abortHandler(event) {
             _("status").innerHTML = "Status: Upload Aborted";
             firework.launch('Upload aborted!', 'danger', 30000);
-            document.getElementById("newfile").disabled = false;
+            document.getElementById("file_selector").disabled = false;
         }
 
         function startProgressTimer() {     
