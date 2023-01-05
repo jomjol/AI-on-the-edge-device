@@ -196,7 +196,7 @@
                         updateTimer = setInterval(function() {                            
                             action_runtime += 1;
                             console.log("Waiting: " + action_runtime + "s");  
-                            _("progressBar").value = Math.round(action_runtime/3);
+                            _("progressBar").value = Math.round(action_runtime);
 
                             if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
                                 /* Check if the device is up again and forward to index page if so */
@@ -205,11 +205,11 @@
                                 )
                             }
 
-                            if (action_runtime > 300) { // We reached 300 seconds but device is not ready yet
+                            if (action_runtime > 100) { // We reached 300 seconds but device is not ready yet
                                 firework.launch("The device seems not do be up again, or maybe we missed it. Try to reload this page or reset the device!", 'danger', 30000);
                                 clearInterval(updateTimer);
                             }
-                        }, 1000);
+                        }, 3000);
                     } else if (xhttp.status == 0) {
                         firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                         UpdatePage();
