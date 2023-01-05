@@ -839,11 +839,11 @@ void task_autodoFlow(void *pvParameter)
     if (!isPlannedReboot)
     {
         if (esp_reset_reason() == ESP_RST_PANIC) {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA or to fetch the log!"); 
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA Update or to fetch the log!"); 
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
             LogFile.setLogLevel(ESP_LOG_DEBUG);
             //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
-            vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA or fetch the log
+            vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA Update or fetch the log
         }
     }
 
