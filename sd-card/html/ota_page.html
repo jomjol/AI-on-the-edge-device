@@ -62,8 +62,6 @@
         var domainname = getDomainname();
         
         var action_runtime = 0;
-        var progressTimerHandle = null;
-
         
         /* Max size of an individual file. Make sure this
         * value is same as that set in server_file.c */
@@ -131,6 +129,8 @@
 
 
         function start_OTA() {
+            document.getElementById("start_OTA_button").disabled = true;
+
             var file_name = document.getElementById("file_selector").value;
             document.getElementById("file_selector").disabled = true;
             file_name = file_name.split(/[\\\/]/).pop();
@@ -141,11 +141,9 @@
 
 
         function doRebootAfterUpdate() {
-            var stringota = "/reboot?task=OTA";
-            window.location = stringota;
-            window.location.href = stringota;
-            window.location.assign(stringota);
-            window.location.replace(stringota);
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "/reboot", true);
+            xhttp.send();
         }
 
 
@@ -187,21 +185,31 @@
                     if (xhttp.status == 200) {
                         document.cookie = "page=overview.html"; // Make sure after the reboot we go to the overview page
 
-                        if (xhttp.responseText.startsWith("reboot"))
-                        {
-                            document.getElementById("status").innerText = "Status: Upload completed, will restart in 5 seconds to process it!";
-                            firework.launch('Upload completed, will restart in 5 seconds to process it!', 'success', 5000);
-                        
-                            // Wait a bit so we can see the status
-                            setTimeout(function() {
-                                doRebootAfterUpdate();
-                            }, 5000);
-                        }
-                        else // Legacy mode without restart
-                        {
-                            document.getElementById("status").innerText = "Status: Upload completed, the firmware gets installed now...";
-                            firework.launch('Upload completed, the firmware gets installed now...', 'success', 5000);
-                        }
+                        console.log("Upload completed, the device will now restart and install the update!");
+                        document.getElementById("status").innerText = "Status: Upload completed, the device will now restart and install the update!";
+                        firework.launch('Upload completed, the device will now restart and install the update', 'success', 5000);
+                    
+                        /* Tell it to reboot */
+                        doRebootAfterUpdate();
+
+                        action_runtime = 0;
+                        updateTimer = setInterval(function() {                            
+                            action_runtime += 1;
+                            console.log("Waiting: " + action_runtime + "s");  
+                            _("progressBar").value = Math.round(action_runtime/3);
+
+                            if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
+                                /* Check if the device is up again and forward to index page if so */
+                                fetch('reboot_page.html?' + Math.random(), {mode: 'no-cors'}).then(
+                                    r=>{parent.location.href=('index.html');}
+                                )
+                            }
+
+                            if (action_runtime > 300) { // We reached 300 seconds but device is not ready yet
+                                firework.launch("The device seems not do be up again, or maybe we missed it. Try to reload this page or reset the device!", 'danger', 30000);
+                                clearInterval(updateTimer);
+                            }
+                        }, 1000);
                     } else if (xhttp.status == 0) {
                         firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                         UpdatePage();
@@ -217,8 +225,6 @@
             var _toDo = domainname + "/ota?task=update&file=" + filePath;
             xhttp.open("GET", _toDo, true);
             xhttp.send();
-
-            startProgressTimer();
         }
 
 
@@ -275,20 +281,6 @@
             _("status").innerHTML = "Status: Upload Aborted";
             firework.launch('Upload aborted!', 'danger', 30000);
             document.getElementById("file_selector").disabled = false;
-        }
-
-        function startProgressTimer() {     
-            action_runtime = 0;    
-            progressTimerHandle = setInterval(function() {
-                action_runtime += 1;
-                console.log("Progress: " + action_runtime + "s");  
-                _("progressBar").value = Math.round(action_runtime/2);
-            }, 1000);
-        }
-
-        function stopProgressTimer() {            
-            clearInterval(progressTimerHandle);
-            _("progressBar").value = 0;
         }
     </script>
 </body>
