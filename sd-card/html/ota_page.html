@@ -108,10 +108,10 @@
              *  - firmware__*.bin
              *  - *.ftl
              *  - *.tflite */
-            if ( /(^AI-on-the-edge-device__update__)[a-z0-9()_.]*(\.zip$)/.test(filename) || // OK
-               ( /(^AI-on-the-edge-device__firmware)[a-z0-9()_.]*(\.bin$)/.test(filename)) ||
-               ( /[a-z0-9()_.]*(\.tfl$)/.test(filename)) ||
-               ( /[a-z0-9()_.]*(\.tflite$)/.test(filename))) {
+            if ( /(^AI-on-the-edge-device__update__)[a-z0-9()_\-.]*(\.zip$)/.test(filename) || // OK
+               ( /(^AI-on-the-edge-device__firmware)[a-z0-9()_\-.]*(\.bin$)/.test(filename)) ||
+               ( /[a-z0-9()_\-.]*(\.tfl$)/.test(filename)) ||
+               ( /[a-z0-9()_\-.]*(\.tflite$)/.test(filename))) {
                 firework.launch('Great, the filename matches our expectations. You can now press "Upload and update".', 'success', 5000);
             }
             /* Following filenames are acceptiod but not prefered:
