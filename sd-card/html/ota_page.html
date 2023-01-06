@@ -118,7 +118,7 @@
             else if (filename.endsWith(".zip") || filename.endsWith(".bin")) { // Warning but still accepted
                 firework.launch('The filename does not match the suggested file name pattern, but is nevertheless accepted. You can now press "Upload and install', 'warning', 10000);
             }
-            /* Any othe rfile name format is not accepted */
+            /* Any other file name format is not accepted */
             else { // invalid
                 firework.launch('The filename does not match our expectations!', 'danger', 30000);
                 return;
@@ -176,7 +176,7 @@
 
 
         function extract() {
-            document.getElementById("status").innerText = "Status: Processing on device (this can take several minutes)...";
+            document.getElementById("status").innerText = "Status: Processing on device...";
 
             var xhttp = new XMLHttpRequest();
             /* first delete the old firmware */	
@@ -185,37 +185,43 @@
                     if (xhttp.status == 200) {
                         document.cookie = "page=overview.html"; // Make sure after the reboot we go to the overview page
 
-                        console.log("Upload completed, the device will now restart and install the update!");
-                        document.getElementById("status").innerText = "Status: Upload completed, the device will now restart and install the update!";
-                        firework.launch('Upload completed, the device will now restart and install the update', 'success', 5000);
-                    
-                        /* Tell it to reboot */
-                        doRebootAfterUpdate();
+                        if (xhttp.responseText.startsWith("reboot")) { // Reboot required
+                            console.log("Upload completed, the device will now restart and install the update!");
+                            document.getElementById("status").innerText = "Status: Installing...";
+                            firework.launch('Upload completed, the device will now restart and install the update', 'success', 5000);
+                        
+                            /* Tell it to reboot */
+                            doRebootAfterUpdate();
 
-                        action_runtime = 0;
-                        updateTimer = setInterval(function() {                            
-                            action_runtime += 1;
-                            console.log("Waiting: " + action_runtime + "s");  
-                            _("progressBar").value = Math.round(action_runtime);
+                            action_runtime = 0;
+                            updateTimer = setInterval(function() {                            
+                                action_runtime += 1;
+                                console.log("Waiting: " + action_runtime + "s");  
+                                _("progressBar").value = Math.round(action_runtime);
 
-                            if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
-                                /* Check if the device is up again and forward to index page if so */
-                                fetch('reboot_page.html?' + Math.random(), {mode: 'no-cors'}).then(
-                                    r=>{parent.location.href=('index.html');}
-                                )
-                            }
+                                if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
+                                    /* Check if the device is up again and forward to index page if so */
+                                    fetch('reboot_page.html?' + Math.random(), {mode: 'no-cors'}).then(
+                                        r=>{parent.location.href=('index.html');}
+                                    )
+                                }
 
-                            if (action_runtime > 100) { // We reached 300 seconds but device is not ready yet
-                                firework.launch("The device seems not do be up again, or maybe we missed it. Try to reload this page or reset the device!", 'danger', 30000);
-                                clearInterval(updateTimer);
-                            }
-                        }, 3000);
+                                if (action_runtime > 100) { // We reached 300 seconds but device is not ready yet
+                                    firework.launch("The device seems not do be up again, or maybe we missed it. Try to reload this page or reset the device!", 'danger', 30000);
+                                    clearInterval(updateTimer);
+                                }
+                            }, 3000);                           
+                        }
+                        else // No reboot required
+                        {
+                            document.getElementById("status").innerText = "Status: Update completed";
+                            firework.launch('Update completed!', 'success', 5000);
+                            document.getElementById("file_selector").disabled = false;
+                        }
                     } else if (xhttp.status == 0) {
                         firework.launch('Server closed the connection abruptly!', 'danger', 30000);
-                        UpdatePage();
                     } else {
                         firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
-                        UpdatePage();
                     }
                 }
             };
