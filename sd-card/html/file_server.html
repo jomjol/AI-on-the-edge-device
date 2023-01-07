@@ -27,7 +27,7 @@
                 padding-top: 12px;
                 padding-bottom: 12px;
                 text-align: left;
-                background-color: #04AA6D;
+                background-color: #0011ff;
                 color: white;
             }
         </style>
@@ -77,6 +77,7 @@ function setpath() {
 
 function dirup() {
     var str = window.location.href;
+    console.log(str);
     str = str.substring(0, str.length-1);
 	var zw = str.indexOf("/");
 	var found = zw;
