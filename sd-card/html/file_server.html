@@ -4,8 +4,31 @@
         <script type="text/javascript" src="/fileserver/html/jquery-3.6.0.min.js"></script>  
         <script type="text/javascript" src="/fileserver/html/firework.js"></script>
         <style>
-            .fixed_files {
-              //  border: 1px solid;
+            #files_table {
+                font-family: Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            #files_table td, #files_table th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            #files_table tr:nth-child(even){
+                background-color: #f2f2f2;
+            }
+
+            #files_table tr:hover {
+                background-color: #ddd;
+            }
+
+            #files_table th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #04AA6D;
+                color: white;
             }
 
         </style>
