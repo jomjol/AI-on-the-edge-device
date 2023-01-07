@@ -40,8 +40,13 @@
 //#include "server_GPIO.h"
 
 #ifdef ENABLE_SOFTAP
-#include "softAP.h"
+    #include "softAP.h"
 #endif //ENABLE_SOFTAP
+
+#ifdef DISABLE_BROWNOUT_DETECTOR
+    #include "soc/soc.h" 
+    #include "soc/rtc_cntl_reg.h" 
+#endif
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -144,6 +149,10 @@ void task_MainInitError_blink(void *pvParameter)
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
+    
+#ifdef DISABLE_BROWNOUT_DETECTOR
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+#endif
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
