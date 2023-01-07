@@ -249,7 +249,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
         "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
         "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th>");
     if (!readonly) {
-        httpd_resp_sendstr_chunk(req, "<th>Delete<br>"
+        httpd_resp_sendstr_chunk(req, "<th>"
             "<form method=\"post\" action=\"");
         httpd_resp_sendstr_chunk(req, _zw.c_str());
         httpd_resp_sendstr_chunk(req,
