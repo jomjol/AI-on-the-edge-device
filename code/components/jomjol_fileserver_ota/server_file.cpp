@@ -247,7 +247,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     httpd_resp_sendstr_chunk(req,
         "<table id=\"files_table\">"
         "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
-        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th>");
+        "<thead><tr><th>Name</th><th>Type</th><th>Size</th>");
     if (!readonly) {
         httpd_resp_sendstr_chunk(req, "<th>"
             "<form method=\"post\" action=\"");
@@ -270,7 +270,14 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
                 ESP_LOGE(TAG, "Failed to stat %s: %s", entrytype, entry->d_name);
                 continue;
             }
-            sprintf(entrysize, "%ld", entry_stat.st_size);
+
+            if (entry_stat.st_size >= 1024) {
+                sprintf(entrysize, "%ld KiB", entry_stat.st_size / 1024); // kBytes
+            }
+            else {
+                sprintf(entrysize, "%ld B", entry_stat.st_size); // Bytes
+            }
+
             ESP_LOGI(TAG, "Found %s: %s (%s bytes)", entrytype, entry->d_name, entrysize);
 
             /* Send chunk of HTML file containing table entries with file name and size */
