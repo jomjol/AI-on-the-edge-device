@@ -30,7 +30,7 @@
                 font-size: small;
             }
         </style>
-        <script type="text/javascript" src="common.js"></script> 
+        <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
     </head>
     <body>
         <div class="box">
@@ -38,14 +38,14 @@
                 <button onClick="reload();">Reload</button>
                 <button onClick="window.open(getDomainname() + '/datafileact');">Show full data</button>
                 <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show older data files</button>
-                <button onClick="window.location.href = 'graph.html'">Show graph</button>
+                <button onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show graph</button>
             </div>
             <div class="row content" id="data"><br><br><br><b>Loading Data file, please wait...</b></div>
             <div class="row footer">
                 <button onClick="reload();">Reload</button>
                 <button onClick="window.open(getDomainname() + '/datafileact');">Show full data</button>
                 <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show older data files</button>
-                <button onClick="window.location.href = 'graph.html'">Show graph</button>
+                <button onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show graph</button>
             </div>
           </div>
     </body>

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>AI on the edge</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css" type="text/css" >
+<link rel="stylesheet" href="style.css?v=$COMMIT_HASH" type="text/css" >
 
-<script type="text/javascript" src="common.js"></script>
-<script type="text/javascript" src="readconfigcommon.js"></script>
-<script type="text/javascript" src="readconfigparam.js"></script>
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
 
-<script type="text/javascript" src="jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="common.js"></script>
-<script type="text/javascript" src="firework.js"></script>
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 
 <script>
     async function loadPage(page) {
@@ -55,7 +55,7 @@
 <div class="main">
 
 <table style="border: none">
-  <tr><td style="padding-right: 10px;"><img src="favicon.ico"></td>
+  <tr><td style="padding-right: 10px;"><img src="favicon.ico?v=$COMMIT_HASH"></td>
     <td><h1 id="id_title"> Digitizer - AI on the edge</h1>
         <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
     </td></tr>
@@ -63,36 +63,36 @@
 
 <div class="menu" onmouseover="resetMenu()">
   <ul>
-    <li><a href="#" onclick="loadPage('overview.html');">Overview</a></li>
+    <li><a href="#" onclick="loadPage('overview.html?v=$COMMIT_HASH');">Overview</a></li>
     <li><a>Settings <i class="arrow down"></i></a>
       <ul class="submenu">
-        <li><a href="#" onclick="loadPage('prevalue_set.html');">Set Previous Value</a></li>
-        <li><a href="#" onclick="loadPage('edit_config_param.html');">Configuration</a></li>
+        <li><a href="#" onclick="loadPage('prevalue_set.html?v=$COMMIT_HASH');">Set Previous Value</a></li>
+        <li><a href="#" onclick="loadPage('edit_config_param.html?v=$COMMIT_HASH');">Configuration</a></li>
         <li><a>Alignment <i class="arrow right"></i></a>
             <ul>
-                <li><a href="#" onclick="loadPage('edit_reference.html');">Reference Image</a></li>
-                <li><a href="#" onclick="loadPage('edit_alignment.html');">Alignment Marks</a></li>
+                <li><a href="#" onclick="loadPage('edit_reference.html?v=$COMMIT_HASH');">Reference Image</a></li>
+                <li><a href="#" onclick="loadPage('edit_alignment.html?v=$COMMIT_HASH');">Alignment Marks</a></li>
             </ul>
         </li>
         <li><a><strong>R</strong>egions <strong>O</strong>f <strong>I</strong>nterest <i class="arrow right"></i></a>
             <ul>
-                <li><a href="#" onclick="loadPage('edit_digits.html');">Digital ROIs</a></li>
-                <li><a href="#" onclick="loadPage('edit_analog.html');">Analog ROIs</a></li>
+                <li><a href="#" onclick="loadPage('edit_digits.html?v=$COMMIT_HASH');">Digital ROIs</a></li>
+                <li><a href="#" onclick="loadPage('edit_analog.html?v=$COMMIT_HASH');">Analog ROIs</a></li>
             </ul>
         </li>
       </ul>
 
     <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
-    <li><a href="#" onclick="loadPage('graph.html');">Data Graph</a></li>
+    <li><a href="#" onclick="loadPage('graph.html?v=$COMMIT_HASH');">Data Graph</a></li>
     <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/');">File Server</a></li>
     <li><a>System <i class="arrow down"></i></a>
         <ul class="submenu">
-            <li><a href="#" onclick="loadPage('backup.html');">Backup/Restore</a></li>
-            <li><a href="#" onclick="loadPage('ota_page.html');">OTA Update</a></li>
-            <li><a href="#" onclick="loadPage('log.html');">Log Viewer</a></li>
-            <li><a href="#" onclick="loadPage('data.html');">Data Viewer</a></li>
-            <li><a href="#" onclick="loadPage('reboot_page.html');">Reboot</a></li>
-            <li><a href="#" onclick="loadPage('info.html');">Info</a></li>
+            <li><a href="#" onclick="loadPage('backup.html?v=$COMMIT_HASH');">Backup/Restore</a></li>
+            <li><a href="#" onclick="loadPage('ota_page.html?v=$COMMIT_HASH');">OTA Update</a></li>
+            <li><a href="#" onclick="loadPage('log.html?v=$COMMIT_HASH');">Log Viewer</a></li>
+            <li><a href="#" onclick="loadPage('data.html?v=$COMMIT_HASH');">Data Viewer</a></li>
+            <li><a href="#" onclick="loadPage('reboot_page.html?v=$COMMIT_HASH');">Reboot</a></li>
+            <li><a href="#" onclick="loadPage('info.html?v=$COMMIT_HASH');">Info</a></li>
         </ul>
     </li>
   </ul>
@@ -107,8 +107,8 @@
   LoadFwVersion();
   LoadWebUiVersion();
 
-  if (getCookie("page") == "" || getCookie("page") == "reboot_page.html") {
-    document.cookie = "page=overview.html" + "; path=/";
+  if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
+    document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
   }
   console.log("Loading page: " + getCookie("page"));
   document.getElementById('maincontent').src = getCookie("page");

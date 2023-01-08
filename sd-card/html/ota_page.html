@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
     <title>OTA Update</title>
     <meta charset="utf-8">
 
@@ -26,10 +26,10 @@
         }
     </style>
 
-    <link href="firework.css" rel="stylesheet">
-    <script type="text/javascript" src="jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="common.js"></script>
-    <script type="text/javascript" src="firework.js"></script>
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -183,7 +183,7 @@
             xhttp.onreadystatechange = function() {
                 if (xhttp.readyState == 4) {
                     if (xhttp.status == 200) {
-                        document.cookie = "page=overview.html" + "; path=/"; // Make sure after the reboot we go to the overview page
+                        document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/"; // Make sure after the reboot we go to the overview page
 
                         if (xhttp.responseText.startsWith("reboot")) { // Reboot required
                             console.log("Upload completed, the device will now restart and install the update!");
@@ -201,8 +201,8 @@
 
                                 if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
                                     /* Check if the device is up again and forward to index page if so */
-                                    fetch('reboot_page.html?' + Math.random(), {mode: 'no-cors'}).then(
-                                        r=>{parent.location.href=('index.html');}
+                                    fetch('reboot_page.html?v=$COMMIT_HASH&' + Math.random(), {mode: 'no-cors'}).then(
+                                        r=>{parent.location.href=('index.html?v=$COMMIT_HASH');}
                                     )
                                 }
 

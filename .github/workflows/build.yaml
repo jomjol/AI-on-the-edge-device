@@ -58,6 +58,10 @@ jobs:
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
+    - name: Set Hash in all Web UI files
+      run: cd sd-card/html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+
+
     - name: Store generated files in cache
       uses: actions/cache@v3
       with:
@@ -65,7 +69,7 @@ jobs:
           ./code/.pio/build/esp32cam/firmware.bin
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
+          ./sd-card/html/*
         key: ${{ github.run_number }}
 
 
@@ -91,7 +95,7 @@ jobs:
           ./code/.pio/build/esp32cam/firmware.bin
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
+          ./sd-card/html/*
         key: ${{ github.run_number }}
 
     - name: Set Variables
@@ -149,7 +153,7 @@ jobs:
           ./code/.pio/build/esp32cam/firmware.bin
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
+          ./sd-card/html/*
         key: ${{ github.run_number }}
 
     - name: Set Variables
@@ -202,7 +206,7 @@ jobs:
           ./code/.pio/build/esp32cam/firmware.bin
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/version.txt
+          ./sd-card/html/*
         key: ${{ github.run_number }}
 
     - name: Set Variables

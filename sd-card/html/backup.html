@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Backup/Restore Configuration</title>
 <meta charset="utf-8">
 
@@ -40,9 +40,9 @@ input[type=number] {
 </body>
 
 
-<script type="text/javascript" src="common.js"></script>
-<script type="text/javascript" src="jszip.min.js"></script>
-<script type="text/javascript" src="FileSaver.min.js"></script>
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="jszip.min.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="FileSaver.min.js?v=$COMMIT_HASH"></script>
 <script>
 
 function startBackup() {  

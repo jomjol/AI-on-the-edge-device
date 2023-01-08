@@ -1,10 +1,10 @@
 <html>
     <head>
-    <script type="text/javascript" src='https://cdn.plot.ly/plotly-2.14.0.min.js'></script>
+    <script type="text/javascript" src='https://cdn.plot.ly/plotly-2.14.0.min.js?v=$COMMIT_HASH'></script>
 
-    <script type="text/javascript" src="common.js"></script> 
-    <script type="text/javascript" src="readconfigcommon.js"></script>  
-    <script type="text/javascript" src="readconfigparam.js"></script>  
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
 
     <style>
         textarea {
@@ -18,9 +18,9 @@
       el && eval(el.value);
     }
     </script>
-    <link href="firework.css" rel="stylesheet">
-    <script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
-    <script type="text/javascript" src="firework.js"></script>
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
     </head>
     <body>
     <div id='chart'></div>

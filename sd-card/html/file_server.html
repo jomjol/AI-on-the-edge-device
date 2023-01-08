@@ -1,8 +1,8 @@
 <html>
     <head>
-        <link href="/fileserver/html/firework.css" rel="stylesheet">
-        <script type="text/javascript" src="/fileserver/html/jquery-3.6.0.min.js"></script>  
-        <script type="text/javascript" src="/fileserver/html/firework.js"></script>
+        <link href="/firework.css?v=$COMMIT_HASH" rel="stylesheet">
+        <script type="text/javascript" src="/jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+        <script type="text/javascript" src="/firework.js?v=$COMMIT_HASH"></script>
         <style>
             #files_table {
                 font-family: Arial, Helvetica, sans-serif;
@@ -67,7 +67,7 @@
     </tr>
 </table>
 
-<script type="text/javascript" src="/fileserver/html/common.js"> 
+<script type="text/javascript" src="/common.js?v=$COMMIT_HASH"> 
 </script>            
 <script language="JavaScript">
 function setpath() {
