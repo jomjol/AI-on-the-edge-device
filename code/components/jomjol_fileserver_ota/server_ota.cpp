@@ -129,9 +129,7 @@ void CheckUpdate()
 	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update during boot triggered - Update File: " + _file_name_update);
 
 
-    BaseType_t xReturned;
-    int _i = configMINIMAL_STACK_SIZE;
-    xReturned = xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
+    xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
     while(1) { // wait until reboot within task_do_Update_ZIP
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
