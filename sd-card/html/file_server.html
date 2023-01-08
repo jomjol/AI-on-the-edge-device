@@ -1,18 +1,43 @@
 <html>
     <head>
-        <link href="firework.css" rel="stylesheet">
-        <script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
-        <script type="text/javascript" src="firework.js"></script>
+        <link href="/fileserver/html/firework.css" rel="stylesheet">
+        <script type="text/javascript" src="/fileserver/html/jquery-3.6.0.min.js"></script>  
+        <script type="text/javascript" src="/fileserver/html/firework.js"></script>
+        <style>
+            #files_table {
+                font-family: Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            #files_table td, #files_table th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            #files_table tr:nth-child(even){
+                background-color: #f2f2f2;
+            }
+
+            #files_table tr:hover {
+                background-color: #ddd;
+            }
+
+            #files_table th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #0011ff;
+                color: white;
+            }
+        </style>
     </head>
 </body>
-<table class="fixed" border="0" style="font-family: arial">
-    <col width="300px" /><col width="200px" />
+<table class="fixed" border="0" width=100% style="font-family: arial">
     <tr><td>
-        <h2>ESP32 File Server</h2>
-    </td><td>
-        <button id="dirup" type="button" onclick="dirup()">Directory up</button>
+        <h2>Content on SD-Card</h2>
     </td>
-    <td>
+    <td rowspan="2" width="500px">
         <table border="0">
             <tr>
                 <td>
@@ -35,6 +60,11 @@
             </tr>
         </table>
     </td></tr>
+    <tr>
+        <td>
+            <span id="currentpath"></span> &nbsp;&nbsp;&nbsp;&nbsp;<button id="dirup" type="button" onclick="dirup()" disabled>&#129041; Directory up</button>
+        </td>
+    </tr>
 </table>
 
 <script type="text/javascript" src="/fileserver/html/common.js"> 
@@ -59,6 +89,7 @@ function dirup() {
 			found = zw;
 	}
 	var res = str.substring(0, found+1);
+
 	window.location.href = res;	
 }
 
@@ -111,6 +142,31 @@ function upload() {
         xhttp.send(file);
     }
 }
+
+
+function checkAtRootLevel(res) {
+    if (getPath() == "/fileserver/") { // Already at root level
+        document.getElementById("dirup").disabled = true;
+        console.log("Already on sd-card root level!");
+        return true;
+    }
+
+    document.getElementById("dirup").disabled = false;
+    return false;
+}
+
+
+function getPath() {
+    return window.location.pathname.replace(/\/+$/, '') + "/"
+}
+
+checkAtRootLevel();
+
+console.log("Current path: " + getPath().replace("/fileserver", ""));
+document.getElementById("currentpath").innerHTML = "Current path: <b>" + getPath().replace("/fileserver", "") + "</b>";
+
+document.cookie = "page=" + getPath() + "; path=/";
+
 </script>
 
 </body>

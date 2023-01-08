@@ -219,7 +219,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
 
 /////////////////////////////////////////////////
     if (!readonly) {
-        FILE *fd = fopen("/sdcard/html/upload_script.html", "r");
+        FILE *fd = fopen("/sdcard/html/file_server.html", "r");
         char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
         size_t chunksize;
         do {
@@ -245,11 +245,11 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
 
     /* Send file-list table definition and column labels */
     httpd_resp_sendstr_chunk(req,
-        "<table class=\"fixed\" border=\"1\">"
+        "<table id=\"files_table\">"
         "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
-        "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th>");
+        "<thead><tr><th>Name</th><th>Type</th><th>Size</th>");
     if (!readonly) {
-        httpd_resp_sendstr_chunk(req, "<th>Delete<br>"
+        httpd_resp_sendstr_chunk(req, "<th>"
             "<form method=\"post\" action=\"");
         httpd_resp_sendstr_chunk(req, _zw.c_str());
         httpd_resp_sendstr_chunk(req,
@@ -270,7 +270,19 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
                 ESP_LOGE(TAG, "Failed to stat %s: %s", entrytype, entry->d_name);
                 continue;
             }
-            sprintf(entrysize, "%ld", entry_stat.st_size);
+
+            if (entry->d_type == DT_DIR) {
+                strcpy(entrysize, "-\0");
+            }
+            else {
+                if (entry_stat.st_size >= 1024) {
+                    sprintf(entrysize, "%ld KiB", entry_stat.st_size / 1024); // kBytes
+                }
+                else {
+                    sprintf(entrysize, "%ld B", entry_stat.st_size); // Bytes
+                }
+            }
+
             ESP_LOGI(TAG, "Found %s: %s (%s bytes)", entrytype, entry->d_name, entrysize);
 
             /* Send chunk of HTML file containing table entries with file name and size */
