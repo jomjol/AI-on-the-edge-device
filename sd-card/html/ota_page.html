@@ -38,8 +38,8 @@
     Then pick the <i><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></i> file!</p>
     <p>Alternatively you can use a file in the following format:</p>
     <ul>
-        <li><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></li>
-        <li><span style="font-family:monospace">AI-on-the-edge-device__firmware__*.bin</span></li>
+        <li><span style="font-family:monospace">*.zip</span></li>
+        <li><span style="font-family:monospace">*.bin</span></li>
         <li><span style="font-family:monospace">*.tfl/tflite</span></li>
     </ul>
     <p>Make sure the file extention is lower case.</p>
@@ -183,7 +183,7 @@
             xhttp.onreadystatechange = function() {
                 if (xhttp.readyState == 4) {
                     if (xhttp.status == 200) {
-                        document.cookie = "page=overview.html"; // Make sure after the reboot we go to the overview page
+                        document.cookie = "page=overview.html" + "; path=/"; // Make sure after the reboot we go to the overview page
 
                         if (xhttp.responseText.startsWith("reboot")) { // Reboot required
                             console.log("Upload completed, the device will now restart and install the update!");

@@ -18,7 +18,7 @@
 <script>
     async function loadPage(page) {
         console.log("loadPage(" + page + ")");
-        document.cookie = "page="+page;
+        document.cookie = "page="+page + "; path=/";
         document.getElementById('maincontent').src = page;
 
         [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
@@ -108,7 +108,7 @@
   LoadWebUiVersion();
 
   if (getCookie("page") == "" || getCookie("page") == "reboot_page.html") {
-    document.cookie = "page=overview.html";
+    document.cookie = "page=overview.html" + "; path=/";
   }
   console.log("Loading page: " + getCookie("page"));
   document.getElementById('maincontent').src = getCookie("page");

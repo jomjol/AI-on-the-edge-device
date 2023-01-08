@@ -271,11 +271,16 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
                 continue;
             }
 
-            if (entry_stat.st_size >= 1024) {
-                sprintf(entrysize, "%ld KiB", entry_stat.st_size / 1024); // kBytes
+            if (entry->d_type == DT_DIR) {
+                strcpy(entrysize, "-\0");
             }
             else {
-                sprintf(entrysize, "%ld B", entry_stat.st_size); // Bytes
+                if (entry_stat.st_size >= 1024) {
+                    sprintf(entrysize, "%ld KiB", entry_stat.st_size / 1024); // kBytes
+                }
+                else {
+                    sprintf(entrysize, "%ld B", entry_stat.st_size); // Bytes
+                }
             }
 
             ESP_LOGI(TAG, "Found %s: %s (%s bytes)", entrytype, entry->d_name, entrysize);

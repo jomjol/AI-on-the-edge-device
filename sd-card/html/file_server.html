@@ -33,14 +33,11 @@
         </style>
     </head>
 </body>
-<table class="fixed" border="0" style="font-family: arial">
-    <col width="300px" /><col width="200px" />
+<table class="fixed" border="0" width=100% style="font-family: arial">
     <tr><td>
         <h2>Content on SD-Card</h2>
-    </td><td>
-        <button id="dirup" type="button" onclick="dirup()">&#129041; Directory up</button>
     </td>
-    <td>
+    <td rowspan="2" width="500px">
         <table border="0">
             <tr>
                 <td>
@@ -63,6 +60,11 @@
             </tr>
         </table>
     </td></tr>
+    <tr>
+        <td>
+            <span id="currentpath"></span> &nbsp;&nbsp;&nbsp;&nbsp;<button id="dirup" type="button" onclick="dirup()" disabled>&#129041; Directory up</button>
+        </td>
+    </tr>
 </table>
 
 <script type="text/javascript" src="/fileserver/html/common.js"> 
@@ -77,7 +79,6 @@ function setpath() {
 
 function dirup() {
     var str = window.location.href;
-    console.log(str);
     str = str.substring(0, str.length-1);
 	var zw = str.indexOf("/");
 	var found = zw;
@@ -88,6 +89,8 @@ function dirup() {
 			found = zw;
 	}
 	var res = str.substring(0, found+1);
+
+    console.log(res);
 	window.location.href = res;	
 }
 
@@ -140,6 +143,31 @@ function upload() {
         xhttp.send(file);
     }
 }
+
+
+function checkAtRootLevel(res) {
+    if (getPath() == "/fileserver/") { // Already at root level
+        document.getElementById("dirup").disabled = true;
+        console.log("Already on sd-card root level!");
+        return true;
+    }
+
+    document.getElementById("dirup").disabled = false;
+    return false;
+}
+
+
+function getPath() {
+    return window.location.pathname.replace(/\/+$/, '') + "/"
+}
+
+checkAtRootLevel();
+
+console.log("Current path: " + getPath().replace("/fileserver", ""));
+document.getElementById("currentpath").innerHTML = "Current path: <b>" + getPath().replace("/fileserver", "") + "</b>";
+
+document.cookie = "page=" + getPath() + "; path=/";
+
 </script>
 
 </body>
