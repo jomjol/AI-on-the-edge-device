@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Overview</title>
 <meta charset="utf-8">
 
@@ -68,9 +68,9 @@
 </table>
 
 
-<script type="text/javascript" src="jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfigcommon.js"></script> 
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
 <script type="text/javascript">
 
 	function addZero(i) {
@@ -106,8 +106,8 @@
 		var h = addZero(d.getHours());
 		var m = addZero(d.getMinutes());
 		var s = addZero(d.getSeconds());
-		$('#img').html('<img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+		$('#img').html?v=$COMMIT_HASH('<img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		$('#timestamp').html?v=$COMMIT_HASH("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	}
 
 
@@ -126,7 +126,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#statusflow').html("Status: " + _rsp);
+				$('#statusflow').html?v=$COMMIT_HASH("Status: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -140,7 +140,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#cputemp').html("CPU Temperature: " +_rsp);
+				$('#cputemp').html?v=$COMMIT_HASH("CPU Temperature: " +_rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -154,7 +154,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#rssi').html("RSSI: " + _rsp);
+				$('#rssi').html?v=$COMMIT_HASH("RSSI: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -168,7 +168,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#uptime').html("Uptime: " + _rsp);
+				$('#uptime').html?v=$COMMIT_HASH("Uptime: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -182,7 +182,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#round').html("(Round: " + _rsp + ")");
+				$('#round').html?v=$COMMIT_HASH("(Round: " + _rsp + ")");
 			}
 		}
 		xhttp.open("GET", url, true);

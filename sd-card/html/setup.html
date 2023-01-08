@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html style="width: fit-content">
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>AI on the edge</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +29,7 @@ p {font-size: 1em;}
 <body style="font-family: arial">
 
 <table style="border: none">
-  <tr><td style="padding-right: 10px;"><img src="favicon.ico"></td>
+  <tr><td style="padding-right: 10px;"><img src="favicon.ico?v=$COMMIT_HASH"></td>
     <td><h1 id="id_title"> Digitizer - Initial Setup</h1>
         <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
     </td></tr>
@@ -58,7 +58,7 @@ p {font-size: 1em;}
 
  
 
-<script type="text/javascript" src="common.js"></script> 
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
 <script type="text/javascript">
 	var canvas = document.getElementById('canvas'),
 		domainname = getDomainname(); 
@@ -83,53 +83,53 @@ function clickPrevious() {
 function LoadStep(){
    switch (aktstatu) {
       case 0:
-         document.getElementById('maincontent').src = '/edit_explain_0.html';
+         document.getElementById('maincontent').src = '/edit_explain_0.html?v=$COMMIT_HASH';
          document.getElementById('h_iframe_explain').style.display = "none";  
          document.getElementById("previous").disabled = true;
          document.getElementById("next").disabled = false;
          break;
       case 1:
-         document.getElementById('maincontent').src = '/edit_reference.html';
-         document.getElementById('explaincontent').src = '/explain_1.html';
+         document.getElementById('maincontent').src = '/edit_reference.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = '/explain_1.html?v=$COMMIT_HASH';
          document.getElementById('h_iframe_explain').style.display = "";  
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
          break;
       case 2:
-         document.getElementById('maincontent').src = '/edit_alignment.html';
-         document.getElementById('explaincontent').src = '/explain_2.html';
+         document.getElementById('maincontent').src = '/edit_alignment.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = '/explain_2.html?v=$COMMIT_HASH';
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break;
       case 3:
-         document.getElementById('maincontent').src = '/edit_digits.html';
-         document.getElementById('explaincontent').src = '/explain_3.html';         
+         document.getElementById('maincontent').src = '/edit_digits.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = '/explain_3.html?v=$COMMIT_HASH';         
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break;
       case 4:
-         document.getElementById('maincontent').src = '/edit_analog.html';
-         document.getElementById('explaincontent').src = '/explain_4.html';   
+         document.getElementById('maincontent').src = '/edit_analog.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = '/explain_4.html?v=$COMMIT_HASH';   
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break;
       case 5:
-         document.getElementById('maincontent').src = '/edit_config_param.html?InitialSetup=true';
-         document.getElementById('explaincontent').src = '/explain_5.html';            
+         document.getElementById('maincontent').src = '/edit_config_param.html?v=$COMMIT_HASH?InitialSetup=true';
+         document.getElementById('explaincontent').src = '/explain_5.html?v=$COMMIT_HASH';            
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break; 
       case 6:
-         document.getElementById('maincontent').src = '/edit_explain_6.html';
-         document.getElementById('explaincontent').src = '/explain_6.html';            
+         document.getElementById('maincontent').src = '/edit_explain_6.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = '/explain_6.html?v=$COMMIT_HASH';            
          document.getElementById('h_iframe_explain').style.display = "none";  
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = true;

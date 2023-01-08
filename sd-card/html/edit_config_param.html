@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Edit Config</title>
 <meta charset="utf-8">
 
@@ -72,9 +72,9 @@ textarea {
 }
 
 </style>
-<link href="firework.css" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
-<script type="text/javascript" src="firework.js"></script>
+<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -1368,7 +1368,7 @@ textarea {
 			</td>
 			<td class="description">
 				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)<br>
-				Use this <a href=timezones.html target=_blank>table</a> to find the settings for your region. 
+				Use this <a href=timezones.html?v=$COMMIT_HASH target=_blank>table</a> to find the settings for your region. 
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -1429,9 +1429,9 @@ textarea {
 
 </div>
 
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfigcommon.js"></script>  
-<script type="text/javascript" src="readconfigparam.js"></script>  
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
  
 <script type="text/javascript">
 	var canvas = document.getElementById('canvas'),
@@ -2083,7 +2083,7 @@ function doReboot() {
 
 function editConfigDirect() {
 	if (confirm("Did you save your changes?")) {
-		var stringota = getDomainname() + "/edit_config.html";
+		var stringota = getDomainname() + "/edit_config.html?v=$COMMIT_HASH";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);

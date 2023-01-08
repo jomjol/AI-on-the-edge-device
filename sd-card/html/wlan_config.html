@@ -1,8 +1,8 @@
 <html>
     <head>
-        <link href="firework.css" rel="stylesheet">
-        <script type="text/javascript" src="jquery-3.6.0.min.js"></script>  
-        <script type="text/javascript" src="firework.js"></script>
+        <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+        <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+        <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
     </head>
 <body>
     <table>
@@ -59,7 +59,7 @@ if (!file.name.includes("remote-setup")){
                     document.getElementById("status").innerText = "Status: Update completed!";
                     document.getElementById("doUpdate").disabled = true;
                     document.getElementById("newfile").disabled = false;
-                    document.cookie = "page=overview.html" + "; path=/"; // Make sure after the reboot we go to the overview page
+                    document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/"; // Make sure after the reboot we go to the overview page
     
                     if (xhttp.responseText.startsWith("reboot"))
                     {

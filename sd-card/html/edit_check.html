@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <meta charset="utf-8"/>
 <title>Check</title>
 
@@ -50,8 +50,8 @@ p {font-size: 1em;}
     </tr>
 </table>
 
-<script type="text/javascript" src="common.js"></script> 
-<script type="text/javascript" src="readconfig.js"></script>  
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfig.js?v=$COMMIT_HASH"></script>  
  
 <script type="text/javascript">
     var domainname = getDomainname();
