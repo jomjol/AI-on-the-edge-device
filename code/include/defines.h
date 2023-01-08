@@ -111,7 +111,7 @@
     //#define STB_IMAGE_IMPLEMENTATION
     //#define STB_IMAGE_WRITE_IMPLEMENTATION
     //#define STB_IMAGE_RESIZE_IMPLEMENTATION
-    //#define STBI_ONLY_JPEG // (save 2% of Flash, but breaks the alignment mark generation, see https://github.com/jomjol/AI-on-the-edge-device/issues/1721)
+    #define STBI_ONLY_JPEG // (save 2% of Flash, but breaks the alignment mark generation, see https://github.com/jomjol/AI-on-the-edge-device/issues/1721)
 
     //interface_influxdb
     #define MAX_HTTP_OUTPUT_BUFFER 2048

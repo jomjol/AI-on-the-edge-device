@@ -123,8 +123,12 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
                 p_target[_channels] = p_source[_channels];
         }
 
-    //    stbi_write_jpg(_template1.c_str(), dx, dy, channels, odata, 0);
+#ifdef STBI_ONLY_JPEG
+    stbi_write_jpg(_template1.c_str(), dx, dy, channels, odata, 100);
+#else
     stbi_write_bmp(_template1.c_str(), dx, dy, channels, odata);
+#endif
+    
 
     RGBImageRelease();
 
