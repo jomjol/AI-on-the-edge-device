@@ -692,6 +692,7 @@ void gpio_handler_deinit() {
 void gpio_handler_destroy()
 {
     if (gpioHandler != NULL) {
+        gpio_handler_deinit();
         delete gpioHandler;
         gpioHandler = NULL;
     }
