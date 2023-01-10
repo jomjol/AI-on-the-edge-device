@@ -310,11 +310,12 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+
 esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");  
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");  
+    #endif
 
     char filepath[50];
 
@@ -330,21 +331,19 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
     filetosend = std::string(filename);
     ESP_LOGD(TAG, "File to upload: %s", filetosend.c_str());
 
+    // Serve raw.jpg
     if (filetosend == "raw.jpg")
-    {
         return GetRawJPG(req); 
-    } 
 
-    esp_err_t zw = GetJPG(filetosend, req);
-
-    if (zw == ESP_OK)
+    // Serve alg.jpg, alg_roi.jpg or digital and analog ROIs
+    if (ESP_OK == GetJPG(filetosend, req))
         return ESP_OK;
 
-    // File wird nicht intern bereit gestellt --> klassischer weg:
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
+    #endif
 
+    // File was not served already --> serve with img_tmp_handler
     return img_tmp_handler(req);
 }
 
