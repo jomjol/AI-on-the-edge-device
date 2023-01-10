@@ -48,7 +48,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Light On API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /lighton not available!");
         return ESP_ERR_NOT_FOUND;
     }
 
@@ -75,7 +75,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Light Off API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /lightoff not available!");
         return ESP_ERR_NOT_FOUND;
     }
 
@@ -117,7 +117,7 @@ esp_err_t handler_capture(httpd_req_t *req)
     }
         else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Capture API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /capture not available!");
         return ESP_ERR_NOT_FOUND;
     }
 }
@@ -177,7 +177,7 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
     }
         else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Capture + flashlight API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /capture_with_flashlight not available!");
         return ESP_ERR_NOT_FOUND;
     }
 }
@@ -248,7 +248,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Capture + save API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /save not available!");
         return ESP_ERR_NOT_FOUND;
     }
 }
