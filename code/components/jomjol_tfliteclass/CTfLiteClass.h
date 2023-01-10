@@ -39,7 +39,7 @@ class CTfLiteClass
         int kTensorArenaSize;
         uint8_t *tensor_arena;
 
-        unsigned char *modelload = NULL;
+        unsigned char *modelfile = NULL;
 
 
         float* input;
@@ -47,13 +47,13 @@ class CTfLiteClass
         int im_height, im_width, im_channel;
 
         long GetFileSize(std::string filename);
-        unsigned char* ReadFileToCharArray(std::string _fn);
-        
+        bool ReadFileToModel(std::string _fn);
+
     public:
         CTfLiteClass();
         ~CTfLiteClass();        
         bool LoadModel(std::string _fn);
-        void MakeAllocate();
+        bool MakeAllocate();
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();

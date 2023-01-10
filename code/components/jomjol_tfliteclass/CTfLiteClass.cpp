@@ -74,6 +74,7 @@ int CTfLiteClass::GetOutClassification(int _von, int _bis)
   return (zw_class - _von);
 }
 
+
 void CTfLiteClass::GetInputDimension(bool silent = false)
 {
   TfLiteTensor* input2 = this->interpreter->input(0);
@@ -92,6 +93,7 @@ void CTfLiteClass::GetInputDimension(bool silent = false)
   }
 }
 
+
 int CTfLiteClass::ReadInputDimenstion(int _dim)
 {
   if (_dim == 0)
@@ -103,7 +105,6 @@ int CTfLiteClass::ReadInputDimenstion(int _dim)
 
   return -1;
 }
-
 
 
 int CTfLiteClass::GetAnzOutPut(bool silent)
@@ -133,6 +134,7 @@ int CTfLiteClass::GetAnzOutPut(bool silent)
   return numeroutput;
 }
 
+
 void CTfLiteClass::Invoke()
 {
     if (interpreter != nullptr)
@@ -140,10 +142,11 @@ void CTfLiteClass::Invoke()
 }
 
 
-
 bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
 {
-    std::string zw = "ClassFlowCNNGeneral::doNeuralNetwork after LoadInputResizeImage: ";
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CTfLiteClass::LoadInputImageBasis - Start");
+    #endif
 
     unsigned int w = rs->width;
     unsigned int h = rs->height;
@@ -168,41 +171,60 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
             }
 
 #ifdef DEBUG_DETAIL_ON          
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After loading in input");
+        LogFile.WriteHeapInfo("CTfLiteClass::LoadInputImageBasis - done");
 #endif
 
     return true;
 }
 
 
-void CTfLiteClass::MakeAllocate()
+bool CTfLiteClass::MakeAllocate()
 {
     static tflite::AllOpsResolver resolver;
 
-//    ESP_LOGD(TAG, "%s", LogFile.getESPHeapInfo().c_str());
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CTLiteClass::Alloc start");
+    #endif
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Make Allocate");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::MakeAllocate");
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
-//    ESP_LOGD(TAG, "%s", LogFile.getESPHeapInfo().c_str());
 
+    if (this->interpreter) 
+    {
     TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
         TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "AllocateTensors() failed");
 
     this->GetInputDimension();   
-    return;
+            return false;
   }
-//    ESP_LOGD(TAG, "Allocate Done");
+    }
+    else 
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "new tflite::MicroInterpreter failed");
+        LogFile.WriteHeapInfo("CTfLiteClass::MakeAllocate-new tflite::MicroInterpreter failed");
+        return false;
 }
 
-void CTfLiteClass::GetInputTensorSize(){
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CTLiteClass::Alloc done");
+    #endif
+
+    return true;
+}
+
+
+void CTfLiteClass::GetInputTensorSize()
+{
 #ifdef DEBUG_DETAIL_ON    
     float *zw = this->input;
     int test = sizeof(zw);
     ESP_LOGD(TAG, "Input Tensor Dimension: %d", test);
 #endif
 }
+
 
 long CTfLiteClass::GetFileSize(std::string filename)
 {
@@ -212,90 +234,95 @@ long CTfLiteClass::GetFileSize(std::string filename)
 }
 
 
-unsigned char* CTfLiteClass::ReadFileToCharArray(std::string _fn)
+bool CTfLiteClass::ReadFileToModel(std::string _fn)
 {
-    long size;
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::ReadFileToModel: " + _fn);
     
-    size = GetFileSize(_fn);
+    long size = GetFileSize(_fn);
 
     if (size == -1)
     {
-      ESP_LOGD(TAG, "File doesn't exist");
-      return NULL;
+        ESP_LOGE(TAG, "CTfLiteClass::ReadFileToModel: Model file doesn't exist: %s", _fn.c_str());
+        return false;
     }
 
-    unsigned char *result = (unsigned char*) malloc(size);
-    int anz = 1;
-    while (!result && (anz < 6))    // Try a maximum of 5x (= 5s)
-    {
 #ifdef DEBUG_DETAIL_ON      
-		    ESP_LOGD(TAG, "Speicher ist voll - Versuche es erneut: %d", anz);
+        LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
 #endif
-        result = (unsigned char*) malloc(size);
-        anz++;
-    }
 
+    modelfile = (unsigned char*)GET_MEMORY(size);
   
-	  if(result != NULL) {
+	  if(modelfile != NULL) 
+    {
         FILE* f = fopen(_fn.c_str(), "rb");     // previously only "r
-        fread(result, 1, size, f);
+        fread(modelfile, 1, size, f);
         fclose(f);        
-	  }else {
-		  ESP_LOGD(TAG, "No free memory available");
+
+        #ifdef DEBUG_DETAIL_ON 
+            LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile successful");
+        #endif
+
+        return true;    
 	}    
+    else 
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CTfLiteClass::ReadFileToModel: Can't allocate enough memory: " + std::to_string(size));
+        LogFile.WriteHeapInfo("CTfLiteClass::ReadFileToModel");
 
-
-    return result;
+        return false;
+    }
 }
 
-bool CTfLiteClass::LoadModel(std::string _fn){
 
+bool CTfLiteClass::LoadModel(std::string _fn)
+{
 #ifdef SUPRESS_TFLITE_ERRORS
     this->error_reporter = new tflite::OwnMicroErrorReporter;
 #else
     this->error_reporter = new tflite::MicroErrorReporter;
 #endif
 
-    modelload = ReadFileToCharArray(_fn.c_str());
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::LoadModel");
 
-    if (modelload == NULL) 
+    if (!ReadFileToModel(_fn.c_str())) {
       return false;
+    }
 
-    model = tflite::GetModel(modelload);
-//    free(rd);
-    TFLITE_MINIMAL_CHECK(model != nullptr); 
+    model = tflite::GetModel(modelfile);
+
+    if(model == nullptr)     
+      return false;
     
     return true;
 }
 
 
-
 CTfLiteClass::CTfLiteClass()
 {
     this->model = nullptr;
+    this->modelfile = NULL;
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
     this->kTensorArenaSize = 800 * 1024;   /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
-    this->tensor_arena = new uint8_t[kTensorArenaSize]; 
+    this->tensor_arena = (uint8_t*)GET_MEMORY(kTensorArenaSize);
 }
+
 
 CTfLiteClass::~CTfLiteClass()
 {
-  delete this->tensor_arena;
+  free(modelfile);
+
+  free(this->tensor_arena);
   delete this->interpreter;
   delete this->error_reporter;
-  
-  free(modelload);
 }        
 
 
-namespace tflite {
-
-  int OwnMicroErrorReporter::Report(const char* format, va_list args) {
+namespace tflite 
+{
+  int OwnMicroErrorReporter::Report(const char* format, va_list args) 
+  {
     return 0;
   }
-
 }  
-
-
