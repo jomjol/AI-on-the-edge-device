@@ -185,6 +185,9 @@ function EnDisableAnalog() {
         }
 		
         sah1(document.getElementById("div1"), !isEnabled);
+
+        param["Analog"]["enabled"] = isEnabled;
+        
         if (isEnabled)
         {
             UpdateROIs();

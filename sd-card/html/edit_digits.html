@@ -179,6 +179,8 @@ function EnDisableDigits() {
         }
 		
         sah1(document.getElementById("div1"), !isEnabled);
+        param["Digits"]["enabled"] = isEnabled;
+                
         if (isEnabled)
         {
             UpdateROIs();
