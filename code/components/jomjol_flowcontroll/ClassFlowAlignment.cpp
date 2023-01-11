@@ -12,8 +12,6 @@
 
 static const char *TAG = "ALIGN";
 
-bool AlignmentExtendedDebugging = true;
-
 // #define DEBUG_DETAIL_ON  
 
 
@@ -36,6 +34,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     SAD_criteria = 0.05;
 }
 
+
 ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 {
     SetInitialParameter();
@@ -51,7 +50,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 
     if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
-        if (AlignmentExtendedDebugging) ESP_LOGD(TAG, "CImageBasis had to be created");
+        ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis(namerawimage);
     }
 }
@@ -119,10 +118,10 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(splitted[0]) == "ALIGNMENTALGO") && (splitted.size() > 1))
         {
-#ifdef DEBUG_DETAIL_ON
-            std::string zw2 = "Alignment mode selected: " + splitted[1];
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
-#endif
+            #ifdef DEBUG_DETAIL_ON
+                std::string zw2 = "Alignment mode selected: " + splitted[1];
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
+            #endif
             if (toUpper(splitted[1]) == "HIGHACCURACY")
                 alg_algo = 1;
             if (toUpper(splitted[1]) == "FAST")
@@ -136,10 +135,10 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         References[i].search_y = suchey;
         References[i].fastalg_SAD_criteria = SAD_criteria;
         References[i].alignment_algo = alg_algo;
-#ifdef DEBUG_DETAIL_ON
-        std::string zw2 = "Alignment mode written: " + std::to_string(alg_algo);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
-#endif
+        #ifdef DEBUG_DETAIL_ON
+            std::string zw2 = "Alignment mode written: " + std::to_string(alg_algo);
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
+        #endif
     }
 
     LoadReferenceAlignmentValues();
@@ -147,6 +146,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
     return true;
 
 }
+
 
 string ClassFlowAlignment::getHTMLSingleStep(string host)
 {
@@ -162,11 +162,24 @@ string ClassFlowAlignment::getHTMLSingleStep(string host)
 bool ClassFlowAlignment::doFlow(string time) 
 {
     if (!ImageTMP) 
+    {
         ImageTMP = new CImageBasis(ImageBasis);
+        if (!ImageTMP) 
+        {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
+            LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
+            return false;
+        }
+    }
 
     delete AlignAndCutImage;
-    
-    AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);   
+    AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);
+    if (!AlignAndCutImage) 
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");
+        LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
+        return false;
+    }
 
     CRotateImage rt(AlignAndCutImage, ImageTMP, initialflip);
     if (initialflip)
@@ -176,10 +189,13 @@ bool ClassFlowAlignment::doFlow(string time)
         ImageBasis->width = _zw;
     }
 
-    if (initialmirror){
+    if (initialmirror)
+    {
         ESP_LOGD(TAG, "do mirror");
         rt.Mirror();
-        if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/mirror.jpg"));
+        
+        if (SaveAllFiles)
+            AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/mirror.jpg"));
     }
  
     if ((initalrotate != 0) || initialflip)
@@ -188,7 +204,9 @@ bool ClassFlowAlignment::doFlow(string time)
             rt.RotateAntiAliasing(initalrotate);
         else
             rt.Rotate(initalrotate);
-        if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
+        
+        if (SaveAllFiles)
+            AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
     }
 
     if (!AlignAndCutImage->Align(&References[0], &References[1])) 
@@ -213,12 +231,11 @@ bool ClassFlowAlignment::doFlow(string time)
     // must be deleted to have memory space for loading tflite
     delete ImageTMP;
     ImageTMP = NULL;
-    
+
     LoadReferenceAlignmentValues();
 
     return true;
 }
-
 
 
 void ClassFlowAlignment::SaveReferenceAlignmentValues()
@@ -258,9 +275,6 @@ void ClassFlowAlignment::SaveReferenceAlignmentValues()
 
     fclose(pFile);
 }
-
-
-
 
 
 bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
@@ -311,25 +325,26 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     fclose(pFile);
 
 
-/*#ifdef DEBUG_DETAIL_ON
-    std::string _zw = "\tLoadReferences[0]\tx,y:\t" + std::to_string(References[0].fastalg_x) + "\t" + std::to_string(References[0].fastalg_x);
-    _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[0].fastalg_SAD) + "\t" + std::to_string(References[0].fastalg_min);
-    _zw = _zw + "\t" + std::to_string(References[0].fastalg_max) + "\t" + std::to_string(References[0].fastalg_avg);
-    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
-    _zw = "\tLoadReferences[1]\tx,y:\t" + std::to_string(References[1].fastalg_x) + "\t" + std::to_string(References[1].fastalg_x);
-    _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[1].fastalg_SAD) + "\t" + std::to_string(References[1].fastalg_min);
-    _zw = _zw + "\t" + std::to_string(References[1].fastalg_max) + "\t" + std::to_string(References[1].fastalg_avg);
-    LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
-#endif*/
+    /*#ifdef DEBUG_DETAIL_ON
+        std::string _zw = "\tLoadReferences[0]\tx,y:\t" + std::to_string(References[0].fastalg_x) + "\t" + std::to_string(References[0].fastalg_x);
+        _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[0].fastalg_SAD) + "\t" + std::to_string(References[0].fastalg_min);
+        _zw = _zw + "\t" + std::to_string(References[0].fastalg_max) + "\t" + std::to_string(References[0].fastalg_avg);
+        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
+        _zw = "\tLoadReferences[1]\tx,y:\t" + std::to_string(References[1].fastalg_x) + "\t" + std::to_string(References[1].fastalg_x);
+        _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[1].fastalg_SAD) + "\t" + std::to_string(References[1].fastalg_min);
+        _zw = _zw + "\t" + std::to_string(References[1].fastalg_max) + "\t" + std::to_string(References[1].fastalg_avg);
+        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
+    #endif*/
 
     return true;
 }
 
 
-
 void ClassFlowAlignment::DrawRef(CImageBasis *_zw)
 {
-    _zw->drawRect(References[0].target_x, References[0].target_y, References[0].width, References[0].height, 255, 0, 0, 2);
-    _zw->drawRect(References[1].target_x, References[1].target_y, References[1].width, References[1].height, 255, 0, 0, 2);
+    if (_zw->ImageOkay()) 
+    {
+        _zw->drawRect(References[0].target_x, References[0].target_y, References[0].width, References[0].height, 255, 0, 0, 2);
+        _zw->drawRect(References[1].target_x, References[1].target_y, References[1].width, References[1].height, 255, 0, 0, 2);
+    }
 }
-
