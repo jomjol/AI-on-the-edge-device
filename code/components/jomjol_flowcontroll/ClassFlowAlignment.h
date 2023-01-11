@@ -34,6 +34,9 @@ protected:
 
 public:
     CImageBasis *ImageBasis, *ImageTMP;
+    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
+    ImageData *AlgROI;
+    #endif
     
     ClassFlowAlignment(std::vector<ClassFlow*>* lfc);
 
