@@ -141,7 +141,7 @@ esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t *_req, const int quality)
             ii.res = ESP_FAIL;  
         }
     }
-    
+
     RGBImageRelease();
 
     return ii.res;
@@ -608,11 +608,13 @@ void CImageBasis::SaveToFile(std::string _imageout)
     {
         stbi_write_jpg(_imageout.c_str(), width, height, channels, rgb_image, 0);
     }
-
+ 
+#ifndef STBI_ONLY_JPEG
     if ((typ == "bmp") || (typ == "BMP"))
     {
         stbi_write_bmp(_imageout.c_str(), width, height, channels, rgb_image);
     }
+#endif
     RGBImageRelease();
 }
 

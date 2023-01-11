@@ -48,7 +48,7 @@ fetch(_domainname + '/fileserver/log/data/' + datefile)
 .then(response => {
     // handle the response
     if (response.status == 404) {
-        firework.launch('No log data available for " + dateString, 'warning', 10000);
+        firework.launch("No log data available for " + dateString, 'warning', 10000);
     }
     response.text()
     .then( result => {

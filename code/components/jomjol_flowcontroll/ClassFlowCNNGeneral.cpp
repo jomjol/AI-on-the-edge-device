@@ -503,9 +503,9 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
             if (SaveAllFiles)
             {
                 if (GENERAL[_ana]->name == "default")
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
                 else
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
             } 
         }
 
@@ -847,20 +847,20 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
             if (GENERAL[_ana]->ROI[i]->image)
             {
                 if (GENERAL[_ana]->name == "default")
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
                 else
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
             }
 
             HTMLInfo *zw = new HTMLInfo;
             if (GENERAL[_ana]->name == "default")
             {
-                zw->filename = GENERAL[_ana]->ROI[i]->name + ".bmp";
+                zw->filename = GENERAL[_ana]->ROI[i]->name + ".jpg";
                 zw->filename_org = GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
             else
             {
-                zw->filename = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp";
+                zw->filename = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
                 zw->filename_org = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
 
