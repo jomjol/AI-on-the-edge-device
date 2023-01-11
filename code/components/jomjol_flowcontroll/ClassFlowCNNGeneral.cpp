@@ -12,6 +12,7 @@
 
 static const char* TAG = "CNN";
 
+//#define DEBUG_DETAIL_ON
 
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
@@ -30,6 +31,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     flowpostalignment = _flowalign;
     logfileRetentionInDays = 5;
 }
+
 
 string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float analogDigitalTransitionStart)
 {
@@ -124,10 +126,9 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         }
         return result;
     }
-
-
     return result;
 }
+
 
 int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
 {
@@ -245,6 +246,7 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
 
 }
 
+
 int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder)
 {
     float number_min, number_max;
@@ -285,7 +287,6 @@ int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder
                                                 " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
 
     return result;
-
 }
 
 
@@ -382,6 +383,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     return true;
 }
 
+
 general* ClassFlowCNNGeneral::FindGENERAL(string _name_number)
 {
     for (int i = 0; i < GENERAL.size(); ++i)
@@ -434,7 +436,6 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
 }
 
 
-
 string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
 {
     string result, zw;
@@ -459,7 +460,6 @@ string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
 }
 
 
-
 bool ClassFlowCNNGeneral::doFlow(string time)
 {
     if (disabled)
@@ -476,6 +476,7 @@ bool ClassFlowCNNGeneral::doFlow(string time)
     RemoveOldLogs();
     return true;
 }
+
 
 bool ClassFlowCNNGeneral::doAlignAndCut(string time)
 {
@@ -511,30 +512,35 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
     return true;
 } 
 
+
 void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw)
 {
-    if (CNNType == Analogue || CNNType == Analogue100)
-    {
-        int r = 0;
-        int g = 255;
-        int b = 0;
+    if (_zw->ImageOkay()) 
+    { 
+        if (CNNType == Analogue || CNNType == Analogue100)
+        {
+            int r = 0;
+            int g = 255;
+            int b = 0;
 
-        for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
-            for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
-            {
-                _zw->drawRect(GENERAL[_ana]->ROI[i]->posx, GENERAL[_ana]->ROI[i]->posy, GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, r, g, b, 1);
-                _zw->drawEllipse( (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int)  (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) (GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
-                _zw->drawLine((int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) GENERAL[_ana]->ROI[i]->posy, (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay), r, g, b, 2);
-                _zw->drawLine((int) GENERAL[_ana]->ROI[i]->posx, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
-            }
-    }
-    else
-    {
-        for (int _dig = 0; _dig < GENERAL.size(); ++_dig)
-            for (int i = 0; i < GENERAL[_dig]->ROI.size(); ++i)
-                _zw->drawRect(GENERAL[_dig]->ROI[i]->posx, GENERAL[_dig]->ROI[i]->posy, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, 0, 0, (255 - _dig*100), 2);
+            for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
+                for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
+                {
+                    _zw->drawRect(GENERAL[_ana]->ROI[i]->posx, GENERAL[_ana]->ROI[i]->posy, GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, r, g, b, 1);
+                    _zw->drawEllipse( (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int)  (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) (GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
+                    _zw->drawLine((int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) GENERAL[_ana]->ROI[i]->posy, (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay), r, g, b, 2);
+                    _zw->drawLine((int) GENERAL[_ana]->ROI[i]->posx, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
+                }
+        }
+        else
+        {
+            for (int _dig = 0; _dig < GENERAL.size(); ++_dig)
+                for (int i = 0; i < GENERAL[_dig]->ROI.size(); ++i)
+                    _zw->drawRect(GENERAL[_dig]->ROI[i]->posx, GENERAL[_dig]->ROI[i]->posy, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, 0, 0, (255 - _dig*100), 2);
+        }
     }
 } 
+
 
 bool ClassFlowCNNGeneral::getNetworkParameter()
 {
@@ -546,11 +552,18 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file " + cnnmodelfile);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Init aborted!");
+        LogFile.WriteHeapInfo("getNetworkParameter-LoadModel");
         delete tflite;
         return false;
     } 
-    tflite->MakeAllocate();
+
+    if (!tflite->MakeAllocate()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tflite model -> Init aborted!");
+        LogFile.WriteHeapInfo("getNetworkParameter-MakeAllocate");
+        delete tflite;
+        return false;
+    }
 
     if (CNNType == AutoDetect)
     {
@@ -601,6 +614,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     return true;
 }
 
+
 bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 {
     if (disabled)
@@ -612,13 +626,20 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
-    if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file " + cnnmodelfile);
 
+    if (!tflite->LoadModel(zwcnn)) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Exec aborted this round!");
+        LogFile.WriteHeapInfo("doNeuralNetwork-LoadModel");
         delete tflite;
         return false;
-    } 
-    tflite->MakeAllocate();
+    }
+
+    if (!tflite->MakeAllocate()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tfilte model -> Exec aborted this round!");
+        LogFile.WriteHeapInfo("doNeuralNetwork-MakeAllocate");
+        delete tflite;
+        return false;
+    }
 
     for (int n = 0; n < GENERAL.size(); ++n) // For each NUMBER
     {
@@ -805,6 +826,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     return true;
 }
 
+
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 {
     if (!(CNNType == Digital))
@@ -812,7 +834,6 @@ bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 
     return false;
 }
-
 
 
 std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
@@ -856,10 +877,12 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     return result;
 }
 
+
 int ClassFlowCNNGeneral::getNumberGENERAL()
 {
     return GENERAL.size();
 }
+
 
 string ClassFlowCNNGeneral::getNameGENERAL(int _analog)
 {
@@ -869,6 +892,7 @@ string ClassFlowCNNGeneral::getNameGENERAL(int _analog)
     return "GENERAL DOES NOT EXIST";
 }
 
+
 general* ClassFlowCNNGeneral::GetGENERAL(int _analog)
 {
     if (_analog < GENERAL.size())
@@ -876,7 +900,6 @@ general* ClassFlowCNNGeneral::GetGENERAL(int _analog)
 
     return NULL;
 }
-
 
 
 void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numbers)
@@ -894,6 +917,7 @@ void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numb
             (*_name_numbers).push_back(_name);
     }
 }
+
 
 string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
 {
