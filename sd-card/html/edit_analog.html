@@ -154,10 +154,13 @@ th, td {
             drag = false,
             aktindex = 0,
             ROIInfo,
+            cofcat,
+            param,
             enhanceCon = false;
             lockAR = true;
             lockSizes = true;
             domainname = getDomainname();
+
     
 function doReboot() {
     if (confirm("Are you sure you want to reboot? Did you save the config?")) {
@@ -186,7 +189,8 @@ function EnDisableAnalog() {
 		
         sah1(document.getElementById("div1"), !isEnabled);
 
-        param["Analog"]["enabled"] = isEnabled;
+
+        cofcat["Analog"]["enabled"] = isEnabled;
         
         if (isEnabled)
         {
@@ -282,8 +286,8 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    _zwcat = getConfigCategory();
-    _zwcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+//    _zwcat = getConfigCategory();
+    cofcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
     WriteConfigININew();
     SaveConfigToServer(domainname);  
     firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
@@ -296,9 +300,9 @@ function UpdateROIs(_sel){
     var _number = sel.options[sel.selectedIndex].text;
 
     ROIInfo = getROIInfo("analog", _number);
-    _catzw = getConfigCategory();
+//    _catzw = getConfigCategory();
 
-    if (_catzw["Analog"]["enabled"] == false) 
+    if (cofcat["Analog"]["enabled"] == false) 
     {
         document.getElementById("Category_Analog_enabled").checked = false;
         EnDisableAnalog();
@@ -411,6 +415,7 @@ function UpdateROIs(_sel){
             loadConfig(domainname); 
             ParseConfig();
             param = getConfigParameters(); 
+            cofcat = getConfigCategory();
             UpdateNUMBERS();
             drawImage();
             draw();
