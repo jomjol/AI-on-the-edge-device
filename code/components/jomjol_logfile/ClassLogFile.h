@@ -22,8 +22,6 @@ private:
 public:
     ClassLogFile(std::string _logpath, std::string _logfile, std::string _logdatapath, std::string _datafile);
 
-    std::string getESPHeapInfo();
-
     void WriteHeapInfo(std::string _id);
 
     void setLogLevel(esp_log_level_t _logLevel);

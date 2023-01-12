@@ -21,49 +21,15 @@ static const char *TAG = "LOGFILE";
 
 ClassLogFile LogFile("/sdcard/log/message", "log_%Y-%m-%d.txt", "/sdcard/log/data", "data_%Y-%m-%d.csv");
 
+
 void ClassLogFile::WriteHeapInfo(std::string _id)
 {
-    std::string _zw = _id;
     if (loglevel >= ESP_LOG_DEBUG) {
-        _zw =  _zw + "\t" + getESPHeapInfo();
+        std::string _zw =  _id + "\t" + getESPHeapInfo();
         WriteToFile(ESP_LOG_DEBUG, "HEAP", _zw);
     }
 }
 
-
-std::string ClassLogFile::getESPHeapInfo(){
-	string espInfoResultStr = "";
-	char aMsgBuf[80];
-    
-	multi_heap_info_t aMultiHead_info ;
-	heap_caps_get_info (&aMultiHead_info,MALLOC_CAP_8BIT);
-	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-	size_t aMinFreeHeadSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
-	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
-	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-	sprintf(aMsgBuf,"Free Heap Size: \t%ld", (long) aFreeHeapSize);
-	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_SPIRAM);
- 	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
-	size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
-
-	sprintf(aMsgBuf,"\tHeap:\t%ld", (long) aFreeHeapSize);
-	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf,"\tMin Free:\t%ld", (long) aMinFreeHeapSize);
-	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf,"\tlarg. Block: \t%ld", (long) aHeapLargestFreeBlockSize);
-	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf,"\tSPI Heap:\t%ld", (long) aFreeSPIHeapSize);
-	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf,"\tMin Free Heap Size:\t%ld", (long) aMinFreeHeadSize);
-	sprintf(aMsgBuf,"\tNOT_SPI Heap:\t%ld", (long) (aFreeHeapSize - aFreeSPIHeapSize));
-	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf,"\tlargest Block Size: \t%ld", (long) aHeapLargestFreeBlockSize);
-	sprintf(aMsgBuf,"\tInternal Heap:\t%ld", (long) (aFreeInternalHeapSize));
-	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf,"\tInternal Min Heap free:\t%ld", (long) (aMinFreeInternalHeapSize));
-	espInfoResultStr += string(aMsgBuf);
-	return 	espInfoResultStr;
-}
 
 void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::string  _ReturnRawValue, std::string  _ReturnValue, std::string  _ReturnPreValue, std::string  _ReturnRateValue, std::string  _ReturnChangeAbsolute, std::string  _ErrorMessageText, std::string  _digital, std::string  _analog)
 {
@@ -145,25 +111,29 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
     */
 }
 
+
 void ClassLogFile::SetLogFileRetention(unsigned short _LogFileRetentionInDays){
     logFileRetentionInDays = _LogFileRetentionInDays;
 }
+
 
 void ClassLogFile::SetDataLogRetention(unsigned short _DataLogRetentionInDays){
     dataLogRetentionInDays = _DataLogRetentionInDays;
 }
 
+
 void ClassLogFile::SetDataLogToSD(bool _doDataLogToSD){
     doDataLogToSD = _doDataLogToSD;
 }
+
 
 bool ClassLogFile::GetDataLogToSD(){
     return doDataLogToSD;
 }
 
+
 static FILE* logFileAppendHandle = NULL;
 std::string fileNameDate;
-
 
 void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
@@ -280,6 +250,7 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
     LogFile.WriteToFile(level, tag, message, true);
 }
 
+
 std::string ClassLogFile::GetCurrentFileNameData()
 {
     time_t rawtime;
@@ -310,6 +281,7 @@ std::string ClassLogFile::GetCurrentFileName()
 
     return logpath;
 }
+
 
 void ClassLogFile::RemoveOldLogFile()
 {
