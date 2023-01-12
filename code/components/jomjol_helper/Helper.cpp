@@ -39,51 +39,58 @@ unsigned int systemStatus = 0;
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
 
+
+// #define DEBUG_DETAIL_ON 
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 string getESPHeapInfo(){
 	string espInfoResultStr = "";
 	char aMsgBuf[80];
-    
-	multi_heap_info_t aMultiHead_info ;
-	heap_caps_get_info (&aMultiHead_info,MALLOC_CAP_8BIT);
-	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-	size_t aMinFreeHeadSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
-	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
-	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-	sprintf(aMsgBuf," Free Heap Size: %ld", (long) aFreeHeapSize);
-	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_SPIRAM);
- 	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
-	 size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
 
-	sprintf(aMsgBuf," Heap: %ld", (long) aFreeHeapSize);
+	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+
+	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+	size_t aHeapIntLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+	size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+
+	sprintf(aMsgBuf,"Heap Total: %ld", (long) aFreeHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," Min Free: %ld", (long) aMinFreeHeapSize);
+
+	sprintf(aMsgBuf," | SPI Free: %ld", (long) aFreeSPIHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," larg. Block:  %ld", (long) aHeapLargestFreeBlockSize);
+	sprintf(aMsgBuf," | SPI Larg Block:  %ld", (long) aHeapLargestFreeBlockSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," SPI Heap: %ld", (long) aFreeSPIHeapSize);
+	sprintf(aMsgBuf," | SPI Min Free: %ld", (long) aMinFreeHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," Min Free Heap Size: %ld", (long) aMinFreeHeadSize);
-	sprintf(aMsgBuf," NOT_SPI Heap: %ld", (long) (aFreeHeapSize - aFreeSPIHeapSize));
+
+	sprintf(aMsgBuf," | Int Free: %ld", (long) (aFreeInternalHeapSize));
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," largest Block Size:  %ld", (long) aHeapLargestFreeBlockSize);
-	sprintf(aMsgBuf," Internal Heap: %ld", (long) (aFreeInternalHeapSize));
+	sprintf(aMsgBuf," | Int Larg Block:  %ld", (long) aHeapIntLargestFreeBlockSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," Internal Min Heap free: %ld", (long) (aMinFreeInternalHeapSize));
+	sprintf(aMsgBuf," | Int Min Free: %ld", (long) (aMinFreeInternalHeapSize));
 	espInfoResultStr += string(aMsgBuf);
+	
 	return 	espInfoResultStr;
 }
 
 
-size_t getESPHeapSize(){
-   size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-   return aFreeHeapSize;
+size_t getESPHeapSize()
+{
+   return heap_caps_get_free_size(MALLOC_CAP_8BIT);
 }
 
-size_t getInternalESPHeapSize() {
-	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
-	return aFreeInternalHeapSize;
+
+size_t getInternalESPHeapSize() 
+{
+	return heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
 }
+
 
 string getSDCardPartitionSize(){
 	FATFS *fs;
@@ -98,6 +105,7 @@ string getSDCardPartitionSize(){
 	return std::to_string(tot_sect);
 }
 
+
 string getSDCardFreePartitionSpace(){
 	FATFS *fs;
     uint32_t fre_clust, fre_sect;
@@ -110,6 +118,7 @@ string getSDCardFreePartitionSpace(){
 
 	return std::to_string(fre_sect);
 }
+
 
 string getSDCardPartitionAllocationSize(){
 	FATFS *fs;
@@ -130,12 +139,14 @@ void SaveSDCardInfo(sdmmc_card_t* card) {
     SDCardCsd = card->csd;
 }
 
+
 string getSDCardManufacturer(){
 	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
 	//ESP_LOGD(TAG, "SD Card Manufacturer: %s", SDCardManufacturer.c_str());
 	
 	return (SDCardManufacturer + " (ID: " + std::to_string(SDCardCid.mfg_id) + ")");
 }
+
 
 string getSDCardName(){
 	char *SDCardName = SDCardCid.name;
@@ -144,12 +155,14 @@ string getSDCardName(){
 	return std::string(SDCardName);
 }
 
+
 string getSDCardCapacity(){
 	int SDCardCapacity = SDCardCsd.capacity / (1024/SDCardCsd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
 	//ESP_LOGD(TAG, "SD Card Capacity: %s", std::to_string(SDCardCapacity).c_str()); 
 
 	return std::to_string(SDCardCapacity);
 }
+
 
 string getSDCardSectorSize(){
 	int SDCardSectorSize = SDCardCsd.sector_size;
@@ -210,6 +223,7 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
     }
 }
 
+
 bool MakeDir(std::string _what)
 {
 	int mk_ret = mkdir(_what.c_str(), 0775);
@@ -220,7 +234,6 @@ bool MakeDir(std::string _what)
 	}
 	return true;
 }
-
 
 
 bool ctype_space(const char c, string adddelimiter)
@@ -234,6 +247,7 @@ bool ctype_space(const char c, string adddelimiter)
 
 	return false;
 }
+
 
 string trim(string istring, string adddelimiter)
 {
@@ -260,6 +274,7 @@ string trim(string istring, string adddelimiter)
 		return trim(istring, adddelimiter);
 	}
 }
+
 
 size_t findDelimiterPos(string input, string delimiter)
 {
@@ -300,6 +315,7 @@ bool RenameFile(string from, string to)
 	rename(from.c_str(), to.c_str());
 	return true;
 }
+
 
 bool FileExists(string filename)
 {
@@ -367,6 +383,7 @@ bool CopyFile(string input, string output)
 	return true;
 }
 
+
 string getFileFullFileName(string filename)
 {
 	size_t lastpos = filename.find_last_of('/');
@@ -380,6 +397,7 @@ string getFileFullFileName(string filename)
 
 	return zw;
 }
+
 
 string getDirectory(string filename)
 {
@@ -396,6 +414,7 @@ string getDirectory(string filename)
 	string zw = filename.substr(0, lastpos - 1);
 	return zw;
 }
+
 
 string getFileType(string filename)
 {
@@ -414,6 +433,7 @@ string getFileType(string filename)
 
 	return zw;
 }
+
 
 /* recursive mkdir */
 int mkdir_r(const char *dir, const mode_t mode) {
@@ -472,6 +492,7 @@ int mkdir_r(const char *dir, const mode_t mode) {
     return 0;
 }
 
+
 string toUpper(string in)
 {
 	for (int i = 0; i < in.length(); ++i)
@@ -479,6 +500,7 @@ string toUpper(string in)
 	
 	return in;
 }
+
 
 string toLower(string in)
 {
@@ -488,6 +510,7 @@ string toLower(string in)
 	return in;
 }
 
+
 // CPU Temp
 extern "C" uint8_t temprature_sens_read();
 float temperatureRead()
@@ -495,11 +518,13 @@ float temperatureRead()
     return (temprature_sens_read() - 32) / 1.8;
 }
 
+
 time_t addDays(time_t startTime, int days) {
 	struct tm* tm = localtime(&startTime);
 	tm->tm_mday += days;
 	return mktime(tm);
 }
+
 
 int removeFolder(const char* folderPath, const char* logTag) {
 	//ESP_LOGD(logTag, "Delete content in path %s", folderPath);
@@ -546,7 +571,6 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 
 	return ZerlegeZeile(input, delimiter);
 }
-
 
 
 std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
@@ -611,6 +635,7 @@ struct SDCard_Manufacturer_database {
 	int id;
 	string manufacturer;
 };
+
 
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
 /* SD Card Manufacturer Database */
@@ -722,6 +747,7 @@ struct SDCard_Manufacturer_database database[] = {
 	}
 };
 
+
 /* Parse SD Card Manufacturer Database */
 string SDCardParseManufacturerIDs(int id) 
 {
@@ -784,6 +810,7 @@ void setSystemStatusFlag(SystemStatusFlag_t flag) {
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
 }
 
+
 void clearSystemStatusFlag(SystemStatusFlag_t flag) {
 	systemStatus = systemStatus | ~flag; // clear bit
 
@@ -792,9 +819,11 @@ void clearSystemStatusFlag(SystemStatusFlag_t flag) {
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
 }
 
+
 int getSystemStatus(void) {
     return systemStatus;
 }
+
 
 bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 	//ESP_LOGE(TAG, "Flag (0x%08X) is set (0x%08X): %d", flag, systemStatus , ((systemStatus & flag) == flag));
@@ -835,6 +864,7 @@ string getResetReason(void) {
     return reasonText;
 }
 
+
 /**
  * Returns the current uptime  formated ad xxf xxh xxm [xxs]
  */
@@ -858,6 +888,7 @@ std::string getFormatedUptime(bool compact) {
 
 	return std::string(buf);
 }
+
 
 const char* get404(void) {
     return 
