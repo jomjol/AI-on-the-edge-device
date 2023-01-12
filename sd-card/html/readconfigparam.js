@@ -9,64 +9,63 @@ var REFERENCES = new Array(0);
 
 function getNUMBERSList() {
 	_domainname = getDomainname(); 
-     var datalist = "";
+     var namenumberslist = "";
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		datalist = xhttp.responseText;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
+          if (xhttp.status >= 200 && xhttp.status < 300) {
+               namenumberslist = xhttp.responseText;
+          } else {
+               console.warn(request.statusText, request.responseText);
+          }
+     });
 
-	 try {
-		  url = _domainname + '/editflow?task=namenumbers';     
-		  xhttp.open("GET", url, false);
-		  xhttp.send();
-
-	 }
-	 catch (error)
-	 {
+     try {
+          url = _domainname + '/editflow?task=namenumbers';     
+          xhttp.open("GET", url, false);
+          xhttp.send();
+     }
+     catch (error)
+     {
 //               alert("Loading Hostname failed");
-	 }
+     }
 
-      datalist = datalist.split("\t");
-//      datalist.pop();
+     namenumberslist = namenumberslist.split("\t");
+//      namenumberslist.pop();
 
-      return datalist;
-  }
+     return namenumberslist;
+}
 
 
 function getDATAList() {
 	_domainname = getDomainname(); 
-     tflitelist = "";
+     datalist = "";
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		tflitelist = xhttp.responseText;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
+          if (xhttp.status >= 200 && xhttp.status < 300) {
+               datalist = xhttp.responseText;
+          } else {
+               console.warn(request.statusText, request.responseText);
+          }
+     });
 
-	 try {
-		  url = _domainname + '/editflow?task=data';     
-		  xhttp.open("GET", url, false);
-		  xhttp.send();
-
-	 }
-	 catch (error)
-	 {
+     try {
+          url = _domainname + '/editflow?task=data';     
+          xhttp.open("GET", url, false);
+          xhttp.send();
+     }
+     catch (error)
+     {
 //               alert("Loading Hostname failed");
-	 }
+     }
 
-      tflitelist = tflitelist.split("\t");
-      tflitelist.pop();
+     datalist = datalist.split("\t");
+     datalist.pop();
+     datalist.sort();
 
-      return tflitelist;
-  }
+     return datalist;
+}
 
 
 function getTFLITEList() {
@@ -75,29 +74,28 @@ function getTFLITEList() {
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		tflitelist = xhttp.responseText;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
+          if (xhttp.status >= 200 && xhttp.status < 300) {
+               tflitelist = xhttp.responseText;
+          } else {
+               console.warn(request.statusText, request.responseText);
+          }
+     });
 
-	 try {
-		  url = _domainname + '/editflow?task=tflite';     
-		  xhttp.open("GET", url, false);
-		  xhttp.send();
-
-	 }
-	 catch (error)
-	 {
+     try {
+          url = _domainname + '/editflow?task=tflite';
+          xhttp.open("GET", url, false);
+          xhttp.send();
+     }
+     catch (error)
+     {
 //               alert("Loading Hostname failed");
-	 }
+     }
 
-      tflitelist = tflitelist.split("\t");
-      tflitelist.pop();
+     tflitelist = tflitelist.split("\t");
+     tflitelist.pop();
 
-      return tflitelist;
-  }
+     return tflitelist;
+}
 
 
 function ParseConfig() {
