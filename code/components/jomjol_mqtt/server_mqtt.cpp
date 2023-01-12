@@ -185,7 +185,7 @@ void publishSystemData() {
     sprintf(tmp_char, "%ld", (long)getUpTime());
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
     
-    sprintf(tmp_char, "%zu", esp_get_free_heap_size());
+    sprintf(tmp_char, "%lu", (long) getESPHeapSize());
     MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
