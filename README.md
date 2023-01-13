@@ -38,7 +38,7 @@ There are several options what to do with that value. Either send it to a MQTT b
 
 
 ## Setup
-There is a growing [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) which provides you with a lot of information.
+There is a growing [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/) which provides you with a lot of information.
 Head there to get a start, set it up and configure it.
 
 There are also a articles in the German Heise magazine "make:" about the setup and the technical background (behind a paywall) : [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
@@ -56,10 +56,10 @@ There are different ways to flash your ESP32:
 - Flash Tool from Espressif
 - ESPtool (Command Line Tool)
 
-See the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation) for more information.
+See the [Docu](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for more information.
 
 ### Flashing the SD-Card
-The SD-Card must be flashed separately, see the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation) for details.
+The SD-Card must be flashed separately, see the [Docu](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for details.
 
 ## Casing
 
@@ -90,7 +90,7 @@ See [Changelog](Changelog.md)
 ## Tools
 
 * Logfile downloader and combiner (Thx to [reserve85](https://github.com/reserve85))
-  * Files see ['/tools/logfile-tool'](tbd), How-to see [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader)
+  * Files see ['/tools/logfile-tool'](tbd), How-to see [Docu](https://jomjol.github.io/AI-on-the-edge-device-docs/outdated--Gasmeter-Log-Downloader/)
 
 ## Additional Ideas
 There are some ideas and feature requests which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)

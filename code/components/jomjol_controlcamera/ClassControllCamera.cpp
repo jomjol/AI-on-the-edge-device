@@ -683,7 +683,7 @@ void CCamera::useDemoMode()
     FILE *fd = fopen("/sdcard/demo/files.txt", "r");
     if (!fd) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can not start Demo mode, the folder '/sdcard/demo/' does not contain the needed files!");
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "See Details on https://github.com/jomjol/AI-on-the-edge-device/wiki/Demo-Mode!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "See Details on https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode!");
         return;
     }
 
