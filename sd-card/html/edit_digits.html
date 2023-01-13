@@ -146,6 +146,8 @@ th, td {
             drag = false,
             aktindex = 0,
             ROIInfo,
+            cofcat,
+            param,
             enhanceCon = false;
             lockAR = true;
             lockSizes = true;
@@ -179,6 +181,9 @@ function EnDisableDigits() {
         }
 		
         sah1(document.getElementById("div1"), !isEnabled);
+
+        cofcat["Digits"]["enabled"] = isEnabled;
+                
         if (isEnabled)
         {
             UpdateROIs();
@@ -282,8 +287,8 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    _zwcat = getConfigCategory();
-    _zwcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
+//    _zwcat = getConfigCategory();
+    cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     WriteConfigININew();
     SaveConfigToServer(domainname); 
     firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
@@ -296,9 +301,9 @@ function UpdateROIs(_sel){
     var _number = sel.options[sel.selectedIndex].text;
 
     ROIInfo = getROIInfo("digit", _number);
-    _catzw = getConfigCategory();
+//    _catzw = getConfigCategory();
 
-    if (_catzw["Digits"]["enabled"] == false) 
+    if (cofcat["Digits"]["enabled"] == false) 
     {
         document.getElementById("Category_Digits_enabled").checked = false;
         EnDisableDigits();
@@ -410,6 +415,7 @@ function UpdateROIs(_sel){
             loadConfig(domainname); 
             ParseConfig();
             param = getConfigParameters(); 
+            cofcat = getConfigCategory();
             UpdateNUMBERS();
 
             space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
