@@ -61,6 +61,7 @@ class CImageBasis
         void SetIndepended(){externalImage = false;};
 
         void CreateEmptyImage(int _width, int _height, int _channels);
+        void EmptyImage();
 
 
         CImageBasis();
@@ -74,7 +75,8 @@ class CImageBasis
 
         void LoadFromMemory(stbi_uc *_buffer, int len);
 
-        ImageData* writeToMemoryAsJPG(const int quality = 90);   
+        ImageData* writeToMemoryAsJPG(const int quality = 90);
+        void writeToMemoryAsJPG(ImageData* ii, const int quality = 90);
 
         esp_err_t SendJPGtoHTTP(httpd_req_t *req, const int quality = 90);   
 

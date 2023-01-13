@@ -141,6 +141,27 @@ t_CNNType ClassFlowControll::GetTypeAnalog()
 }
 
 
+#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+void ClassFlowControll::DigitalDrawROI(CImageBasis *_zw)
+{
+    if (flowdigit)
+        flowdigit->DrawROI(_zw);
+}
+
+
+void ClassFlowControll::AnalogDrawROI(CImageBasis *_zw)
+{
+    if (flowanalog)
+        flowanalog->DrawROI(_zw);
+}
+
+
+void ClassFlowControll::SetNewAlgROI(bool _value)
+{
+    bNewAlgROI = _value;
+}
+#endif
+
 
 #ifdef ENABLE_MQTT
 string ClassFlowControll::GetMQTTMainTopic()
@@ -667,25 +688,47 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
         }
     }
     else if (_fn == "alg_roi.jpg") {
-        _send = new CImageBasis(flowalignment->ImageBasis);
-
-        if (_send->ImageOkay()) {
-            if (flowalignment) flowalignment->DrawRef(_send);
-            if (flowdigit) flowdigit->DrawROI(_send);
-            if (flowanalog) flowanalog->DrawROI(_send);
-            _sendDelete = true; // delete temporary _send element after sending
-        }
-        else {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "ClassFlowControll::GetJPGStream: Not enough memory to create alg_roi.jpg -> alg.jpg is going to be served!");
-
-            if (flowalignment && flowalignment->ImageBasis->ImageOkay()) {
-                _send = flowalignment->ImageBasis;  
+        #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG      // no CImageBasis needed to create alg_roi.jpg (ca. 790kB less RAM)
+            if (bNewAlgROI) {
+                if (flowalignment && flowalignment->AlgROI) {
+                    httpd_resp_set_type(req, "image/jpeg");
+                    result = httpd_resp_send(req, (const char *)flowalignment->AlgROI->data, flowalignment->AlgROI->size);
+                }
+                else {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControll::GetJPGStream: alg_roi.jpg cannot be served");
+                    return ESP_FAIL;
+                }
             }
             else {
-                httpd_resp_send(req, NULL, 0);
-                return ESP_OK;
+                if (flowalignment && flowalignment->ImageBasis->ImageOkay()) {
+                    _send = flowalignment->ImageBasis;
+                }
+                else {
+                    httpd_resp_send(req, NULL, 0);
+                    return ESP_OK;
+                }
             }
-        }
+        #else
+            _send = new CImageBasis(flowalignment->ImageBasis);
+			
+            if (_send->ImageOkay()) {
+                if (flowalignment) flowalignment->DrawRef(_send);
+                if (flowdigit) flowdigit->DrawROI(_send);
+                if (flowanalog) flowanalog->DrawROI(_send);
+                _sendDelete = true; // delete temporary _send element after sending
+            }
+            else {
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "ClassFlowControll::GetJPGStream: Not enough memory to create alg_roi.jpg -> alg.jpg is going to be served!");
+                
+                if (flowalignment && flowalignment->ImageBasis->ImageOkay()) {
+                    _send = flowalignment->ImageBasis;
+                }
+                else {
+                    httpd_resp_send(req, NULL, 0);
+                    return ESP_OK;
+                }
+            }
+        #endif
     }
     else {
         std::vector<HTMLInfo*> htmlinfo;

@@ -25,9 +25,9 @@ uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
 {
     if (islocked)
     {
-#ifdef DEBUG_DETAIL_ON   
-        ESP_LOGD(TAG, "Image is locked: sleep for: %ds", _waitmaxsec);
-#endif
+        #ifdef DEBUG_DETAIL_ON   
+                ESP_LOGD(TAG, "Image is locked: sleep for: %ds", _waitmaxsec);
+        #endif
         TickType_t xDelay;
         xDelay = 1000 / portTICK_PERIOD_MS;
         for (int i = 0; i <= _waitmaxsec; ++i)
@@ -81,6 +81,19 @@ ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
     RGBImageRelease();
 
     return ii;
+}
+
+
+void CImageBasis::writeToMemoryAsJPG(ImageData* i, const int quality)
+{
+    ImageData* ii = new ImageData;
+    
+    RGBImageLock();
+    stbi_write_jpg_to_func(writejpghelp, ii, width, height, channels, rgb_image, quality);
+    RGBImageRelease();
+
+    memCopy((uint8_t*) ii, (uint8_t*) i, sizeof(ImageData));
+    delete ii;
 }
 
 
@@ -380,6 +393,28 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
 }
 
 
+void CImageBasis::EmptyImage()
+{
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CImageBasis::EmptyImage");
+    #endif
+
+    stbi_uc* p_source;
+
+    RGBImageLock();
+
+    for (int x = 0; x < width; ++x)
+        for (int y = 0; y < height; ++y)
+        {
+            p_source = rgb_image + (channels * (y * width + x));
+            for (int _channels = 0; _channels < channels; ++_channels)
+                p_source[_channels] = (uint8_t) 0;
+        }
+
+    RGBImageRelease();
+}
+
+
 void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 {
     RGBImageLock();
@@ -503,8 +538,8 @@ CImageBasis::CImageBasis(std::string _image)
 
     #ifdef DEBUG_DETAIL_ON 
         std::string zw = "CImageBasis after load " + _image;
-    ESP_LOGD(TAG, "%s", zw.c_str());
-    ESP_LOGD(TAG, "w %d, h %d, b %d, c %d", width, height, bpp, channels);
+        ESP_LOGD(TAG, "%s", zw.c_str());
+        ESP_LOGD(TAG, "w %d, h %d, b %d, c %d", width, height, bpp, channels);
     #endif
 
     #ifdef DEBUG_DETAIL_ON 

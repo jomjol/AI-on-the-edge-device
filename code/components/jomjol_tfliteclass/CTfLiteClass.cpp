@@ -170,9 +170,9 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
                 input_data_ptr++;
             }
 
-#ifdef DEBUG_DETAIL_ON          
+    #ifdef DEBUG_DETAIL_ON 
         LogFile.WriteHeapInfo("CTfLiteClass::LoadInputImageBasis - done");
-#endif
+    #endif
 
     return true;
 }
@@ -191,21 +191,21 @@ bool CTfLiteClass::MakeAllocate()
 
     if (this->interpreter) 
     {
-    TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
-    if (allocate_status != kTfLiteOk) {
-        TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "AllocateTensors() failed");
+        TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
+        if (allocate_status != kTfLiteOk) {
+            TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "AllocateTensors() failed");
 
-    this->GetInputDimension();   
+            this->GetInputDimension();   
             return false;
-  }
+        }
     }
     else 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "new tflite::MicroInterpreter failed");
         LogFile.WriteHeapInfo("CTfLiteClass::MakeAllocate-new tflite::MicroInterpreter failed");
         return false;
-}
+    }
 
 
     #ifdef DEBUG_DETAIL_ON 

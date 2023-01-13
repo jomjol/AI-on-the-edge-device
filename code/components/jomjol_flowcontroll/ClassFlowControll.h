@@ -38,6 +38,9 @@ protected:
 	void SetInitialParameter(void);	
 	std::string aktstatus;
 	int aktRunNr;
+	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
+	bool bNewAlgROI = false;
+	#endif
 
 public:
 	void InitFlow(std::string config);
@@ -51,11 +54,20 @@ public:
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
 	string getNumbersName();
+	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
+	void SetNewAlgROI(bool _value);
+	#endif
 
 	string TranslateAktstatus(std::string _input);
-#ifdef ENABLE_MQTT
+
+	#ifdef ENABLE_MQTT
 	string GetMQTTMainTopic();
-#endif //ENABLE_MQTT
+	#endif //ENABLE_MQTT
+
+	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+	void DigitalDrawROI(CImageBasis *_zw);
+	void AnalogDrawROI(CImageBasis *_zw);
+	#endif
 
 	esp_err_t GetJPGStream(std::string _fn, httpd_req_t *req);
 	esp_err_t SendRawJPG(httpd_req_t *req);
@@ -71,9 +83,10 @@ public:
 
 	t_CNNType GetTypeDigital();
 	t_CNNType GetTypeAnalog();
-#ifdef ENABLE_MQTT
+	
+	#ifdef ENABLE_MQTT
 	bool StartMQTTService();
-#endif //ENABLE_MQTT
+	#endif //ENABLE_MQTT
 
 	int CleanTempFolder();
 

@@ -1,6 +1,7 @@
 #include "ClassFlowAlignment.h"
 #include "ClassFlowMakeImage.h"
 #include "ClassFlow.h"
+#include "server_tflite.h"
 
 #include "CRotateImage.h"
 #include "esp_log.h"
@@ -29,6 +30,9 @@ void ClassFlowAlignment::SetInitialParameter(void)
     AlignAndCutImage = NULL;
     ImageBasis = NULL;
     ImageTMP = NULL;
+    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
+    AlgROI = (ImageData*)heap_caps_malloc(sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+    #endif
     previousElement = NULL;
     disabled = false;
     SAD_criteria = 0.05;
@@ -161,6 +165,25 @@ string ClassFlowAlignment::getHTMLSingleStep(string host)
 
 bool ClassFlowAlignment::doFlow(string time) 
 {
+    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+        if (!AlgROI)  // AlgROI needs to be allocated before ImageTMP to avoid heap fragmentation
+        {
+            AlgROI = (ImageData*)heap_caps_realloc(AlgROI, sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);     
+            if (!AlgROI) 
+            {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlgROI");
+                LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
+                tfliteflow.SetNewAlgROI(false); // continue flow only with alg.jpg (no ROIs available)
+            }
+        }
+
+        if (AlgROI)
+        {
+            ImageBasis->writeToMemoryAsJPG((ImageData*)AlgROI, 90);
+            tfliteflow.SetNewAlgROI(true);
+        }
+    #endif
+
     if (!ImageTMP) 
     {
         ImageTMP = new CImageBasis(ImageBasis);
@@ -214,8 +237,15 @@ bool ClassFlowAlignment::doFlow(string time)
         SaveReferenceAlignmentValues();
     }
 
-    if (SaveAllFiles) AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/alg.jpg"));
-
+    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+        if (AlgROI) {
+            DrawRef(ImageTMP);
+            tfliteflow.DigitalDrawROI(ImageTMP);
+            tfliteflow.AnalogDrawROI(ImageTMP);
+            ImageTMP->writeToMemoryAsJPG((ImageData*)AlgROI, 90);
+        }
+    #endif
+    
     if (SaveAllFiles)
     {
         if (initialflip)
@@ -224,7 +254,8 @@ bool ClassFlowAlignment::doFlow(string time)
             ImageTMP->width = ImageTMP->height;
             ImageTMP->height = _zw;
         }
-        DrawRef(ImageTMP);
+
+        AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/alg.jpg"));
         ImageTMP->SaveToFile(FormatFileName("/sdcard/img_tmp/alg_roi.jpg"));
     }
 
