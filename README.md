@@ -6,18 +6,21 @@ Here this edge computing is brought into a practical oriented example, where a A
 
 This projects allows you to digitalize your **analoge** water, gas, power and other meters using cheap and easily available hardware.
 
-All you need is an [ESP32 board with a supported camera](https://github.com/jomjol/AI-on-the-edge-device/wiki/Hardware-Compatibility) and a bit of a practical hand.
+All you need is an [ESP32 board with a supported camera](https://jomjol.github.io/AI-on-the-edge-device-docs/Hardware-Compatibility/) and a bit of a practical hand.
 
 <img src="images/esp32-cam.png" width="200px">
 
 ## Key features
+- Tensorflow Lite (TFlite) integration - including easy to use wrapper
+- Inline Image processing (feature detection, alignment, ROI extraction)
 - **Small** and **cheap** device (3x4.5x2 cm³, < 10 EUR)
 - camera and illumination integrated
-- Web surface for administration and control
+- Web surface to administrate and control
 - OTA-Interface to update directly through the web interface
-- API for easy integration
-- Inline Image processing (feature detection, alignment, ROI extraction)
-- Tensorflow Lite (TFlite) integration - including easy to use wrapper
+- Full integration into Homeassistant
+- Support for Influx DB 1
+- MQTT
+- REST API
 
 ## Workflow
 The device takes a photo of your meter at a defined interval. It then extracts the Regions of Interest (ROI's) out of it and runs them through an artificial inteligence. As a result, you get the digitalized value of your meter.
