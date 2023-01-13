@@ -6,10 +6,20 @@
 ////          Global definitions         ////
 /////////////////////////////////////////////
 
+    //********* debug options :  *************
+
+    //can be set in platformio with -D OPTION_TO_ACTIVATE
+
+    //#define DEBUG_DETAIL_ON 
+    //#define DEBUG_DISABLE_BROWNOUT_DETECTOR
+    //#define DEBUG_ENABLE_SYSINFO
+    //#define DEBUG_ENABLE_PERFMON
+
+  
+
     /* Uncomment this to generate task list with stack sizes using the /heap handler
         PLEASE BE AWARE: The following CONFIG parameters have to to be set in 
         sdkconfig.defaults before use of this function is possible!!
-
         CONFIG_FREERTOS_USE_TRACE_FACILITY=1
         CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
         CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID=y
@@ -17,13 +27,12 @@
     // server_tflite.cpp
     //#define TASK_ANALYSIS_ON
 
-    // ######## debug options : 
-    //#define DISABLE_BROWNOUT_DETECTOR
-
     /* Uncomment this to keep the logfile open for appending.
     * If commented out, the logfile gets opened/closed for each log measage (old behaviour) */
     // ClassLogFile
     //#define KEEP_LOGFILE_OPEN_FOR_APPENDING
+
+  //****************************************
 
     //compiler optimization for tflite-micro-esp-examples
     #define XTENSA
