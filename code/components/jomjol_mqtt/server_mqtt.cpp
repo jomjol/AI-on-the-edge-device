@@ -182,7 +182,7 @@ void publishSystemData() {
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
 
-    sprintf(tmp_char, "%ld", (long)getUpTime());
+    sprintf(tmp_char, "%d", (int)getUpTime());
     MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
     
     sprintf(tmp_char, "%lu", (long) getESPHeapSize());

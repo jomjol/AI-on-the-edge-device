@@ -837,8 +837,8 @@ bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 }
 
 
-time_t getUpTime(void) {
-    return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+int getUpTime(void) {
+    return (int)(esp_timer_get_time()/1000/1000); // in seconds
 }
 
 

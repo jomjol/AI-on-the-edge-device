@@ -846,7 +846,7 @@ void task_autodoFlow(void *pvParameter)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
-        time_t roundStartTime = getUpTime();
+        int roundStartTime = getUpTime();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
 
