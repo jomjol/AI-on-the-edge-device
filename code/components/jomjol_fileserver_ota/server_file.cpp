@@ -357,7 +357,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 
     fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(currentfilename) +"!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(currentfilename) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -443,7 +443,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 
     fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(currentfilename.c_str()) +"!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(currentfilename.c_str()) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -571,7 +571,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     fd = fopen(filepath, "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
