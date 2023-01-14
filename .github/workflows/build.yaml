@@ -329,6 +329,10 @@ jobs:
     # all artifacts in firmware folder pushed to the release
     - name: Release
       uses: softprops/action-gh-release@v1
+      # Note:
+      # If you get the error "Resource not accessible by integration",
+      # The access rights are not sufficient, see
+      # https://github.com/softprops/action-gh-release/issues/232#issuecomment-1131379440
       if: startsWith(github.ref, 'refs/tags/')
       with:
         name:  ${{ steps.get_version.outputs.version-without-v }}
