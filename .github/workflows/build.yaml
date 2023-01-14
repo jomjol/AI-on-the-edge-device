@@ -124,7 +124,7 @@ jobs:
 
     - name: Add CNN to update
       run: |
-        mkdir ./update/config/
+        mkdir -p ./update/config/
         cp ./sd-card/config/*.tfl ./update/config/ 2>/dev/null || true
         cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
 
@@ -185,7 +185,7 @@ jobs:
 
     - name: Add whole config folder to remote_setup
       run: |
-        mkdir ./remote_setup/config/
+        mkdir -p ./remote_setup/config/
         cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
 
     - name: Upload remote_setup as remote_setup.zip artifact (Firmware + Web UI + Config)
