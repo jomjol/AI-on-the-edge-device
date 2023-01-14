@@ -5,3 +5,4 @@
 .vscode/ipch
 version.cpp
 sdkconfig.esp32cam
+sdkconfig.esp32cam-dev
