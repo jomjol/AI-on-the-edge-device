@@ -1,3 +1,0 @@
-#if ENABLE_SOFTAP = disabled, set 
-CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n 
-#to save 28k of flash
