@@ -41,7 +41,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
 {
     FILE *fd = fopen(filename.c_str(), "r");
     if (!fd) {
-        ESP_LOGE(TAG, "Failed to read existing file: %s", filename.c_str());
+        ESP_LOGE(TAG, "Failed to read file: %s", filename.c_str());
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;

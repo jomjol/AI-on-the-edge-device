@@ -347,20 +347,17 @@ static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 {
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "data_get_last_part_handler");
-    char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
     ESP_LOGD(TAG, "uri: %s", req->uri);
 
-    const char* filename = ""; 
-
     std::string currentfilename = LogFile.GetCurrentFileNameData();
 
-    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, currentfilename.c_str(), currentfilename.c_str());
 
     fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(currentfilename) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -369,7 +366,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
 //    ESP_LOGI(TAG, "Sending file: %s (%ld bytes)...", &filename, file_stat.st_size);
-    set_content_type_from_file(req, filename);
+    set_content_type_from_file(req, currentfilename.c_str());
 
     if (!send_full_file) { // Send only last part of file
         ESP_LOGD(TAG, "Sending last %d bytes of the actual datafile!", LOGFILE_LAST_PART_BYTES);
@@ -431,7 +428,6 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 {
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "log_get_last_part_handler");
-    char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     //struct stat file_stat;
     ESP_LOGI(TAG, "uri: %s", req->uri);
@@ -440,14 +436,14 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 
     std::string currentfilename = LogFile.GetCurrentFileName();
 
-    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
+    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, currentfilename.c_str());
 
     // Since the log file is still could open for writing, we need to close it first
     LogFile.CloseLogFileAppendHandle();
 
     fd = fopen(currentfilename.c_str(), "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(currentfilename.c_str()) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
@@ -575,7 +571,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
     fd = fopen(filepath, "r");
     if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read existing file: " + std::string(filepath) +"!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read file: " + std::string(filepath) +"!");
         /* Respond with 404 Error */
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
