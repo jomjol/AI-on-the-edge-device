@@ -307,7 +307,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     #ifdef DEBUG_DETAIL_ON
         std::string _zw = "Targetimage: " + std::to_string((int) _Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
-        _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage.rgb_image)  + " Size: " + std::to_string(_zwImage.width) + ", " + std::to_string(_zwImage.height);
+        _zw = _zw + " _zwImage: " + std::to_string((int) _zwImage->rgb_image)  + " Size: " + std::to_string(_zwImage->width) + ", " + std::to_string(_zwImage->height);
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
     #endif
 
