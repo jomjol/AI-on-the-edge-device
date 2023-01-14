@@ -24,19 +24,41 @@ jobs:
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: Cache PIP
+    - name: Update PIP cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: pip-${{ github.run_id }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          pip- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
 
-    - name: Cache PlatformIO
+    - name: Update PlatformIO cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+        key: platformio-${{ github.run_id }}
+        restore-keys: |
+          platformio- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+          
+    - name: Update Build cache on every commit
+      uses: actions/cache@v3.2.3
+      with:
+        path: ./code/.pio/
+        key: build-${{ github.run_id }}
+        restore-keys: |
+          build- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+          
+    - name: Update generated-files cache on every commit
+      uses: actions/cache@v3.2.3
+      with:
+        path: |
+          ./code/.pio/build/esp32cam/firmware.bin
+          ./code/.pio/build/esp32cam/partitions.bin
+          ./code/.pio/build/esp32cam/bootloader.bin
+          ./sd-card/html/*
+        key: generated-files-${{ github.run_id }}
+        restore-keys: |
+          generated-files- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache          
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -48,12 +70,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
 
-    - name: Use Build Cache
-      uses: actions/cache@v3.2.3
-      with:
-        path: ./code/.pio/
-        key: ${{ runner.os }}-pio-${{ github.ref_name }}
-
     - name: Build Firmware
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
@@ -61,16 +77,6 @@ jobs:
     - name: Set Hash in all Web UI files
       run: cd sd-card/html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
 
-
-    - name: Store generated files in cache
-      uses: actions/cache@v3.2.3
-      with:
-        path: |
-          ./code/.pio/build/esp32cam/firmware.bin
-          ./code/.pio/build/esp32cam/partitions.bin
-          ./code/.pio/build/esp32cam/bootloader.bin
-          ./sd-card/html/*
-        key: ${{ github.run_number }}
 
 
 #########################################################################################
@@ -88,7 +94,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Get generated files from cache
+    - name: Update generated-files cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: |
@@ -96,8 +102,18 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/*
-        key: ${{ github.run_number }}
+        key: generated-files-${{ github.run_id }}
+        restore-keys: |
+          generated-files- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
 
+    - name: Update update cache on every commit
+      uses: actions/cache@v3.2.3
+      with:
+        path: update
+        key: update-${{ github.run_id }}
+        restore-keys: |
+          update- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+    
     - name: Set Variables
       id: vars
       run: |
@@ -124,11 +140,6 @@ jobs:
         name: "AI-on-the-edge-device__update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./update/*
 
-    - name: Store generated files in cache
-      uses: actions/cache@v3.2.3
-      with:
-        path: update
-        key: ${{ github.run_number }}-update
 
 
 #########################################################################################
@@ -146,7 +157,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Get generated files from cache
+    - name: Update generated-files cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: |
@@ -154,7 +165,17 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/*
-        key: ${{ github.run_number }}
+        key: generated-files-${{ github.run_id }}
+        restore-keys: |
+          generated-files- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+          
+    - name: Update remote_setup cache on every commit
+      uses: actions/cache@v3.2.3
+      with:
+        path: remote_setup
+        key: remote_setup-${{ github.run_id }}
+        restore-keys: |
+          remote_setup- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Set Variables
       id: vars
@@ -181,12 +202,6 @@ jobs:
         name: "AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./remote_setup/*
 
-    - name: Store generated files in cache
-      uses: actions/cache@v3.2.3
-      with:
-        path: remote_setup
-        key: ${{ github.run_number }}-remote_setup
-
 
 #########################################################################################
 ## Pack for a fresh install (USB flashing) (manual_setup)
@@ -199,7 +214,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Get generated files from cache
+    - name: Update generated-files cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: |
@@ -207,7 +222,17 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./sd-card/html/*
-        key: ${{ github.run_number }}
+        key: generated-files-${{ github.run_id }}
+        restore-keys: |
+          generated-files- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+
+    - name: Update manual_setup cache on every commit
+      uses: actions/cache@v3.2.3
+      with:
+        path: manual_setup
+        key: manual_setup-${{ github.run_id }}
+        restore-keys: |
+          manual_setup- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Set Variables
       id: vars
@@ -233,12 +258,6 @@ jobs:
         name: "AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./manual_setup
 
-    - name: Store generated files in cache
-      uses: actions/cache@v3.2.3
-      with:
-        path: manual_setup
-        key: ${{ github.run_number }}-manual_setup
-
 
 #########################################################################################
 ## Prepare and create release
@@ -250,27 +269,30 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
-
-    # import update
-    - name: Get generated update files from cache
+    
+    - name: Update update cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: update
-        key: ${{ github.run_number }}-update
-
-    # import remote_setup
-    - name: Get generated files from cache
+        key: update-${{ github.run_id }}
+        restore-keys: |
+          update- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+    
+    - name: Update remote_setup cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: remote_setup
-        key: ${{ github.run_number }}-remote_setup
-
-    # import manual_setup
-    - name: Get generated files from cache
+        key: remote_setup-${{ github.run_id }}
+        restore-keys: |
+          remote_setup- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+    
+    - name: Update manual_setup cache on every commit
       uses: actions/cache@v3.2.3
       with:
         path: manual_setup
-        key: ${{ github.run_number }}-manual_setup
+        key: manual_setup-${{ github.run_id }}
+        restore-keys: |
+          manual_setup- # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Set Variables
       id: vars
