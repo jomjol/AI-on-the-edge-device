@@ -48,6 +48,12 @@
     #include "soc/rtc_cntl_reg.h" 
 #endif
 
+#ifdef DEBUG_ENABLE_SYSINFO
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
+    #include "esp_sys.h"
+#endif
+#endif //DEBUG_ENABLE_SYSINFO
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -153,6 +159,13 @@ extern "C" void app_main(void)
 #ifdef DISABLE_BROWNOUT_DETECTOR
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
 #endif
+    
+#ifdef DEBUG_ENABLE_SYSINFO
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
+    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device Info" + get_device_info() );
+    ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
+#endif
+#endif //DEBUG_ENABLE_SYSINFO
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
