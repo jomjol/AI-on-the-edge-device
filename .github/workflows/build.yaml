@@ -25,7 +25,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Cache PIP
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -33,7 +33,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Cache PlatformIO
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -49,7 +49,7 @@ jobs:
         pip install --upgrade platformio
 
     - name: Use Build Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: ./code/.pio/
         key: ${{ runner.os }}-pio-${{ github.ref_name }}
@@ -63,7 +63,7 @@ jobs:
 
 
     - name: Store generated files in cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -89,7 +89,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Get generated files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -125,7 +125,7 @@ jobs:
         path: ./update/*
 
     - name: Store generated files in cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: update
         key: ${{ github.run_number }}-update
@@ -147,7 +147,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Get generated files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -182,7 +182,7 @@ jobs:
         path: ./remote_setup/*
 
     - name: Store generated files in cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: remote_setup
         key: ${{ github.run_number }}-remote_setup
@@ -200,7 +200,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Get generated files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -234,7 +234,7 @@ jobs:
         path: ./manual_setup
 
     - name: Store generated files in cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: manual_setup
         key: ${{ github.run_number }}-manual_setup
@@ -253,21 +253,21 @@ jobs:
 
     # import update
     - name: Get generated update files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: update
         key: ${{ github.run_number }}-update
 
     # import remote_setup
     - name: Get generated files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: remote_setup
         key: ${{ github.run_number }}-remote_setup
 
     # import manual_setup
     - name: Get generated files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: manual_setup
         key: ${{ github.run_number }}-manual_setup
@@ -361,7 +361,7 @@ jobs:
 
     # import update
     - name: Get generated update files from cache
-      uses: actions/cache@v3
+      uses: actions/cache@v3.2.3
       with:
         path: update
         key: ${{ github.run_number }}-update
