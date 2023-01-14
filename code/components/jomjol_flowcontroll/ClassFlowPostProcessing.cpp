@@ -854,7 +854,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ReturnValue = "";
 
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                     WriteDataLog(j);
                     continue;
                 }
@@ -887,7 +887,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->ReturnRateValue = "";
 
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                 WriteDataLog(j);
                 continue;
             }
