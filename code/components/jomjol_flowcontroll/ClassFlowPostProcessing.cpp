@@ -833,7 +833,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After checkDigitIncreaseConsistency: Value %f", NUMBERS[j]->Value);
         #endif
-               
 
         if (!NUMBERS[j]->AllowNegativeRates)
         {
@@ -861,9 +860,11 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 
             }
         }
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
+
         double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
         difference /= 60;  
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
@@ -890,9 +891,11 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 continue;
             }
         }
+
         #ifdef SERIAL_DEBUG
            ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
+        
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
