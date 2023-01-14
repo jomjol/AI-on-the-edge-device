@@ -99,4 +99,3 @@ See [Changelog](Changelog.md)
 There are some ideas and feature requests which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)
 
 ------
-
