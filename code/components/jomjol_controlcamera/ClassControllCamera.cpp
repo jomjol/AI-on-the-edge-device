@@ -266,10 +266,10 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LEDOnOff(false);
         LightOnOff(false);
 
-        ESP_LOGE(TAG, "CaptureToBasisImage: Capture Failed");
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
-                "System will reboot.");
-        doReboot();
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera is not working anymore (Capture Failed)! Most probably caused by a hardware problem (instablility, ...)!"
+                //" System will reboot."
+                );
+        //doReboot();
 
         return ESP_FAIL;
     }
