@@ -410,21 +410,6 @@ textarea {
 				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
 			</td>
 		</tr>
-		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
-				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td style="font-size: 80%;">
-				Set on "false" to ensure, that only positive changes are accepted (typically for counter)
-			</td>
-		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
@@ -465,6 +450,21 @@ textarea {
                     <option value="1" >NT</option>
                     <option value="2" >HT</option>
                 </select></b>
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
+				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
+			</td>
+			<td>
+				<select id="PostProcessing_AllowNegativeRates_value1">
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Set on "false" to ensure, that only positive changes are accepted (typically for counter)
 			</td>
 		</tr>
 		<tr>
@@ -1775,6 +1775,7 @@ function UpdateInputIndividual()
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt)		
 	}
 
 	var sel = document.getElementById("Numbers_value1");
@@ -1785,6 +1786,7 @@ function UpdateInputIndividual()
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -1820,7 +1822,7 @@ function UpdateInput() {
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
-	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
+//	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
 	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
 	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
@@ -1943,7 +1945,7 @@ function ReadParameterAll()
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
+//	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
 	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
