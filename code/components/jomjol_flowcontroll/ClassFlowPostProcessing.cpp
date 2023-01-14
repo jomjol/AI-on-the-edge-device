@@ -393,6 +393,36 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
     }
 }
 
+void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+
+    for (int j = 0; j < NUMBERS.size(); ++j)
+    {
+        bool _rt = false;
+
+        if (toUpper(_value) == "TRUE")
+            _rt = true;
+
+        if (_digit == "default")                        // Set to default first (if nothing else is set)
+        {
+            NUMBERS[j]->AllowNegativeRates = _rt;
+        }
+
+        if (NUMBERS[j]->name == _digit)
+        {
+            NUMBERS[j]->AllowNegativeRates = _rt;
+        }
+    }
+}
+
+
 
 void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value)
 {
@@ -521,9 +551,12 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         }        
         if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1))
         {
+            handleAllowNegativeRate(splitted[0], splitted[1]);
+/*          Updated to allow individual Settings
             if (toUpper(splitted[1]) == "TRUE")
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->AllowNegativeRates = true;
+*/
         }
         if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1))
         {

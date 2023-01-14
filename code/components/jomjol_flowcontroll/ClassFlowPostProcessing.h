@@ -43,6 +43,8 @@ protected:
     void handleDecimalExtendedResolution(string _decsep, string _value); 
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogDigitalTransitionStart(string _decsep, string _value);
+    void handleAllowNegativeRate(string _decsep, string _value);
+    
     std::string GetStringReadouts(general);
 
     void WriteDataLog(int _index);
