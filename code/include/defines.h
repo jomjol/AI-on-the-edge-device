@@ -78,7 +78,7 @@
     #define MAX_FILE_SIZE   (8000*1024) // 8 MB Max size of an individual file. Make sure this value is same as that set in upload_script.html and ota_page.html!
     #define MAX_FILE_SIZE_STR "8MB"
          
-    #define LOGFILE_LAST_PART_BYTES SERVER_FILER_SCRATCH_BUFSIZE * 20 // 80 kBytes  // Size of partial log file to return 
+    #define LOGFILE_LAST_PART_BYTES 80 * 1024 // 80 kBytes  // Size of partial log file to return 
 
     #define SERVER_FILER_SCRATCH_BUFSIZE  4096 
     #define SERVER_HELPER_SCRATCH_BUFSIZE  8192
