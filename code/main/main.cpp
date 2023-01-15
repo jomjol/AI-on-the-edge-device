@@ -170,13 +170,14 @@ extern "C" void app_main(void)
     
 #ifdef DEBUG_ENABLE_SYSINFO
     #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device Info" + get_device_info() );
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device Info : " + get_device_info() );
         ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
     #endif
 #endif //DEBUG_ENABLE_SYSINFO
 
 #ifdef USE_HIMEM_IF_AVAILABLE
     #ifdef DEBUG_HIMEM_MEMORY_CHECK
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Himem mem check : " + himem_memory_check() );
         ESP_LOGD(TAG, "Himem mem check %s", himem_memory_check().c_str());
     #endif
 #endif
