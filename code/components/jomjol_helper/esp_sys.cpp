@@ -9,13 +9,6 @@
 
 #include "esp_chip_info.h"
 
-// for esp_spiram_get_size
-extern "C" {
-    
-#include <esp32/spiram.h>
-#include <esp32/himem.h>
-}
-
 
 void Restart() {
     esp_restart();
@@ -126,6 +119,8 @@ std::string get_device_info()
         else
            espInfoResultStr += "    External Flash memory\n";
     }
+
+    #ifdef USE_HIMEM_IF_AVAILABLE
         sprintf(aMsgBuf,"spiram size %u\n", esp_spiram_get_size());
         espInfoResultStr += std::string(aMsgBuf);
         sprintf(aMsgBuf,"himem free %u\n", esp_himem_get_free_size());
@@ -133,6 +128,8 @@ std::string get_device_info()
         sprintf(aMsgBuf,"himem phys %u\n", esp_himem_get_phys_size());
         espInfoResultStr += std::string(aMsgBuf);
         sprintf(aMsgBuf,"himem reserved %u\n", esp_himem_reserved_area_size());
+        espInfoResultStr += std::string(aMsgBuf);
+    #endif
     
     return espInfoResultStr; 
 }
@@ -163,6 +160,19 @@ size_t getMinEverFreeMemInternal(){ //Min. Ever Free Size
 size_t getMinEverFreeMemSPIRAM(){ //Min. Ever Free Size
     return heap_caps_get_minimum_free_size(MALLOC_CAP_SPIRAM);
 }
-//#endif // ESP_IDF_VERSION
+
+#ifdef USE_HIMEM_IF_AVAILABLE
+    size_t getHimemTotSpace(){ 
+        return esp_himem_get_phys_size();
+    }
+
+    size_t getHimemFreeSpace(){ 
+        return esp_himem_get_free_size();
+    }
+
+    size_t getHimemReservedArea(){ 
+        return esp_himem_reserved_area_size();
+    }
+#endif
 
 #endif //DEBUG_ENABLE_SYSINFO
