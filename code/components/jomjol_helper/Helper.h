@@ -70,7 +70,7 @@ string getMac(void);
 
 /* Error bit fields
    One bit per error
-   Make sure it matches https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes */
+   Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
 enum SystemStatusFlag_t {          // One bit per error
     // First Byte
     SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
