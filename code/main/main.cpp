@@ -54,6 +54,14 @@
 #endif
 #endif //DEBUG_ENABLE_SYSINFO
 
+
+#ifdef USE_HIMEM_IF_AVAILABLE
+    #include "esp32/himem.h"
+    #ifdef DEBUG_HIMEM_MEMORY_CHECK
+        #include "himem_memory_check.c"
+    #endif
+#endif
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -161,11 +169,17 @@ extern "C" void app_main(void)
 #endif
     
 #ifdef DEBUG_ENABLE_SYSINFO
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
-    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device Info" + get_device_info() );
-    ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
-#endif
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device Info" + get_device_info() );
+        ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
+    #endif
 #endif //DEBUG_ENABLE_SYSINFO
+
+#ifdef USE_HIMEM_IF_AVAILABLE
+    #ifdef DEBUG_HIMEM_MEMORY_CHECK
+        ESP_LOGD(TAG, "Himem mem check %s", himem_memory_check().c_str());
+    #endif
+#endif
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
