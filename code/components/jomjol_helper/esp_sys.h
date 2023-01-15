@@ -16,6 +16,14 @@
 #include <esp_spi_flash.h>
 #include <esp_heap_caps.h>
 
+// for esp_spiram_get_size
+extern "C" {
+    #include <esp32/spiram.h>
+    #ifdef USE_HIMEM_IF_AVAILABLE
+        #include <esp32/himem.h>
+    #endif
+}
+
 
 
     void Restart();
@@ -26,23 +34,20 @@
     uint32_t GetFreeHeap();
     uint32_t GetLeastHeapFreeSinceBoot();
 
-/*
-    bool CHIP_FEATURE_EMB_FLASH; //Chip has embedded flash memory.
-    bool CHIP_FEATURE_WIFI_BGN; //Chip has 2.4GHz WiFi.
-    bool CHIP_FEATURE_BLE; //Chip has Bluetooth LE.
-    bool CHIP_FEATURE_BT; //Chip has Bluetooth Classic.
-    bool CHIP_FEATURE_IEEE802154; //Chip has IEEE 802.15.4 (Zigbee/Thread)
-    bool CHIP_FEATURE_EMB_PSRAM; //Chip has embedded psram.
-*/
-
     std::string get_device_info();
 
     size_t getFreeMemoryInternal();
-    size_t  getFreeMemorySPIRAM();
-    size_t  getLargestFreeBlockInternal();
-    size_t  getLargestFreeBlockSPIRAM();
-    size_t  getMinEverFreeMemInternal();
-    size_t  getMinEverFreeMemSPIRAM();
+    size_t getFreeMemorySPIRAM();
+    size_t getLargestFreeBlockInternal();
+    size_t getLargestFreeBlockSPIRAM();
+    size_t getMinEverFreeMemInternal();
+    size_t getMinEverFreeMemSPIRAM();
+    #ifdef USE_HIMEM_IF_AVAILABLE
+        size_t getHimemTotSpace();
+        size_t getHimemFreeSpace();
+        size_t getHimemReservedArea();
+    #endif
+
 
 #endif //ESP_SYS_H
 

@@ -14,8 +14,14 @@
     //#define DEBUG_DISABLE_BROWNOUT_DETECTOR
     //#define DEBUG_ENABLE_SYSINFO
     //#define DEBUG_ENABLE_PERFMON
+    //#define DEBUG_HIMEM_MEMORY_CHECK
+    // need [env:esp32cam-dev-himem]
+    //=> CONFIG_SPIRAM_BANKSWITCH_ENABLE=y
+    //=> CONFIG_SPIRAM_BANKSWITCH_RESERVE=4
 
-  
+
+    // use himem //https://github.com/jomjol/AI-on-the-edge-device/issues/1842
+    #define USE_HIMEM_IF_AVAILABLE
 
     /* Uncomment this to generate task list with stack sizes using the /heap handler
         PLEASE BE AWARE: The following CONFIG parameters have to to be set in 
