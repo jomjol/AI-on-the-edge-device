@@ -34,17 +34,19 @@
 
 <body style="font-family: arial; padding: 0px 10px;">
     <h2>OTA Update</h2>
-    <p>Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a> to see if there is an update available. <br>
-    Then pick the <i><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></i> file!</p>
-    <p>Alternatively you can use a file in the following format:</p>
-    <ul>
-        <li><span style="font-family:monospace">*.zip</span></li>
-        <li><span style="font-family:monospace">*.bin</span></li>
-        <li><span style="font-family:monospace">*.tfl/tflite</span></li>
-    </ul>
-    <p>Make sure the file extention is lower case.</p>
+    <p>Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a> to see if there is an update available. </p>
+    <p>You can also automatically get notified about a release, see <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/New-Releases-Notification" target=_blank>Release Notifications</a>.</p>
 
-    <p><br><b>Do not reload the page or switch to another page while the update is in progress!</b><br></p>
+    <h3>Update</h3>
+    On the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a>, pick the <i><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></i> file!</p>
+    <p>Alternatively the following file formats are supported (Make sure the file extention is lower case):</p>
+    <ul>
+        <li><span style="font-family:monospace">*.zip</span> &rarr; Gets unpacked on the SD-Card (most top folder)</li>
+        <li><span style="font-family:monospace">*.bin</span> &rarr; gets installed onto the ESP32</li>
+        <li><span style="font-family:monospace">*.tfl/tflite</span> &rarr; Gets copied to your <i>SD-Card/config</i></li>
+    </ul>
+
+    <p><b>Do not reload this page or switch to another page while the update is in progress!</b><br></p>
 
     <form id="upload_form" enctype="multipart/form-data" method="post">
         <input type="file" accept=".bin,.zip,.tfl,.tflite" name="file_selector" id="file_selector" onchange="validate_file()"><br><br>
