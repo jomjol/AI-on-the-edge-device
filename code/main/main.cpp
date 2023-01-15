@@ -168,19 +168,6 @@ extern "C" void app_main(void)
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
 #endif
     
-#ifdef DEBUG_ENABLE_SYSINFO
-    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device Info : " + get_device_info() );
-        ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
-    #endif
-#endif //DEBUG_ENABLE_SYSINFO
-
-#ifdef USE_HIMEM_IF_AVAILABLE
-    #ifdef DEBUG_HIMEM_MEMORY_CHECK
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Himem mem check : " + himem_memory_check() );
-        ESP_LOGD(TAG, "Himem mem check %s", himem_memory_check().c_str());
-    #endif
-#endif
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
@@ -215,6 +202,20 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
+    
+#ifdef DEBUG_ENABLE_SYSINFO
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device Info : " + get_device_info() );
+        ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
+    #endif
+#endif //DEBUG_ENABLE_SYSINFO
+
+#ifdef USE_HIMEM_IF_AVAILABLE
+    #ifdef DEBUG_HIMEM_MEMORY_CHECK
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Himem mem check : " + himem_memory_check() );
+        ESP_LOGD(TAG, "Himem mem check %s", himem_memory_check().c_str());
+    #endif
+#endif
 
     CheckIsPlannedReboot();
     CheckOTAUpdate();
