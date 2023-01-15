@@ -13,28 +13,6 @@
 
 //source adapted from : https://github.com/espressif/esp-idf/blob/master/examples/system/himem/main/himem_example_main.c
 
-/*
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <inttypes.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/queue.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_heap_caps.h"
-#include "sdkconfig.h"
-*/
-
-//#include <string>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/queue.h"
-#include "esp_system.h"
-#include "esp_heap_caps.h"
-#include "esp32/himem.h"
-
 
 //Fill memory with pseudo-random data generated from the given seed.
 //Fills the memory in 32-bit words for speed.
