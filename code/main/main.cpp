@@ -58,7 +58,7 @@
 #ifdef USE_HIMEM_IF_AVAILABLE
     #include "esp32/himem.h"
     #ifdef DEBUG_HIMEM_MEMORY_CHECK
-        #include "himem_memory_check.c"
+        #include "himem_memory_check.h"
     #endif
 #endif
 
