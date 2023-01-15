@@ -1,4 +1,9 @@
-#### recommended optimizations
+### nothing actually
+
+
+/* #disabled
+
+#### recommended optimizations to test 
 #https://docs.espressif.com/projects/esp-at/en/latest/esp32/Compile_and_Develop/How_to_optimize_throughput.html
 
 # System
@@ -27,3 +32,5 @@ CONFIG_LWIP_TCPIP_RECVMBOX_SIZE=64
 #CONFIG_ESP32_WIFI_AMPDU_RX_ENABLED=y
 
 ## end of recommended optimizations
+
+*/
