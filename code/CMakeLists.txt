@@ -19,4 +19,4 @@ if(EXISTS "${SDKCONFIG}.defaults")
 endif()
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(projectname)
+project(AI-on-the-edge)
