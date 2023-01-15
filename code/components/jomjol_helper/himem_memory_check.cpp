@@ -123,7 +123,7 @@ std::string himem_memory_check()
 	//running memory checks
 	//assert(test_region(memfree, 0xaaaa));
 
-	if(test_region(memfree, 0xaaaa) != NULL) {
+	if(test_region(memfree, 0xaaaa)) {
 		espInfoResultStr += "Himem check Failed!\n";
 	} else {
 		espInfoResultStr += "Himem check Done!\n";
