@@ -716,7 +716,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                     FILE* file = fopen("/sdcard/html/Flowstate_take_image.jpg", "rb");    
 
                     if (!file) {
-                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/config/Flowstate_take_image.jpg not found");
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_take_image.jpg not found");
                         return ESP_FAIL;
                     }
 
@@ -725,7 +725,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                     fseek(file, 0, SEEK_SET); /* reset */
                     
                     if (flowalignment->AlgROI->size > MAX_JPG_SIZE) {
-                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_take_image.jpg too big: " + std::to_string(flowalignment->AlgROI->size));
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_take_image.jpg too large: " + std::to_string(flowalignment->AlgROI->size));
                         fclose(file);
                         return ESP_FAIL;
                     }
