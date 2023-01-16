@@ -62,6 +62,13 @@
     #endif
 #endif
 
+//#ifdef CONFIG_HEAP_TRACING_STANDALONE
+#if defined HEAP_TRACING_MAIN_WIFI || defined HEAP_TRACING_MAIN_START
+    #include <esp_heap_trace.h>
+    #define NUM_RECORDS 300
+    static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
+#endif
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -162,6 +169,13 @@ void task_MainInitError_blink(void *pvParameter)
 
 extern "C" void app_main(void)
 {
+   
+//#ifdef CONFIG_HEAP_TRACING_STANDALONE
+#if defined HEAP_TRACING_MAIN_WIFI || defined HEAP_TRACING_MAIN_START
+    //register a buffer to record the memory trace
+    ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
+#endif
+    
     TickType_t xDelay;
     
 #ifdef DISABLE_BROWNOUT_DETECTOR
@@ -224,6 +238,10 @@ extern "C" void app_main(void)
         CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
     #endif
 
+#ifdef HEAP_TRACING_MAIN_WIFI
+    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+#endif
+    
     char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
     LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
 
@@ -256,6 +274,15 @@ extern "C" void app_main(void)
     xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
+    
+#ifdef HEAP_TRACING_MAIN_WIFI
+    ESP_ERROR_CHECK( heap_trace_stop() );
+    heap_trace_dump(); 
+#endif   
+
+#ifdef HEAP_TRACING_MAIN_START
+    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+#endif
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
@@ -268,6 +295,11 @@ extern "C" void app_main(void)
 
     std::string zw = getCurrentTimeString("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
+    
+#ifdef HEAP_TRACING_MAIN_START
+    ESP_ERROR_CHECK( heap_trace_stop() );
+    heap_trace_dump(); 
+#endif  
 
     /* Check if PSRAM can be initalized */
     esp_err_t ret;
