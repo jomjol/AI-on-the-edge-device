@@ -734,8 +734,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
-        /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
-//        NUMBERS[j]->lastvalue = imagetime;    // must only be set in case of good value !!! --> move to the end
+
+        /* calculate time difference BEFORE we overwrite the 'lastvalue' */
+        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
+
+        /* TODO:
+         * We could call `NUMBERS[j]->lastvalue = imagetime;` here and remove all other such calls further down.
+         * But we should check nothing breaks! */
 
         UpdateNachkommaDecimalShift();
 
@@ -866,7 +871,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
 
-        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
         difference /= 60;  
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
