@@ -55,8 +55,6 @@ void CheckIsPlannedReboot()
         DeleteFile("/sdcard/reboot.txt");   // Prevent Boot Loop!!!
         isPlannedReboot = true;
 	}
-
-
 }
 
 
@@ -462,8 +460,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
     char _valuechar[30];
     string _task;
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
@@ -513,6 +509,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         CopyFile(in, out);
         zw = "Copy Done";
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     }
 
@@ -582,6 +579,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         delete cim;        
 
         zw = "CutImage Done";
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
         
     }
@@ -625,6 +623,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         Camera.SetLEDIntensity(intens);
         ESP_LOGD(TAG, "test_take - vor MakeImage");
         std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     } 
 
@@ -639,6 +638,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
         std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     }
 
