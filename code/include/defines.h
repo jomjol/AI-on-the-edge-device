@@ -33,6 +33,16 @@
     // server_tflite.cpp
     //#define TASK_ANALYSIS_ON
 
+
+    //Memory leak tracing
+    //https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/heap_debug.html#heap-information
+    //need CONFIG_HEAP_TRACING_STANDALONE=y or #define CONFIG_HEAP_TRACING_STANDALONE
+    //all setup is predifined in [env:esp32cam-dev-task-analysis]
+    //#define HEAP_TRACING_MAIN_WIFI || HEAP_TRACING_MAIN_START //enable heap tracing per function in main.cpp
+    //all defines in [env:esp32cam-dev-task-analysis]
+     //#define HEAP_TRACING_MAIN_WIFI
+     //#define HEAP_TRACING_MAIN_START
+
     /* Uncomment this to keep the logfile open for appending.
     * If commented out, the logfile gets opened/closed for each log measage (old behaviour) */
     // ClassLogFile
