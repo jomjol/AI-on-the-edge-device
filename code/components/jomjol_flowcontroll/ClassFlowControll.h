@@ -38,9 +38,6 @@ protected:
 	void SetInitialParameter(void);	
 	std::string aktstatus;
 	int aktRunNr;
-	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
-	bool bNewAlgROI = false;
-	#endif
 
 public:
 	void InitFlow(std::string config);

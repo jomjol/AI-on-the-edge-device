@@ -242,10 +242,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     _Image->EmptyImage(); //Delete previous stored raw image -> black image
     
-    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG__SHOW_TAKE_IMAGE_PROCESS
-        tfliteflow.SetNewAlgROI(false);
-    #endif
-    
     LEDOnOff(true);
 
     if (delay > 0) 
@@ -320,10 +316,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
             p_target[1] = p_source[1];
             p_target[2] = p_source[2];
         }
-
-    #ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After Copy To Target");
-    #endif
 
     delete _zwImage;
 

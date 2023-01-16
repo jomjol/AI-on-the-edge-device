@@ -656,10 +656,11 @@ esp_err_t handler_statusflow(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_prevalue - Start");       
     #endif
 
+    const char* resp_str;
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
     if (FlowInitDone) 
     {
-        const char* resp_str;
-
         #ifdef DEBUG_DETAIL_ON       
             ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
         #endif
@@ -667,13 +668,12 @@ esp_err_t handler_statusflow(httpd_req_t *req)
         string* zw = tfliteflow.getActStatus();
         resp_str = zw->c_str();
 
-        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);   
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow not (yet) started: REST API /flowstatus not available!");
-        return ESP_ERR_NOT_FOUND;
+        resp_str = "Flow not started";
+        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);  
     }  
 
     #ifdef DEBUG_DETAIL_ON       
@@ -842,6 +842,7 @@ void task_autodoFlow(void *pvParameter)
         tfliteflow.doFlowMakeImageOnly(zw_time);
 
     }
+    
     while (auto_isrunning)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
