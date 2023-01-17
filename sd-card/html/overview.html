@@ -55,8 +55,8 @@
   </tr> 
   <tr>	
     <td class="tg-3">
-	<div id="timestamp" ></div>	
 	<div id="statusflow" ></div>	
+	<div id="timestamp" ></div>	
 	<div id="cputemp" ></div>	
 	<div id="rssi" ></div>
 	<div>
@@ -126,7 +126,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#statusflow').html("Status: " + _rsp);
+				$('#statusflow').html("State: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
