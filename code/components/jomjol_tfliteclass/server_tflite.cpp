@@ -27,7 +27,7 @@ ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
-bool FlowInitDone = false;
+bool bTaskAutoFlowCreated = false;
 bool flowisrunning = false;
 
 long auto_intervall = 0;
@@ -104,7 +104,6 @@ void doInit(void)
         ESP_LOGD(TAG, "Start tfliteflow.InitFlow(config);");
     #endif
     tfliteflow.InitFlow(CONFIG_FILE);
-    FlowInitDone = true;
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
     #endif
@@ -265,7 +264,7 @@ esp_err_t handler_json(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_JSON uri: %s", req->uri);
     
-    if (FlowInitDone) 
+    if (bTaskAutoFlowCreated) 
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "application/json");
@@ -300,7 +299,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler water counter - Start");    
     #endif
 
-    if (FlowInitDone) 
+    if (bTaskAutoFlowCreated) 
     {
         bool _rawValue = false;
         bool _noerror = false;
@@ -659,7 +658,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     const char* resp_str;
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    if (FlowInitDone) 
+    if (bTaskAutoFlowCreated) 
     {
         #ifdef DEBUG_DETAIL_ON       
             ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
@@ -672,9 +671,9 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     }
     else 
     {
-        resp_str = "Flow not started";
+        resp_str = "Flow task not yet created";
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);  
-    }  
+    }
 
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_prevalue - Done");       
@@ -820,13 +819,18 @@ void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
 
+    bTaskAutoFlowCreated = true;
+
     if (!isPlannedReboot)
     {
         if (esp_reset_reason() == ESP_RST_PANIC) {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA Update or to fetch the log!"); 
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
             LogFile.setLogLevel(ESP_LOG_DEBUG);
-            //MQTTPublish(GetMQTTMainTopic() + "/" + "status", "Postponing first round", false);
+            tfliteflow.setActStatus("Initialization (delayed)");
+            //#ifdef ENABLE_MQTT
+                //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
+            //#endif //ENABLE_MQTT
             vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA Update or fetch the log
         }
     }
@@ -836,11 +840,12 @@ void task_autodoFlow(void *pvParameter)
     doInit();
 
     auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
-    if (isSetupModusActive()) {
+
+    if (isSetupModusActive()) 
+    {
         auto_isrunning = false;
         std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
         tfliteflow.doFlowMakeImageOnly(zw_time);
-
     }
     
     while (auto_isrunning)

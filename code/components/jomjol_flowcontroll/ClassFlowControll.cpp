@@ -189,7 +189,7 @@ void ClassFlowControll::SetInitialParameter(void)
     flowpostprocessing = NULL;
     disabled = false;
     aktRunNr = 0;
-    aktstatus = "Flow not started";
+    aktstatus = "Flow task not yet created";
 }
 
 
@@ -264,10 +264,13 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
 void ClassFlowControll::InitFlow(std::string config)
 {
+    aktstatus = "Initialization";
+    //#ifdef ENABLE_MQTT
+        //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false); // Right now, not possible -> MQTT Service is going to be started later
+    //#endif //ENABLE_MQTT
+    
     string line;
-
     flowpostprocessing = NULL;
-    aktstatus = "Flow not started";
 
     ClassFlow* cfc;
     FILE* pFile;
@@ -310,6 +313,12 @@ void ClassFlowControll::InitFlow(std::string config)
 std::string* ClassFlowControll::getActStatus()
 {
     return &aktstatus;
+}
+
+
+void ClassFlowControll::setActStatus(std::string _aktstatus)
+{
+    aktstatus = _aktstatus;
 }
 
 
@@ -667,12 +676,6 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     esp_err_t result = ESP_FAIL;
     bool _sendDelete = false;
 
-    if (flowalignment == NULL) 
-    {
-        ESP_LOGD(TAG, "ClassFloDControll::GetJPGStream: FloDalignment is not (yet) initialized. Interrupt serving!");
-        return ESP_OK;
-    }
-
     if (_fn == "alg.jpg") {
         if (flowalignment && flowalignment->ImageBasis->ImageOkay()) {
             _send = flowalignment->ImageBasis;
@@ -684,11 +687,38 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     }
     else if (_fn == "alg_roi.jpg") {
         #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG      // no CImageBasis needed to create alg_roi.jpg (ca. 790kB less RAM)
-            if (aktstatus.find("Flow not started") != -1) {
-                FILE* file = fopen("/sdcard/html/Flowstate_flow_not_started.jpg", "rb"); 
+            if (aktstatus.find("Initialization (delayed)") != -1) {
+                FILE* file = fopen("/sdcard/html/Flowstate_initialization_delayed.jpg", "rb"); 
 
                 if (!file) {
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_flow_not_started.jpg not found");
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_initialization_delayed.jpg not found");
+                    return ESP_FAIL;
+                }
+
+                fseek(file, 0, SEEK_END);
+                long fileSize = ftell(file); /* how long is the file ? */
+                fseek(file, 0, SEEK_SET); /* reset */
+
+                unsigned char* fileBuffer = (unsigned char*) malloc(fileSize);
+
+                if (!fileBuffer) {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControll::GetJPGStream: Not enough memory to create fileBuffer: " + std::to_string(fileSize));
+                    fclose(file);  
+                    return ESP_FAIL;
+                }
+
+                fread(fileBuffer, fileSize, 1, file);
+                fclose(file);
+
+                httpd_resp_set_type(req, "image/jpeg");
+                result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
+                delete fileBuffer;
+            }
+            else if (aktstatus.find("Initialization") != -1) {
+                FILE* file = fopen("/sdcard/html/Flowstate_initialization.jpg", "rb"); 
+
+                if (!file) {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_initialization.jpg not found");
                     return ESP_FAIL;
                 }
 
@@ -764,6 +794,12 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 }
             }
         #else
+            if (!flowalignment) {
+                ESP_LOGD(TAG, "ClassFloDControll::GetJPGStream: FlowAlignment is not (yet) initialized. Interrupt serving!");
+                httpd_resp_send(req, NULL, 0);
+                return ESP_FAIL;
+            }
+
             _send = new CImageBasis(flowalignment->ImageBasis);
 			
             if (_send->ImageOkay()) {
