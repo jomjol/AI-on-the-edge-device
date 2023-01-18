@@ -90,13 +90,13 @@
                 firework.launch('File path on server is not set!', 'danger', 30000);
                 return;
             } else if (filename.length > 100) {
-                firework.launch('Filename is to long! Max 100 characters.', 'danger', 30000);
+                firework.launch('Filename is too long! Max 100 characters.', 'danger', 30000);
                 return;
             } else if (filename.indexOf(' ') >= 0) {
                 firework.launch('Filename can not have spaces!', 'danger', 30000);
                 return;
             } else if (filename[filename.length-1] == '/') {
-                firework.launch('File name not specified after path!', 'danger', 30000);
+                firework.launch('Filename not specified after path!', 'danger', 30000);
                 return;
             } else if (fileInput[0].size > MAX_FILE_SIZE) {
                 firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
@@ -112,13 +112,13 @@
                ( /(^AI-on-the-edge-device__firmware)[a-z0-9()_\-.]*(\.bin$)/.test(filename)) ||
                ( /[a-z0-9()_\-.]*(\.tfl$)/.test(filename)) ||
                ( /[a-z0-9()_\-.]*(\.tflite$)/.test(filename))) {
-                firework.launch('Great, the filename matches our expectations. You can now press "Upload and update".', 'success', 5000);
+                firework.launch('Great, the filename matches our expectations. You can now press "Upload and install".', 'success', 5000);
             }
             /* Following filenames are acceptiod but not prefered:
              * - *.bin
              * - *.zip */
             else if (filename.endsWith(".zip") || filename.endsWith(".bin")) { // Warning but still accepted
-                firework.launch('The filename does not match the suggested file name pattern, but is nevertheless accepted. You can now press "Upload and install', 'warning', 10000);
+                firework.launch('The filename does not match the suggested filename pattern, but is nevertheless accepted. You can now press "Upload and install', 'warning', 10000);
             }
             /* Any other file name format is not accepted */
             else { // invalid
