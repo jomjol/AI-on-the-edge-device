@@ -734,8 +734,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
-        /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
-//        NUMBERS[j]->lastvalue = imagetime;    // must only be set in case of good value !!! --> move to the end
+
+        /* calculate time difference BEFORE we overwrite the 'lastvalue' */
+        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
+
+        /* TODO:
+         * We could call `NUMBERS[j]->lastvalue = imagetime;` here and remove all other such calls further down.
+         * But we should check nothing breaks! */
 
         UpdateNachkommaDecimalShift();
 
@@ -833,7 +838,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After checkDigitIncreaseConsistency: Value %f", NUMBERS[j]->Value);
         #endif
-               
 
         if (!NUMBERS[j]->AllowNegativeRates)
         {
@@ -852,19 +856,21 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
+                    NUMBERS[j]->lastvalue = imagetime;
 
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                     WriteDataLog(j);
                     continue;
                 }
                 
             }
         }
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
-        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
+
         difference /= 60;  
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
@@ -879,28 +885,27 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue))
             {
-                WriteDataLog(j);
-
                 NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " - Rate: " + RundeOutput(_ratedifference, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
+                NUMBERS[j]->lastvalue = imagetime;
 
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                 WriteDataLog(j);
                 continue;
             }
         }
+
         #ifdef SERIAL_DEBUG
            ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
+        
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
         NUMBERS[j]->lastvalue = imagetime;
-
-
 
         NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
@@ -909,7 +914,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         UpdatePreValueINI = true;
 
         string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-        ESP_LOGD(TAG, "%s", zw.c_str());
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
     }
