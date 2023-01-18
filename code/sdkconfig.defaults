@@ -134,6 +134,13 @@ CONFIG_GC0308_SUPPORT=n
 CONFIG_BF3005_SUPPORT=n
 
 #only necessary for task analysis (include/defines -> TASK_ANALYSIS_ON)
+#set in [env:esp32cam-dev-task-analysis]
 #CONFIG_FREERTOS_USE_TRACE_FACILITY=1
 #CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
 #CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID=y
+
+#force disable HIMEM as not used in default config, can be enabled with [env:esp32cam-dev-himem]
+#free 256kb of internal memory :
+#I (2112) esp_himem: Initialized. Using last 8 32KB address blocks for bank switching on 4352 KB of physical memory.
+CONFIG_SPIRAM_BANKSWITCH_ENABLE=n
+#CONFIG_SPIRAM_BANKSWITCH_RESERVE is not set
