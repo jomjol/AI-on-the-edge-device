@@ -12,7 +12,12 @@
 
 static const char* TAG = "CNN";
 
-//#define DEBUG_DETAIL_ON
+//#ifdef CONFIG_HEAP_TRACING_STANDALONE
+#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+    #include <esp_heap_trace.h>
+    #define NUM_RECORDS 300
+    static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
+#endif
 
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
@@ -462,6 +467,14 @@ string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
 
 bool ClassFlowCNNGeneral::doFlow(string time)
 {
+
+#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+    //register a buffer to record the memory trace
+    ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
+    // start tracing
+    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+#endif
+
     if (disabled)
       return true;
 
@@ -474,6 +487,12 @@ bool ClassFlowCNNGeneral::doFlow(string time)
     doNeuralNetwork(time);
 
     RemoveOldLogs();
+
+#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+    ESP_ERROR_CHECK( heap_trace_stop() );
+    heap_trace_dump(); 
+#endif   
+
     return true;
 }
 
