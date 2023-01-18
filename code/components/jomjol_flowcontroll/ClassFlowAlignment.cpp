@@ -65,7 +65,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
     std::vector<string> splitted;
     int suchex = 40;
     int suchey = 40;
-    int alg_algo = 0;
+    int alg_algo = 0; //default=0; 1 =HIGHACCURACY; 2= FAST; 3= OFF
 
 
     aktparamgraph = trim(aktparamgraph);
@@ -130,6 +130,8 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
                 alg_algo = 1;
             if (toUpper(splitted[1]) == "FAST")
                 alg_algo = 2;
+            if (toUpper(splitted[1]) == "OFF")
+                alg_algo = 3;
         }
     }
 
@@ -193,8 +195,11 @@ bool ClassFlowAlignment::doFlow(string time)
         }
     }
 
+//no align algo if set to 3 = off
+if(References[0].alignment_algo != 3){
     delete AlignAndCutImage;
     AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);
+}
     if (!AlignAndCutImage) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");
