@@ -156,7 +156,7 @@
 				var _rsp = xhttp.responseText;
 				var _rspVal = _rsp.split("d")[0]
 				if (_rspVal >= -55) {
-					$('#rssi').html("WIFI Signal: Execellent (" + _rsp + ")");
+					$('#rssi').html("WIFI Signal: Excellent (" + _rsp + ")");
 				}
 				else if (_rspVal < -55 && _rspVal >= -67) {
 					$('#rssi').html("WIFI Signal: Good (" + _rsp + ")");
