@@ -123,10 +123,10 @@ esp_err_t handler_capture(httpd_req_t *req)
 }
 
 
-esp_err_t handler_capture_with_ligth(httpd_req_t *req)
+esp_err_t handler_capture_with_light(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
+        LogFile.WriteHeapInfo("handler_capture_with_light - Start");
     #endif
     
     if (Camera.getCameraInitSuccessful()) 
@@ -170,7 +170,7 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
         Camera.LightOnOff(false);
 
         #ifdef DEBUG_DETAIL_ON   
-            LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
+            LogFile.WriteHeapInfo("handler_capture_with_light - Done");
         #endif
 
         return result;
@@ -279,7 +279,7 @@ void register_server_camera_uri(httpd_handle_t server)
     httpd_register_uri_handler(server, &camuri);      
 
     camuri.uri       = "/capture_with_flashlight";
-    camuri.handler   = handler_capture_with_ligth;
+    camuri.handler   = handler_capture_with_light;
     camuri.user_ctx  = NULL; 
     httpd_register_uri_handler(server, &camuri);  
 
