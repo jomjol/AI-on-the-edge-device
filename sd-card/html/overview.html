@@ -154,7 +154,22 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#rssi').html("RSSI: " + _rsp);
+				var _rspVal = _rsp.split("d")[0]
+				if (_rspVal >= -55) {
+					$('#rssi').html("WIFI Signal: Excellent (" + _rsp + ")");
+				}
+				else if (_rspVal < -55 && _rspVal >= -67) {
+					$('#rssi').html("WIFI Signal: Good (" + _rsp + ")");
+				}
+				else if (_rspVal < -67 && _rspVal >= -78) {
+					$('#rssi').html("WIFI Signal: Fair (" + _rsp + ")");
+				}
+				else if (_rspVal < -78 && _rspVal >= -85) {
+					$('#rssi').html("WIFI Signal: Weak (" + _rsp + ")");
+				}
+				else {
+					$('#rssi').html("WIFI Signal: Unreliable (" + _rsp + ")");
+				}
 			}
 		}
 		xhttp.open("GET", url, true);
