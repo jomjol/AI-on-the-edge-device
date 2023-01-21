@@ -31,11 +31,11 @@
 If anything breaks you can try to enforce manual update as following:
 
 **OTA:**
-  1\. Make sure the last run of the update completed the **Uploading** step.
-  1\. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
+  1. Make sure the last run of the update completed the **Uploading** step.
+  1. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
 
 **Initial Setup:**
-  1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+  1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 ### Added
 
@@ -127,8 +127,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
