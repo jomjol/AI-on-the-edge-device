@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-**Stabilization Release**
+**xxx @jomjol **
 
 
 ### Update Procedure
@@ -17,13 +17,12 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Added various debug tools
  - [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
  - [1784](https://github.com/jomjol/AI-on-the-edge-device/pull/1784) Add option to disable brownout detector
- - Added full Installation mode, see xxx
- - Added Demo Mode, see xxx
- - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by REST API or MQTT, see xxx
-
+ - Added full Installation mode, see xxx @jomjol
+ - Added [Demo Mode](https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode)
+ - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
 
 #### Changed
- - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Help us to make it even better.
+ - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Please hHelp us to make it even better.
  - New OTA Update page with progress indication
  - Various memory optimizations
  - Cleanup code/Web UI
@@ -39,7 +38,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
  - [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
  - [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
- - [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/) DataGraph: datafiles sorted -> newest on top
+ - [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
 
 #### Removed
 -   n.a.
