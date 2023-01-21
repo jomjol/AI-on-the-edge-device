@@ -876,12 +876,12 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOldDataLog();
         }
         
-        //CPU Temp
-        float cputmp = temperatureRead();
+        //CPU Temp -> Logfile
         std::stringstream stream;
-        stream << std::fixed << std::setprecision(1) << cputmp;
-        string zwtemp = "CPU Temperature: " + stream.str();
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zwtemp); 
+        stream << std::fixed << std::setprecision(1) << temperatureRead();
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + stream.str() + "°C");
+        // WIFI Signal Strength (RSSI) -> Logfile
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
 
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
