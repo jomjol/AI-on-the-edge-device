@@ -2,6 +2,49 @@
 
 ## [Unreleased]
 
+**Stabilization Release**
+
+
+### Update Procedure
+Follow the [same instructions](https://github.com/jomjol/AI-on-the-edge-device/edit/rolling/Changelog.md#update-procedure-1) as for release 13.0.8.
+
+### Changes
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0)
+
+#### Added
+ - [1877](https://github.com/jomjol/AI-on-the-edge-device/pull/1877) Show WIFI signal text labels / Log RSSI value to logfile
+ - Web UI caching of static files
+ - Added various debug tools
+ - [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
+ - [1784](https://github.com/jomjol/AI-on-the-edge-device/pull/1784) Add option to disable brownout detector
+ - Added full Installation mode, see xxx
+ - Added Demo Mode, see xxx
+ - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by REST API or MQTT, see xxx
+
+
+#### Changed
+ - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Help us to make it even better.
+ - New OTA Update page with progress indication
+ - Various memory optimizations
+ - Cleanup code/Web UI
+ - Updated models
+ - [1809](https://github.com/jomjol/AI-on-the-edge-device/pull/1809) Store preprocessed image with ROI to RAM
+ - Better log messages on some errors/issues
+ - [1742](https://github.com/jomjol/AI-on-the-edge-device/pull/1742) Replace alert boxes with overlay info boxes
+ - Improve log message when web UI is installed incomplete
+ - [1676](https://github.com/jomjol/AI-on-the-edge-device/pull/1676) Improve NTP handling
+ 
+#### Fixed
+ - Fixed many many things
+ - [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
+ - [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
+ - [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
+ - [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/) DataGraph: datafiles sorted -> newest on top
+
+#### Removed
+-   n.a.
+
+
 ## [13.0.8] - 2022-12-19
 
 **Home Assistant MQTT Discovery Support**
