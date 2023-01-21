@@ -15,6 +15,7 @@ extern "C"
 #include <string.h>
 #include "Helper.h"
 #include <fstream>
+#include <algorithm>
 
 
 const char* build_time(void)
@@ -63,7 +64,10 @@ std::string getHTMLversion(void){
     fgets(buf, sizeof(buf), pFile); // Line 1: Version
     fclose(pFile);
 
-    return string(buf).substr(0, string(buf).size()-1); // Remove last character (newline) and return it
+    string value = string(buf);
+    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end()); // Remove any newlines
+
+    return value;
 }
 
 std::string getHTMLcommit(void){
@@ -79,7 +83,10 @@ std::string getHTMLcommit(void){
     fgets(buf, sizeof(buf), pFile); // Line 2: Commit
     fclose(pFile);
 
-    return std::string(buf).substr(0, string(buf).size()-1); // Remove last character (newline) and return it
+    string value = string(buf);
+    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end()); // Remove any newlines
+
+    return value;
 }
 
 #endif // _VERSION_H
