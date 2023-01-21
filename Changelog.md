@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [13.0.8] - 2022-12-19
+
 **Home Assistant MQTT Discovery Support**
 
 ### Update Procedure
@@ -29,11 +31,11 @@
 If anything breaks you can try to enforce manual update as following:
 
 **OTA:**
-  1. Make sure the last run of the update completed the **Uploading** step.
-  1. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
+  1\. Make sure the last run of the update completed the **Uploading** step.
+  1\. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
 
 **Initial Setup:**
-  1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+  1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
 
 ### Added
 
@@ -66,16 +68,16 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.2: MQTT: Added MQTT topic `status` (Digitalization Status), Timezone to MQTT topic `timestamp`.#
 -   NEW v13.0.2: Logging: Disable heap logs by default, cleanup
 -   NEW v13.0.7:
-    - log NTP server name
-    - Improved log messages
-    - Various preparations for next release
+    -   log NTP server name
+    -   Improved log messages
+    -   Various preparations for next release
 -   **NEW v13.0.8**: 
-    - Continue booting on PSRAM issues, Web UI will show an error
-    - Updated models
-    - Various UI enhancements
-    - Various internal improvements
-    - Show uptime in log
-    - Show uptime and round on overview page
+    -   Continue booting on PSRAM issues, Web UI will show an error
+    -   Updated models
+    -   Various UI enhancements
+    -   Various internal improvements
+    -   Show uptime in log
+    -   Show uptime and round on overview page
 
 ### Fixed
 
@@ -92,12 +94,12 @@ If anything breaks you can try to enforce manual update as following:
 -   NEW v13.0.4: Fix for reboot in case of MQTT not used
 -   NEW v13.0.5: No reboot in case of missing NTP-connection
 -   NEW v13.0.7:
-    - Prevent autoreboot on cam framebuffer init error
-    - Properly protect `wlan.ini` against deletion
-    - Fixed various MQTT topic content issues
-    - Fix Digit detected as 10 (https://github.com/jomjol/AI-on-the-edge-device/pull/1525)
-    - Fix frozen time in datafile on error
-    - Various minor fixes
+    -   Prevent autoreboot on cam framebuffer init error
+    -   Properly protect `wlan.ini` against deletion
+    -   Fixed various MQTT topic content issues
+    -   Fix Digit detected as 10 (<https://github.com/jomjol/AI-on-the-edge-device/pull/1525>)
+    -   Fix frozen time in datafile on error
+    -   Various minor fixes
 -   **NEW v13.0.8**: 
     -   Fix Rate Problem ([#1578](https://github.com/jomjol/AI-on-the-edge-device/issues/1578), [#1572](https://github.com/jomjol/AI-on-the-edge-device/issues/1572))
     -   Stabilized MQTT
@@ -125,8 +127,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -778,7 +780,9 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.7...HEAD
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...HEAD
+
+[13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.8
 
 [13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.7
 
