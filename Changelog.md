@@ -4,6 +4,11 @@
 
 **xxx @jomjol **
 
+Thanks to those 13 contributors, we can anounce another great release with many many improvements and new features:
+[040medien](https://github.com/040medien), [adellafave](https://github.com/adellafave), [AngryApostrophe](https://github.com/AngryApostrophe), [caco3](https://github.com/caco3), [CFenner](https://github.com/CFenner), [cristianmitran](https://github.com/cristianmitran), [github-actions[bot]](https://github.com/github-actions[bot]), [haverland](https://github.com/haverland), [jochenchrist](https://github.com/jochenchrist), [jomjol](https://github.com/jomjol), [mad2xlc](https://github.com/mad2xlc), [michaeljoos72](https://github.com/michaeljoos72), [mkelley88](https://github.com/mkelley88), [nliaudat](https://github.com/nliaudat), [ottk3](https://github.com/ottk3), [parhedberg](https://github.com/parhedberg), [phlupp](https://github.com/phlupp), [pixeldoc2000](https://github.com/pixeldoc2000), [PLCHome](https://github.com/PLCHome), [ppisljar](https://github.com/ppisljar), [queeek](https://github.com/queeek), [ralf1307](https://github.com/ralf1307), [rdmueller](https://github.com/rdmueller), [rstephan](https://github.com/rstephan), [SkylightXD](https://github.com/SkylightXD), [Slider0007](https://github.com/Slider0007), [smartboart](https://github.com/smartboart), [toolsfactory](https://github.com/toolsfactory), [Turbo87](https://github.com/Turbo87), [wetneb](https://github.com/wetneb), [Zwer2k](https://github.com/Zwer2k)
+
+
+
 
 ### Update Procedure
 Follow the [same instructions](https://github.com/jomjol/AI-on-the-edge-device/edit/rolling/Changelog.md#update-procedure-1) as for release 13.0.8.
