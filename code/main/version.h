@@ -63,7 +63,7 @@ std::string getHTMLversion(void){
     fgets(buf, sizeof(buf), pFile); // Line 1: Version
     fclose(pFile);
 
-    return std::string(buf);
+    return string(buf).substr(0, string(buf).size()-1); // Remove last character (newline) and return it
 }
 
 std::string getHTMLcommit(void){
