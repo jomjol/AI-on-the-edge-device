@@ -79,7 +79,7 @@ std::string getHTMLcommit(void){
     fgets(buf, sizeof(buf), pFile); // Line 2: Commit
     fclose(pFile);
 
-    return std::string(buf);
+    return std::string(buf).substr(0, string(buf).size()-1); // Remove last character (newline) and return it
 }
 
 #endif // _VERSION_H
