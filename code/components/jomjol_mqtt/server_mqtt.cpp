@@ -73,7 +73,7 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
-    payload = "{"  +
+    payload = string("{")  +
         "\"~\": \"" + maintopic + "\","  +
         "\"unique_id\": \"" + maintopic + "-" + configTopic + "\","  +
         "\"object_id\": \"" + maintopic + "_" + configTopic + "\","  + // This used to generate the Entity ID
@@ -120,8 +120,7 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         "\"payload_available\": \"" + LWT_CONNECTED + "\","  +
         "\"payload_not_available\": \"" + LWT_DISCONNECTED + "\",";
 
-    payload +=
-    "\"device\": {"  +
+    payload += string("\"device\": {")  +
         "\"identifiers\": [\"" + maintopic + "\"],"  +
         "\"name\": \"" + maintopic + "\","  +
         "\"model\": \"Meter Digitizer\","  +
