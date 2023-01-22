@@ -367,7 +367,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"cputemp\": \"" + cputemp + "\"," +
         "\"hostname\": \"" + hostname + "\"," +
         "\"IPv4\": \"" + ip4addr_ntoa(&ip_info.ip) + "\"," +
-        "\"freeHeapMem\": \"" + freeheapmem + "\"" +
+        "\"freeHeapMem\": \"" + freeheapmem + "\"" + nl +
         "}]";
 
     resp_str = zw.c_str();
