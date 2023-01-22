@@ -38,9 +38,6 @@ protected:
 	void SetInitialParameter(void);	
 	std::string aktstatus;
 	int aktRunNr;
-	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
-	bool bNewAlgROI = false;
-	#endif
 
 public:
 	void InitFlow(std::string config);
@@ -54,9 +51,6 @@ public:
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
 	string getNumbersName();
-	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
-	void SetNewAlgROI(bool _value);
-	#endif
 
 	string TranslateAktstatus(std::string _input);
 
@@ -77,6 +71,7 @@ public:
 	bool isAutoStart(long &_intervall);
 
 	std::string* getActStatus();
+	void setActStatus(std::string _aktstatus);
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	
