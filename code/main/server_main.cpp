@@ -356,9 +356,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     const char *hostname;
     ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
     
-    zw = "\
-[\
-{\
+    zw = "[{\
 \"firmware\" : \"" + gitversion + "\",\
 \"buildtime\" : \"" + buildtime + "\",\
 \"gitbranch\" : \"" + gitbranch + "\",\
@@ -369,9 +367,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 \"hostname\" : \"" + hostname + "\",\
 \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\",\
 \"freeHeapMem\" : \"" + freeheapmem + "\"\
-}\
-]\
-        ";
+}]";
 
     resp_str = zw.c_str();
 
