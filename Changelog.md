@@ -35,6 +35,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Improve log message when web UI is installed incomplete
  - [1676](https://github.com/jomjol/AI-on-the-edge-device/pull/1676) Improve NTP handling
  - HTML: improved user informations (info boxes, error hints, ...)
+ - [1904](https://github.com/jomjol/AI-on-the-edge-device/pull/1904) Removed newlines in JSON and replaced all whitespaces where there was more than one
 
 #### Fixed
  - Fixed many many things
