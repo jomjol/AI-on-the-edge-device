@@ -370,7 +370,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\",\
 \"freeHeapMem\" : \"" + freeheapmem + "\"\
 }\
-]
+]\
         ";
 
     resp_str = zw.c_str();
