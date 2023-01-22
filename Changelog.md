@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-**xxx @jomjol **
+**Stabilization and Improved User Experience**
 
 Thanks to 13 contributors, we can anounce another great release with many many improvements and new features:
 
@@ -18,12 +18,12 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Added various debug tools
  - [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
  - [1784](https://github.com/jomjol/AI-on-the-edge-device/pull/1784) Add option to disable brownout detector
- - Added full Installation mode, see xxx @jomjol
+ - Added full Installation mode, see [WebInstaller](https://jomjol.github.io/AI-on-the-edge-device/index.html)
  - Added [Demo Mode](https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode)
  - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
 
 #### Changed
- - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Please hHelp us to make it even better.
+ - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Please help us to make it even better.
  - New OTA Update page with progress indication
  - Various memory optimizations
  - Cleanup code/Web UI
@@ -33,7 +33,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - [1742](https://github.com/jomjol/AI-on-the-edge-device/pull/1742) Replace alert boxes with overlay info boxes
  - Improve log message when web UI is installed incomplete
  - [1676](https://github.com/jomjol/AI-on-the-edge-device/pull/1676) Improve NTP handling
- 
+
 #### Fixed
  - Fixed many many things
  - [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
