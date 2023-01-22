@@ -349,7 +349,6 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     std::string gitrevision = libfive_git_revision();
     std::string htmlversion = getHTMLversion();
     char freeheapmem[11];
-    std::string nl = "\n";
     sprintf(freeheapmem, "%lu", (long) getESPHeapSize());
     
     tcpip_adapter_ip_info_t ip_info;
@@ -357,7 +356,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     const char *hostname;
     ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
     
-    zw = "[{" + nl +
+    zw = string("[{") + 
         "\"firmware\": \"" + gitversion + "\"," +
         "\"buildtime\": \"" + buildtime + "\"," +
         "\"gitbranch\": \"" + gitbranch + "\"," +
@@ -367,7 +366,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"cputemp\": \"" + cputemp + "\"," +
         "\"hostname\": \"" + hostname + "\"," +
         "\"IPv4\": \"" + ip4addr_ntoa(&ip_info.ip) + "\"," +
-        "\"freeHeapMem\": \"" + freeheapmem + "\"" + nl +
+        "\"freeHeapMem\": \"" + freeheapmem + "\"" +
         "}]";
 
     resp_str = zw.c_str();

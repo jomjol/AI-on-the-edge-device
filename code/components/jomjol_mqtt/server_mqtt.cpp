@@ -57,7 +57,6 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     std::string topicFull;
     std::string configTopic;
     std::string payload;
-    std::string nl = "\n";
 
     configTopic = field;
 
@@ -74,63 +73,63 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
-    payload = "{" + nl +
-        "\"~\": \"" + maintopic + "\"," + nl +
-        "\"unique_id\": \"" + maintopic + "-" + configTopic + "\"," + nl +
-        "\"object_id\": \"" + maintopic + "_" + configTopic + "\"," + nl + // This used to generate the Entity ID
-        "\"name\": \"" + name + "\"," + nl +
-        "\"icon\": \"mdi:" + icon + "\"," + nl;        
+    payload = "{"  +
+        "\"~\": \"" + maintopic + "\","  +
+        "\"unique_id\": \"" + maintopic + "-" + configTopic + "\","  +
+        "\"object_id\": \"" + maintopic + "_" + configTopic + "\","  + // This used to generate the Entity ID
+        "\"name\": \"" + name + "\","  +
+        "\"icon\": \"mdi:" + icon + "\",";        
 
     if (group != "") {
         if (field == "problem") { // Special binary sensor which is based on error topic
-            payload += "\"state_topic\": \"~/" + group + "/error\"," + nl;
-            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+            payload += "\"state_topic\": \"~/" + group + "/error\",";
+            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\",";
         }
         else {
-            payload += "\"state_topic\": \"~/" + group + "/" + field + "\"," + nl;
+            payload += "\"state_topic\": \"~/" + group + "/" + field + "\",";
         }
     }
     else {
         if (field == "problem") { // Special binary sensor which is based on error topic
-            payload += "\"state_topic\": \"~/error\"," + nl;
-            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\"," + nl;
+            payload += "\"state_topic\": \"~/error\",";
+            payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\",";
         }
         else {
-            payload += "\"state_topic\": \"~/" + field + "\"," + nl;
+            payload += "\"state_topic\": \"~/" + field + "\",";
         }
     }
 
     if (unit != "") {
-        payload += "\"unit_of_meas\": \"" + unit + "\"," + nl;
+        payload += "\"unit_of_meas\": \"" + unit + "\",";
     }
 
     if (deviceClass != "") {
-        payload += "\"device_class\": \"" + deviceClass + "\"," + nl;
+        payload += "\"device_class\": \"" + deviceClass + "\",";
     }
 
     if (stateClass != "") {
-        payload += "\"state_class\": \"" + stateClass + "\"," + nl;
+        payload += "\"state_class\": \"" + stateClass + "\",";
     } 
 
     if (entityCategory != "") {
-        payload += "\"entity_category\": \"" + entityCategory + "\"," + nl;
+        payload += "\"entity_category\": \"" + entityCategory + "\",";
     } 
 
     payload += 
-        "\"availability_topic\": \"~/" + std::string(LWT_TOPIC) + "\"," + nl +
-        "\"payload_available\": \"" + LWT_CONNECTED + "\"," + nl +
-        "\"payload_not_available\": \"" + LWT_DISCONNECTED + "\"," + nl;
+        "\"availability_topic\": \"~/" + std::string(LWT_TOPIC) + "\","  +
+        "\"payload_available\": \"" + LWT_CONNECTED + "\","  +
+        "\"payload_not_available\": \"" + LWT_DISCONNECTED + "\",";
 
     payload +=
-    "\"device\": {" + nl +
-        "\"identifiers\": [\"" + maintopic + "\"]," + nl +
-        "\"name\": \"" + maintopic + "\"," + nl +
-        "\"model\": \"Meter Digitizer\"," + nl +
-        "\"manufacturer\": \"AI on the Edge Device\"," + nl +
-      "\"sw_version\": \"" + version + "\"," + nl +
-      "\"configuration_url\": \"http://" + *getIPAddress() + "\"" + nl +
-    "}" + nl +
-    "}" + nl;
+    "\"device\": {"  +
+        "\"identifiers\": [\"" + maintopic + "\"],"  +
+        "\"name\": \"" + maintopic + "\","  +
+        "\"model\": \"Meter Digitizer\","  +
+        "\"manufacturer\": \"AI on the Edge Device\","  +
+      "\"sw_version\": \"" + version + "\","  +
+      "\"configuration_url\": \"http://" + *getIPAddress() + "\""  +
+    "}"  +
+    "}";
 
     MQTTPublish(topicFull, payload, true);
 }
