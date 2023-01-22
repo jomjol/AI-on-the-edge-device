@@ -76,11 +76,11 @@
       issue:
           body: |
             You can try the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling+event%3Apush) of the the `rolling` or any other branch. It might already contain a fix for your issue.
-            See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/rolling-installation).
+            See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/rolling-installation) for additional information.
       discussion:
           body: |
             You can try the latest [Automatic Build](https://github.com/jomjol/AI-on-the-edge-device/actions/workflows/build.yaml?query=branch%3Arolling+event%3Apush) of the the `rolling` or any other branch. It might already contain a fix for your issue.
-            See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/rolling-installation).
+            See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/rolling-installation) for additional information.
             
             
   #######################################################################
