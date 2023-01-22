@@ -21,6 +21,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Added full web browser based installation mode (including initial setup of SD-card) - see [WebInstaller](https://jomjol.github.io/AI-on-the-edge-device/index.html)
  - Added [Demo Mode](https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode)
  - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
+ - Show special images during steps `Initializing` and `Take Image` as the current camera image might be incomplete or outdated
 
 #### Changed
  - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Please help us to make it even better.
