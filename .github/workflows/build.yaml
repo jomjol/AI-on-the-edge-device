@@ -242,7 +242,7 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/firmware.bin" "manual_setup/firmware.bin"
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "manual_setup/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "manual_setup/partitions.bin"
-        zip -r ./manual_setup/sd-card.zip sd-card
+        cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
   
     - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
