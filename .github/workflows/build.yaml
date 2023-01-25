@@ -315,7 +315,7 @@ jobs:
     # extract the version used in next step
     - id: get_version
       if: startsWith(github.ref, 'refs/tags/') 
-      uses: battila7/get-version-action@v2
+      uses: CarterChen247/version-retriever@v1
 
     # the changelog [unreleased] will now be changed to the release version
     - name: Update changelog
