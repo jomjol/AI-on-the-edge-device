@@ -689,15 +689,8 @@ esp_err_t handler_cputemp(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_cputemp - Start");       
     #endif
 
-    const char* resp_str;
-    char cputemp[20];
-    
-    sprintf(cputemp, "%4.1f&degC", temperatureRead());
-
-    resp_str = cputemp;
-
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send(req, std::to_string((int)temperatureRead()).c_str(), HTTPD_RESP_USE_STRLEN);
 
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_cputemp - End");       
@@ -715,15 +708,8 @@ esp_err_t handler_rssi(httpd_req_t *req)
 
     if (getWIFIisConnected()) 
     {
-        const char* resp_str;
-        char rssi[20];
-
-        sprintf(rssi, "%idBm", get_WIFI_RSSI());
-
-        resp_str = rssi;
-
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+        httpd_resp_send(req, std::to_string(get_WIFI_RSSI()).c_str(), HTTPD_RESP_USE_STRLEN);
     }
     else 
     {
@@ -877,12 +863,12 @@ void task_autodoFlow(void *pvParameter)
         }
         
         //CPU Temp -> Logfile
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(1) << temperatureRead();
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + stream.str() + "°C");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
+        
         // WIFI Signal Strength (RSSI) -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
-
+        
+        //Round finished -> Logfile
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
 
