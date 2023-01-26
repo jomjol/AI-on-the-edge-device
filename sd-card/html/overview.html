@@ -140,7 +140,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#cputemp').html("CPU Temperature: " +_rsp);
+				$('#cputemp').html("CPU Temperature: " +_rsp + "°C");
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -154,21 +154,21 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				var _rspVal = _rsp.split("d")[0]
-				if (_rspVal >= -55) {
-					$('#rssi').html("WIFI Signal: Excellent (" + _rsp + ")");
+				
+				if (_rsp >= -55) {
+					$('#rssi').html("WIFI Signal: Excellent (" + _rsp + "dBm)");
 				}
-				else if (_rspVal < -55 && _rspVal >= -67) {
-					$('#rssi').html("WIFI Signal: Good (" + _rsp + ")");
+				else if (_rsp < -55 && _rsp >= -67) {
+					$('#rssi').html("WIFI Signal: Good (" + _rsp + "dBm)");
 				}
-				else if (_rspVal < -67 && _rspVal >= -78) {
-					$('#rssi').html("WIFI Signal: Fair (" + _rsp + ")");
+				else if (_rsp < -67 && _rsp >= -78) {
+					$('#rssi').html("WIFI Signal: Fair (" + _rsp + "dBm)");
 				}
-				else if (_rspVal < -78 && _rspVal >= -85) {
-					$('#rssi').html("WIFI Signal: Weak (" + _rsp + ")");
+				else if (_rsp < -78 && _rsp >= -85) {
+					$('#rssi').html("WIFI Signal: Weak (" + _rsp + "dBm)");
 				}
 				else {
-					$('#rssi').html("WIFI Signal: Unreliable (" + _rsp + ")");
+					$('#rssi').html("WIFI Signal: Unreliable (" + _rsp + "dBm)");
 				}
 			}
 		}

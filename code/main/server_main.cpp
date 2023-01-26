@@ -333,15 +333,10 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 }
 
 
-
-
-
-
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
-    const char* resp_str; 
     std::string zw;
-    std::string cputemp = std::to_string(temperatureRead());
+    std::string cputemp = std::to_string((int)temperatureRead());
     std::string gitversion = libfive_git_version();
     std::string buildtime = build_time();
     std::string gitbranch = libfive_git_branch();
@@ -369,10 +364,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"freeHeapMem\": \"" + freeheapmem + "\"" +
         "}]";
 
-    resp_str = zw.c_str();
-
     httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, resp_str);
+    httpd_resp_send(req, zw.c_str(), zw.length());
 
     return ESP_OK;
 }
