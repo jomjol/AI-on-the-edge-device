@@ -10,7 +10,7 @@ Thanks to over 80 Pull Requests from 6 contributors, we can anounce another grea
 
 ### Update Procedure
 
-Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
 ### Changes
 
@@ -59,7 +59,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 **Home Assistant MQTT Discovery Support**
 
-### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
+### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
 ### Added
 
