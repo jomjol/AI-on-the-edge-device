@@ -4,7 +4,7 @@
 
 **Stabilization and Improved User Experience**
 
-Thanks to over 100 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
+Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
 
 ### Update Procedure
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
