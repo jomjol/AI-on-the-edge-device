@@ -2,57 +2,64 @@
 
 ## [Unreleased]
 
+## [14.0.0-RC1] - 2023-01-27
+
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
 
 ### Update Procedure
-Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
+
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
 ### Changes
+
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0)
 
 #### Added
- - [1877](https://github.com/jomjol/AI-on-the-edge-device/pull/1877) Show WIFI signal text labels / Log RSSI value to logfile
- - Web UI caching of static files
- - Added various debug tools
- - [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
- - [1784](https://github.com/jomjol/AI-on-the-edge-device/pull/1784) Add option to disable brownout detector
- - Added full web browser based installation mode (including initial setup of SD-card) - see [WebInstaller](https://jomjol.github.io/AI-on-the-edge-device/index.html)
- - Added [Demo Mode](https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode)
- - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
- - Show special images during steps `Initializing` and `Take Image` as the current camera image might be incomplete or outdated
+
+-   [1877](https://github.com/jomjol/AI-on-the-edge-device/pull/1877) Show WIFI signal text labels / Log RSSI value to logfile
+-   Web UI caching of static files
+-   Added various debug tools
+-   [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
+-   [1784](https://github.com/jomjol/AI-on-the-edge-device/pull/1784) Add option to disable brownout detector
+-   Added full web browser based installation mode (including initial setup of SD-card) - see [WebInstaller](https://jomjol.github.io/AI-on-the-edge-device/index.html)
+-   Added [Demo Mode](https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode)
+-   [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
+-   Show special images during steps `Initializing` and `Take Image` as the current camera image might be incomplete or outdated
 
 #### Changed
- - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Please help us to make it even better.
- - New OTA Update page with progress indication
- - Various memory optimizations
- - Cleanup code/Web UI
- - Updated models
- - [1809](https://github.com/jomjol/AI-on-the-edge-device/pull/1809) Store preprocessed image with ROI to RAM
- - Better log messages on some errors/issues
- - [1742](https://github.com/jomjol/AI-on-the-edge-device/pull/1742) Replace alert boxes with overlay info boxes
- - Improve log message when web UI is installed incomplete
- - [1676](https://github.com/jomjol/AI-on-the-edge-device/pull/1676) Improve NTP handling
- - HTML: improved user informations (info boxes, error hints, ...)
- - [1904](https://github.com/jomjol/AI-on-the-edge-device/pull/1904) Removed newlines in JSON and replaced all whitespaces where there was more than one
+
+-   Migrated documentation (Wiki) to <https://jomjol.github.io/AI-on-the-edge-device-docs>. Please help us to make it even better.
+-   New OTA Update page with progress indication
+-   Various memory optimizations
+-   Cleanup code/Web UI
+-   Updated models
+-   [1809](https://github.com/jomjol/AI-on-the-edge-device/pull/1809) Store preprocessed image with ROI to RAM
+-   Better log messages on some errors/issues
+-   [1742](https://github.com/jomjol/AI-on-the-edge-device/pull/1742) Replace alert boxes with overlay info boxes
+-   Improve log message when web UI is installed incomplete
+-   [1676](https://github.com/jomjol/AI-on-the-edge-device/pull/1676) Improve NTP handling
+-   HTML: improved user informations (info boxes, error hints, ...)
+-   [1904](https://github.com/jomjol/AI-on-the-edge-device/pull/1904) Removed newlines in JSON and replaced all whitespaces where there was more than one
 
 #### Fixed
- - Fixed many many things
- - [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
- - [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
- - [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
- - [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
+
+-   Fixed many many things
+-   [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
+-   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
+-   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
+-   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
 
 #### Removed
--   n.a.
 
+-   n.a.
 
 ## [13.0.8] - 2022-12-19
 
 **Home Assistant MQTT Discovery Support**
 
-### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
+### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
 ### Added
 
@@ -144,8 +151,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -797,7 +804,9 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...HEAD
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC1...HEAD
+
+[14.0.0-RC1]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...14.0.0-RC1
 
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.8
 
