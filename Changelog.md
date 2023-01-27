@@ -2,40 +2,57 @@
 
 ## [Unreleased]
 
+**Stabilization and Improved User Experience**
+
+Thanks to 13 contributors, we can anounce another great release with many many improvements and new features:
+
+### Update Procedure
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
+
+### Changes
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0)
+
+#### Added
+ - [1877](https://github.com/jomjol/AI-on-the-edge-device/pull/1877) Show WIFI signal text labels / Log RSSI value to logfile
+ - Web UI caching of static files
+ - Added various debug tools
+ - [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
+ - [1784](https://github.com/jomjol/AI-on-the-edge-device/pull/1784) Add option to disable brownout detector
+ - Added full web browser based installation mode (including initial setup of SD-card) - see [WebInstaller](https://jomjol.github.io/AI-on-the-edge-device/index.html)
+ - Added [Demo Mode](https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode)
+ - [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
+ - Show special images during steps `Initializing` and `Take Image` as the current camera image might be incomplete or outdated
+
+#### Changed
+ - Migrated documentation (Wiki) to [https://jomjol.github.io/AI-on-the-edge-device-docs](https://jomjol.github.io/AI-on-the-edge-device-docs). Please help us to make it even better.
+ - New OTA Update page with progress indication
+ - Various memory optimizations
+ - Cleanup code/Web UI
+ - Updated models
+ - [1809](https://github.com/jomjol/AI-on-the-edge-device/pull/1809) Store preprocessed image with ROI to RAM
+ - Better log messages on some errors/issues
+ - [1742](https://github.com/jomjol/AI-on-the-edge-device/pull/1742) Replace alert boxes with overlay info boxes
+ - Improve log message when web UI is installed incomplete
+ - [1676](https://github.com/jomjol/AI-on-the-edge-device/pull/1676) Improve NTP handling
+ - HTML: improved user informations (info boxes, error hints, ...)
+ - [1904](https://github.com/jomjol/AI-on-the-edge-device/pull/1904) Removed newlines in JSON and replaced all whitespaces where there was more than one
+
+#### Fixed
+ - Fixed many many things
+ - [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
+ - [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
+ - [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
+ - [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
+
+#### Removed
+-   n.a.
+
+
 ## [13.0.8] - 2022-12-19
 
 **Home Assistant MQTT Discovery Support**
 
-### Update Procedure
-
-:bangbang: **Make sure to read the instructions below carfully!**
-
-1.  Backup your configuration (use the `System -> Backup/Restore` page)!
-
-2.  You should update to `12.0.1` before you update to this release. All other migrations are untested. 
-
-3.  Upload and update the `update-*.zip` file from this release.
-
-4.  Let it restart and check on the `System -> Info` page that the Firmware as well as the Web UI got updated. If only one got updated, redo the update. If it fails several times, you also can update the Firmware and the Web UI separately.
-
-5.  Safe way: 
-    1.  Update first the `firmware.bin` (extract it from one of the provided zip files) and do the Reboot
-    2.  Update with the full zip file (`update-*.zip`, ignore the version warning after the reboot)
-
-6.  Please go to `Settings -> Configuration` and address the changed parameters:
-    -   DataLogging (storing the values for data graph)
-    -   Debug (extended by different debug reporting levels)
-
-7.  Make sure it starts to do the digitalization (check the Error field on the overview page). If it does not start a round within a minute, restart the device.
-
-If anything breaks you can try to enforce manual update as following:
-
-**OTA:**
-  1. Make sure the last run of the update completed the **Uploading** step.
-  1. Call `http://<IP>/ota?task=update&file=<UPLOAD_FILENAME>` to enforce the extraction/flashing.
-
-**Initial Setup:**
-  1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative to have a clean install.
+### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update)
 
 ### Added
 
