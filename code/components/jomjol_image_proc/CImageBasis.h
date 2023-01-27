@@ -1,13 +1,14 @@
 #pragma once
 
-#ifndef __CIMAGEBASIS
-#define __CIMAGEBASIS
+#ifndef CIMAGEBASIS_H
+#define CIMAGEBASIS_H
 
 #include <stdint.h>
 #include <string>
 #include <esp_http_server.h>
 
-#define _USE_MATH_DEFINES
+#include "../../include/defines.h"
+
 #include <math.h>
 
 #include "stb_image.h"
@@ -15,13 +16,6 @@
 #include "stb_image_resize.h"
 
 #include "esp_heap_caps.h"
-
-//#define GET_MEMORY malloc
-#define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
-
-
-#define MAX_JPG_SIZE 128000
-
 
 struct ImageData
 {
@@ -67,20 +61,22 @@ class CImageBasis
         void SetIndepended(){externalImage = false;};
 
         void CreateEmptyImage(int _width, int _height, int _channels);
+        void EmptyImage();
 
 
         CImageBasis();
         CImageBasis(std::string _image);
         CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp);
         CImageBasis(int _width, int _height, int _channels);
-        CImageBasis(CImageBasis *_copyfrom, int _anzrepeat = 0);
+        CImageBasis(CImageBasis *_copyfrom);
 
         void Resize(int _new_dx, int _new_dy);        
         void Resize(int _new_dx, int _new_dy, CImageBasis *_target);        
 
         void LoadFromMemory(stbi_uc *_buffer, int len);
 
-        ImageData* writeToMemoryAsJPG(const int quality = 90);   
+        ImageData* writeToMemoryAsJPG(const int quality = 90);
+        void writeToMemoryAsJPG(ImageData* ii, const int quality = 90);
 
         esp_err_t SendJPGtoHTTP(httpd_req_t *req, const int quality = 90);   
 
@@ -92,5 +88,5 @@ class CImageBasis
 };
 
 
-#endif
+#endif //CIMAGEBASIS_H
 

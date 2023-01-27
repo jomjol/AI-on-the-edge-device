@@ -1,266 +1,295 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
-<title>OTA Update</title>
-<meta charset="utf-8">
+    <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
+    <title>OTA Update</title>
+    <meta charset="utf-8">
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em;}
-h3 {font-size: 1.2em;} 
-p {font-size: 1em;}
+    <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em;}
+        h3 {font-size: 1.2em;} 
+        p {font-size: 1em;}
+        
+        input[type=number] {
+            width: 138px;
+            padding: 10px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
+        
+        .button {
+            padding: 10px 20px;
+            width: 211px;
+            font-size: 16px;
+        }
+    </style>
 
-input[type=number] {
-	width: 138px;
-	padding: 10px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
-
-.button {
-	padding: 10px 20px;
-    width: 211px;
-	font-size: 16px;
-}
-</style>
-
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<p>Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a> to see if there is an update available.</p>
-<p>Normally, the overall update package (<i><span style="font-family:monospace">update__*.zip</span></i>) is your best choice!<br>
-Alternatively you can use the old style <i><span style="font-family:monospace">firmware__*.bin</span></i> and
-web interface (<i><span style="font-family:monospace">html__*.zip</span></i>). How ever it is strongly recommended to update firmware and
-    web interface at the same time!</p>
-<hr>
-<h2>Update</h2>
-<b>Do not reload the page or switch to another page while the update is in progress!</b>
-<table class="fixed" border="0">
-    <tr>
-        <p>
-            <label for="newfile">Select the file containig the update (
-                <i><span style="font-family:monospace">update__*.zip</span></i>,
-                <i><span style="font-family:monospace">firmware__*.bin</span></i>,
-                <i><span style="font-family:monospace">html__*.zip</span></i>,
-                <i><span style="font-family:monospace">*.tfl/tflite</span></i>)
-        </p>
+    <h2>OTA Update</h2>
+    <p>Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a> to see if there is an update available. </p>
+    <p>You can also automatically get notified about a release, see <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/New-Releases-Notification" target=_blank>Release Notifications</a>.</p>
+
+    <h3>Update</h3>
+    On the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a>, pick the <i><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></i> file!</p>
+    <p>Alternatively the following file formats are supported (Make sure the file extention is lower case):</p>
+    <ul>
+        <li><span style="font-family:monospace">*.zip</span> &rarr; Gets unpacked on the SD-Card (most top folder)</li>
+        <li><span style="font-family:monospace">*.bin</span> &rarr; gets installed onto the ESP32</li>
+        <li><span style="font-family:monospace">*.tfl/tflite</span> &rarr; Gets copied to your <i>SD-Card/config</i></li>
+    </ul>
+
+    <p><b>Do not reload this page or switch to another page while the update is in progress!</b><br></p>
+
+    <form id="upload_form" enctype="multipart/form-data" method="post">
+        <input type="file" accept=".bin,.zip,.tfl,.tflite" name="file_selector" id="file_selector" onchange="validate_file()"><br><br>
+
+        <button class="button" style="width:300px" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload and install</button>
+        <br><br>
+        <progress id="progressBar" value="0" max="100" style="width:600px;"></progress>
+        <p id="loaded_n_total"></p>
+        <h3><span id="status">Status: idle</span></h3>
+    </form>
+    
+
+
+    <script language="JavaScript">
+        var domainname = getDomainname();
         
-    </tr>
-    <tr>
-        <p>
-            <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
-        </p>
-    </tr>
-    <tr>
-        <p>
-            <button class="button" style="width:300px" id="doUpdate" type="button" onclick="prepareOnServer()">Upload and update<br>(incl. reboot - if needed)</button>
-        </p>
-    </tr>
-    <tr>
-        <p>
-            <h3><span id="status">Status: idle</span> <span id="progress"></span></h3>
-        </p>
-    </tr>
-</table>
+        var action_runtime = 0;
+        
+        /* Max size of an individual file. Make sure this
+        * value is same as that set in server_file.c */
+        var MAX_FILE_SIZE = 8000*1024;
+        var MAX_FILE_SIZE_STR = "8MB";
+        
+        function validate_file() {
+            document.getElementById("start_OTA_button").disabled = true;
 
+            var fileInput = document.getElementById("file_selector").files;
+            var filepath = document.getElementById("file_selector").value;
 
-<script language="JavaScript">
+            console.log("filepath: " + filepath);
 
-var basepath = "http://192.168.178.26";
+            filename = filepath.split(/[\\\/]/).pop();
 
+            console.log("filename: " + filename);
 
-/* Max size of an individual file. Make sure this
-* value is same as that set in server_file.c */
-var MAX_FILE_SIZE = 8000*1024;
-var MAX_FILE_SIZE_STR = "8MB";
-
-var action_runtime = 0;
-var progressTimerHandle = null;
-
-
-function init(){
-    basepath = getbasepath();
-
-    document.getElementById("doUpdate").disabled = true;
-}
-
-
-function doRebootAfterUpdate() {
-	if (confirm("Upload completed!\nThe device will reboot now and complete the update.\nThis will take up to 180s!")) {
-		var stringota = "/reboot";
-		window.location = stringota;
-		window.location.href = stringota;
-		window.location.assign(stringota);
-		window.location.replace(stringota);
-	}
-}
-
-
-function setpath() {
-    var nameneu = document.getElementById("newfile").value;
-    nameneu = nameneu.split(/[\\\/]/).pop();
-    document.getElementById("doUpdate").disabled = false;
-    document.getElementById("status").innerText = "Status: File selected";
-}
-
-
-function prepareOnServer() {
-    var fileInput = document.getElementById("newfile").files;
-    var nameneu = document.getElementById("newfile").value;
-    filePath = nameneu.split(/[\\\/]/).pop();
-
-    if (fileInput.length == 0) {
-        alert("No file selected!");
-        return;
-    } else if (filePath.length == 0) {
-        alert("File path on server is not set!");
-        return;
-    } else if (filePath.length > 100) {
-        alert("Filename is to long! Max 100 characters.");
-        return;
-    } else if (filePath.indexOf(' ') >= 0) {
-        alert("File path on server cannot have spaces!");
-        return;
-    } else if (filePath[filePath.length-1] == '/') {
-        alert("File name not specified after path!");
-        return;
-    } else if (fileInput[0].size > MAX_FILE_SIZE) {
-        alert("File size must be less than " + MAX_FILE_SIZE_STR + "!");
-        return;
-    }
-
-    document.getElementById("status").innerText = "Status: Preparations on device";
-    document.getElementById("doUpdate").disabled = true;
-
-	var xhttp = new XMLHttpRequest();
-
-    var nameneu = document.getElementById("newfile").value;
-    filePath = nameneu.split(/[\\\/]/).pop();
-
-	/* first delete the old firmware AND empty the /firmware directory*/	
-	xhttp.onreadystatechange = function() {
-		if (xhttp.readyState == 4) {
-            stopProgressTimer();
-			if (xhttp.status == 200) {
-				/* keine Reaktion, damit sich das Dokument nicht ändert */
-                upload();
-			} else if (xhttp.status == 0) {
-				alert("Server closed the connection abruptly!");
-                document.getElementById("doUpdate").disabled = false;
-			} else {
-				alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                document.getElementById("doUpdate").disabled = false;
-			}
-		}
-	};
-
-    startProgressTimer("Server preparations...");
-
-    var _toDo = basepath + "/ota?task=emptyfirmwaredir";
-	xhttp.open("GET", _toDo, true);
-	xhttp.send();
-}
-
-
-function upload() {
-    document.getElementById("newfile").disabled = true;
-    
-	var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4) {
-            stopProgressTimer();
-            if (xhttp.status == 200) {
-//					alert("Upload successfull!")
-//                    document.reload();
-                extract();
-            } else if (xhttp.status == 0) {
-                alert("Server closed the connection abruptly!");
-                document.getElementById("doUpdate").disabled = false;
-            } else {
-                alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                document.getElementById("doUpdate").disabled = false;
+            /* Various checks on filename length and file size */
+            if (fileInput.length == 0) {
+                firework.launch('No file selected!', 'danger', 30000);
+                return;
+            } else if (filename.length == 0) {
+                firework.launch('File path on server is not set!', 'danger', 30000);
+                return;
+            } else if (filename.length > 100) {
+                firework.launch('Filename is too long! Max 100 characters.', 'danger', 30000);
+                return;
+            } else if (filename.indexOf(' ') >= 0) {
+                firework.launch('Filename can not have spaces!', 'danger', 30000);
+                return;
+            } else if (filename[filename.length-1] == '/') {
+                firework.launch('Filename not specified after path!', 'danger', 30000);
+                return;
+            } else if (fileInput[0].size > MAX_FILE_SIZE) {
+                firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
+                return;
             }
-        }
-    };
-    
-    startProgressTimer("Upload");
 
-    var fileInput = document.getElementById("newfile").files;
-    var file = fileInput[0];
-    var upload_path = "/upload/firmware/" + filePath;
-
-    xhttp.open("POST", upload_path, true);
-    document.getElementById("status").innerText = "Status: Uploading (takes up to 60s)...";
-    xhttp.send(file);
-}
-
-
-function extract() {
-    document.getElementById("status").innerText = "Status: Processing on device (takes up to 3 minutes)...";
-
-    var xhttp = new XMLHttpRequest();
-    /* first delete the old firmware */	
-    xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4) {
-            stopProgressTimer();
-            if (xhttp.status == 200) {
-                document.getElementById("status").innerText = "Status: Update completed!";
-                document.getElementById("doUpdate").disabled = true;
-                document.getElementById("newfile").disabled = false;
-                document.cookie = "page=overview.html"; // Make sure after the reboot we go to the overview page
-
-                if (xhttp.responseText.startsWith("reboot"))
-                {
-                    doRebootAfterUpdate();
-                }
-                else
-                {
-                    alert("Processing done!\n\n" + xhttp.responseText);
-                }
-            } else if (xhttp.status == 0) {
-                alert("Server closed the connection abruptly!");
-                UpdatePage();
-            } else {
-                alert(xhttp.status + " Error!\n" + xhttp.responseText);
-                UpdatePage();
+            /* Check if the fillename matches our expected pattern
+             *  - AI-on-the-edge-device__update__*.zip
+             *  - firmware__*.bin
+             *  - *.ftl
+             *  - *.tflite */
+            if ( /(^AI-on-the-edge-device__update__)[a-z0-9()_\-.]*(\.zip$)/.test(filename) || // OK
+               ( /(^AI-on-the-edge-device__firmware)[a-z0-9()_\-.]*(\.bin$)/.test(filename)) ||
+               ( /[a-z0-9()_\-.]*(\.tfl$)/.test(filename)) ||
+               ( /[a-z0-9()_\-.]*(\.tflite$)/.test(filename))) {
+                firework.launch('Great, the filename matches our expectations. You can now press "Upload and install".', 'success', 5000);
             }
+            /* Following filenames are acceptiod but not prefered:
+             * - *.bin
+             * - *.zip */
+            else if (filename.endsWith(".zip") || filename.endsWith(".bin")) { // Warning but still accepted
+                firework.launch('The filename does not match the suggested filename pattern, but is nevertheless accepted. You can now press "Upload and install', 'warning', 10000);
+            }
+            /* Any other file name format is not accepted */
+            else { // invalid
+                firework.launch('The filename does not match our expectations!', 'danger', 30000);
+                return;
+            }
+
+            document.getElementById("start_OTA_button").disabled = false;
         }
-    };
-
-    startProgressTimer("Extraction");
 
 
-    var nameneu = document.getElementById("newfile").value;
-    filePath = nameneu.split(/[\\\/]/).pop();
-    var _toDo = basepath + "/ota?task=update&file=" + filePath;
-    xhttp.open("GET", _toDo, true);
-    xhttp.send();
-}
+        function start_OTA() {
+            document.getElementById("start_OTA_button").disabled = true;
+
+            var file_name = document.getElementById("file_selector").value;
+            document.getElementById("file_selector").disabled = true;
+            file_name = file_name.split(/[\\\/]/).pop();
+            document.getElementById("status").innerText = "Status: File selected";
+
+            prepareOnServer();
+        }
 
 
-function startProgressTimer(step) {     
-    console.log(step + "...");
-    document.getElementById('progress').innerHTML = "(0s)";
-    action_runtime = 0;    
-    progressTimerHandle = setInterval(function() {
-        action_runtime += 1;
-        console.log("Progress: " + action_runtime + "s");  
-        document.getElementById('progress').innerHTML = "(" + action_runtime + "s)";
-    }, 1000);
-}
+        function doRebootAfterUpdate() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "/reboot", true);
+            xhttp.send();
+        }
 
 
-function stopProgressTimer() {            
-    clearInterval(progressTimerHandle);
-    document.getElementById('progress').innerHTML = "";
-}
+        function prepareOnServer() {
+            document.getElementById("status").innerText = "Status: Preparing device...";
+
+            var xhttp = new XMLHttpRequest();
+
+            var file_name = document.getElementById("file_selector").value;
+            filePath = file_name.split(/[\\\/]/).pop();
+
+            /* first delete the old firmware AND empty the /firmware directory*/	
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState == 4) {
+                    if (xhttp.status == 200) {
+                        /* keine Reaktion, damit sich das Dokument nicht ändert */
+                        upload();
+                    } else if (xhttp.status == 0) {
+                        firework.launch('Server closed the connection abruptly!', 'danger', 30000);
+                    } else {
+                        firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
+                    }
+                }
+            };
+
+            var _toDo = domainname + "/ota?task=emptyfirmwaredir";
+            xhttp.open("GET", _toDo, true);
+            xhttp.send();
+        }
 
 
-init();
+        function extract() {
+            document.getElementById("status").innerText = "Status: Processing on device...";
 
-</script>
+            var xhttp = new XMLHttpRequest();
+            /* first delete the old firmware */	
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState == 4) {
+                    if (xhttp.status == 200) {
+                        document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/"; // Make sure after the reboot we go to the overview page
+
+                        if (xhttp.responseText.startsWith("reboot")) { // Reboot required
+                            console.log("Upload completed, the device will now restart and install the update!");
+                            document.getElementById("status").innerText = "Status: Installing...";
+                            firework.launch('Upload completed, the device will now restart and install the update', 'success', 5000);
+                        
+                            /* Tell it to reboot */
+                            doRebootAfterUpdate();
+
+                            action_runtime = 0;
+                            updateTimer = setInterval(function() {                            
+                                action_runtime += 1;
+                                console.log("Waiting: " + action_runtime + "s");  
+                                _("progressBar").value = Math.round(action_runtime);
+
+                                if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
+                                    /* Check if the device is up again and forward to index page if so */
+                                    fetch('reboot_page.html?v=$COMMIT_HASH&' + Math.random(), {mode: 'no-cors'}).then(
+                                        r=>{parent.location.href=('index.html?v=$COMMIT_HASH');}
+                                    )
+                                }
+
+                                if (action_runtime > 100) { // We reached 300 seconds but device is not ready yet
+                                    firework.launch("The device seems not do be up again, or maybe we missed it. Try to reload this page or reset the device!", 'danger', 30000);
+                                    clearInterval(updateTimer);
+                                }
+                            }, 3000);                           
+                        }
+                        else // No reboot required
+                        {
+                            document.getElementById("status").innerText = "Status: Update completed";
+                            firework.launch('Update completed!', 'success', 5000);
+                            document.getElementById("file_selector").disabled = false;
+                        }
+                    } else if (xhttp.status == 0) {
+                        firework.launch('Server closed the connection abruptly!', 'danger', 30000);
+                    } else {
+                        firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
+                    }
+                }
+            };
+
+            var file_name = document.getElementById("file_selector").value;
+            filePath = file_name.split(/[\\\/]/).pop();
+            var _toDo = domainname + "/ota?task=update&file=" + filePath;
+            xhttp.open("GET", _toDo, true);
+            xhttp.send();
+        }
+
+
+        function _(el) {
+            return document.getElementById(el);
+        }
+
+
+        function upload() {
+            document.getElementById("status").innerText = "Status: Uploading...";
+
+            var upload_path = "/upload/firmware/" + filePath;
+
+            var file = _("file_selector").files[0];
+            var formdata = new FormData();
+            formdata.append("file_selector", file);
+            var ajax = new XMLHttpRequest();
+            ajax.upload.addEventListener("progress", progressHandler, false);
+            ajax.addEventListener("load", completeHandler, false);
+            ajax.addEventListener("error", errorHandler, false);
+            ajax.addEventListener("abort", abortHandler, false);
+
+            ajax.open("POST", upload_path);
+            ajax.send(file);
+        }
+
+
+        function progressHandler(event) {
+            _("loaded_n_total").innerHTML = "Uploaded " + (event.loaded / 1024 / 1024).toFixed(2) + 
+                    " MBytes of " + (event.total / 1024/ 1024).toFixed(2) + " MBytes.";
+            var percent = (event.loaded / event.total) * 100;
+            _("progressBar").value = Math.round(percent);
+            _("status").innerHTML = "Status: " + Math.round(percent) + "% uploaded... please wait";
+        }
+
+
+        function completeHandler(event) {
+            _("status").innerHTML = "Status: " + event.target.responseText;
+            _("progressBar").value = 0; //will clear progress bar after successful upload
+            _("loaded_n_total").innerHTML = "";
+        
+            extract();
+        }
+
+
+        function errorHandler(event) {
+            _("status").innerHTML = "Status: Upload Failed";
+            firework.launch('Upload failed!', 'danger', 30000);
+            document.getElementById("file_selector").disabled = false;
+        }
+
+
+        function abortHandler(event) {
+            _("status").innerHTML = "Status: Upload Aborted";
+            firework.launch('Upload aborted!', 'danger', 30000);
+            document.getElementById("file_selector").disabled = false;
+        }
+    </script>
 </body>
-</html>
+</html> 

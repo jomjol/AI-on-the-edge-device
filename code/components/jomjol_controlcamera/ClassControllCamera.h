@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef CLASSCONTROLLCAMERA_H
 #define CLASSCONTROLLCAMERA_H
 
@@ -11,10 +13,7 @@
 #include <string>
 #include <esp_http_server.h>
 #include "CImageBasis.h"
-
-
-#define CAMERA_MODEL_AI_THINKER
-
+#include "../../include/defines.h"
 
 class CCamera {
     protected:
@@ -27,6 +26,10 @@ class CCamera {
 
         void ledc_init(void);
         bool CameraInitSuccessful = false;
+        bool demoMode = false;
+
+        bool loadNextDemoImage(camera_fb_t *fb);
+        long GetFileSize(std::string filename);
 
     public:
         int image_height, image_width;
@@ -41,10 +44,11 @@ class CCamera {
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
         void SetLEDIntensity(float _intrel);
-
-        void EnableAutoExposure(int flashdauer);
+        bool testCamera(void);
+        void EnableAutoExposure(int flash_duration);
         bool getCameraInitSuccessful();
-        
+        void useDemoMode(void);
+       
 
         framesize_t TextToFramesize(const char * text);
 

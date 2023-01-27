@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Edit Config</title>
 <meta charset="utf-8">
 
@@ -72,7 +72,9 @@ textarea {
 }
 
 </style>
-
+<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -121,6 +123,23 @@ textarea {
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
 			</td>
+		</tr>		
+		<tr class="expert" id="ex1">
+			<td class="indent1">
+				<input type="checkbox" id="MakeImage_Demo_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "Demo")' unchecked >
+				<label for=MakeImage_Demo_enabled><class id="MakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
+			</td>
+			<td>
+				<select id="MakeImage_Demo_value1">
+					<option value="true">true</option>
+					<option value="false" selected>false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Enable to use demo images instead of the real camera images.<br>
+				Make sure to have a demo folder on your SD-Card!
+				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode" target="_blank">documentation</a> for details.
+			</td>
 		</tr>
 		<tr class="expert" id="ex1">
 			
@@ -131,7 +150,7 @@ textarea {
 				<input type="number" id="MakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
 			</td>
 			<td class="description">
-				Wait time between illumination switch on and take the picture (in seconds)
+				Wait time between switching illumination on and taking the picture (in seconds)
 			</td>
 		</tr>
 		<tr class="expert" id="ex2">
@@ -157,7 +176,7 @@ textarea {
 				</select>
 			</td>
 			<td class="description">
-				Picture size camera (default = "VGA")
+				Size of camera picture (default = "VGA")
 			</td>
 		</tr>
 
@@ -286,7 +305,8 @@ textarea {
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Path to CNN model file for image recognition. Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Choosing-the-Model" target="_blank">documentation</a> for details.
+				Path to CNN model file for image recognition.<br>
+				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.
 			</td>
 		</tr>
 		
@@ -342,7 +362,8 @@ textarea {
 				<select id="Analog_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;"> Path to CNN model file for image recognition. Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/wiki/Choosing-the-Model" target="_blank">documentation</a> for details.</td>
+			<td style="font-size: 80%;"> Path to CNN model file for image recognition.<br>
+				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -391,21 +412,6 @@ textarea {
 				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
 			</td>
 		</tr>
-		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
-				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td style="font-size: 80%;">
-				Set on "false" to ensure, that only positive changes are accepted (typically for counter)
-			</td>
-		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
@@ -450,6 +456,21 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
+				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
+				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
+			</td>
+			<td>
+				<select id="PostProcessing_AllowNegativeRates_value1">
+					<option value="true" selected>true</option>
+					<option value="false" >false</option>
+				</select>
+			</td>
+			<td style="font-size: 80%;">
+				Set to "false" to ensure, that only positive changes are accepted (typically for counter)
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
 				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class></label>
 			</td>
@@ -457,7 +478,8 @@ textarea {
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
 			<td style="font-size: 80%;">
-				Shift the digit separator within the digital digits (positiv and negativ)
+				Shift the decimal separator (positiv or negativ).<br>
+				Eg. to move from 'm&sup3;' to 'l' (Multiply by 1000), you need to set it to +3.
 			</td>
 		</tr>
 		<tr>
@@ -483,7 +505,7 @@ textarea {
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
 			<td style="font-size: 80%;">
-				Maximum change of a reading - if threated as absolute or relative change see next parameter.
+				Maximum change of a reading - if treated as absolute or relative change see next parameter.
 			</td>
 		</tr>
 		<tr>
@@ -513,7 +535,7 @@ textarea {
 				</select>
 			</td>
 			<td style="font-size: 80%;">
-				Enable to use the after point resolution for the last analog counter
+				Enable to use the decimal place of the last analog counter
 			</td>
 		</tr>
 		
@@ -667,7 +689,9 @@ textarea {
 			</td>
 			<td style="font-size: 80%;">
 				Select the meter type so the sensors have the right units in Homeassistant.<br>
-				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!
+				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!<br>
+				Please also make sure that it matches the dimention of the value provided by the meter! Eg. if your meter provides m3, you need to also set it to m3.
+				Alternatively you could set 'DecimalShift' to '3' so the value is converted to 'l'!
 			</td>
 		</tr>
 
@@ -1345,7 +1369,8 @@ textarea {
 				<input type="text" id="System_TimeZone_value1">
 			</td>
 			<td class="description">
-				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)
+				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)<br>
+				Use this <a href=timezones.html?v=$COMMIT_HASH target=_blank>table</a> to find the settings for your region. 
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -1357,7 +1382,11 @@ textarea {
 				<input type="text" id="System_TimeServer_value1">
 			</td>
 			<td class="description">
-				Time server to synchronize system time (default: "pool.ntp.org" - used if nothing is specified)
+				Time server to synchronize system time. If it is disabled or "undefined", "pool.ntp.org" will be used.<br>
+				You can also set it to the IP of your router. Many routers like 
+				<a href=https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-7590-AX/336_Configuring-time-synchronization-NTP-for-FRITZ-Box-and-network-devices/
+				target=_blank>Fritzboxes</a> can act as a local NTP server.<br>
+				To disable NTP, you need to activate it but set the TimeServer config to be empty. In such case the time always starts at 01.01.1970 after each power cycle!
 			</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">
@@ -1369,6 +1398,18 @@ textarea {
 				<input type="text" id="System_Hostname_value1">
 			<td class="description">
 				Hostname for server - will be transfered to wlan.ini at next startup)
+			</td>
+		</tr>
+		<tr class="expert"  id="System_RSSIThreashold">
+			<td class="indent1">
+				<input type="checkbox" id="System_RSSIThreashold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreashold")' unchecked >
+				<label for=System_RSSIThreashold_enabled><class id="System_RSSIThreashold_text" style="color:black;">RSSIThreashold</class></label>
+			</td>
+			<td>
+				<input type="number" name="name" id="System_RSSIThreashold_value1" min="-100"  max="0" step="1">
+			<td class="description">
+				WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.
+				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
 			</td>
 		</tr>
 
@@ -1390,13 +1431,13 @@ textarea {
 
 </div>
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script>  
-<script type="text/javascript" src="./readconfigparam.js"></script>  
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
  
 <script type="text/javascript">
 	var canvas = document.getElementById('canvas'),
-		basepath = "http://192.168.178.22"; 
+		domainname = getDomainname(); 
 		param;
 		category;
 		NUNBERSAkt = -1;
@@ -1411,9 +1452,9 @@ function LoadConfigNeu() {
 	}
 
 
-	basepath = getbasepath(); 
-	if (!loadConfig(basepath)) {
-		alert("Config.ini could not be loaded!\nPlease reload the page.");
+	domainname = getDomainname(); 
+	if (!loadConfig(domainname)) {
+		firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
 		return;
 	} 
 	ParseConfig();	
@@ -1491,8 +1532,8 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (!_isFound)
 				{
 					_zw_txt = "In the selected field the value '" + textToFind + "' in the parameter '";
-					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
-					alert(_zw_txt);
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
+					firework.launch(_zw_txt, 'warning', 10000);
 				}
 			}
 			else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
@@ -1532,8 +1573,8 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 				if (!_isFound)
 				{
 					_zw_txt = "In the selected field the value '" + textToFind + "' in the section '";
-					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid.\nPLEASE CHECK BEFORE SAVING!";
-					alert(_zw_txt);
+					_zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
+					firework.launch(_zw_txt, 'warning', 10000);
 				}
 
 			}
@@ -1736,6 +1777,7 @@ function UpdateInputIndividual()
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt)		
 	}
 
 	var sel = document.getElementById("Numbers_value1");
@@ -1746,6 +1788,7 @@ function UpdateInputIndividual()
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -1758,6 +1801,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
 	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, category, "MakeImage", "Demo", true);
 	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
 	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
 	WriteParameter(param, category, "MakeImage", "Brightness", false);		
@@ -1780,7 +1824,7 @@ function UpdateInput() {
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
-	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
+//	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
 	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
 	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
@@ -1821,6 +1865,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
+	WriteParameter(param, category, "System", "RSSIThreashold", true);
 
 	WriteModelFiles();
 }
@@ -1876,7 +1921,8 @@ function ReadParameterAll()
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
-	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);
+	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);	
+	ReadParameter(param, "MakeImage", "Demo", true);
 	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
 	ReadParameter(param, "MakeImage", "ImageQuality", false);		
 	ReadParameter(param, "MakeImage", "Brightness", false);		
@@ -1901,7 +1947,7 @@ function ReadParameterAll()
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
+//	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
 	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
@@ -1949,6 +1995,7 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true);	
+	ReadParameter(param, "System", "RSSIThreashold", true);	
 
 	UpdateInputIndividual();
 	
@@ -2016,21 +2063,21 @@ function saveTextAsFile()
 {
 	ReadParameterAll();
 	if (document.getElementsByClassName("invalid-input").length > 0) {
-		alert("Settings cannot be saved. Please check your entries.");
+		firework.launch("Settings cannot be saved. Please check your entries!", 'danger', 30000);
 		return;
 	}
 
 	if (confirm("Are you sure you want to update \"config.ini\"?")) {
 		ReadParameterAll();
 		WriteConfigININew();
-	    SaveConfigToServer(basepath);
-		alert("Config.ini is updated!")
+	    SaveConfigToServer(domainname);
+		firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
 	}
 }
 
 function doReboot() {
 	if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = "/reboot";
+		var stringota = getDomainname() + "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
@@ -2040,7 +2087,7 @@ function doReboot() {
 
 function editConfigDirect() {
 	if (confirm("Did you save your changes?")) {
-		var stringota = "/edit_config.html";
+		var stringota = getDomainname() + "/edit_config.html?v=$COMMIT_HASH";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);

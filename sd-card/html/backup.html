@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Backup/Restore Configuration</title>
 <meta charset="utf-8">
 
@@ -32,38 +32,31 @@ input[type=number] {
 <h2>Backup Configuration</h2>
 <p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
 
-<table border="0">
-    </tr>
-        <td>
-            <button class="button" id="doBackup" type="button" onclick="doBackup()">Create Config backup</button>
-        </td>
-        <td>
-            <p id=progress></p>
-        </td>
-    </tr>
-</table>
+<button class="button" id="startBackup" type="button" onclick="startBackup()">Create Config backup</button>
+<p id=progress></p>
 <hr>
 <h2>Restore Configuration</h2>
 <p>Use the <a href="/fileserver/config/" target="_self">File Server</a> to upload individual files.</p>
 </body>
 
 
-<script src="jszip.min.js"></script>
-<script src="FileSaver.min.js"></script>
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="jszip.min.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="FileSaver.min.js?v=$COMMIT_HASH"></script>
 <script>
 
-function doBackup() {  
-    document.getElementById("progress").innerHTML = "Creating backup...";
+function startBackup() {  
+    document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
     
     // Get hostname
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/info?type=Hostname", false);
+        xhttp.open("GET", getDomainname() + "/info?type=Hostname", false);
         xhttp.send();
         hostname = xhttp.responseText;
     }
     catch(err) {
-        alert("Failed to fetch hostname: " + err.message);
+        setStatus("<span style=\"color: red\">Failed to fetch hostname: " + err.message + "!</span>");
         return;
     }
     
@@ -74,15 +67,16 @@ function doBackup() {
     console.log(zipFilename);
 
     // Get files list
+    setStatus("Fetching File List...");
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/fileserver/config/", false);
+        xhttp.open("GET", getDomainname() + "/fileserver/config/", false);
         xhttp.send();
         
         var parser = new DOMParser();
         var content = parser.parseFromString(xhttp.responseText, 'text/html');    }
     catch(err) {
-        alert("Failed to fetch files list: " + err.message);
+        setStatus("Failed to fetch files list: " + err.message);
         return;
     }
     
@@ -92,48 +86,117 @@ function doBackup() {
     
     for (a of list) {
         url = a.getAttribute("href");
-        urls.push(url);
+        urls.push(getDomainname() + url);
     }
     
     // Pack as zip and download
     try {
-        saveZip(zipFilename, urls);
+        backup(urls, zipFilename);
         }
     catch(err) {
-        alert("Failed to zip files: " + err.message);
+        setStatus("<span style=\"color: red\">Failed to zip files: " + err.message + "!</span>");
         return;
     }
 }
 
 
-const saveZip = (filename, urls) => {
-    if(!urls) return;
+function fetchFiles(urls, filesData, index, retry, zipFilename) {
+    url = urls[index];
 
-    const zip = new JSZip();
-    const folder = zip.folder("");
-    
-    var i = 0;
-    urls.forEach((url) => {        
-        const blobPromise = fetch(url).then((r) => {
-            if (r.status === 200) return r.blob();
-            return Promise.reject(new Error(r.statusText));
-        });
-        const name = url.substring(url.lastIndexOf("/") + 1);
-        folder.file(name, blobPromise);
+//    console.log(url + " started (" + index + "/" + urls.length + ")");
+    if (retry == 0) {
+        setStatus("&nbsp;- " + getFilenameFromUrl(urls[index]) + " (" + index + "/" + urls.length + ")...");
+    }
+    else {
+        setStatus("<span style=\"color: gray\">&nbsp;&nbsp;&nbsp;Retrying (" + retry + ")...</span>");
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = "blob";
+
+    if (retry == 0) { // Short timeout on first retry
+        xhr.timeout = 2000; // time in milliseconds
+    }
+    else if (retry == 1) { // longer timeout
+        xhr.timeout = 5000; // time in milliseconds
+    }
+    else { // very long timeout
+        xhr.timeout = 20000; // time in milliseconds
+    }
+
+    xhr.onload = () => { // Request finished
+        //console.log(url + " done");
+
+        filesData[index] = xhr.response;
+
+        if (index == urls.length - 1) {
+            setStatus("Fetched all files");
+            generateZipFile(urls, filesData, zipFilename);
+            return;
+        }
+        else { // Next file
+            fetchFiles(urls, filesData, index+1, 0, zipFilename);
+        }
+    };
+
+    xhr.ontimeout = (e) => { // XMLHttpRequest timed out
+        console.log("Timeout on fetching " + url + "!");
+        if (retry > 5) {
+            setStatus("<span style=\"color: red\">Backup failed, please restart the device and try again!</span>");
+        }
+        else {
+            fetchFiles(urls, filesData, index, retry+1, zipFilename);
+        }
+    };
+
+    xhr.send(null);
+}
+
+
+function generateZipFile(urls, filesData, zipFilename) {
+    setStatus("Creating Zip File...");
+
+    var zip = new JSZip();
+
+    for (var i = 0; i < urls.length; i++) {        
+        zip.file(getFilenameFromUrl(urls[i]), filesData[i]);
+    }
+
+    zip.generateAsync({type:"blob"})
+    .then(function(content) {
+        saveAs(content, zipFilename);
     });
 
-    zip.generateAsync({ type: "blob" },
-        function updateCallback(metadata) {
-            var msg = "Progress: " + metadata.percent.toFixed(0) + "%";
-            if(metadata.currentFile) {
-                msg += ", " + metadata.currentFile;
-            }
+    setStatus("Backup completed");
+}
 
-            console.log(msg);
-            document.getElementById("progress").innerHTML = msg;
-        }
-    ).then((blob) => saveAs(blob, filename));
+
+const backup = (urls, zipFilename) => {
+    if(!urls) return;
+
+    /* Testing */
+    /*len = urls.length;
+    for (i = 0; i < len - 3; i++) {
+        urls.pop();
+    }*/
+
+    console.log(urls);
+
+    urlIndex = 0;
+    setStatus("Fetching files...");
+    fetchFiles(urls, [], 0, 0, zipFilename);
 };
+
+
+function setStatus(status) {
+    console.log(status);
+    document.getElementById("progress").innerHTML += status + "<br>\n";
+}
+
+function getFilenameFromUrl(url) {
+    return filename = url.substring(url.lastIndexOf('/')+1);
+}
 
 </script>
 

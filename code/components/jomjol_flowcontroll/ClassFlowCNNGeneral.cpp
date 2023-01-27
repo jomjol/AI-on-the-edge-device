@@ -8,9 +8,16 @@
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
 #include "esp_log.h"
+#include "../../include/defines.h"
 
 static const char* TAG = "CNN";
 
+//#ifdef CONFIG_HEAP_TRACING_STANDALONE
+#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+    #include <esp_heap_trace.h>
+    #define NUM_RECORDS 300
+    static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
+#endif
 
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
@@ -30,7 +37,8 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     logfileRetentionInDays = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _vorgaengerAnalog, float analogDigitalTransitionStart)
+
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float analogDigitalTransitionStart)
 {
     string result = "";    
 
@@ -40,19 +48,19 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
  
     if (CNNType == Analogue || CNNType == Analogue100)
     {
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
-        int ergebnis_nachkomma = ((int) floor(zahl * 10) + 10) % 10;
+        float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
+        int result_after_decimal_point = ((int) floor(number * 10) + 10) % 10;
         
-        prev = ZeigerEvalAnalogNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(analog) zahl=" + std::to_string(zahl) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
+        prev = PointerEvalAnalogNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(analog) number=" + std::to_string(number) + ", result_after_decimal_point=" + std::to_string(result_after_decimal_point) + ", prev=" + std::to_string(prev));
         result = std::to_string(prev);
 
         if (_extendedResolution && (CNNType != Digital))
-            result = result + std::to_string(ergebnis_nachkomma);
+            result = result + std::to_string(result_after_decimal_point);
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i)
         {
-            prev = ZeigerEvalAnalogNeu(GENERAL[_analog]->ROI[i]->result_float, prev);
+            prev = PointerEvalAnalogNew(GENERAL[_analog]->ROI[i]->result_float, prev);
             result = std::to_string(prev) + result;
         }
         return result;
@@ -73,25 +81,24 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     if ((CNNType == DoubleHyprid10) || (CNNType == Digital100))
     {
 
-        float zahl = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
-        if (zahl >= 0)       // NaN?
+        float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
+        if (number >= 0)       // NaN?
         {
-            if (_extendedResolution)            // ist nur gesetzt, falls es die erste Ziffer ist (kein Analog vorher!)
+            if (_extendedResolution)            // is only set if it is the first digit (no analogue before!)
             {
-                int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-                int ergebnis_vorkomma = ((int) floor(zahl)) % 10;
+                int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+                int result_before_decimal_point = ((int) floor(number)) % 10;
 
-                result = std::to_string(ergebnis_vorkomma) + std::to_string(ergebnis_nachkomma);
-                prev = ergebnis_vorkomma;
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100-ext) ergebnis_vorkomma=" + std::to_string(ergebnis_vorkomma) + ", ergebnis_nachkomma=" + std::to_string(ergebnis_nachkomma) + ", prev=" + std::to_string(prev));
+                result = std::to_string(result_before_decimal_point) + std::to_string(result_after_decimal_point);
+                prev = result_before_decimal_point;
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100-ext) result_before_decimal_point=" + std::to_string(result_before_decimal_point) + ", result_after_decimal_point=" + std::to_string(result_after_decimal_point) + ", prev=" + std::to_string(prev));
             }
             else
             {
-//                prev = ZeigerEval(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev);
-                if (_vorgaengerAnalog >= 0)
-                    prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _vorgaengerAnalog, prev, true, analogDigitalTransitionStart);
+                if (_before_narrow_Analog >= 0)
+                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, analogDigitalTransitionStart);
                 else
-                    prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
+                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 result = std::to_string(prev);
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
         
@@ -108,8 +115,8 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         {
             if (GENERAL[_analog]->ROI[i]->result_float >= 0)
             {
-                prev = ZeigerEvalHybridNeu(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#ZeigerEvalHybridNeu()= " + std::to_string(prev));
+                prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#PointerEvalHybridNew()= " + std::to_string(prev));
                 result = std::to_string(prev) + result;
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#result= " + result);
                 
@@ -124,120 +131,119 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         }
         return result;
     }
-
-
     return result;
 }
 
-int ClassFlowCNNGeneral::ZeigerEvalHybridNeu(float zahl, float zahl_vorgaenger, int eval_vorgaenger, bool AnalogerVorgaenger, float digitalAnalogTransitionStart)
+
+int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
 {
     int result;
-    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
+    int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+    int result_before_decimal_point = ((int) floor(number) + 10) % 10;
 
-    if (eval_vorgaenger < 0)
+    if (eval_predecessors < 0)
     {
-        if ((ergebnis_nachkomma <= DigitalUnschaerfe * 10) || (ergebnis_nachkomma >= DigitalUnschaerfe * 10))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            result = (int) (round(zahl) + 10) % 10;
+        if ((result_after_decimal_point <= Digital_Uncertainty * 10) || (result_after_decimal_point >= Digital_Uncertainty * 10))     // Band around the digit --> Rounding, as digit reaches inaccuracy in the frame
+            result = (int) (round(number) + 10) % 10;
         else
-            result = (int) ((int) trunc(zahl) + 10) % 10;
+            result = (int) ((int) trunc(number) + 10) % 10;
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }
 
-    if (AnalogerVorgaenger)
+    if (Analog_Predecessors)
     {
-        result = ZeigerEvalAnalogToDigitNeu(zahl, zahl_vorgaenger, eval_vorgaenger, digitalAnalogTransitionStart);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - Analoger Vorgänger, Bewertung über ZeigerEvalAnalogNeu = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        result = PointerEvalAnalogToDigitNew(number, number_of_predecessors, eval_predecessors, digitalAnalogTransitionStart);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - Analog predecessor, evaluation over PointerEvalAnalogNew = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }
 
-    if ((zahl_vorgaenger >= DigitalUebergangsbereichVorgaenger ) && (zahl_vorgaenger <= (10.0 - DigitalUebergangsbereichVorgaenger)))
+    if ((number_of_predecessors >= Digital_Transition_Area_Predecessor ) && (number_of_predecessors <= (10.0 - Digital_Transition_Area_Predecessor)))
     {
-        // kein Ziffernwechsel, da Vorgänger weit genug weg ist (0+/-DigitalUebergangsbereichVorgaenger) --> zahl wird gerundet
-        if ((ergebnis_nachkomma <= DigitalBand) || (ergebnis_nachkomma >= (10-DigitalBand)))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-            result = ((int) round(zahl) + 10) % 10;
+        // no digit change, because predecessor is far enough away (0+/-DigitalTransitionRangePredecessor) --> number is rounded
+        if ((result_after_decimal_point <= DigitalBand) || (result_after_decimal_point >= (10-DigitalBand)))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+            result = ((int) round(number) + 10) % 10;
         else
-            result = ((int) trunc(zahl) + 10) % 10;
+            result = ((int) trunc(number) + 10) % 10;
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, kein Ziffernwechsel, da Vorkomma weit genug weg = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - NO analogue predecessor, no change of digits, as pre-decimal point far enough away = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }  
 
-    if (eval_vorgaenger <= 1)  // Nulldurchgang beim Vorgänger hat stattgefunden (!Bewertung über Prev_value und nicht Zahl!) --> hier aufrunden (2.8 --> 3, aber auch 3.1 --> 3)
+    if (eval_predecessors <= 1)  // Zero crossing at the predecessor has taken place (! evaluation via Prev_value and not number!) --> round up here (2.8 --> 3, but also 3.1 --> 3)
     {
-        // Wir nehmen einfach an, dass das aktuelle Digit nach dem Nulldurchgang des Vorgängers
-        // mindestens zur Hälfte (x.5) durchlaufen hat
-        if (ergebnis_nachkomma > 5)
-            // Das akt. digit hat noch keinen Nulldurchgang, aber der Vorgänger schon.
-            result =  (ergebnis_vorkomma + 1) % 10;
+        // We simply assume that the current digit after the zero crossing of the predecessor
+        // has passed through at least half (x.5)
+        if (result_after_decimal_point > 5)
+            // The current digit does not yet have a zero crossing, but the predecessor does..
+            result =  (result_before_decimal_point + 1) % 10;
         else
-            // Akt. digit und Vorgänger haben Nulldurchgang
-            result =  ergebnis_vorkomma % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, Nulldurchgang hat stattgefunden = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe));
+            // Act. digit and predecessor have zero crossing
+            result =  result_before_decimal_point % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - NO analogue predecessor, zero crossing has taken placen = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
         return result;
     }
 
     
-    // bleibt nur >= 9.x --> noch kein Nulldurchgang --> 2.8 --> 2, 
-    // und ab 9.7(DigitalUebergangsbereichVorlauf) 3.1 --> 2
-    // alles >=x.4 kann als aktuelle Zahl gelten im Übergang. Bei 9.x Vorgänger kann die aktuelle
-    // Zahl noch x.6 - x.7 sein. 
-    // Vorlauf (else - Zweig) passiert nicht bereits ab 9.
-    if (DigitalUebergangsbereichVorlauf>=zahl_vorgaenger || ergebnis_nachkomma >= 4)
-        // aktuelles digit hat genauso wie das Vorgängerdigit noch keinen Nulldurchgang. 
-        result =  ergebnis_vorkomma % 10;
+    // remains only >= 9.x --> no zero crossing yet --> 2.8 --> 2, 
+    // and from 9.7(DigitalTransitionRangeLead) 3.1 --> 2
+    // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
+    // number can still be x.6 - x.7. 
+    // Preceding (else - branch) does not already happen from 9.
+    if (Digital_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4)
+        // The current digit, like the previous digit, does not yet have a zero crossing. 
+        result =  result_before_decimal_point % 10;
     else
-        // aktuelles digit läuft dem kleineren digit (9.x) vor. Also schon >=x.0 während das vorherige Digit noch
-        // keinen Nulldurchgang hat. Daher wird um 1 reduziert.
-        result =  (ergebnis_vorkomma - 1 + 10) % 10;
+        // current digit precedes the smaller digit (9.x). So already >=x.0 while the previous digit has not yet
+        // has no zero crossing. Therefore, it is reduced by 1.
+        result =  (result_before_decimal_point - 1 + 10) % 10;
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalHybridNeu - KEIN Analoger Vorgänger, >= 9.5 --> noch kein Nulldurchgang = " + std::to_string(result) +
-                                                " zahl: " + std::to_string(zahl) + " zahl_vorgaenger = " + std::to_string(zahl_vorgaenger)+ " eval_vorgaenger = " + std::to_string(eval_vorgaenger) + " DigitalUnschaerfe = " +  std::to_string(DigitalUnschaerfe) + " ergebnis_nachkomma = " + std::to_string(ergebnis_nachkomma));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - O analogue predecessor, >= 9.5 --> no zero crossing yet = " + std::to_string(result) +
+                                                " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
     return result;
 }
 
 
-int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vorgaenger,  int eval_vorgaenger, float analogDigitalTransitionStart)
+int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float analogDigitalTransitionStart)
 {
     int result;
-    int ergebnis_nachkomma = ((int) floor(zahl * 10)) % 10;
-    int ergebnis_vorkomma = ((int) floor(zahl) + 10) % 10;
+    int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+    int result_before_decimal_point = ((int) floor(number) + 10) % 10;
     bool roundedUp = false;
 
-    // Innerhalb der digitalen Unschaefe 
-    if ((ergebnis_nachkomma >= (10-DigitalUnschaerfe * 10))     // Band um die Ziffer --> Runden, da Ziffer im Rahmen Ungenauigkeit erreicht
-        || (eval_vorgaenger <= 4 && ergebnis_nachkomma>=6))  {   // oder digit läuft nach (analog =0..4, digit >=6)
-        result = (int) (round(zahl) + 10) % 10;
+    // Within the digital inequalities 
+    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+        || (eval_predecessors <= 4 && result_after_decimal_point>=6))  {   // or digit runs after (analogue =0..4, digit >=6)
+        result = (int) (round(number) + 10) % 10;
         roundedUp = true;
-        // vor/nachkomma neu berechnen, da wir anhand der Unschaefe die Zahl anpassen.
-        ergebnis_nachkomma = ((int) floor(result * 10)) % 10;
-        ergebnis_vorkomma = ((int) floor(result) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger: " + std::to_string(ziffer_vorgaenger) +
-                                                    " erg_vorkomma: " + std::to_string(ergebnis_vorkomma) + 
-                                                    " erg_nachkomma: " + std::to_string(ergebnis_nachkomma));
+        // before/ after decimal point, because we adjust the number based on the uncertainty.
+        result_after_decimal_point = ((int) floor(result * 10)) % 10;
+        result_before_decimal_point = ((int) floor(result) + 10) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Digital Uncertainty - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
+                                                    " erg before comma: " + std::to_string(result_before_decimal_point) + 
+                                                    " erg after comma: " + std::to_string(result_after_decimal_point));
     } else {
-        result = (int) ((int) trunc(zahl) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - KEINE digitaleUnschaerfe - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger));
+        result = (int) ((int) trunc(number) + 10) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digital Uncertainty - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder));
     }
 
-    // Kein Nulldurchgang hat stattgefunden.
-    // Nur eval_vorgaenger verwendet, da ziffer_vorgaenger hier falsch sein könnte.
-    // ziffer_vorgaenger<=0.1 & eval_vorgaenger=9 entspricht analog wurde zurückgesetzt wegen vorhergehender analog, die noch nicht auf 0 sind.
-    if ((eval_vorgaenger>=6 && (ziffer_vorgaenger>analogDigitalTransitionStart || ziffer_vorgaenger<=0.2) && roundedUp))
+    // No zero crossing has taken place.
+    // Only eval_predecessors used because numeral_preceder could be wrong here.
+    // numeral_preceder<=0.1 & eval_predecessors=9 corresponds to analogue was reset because of previous analogue that are not yet at 0.
+    if ((eval_predecessors>=6 && (numeral_preceder>analogDigitalTransitionStart || numeral_preceder<=0.2) && roundedUp))
     {
-        result =  ((ergebnis_vorkomma+10) - 1) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogToDigitNeu - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
-                                    " zahl: " + std::to_string(zahl) + 
-                                    " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + 
-                                    " erg_nachkomma = " +  std::to_string(ergebnis_nachkomma));
+        result =  ((result_before_decimal_point+10) - 1) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
+                                    " number: " + std::to_string(number) + 
+                                    " numeral_preceder = " + std::to_string(numeral_preceder) + 
+                                    " eerg after comma = " +  std::to_string(result_after_decimal_point));
 
     }
 
@@ -245,53 +251,53 @@ int ClassFlowCNNGeneral::ZeigerEvalAnalogToDigitNeu(float zahl, float ziffer_vor
 
 }
 
-int ClassFlowCNNGeneral::ZeigerEvalAnalogNeu(float zahl, int ziffer_vorgaenger)
+
+int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder)
 {
-    float zahl_min, zahl_max;
+    float number_min, number_max;
     int result;
 
-    if (ziffer_vorgaenger == -1)
+    if (numeral_preceder == -1)
     {
-        result = (int) floor(zahl);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - kein Vorgänger - Ergebnis = " + std::to_string(result) +
-                                                    " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+        result = (int) floor(number);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - No predecessor - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
         return result;
     }
 
-    zahl_min = zahl - AnalogFehler / 10.0;
-    zahl_max = zahl + AnalogFehler / 10.0;
+    number_min = number - Analog_error / 10.0;
+    number_max = number + Analog_error / 10.0;
 
-    if ((int) floor(zahl_max) - (int) floor(zahl_min) != 0)
+    if ((int) floor(number_max) - (int) floor(number_min) != 0)
     {
-        if (ziffer_vorgaenger <= AnalogFehler)
+        if (numeral_preceder <= Analog_error)
         {
-            result = ((int) floor(zahl_max) + 10) % 10;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach oben - Ergebnis = " + std::to_string(result) +
-                                                        " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+            result = ((int) floor(number_max) + 10) % 10;
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - number ambiguous, correction upwards - result = " + std::to_string(result) +
+                                                        " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
             return result;
         }
-        if (ziffer_vorgaenger >= 10 - AnalogFehler)
+        if (numeral_preceder >= 10 - Analog_error)
         {
-            result = ((int) floor(zahl_min) + 10) % 10;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - Zahl uneindeutig, Korrektur nach unten - Ergebnis = " + std::to_string(result) +
-                                                        " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+            result = ((int) floor(number_min) + 10) % 10;
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - number ambiguous, downward correction - result = " + std::to_string(result) +
+                                                        " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
             return result;
         }
     }
     
 
-    result = ((int) floor(zahl) + 10) % 10;
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "ZeigerEvalAnalogNeu - Zahl eindeutig, keine Korrektur notwendig - Ergebnis = " + std::to_string(result) +
-                                                " zahl: " + std::to_string(zahl) + " ziffer_vorgaenger = " + std::to_string(ziffer_vorgaenger) + " AnalogFehler = " +  std::to_string(AnalogFehler));
+    result = ((int) floor(number) + 10) % 10;
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogNew - number unambiguous, no correction necessary - result = " + std::to_string(result) +
+                                                " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) + " Analog_error = " +  std::to_string(Analog_error));
 
     return result;
-
 }
 
 
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
-    std::vector<string> zerlegt;
+    std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
@@ -317,53 +323,53 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        zerlegt = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(zerlegt[0]) == "LOGIMAGELOCATION") && (zerlegt.size() > 1))
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "LOGIMAGELOCATION") && (splitted.size() > 1))
         {
-            this->LogImageLocation = "/sdcard" + zerlegt[1];
+            this->LogImageLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
         }
-        if ((toUpper(zerlegt[0]) == "LOGIMAGESELECT") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGIMAGESELECT") && (splitted.size() > 1))
         {
-            LogImageSelect = zerlegt[1];
+            LogImageSelect = splitted[1];
             isLogImageSelect = true;            
         }
 
-        if ((toUpper(zerlegt[0]) == "LOGFILERETENTIONINDAYS") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(zerlegt[1]);
+            this->logfileRetentionInDays = std::stoi(splitted[1]);
         }
 
-        if ((toUpper(zerlegt[0]) == "MODEL") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "MODEL") && (splitted.size() > 1))
         {
-            this->cnnmodelfile = zerlegt[1];
+            this->cnnmodelfile = splitted[1];
         }
         
-        if ((toUpper(zerlegt[0]) == "CNNGOODTHRESHOLD") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "CNNGOODTHRESHOLD") && (splitted.size() > 1))
         {
-            CNNGoodThreshold = std::stof(zerlegt[1]);
+            CNNGoodThreshold = std::stof(splitted[1]);
         }
-        if (zerlegt.size() >= 5)
+        if (splitted.size() >= 5)
         {
-            general* _analog = GetGENERAL(zerlegt[0], true);
+            general* _analog = GetGENERAL(splitted[0], true);
             roi* neuroi = _analog->ROI[_analog->ROI.size()-1];
-            neuroi->posx = std::stoi(zerlegt[1]);
-            neuroi->posy = std::stoi(zerlegt[2]);
-            neuroi->deltax = std::stoi(zerlegt[3]);
-            neuroi->deltay = std::stoi(zerlegt[4]);
+            neuroi->posx = std::stoi(splitted[1]);
+            neuroi->posy = std::stoi(splitted[2]);
+            neuroi->deltax = std::stoi(splitted[3]);
+            neuroi->deltay = std::stoi(splitted[4]);
             neuroi->CCW = false;
-            if (zerlegt.size() >= 6)
+            if (splitted.size() >= 6)
             {
-                neuroi->CCW = toUpper(zerlegt[5]) == "TRUE";
+                neuroi->CCW = toUpper(splitted[5]) == "TRUE";
             }
             neuroi->result_float = -1;
             neuroi->image = NULL;
             neuroi->image_org = NULL;
         }
 
-        if ((toUpper(zerlegt[0]) == "SAVEALLFILES") && (zerlegt.size() > 1))
+        if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(zerlegt[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
         }
     }
@@ -381,6 +387,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     return true;
 }
+
 
 general* ClassFlowCNNGeneral::FindGENERAL(string _name_number)
 {
@@ -413,7 +420,7 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
         if (GENERAL[i]->name == _analog)
             _ret = GENERAL[i];
 
-    if (!_create)         // nicht gefunden und soll auch nicht erzeugt werden
+    if (!_create)         // not found and should not be created
         return _ret;
 
     if (_ret == NULL)
@@ -432,7 +439,6 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
 
     return _ret;
 }
-
 
 
 string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
@@ -459,9 +465,16 @@ string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
 }
 
 
-
 bool ClassFlowCNNGeneral::doFlow(string time)
 {
+
+#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+    //register a buffer to record the memory trace
+    ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
+    // start tracing
+    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+#endif
+
     if (disabled)
       return true;
 
@@ -469,13 +482,20 @@ bool ClassFlowCNNGeneral::doFlow(string time)
         return false;
     };
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow nach Alignment");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow after alignment");
 
     doNeuralNetwork(time);
 
     RemoveOldLogs();
+
+#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+    ESP_ERROR_CHECK( heap_trace_stop() );
+    heap_trace_dump(); 
+#endif   
+
     return true;
 }
+
 
 bool ClassFlowCNNGeneral::doAlignAndCut(string time)
 {
@@ -502,39 +522,44 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
             if (SaveAllFiles)
             {
                 if (GENERAL[_ana]->name == "default")
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
                 else
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
             } 
         }
 
     return true;
 } 
 
+
 void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw)
 {
-    if (CNNType == Analogue || CNNType == Analogue100)
-    {
-        int r = 0;
-        int g = 255;
-        int b = 0;
+    if (_zw->ImageOkay()) 
+    { 
+        if (CNNType == Analogue || CNNType == Analogue100)
+        {
+            int r = 0;
+            int g = 255;
+            int b = 0;
 
-        for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
-            for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
-            {
-                _zw->drawRect(GENERAL[_ana]->ROI[i]->posx, GENERAL[_ana]->ROI[i]->posy, GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, r, g, b, 1);
-                _zw->drawEllipse( (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int)  (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) (GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
-                _zw->drawLine((int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) GENERAL[_ana]->ROI[i]->posy, (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay), r, g, b, 2);
-                _zw->drawLine((int) GENERAL[_ana]->ROI[i]->posx, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
-            }
-    }
-    else
-    {
-        for (int _dig = 0; _dig < GENERAL.size(); ++_dig)
-            for (int i = 0; i < GENERAL[_dig]->ROI.size(); ++i)
-                _zw->drawRect(GENERAL[_dig]->ROI[i]->posx, GENERAL[_dig]->ROI[i]->posy, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, 0, 0, (255 - _dig*100), 2);
+            for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
+                for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
+                {
+                    _zw->drawRect(GENERAL[_ana]->ROI[i]->posx, GENERAL[_ana]->ROI[i]->posy, GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, r, g, b, 1);
+                    _zw->drawEllipse( (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int)  (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) (GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
+                    _zw->drawLine((int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) GENERAL[_ana]->ROI[i]->posy, (int) (GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax/2), (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay), r, g, b, 2);
+                    _zw->drawLine((int) GENERAL[_ana]->ROI[i]->posx, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), (int) GENERAL[_ana]->ROI[i]->posx + GENERAL[_ana]->ROI[i]->deltax, (int) (GENERAL[_ana]->ROI[i]->posy + GENERAL[_ana]->ROI[i]->deltay/2), r, g, b, 2);
+                }
+        }
+        else
+        {
+            for (int _dig = 0; _dig < GENERAL.size(); ++_dig)
+                for (int i = 0; i < GENERAL[_dig]->ROI.size(); ++i)
+                    _zw->drawRect(GENERAL[_dig]->ROI[i]->posx, GENERAL[_dig]->ROI[i]->posy, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, 0, 0, (255 - _dig*100), 2);
+        }
     }
 } 
+
 
 bool ClassFlowCNNGeneral::getNetworkParameter()
 {
@@ -546,11 +571,18 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file " + cnnmodelfile);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Init aborted!");
+        LogFile.WriteHeapInfo("getNetworkParameter-LoadModel");
         delete tflite;
         return false;
     } 
-    tflite->MakeAllocate();
+
+    if (!tflite->MakeAllocate()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tflite model -> Init aborted!");
+        LogFile.WriteHeapInfo("getNetworkParameter-MakeAllocate");
+        delete tflite;
+        return false;
+    }
 
     if (CNNType == AutoDetect)
     {
@@ -593,13 +625,14 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
                 }
                 break;
             default:
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "tflite passt nicht zur Firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "tflite does not fit the firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
         }
     }
 
     delete tflite;
     return true;
 }
+
 
 bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 {
@@ -612,13 +645,20 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
-    if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't read model file " + cnnmodelfile);
 
+    if (!tflite->LoadModel(zwcnn)) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Exec aborted this round!");
+        LogFile.WriteHeapInfo("doNeuralNetwork-LoadModel");
         delete tflite;
         return false;
-    } 
-    tflite->MakeAllocate();
+    }
+
+    if (!tflite->MakeAllocate()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tfilte model -> Exec aborted this round!");
+        LogFile.WriteHeapInfo("doNeuralNetwork-MakeAllocate");
+        delete tflite;
+        return false;
+    }
 
     for (int n = 0; n < GENERAL.size(); ++n) // For each NUMBER
     {
@@ -637,7 +677,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After Invoke");
 
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
@@ -648,7 +688,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         else
                             GENERAL[n]->ROI[roi]->result_float = result * 10;
                               
-                        ESP_LOGD(TAG, "Result General(Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
+                        ESP_LOGD(TAG, "General result (Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
                         if (isLogImage)
                             LogImage(logPath, GENERAL[n]->ROI[roi]->name, &GENERAL[n]->ROI[roi]->result_float, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                     } break;
@@ -658,7 +698,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     {
                         GENERAL[n]->ROI[roi]->result_klasse = 0;
                         GENERAL[n]->ROI[roi]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[n]->ROI[roi]->image);
-                        ESP_LOGD(TAG, "Result General(Digit)%i: %d", roi, GENERAL[n]->ROI[roi]->result_klasse);
+                        ESP_LOGD(TAG, "General result (Digit)%i: %d", roi, GENERAL[n]->ROI[roi]->result_klasse);
 
                         if (isLogImage)
                         {
@@ -674,85 +714,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             }
                         }
                     } break;
-/*
-                case DigitalHyprid:
-                    {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DigitalHyprid");
-                        int _num, _nachkomma;
 
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
-                        tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
-
-                        _num = tflite->GetOutClassification(0, 10);
-                        _nachkomma = tflite->GetOutClassification(11, 21);
-
-
-                        string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        if ((_num == 10) || (_nachkomma == 10))                      // NaN detektiert
-                            GENERAL[_ana]->ROI[i]->result_float = -1;
-                        else
-                            GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
-
-                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
-                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        if (isLogImage)
-                        {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
-                            if (isLogImageSelect)
-                            {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                            else
-                            {
-                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                        }
-                    } break;
-*/
-/*
-                case DigitalHyprid10:
-                    {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DigitalHyprid10");
-                        int _num, _nachkomma;
-
-                        tflite->LoadInputImageBasis(GENERAL[_ana]->ROI[i]->image);        
-                        tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
-
-                        _num = tflite->GetOutClassification(0, 9);
-                        _nachkomma = tflite->GetOutClassification(10, 19);
-
-
-                        string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        GENERAL[_ana]->ROI[i]->result_float = fmod((double) _num + (((double)_nachkomma)-5)/10 + (double) 10, 10);
-
-                        ESP_LOGD(TAG, "Result General(DigitalHyprid)%i: %f\n", i, GENERAL[_ana]->ROI[i]->result_float);
-                        _zwres = "Result General(DigitalHyprid)" + to_string(i) + ": " + to_string(GENERAL[_ana]->ROI[i]->result_float);
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, _zwres);
-
-                        if (isLogImage)
-                        {
-                            string _imagename = GENERAL[_ana]->name +  "_" + GENERAL[_ana]->ROI[i]->name;
-                            if (isLogImageSelect)
-                            {
-                                if (LogImageSelect.find(GENERAL[_ana]->ROI[i]->name) != std::string::npos)
-                                    LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                            else
-                            {
-                                LogImage(logPath, _imagename, NULL, &GENERAL[_ana]->ROI[i]->result_klasse, time, GENERAL[_ana]->ROI[i]->image_org);
-                            }
-                        }
-                    } break;
-*/
 
                 case DoubleHyprid10:
                     {
@@ -764,7 +726,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                         tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Nach Invoke");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After Invoke");
 
                         _num = tflite->GetOutClassification(0, 9);
                         _numplus = (_num + 1) % 10;
@@ -804,8 +766,8 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         {
                             GENERAL[n]->ROI[roi]->isReject = true;
                             result = -1;
-                            _result_save_file+= 100;     // Für den Fall, dass fit nicht ausreichend, soll trotzdem das Ergebnis mit "-10x.y" abgespeichert werden.
-                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + "Threshold: " + to_string(CNNGoodThreshold) + ")";
+                            _result_save_file+= 100;     // In case fit is not sufficient, the result should still be saved with "-10x.y".
+                            string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + ", Threshold: " + to_string(CNNGoodThreshold) + ")";
                             LogFile.WriteToFile(ESP_LOG_WARN, TAG, zw);
                         }
                         else
@@ -883,6 +845,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     return true;
 }
 
+
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 {
     if (!(CNNType == Digital))
@@ -890,7 +853,6 @@ bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 
     return false;
 }
-
 
 
 std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
@@ -904,20 +866,20 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
             if (GENERAL[_ana]->ROI[i]->image)
             {
                 if (GENERAL[_ana]->name == "default")
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
                 else
-                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp"));
+                    GENERAL[_ana]->ROI[i]->image->SaveToFile(FormatFileName("/sdcard/img_tmp/" + GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg"));
             }
 
             HTMLInfo *zw = new HTMLInfo;
             if (GENERAL[_ana]->name == "default")
             {
-                zw->filename = GENERAL[_ana]->ROI[i]->name + ".bmp";
+                zw->filename = GENERAL[_ana]->ROI[i]->name + ".jpg";
                 zw->filename_org = GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
             else
             {
-                zw->filename = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".bmp";
+                zw->filename = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
                 zw->filename_org = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
 
@@ -934,10 +896,12 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo()
     return result;
 }
 
-int ClassFlowCNNGeneral::getAnzahlGENERAL()
+
+int ClassFlowCNNGeneral::getNumberGENERAL()
 {
     return GENERAL.size();
 }
+
 
 string ClassFlowCNNGeneral::getNameGENERAL(int _analog)
 {
@@ -947,6 +911,7 @@ string ClassFlowCNNGeneral::getNameGENERAL(int _analog)
     return "GENERAL DOES NOT EXIST";
 }
 
+
 general* ClassFlowCNNGeneral::GetGENERAL(int _analog)
 {
     if (_analog < GENERAL.size())
@@ -954,7 +919,6 @@ general* ClassFlowCNNGeneral::GetGENERAL(int _analog)
 
     return NULL;
 }
-
 
 
 void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numbers)
@@ -972,6 +936,7 @@ void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numb
             (*_name_numbers).push_back(_name);
     }
 }
+
 
 string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
 {

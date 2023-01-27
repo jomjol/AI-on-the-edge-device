@@ -15,6 +15,7 @@ extern "C"
 #include <string.h>
 #include "Helper.h"
 #include <fstream>
+#include <algorithm>
 
 
 const char* build_time(void)
@@ -38,6 +39,19 @@ const char* libfive_git_branch(void)
 }
 
 
+std::string getFwVersion(void) {
+    std::string buf;
+    if (std::string(GIT_TAG) == "") { // Tag not set, show branch
+        buf = "Development-Branch: " + std::string(GIT_BRANCH);
+    }
+    else { // Tag is set, ignore branch
+        buf = "Release: " + std::string(GIT_TAG);
+    }
+    buf = buf + " (Commit: " + std::string(GIT_REV) + ")";
+
+    return buf;
+}
+
 std::string getHTMLversion(void){
     char buf[100]="?\0";
     FILE* pFile;
@@ -50,7 +64,10 @@ std::string getHTMLversion(void){
     fgets(buf, sizeof(buf), pFile); // Line 1: Version
     fclose(pFile);
 
-    return std::string(buf);
+    string value = string(buf);
+    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end()); // Remove any newlines
+
+    return value;
 }
 
 std::string getHTMLcommit(void){
@@ -66,7 +83,10 @@ std::string getHTMLcommit(void){
     fgets(buf, sizeof(buf), pFile); // Line 2: Commit
     fclose(pFile);
 
-    return std::string(buf);
+    string value = string(buf);
+    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end()); // Remove any newlines
+
+    return value;
 }
 
 #endif // _VERSION_H

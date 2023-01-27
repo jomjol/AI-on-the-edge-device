@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Overview</title>
 <meta charset="utf-8">
 
@@ -55,8 +55,8 @@
   </tr> 
   <tr>	
     <td class="tg-3">
-	<div id="timestamp" ></div>	
 	<div id="statusflow" ></div>	
+	<div id="timestamp" ></div>	
 	<div id="cputemp" ></div>	
 	<div id="rssi" ></div>
 	<div>
@@ -68,95 +68,117 @@
 </table>
 
 
-<script src="/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script> 
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
 <script type="text/javascript">
 
-function addZero(i) {
+	function addZero(i) {
 	  if (i < 10) {
 		i = "0" + i;
 	  }
 	  return i;
 	}
 
-	$(document).ready(function() {
-	var d = new Date();
-	var h = addZero(d.getHours());
-	var m = addZero(d.getMinutes());
-	var s = addZero(d.getSeconds());
 
-	$('#img').html('<img src="/img_tmp/alg_roi.jpg" style="max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
-	loadStatus();
-	loadCPUTemp();
-	loadRSSI();
-	loadUptime();
-	loadRoundCounter();
-	refresh();
+	$(document).ready(function() {
+		LoadData();
+		LoadROIImage();
 	});
 
-function refresh() {
-	setTimeout (function() {
-	var time = new Date();
-	var timestamp = new Date().getTime();
-	var d = new Date();
-	var h = addZero(d.getHours());
-	var m = addZero(d.getMinutes());
-	var s = addZero(d.getSeconds());	
-	
-	// reassign the url to be like alg_roi.jpg?timestamp=456784512 based on timestamp
-	$('#img').html('<img src="/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'"max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
-	$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
-	init();
-	  refresh();
-	}, 300000);
 
-  }
+	function LoadData(){
+		loadValue("value", "value");
+		loadValue("raw", "raw");
+		loadValue("prevalue", "prevalue");
+		loadValue("error", "error", "font-size:8px");
+		loadStatus();
+		loadCPUTemp();
+		loadRSSI();
+		loadUptime();
+		loadRoundCounter();
+	}
 
-	var basepath = "http://192.168.178.22"; 
+
+	function LoadROIImage(){
+		var d = new Date();
+		var timestamp = d.getTime();
+		var h = addZero(d.getHours());
+		var m = addZero(d.getMinutes());
+		var s = addZero(d.getSeconds());
+		$('#img').html('<img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
+	}
+
+
+	function Refresh() {
+		setTimeout (function() {
+			LoadData();
+			LoadROIImage();
+			Refresh();
+		}, 300000);
+	}
+
 
 	function loadStatus() {
-		url = basepath + '/statusflow';     
+		url = domainname + '/statusflow';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#statusflow').html("Status: " + _rsp);
+				$('#statusflow').html("State: " + _rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
 		xhttp.send();
 	}
+
 
 	function loadCPUTemp() {
-		url = basepath + '/cpu_temperature';     
+		url = domainname + '/cpu_temperature';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#cputemp').html("CPU Temperature: " +_rsp);
+				$('#cputemp').html("CPU Temperature: " +_rsp + "°C");
 			}
 		}
 		xhttp.open("GET", url, true);
 		xhttp.send();
 	}
 
+
 	function loadRSSI() {
-		url = basepath + '/rssi';     
+		url = domainname + '/rssi';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#rssi').html("RSSI: " + _rsp);
+				
+				if (_rsp >= -55) {
+					$('#rssi').html("WIFI Signal: Excellent (" + _rsp + "dBm)");
+				}
+				else if (_rsp < -55 && _rsp >= -67) {
+					$('#rssi').html("WIFI Signal: Good (" + _rsp + "dBm)");
+				}
+				else if (_rsp < -67 && _rsp >= -78) {
+					$('#rssi').html("WIFI Signal: Fair (" + _rsp + "dBm)");
+				}
+				else if (_rsp < -78 && _rsp >= -85) {
+					$('#rssi').html("WIFI Signal: Weak (" + _rsp + "dBm)");
+				}
+				else {
+					$('#rssi').html("WIFI Signal: Unreliable (" + _rsp + "dBm)");
+				}
 			}
 		}
 		xhttp.open("GET", url, true);
 		xhttp.send();		
 	}
 
+
 	function loadUptime() {
-		url = basepath + '/uptime';     
+		url = domainname + '/uptime';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -168,8 +190,9 @@ function refresh() {
 		xhttp.send();
 	}
 
+
 	function loadRoundCounter() {
-		url = basepath + '/info?type=Round';     
+		url = domainname + '/info?type=Round';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -181,8 +204,9 @@ function refresh() {
 		xhttp.send();
 	}
 		
+	
 	function loadValue(_type, _div, _style) {
-		url = basepath + '/value?all=true&type=' + _type;     
+		url = domainname + '/value?all=true&type=' + _type;     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -221,19 +245,13 @@ function refresh() {
 		xhttp.send();		
 	}
 
+
 	function init(){
-		basepath = getbasepath();
-		loadValue("value", "value");
-		loadValue("raw", "raw");
-		loadValue("prevalue", "prevalue");
-		loadValue("error", "error", "font-size:8px");
-		loadStatus();
-		loadCPUTemp();
-		loadRSSI();
-		loadUptime();
-		loadRoundCounter();
+		domainname = getDomainname();
+		Refresh();
 	}
 
+	
 	init();
 
 </script>

@@ -1,4 +1,6 @@
 #ifdef ENABLE_INFLUXDB
+
+#pragma once
 #ifndef INTERFACE_INFLUXDB_H
 #define INTERFACE_INFLUXDB_H
 

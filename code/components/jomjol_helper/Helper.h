@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef HELPER_H
+#define HELPER_H
+
 #include <string>
 #include <fstream>
 #include <vector>
@@ -14,12 +18,10 @@ bool CopyFile(string input, string output);
 bool DeleteFile(string fn);
 bool RenameFile(string from, string to);
 bool MakeDir(std::string _what);
+bool FileExists(string filename);
 
 
 string RundeOutput(double _in, int _anzNachkomma);
-
-
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec = 1, bool silent = true);
 
 size_t findDelimiterPos(string input, string delimiter);
 //string trim(string istring);
@@ -29,6 +31,7 @@ bool ctype_space(const char c, string adddelimiter);
 string getFileType(string filename);
 string getFileFullFileName(string filename);
 string getDirectory(string filename);
+
 
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);
@@ -67,7 +70,7 @@ string getMac(void);
 
 /* Error bit fields
    One bit per error
-   Make sure it matches https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes */
+   Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
 enum SystemStatusFlag_t {          // One bit per error
     // First Byte
     SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
@@ -84,7 +87,10 @@ void clearSystemStatusFlag(SystemStatusFlag_t flag);
 int getSystemStatus(void);
 bool isSetSystemStatusFlag(SystemStatusFlag_t flag);
 
+time_t getUpTime(void);
 string getResetReason(void);
 std::string getFormatedUptime(bool compact);
 
 const char* get404(void);
+
+#endif //HELPER_H

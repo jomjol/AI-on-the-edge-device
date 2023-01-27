@@ -6,18 +6,21 @@ Here this edge computing is brought into a practical oriented example, where a A
 
 This projects allows you to digitalize your **analoge** water, gas, power and other meters using cheap and easily available hardware.
 
-All you need is an [ESP32 board with a supported camera](https://github.com/jomjol/AI-on-the-edge-device/wiki/Hardware-Compatibility) and a bit of a practical hand.
+All you need is an [ESP32 board with a supported camera](https://jomjol.github.io/AI-on-the-edge-device-docs/Hardware-Compatibility/) and a bit of a practical hand.
 
 <img src="images/esp32-cam.png" width="200px">
 
 ## Key features
+- Tensorflow Lite (TFlite) integration - including easy to use wrapper
+- Inline Image processing (feature detection, alignment, ROI extraction)
 - **Small** and **cheap** device (3x4.5x2 cm³, < 10 EUR)
 - camera and illumination integrated
-- Web surface for administration and control
+- Web surface to administrate and control
 - OTA-Interface to update directly through the web interface
-- API for easy integration
-- Inline Image processing (feature detection, alignment, ROI extraction)
-- Tensorflow Lite (TFlite) integration - including easy to use wrapper
+- Full integration into Homeassistant
+- Support for Influx DB 1
+- MQTT
+- REST API
 
 ## Workflow
 The device takes a photo of your meter at a defined interval. It then extracts the Regions of Interest (ROI's) out of it and runs them through an artificial inteligence. As a result, you get the digitalized value of your meter.
@@ -38,7 +41,7 @@ There are several options what to do with that value. Either send it to a MQTT b
 
 
 ## Setup
-There is a growing [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki) which provides you with a lot of information.
+There is a growing [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/) which provides you with a lot of information.
 Head there to get a start, set it up and configure it.
 
 There are also a articles in the German Heise magazine "make:" about the setup and the technical background (behind a paywall) : [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
@@ -56,10 +59,10 @@ There are different ways to flash your ESP32:
 - Flash Tool from Espressif
 - ESPtool (Command Line Tool)
 
-See the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation) for more information.
+See the [Docu](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for more information.
 
 ### Flashing the SD-Card
-The SD-Card must be flashed separately, see the [Wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation) for details.
+The SD-Card must be flashed separately, see the [Docu](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for details.
 
 ## Casing
 
@@ -90,7 +93,7 @@ See [Changelog](Changelog.md)
 ## Tools
 
 * Logfile downloader and combiner (Thx to [reserve85](https://github.com/reserve85))
-  * Files see ['/tools/logfile-tool'](tbd), How-to see [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader)
+  * Files see ['/tools/logfile-tool'](tbd), How-to see [Docu](https://jomjol.github.io/AI-on-the-edge-device-docs/outdated--Gasmeter-Log-Downloader/)
 
 ## Additional Ideas
 There are some ideas and feature requests which are not followed currently - mainly due to capacity reasons on side of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md)

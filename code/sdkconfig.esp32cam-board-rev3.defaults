@@ -1,0 +1,7 @@
+CONFIG_ESP32_REV_MIN_0=n
+
+ESP32_REV_MIN_3=y
+CONFIG_ESP32_REV_MIN_3=y
+
+#https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#config-spiram-cache-workaround
+CONFIG_ESP32_DPORT_WORKAROUND=n

@@ -1,7 +1,7 @@
+#pragma once
 
-
-#ifndef __FLOWCONTROLL__
-#define __FLOWCONTROLL__
+#ifndef CLASSFLOWCONTROLL_H
+#define CLASSFLOWCONTROLL_H
 
 #include <string>
 
@@ -18,13 +18,6 @@
 #endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowWriteList.h"
-
-
-#define READOUT_TYPE_VALUE 0
-#define READOUT_TYPE_PREVALUE 1
-#define READOUT_TYPE_RAWVALUE 2
-#define READOUT_TYPE_ERROR 3
-
 
 class ClassFlowControll :
     public ClassFlow
@@ -60,9 +53,15 @@ public:
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);
-#ifdef ENABLE_MQTT
+
+	#ifdef ENABLE_MQTT
 	string GetMQTTMainTopic();
-#endif //ENABLE_MQTT
+	#endif //ENABLE_MQTT
+
+	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+	void DigitalDrawROI(CImageBasis *_zw);
+	void AnalogDrawROI(CImageBasis *_zw);
+	#endif
 
 	esp_err_t GetJPGStream(std::string _fn, httpd_req_t *req);
 	esp_err_t SendRawJPG(httpd_req_t *req);
@@ -72,15 +71,17 @@ public:
 	bool isAutoStart(long &_intervall);
 
 	std::string* getActStatus();
+	void setActStatus(std::string _aktstatus);
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	
 
 	t_CNNType GetTypeDigital();
 	t_CNNType GetTypeAnalog();
-#ifdef ENABLE_MQTT
+	
+	#ifdef ENABLE_MQTT
 	bool StartMQTTService();
-#endif //ENABLE_MQTT
+	#endif //ENABLE_MQTT
 
 	int CleanTempFolder();
 

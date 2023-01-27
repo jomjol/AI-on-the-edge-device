@@ -1,15 +1,77 @@
-##################################################
+################################################## 
 # Application specific configuration
 # Edit this file instead of sdkconfig.esp32cam!
 # After editting, make sure to explicitly delete 
 # sdkconfig.esp32cam to apply your changes!
 ##################################################
 
+#if ENABLE_SOFTAP = disabled, set 
+#CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n 
+#to save 28k of flash
+
 CONFIG_TASK_WDT=n
 CONFIG_TASK_WDT_CHECK_IDLE_TASK=n
 
 CONFIG_COMPILER_OPTIMIZATION_DEFAULT=n
 CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
+###### safe optimizations 
+CONFIG_BOOTLOADER_COMPILER_OPTIMIZATION_SIZE=y
+CONFIG_COMPILER_OPTIMIZATION_ASSERTIONS_SILENT=y
+
+#disable bootloader logging
+CONFIG_COMPILER_OPTIMIZATION_ASSERTIONS_DISABLE=y
+CONFIG_COMPILER_OPTIMIZATION_ASSERTION_LEVEL=0
+CONFIG_COMPILER_OPTIMIZATION_CHECKS_SILENT=y
+CONFIG_FREERTOS_ASSERT_DISABLE=y
+CONFIG_HAL_DEFAULT_ASSERTION_LEVEL=0
+#CONFIG_LOG_DEFAULT_LEVEL_NONE=y
+#CONFIG_LOG_DEFAULT_LEVEL=0
+CONFIG_LOG_MAXIMUM_EQUALS_DEFAULT=y
+CONFIG_LWIP_ESP_LWIP_ASSERT=n
+CONFIG_OPTIMIZATION_ASSERTIONS_DISABLED=y
+CONFIG_OPTIMIZATION_ASSERTION_LEVEL=0
+# CONFIG_LOG_COLORS is not set
+
+#set default loggin to 
+CONFIG_BOOTLOADER_LOG_LEVEL_ERROR=y
+# CONFIG_BOOTLOADER_LOG_LEVEL_WARN is not set
+# CONFIG_BOOTLOADER_LOG_LEVEL_INFO is not set
+# CONFIG_BOOTLOADER_LOG_LEVEL_DEBUG is not set
+# CONFIG_BOOTLOADER_LOG_LEVEL_VERBOSE is not set
+CONFIG_BOOTLOADER_LOG_LEVEL=1
+
+#disable lookup function
+CONFIG_ESP_ERR_TO_NAME_LOOKUP=n
+# CONFIG_ESP_ERR_TO_NAME_LOOKUP is not set
+
+#no panic message
+ESP_SYSTEM_PANIC_SILENT_REBOOT=y
+
+#disable ADC calibration (needed for external sensors)
+CONFIG_ADC_CAL_EFUSE_TP_ENABLE=n
+CONFIG_ADC_CAL_EFUSE_VREF_ENABLE=n
+CONFIG_ADC_CAL_LUT_ENABLE=needed
+
+#disable IPV6
+CONFIG_LWIP_IPV6=n
+
+#Newlib format
+CONFIG_NEWLIB_NANO_FORMAT=y
+
+
+# ESP-NN
+#
+# CONFIG_NN_ANSI_C is not set
+CONFIG_NN_OPTIMIZED=y
+CONFIG_NN_OPTIMIZATIONS=1
+# end of ESP-NN
+
+# ESP HTTP client
+#
+# CONFIG_ESP_HTTP_CLIENT_ENABLE_HTTPS is not set
+
+###### end safe optimizations
 
 CONFIG_ESP32_REV_MIN_0=y
 
@@ -70,3 +132,15 @@ CONFIG_GC2145_SUPPORT=n
 CONFIG_GC032A_SUPPORT=n
 CONFIG_GC0308_SUPPORT=n
 CONFIG_BF3005_SUPPORT=n
+
+#only necessary for task analysis (include/defines -> TASK_ANALYSIS_ON)
+#set in [env:esp32cam-dev-task-analysis]
+#CONFIG_FREERTOS_USE_TRACE_FACILITY=1
+#CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
+#CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID=y
+
+#force disable HIMEM as not used in default config, can be enabled with [env:esp32cam-dev-himem]
+#free 256kb of internal memory :
+#I (2112) esp_himem: Initialized. Using last 8 32KB address blocks for bank switching on 4352 KB of physical memory.
+CONFIG_SPIRAM_BANKSWITCH_ENABLE=n
+#CONFIG_SPIRAM_BANKSWITCH_RESERVE is not set

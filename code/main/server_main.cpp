@@ -16,11 +16,9 @@
 #include "server_tflite.h"
 #include "esp_log.h"
 
+#include <stdio.h>
+
 #include "Helper.h"
-
-//#define DEBUG_DETAIL_ON      
-
-
 
 httpd_handle_t server = NULL;   
 std::string starttime = "";
@@ -48,162 +46,138 @@ esp_err_t info_get_handler(httpd_req_t *req)
             ESP_LOGD(TAG, "type is found: %s", _valuechar);
             _task = std::string(_valuechar);
         }
-    };
+    }
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     if (_task.compare("GitBranch") == 0)
     {
-        httpd_resp_sendstr_chunk(req, libfive_git_branch());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, libfive_git_branch());
         return ESP_OK;        
     }
     else if (_task.compare("GitTag") == 0)
     {
-        httpd_resp_sendstr_chunk(req, libfive_git_version());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, libfive_git_version());
         return ESP_OK;        
     }
     else if (_task.compare("GitRevision") == 0)
     {
-        httpd_resp_sendstr_chunk(req, libfive_git_revision());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, libfive_git_revision());
         return ESP_OK;        
     }
     else if (_task.compare("BuildTime") == 0)
     {
-        httpd_resp_sendstr_chunk(req, build_time());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, build_time());
         return ESP_OK;        
     }
     else if (_task.compare("FirmwareVersion") == 0)
     {
-        string buf;
-        if (std::string(GIT_TAG) == "") { // Tag not set, show branch
-            buf = "Development-Branch: " + std::string(GIT_BRANCH);
-        }
-        else { // Tag is set, ignore branch
-            buf = "Release: " + std::string(GIT_TAG);
-        }
-        buf = buf + " (Commit: " + std::string(GIT_REV) + ")";
-        httpd_resp_sendstr_chunk(req, buf.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, getFwVersion().c_str());
         return ESP_OK;        
     }
     else if (_task.compare("HTMLVersion") == 0)
     {
-        httpd_resp_sendstr_chunk(req, getHTMLversion().c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, getHTMLversion().c_str());
         return ESP_OK;        
     }
     else if (_task.compare("Hostname") == 0)
     {
         std::string zw;
         zw = std::string(hostname);
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("IP") == 0)
     {
         std::string *zw;
         zw = getIPAddress();
-        httpd_resp_sendstr_chunk(req, zw->c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw->c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SSID") == 0)
     {
         std::string *zw;
         zw = getSSID();
-        httpd_resp_sendstr_chunk(req, zw->c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw->c_str());
         return ESP_OK;        
     }
     else if (_task.compare("FlowStatus") == 0)
     {
         std::string zw;
         zw = std::string("FlowStatus");
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("Round") == 0)
     {
         char formated[10] = "";    
         snprintf(formated, sizeof(formated), "%d", getCountFlowRounds());
-        httpd_resp_sendstr_chunk(req, formated);
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, formated);
         return ESP_OK;        
     }
     else if (_task.compare("SDCardPartitionSize") == 0)
     {
         std::string zw;
         zw = getSDCardPartitionSize();
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SDCardFreePartitionSpace") == 0)
     {
         std::string zw;
         zw = getSDCardFreePartitionSpace();
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SDCardPartitionAllocationSize") == 0)
     {
         std::string zw;
         zw = getSDCardPartitionAllocationSize();
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SDCardManufacturer") == 0)
     {
         std::string zw;
         zw = getSDCardManufacturer(); 
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SDCardName") == 0)
     {
         std::string zw;
         zw = getSDCardName(); 
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SDCardCapacity") == 0)
     {
         std::string zw;
         zw = getSDCardCapacity();
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SDCardSectorSize") == 0)
     {
         std::string zw;
         zw = getSDCardSectorSize();
-        httpd_resp_sendstr_chunk(req, zw.c_str());
-        httpd_resp_sendstr_chunk(req, NULL);  
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
 
     return ESP_OK;
 }
 
+
 esp_err_t starttime_get_handler(httpd_req_t *req)
 {
-    httpd_resp_send(req, starttime.c_str(), strlen(starttime.c_str())); 
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);  
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    
+    httpd_resp_send(req, starttime.c_str(), starttime.length()); 
 
     return ESP_OK;
 }
+
 
 esp_err_t hello_main_handler(httpd_req_t *req)
 {
@@ -253,7 +227,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
                 }
             }
 
-            message += "<br>Please check <a href=\"https://github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes\" target=_blank>github.com/jomjol/AI-on-the-edge-device/wiki/Error-Codes</a> for more information!";
+            message += "<br>Please check <a href=\"https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes\" target=_blank>jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes</a> for more information!";
             message += "<br><br><button onclick=\"window.location.href='/reboot';\">Reboot</button>";
             message += "&nbsp;<button onclick=\"window.open('/ota_page.html');\">OTA Update</button>";
             message += "&nbsp;<button onclick=\"window.open('/log.html');\">Log Viewer</button>";
@@ -296,6 +270,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
     char filepath[50];
@@ -320,11 +295,12 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+
 esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");  
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");  
+    #endif
 
     char filepath[50];
 
@@ -340,33 +316,27 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
     filetosend = std::string(filename);
     ESP_LOGD(TAG, "File to upload: %s", filetosend.c_str());
 
+    // Serve raw.jpg
     if (filetosend == "raw.jpg")
-    {
         return GetRawJPG(req); 
-    } 
 
-    esp_err_t zw = GetJPG(filetosend, req);
-
-    if (zw == ESP_OK)
+    // Serve alg.jpg, alg_roi.jpg or digital and analog ROIs
+    if (ESP_OK == GetJPG(filetosend, req))
         return ESP_OK;
 
-    // File wird nicht intern bereit gestellt --> klassischer weg:
-#ifdef DEBUG_DETAIL_ON      
-    LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
-#endif
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("img_tmp_virtual_handler - Done");   
+    #endif
 
+    // File was not served already --> serve with img_tmp_handler
     return img_tmp_handler(req);
 }
 
 
-
-
-
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
-    const char* resp_str; 
     std::string zw;
-    std::string cputemp = std::to_string(temperatureRead());
+    std::string cputemp = std::to_string((int)temperatureRead());
     std::string gitversion = libfive_git_version();
     std::string buildtime = build_time();
     std::string gitbranch = libfive_git_branch();
@@ -374,37 +344,32 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     std::string gitrevision = libfive_git_revision();
     std::string htmlversion = getHTMLversion();
     char freeheapmem[11];
-    sprintf(freeheapmem, "%zu", esp_get_free_heap_size());
+    sprintf(freeheapmem, "%lu", (long) getESPHeapSize());
     
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
     const char *hostname;
     ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
     
-    zw = "[\
-            {\
-                \"firmware\" : \"" + gitversion + "\",\
-                \"buildtime\" : \"" + buildtime + "\",\
-                \"gitbranch\" : \"" + gitbranch + "\",\
-                \"gittag\" : \"" + gittag + "\",\
-                \"gitrevision\" : \"" + gitrevision + "\",\
-                \"html\" : \"" + htmlversion + "\",\
-                \"cputemp\" : \"" + cputemp + "\",\
-                \"hostname\" : \"" + hostname + "\",\
-                \"IPv4\" : \"" + ip4addr_ntoa(&ip_info.ip) + "\",\
-                \"freeHeapMem\" : \"" + freeheapmem + "\"\
-            }\
-        ]";
-
-    resp_str = zw.c_str();
+    zw = string("[{") + 
+        "\"firmware\": \"" + gitversion + "\"," +
+        "\"buildtime\": \"" + buildtime + "\"," +
+        "\"gitbranch\": \"" + gitbranch + "\"," +
+        "\"gittag\": \"" + gittag + "\"," +
+        "\"gitrevision\": \"" + gitrevision + "\"," +
+        "\"html\": \"" + htmlversion + "\"," +
+        "\"cputemp\": \"" + cputemp + "\"," +
+        "\"hostname\": \"" + hostname + "\"," +
+        "\"IPv4\": \"" + ip4addr_ntoa(&ip_info.ip) + "\"," +
+        "\"freeHeapMem\": \"" + freeheapmem + "\"" +
+        "}]";
 
     httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, resp_str, strlen(resp_str));   
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);  
+    httpd_resp_send(req, zw.c_str(), zw.length());
 
     return ESP_OK;
 }
+
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
@@ -432,7 +397,6 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     };
     httpd_register_uri_handler(server, &starttime_tmp_handle);
 
-
     httpd_uri_t img_tmp_handle = {
         .uri       = "/img_tmp/*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
@@ -440,7 +404,6 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &img_tmp_handle);
-
 
     httpd_uri_t main_rest_handle = {
         .uri       = "/*",  // Match all URIs of type /path/to/file
@@ -453,24 +416,23 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
 }
 
 
-
 httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority      = tskIDLE_PRIORITY+3; //20221211: before: tskIDLE_PRIORITY+1; // 20210924 --> vorher +5
-    config.stack_size         = 32768;      //20210921 --> vorher 32768             // bei 32k stürzt das Programm beim Bilderaufnehmen ab
-    config.core_id            = 0;          //20221211 --> force all not flow related tasks to CPU0, before: tskNO_AFFINITY;
-    config.server_port        = 80;
-    config.ctrl_port          = 32768;
-    config.max_open_sockets   = 5;          //20210921 --> vorher 7   
-    config.max_uri_handlers   = 37;         // vorher 24, 20220511: 35             
-    config.max_resp_headers   = 8;                        
-    config.backlog_conn       = 5;                        
-    config.lru_purge_enable   = true;       // dadurch werden alte Verbindungen gekappt, falls neue benögt werden.               
-    config.recv_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30              
-    config.send_wait_timeout  = 5;          // default: 5         20210924 --> vorher 30                   
+    config.task_priority = tskIDLE_PRIORITY+3; // previously -> 2022-12-11: tskIDLE_PRIORITY+1; 2021-09-24: tskIDLE_PRIORITY+5
+    config.stack_size = 12288; // previously -> 2023-01-02: 32768
+    config.core_id = 1; // previously -> 2023-01-02: 0, 2022-12-11: tskNO_AFFINITY;
+    config.server_port = 80;
+    config.ctrl_port = 32768;
+    config.max_open_sockets = 5; //20210921 --> previously 7   
+    config.max_uri_handlers = 38; // previously 24, 20220511: 35, 20221220: 37, 2023-01-02:38             
+    config.max_resp_headers = 8;                        
+    config.backlog_conn = 5;                        
+    config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               
+    config.recv_wait_timeout = 5; // default: 5 20210924 --> previously 30              
+    config.send_wait_timeout = 5; // default: 5 20210924 --> previously 30                    
     config.global_user_ctx = NULL;                        
     config.global_user_ctx_free_fn = NULL;                
     config.global_transport_ctx = NULL;                   
@@ -480,7 +442,7 @@ httpd_handle_t start_webserver(void)
 //    config.uri_match_fn = NULL;                            
     config.uri_match_fn = httpd_uri_match_wildcard;
 
-    starttime = gettimestring("%Y%m%d-%H%M%S");
+    starttime = getCurrentTimeString("%Y%m%d-%H%M%S");
 
     // Start the httpd server
     ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
@@ -493,6 +455,7 @@ httpd_handle_t start_webserver(void)
     ESP_LOGI(TAG, "Error starting server!");
     return NULL;
 }
+
 
 void stop_webserver(httpd_handle_t server)
 {
@@ -510,6 +473,7 @@ void disconnect_handler(void* arg, esp_event_base_t event_base,
         *server = NULL;
     }
 }
+
 
 void connect_handler(void* arg, esp_event_base_t event_base, 
                             int32_t event_id, void* event_data)

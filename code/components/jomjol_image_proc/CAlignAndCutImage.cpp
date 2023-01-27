@@ -2,18 +2,12 @@
 #include "CRotateImage.h"
 #include "ClassLogFile.h"
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm>
 #include <esp_log.h>
+#include "../../include/defines.h"
 
 static const char* TAG = "c_align_and_cut_image";
-
-//#define GET_MEMORY malloc
-#define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
-
-// #define DEBUG_DETAIL_ON 
-
 
 CAlignAndCutImage::CAlignAndCutImage(CImageBasis *_org, CImageBasis *_temp)
 {
@@ -47,14 +41,14 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     r0_x = _temp1->target_x;
     r0_y = _temp1->target_y;
-    ESP_LOGD(TAG, "Vor ft->FindTemplate(_temp1); %s", _temp1->image_file.c_str());
+    ESP_LOGD(TAG, "Before ft->FindTemplate(_temp1); %s", _temp1->image_file.c_str());
     isSimilar1 = ft->FindTemplate(_temp1);
     _temp1->width = ft->tpl_width;
     _temp1->height = ft->tpl_height; 
 
     r1_x = _temp2->target_x;
     r1_y = _temp2->target_y;
-    ESP_LOGD(TAG, "Vor ft->FindTemplate(_temp2); %s", _temp2->image_file.c_str());
+    ESP_LOGD(TAG, "Before ft->FindTemplate(_temp2); %s", _temp2->image_file.c_str());
     isSimilar2 = ft->FindTemplate(_temp2);
     _temp2->width = ft->tpl_width;
     _temp2->height = ft->tpl_height; 
@@ -78,14 +72,14 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     d_winkel = (w_ist - w_org) * 180 / M_PI;
 
-#ifdef DEBUG_DETAIL_ON
+/*#ifdef DEBUG_DETAIL_ON
     std::string zw = "\tdx:\t" + std::to_string(dx) + "\tdy:\t" + std::to_string(dy) + "\td_winkel:\t" + std::to_string(d_winkel);
     zw = zw + "\tt1_x_y:\t" + std::to_string(_temp1->found_x) + "\t" + std::to_string(_temp1->found_y);
     zw = zw + "\tpara1_found_min_avg_max_SAD:\t" + std::to_string(_temp1->fastalg_min) + "\t" + std::to_string(_temp1->fastalg_avg) + "\t" + std::to_string(_temp1->fastalg_max) + "\t"+ std::to_string(_temp1->fastalg_SAD);
     zw = zw + "\tt2_x_y:\t" + std::to_string(_temp2->found_x) + "\t" + std::to_string(_temp2->found_y);
     zw = zw + "\tpara2_found_min_avg_max:\t" + std::to_string(_temp2->fastalg_min) + "\t" + std::to_string(_temp2->fastalg_avg) + "\t" + std::to_string(_temp2->fastalg_max) + "\t"+ std::to_string(_temp2->fastalg_SAD);
     LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
-#endif
+#endif*/
 
     CRotateImage rt(this, ImageTMP);
     rt.Translate(dx, dy);
@@ -129,8 +123,12 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
                 p_target[_channels] = p_source[_channels];
         }
 
-    //    stbi_write_jpg(_template1.c_str(), dx, dy, channels, odata, 0);
+#ifdef STBI_ONLY_JPEG
+    stbi_write_jpg(_template1.c_str(), dx, dy, channels, odata, 100);
+#else
     stbi_write_bmp(_template1.c_str(), dx, dy, channels, odata);
+#endif
+    
 
     RGBImageRelease();
 

@@ -1,5 +1,7 @@
-#ifndef __FLOWPOSTPROCESSING__
-#define __FLOWPOSTPROCESSING__
+#pragma once
+
+#ifndef CLASSFFLOWPOSTPROCESSING_H
+#define CLASSFFLOWPOSTPROCESSING_H
 
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
@@ -18,7 +20,7 @@ protected:
 
     int PreValueAgeStartup; 
     bool ErrorMessage;
-    bool IgnoreLeadingNaN;          // SPEZIALFALL für User Gustl
+    bool IgnoreLeadingNaN;          // SPECIAL CASE for User Gustl ???
 
 
     ClassFlowCNNGeneral* flowAnalog;
@@ -41,6 +43,8 @@ protected:
     void handleDecimalExtendedResolution(string _decsep, string _value); 
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogDigitalTransitionStart(string _decsep, string _value);
+    void handleAllowNegativeRate(string _decsep, string _value);
+    
     std::string GetStringReadouts(general);
 
     void WriteDataLog(int _index);
@@ -76,4 +80,4 @@ public:
 };
 
 
-#endif
+#endif //CLASSFFLOWPOSTPROCESSING_H

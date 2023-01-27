@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <meta charset="utf-8"/>
 <title>Make Analog Alignment</title>
 
@@ -60,7 +60,9 @@ th, td {
     opacity: 0.4;
 }
 </style>
-
+<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -140,9 +142,9 @@ th, td {
     </table>	
 
 
-    <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfigcommon.js"></script>
-    <script type="text/javascript" src="./readconfigparam.js"></script>  
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
     
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -152,14 +154,17 @@ th, td {
             drag = false,
             aktindex = 0,
             ROIInfo,
+            cofcat,
+            param,
             enhanceCon = false;
             lockAR = true;
             lockSizes = true;
-            basepath = "http://192.168.178.26";
+            domainname = getDomainname();
+
     
 function doReboot() {
     if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-            var stringota = "/reboot";
+            var stringota = getDomainname() + "/reboot";
             window.location = stringota;
             window.location.href = stringota;
             window.location.assign(stringota);
@@ -183,6 +188,10 @@ function EnDisableAnalog() {
         }
 		
         sah1(document.getElementById("div1"), !isEnabled);
+
+
+        cofcat["Analog"]["enabled"] = isEnabled;
+        
         if (isEnabled)
         {
             UpdateROIs();
@@ -227,7 +236,7 @@ function newROI(){
         erg = CreateROI(_number, "analog", sel.selectedIndex, _roinew, 1, 1, 30, 30, false);
 
     if (erg != "")
-        alert(erg);
+        firework.launch(erg, 'danger', 30000);
     else
         UpdateROIs(_roinew);
 }
@@ -277,11 +286,11 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    _zwcat = getConfigCategory();
-    _zwcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+//    _zwcat = getConfigCategory();
+    cofcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
     WriteConfigININew();
-    SaveConfigToServer(basepath);  
-	alert("Config.ini is updated!");
+    SaveConfigToServer(domainname);  
+    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
 }
 
 
@@ -291,18 +300,18 @@ function UpdateROIs(_sel){
     var _number = sel.options[sel.selectedIndex].text;
 
     ROIInfo = getROIInfo("analog", _number);
-    _catzw = getConfigCategory();
+//    _catzw = getConfigCategory();
 
-    if (_catzw["Analog"]["enabled"] == false) 
+    if (cofcat["Analog"]["enabled"] == false) 
     {
         document.getElementById("Category_Analog_enabled").checked = false;
-        EnDisableDigits();
-        alert("Analog ROIs are disabled - please enable (Check box top left).\n");
+        EnDisableAnalog();
+        firework.launch('Analog ROIs are disabled - please enable first (Check box top left)', 'warning', 10000);
         return;
     }
 
     if (ROIInfo.length == 0){
-        alert("There are no ROIs defined.\nPlease first create a new ROI (\"New ROIs ...\").\n");
+        firework.launch('There are no ROIs defined. Please first create a new ROI ("New ROIs ...")', 'danger', 10000);
         document.getElementById("newROI").disabled = false;
         document.getElementById("deleteROI").disabled = true;
         document.getElementById("index").disabled = true;
@@ -398,14 +407,15 @@ function UpdateROIs(_sel){
     
     
         function init() {
-            basepath = getbasepath();
+            domainname = getDomainname();
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
-            loadCanvas(basepath + "/fileserver/config/reference.jpg");
-            loadConfig(basepath); 
+            loadCanvas(domainname + "/fileserver/config/reference.jpg");
+            loadConfig(domainname); 
             ParseConfig();
             param = getConfigParameters(); 
+            cofcat = getConfigCategory();
             UpdateNUMBERS();
             drawImage();
             draw();
@@ -454,7 +464,7 @@ function renameNumber(){
 
     erg = RenameNUMBER(_delte, _numbernew);
     if (erg != "")
-        alert(erg);
+        firework.launch(erg, 'danger', 30000);
     else
         UpdateNUMBERS(_numbernew);
 }
@@ -464,7 +474,7 @@ function newNumber(){
 
     erg = CreateNUMBER(_numbernew);
     if (erg != "")
-        alert(erg);
+        firework.launch(erg, 'danger', 30000);
     else
         UpdateNUMBERS(_numbernew);
 }
@@ -476,7 +486,7 @@ function removeNumber(){
         var _delte= sel.options[sel.selectedIndex].text;
         erg = DeleteNUMBER(_delte);
         if (erg != "")
-            alert(erg);
+            firework.launch(erg, 'danger', 30000);
         UpdateNUMBERS();
 	}	    
 }
@@ -683,7 +693,7 @@ function drawTextBG(context, txt, x, y, padding) {
 
         erg = RenameROI(_number, "analog", _roialt, _roinew);
         if (erg != "")
-            alert(erg);
+            firework.launch(erg, 'danger', 30000);
         else
             UpdateROIs(_roinew);
     }

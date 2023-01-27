@@ -1,10 +1,10 @@
 <html>
     <head>
-    <script src='https://cdn.plot.ly/plotly-2.14.0.min.js'></script>
+    <script type="text/javascript" src='plotly-2.14.0.min.js?v=$COMMIT_HASH'></script>
 
-    <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfigcommon.js"></script>  
-    <script type="text/javascript" src="./readconfigparam.js"></script>  
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
 
     <style>
         textarea {
@@ -18,7 +18,9 @@
       el && eval(el.value);
     }
     </script>
-
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
     </head>
     <body>
     <div id='chart'></div>
@@ -31,7 +33,7 @@
             <option value="6">Change-Absolut</option>
         </select>
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=fileserver/log/data/>Download</a>
+        <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show data files</button>
 
   <!-- <button onclick="document.getElementById('editor').hidden = false; this.hidden = true;" >Editor</button> -->
     <div id='editor' hidden='true'>
@@ -41,12 +43,12 @@ numbername = document.getElementById("numbers").value;
 datatype = document.getElementById("datatype").value;
 //alert("Auslesen: " + datefile + " " + numbername);
 
-_basepath = getbasepath(); 
-fetch(_basepath + '/fileserver/log/data/' + datefile)
+_domainname = getDomainname(); 
+fetch(_domainname + '/fileserver/log/data/' + datefile)
 .then(response => {
     // handle the response
     if (response.status == 404) {
-        alert("no log data available for "+dateString);
+        firework.launch("No log data available for " + dateString, 'warning', 10000);
     }
     response.text()
     .then( result => {
@@ -79,7 +81,6 @@ fetch(_basepath + '/fileserver/log/data/' + datefile)
 }).catch((error) => {
     // handle the error
     console.log(error);
-alert("test");
 });        
 </textarea><br />
 <button onclick="run();">run</button>

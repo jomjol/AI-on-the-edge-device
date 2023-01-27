@@ -23,6 +23,7 @@ extern "C" {
 
 #include <string.h>
 #include <esp_log.h>
+#include "../../include/defines.h"
 
 
 #include "ClassLogFile.h"
@@ -31,9 +32,6 @@ extern "C" {
 
 static const char* TAG = "HELPER";
 
-//#define ISWINDOWS_TRUE
-#define PATH_MAX_STRING_SIZE 256
-
 using namespace std;
 
 unsigned int systemStatus = 0;
@@ -41,51 +39,58 @@ unsigned int systemStatus = 0;
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
 
+
+// #define DEBUG_DETAIL_ON 
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 string getESPHeapInfo(){
 	string espInfoResultStr = "";
 	char aMsgBuf[80];
-    
-	multi_heap_info_t aMultiHead_info ;
-	heap_caps_get_info (&aMultiHead_info,MALLOC_CAP_8BIT);
-	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-	size_t aMinFreeHeadSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
-	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
-	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-	sprintf(aMsgBuf," Free Heap Size: %ld", (long) aFreeHeapSize);
-	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_SPIRAM);
- 	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
-	 size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
 
-	sprintf(aMsgBuf," Heap: %ld", (long) aFreeHeapSize);
+	size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+
+	size_t aFreeSPIHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+	size_t aHeapLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+	size_t aHeapIntLargestFreeBlockSize = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+	size_t aMinFreeHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+	size_t aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+
+	sprintf(aMsgBuf,"Heap Total: %ld", (long) aFreeHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," Min Free: %ld", (long) aMinFreeHeapSize);
+
+	sprintf(aMsgBuf," | SPI Free: %ld", (long) aFreeSPIHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," larg. Block:  %ld", (long) aHeapLargestFreeBlockSize);
+	sprintf(aMsgBuf," | SPI Larg Block:  %ld", (long) aHeapLargestFreeBlockSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," SPI Heap: %ld", (long) aFreeSPIHeapSize);
+	sprintf(aMsgBuf," | SPI Min Free: %ld", (long) aMinFreeHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," Min Free Heap Size: %ld", (long) aMinFreeHeadSize);
-	sprintf(aMsgBuf," NOT_SPI Heap: %ld", (long) (aFreeHeapSize - aFreeSPIHeapSize));
+
+	sprintf(aMsgBuf," | Int Free: %ld", (long) (aFreeInternalHeapSize));
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," largest Block Size:  %ld", (long) aHeapLargestFreeBlockSize);
-	sprintf(aMsgBuf," Internal Heap: %ld", (long) (aFreeInternalHeapSize));
+	sprintf(aMsgBuf," | Int Larg Block:  %ld", (long) aHeapIntLargestFreeBlockSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," Internal Min Heap free: %ld", (long) (aMinFreeInternalHeapSize));
+	sprintf(aMsgBuf," | Int Min Free: %ld", (long) (aMinFreeInternalHeapSize));
 	espInfoResultStr += string(aMsgBuf);
+	
 	return 	espInfoResultStr;
 }
 
 
-size_t getESPHeapSize(){
-   size_t aFreeHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-   return aFreeHeapSize;
+size_t getESPHeapSize()
+{
+   return heap_caps_get_free_size(MALLOC_CAP_8BIT);
 }
 
-size_t getInternalESPHeapSize() {
-	size_t aFreeInternalHeapSize  = heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
-	return aFreeInternalHeapSize;
+
+size_t getInternalESPHeapSize() 
+{
+	return heap_caps_get_free_size(MALLOC_CAP_8BIT| MALLOC_CAP_INTERNAL);
 }
+
 
 string getSDCardPartitionSize(){
 	FATFS *fs;
@@ -100,6 +105,7 @@ string getSDCardPartitionSize(){
 	return std::to_string(tot_sect);
 }
 
+
 string getSDCardFreePartitionSpace(){
 	FATFS *fs;
     uint32_t fre_clust, fre_sect;
@@ -112,6 +118,7 @@ string getSDCardFreePartitionSpace(){
 
 	return std::to_string(fre_sect);
 }
+
 
 string getSDCardPartitionAllocationSize(){
 	FATFS *fs;
@@ -132,12 +139,14 @@ void SaveSDCardInfo(sdmmc_card_t* card) {
     SDCardCsd = card->csd;
 }
 
+
 string getSDCardManufacturer(){
 	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
 	//ESP_LOGD(TAG, "SD Card Manufacturer: %s", SDCardManufacturer.c_str());
 	
 	return (SDCardManufacturer + " (ID: " + std::to_string(SDCardCid.mfg_id) + ")");
 }
+
 
 string getSDCardName(){
 	char *SDCardName = SDCardCid.name;
@@ -146,12 +155,14 @@ string getSDCardName(){
 	return std::string(SDCardName);
 }
 
+
 string getSDCardCapacity(){
 	int SDCardCapacity = SDCardCsd.capacity / (1024/SDCardCsd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
 	//ESP_LOGD(TAG, "SD Card Capacity: %s", std::to_string(SDCardCapacity).c_str()); 
 
 	return std::to_string(SDCardCapacity);
 }
+
 
 string getSDCardSectorSize(){
 	int SDCardSectorSize = SDCardCsd.sector_size;
@@ -168,24 +179,6 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
         *(_target + i) = *(_source + i);
 }
 
-
-
-FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec, bool silent)
-{
-	FILE *pfile;
-
-	ESP_LOGD(TAG, "open file %s in mode %s", nm, _mode);
-
-	if ((pfile = fopen(nm, _mode)) != NULL) {
-		if (!silent) ESP_LOGE(TAG, "File %s successfully opened", nm);
-	}
-	else {
-		if (!silent) ESP_LOGE(TAG, "Error: file %s does not exist!", nm);
-		return NULL;
-	}
-
-	return pfile;
-}
 
 std::string FormatFileName(std::string input)
 {
@@ -230,6 +223,7 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
     }
 }
 
+
 bool MakeDir(std::string _what)
 {
 	int mk_ret = mkdir(_what.c_str(), 0775);
@@ -240,7 +234,6 @@ bool MakeDir(std::string _what)
 	}
 	return true;
 }
-
 
 
 bool ctype_space(const char c, string adddelimiter)
@@ -254,6 +247,7 @@ bool ctype_space(const char c, string adddelimiter)
 
 	return false;
 }
+
 
 string trim(string istring, string adddelimiter)
 {
@@ -280,6 +274,7 @@ string trim(string istring, string adddelimiter)
 		return trim(istring, adddelimiter);
 	}
 }
+
 
 size_t findDelimiterPos(string input, string delimiter)
 {
@@ -309,7 +304,7 @@ bool RenameFile(string from, string to)
 {
 //	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
-	FILE* fpSourceFile = OpenFileAndWait(from.c_str(), "rb");
+	FILE* fpSourceFile = fopen(from.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGE(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
@@ -322,11 +317,23 @@ bool RenameFile(string from, string to)
 }
 
 
+bool FileExists(string filename)
+{
+	FILE* fpSourceFile = fopen(filename.c_str(), "rb");
+	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	{
+		return false;
+	}
+	fclose(fpSourceFile);
+	return true;    
+}
+
+
 bool DeleteFile(string fn)
 {
 //	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
 	/* Delete file */
-	FILE* fpSourceFile = OpenFileAndWait(fn.c_str(), "rb");
+	FILE* fpSourceFile = fopen(fn.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
@@ -344,21 +351,21 @@ bool CopyFile(string input, string output)
 	input = FormatFileName(input);
 	output = FormatFileName(output);
 
-	if (toUpper(input).compare("/SDCARD/WLAN.INI") == 0)
+	if (toUpper(input).compare(WLAN_CONFIG_FILE) == 0)
 	{
 		ESP_LOGD(TAG, "wlan.ini kann nicht kopiert werden!");
 		return false;
 	}
 
 	char cTemp;
-	FILE* fpSourceFile = OpenFileAndWait(input.c_str(), "rb");
+	FILE* fpSourceFile = fopen(input.c_str(), "rb");
 	if (!fpSourceFile)	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
 	{
 		ESP_LOGD(TAG, "File %s existiert nicht!", input.c_str());
 		return false;
 	}
 
-	FILE* fpTargetFile = OpenFileAndWait(output.c_str(), "wb");
+	FILE* fpTargetFile = fopen(output.c_str(), "wb");
 
 	// Code Section
 
@@ -376,6 +383,7 @@ bool CopyFile(string input, string output)
 	return true;
 }
 
+
 string getFileFullFileName(string filename)
 {
 	size_t lastpos = filename.find_last_of('/');
@@ -389,6 +397,7 @@ string getFileFullFileName(string filename)
 
 	return zw;
 }
+
 
 string getDirectory(string filename)
 {
@@ -405,6 +414,7 @@ string getDirectory(string filename)
 	string zw = filename.substr(0, lastpos - 1);
 	return zw;
 }
+
 
 string getFileType(string filename)
 {
@@ -424,16 +434,17 @@ string getFileType(string filename)
 	return zw;
 }
 
+
 /* recursive mkdir */
 int mkdir_r(const char *dir, const mode_t mode) {
-    char tmp[PATH_MAX_STRING_SIZE];
+    char tmp[FILE_PATH_MAX];
     char *p = NULL;
     struct stat sb;
     size_t len;
     
     /* copy path */
-    len = strnlen (dir, PATH_MAX_STRING_SIZE);
-    if (len == 0 || len == PATH_MAX_STRING_SIZE) {
+    len = strnlen (dir, FILE_PATH_MAX);
+    if (len == 0 || len == FILE_PATH_MAX) {
         return -1;
     }
     memcpy (tmp, dir, len);
@@ -481,6 +492,7 @@ int mkdir_r(const char *dir, const mode_t mode) {
     return 0;
 }
 
+
 string toUpper(string in)
 {
 	for (int i = 0; i < in.length(); ++i)
@@ -488,6 +500,7 @@ string toUpper(string in)
 	
 	return in;
 }
+
 
 string toLower(string in)
 {
@@ -497,6 +510,7 @@ string toLower(string in)
 	return in;
 }
 
+
 // CPU Temp
 extern "C" uint8_t temprature_sens_read();
 float temperatureRead()
@@ -504,11 +518,13 @@ float temperatureRead()
     return (temprature_sens_read() - 32) / 1.8;
 }
 
+
 time_t addDays(time_t startTime, int days) {
 	struct tm* tm = localtime(&startTime);
 	tm->tm_mday += days;
 	return mktime(tm);
 }
+
 
 int removeFolder(const char* folderPath, const char* logTag) {
 	//ESP_LOGD(logTag, "Delete content in path %s", folderPath);
@@ -557,7 +573,6 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 }
 
 
-
 std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 {
 	std::vector<string> Output;
@@ -602,6 +617,17 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 }
 
 
+std::string ReplaceString(std::string subject, const std::string& search,
+                          const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return subject;
+}
+
+
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
 /* SD Card Manufacturer Database */
 struct SDCard_Manufacturer_database {
@@ -609,6 +635,7 @@ struct SDCard_Manufacturer_database {
 	int id;
 	string manufacturer;
 };
+
 
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
 /* SD Card Manufacturer Database */
@@ -720,6 +747,7 @@ struct SDCard_Manufacturer_database database[] = {
 	}
 };
 
+
 /* Parse SD Card Manufacturer Database */
 string SDCardParseManufacturerIDs(int id) 
 {
@@ -782,6 +810,7 @@ void setSystemStatusFlag(SystemStatusFlag_t flag) {
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
 }
 
+
 void clearSystemStatusFlag(SystemStatusFlag_t flag) {
 	systemStatus = systemStatus | ~flag; // clear bit
 
@@ -790,9 +819,11 @@ void clearSystemStatusFlag(SystemStatusFlag_t flag) {
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
 }
 
+
 int getSystemStatus(void) {
     return systemStatus;
 }
+
 
 bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 	//ESP_LOGE(TAG, "Flag (0x%08X) is set (0x%08X): %d", flag, systemStatus , ((systemStatus & flag) == flag));
@@ -805,11 +836,17 @@ bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 	}
 }
 
+
+time_t getUpTime(void) {
+    return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+}
+
+
 string getResetReason(void) {
 	std::string reasonText;
 
 	switch(esp_reset_reason()) {
-		case ESP_RST_POWERON: reasonText = "Power-on event"; break;    //!< Reset due to power-on event
+		case ESP_RST_POWERON: reasonText = "Power-on event (or reset button)"; break;    //!< Reset due to power-on event
 		case ESP_RST_EXT: reasonText = "External pin"; break;        //!< Reset by external pin (not applicable for ESP32)
 		case ESP_RST_SW: reasonText = "Via esp_restart"; break;         //!< Software reset via esp_restart
 		case ESP_RST_PANIC: reasonText = "Exception/panic"; break;      //!< Software reset due to exception/panic
@@ -827,6 +864,7 @@ string getResetReason(void) {
     return reasonText;
 }
 
+
 /**
  * Returns the current uptime  formated ad xxf xxh xxm [xxs]
  */
@@ -834,7 +872,7 @@ std::string getFormatedUptime(bool compact) {
 	char buf[20];
 	#pragma GCC diagnostic ignored "-Wformat-truncation"
 
-    int uptime = (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+    int uptime = getUpTime(); // in seconds
 
     int days = int(floor(uptime / (3600*24)));
     int hours = int(floor((uptime - days * 3600*24) / (3600)));
@@ -850,6 +888,7 @@ std::string getFormatedUptime(bool compact) {
 
 	return std::string(buf);
 }
+
 
 const char* get404(void) {
     return 

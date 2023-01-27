@@ -1,20 +1,23 @@
-#include <string>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
+//#include <string>
+//#include "freertos/FreeRTOS.h"
+//#include "freertos/task.h"
+//#include "freertos/event_groups.h"
 
-#include "driver/gpio.h"
-#include "sdkconfig.h"
+//#include "driver/gpio.h"
+//#include "sdkconfig.h"
 //#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
+//#include "spiram.h"
 #include "esp32/spiram.h"
 
+
 // SD-Card ////////////////////
-#include "nvs_flash.h"
+//#include "nvs_flash.h"
 #include "esp_vfs_fat.h"
-#include "sdmmc_cmd.h"
+//#include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
-#include "driver/sdmmc_defs.h"
+//#include "driver/sdmmc_defs.h"
 ///////////////////////////////
+
 
 #include "ClassLogFile.h"
 
@@ -26,38 +29,56 @@
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
-#include "ClassControllCamera.h"
+//#include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
 #ifdef ENABLE_MQTT
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
-#include "Helper.h"
+//#include "Helper.h"
+#include "../../include/defines.h"
+//#include "server_GPIO.h"
+
+#ifdef ENABLE_SOFTAP
+    #include "softAP.h"
+#endif //ENABLE_SOFTAP
+
+#ifdef DISABLE_BROWNOUT_DETECTOR
+    #include "soc/soc.h" 
+    #include "soc/rtc_cntl_reg.h" 
+#endif
+
+#ifdef DEBUG_ENABLE_SYSINFO
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
+    #include "esp_sys.h"
+#endif
+#endif //DEBUG_ENABLE_SYSINFO
+
+
+#ifdef USE_HIMEM_IF_AVAILABLE
+    #include "esp32/himem.h"
+    #ifdef DEBUG_HIMEM_MEMORY_CHECK
+        #include "himem_memory_check.h"
+    #endif
+#endif
+
+//#ifdef CONFIG_HEAP_TRACING_STANDALONE
+#if defined HEAP_TRACING_MAIN_WIFI || defined HEAP_TRACING_MAIN_START
+    #include <esp_heap_trace.h>
+    #define NUM_RECORDS 300
+    static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
+#endif
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
 extern const char* BUILD_TIME;
 
+extern std::string getFwVersion(void);
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
-#define __HIDE_PASSWORD
-
-// #include "jomjol_WS2812Slow.h"
-#include "SmartLeds.h"
-
-
-#define __SD_USE_ONE_LINE_MODE__
-
-#include "server_GPIO.h"
-
-
-#define BLINK_GPIO GPIO_NUM_33
-
 static const char *TAG = "MAIN";
-
-//#define FLASH_GPIO GPIO_NUM_4
 
 bool Init_NVS_SDCard()
 {
@@ -97,7 +118,7 @@ bool Init_NVS_SDCard()
     // formatted in case when mounting fails.
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 7,                         // anstatt 5 (2022-09-21)
+        .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
         .allocation_unit_size = 16 * 1024
     };
 
@@ -148,7 +169,19 @@ void task_MainInitError_blink(void *pvParameter)
 
 extern "C" void app_main(void)
 {
+   
+//#ifdef CONFIG_HEAP_TRACING_STANDALONE
+#if defined HEAP_TRACING_MAIN_WIFI || defined HEAP_TRACING_MAIN_START
+    //register a buffer to record the memory trace
+    ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
+#endif
+    
     TickType_t xDelay;
+    
+#ifdef DISABLE_BROWNOUT_DETECTOR
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+#endif
+    
 
     ESP_LOGI(TAG, "\n\n\n\n\n"); // Add mark on log to see when it restarted
     
@@ -165,8 +198,9 @@ extern "C" void app_main(void)
         return; // No way to continue without SD-Card!
     }
 
-    string versionFormated = "Branch: '" + std::string(GIT_BRANCH) + \
-        "', Revision: " + std::string(GIT_REV) +", Date/Time: " + std::string(BUILD_TIME) + \
+    setupTime();
+
+    string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
         ", Web UI: " + getHTMLversion();
 
     if (std::string(GIT_TAG) != "") { // We are on a tag, add it as prefix
@@ -174,18 +208,44 @@ extern "C" void app_main(void)
     }
 
     LogFile.CreateLogDirectories();
+    MakeDir("/sdcard/demo");            // needed for demo mode
+
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Startup ====================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
+    
+#ifdef DEBUG_ENABLE_SYSINFO
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device Info : " + get_device_info() );
+        ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
+    #endif
+#endif //DEBUG_ENABLE_SYSINFO
 
+#ifdef USE_HIMEM_IF_AVAILABLE
+    #ifdef DEBUG_HIMEM_MEMORY_CHECK
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Himem mem check : " + himem_memory_check() );
+        ESP_LOGD(TAG, "Himem mem check %s", himem_memory_check().c_str());
+    #endif
+#endif
+
+    CheckIsPlannedReboot();
     CheckOTAUpdate();
     CheckUpdate();
+    #ifdef ENABLE_SOFTAP
+        CheckStartAPMode();          // if no wlan.ini and/or config.ini --> AP ist startet and this function does not exit anymore until reboot
+    #endif
 
-    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL;
-    LoadWlanFromFile("/sdcard/wlan.ini", ssid, passwd, hostname, ip, gateway, netmask, dns);
+#ifdef HEAP_TRACING_MAIN_WIFI
+    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+#endif
+    
+    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
+    LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
@@ -208,19 +268,21 @@ extern "C" void app_main(void)
        ESP_LOGD(TAG, "DNS IP: %s", dns);
 
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);   
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
     vTaskDelay( xDelay );   
+    
+#ifdef HEAP_TRACING_MAIN_WIFI
+    ESP_ERROR_CHECK( heap_trace_stop() );
+    heap_trace_dump(); 
+#endif   
 
-    if (!setup_time()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "NTP Initialization failed!");
-        setSystemStatusFlag(SYSTEM_STATUS_NTP_BAD);
-    }
-
-    setBootTime();
+#ifdef HEAP_TRACING_MAIN_START
+    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+#endif
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "================== Main Started =================");
@@ -228,10 +290,16 @@ extern "C" void app_main(void)
 
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ") !");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Please make sure to setup the SD-Card properly (check the documentation) or re-install using the AI-on-the-edge-device__update__*.zip!");    
     }
 
-    std::string zw = gettimestring("%Y%m%d-%H%M%S");
+    std::string zw = getCurrentTimeString("%Y%m%d-%H%M%S");
     ESP_LOGD(TAG, "time %s", zw.c_str());
+    
+#ifdef HEAP_TRACING_MAIN_START
+    ESP_ERROR_CHECK( heap_trace_stop() );
+    heap_trace_dump(); 
+#endif  
 
     /* Check if PSRAM can be initalized */
     esp_err_t ret;
@@ -274,9 +342,8 @@ extern "C" void app_main(void)
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Check that your camera module is working and connected properly!");
                 setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
             }
-        } else { // Test Camera            
-            camera_fb_t * fb = esp_camera_fb_get();
-            if (!fb) {
+        } else { // Test Camera    
+            if (!Camera.testCamera()) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera Framebuffer cannot be initialized!");
                 /* Easiest would be to simply restart here and try again,
                    how ever there seem to be systems where it fails at startup but still work corectly later.
@@ -284,7 +351,6 @@ extern "C" void app_main(void)
                    setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
             }
             else {
-                esp_camera_fb_return(fb);   
                 Camera.LightOnOff(false);
             }
         }
@@ -307,7 +373,7 @@ extern "C" void app_main(void)
 
     gpio_handler_create(server);
 
-    ESP_LOGD(TAG, "vor reg server main");
+    ESP_LOGD(TAG, "Before reg server main");
     register_server_main_uri(server, "/sdcard");
 
 
@@ -318,16 +384,17 @@ extern "C" void app_main(void)
     /* Main Init has successed or only an error which allows to continue operation */
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully!");
-        ESP_LOGD(TAG, "vor do autostart");
+        ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
         isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors, but trying to continue...");
-        ESP_LOGD(TAG, "vor do autostart");
+        ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else { // Any other error is critical and makes running the flow impossible.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Not starting flows!");
     }
 }
+

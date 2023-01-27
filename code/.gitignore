@@ -5,3 +5,11 @@
 .vscode/ipch
 version.cpp
 sdkconfig.esp32cam
+sdkconfig.esp32cam-dev
+sdkconfig.esp32cam-debug
+sdkconfig.esp32cam-board-rev3
+sdkconfig.esp32cam-cpu-freq-240
+sdkconfig.esp32cam-board-rev3-cpu-freq-240
+sdkconfig.esp32cam-dev-himem
+sdkconfig.esp32cam-dev-task-analysis
+sdkconfig.esp32cam-no-softap

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Make Reference</title>
 <meta charset="utf-8"/>
 	
@@ -30,7 +30,9 @@ table {
 	padding: 5px;
 }
 </style>
-
+<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -93,9 +95,9 @@ table {
 	</table>
 
 
-    <script type="text/javascript" src="./gethost.js"></script> 
-    <script type="text/javascript" src="./readconfigcommon.js"></script>  
-    <script type="text/javascript" src="./readconfigparam.js"></script>  
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
     
     
 
@@ -103,13 +105,13 @@ table {
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
             imageObj = new Image()
-            basepath = "http://192.168.178.26";   
+            domainname = getDomainname();   
             isActReference = false;
             param;
             
         function doReboot() {
             if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-                    var stringota = "/reboot";
+                    var stringota = getDomainname() + "/reboot";
                     window.location = stringota;
                     window.location.href = stringota;
                     window.location.assign(stringota);
@@ -126,15 +128,15 @@ table {
                 _brightness = document.getElementById("MakeImage_Brightness_value1").value;
                 _contrast = document.getElementById("MakeImage_Contrast_value1").value;
                 _saturation = document.getElementById("MakeImage_Saturation_value1").value;
-                url = basepath + "/editflow?task=test_take&bri=" + _brightness;
+                url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
                 url = url + "&con=" + _saturation + "&sat=" + _saturation + "&int=" + _intensity;
             }
             else
             {
-                url = basepath + "/editflow?task=test_take";
+                url = domainname + "/editflow?task=test_take";
             }
-            if (basepath.length > 0){
-                url = url + "&host=" + basepath;
+            if (domainname.length > 0){
+                url = url + "&host=" + domainname;
             }
 
             xhttp.open("GET", url, false);
@@ -145,7 +147,7 @@ table {
         }
             
         function loadRawImage(){
-            url = basepath + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+            url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
             document.getElementById("updatereferenceimage").disabled = false;
@@ -189,7 +191,7 @@ table {
         }    
 
         function showReference(_param){
-            url = basepath + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);;
+            url = getDomainname() + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);;
             document.getElementById("finerotate").value = 0;
             document.getElementById("prerotateangle").value = _param["Alignment"]["InitialRotate"].value1;
 
@@ -263,12 +265,12 @@ table {
                 drawRotated(false);
 
                 WriteConfigININew();
-                SaveConfigToServer(basepath);    
+                SaveConfigToServer(getDomainname());    
 
-                SaveCanvasToImage(canvas, "/config/reference.jpg", true, basepath);
+                SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
                 showReference(param);
                 UpdatePage();
-                alert("Reference is updated!");
+                firework.launch('Reference got updated. Please reboot to activate changes!', 'success', 5000);
             }
         }
 
@@ -301,8 +303,7 @@ table {
 
         function init() {
             canvas.addEventListener('mousemove', mouseMove, false);    
-            basepath = getbasepath();  
-            loadConfig(basepath); 
+            loadConfig(getDomainname()); 
             ParseConfig();
             param = getConfigParameters();
 

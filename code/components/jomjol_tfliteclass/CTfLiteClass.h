@@ -1,9 +1,7 @@
+#pragma once
 
-#define TFLITE_MINIMAL_CHECK(x)                              \
-  if (!(x)) {                                                \
-    fprintf(stderr, "Error at %s:%d\n", __FILE__, __LINE__); \
-    exit(1);                                                 \
-  }
+#ifndef CTFLITECLASS_H
+#define CTFLITECLASS_H
 
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
@@ -14,10 +12,6 @@
 #include "esp_log.h"
 
 #include "CImageBasis.h"
-
-
-
-#define SUPRESS_TFLITE_ERRORS           // use, to avoid error messages from TFLITE
 
 #ifdef SUPRESS_TFLITE_ERRORS
 #include "tensorflow/lite/core/api/error_reporter.h"
@@ -45,7 +39,7 @@ class CTfLiteClass
         int kTensorArenaSize;
         uint8_t *tensor_arena;
 
-        unsigned char *modelload = NULL;
+        unsigned char *modelfile = NULL;
 
 
         float* input;
@@ -53,13 +47,13 @@ class CTfLiteClass
         int im_height, im_width, im_channel;
 
         long GetFileSize(std::string filename);
-        unsigned char* ReadFileToCharArray(std::string _fn);
-        
+        bool ReadFileToModel(std::string _fn);
+
     public:
         CTfLiteClass();
         ~CTfLiteClass();        
         bool LoadModel(std::string _fn);
-        void MakeAllocate();
+        bool MakeAllocate();
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
@@ -74,3 +68,4 @@ class CTfLiteClass
         int ReadInputDimenstion(int _dim);
 };
 
+#endif //CTFLITECLASS_H

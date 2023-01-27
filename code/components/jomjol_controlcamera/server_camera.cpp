@@ -9,16 +9,13 @@
 #include "ClassLogFile.h"
 #include "esp_log.h"
 
+#include "../../include/defines.h"
+
 static const char *TAG = "server_cam";
 
-#define SCRATCH_BUFSIZE2  8192 
-char scratch2[SCRATCH_BUFSIZE2];
 
-//#define DEBUG_DETAIL_ON   
+void PowerResetCamera(){
 
-
-void PowerResetCamera()
-{
         ESP_LOGD(TAG, "Resetting camera by power down line");
         gpio_config_t conf;
         conf.intr_type = GPIO_INTR_DISABLE;
@@ -51,7 +48,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Light On API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /lighton not available!");
         return ESP_ERR_NOT_FOUND;
     }
 
@@ -78,7 +75,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Light Off API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /lightoff not available!");
         return ESP_ERR_NOT_FOUND;
     }
 
@@ -120,16 +117,16 @@ esp_err_t handler_capture(httpd_req_t *req)
     }
         else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Capture API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /capture not available!");
         return ESP_ERR_NOT_FOUND;
     }
 }
 
 
-esp_err_t handler_capture_with_ligth(httpd_req_t *req)
+esp_err_t handler_capture_with_light(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("handler_capture_with_ligth - Start");
+        LogFile.WriteHeapInfo("handler_capture_with_light - Start");
     #endif
     
     if (Camera.getCameraInitSuccessful()) 
@@ -173,14 +170,14 @@ esp_err_t handler_capture_with_ligth(httpd_req_t *req)
         Camera.LightOnOff(false);
 
         #ifdef DEBUG_DETAIL_ON   
-            LogFile.WriteHeapInfo("handler_capture_with_ligth - Done");
+            LogFile.WriteHeapInfo("handler_capture_with_light - Done");
         #endif
 
         return result;
     }
         else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Capture + flashlight API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /capture_with_flashlight not available!");
         return ESP_ERR_NOT_FOUND;
     }
 }
@@ -251,7 +248,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
     }
     else 
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera Capture + save API not yet initialized. Please retry later...");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: REST API /save not available!");
         return ESP_ERR_NOT_FOUND;
     }
 }
@@ -282,7 +279,7 @@ void register_server_camera_uri(httpd_handle_t server)
     httpd_register_uri_handler(server, &camuri);      
 
     camuri.uri       = "/capture_with_flashlight";
-    camuri.handler   = handler_capture_with_ligth;
+    camuri.handler   = handler_capture_with_light;
     camuri.user_ctx  = NULL; 
     httpd_register_uri_handler(server, &camuri);  
 

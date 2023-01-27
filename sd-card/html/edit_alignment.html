@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Make Alignment</title>
 <meta charset="utf-8"/>
 	
@@ -41,7 +41,9 @@ select {
 	font-size: 16px;
 }
 </style>	
-	
+<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -93,9 +95,9 @@ select {
 	  </tr>  
 	</table>
 
-<script type="text/javascript" src="./gethost.js"></script> 
-<script type="text/javascript" src="./readconfigcommon.js"></script>
-<script type="text/javascript" src="./readconfigparam.js"></script>  
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
 
 <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -107,13 +109,12 @@ select {
             refInfo,
             enhanceCon = false,
             param;
-            basepath = "http://192.168.178.26";
-            basepath = "",
+            domainname = getDomainname();
             param;
     
 function doReboot() {
     if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-            var stringota = "/reboot";
+            var stringota = getDomainname() + "/reboot";
             window.location = stringota;
             window.location.href = stringota;
             window.location.assign(stringota);
@@ -128,9 +129,9 @@ function ChangeSelection(){
 
 function SaveToConfig(){
     WriteConfigININew();
-    UpdateConfigReference(basepath)
-    SaveConfigToServer(basepath);
-	alert("Config.ini is updated!");
+    UpdateConfigReference(domainname)
+    SaveConfigToServer(domainname);
+    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
 }
 
 function EnhanceContrast(){
@@ -141,7 +142,7 @@ function EnhanceContrast(){
     refInfo[aktindex]["dy"] = document.getElementById("refdy").value;       
 
     enhanceCon = true;
-    MakeContrastImageZW(refInfo[aktindex], enhanceCon, basepath);
+    MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname);
     UpdateReference();
 }
 
@@ -158,11 +159,11 @@ function UpdateReference(){
 
     _filenameurl = refInfo[aktindex]["name"].replace("/config/", "/img_tmp/");
 
-    var url = basepath + "/fileserver" + _filenameurl + "?"  + Date.now();
+    var url = domainname + "/fileserver" + _filenameurl + "?"  + Date.now();
     document.getElementById("img_ref").src = url;
 
     _filenameurl = _filenameurl.replace(".jpg", "_org.jpg");
-    var url = basepath + "/fileserver" + _filenameurl +  "?" + Date.now();
+    var url = domainname + "/fileserver" + _filenameurl +  "?" + Date.now();
     document.getElementById("img_ref_org").src = url;
 
     document.getElementById("name").value = refInfo[aktindex]["name"];
@@ -214,17 +215,17 @@ function dataURLtoBlob(dataurl) {
     
     
         function init() { 
-            basepath = getbasepath();
-            loadConfig(basepath); 
+            domainname = getDomainname();
+            loadConfig(domainname); 
             ParseConfig();
             param = getConfigParameters();
 
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
-            loadCanvas(basepath + "/fileserver/config/reference.jpg");
+            loadCanvas(domainname + "/fileserver/config/reference.jpg");
 
-            CopyReferenceToImgTmp(basepath);
+            CopyReferenceToImgTmp(domainname);
             refInfo = GetReferencesInfo();
 
             UpdateReference();
@@ -247,7 +248,7 @@ function dataURLtoBlob(dataurl) {
             refInfo[aktindex]["y"] = document.getElementById("refy").value; 
             refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
             refInfo[aktindex]["dy"] = document.getElementById("refdy").value;   
-            MakeRefZW(refInfo[aktindex], basepath); 
+            MakeRefZW(refInfo[aktindex], domainname); 
             UpdateReference();
             document.getElementById("enhancecontrast").disabled = false;
         }

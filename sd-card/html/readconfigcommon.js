@@ -1,8 +1,4 @@
-function readconfig_Version(){
-     return "1.0.0 - 20200910";
- }
-
-function SaveConfigToServer(_basepath){
+function SaveConfigToServer(_domainname){
      // leere Zeilen am Ende löschen
      var zw = config_split.length - 1;
      while (config_split[zw] == "") {
@@ -15,16 +11,16 @@ function SaveConfigToServer(_basepath){
           config_gesamt = config_gesamt + config_split[i] + "\n";
      } 
 
-     FileDeleteOnServer("/config/config.ini", _basepath);
+     FileDeleteOnServer("/config/config.ini", _domainname);
 
-     FileSendContent(config_gesamt, "/config/config.ini", _basepath);          
+     FileSendContent(config_gesamt, "/config/config.ini", _domainname);          
 }
 
-function UpdateConfig(zw, _index, _enhance, _basepath){
+function UpdateConfig(zw, _index, _enhance, _domainname){
      var namezw = zw["name"];
-     FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _basepath);
+     FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _domainname);
      var namezw = zw["name"].replace(".jpg", "_org.jpg");
-     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", namezw, _basepath);     
+     FileCopyOnServer("/img_tmp/ref_zw_org.jpg", namezw, _domainname);     
 }
 
 
@@ -35,7 +31,7 @@ function createReader(file) {
          image.onload = function(evt) {
              var width = this.width;
              var height = this.height;
-             alert (width); // will produce something like 198
+             //alert (width); // will produce something like 198
          };
          image.src = evt.target.result; 
      };
@@ -134,10 +130,10 @@ function getConfig()
 }
 
      
-function loadConfig(_basepath) {
+function loadConfig(_domainname) {
      var xhttp = new XMLHttpRequest();
      try {
-          url = _basepath + '/fileserver/config/config.ini';     
+          url = _domainname + '/fileserver/config/config.ini';     
           xhttp.open("GET", url, false);
           xhttp.send();
           config_gesamt = xhttp.responseText;
@@ -145,7 +141,7 @@ function loadConfig(_basepath) {
      }
      catch (error)
      {
-     //          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
      return true;
 }
@@ -162,19 +158,19 @@ function dataURLtoBlob(dataurl) {
      return new Blob([u8arr], {type:mime});
      }	
      
-function FileCopyOnServer(_source, _target, _basepath = ""){
-     url = _basepath + "/editflow?task=copy&in=" + _source + "&out=" + _target;
+function FileCopyOnServer(_source, _target, _domainname = ""){
+     url = _domainname + "/editflow?task=copy&in=" + _source + "&out=" + _target;
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
           xhttp.send();     }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
 
-function FileDeleteOnServer(_filename, _basepath = ""){
+function FileDeleteOnServer(_filename, _domainname = ""){
      var xhttp = new XMLHttpRequest();
      var okay = false;
 
@@ -183,28 +179,28 @@ function FileDeleteOnServer(_filename, _basepath = ""){
                if (xhttp.status == 200) {
                     okay = true;
                } else if (xhttp.status == 0) {
-//                    alert("Server closed the connection on delete abruptly!");
+//				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
 //                    location.reload()
                } else {
-//                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+//				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
 //                    location.reload()
                }
           }
      };
      try {
-          var url = _basepath + "/delete" + _filename;
+          var url = _domainname + "/delete" + _filename;
           xhttp.open("POST", url, false);
           xhttp.send();
      }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 
      return okay;
 }
 
-function FileSendContent(_content, _filename, _basepath = ""){
+function FileSendContent(_content, _filename, _domainname = ""){
      var xhttp = new XMLHttpRequest();  
      var okay = false;
 
@@ -213,41 +209,41 @@ function FileSendContent(_content, _filename, _basepath = ""){
                if (xhttp.status == 200) {
                     okay = true;
                } else if (xhttp.status == 0) {
-                    alert("Server closed the connection abruptly!");
+				firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                } else {
-                    alert(xhttp.status + " Error!\n" + xhttp.responseText);
+				firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                }
           }
      };
 
      try {
-          upload_path = _basepath + "/upload" + _filename;
+          upload_path = _domainname + "/upload" + _filename;
           xhttp.open("POST", upload_path, false);
           xhttp.send(_content);
      }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }     
     return okay;        
 }
 
 
-function SaveCanvasToImage(_canvas, _filename, _delete = true, _basepath = ""){
+function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = ""){
      var JPEG_QUALITY=0.8;
      var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
      var rtn = dataURLtoBlob(dataUrl);
 
      if (_delete) {
-          FileDeleteOnServer(_filename, _basepath);
+          FileDeleteOnServer(_filename, _domainname);
      }
 	
-     FileSendContent(rtn, _filename, _basepath);
+     FileSendContent(rtn, _filename, _domainname);
 }
 
-function MakeContrastImageZW(zw, _enhance, _basepath){
+function MakeContrastImageZW(zw, _enhance, _domainname){
      _filename = zw["name"].replace("/config/", "/img_tmp/");
-     url = _basepath + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      if (_enhance == true){
           url = url + "&enhance=true";
      }
@@ -258,26 +254,26 @@ function MakeContrastImageZW(zw, _enhance, _basepath){
           xhttp.send();     }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
 
 
 
-function MakeRefZW(zw, _basepath){
+function MakeRefZW(zw, _domainname){
      _filetarget = zw["name"].replace("/config/", "/img_tmp/");
      _filetarget = _filetarget.replace(".jpg", "_org.jpg");
-     url = _basepath + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
           xhttp.send();     }
      catch (error)
      {
-//          alert("Deleting Config.ini failed");
+//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
      _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
 //     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
-     FileCopyOnServer(_filetarget, _filetarget2, _basepath);
+     FileCopyOnServer(_filetarget, _filetarget2, _domainname);
 }
 

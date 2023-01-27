@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef CLASSLOGFILE_H
+#define CLASSLOGFILE_H
+
 
 #include <string>
 #include "esp_log.h"
@@ -17,8 +22,6 @@ private:
 public:
     ClassLogFile(std::string _logpath, std::string _logfile, std::string _logdatapath, std::string _datafile);
 
-    std::string getESPHeapInfo();
-
     void WriteHeapInfo(std::string _id);
 
     void setLogLevel(esp_log_level_t _logLevel);
@@ -30,7 +33,7 @@ public:
     void WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time);
     void WriteToFile(esp_log_level_t level, std::string tag, std::string message);
 
-    void WriteToDedicatedFile(std::string _fn, esp_log_level_t level, std::string message, bool _time = true);
+    void CloseLogFileAppendHandle();
 
     void CreateLogDirectories();
     void RemoveOldLogFile();
@@ -45,3 +48,5 @@ public:
 };
 
 extern ClassLogFile LogFile;
+
+#endif //CLASSLOGFILE_H

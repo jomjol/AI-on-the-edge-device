@@ -10,15 +10,12 @@
 
 #include "server_tflite.h"
 
-//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
-//#include "errno.h"
 
 #include <sys/stat.h>
 #include <vector>
-//#include <regex>
 
-#include "defines.h"
+#include "../../include/defines.h"
 
 #include "server_GPIO.h"
 
@@ -29,10 +26,9 @@
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
 
+
 static const char *TAG = "GPIO";
 QueueHandle_t gpio_queue_handle = NULL;
-
-//#define DEBUG_DETAIL_ON 
 
 GpioPin::GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, std::string mqttTopic, bool httpEnable) 
 {
@@ -254,7 +250,7 @@ void GpioHandler::init()
 
     if (xHandleTaskGpio == NULL) {
         gpio_queue_handle = xQueueCreate(10,sizeof(GpioResult));
-        BaseType_t  xReturned = xTaskCreate(&gpioHandlerTask, "gpio_int", configMINIMAL_STACK_SIZE * 8, (void *)this, tskIDLE_PRIORITY + 2, &xHandleTaskGpio);
+        BaseType_t  xReturned = xTaskCreate(&gpioHandlerTask, "gpio_int", 3 * 1024, (void *)this, tskIDLE_PRIORITY + 4, &xHandleTaskGpio);
         if(xReturned == pdPASS ) {
             ESP_LOGD(TAG, "xHandletaskGpioHandler started");
         } else {
@@ -310,7 +306,7 @@ bool GpioHandler::readConfig()
 
     ConfigFile configFile = ConfigFile(_configFile); 
 
-    std::vector<std::string> zerlegt;
+    std::vector<std::string> splitted;
     std::string line = "";
     bool disabledLine = false;
     bool eof = false;
@@ -344,31 +340,31 @@ bool GpioHandler::readConfig()
     bool registerISR = false;
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
-        zerlegt = ZerlegeZeile(line);
+        splitted = ZerlegeZeile(line);
         // const std::regex pieces_regex("IO([0-9]{1,2})");
         // std::smatch pieces_match;
-        // if (std::regex_match(zerlegt[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
+        // if (std::regex_match(splitted[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
         // {
         //     std::string gpioStr = pieces_match[1];
-        ESP_LOGD(TAG, "conf param %s", toUpper(zerlegt[0]).c_str());
-        if (toUpper(zerlegt[0]) == "MAINTOPICMQTT") {
+        ESP_LOGD(TAG, "conf param %s", toUpper(splitted[0]).c_str());
+        if (toUpper(splitted[0]) == "MAINTOPICMQTT") {
 //            ESP_LOGD(TAG, "MAINTOPICMQTT found");
-//            mainTopicMQTT = zerlegt[1];
-        } else if ((zerlegt[0].rfind("IO", 0) == 0) && (zerlegt.size() >= 6))
+//            mainTopicMQTT = splitted[1];
+        } else if ((splitted[0].rfind("IO", 0) == 0) && (splitted.size() >= 6))
         {
-            ESP_LOGI(TAG,"Enable GP%s in %s mode", zerlegt[0].c_str(), zerlegt[1].c_str());
-            std::string gpioStr = zerlegt[0].substr(2, 2);
+            ESP_LOGI(TAG,"Enable GP%s in %s mode", splitted[0].c_str(), splitted[1].c_str());
+            std::string gpioStr = splitted[0].substr(2, 2);
             gpio_num_t gpioNr = (gpio_num_t)atoi(gpioStr.c_str());
-            gpio_pin_mode_t pinMode = resolvePinMode(toLower(zerlegt[1]));
-            gpio_int_type_t intType = resolveIntType(toLower(zerlegt[2]));
-            uint16_t dutyResolution = (uint8_t)atoi(zerlegt[3].c_str());
+            gpio_pin_mode_t pinMode = resolvePinMode(toLower(splitted[1]));
+            gpio_int_type_t intType = resolveIntType(toLower(splitted[2]));
+            uint16_t dutyResolution = (uint8_t)atoi(splitted[3].c_str());
 #ifdef ENABLE_MQTT 
-            bool mqttEnabled = toLower(zerlegt[4]) == "true";
+            bool mqttEnabled = toLower(splitted[4]) == "true";
 #endif // ENABLE_MQTT
-            bool httpEnabled = toLower(zerlegt[5]) == "true";
+            bool httpEnabled = toLower(splitted[5]) == "true";
             char gpioName[100];
-            if (zerlegt.size() >= 7) {
-                strcpy(gpioName, trim(zerlegt[6]).c_str());
+            if (splitted.size() >= 7) {
+                strcpy(gpioName, trim(splitted[6]).c_str());
             } else {
                 sprintf(gpioName, "GPIO%d", gpioNr);
             }
@@ -390,28 +386,28 @@ bool GpioHandler::readConfig()
                 registerISR = true;
             }
         }
-        if (toUpper(zerlegt[0]) == "LEDNUMBERS")
+        if (toUpper(splitted[0]) == "LEDNUMBERS")
         {
-            LEDNumbers = stoi(zerlegt[1]);
+            LEDNumbers = stoi(splitted[1]);
         }
-        if (toUpper(zerlegt[0]) == "LEDCOLOR")
+        if (toUpper(splitted[0]) == "LEDCOLOR")
         {
             uint8_t _r, _g, _b;
-            _r = stoi(zerlegt[1]);
-            _g = stoi(zerlegt[2]);
-            _b = stoi(zerlegt[3]);
+            _r = stoi(splitted[1]);
+            _g = stoi(splitted[2]);
+            _b = stoi(splitted[3]);
 
             LEDColor = Rgb{_r, _g, _b};
         }
-        if (toUpper(zerlegt[0]) == "LEDTYPE")
+        if (toUpper(splitted[0]) == "LEDTYPE")
         {
-            if (zerlegt[1] == "WS2812")
+            if (splitted[1] == "WS2812")
                 LEDType = LED_WS2812;
-            if (zerlegt[1] == "WS2812B")
+            if (splitted[1] == "WS2812B")
                 LEDType = LED_WS2812B;
-            if (zerlegt[1] == "SK6812")
+            if (splitted[1] == "SK6812")
                 LEDType = LED_SK6812;
-            if (zerlegt[1] == "WS2813")
+            if (splitted[1] == "WS2813")
                 LEDType = LED_WS2813;
         }
     }
@@ -696,6 +692,7 @@ void gpio_handler_deinit() {
 void gpio_handler_destroy()
 {
     if (gpioHandler != NULL) {
+        gpio_handler_deinit();
         delete gpioHandler;
         gpioHandler = NULL;
     }

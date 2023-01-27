@@ -1,5 +1,7 @@
-#ifndef __CFINDTEMPLATE_CLASS
-#define __CFINDTEMPLATE_CLASS
+#pragma once
+
+#ifndef CFINDTEMPLATE_H
+#define CFINDTEMPLATE_H
 
 #include "CImageBasis.h"
 
@@ -37,4 +39,4 @@ class CFindTemplate : public CImageBasis
         bool CalculateSimularities(uint8_t* _rgb_tmpl, int _startx, int _starty, int _sizex, int _sizey, int &min, float &avg, int &max, float &SAD, float _SADold, float _SADcrit);
 };
 
-#endif
+#endif //CFINDTEMPLATE_H

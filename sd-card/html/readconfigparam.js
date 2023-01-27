@@ -1,7 +1,3 @@
-function readconfig_Version(){
-     return "1.0.0 - 20200910";
- }
-
 var config_gesamt = "";
 var config_split = [];
 var param = [];
@@ -12,96 +8,94 @@ var REFERENCES = new Array(0);
 
 
 function getNUMBERSList() {
-	_basepath = getbasepath(); 
-     var datalist = "";
+	_domainname = getDomainname(); 
+     var namenumberslist = "";
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		datalist = xhttp.responseText;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
+          if (xhttp.status >= 200 && xhttp.status < 300) {
+               namenumberslist = xhttp.responseText;
+          } else {
+               console.warn(request.statusText, request.responseText);
+          }
+     });
 
-	 try {
-		  url = _basepath + '/editflow?task=namenumbers';     
-		  xhttp.open("GET", url, false);
-		  xhttp.send();
+     try {
+          url = _domainname + '/editflow?task=namenumbers';     
+          xhttp.open("GET", url, false);
+          xhttp.send();
+     }
+     catch (error)
+     {
+//               alert("Loading Hostname failed");
+     }
 
-	 }
-	 catch (error)
-	 {
-               alert("Loading Hostname failed");
-	 }
+     namenumberslist = namenumberslist.split("\t");
+//      namenumberslist.pop();
 
-      datalist = datalist.split("\t");
-//      datalist.pop();
-
-      return datalist;
-  }
+     return namenumberslist;
+}
 
 
 function getDATAList() {
-	_basepath = getbasepath(); 
-     tflitelist = "";
+	_domainname = getDomainname(); 
+     datalist = "";
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		tflitelist = xhttp.responseText;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
+          if (xhttp.status >= 200 && xhttp.status < 300) {
+               datalist = xhttp.responseText;
+          } else {
+               console.warn(request.statusText, request.responseText);
+          }
+     });
 
-	 try {
-		  url = _basepath + '/editflow?task=data';     
-		  xhttp.open("GET", url, false);
-		  xhttp.send();
-
-	 }
-	 catch (error)
-	 {
+     try {
+          url = _domainname + '/editflow?task=data';     
+          xhttp.open("GET", url, false);
+          xhttp.send();
+     }
+     catch (error)
+     {
 //               alert("Loading Hostname failed");
-	 }
+     }
 
-      tflitelist = tflitelist.split("\t");
-      tflitelist.pop();
+     datalist = datalist.split("\t");
+     datalist.pop();
+     datalist.sort();
 
-      return tflitelist;
-  }
+     return datalist;
+}
 
 
 function getTFLITEList() {
-	_basepath = getbasepath(); 
+	_domainname = getDomainname(); 
      tflitelist = "";
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.addEventListener('load', function(event) {
-	  if (xhttp.status >= 200 && xhttp.status < 300) {
-		tflitelist = xhttp.responseText;
-	  } else {
-		 console.warn(request.statusText, request.responseText);
-	  }
-	 });
+          if (xhttp.status >= 200 && xhttp.status < 300) {
+               tflitelist = xhttp.responseText;
+          } else {
+               console.warn(request.statusText, request.responseText);
+          }
+     });
 
-	 try {
-		  url = _basepath + '/editflow?task=tflite';     
-		  xhttp.open("GET", url, false);
-		  xhttp.send();
-
-	 }
-	 catch (error)
-	 {
+     try {
+          url = _domainname + '/editflow?task=tflite';
+          xhttp.open("GET", url, false);
+          xhttp.send();
+     }
+     catch (error)
+     {
 //               alert("Loading Hostname failed");
-	 }
+     }
 
-      tflitelist = tflitelist.split("\t");
-      tflitelist.pop();
+     tflitelist = tflitelist.split("\t");
+     tflitelist.pop();
 
-      return tflitelist;
-  }
+     return tflitelist;
+}
 
 
 function ParseConfig() {
@@ -119,6 +113,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "LogImageLocation");
      ParamAddValue(param, catname, "WaitBeforeTakingPicture");
      ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "Demo");
      ParamAddValue(param, catname, "Brightness");
      ParamAddValue(param, catname, "Contrast");
      ParamAddValue(param, catname, "Saturation");
@@ -167,7 +162,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "AnalogDigitalTransitionStart", 1, true);
      ParamAddValue(param, catname, "PreValueUse");
      ParamAddValue(param, catname, "PreValueAgeStartup");
-     ParamAddValue(param, catname, "AllowNegativeRates");
+     ParamAddValue(param, catname, "AllowNegativeRates", 1, true);
      ParamAddValue(param, catname, "MaxRateValue", 1, true);
      ParamAddValue(param, catname, "MaxRateType", 1, true);
      ParamAddValue(param, catname, "ExtendedResolution", 1, true);
@@ -256,6 +251,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "AutoAdjustSummertime");
      ParamAddValue(param, catname, "Hostname");   
+     ParamAddValue(param, catname, "RSSIThreashold");   
      ParamAddValue(param, catname, "SetupMode"); 
      
      
@@ -560,7 +556,7 @@ function isCommented(input)
           return [isComment, input];
      }    
 
-function SaveConfigToServer(_basepath){
+function SaveConfigToServer(_domainname){
      // leere Zeilen am Ende löschen
      var zw = config_split.length - 1;
      while (config_split[zw] == "") {
@@ -573,8 +569,8 @@ function SaveConfigToServer(_basepath){
           config_gesamt = config_gesamt + config_split[i] + "\n";
      } 
 
-     FileDeleteOnServer("/config/config.ini", _basepath);
-     FileSendContent(config_gesamt, "/config/config.ini", _basepath);          
+     FileDeleteOnServer("/config/config.ini", _domainname);
+     FileSendContent(config_gesamt, "/config/config.ini", _domainname);          
 }
 	 
 function getConfig() {
@@ -663,19 +659,19 @@ function getNUMBERS(_name, _type, _create = true)
 
  
 
-function CopyReferenceToImgTmp(_basepath)
+function CopyReferenceToImgTmp(_domainname)
 {
      for (index = 0; index < 2; ++index)
      {
           _filenamevon = REFERENCES[index]["name"];
           _filenamenach = _filenamevon.replace("/config/", "/img_tmp/");
-          FileDeleteOnServer(_filenamenach, _basepath);
-          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+          FileDeleteOnServer(_filenamenach, _domainname);
+          FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
      
           _filenamevon = _filenamevon.replace(".jpg", "_org.jpg");
           _filenamenach = _filenamenach.replace(".jpg", "_org.jpg");
-          FileDeleteOnServer(_filenamenach, _basepath);
-          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+          FileDeleteOnServer(_filenamenach, _domainname);
+          FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
      }
 }
 
@@ -684,18 +680,18 @@ function GetReferencesInfo(){
 }
 
 
-function UpdateConfigReference(_basepath){
+function UpdateConfigReference(_domainname){
      for (var index = 0; index < 2; ++index)
      {
           _filenamenach = REFERENCES[index]["name"];
           _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
-          FileDeleteOnServer(_filenamenach, _basepath);
-          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+          FileDeleteOnServer(_filenamenach, _domainname);
+          FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
      
           _filenamenach = _filenamenach.replace(".jpg", "_org.jpg");
           _filenamevon = _filenamevon.replace(".jpg", "_org.jpg");
-          FileDeleteOnServer(_filenamenach, _basepath);
-          FileCopyOnServer(_filenamevon, _filenamenach, _basepath);
+          FileDeleteOnServer(_filenamenach, _domainname);
+          FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
 
      }
 }

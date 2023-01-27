@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef CLASSFFLOWPWRITELIST_H
+#define CLASSFFLOWPWRITELIST_H
+
 #include "ClassFlow.h"
 #include "ClassFlowPostProcessing.h"
 
@@ -20,3 +24,4 @@ public:
     string name(){return "ClassFlowWriteList";};
 };
 
+#endif //CLASSFFLOWPWRITELIST_H

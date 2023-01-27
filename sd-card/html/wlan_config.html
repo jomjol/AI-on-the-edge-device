@@ -1,0 +1,114 @@
+<html>
+    <head>
+        <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+        <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+        <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+    </head>
+<body>
+    <table>
+<tr><td>WLAN-SSID</td><td><input type="text" name="ssid" id="ssid"></td><td>SSID of the WLAN</td></tr>
+<tr><td>WLAN-Password</td><td><input type="text" name="password" id="password"></td><td>ATTENTION: the password will not be encrypted during the sending.</td>
+</tr><tr><td> Hostname</td><td><input type="text" name="hostname" id="hostname"></td><td></td>
+</tr><tr><td>Fixed IP</td><td><input type="text" name="ip" id="ip"></td><td>Leave emtpy if set by router</td></tr>
+<tr><td>gateway</td><td><input type="text" name="gateway" id="gateway"></td><td>Leave emtpy if set by router</td></tr>
+<tr><td>netmask</td><td><input type="text" name="netmask" id="netmask"></td><td>Leave emtpy if set by router</td>
+</tr><tr><td>DNS</td><td><input type="text" name="dns" id="dns"></td><td>Leave emtpy if set by router</td></tr>
+<tr><td>RSSI Threashold</td><td><input type="number" name="name" id="threashold" min="-100"  max="0" step="1" value = "0"></td><td>WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>
+</table>
+<button class="button" type="button" onclick="wr()">Write wlan.ini</button>
+<input id="newfile" type="file">
+<button class="button" style="width:300px" id="doUpdate" type="button" onclick="upload()">Upload Files</button>
+
+
+<script language="JavaScript">function wr(){
+        api = "/config?"+"ssid"+document.getElementById("ssid").value+"&pwd="+document.getElementById("password").value;+"&hn="+document.getElementById("hostname").value;+"&ip="+document.getElementById("ip").value;+"&gw="+document.getElementById("gateway").value;+"&nm="+document.getElementById("netmask").value;+"&dns="+document.getElementById("dns").value;+"&rssi="+document.getElementById("threashold").value;
+        fetch(api);}
+
+
+//    var xhttp = new XMLHttpRequest();
+//    xhttp.onreadystatechange = function() {if (xhttp.readyState == 4) {if (xhttp.status == 200) {document.reload();}}};
+if (!file.name.includes("remote-setup")){
+    if (!confirm("The zip file name should contain \"...remote-setup...\". Are you sure that you have downloaded the correct file?"))
+        return;
+}
+
+    function upload() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == 4) {stopProgressTimer();if (xhttp.status == 200) {extract();} }};
+        var filePath = document.getElementById("newfile").value.split(/[\\\/]/).pop();
+        var file = document.getElementById("newfile").files[0];
+        if (!file.name.includes("remote-setup"))
+        {
+            if (!confirm("The zip file name should contain \"...remote-setup...\". Are you sure that you have downloaded the correct file?"))
+                return;
+        }
+
+        var upload_path = "/upload/firmware/" + filePath; xhttp.open("POST", upload_path, true); xhttp.send(file);}
+    
+    
+    function extract() {
+        document.getElementById("status").innerText = "Status: Processing on device (takes up to 3 minutes)...";
+    
+        var xhttp = new XMLHttpRequest();
+        /* first delete the old firmware */	
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4) {
+                stopProgressTimer();
+                if (xhttp.status == 200) {
+                    document.getElementById("status").innerText = "Status: Update completed!";
+                    document.getElementById("doUpdate").disabled = true;
+                    document.getElementById("newfile").disabled = false;
+                    document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/"; // Make sure after the reboot we go to the overview page
+    
+                    if (xhttp.responseText.startsWith("reboot"))
+                    {
+                        doRebootAfterUpdate();
+                    }
+                    else
+                    {
+                        firework.launch('Processing done! (' + xhttp.responseText + ')', 'success', 5000);
+                    }
+                } else if (xhttp.status == 0) {
+                    firework.launch('Server closed the connection abruptly!', 'danger', 30000);
+                    UpdatePage();
+                } else {
+                    firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
+                    UpdatePage();
+                }
+            }
+        };
+    
+        startProgressTimer("Extraction");
+    
+    
+        var nameneu = document.getElementById("newfile").value;
+        filePath = nameneu.split(/[\\\/]/).pop();
+        var _toDo = domainname + "/ota?task=update&file=" + filePath;
+        xhttp.open("GET", _toDo, true);
+        xhttp.send();
+    }
+    
+    
+    function startProgressTimer(step) {     
+        console.log(step + "...");
+        document.getElementById('progress').innerHTML = "(0s)";
+        action_runtime = 0;    
+        progressTimerHandle = setInterval(function() {
+            action_runtime += 1;
+            console.log("Progress: " + action_runtime + "s");  
+            document.getElementById('progress').innerHTML = "(" + action_runtime + "s)";
+        }, 1000);
+    }
+    
+    
+    function stopProgressTimer() {            
+        clearInterval(progressTimerHandle);
+        document.getElementById('progress').innerHTML = "";
+    }
+    
+
+    
+    </script>
+</html>
+</body>
