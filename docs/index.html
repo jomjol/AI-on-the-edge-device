@@ -4,7 +4,8 @@
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
    <script
       type="module"
-      src="https://unpkg.com/esp-web-tools@9.0.3/dist/web/install-button.js?module"></script>
+      src="https://unpkg.com/esp-web-tools@9.0.3/dist/web/install-button.js?module"
+      ></script>
    <body style="
         padding: 20px;
         padding-left: 60px;
@@ -22,85 +23,18 @@
 
       <p>This page provides the Webinstaller and a live USB Console to your AI-on-the-edge-device.<br>
       For further information about AI-on-the-edge-device please go to <a href=https://github.com/jomjol/AI-on-the-edge-device>https://github.com/jomjol/AI-on-the-edge-device</a>.</p>
-      <p>Beside flashing the firmware you need a sd-card with configuration informations about the system and the wifi credentials.</p>
-       <p>There a two ways to make this settings:</p>
-      <ol>
-          <li>By hand: follow the instructions in the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#firmware-flashing target=_blank>documentation</a> (copy data to sd-card, setup wifi credentials by hand)</li>
-         <li>Use an integrated primitiv access point to make the initial setup.<br>
-             In this case make sure to read the instructions below carefully in advance, as you have to temporarily change wifi and need a access to a file located in the internet.</li>
-      </ol>
       
       <p>Notes:</p>
       <ul>
          <li>For the installation, make sure to switch the ESP32 to Bootloader mode!</li>
-         <li>The SD-Card still must be flashed separately on a PC (See in the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#sd-card>documentation</a>)!</li>
+         <li>Beside the firmware, also the SD-Card needs to be flashed. This can be done manually or through an initial simple access point.<br>Instructions see <a href=https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation>Wiki</a>!</li>
          <li>After the installation, a manual reset might be required!</li>
          <li>Please note that not all webbrowsers and operating systems support the needed access to USB!</li>
-         <li>Check the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation>documentation</a> for additional information.</li>
+         <li>Check the <a href=https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation>Wiki</a> for additional information.</li>
       </ul>
+            
       <p><esp-web-install-button manifest="manifest.json"></esp-web-install-button></p>
       <hr>
       <p style="font-size: small;">Installer and Console powered by <a href=https://esphome.github.io/esp-web-tools/ target=_blank>ESP Web Tools</a></p>
-
-
-      <h5>Using internal access point for sd-card setup</h5>
-      <p>Before starting the flash process, download the necessary file. It is a zip file, containing the initial default configuration.
-         You can identify it by the naming. It is named `AI-on-the-edge-device__remote-setup__*.zip`. Store this file locally as you will need it later. 
-      </p>
-    
-      <h6>Flash the firmware with the WebInstaller</h6>
-         <div style="text-indent:50px;">
-            <p>Instructions see above.</p>
-         </div>
-
-      <h6>Connect to Device</h6>
-         <div style="text-indent:50px;">
-            <p>During the first booting, the device detects that the wifi credentials as well as the configuration informations are missing.</p>
-            <p>Therefore a simple wifi access point is initiated and a simple internal web server is startet, so the device can be setup.</p>
-            <p>The naming of the wifi is "AI-on-the-edge" and you can access it without any password.</p>
-
-            <p><img src="access-point.png" alt="Access Point" width="250"></p>
-
-            <p>You connect to the server with the fixed ip: <a href=http://192.168.4.1>http://192.168.4.1</a></p>
-         </div>
-
-      <h6>Upload initial configuration to sd-card</h6>
-         <div style="text-indent:50px;">
-            <p><img src="setup-config.png" alt="Access Point" width="300"></p>
-            <p>Use the `select file` and `upload` button to start the upload.</p>
-            <p>A warning will show up if you have choosen a possible wrong file (without default configuration).</p>
-         </div>
-
-      <h6>Upload initial configuration to sd-card</h6>
-         <div style="text-indent:50px;">
-
-            <p><img src="setup-config.png" alt="Access Point" width="300"></p>
-
-            <p>Use the `select file` and `upload` button to start the upload.<br>
-            A warning will show up if you have choosen a possible wrong file (without default configuration).</p>
-            <p>Be patient - the upload takes up to around 60s without response during this time!<br>
-            After succesfull uploading, the page will be reloaded for the next step.</p>
-         </div>
-            
-      <h6>Store WLAN acces information</h6>
-         <div style="text-indent:50px;">
-            <p><img src="setup-wlan.png" alt="Access Point" width="300"></p>
-
-            <p>Here you can set your wifi credentials. Only basic settings can done here. If you need advanced features (fixed ip, ...), please use the manual setup.</p>
-            <p>Attention:</p>
-            <ul>
-               <li>Carefully check your wifi settings. To change them later on, you need to take you the sd-card and to it manually in `wlan.ini`</li>
-               <li>The informations are transfered without encryption.</li>
-            </ul>
-            <p>Finish the step by pushing `Write wlan.ini`</p>
-         </div>
-
-      <h6>Reboot</h6>
-         <div style="text-indent:50px;">
-            <p><img src="setup-reboot.png" alt="Access Point" width="300"></p>
-
-            <p>The final step is the reboot.</p>
-            <p>It will take up to 3 minutes. Afterwards you can find your device in the local network. Check you router for the IP. You can find it also in the USB Console output.</p>
-         </div>
    </body>
 </html>
