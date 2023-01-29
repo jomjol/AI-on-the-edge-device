@@ -64,19 +64,18 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
-    // generate timestamp (TODO: parse result timestamp passed as string and convert it to POSIX timestamp?)
     // Format:     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
     struct tm tm;
     strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
     time_t t = mktime(&tm);  // t is now your desired time_t
 
 
-//    time_t now = time(NULL);
     time_t now;
     time(&now);
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
-    sprintf(nowTimestamp,"%ld000000000", (long) now);
+//    sprintf(nowTimestamp,"%ld000000000", (long) now);
+    sprintf(nowTimestamp,"%ld000000000", (long) t);
     
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now: " + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
@@ -86,7 +85,6 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
-//    ESP_LOGI(TAG, "sending line to influxdb: %s\n", payload.c_str());
 
     // use the default retention policy of the database
     std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
@@ -94,31 +92,24 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     http_config.url = apiURI.c_str();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "API URI: " + apiURI);
-//    ESP_LOGI(TAG, "API URI: %s", apiURI.c_str());
 
     esp_http_client_handle_t http_client = esp_http_client_init(&http_config);
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "client is initialized");
-//    ESP_LOGI(TAG, "client is initialized%s\n", "");
 
     esp_http_client_set_header(http_client, "Content-Type", "text/plain");
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "header is set");
-//    ESP_LOGI(TAG, "header is set%s\n", "");
 
     ESP_ERROR_CHECK(esp_http_client_set_post_field(http_client, payload.c_str(), payload.length()));
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "post payload is set");
-//    ESP_LOGI(TAG, "post payload is set%s\n", "");
 
     esp_err_t err = ESP_ERROR_CHECK_WITHOUT_ABORT(esp_http_client_perform(http_client));
 
     if( err == ESP_OK ) {
       LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request was performed");
-//      ESP_LOGI(TAG, "HTTP request was performed%s\n", "");
       int status_code = esp_http_client_get_status_code(http_client);
       LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP status code" + std::to_string(status_code));
-//      ESP_LOGI(TAG, "HTTP status code %d\n", status_code);
     } else {
       LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request failed");
-//      ESP_LOGW(TAG, "HTTP request failed%s\n", "");
     }
     esp_http_client_cleanup(http_client);
 }
