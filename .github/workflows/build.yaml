@@ -363,5 +363,5 @@ jobs:
 #########################################################################################
 ## Update the Web Installer on a release
 #########################################################################################
-# The Update of the Web installer n olonger should be done in here!
+# The Update of the Web installer no longer gets done in here!
 # See the update-webinstaller.yml which gets triggered automatically on a release (or a change to rolling where it then uses the binary of the latest release)
