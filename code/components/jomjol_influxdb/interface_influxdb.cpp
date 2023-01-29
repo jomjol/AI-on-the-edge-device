@@ -21,25 +21,32 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
     switch(evt->event_id)
     {
         case HTTP_EVENT_ERROR:
-            ESP_LOGE(TAG, "HTTP Client Error encountered");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP Client Error encountered");
+//            ESP_LOGE(TAG, "HTTP Client Error encountered");
             break;
         case HTTP_EVENT_ON_CONNECTED:
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP Client Error encountered");
             ESP_LOGI(TAG, "HTTP Client Connected");
             break;
         case HTTP_EVENT_HEADERS_SENT:
-            ESP_LOGV(TAG, "HTTP Client sent all request headers");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP Client sent all request headers");
+//            ESP_LOGV(TAG, "HTTP Client sent all request headers");
             break;
         case HTTP_EVENT_ON_HEADER:
-            ESP_LOGV(TAG, "Header: key=%s, value=%s", evt->header_key, evt->header_value);
+            LogFile.WriteToFile(ESP_LOG_VERBOSE, TAG, "Header: key=" + std::string(evt->header_key) + ", value="  + std::string(evt->header_value));
+//            ESP_LOGV(TAG, "Header: key=%s, value=%s", evt->header_key, evt->header_value);
             break;
         case HTTP_EVENT_ON_DATA:
-            ESP_LOGV(TAG, "HTTP Client data recevied: len=%d", evt->data_len);
+            LogFile.WriteToFile(ESP_LOG_VERBOSE, TAG, "HTTP Client data recevied: len=" + std::to_string(evt->data_len));
+//            ESP_LOGV(TAG, "HTTP Client data recevied: len=%d", evt->data_len);
             break;
         case HTTP_EVENT_ON_FINISH:
-            ESP_LOGI(TAG, "HTTP Client finished");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP Client finished");
+//            ESP_LOGI(TAG, "HTTP Client finished");
             break;
          case HTTP_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG, "HTTP Client Disconnected");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP Client Disconnected");
+//            ESP_LOGI(TAG, "HTTP Client Disconnected");
             break;
     }
     return ESP_OK;
@@ -60,6 +67,8 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
        http_config.password = _influxDBPassword.c_str();
        http_config.auth_type = HTTP_AUTH_TYPE_BASIC;
     }
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
     // generate timestamp (TODO: parse result timestamp passed as string and convert it to POSIX timestamp?)
     time_t now = time(NULL);
