@@ -309,7 +309,7 @@ jobs:
         zip -r ../release/AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}.zip .
 
         # create AI-on-the-edge-device__remote-setup__*.zip like "AI-on-the-edge-device__remote-setup__v13.0.5.zip"
-        cd ../manual_setup
+        cd ../remote_setup
         zip -r ../release/AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}.zip .
 
     # extract the version used in next step
