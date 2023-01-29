@@ -9,8 +9,8 @@ on:
   push:
     branches:
     - rolling
-    paths:
-    - docs/
+#    paths:
+#    - docs # The path filter somehow does not work, so lets run it on every change to rolling
   release:
   
 jobs:
