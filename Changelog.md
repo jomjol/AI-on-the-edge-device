@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [14.0.0-RC6] - 2023-01-29
+
 ## [14.0.0-RC3] - 2023-01-29
 
 ## [14.0.0-RC2] - 2023-01-29
@@ -153,8 +155,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -826,6 +828,8 @@ External Illumination
 
 [11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.3.9
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC3...HEAD
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC6...HEAD
+
+[14.0.0-RC6]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC3...14.0.0-RC6
 
 [14.0.0-RC3]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC2...14.0.0-RC3
