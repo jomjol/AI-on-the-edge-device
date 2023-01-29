@@ -363,52 +363,5 @@ jobs:
 #########################################################################################
 ## Update the Web Installer on a release
 #########################################################################################
-  update-web-installer:
-    needs: [release]
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-
-    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Update update cache on every commit
-      uses: actions/cache@v3.2.3
-      with:
-        path: update
-        key: update-${{ github.run_id }}
-        restore-keys: update # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
-
-    - name: Add binary to Web Installer and update manifest
-      run: |
-        rm -f docs/binary/firmware.bin
-        cp -f update/firmware.bin docs/binary/firmware.bin
-        cp -f docs/manifest_template.json docs/manifest.json
-        sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
-
-    - name: Setup Pages
-      uses: actions/configure-pages@v2
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
-      with:
-        path: 'docs'
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v1
+# The Update of the Web installer n olonger should be done in here!
+# See the update-webinstaller.yml which gets triggered automatically on a release (or a change to rolling where it then uses the binary of the latest release)
