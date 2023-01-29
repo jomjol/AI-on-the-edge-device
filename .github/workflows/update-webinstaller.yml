@@ -10,7 +10,7 @@ on:
     branches:
     - rolling
     paths:
-    - docs
+    - docs/
   release:
   
 jobs:
