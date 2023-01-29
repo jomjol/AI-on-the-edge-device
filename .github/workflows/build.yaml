@@ -309,7 +309,7 @@ jobs:
         zip -r ../release/AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}.zip .
 
         # create AI-on-the-edge-device__remote-setup__*.zip like "AI-on-the-edge-device__remote-setup__v13.0.5.zip"
-        cd ../manual_setup
+        cd ../remote_setup
         zip -r ../release/AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}.zip .
 
     # extract the version used in next step
@@ -363,9 +363,8 @@ jobs:
 #########################################################################################
 ## Update the Web Installer on a release
 #########################################################################################
-  update-web-installer:
-    needs: [release]
-
+# This is the same as in the update-webinstaller.yml
+  update-web-installer:    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -380,27 +379,23 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Update update cache on every commit
-      uses: actions/cache@v3.2.3
+      
+    - name: Get version of last release
+      id: last_release
+      uses: InsonusK/get-latest-release@v1.0.1
       with:
-        path: update
-        key: update-${{ github.run_id }}
-        restore-keys: update # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-
-    - name: Set Variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
-
+        myToken: ${{ github.token }}
+        exclude_types: "release"
+        view_top: 1     
+      
     - name: Add binary to Web Installer and update manifest
       run: |
         rm -f docs/binary/firmware.bin
-        cp -f update/firmware.bin docs/binary/firmware.bin
+        wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
+        unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
+        cp -f firmware.bin docs/binary/firmware.bin
         cp -f docs/manifest_template.json docs/manifest.json
-        sed -i 's/VERSION/${{ steps.vars.outputs.branch }}/g' docs/manifest.json
-
+        sed -i 's/VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
     - name: Setup Pages
       uses: actions/configure-pages@v2
 
@@ -411,4 +406,4 @@ jobs:
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v1
+      uses: actions/deploy-pages@v1   
