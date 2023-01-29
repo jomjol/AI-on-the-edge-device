@@ -2,6 +2,7 @@
 # it only gets run on:
 #  - Changes to the docs folder in the `rolling` branch
 #  - On a release
+# - Manual trigger (using the files of the current branch)
 
 name: Update Web Installer
 
@@ -12,6 +13,7 @@ on:
     paths:
     - docs
   release:
+  repository_dispatch:
   
 jobs:
   update-web-installer:    
