@@ -71,6 +71,12 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
     // generate timestamp (TODO: parse result timestamp passed as string and convert it to POSIX timestamp?)
+    // Format:     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
+    struct tm tm;
+    strptime(_timestamp.c_str(), "PREVALUE_TIME_FORMAT_OUTPUT", &tm);
+    time_t t = mktime(&tm);  // t is now your desired time_t
+
+
 //    time_t now = time(NULL);
     time_t now;
     time(&now);
@@ -78,7 +84,10 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     // pad with zeroes to get nanoseconds
     sprintf(nowTimestamp,"%ld000000000", (long) now);
     
-    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp + "(time not used yet)";
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now:" + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
+
+    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
