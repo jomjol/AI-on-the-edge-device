@@ -39,10 +39,10 @@
 
     <h3>Update</h3>
     On the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a>, pick the <i><span style="font-family:monospace">AI-on-the-edge-device__update__*.zip</span></i> file!</p>
-    <p>Alternatively the following file formats are supported (Make sure the file extention is lower case):</p>
+    <p>Alternatively the following file types are supported:</p>
     <ul>
         <li><span style="font-family:monospace">*.zip</span> &rarr; Gets unpacked on the SD-Card (most top folder)</li>
-        <li><span style="font-family:monospace">*.bin</span> &rarr; gets installed onto the ESP32</li>
+        <li><span style="font-family:monospace">*.bin</span> &rarr; gets installed onto the ESP32s program flash</li>
         <li><span style="font-family:monospace">*.tfl/tflite</span> &rarr; Gets copied to your <i>SD-Card/config</i></li>
     </ul>
 
@@ -108,10 +108,10 @@
              *  - firmware__*.bin
              *  - *.ftl
              *  - *.tflite */
-            if ( /(^AI-on-the-edge-device__update__)[a-z0-9()_\-.]*(\.zip$)/.test(filename) || // OK
-               ( /(^AI-on-the-edge-device__firmware)[a-z0-9()_\-.]*(\.bin$)/.test(filename)) ||
-               ( /[a-z0-9()_\-.]*(\.tfl$)/.test(filename)) ||
-               ( /[a-z0-9()_\-.]*(\.tflite$)/.test(filename))) {
+            if ( /(^AI-on-the-edge-device__update__)[a-zRC0-9()_\-.]*(\.zip$)/i.test(filename) || // OK
+               ( /(^AI-on-the-edge-device__firmware)[a-zRC0-9()_\-.]*(\.bin$)/i.test(filename)) ||
+               ( /[a-zRC0-9()_\-.]*(\.tfl$)/i.test(filename)) ||
+               ( /[a-zRC0-9()_\-.]*(\.tflite$)/i.test(filename))) {
                 firework.launch('Great, the filename matches our expectations. You can now press "Upload and install".', 'success', 5000);
             }
             /* Following filenames are acceptiod but not prefered:
