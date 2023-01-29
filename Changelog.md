@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [14.0.0-RC1] - 2023-01-27
+## [14.0.0-RC2] - 2023-01-29
 
 **Stabilization and Improved User Experience**
 
@@ -804,9 +804,7 @@ External Illumination
 
 -   Initial Version
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC1...HEAD
-
-[14.0.0-RC1]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...14.0.0-RC1
+[14.0.0-RC2]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...14.0.0-RC2
 
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.8
 
