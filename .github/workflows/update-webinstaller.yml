@@ -6,7 +6,7 @@
 name: Update Web Installer
 
 on:
-  repository_dispatch:
+  repository_dispatch: # Run on manual trigger
 #  push:
 #    branches:
 #    - rolling
