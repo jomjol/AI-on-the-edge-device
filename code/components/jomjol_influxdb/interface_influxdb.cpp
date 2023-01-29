@@ -71,7 +71,9 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
     // generate timestamp (TODO: parse result timestamp passed as string and convert it to POSIX timestamp?)
-    time_t now = time(NULL);
+//    time_t now = time(NULL);
+    time_t now;
+    time(&now);
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
     sprintf(nowTimestamp,"%jd000000000", (intmax_t)now);
