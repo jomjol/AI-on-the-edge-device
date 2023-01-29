@@ -26,15 +26,26 @@ jobs:
       with:
         myToken: ${{ github.token }}
         exclude_types: "release"
-        view_top: 1
+        view_top: 1     
       
-      
-    - name: "Print result"
+    - name: Add binary to Web Installer and update manifest
       run: |
-        echo "id: ${{ steps.last_release.outputs.id }}"
-        echo "name: ${{ steps.last_release.outputs.name }}"
-        echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
-        echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
-        echo "draft: ${{ steps.last_release.outputs.draft }}"
-        echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
-      
+        rm -f docs/binary/firmware.bin
+        wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/v14.0.0-RC1/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
+        unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
+        cp -f firmware.bin docs/binary/firmware.bin
+        cp -f docs/manifest_template.json docs/manifest.json
+        sed -i 's/VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v2
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: 'docs'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1   
+  
