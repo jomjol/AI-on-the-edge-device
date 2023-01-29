@@ -4,12 +4,6 @@
 
 ## [14.0.0-RC7] - 2023-01-29
 
-## [14.0.0-RC6] - 2023-01-29
-
-## [14.0.0-RC3] - 2023-01-29
-
-## [14.0.0-RC2] - 2023-01-29
-
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
