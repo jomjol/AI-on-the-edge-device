@@ -3,7 +3,7 @@
 #  - Changes to the docs folder in the `rolling` branch
 #  - On a release
 
-name: Update Web Installer
+name: Manual Web Installer Update
 
 on:
   repository_dispatch: # Run on manual trigger
@@ -14,7 +14,7 @@ on:
 #    - docs # The path filter somehow does not work, so lets run it on every change to rolling
       
 jobs:
-  update-web-installer:    
+  manually-update-web-installer:    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
