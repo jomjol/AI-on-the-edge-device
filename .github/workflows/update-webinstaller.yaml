@@ -1,0 +1,38 @@
+name: Update Web Installer with the files from the docs folder and the binary of the latest release
+
+on:
+  [workflow_dispatch, push]
+  
+jobs:
+  update-web-installer:    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      id: last_release
+      uses: InsonusK/get-latest-release@v1.0.1
+      with:
+        myToken: ${{ github.token }}
+        exclude_types: "release"
+        view_top: 1
+      
+      
+  - name: "Print result"
+    run: |
+      echo "id: ${{ steps.last_release.outputs.id }}"
+      echo "name: ${{ steps.last_release.outputs.name }}"
+      echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
+      echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
+      echo "draft: ${{ steps.last_release.outputs.draft }}"
+      echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
+      
