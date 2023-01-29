@@ -70,15 +70,15 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     time_t t = mktime(&tm);  // t is now your desired time_t
 
 
-    time_t now;
-    time(&now);
+//    time_t now;
+//    time(&now);
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
 //    sprintf(nowTimestamp,"%ld000000000", (long) now);
     sprintf(nowTimestamp,"%ld000000000", (long) t);
     
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now: " + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
+//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now: " + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
 
     std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     payload.shrink_to_fit();
