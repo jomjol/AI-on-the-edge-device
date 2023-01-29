@@ -76,9 +76,9 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     time(&now);
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
-    sprintf(nowTimestamp,"%jd000000000", (intmax_t)now);
+    sprintf(nowTimestamp,"%ld000000000", (long) now);
     
-    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp + "(time not used yet)";
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
