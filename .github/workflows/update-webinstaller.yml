@@ -7,10 +7,10 @@ name: Update Web Installer
 
 on:
   push:
-    branches:
-    - rolling
-    paths:
-    - docs
+  #  branches:
+  #  - rolling
+  #  paths:
+  #  - docs
   release:
   
 jobs:
