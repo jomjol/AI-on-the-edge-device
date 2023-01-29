@@ -11,8 +11,8 @@ on:
     - rolling
 #    paths:
 #    - docs # The path filter somehow does not work, so lets run it on every change to rolling
-  release:
-  
+  workflow_run: # Allow triggering it from the build script
+      
 jobs:
   update-web-installer:    
     environment:
