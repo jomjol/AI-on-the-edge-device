@@ -365,6 +365,7 @@ jobs:
 #########################################################################################
 # This is the same as in the update-webinstaller.yml
   update-web-installer:    
+    needs: [release]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
