@@ -69,31 +69,42 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     
     std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     payload.shrink_to_fit();
-    ESP_LOGI(TAG, "sending line to influxdb: %s\n", payload.c_str());
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
+
+//    ESP_LOGI(TAG, "sending line to influxdb: %s\n", payload.c_str());
 
     // use the default retention policy of the database
     std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
-    ESP_LOGI(TAG, "API URI: %s", apiURI.c_str());
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "API URI: " + apiURI);
+//    ESP_LOGI(TAG, "API URI: %s", apiURI.c_str());
 
     esp_http_client_handle_t http_client = esp_http_client_init(&http_config);
-    ESP_LOGI(TAG, "client is initialized%s\n", "");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "client is initialized");
+//    ESP_LOGI(TAG, "client is initialized%s\n", "");
 
     esp_http_client_set_header(http_client, "Content-Type", "text/plain");
-    ESP_LOGI(TAG, "header is set%s\n", "");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "header is set");
+//    ESP_LOGI(TAG, "header is set%s\n", "");
 
     ESP_ERROR_CHECK(esp_http_client_set_post_field(http_client, payload.c_str(), payload.length()));
-    ESP_LOGI(TAG, "post payload is set%s\n", "");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "post payload is set");
+//    ESP_LOGI(TAG, "post payload is set%s\n", "");
 
     esp_err_t err = ESP_ERROR_CHECK_WITHOUT_ABORT(esp_http_client_perform(http_client));
 
     if( err == ESP_OK ) {
-      ESP_LOGI(TAG, "HTTP request was performed%s\n", "");
+      LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP request was performed");
+//      ESP_LOGI(TAG, "HTTP request was performed%s\n", "");
       int status_code = esp_http_client_get_status_code(http_client);
-      ESP_LOGI(TAG, "HTTP status code %d\n", status_code);
+      LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP status code" + std::to_string(status_code));
+//      ESP_LOGI(TAG, "HTTP status code %d\n", status_code);
     } else {
-      ESP_LOGW(TAG, "HTTP request failed%s\n", "");
+      LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP request failed");
+//      ESP_LOGW(TAG, "HTTP request failed%s\n", "");
     }
     esp_http_client_cleanup(http_client);
 }
