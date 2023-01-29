@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [14.0.0-RC1] - 2023-01-27
-
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
