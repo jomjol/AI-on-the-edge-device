@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [14.0.0-RC2] - 2023-01-29
+## [14.0.0-RC6] - 2023-01-29
 
 **Stabilization and Improved User Experience**
 
