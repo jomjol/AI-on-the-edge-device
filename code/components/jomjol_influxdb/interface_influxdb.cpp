@@ -73,7 +73,7 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     // generate timestamp (TODO: parse result timestamp passed as string and convert it to POSIX timestamp?)
     // Format:     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
     struct tm tm;
-    strptime(_timestamp.c_str(), "PREVALUE_TIME_FORMAT_OUTPUT", &tm);
+    strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
     time_t t = mktime(&tm);  // t is now your desired time_t
 
 
