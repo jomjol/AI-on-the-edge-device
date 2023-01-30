@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [14.0.0-RC7] - 2023-01-29
-
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
@@ -806,12 +804,6 @@ External Illumination
 
 
 
-
-
-
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.0-RC7...HEAD
-
-[14.0.0-RC7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0-RC7
 
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
 
