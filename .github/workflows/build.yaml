@@ -185,7 +185,6 @@ jobs:
       run: |
         rm -rf ./remote_setup
         mkdir -p ./remote_setup
-        cp "./code/.pio/build/esp32cam/firmware.bin" "remote_setup/firmware.bin"
 
     - name: Add Web UI to remote_setup
       run: cp -r ./html ./remote_setup/
