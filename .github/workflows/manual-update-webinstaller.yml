@@ -6,7 +6,7 @@
 name: Manual Web Installer Update
 
 on:
-  repository_dispatch: # Run on manual trigger
+  workflow_dispatch: # Run on manual trigger
 #  push:
 #    branches:
 #    - rolling

@@ -2,10 +2,6 @@
 
 ## [Unreleased]
 
-## [14.0.0-RC7] - 2023-01-30
-
-## [14.0.0-RC7] - 2023-01-29
-
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
@@ -153,8 +149,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -806,32 +802,23 @@ External Illumination
 
 -   Initial Version
 
-[14.0.0-RC2]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...14.0.0-RC2
 
-[13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.8
 
-[13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.7
 
-[13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.5
+[13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
 
-[13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.4
+[13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
 
-[13.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/12.0.1...13.0.1
+[13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.5
 
-[12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/11.3.1...12.0.1
+[13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.4
 
-[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.3
+[13.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.1
 
-[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.4.2
+[12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v11.3.1...v12.0.1
 
-[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/10.6.2...11.3.9
+[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.3
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC7...HEAD
+[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
 
-[14.0.0-RC7]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC7...14.0.0-RC7
-
-[14.0.0-RC7]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC6...14.0.0-RC7
-
-[14.0.0-RC6]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC3...14.0.0-RC6
-
-[14.0.0-RC3]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC2...14.0.0-RC3
+[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9

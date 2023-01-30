@@ -72,7 +72,8 @@ jobs:
 
     - name: Prepare Web UI (copy data from repo and update hashes in all files)
       run: |
-        rm -rf ./html; mkdir html
+        rm -rf ./html
+        mkdir html
         cp ./sd-card/html/* ./html/
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
         
@@ -119,6 +120,7 @@ jobs:
 
     - name: Prepare update__*.zip artifact
       run: |
+        rm -rf ./update
         mkdir -p ./update
         cp "./code/.pio/build/esp32cam/firmware.bin" "update/firmware.bin"
 
@@ -127,6 +129,7 @@ jobs:
 
     - name: Add CNN to update
       run: |
+        rm -rf ./update/config/
         mkdir -p ./update/config/
         cp ./sd-card/config/*.tfl ./update/config/ 2>/dev/null || true
         cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
@@ -180,14 +183,15 @@ jobs:
 
     - name: Prepare remote_setup__*.zip artifact
       run: |
+        rm -rf ./remote_setup
         mkdir -p ./remote_setup
-        cp "./code/.pio/build/esp32cam/firmware.bin" "remote_setup/firmware.bin"
 
     - name: Add Web UI to remote_setup
       run: cp -r ./html ./remote_setup/
 
     - name: Add whole config folder to remote_setup
       run: |
+        rm -rf ./remote_setup/config/
         mkdir -p ./remote_setup/config/
         cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
 
@@ -235,8 +239,10 @@ jobs:
 
     - name: Prepare manual_setup__*.zip artifact
       run: |
+        rm -rf manual_setup
         mkdir -p manual_setup
         rm -rf manual_setup/*.zip
+        rm -rf release
         mkdir -p release
         # copy builds to manual_setup folder
         cp -f "./code/.pio/build/esp32cam/firmware.bin" "manual_setup/firmware.bin"
@@ -298,6 +304,7 @@ jobs:
 
     - name: Prepare artifacts for release
       run: |
+        rm -rf release
         mkdir -p release
 
         # create AI-on-the-edge-device__update__*.zip like "AI-on-the-edge-device__update__v13.0.5.zip"
