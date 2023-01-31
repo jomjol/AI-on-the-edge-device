@@ -19,6 +19,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 #### Added
 
 -   [1877](https://github.com/jomjol/AI-on-the-edge-device/pull/1877) Show WIFI signal text labels / Log RSSI value to logfile
+-   [1671](https://github.com/jomjol/AI-on-the-edge-device/pull/1671) Added experimental support for WLAN 802.11k und 802.11v (Mesh-Support)
 -   Web UI caching of static files
 -   Added various debug tools
 -   [1798](https://github.com/jomjol/AI-on-the-edge-device/pull/1798) Add error handling for memory intensive tasks
@@ -822,6 +823,6 @@ External Illumination
 
 [11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0-RC8...HEAD
+[14.0.0-RC8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0-RC8
 
-[14.0.0-RC8]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...14.0.0-RC8
+[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.0-RC8...HEAD
