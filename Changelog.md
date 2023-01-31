@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [14.0.0-RC8] - 2023-01-30
-
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
@@ -822,7 +820,5 @@ External Illumination
 [11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
 
 [11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
-
-[14.0.0-RC8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0-RC8
 
 [Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.0-RC8...HEAD
