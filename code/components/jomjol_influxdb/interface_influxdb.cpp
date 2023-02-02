@@ -78,10 +78,11 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
 //    sprintf(nowTimestamp,"%ld000000000", (long) now);
-    sprintf(nowTimestamp,"%ld000000000", (long) t);
+//    sprintf(nowTimestamp,"%ld000000000", (long) t);           // Localtime
+    sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
     
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - t: " + std::to_string(t) + ", utc: " + std::to_string(utc));
+//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - t: " + std::to_string(t) + ", utc: " + std::to_string(utc));
 //    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now: " + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
 
     std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
