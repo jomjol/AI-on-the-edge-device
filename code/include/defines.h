@@ -130,7 +130,7 @@
     //CImageBasis
     #define HTTP_BUFFER_SENT 1024
     #define GET_MEMORY(X) heap_caps_malloc(X, MALLOC_CAP_SPIRAM)
-    #define MAX_JPG_SIZE 160000
+    #define MAX_JPG_SIZE 128000
 
 
     //CAlignAndCutImage + CImageBasis
