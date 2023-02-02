@@ -67,7 +67,7 @@ void writejpghelp(void *context, void *data, int size)
     uint8_t *voidstart = _zw->data;
     uint8_t *datastart = (uint8_t*) data;
     
-    if ((_zw->size < MAX_JPG_SIZE)) {   // Abort copy -> no buffer anymore
+    if ((_zw->size < MAX_JPG_SIZE)) {   // Abort copy to prevent buffer overflow
         voidstart += _zw->size;
 
         for (int i = 0; i < size; ++i)
@@ -91,7 +91,7 @@ ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
 
     if (jpgFileTooLarge) {
         jpgFileTooLarge = false;
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: JPG creation aborted! Preallocated buffer not sufficient: " + std::to_string(MAX_JPG_SIZE));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: Creation aborted! JPG size > preallocated buffer: " + std::to_string(MAX_JPG_SIZE));
     }
     return ii;
 }
@@ -107,7 +107,7 @@ void CImageBasis::writeToMemoryAsJPG(ImageData* i, const int quality)
 
     if (jpgFileTooLarge) {
         jpgFileTooLarge = false;
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: JPG creation aborted! Preallocated buffer not sufficient: " + std::to_string(MAX_JPG_SIZE));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: Creation aborted! JPG size > preallocated buffer: " + std::to_string(MAX_JPG_SIZE));
     }
     memCopy((uint8_t*) ii, (uint8_t*) i, sizeof(ImageData));
     delete ii;
