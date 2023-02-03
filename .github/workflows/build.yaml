@@ -393,7 +393,7 @@ jobs:
       uses: InsonusK/get-latest-release@v1.0.1
       with:
         myToken: ${{ github.token }}
-        exclude_types: "release"
+        exclude_types: "draft|prerelease"
         view_top: 1     
       
     - name: Add binary to Web Installer and update manifest
