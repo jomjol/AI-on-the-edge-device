@@ -21,7 +21,9 @@
 
 
     // use himem //https://github.com/jomjol/AI-on-the-edge-device/issues/1842
-    #define USE_HIMEM_IF_AVAILABLE
+    #if (CONFIG_SPIRAM_BANKSWITCH_ENABLE)
+        #define USE_HIMEM_IF_AVAILABLE 1
+    #endif
 
     /* Uncomment this to generate task list with stack sizes using the /heap handler
         PLEASE BE AWARE: The following CONFIG parameters have to to be set in 
@@ -116,7 +118,6 @@
 
     //ClassFlowControll: Serve alg_roi.jpg from memory as JPG
     #define ALGROI_LOAD_FROM_MEM_AS_JPG // Load ALG_ROI.JPG as rendered JPG from RAM
-    #define ALGROI_LOAD_FROM_MEM_AS_JPG__SHOW_TAKE_IMAGE_PROCESS // Show take image image processing on webinterface (overview.html)
 
     //ClassFlowMQTT
     #define LWT_TOPIC        "connection"
