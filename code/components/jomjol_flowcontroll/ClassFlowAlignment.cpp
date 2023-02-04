@@ -213,6 +213,10 @@ bool ClassFlowAlignment::doFlow(string time)
         int _zw = ImageBasis->height;
         ImageBasis->height = ImageBasis->width;
         ImageBasis->width = _zw;
+
+        _zw = ImageTMP->width;
+        ImageTMP->width = ImageTMP->height;
+        ImageTMP->height = _zw;
     }
 
     if (initialmirror)
@@ -259,13 +263,6 @@ bool ClassFlowAlignment::doFlow(string time)
     
     if (SaveAllFiles)
     {
-        if (initialflip)
-        {
-            int _zw = ImageTMP->width;
-            ImageTMP->width = ImageTMP->height;
-            ImageTMP->height = _zw;
-        }
-
         AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/alg.jpg"));
         ImageTMP->SaveToFile(FormatFileName("/sdcard/img_tmp/alg_roi.jpg"));
     }
