@@ -49,6 +49,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
+-   **NEW v14.0.1:** [#1961](https://github.com/jomjol/AI-on-the-edge-device/issues/1961) Weird ROI Image with `FlipImageSize = true`
 
 #### Removed
 
