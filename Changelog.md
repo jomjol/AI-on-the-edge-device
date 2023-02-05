@@ -1,6 +1,4 @@
-# Changelog
-
-## [Unreleased]
+## [14.0.2] - 2023-02-05
 
 **Stabilization and Improved User Experience**
 
@@ -49,7 +47,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
--   **NEW v14.0.1:** [#1961](https://github.com/jomjol/AI-on-the-edge-device/issues/1961) Weird ROI Image with `FlipImageSize = true`
 
 #### Removed
 
@@ -151,8 +148,8 @@ Improve **u**ser e**x**perience
 5.  Now you can reboot.
 
 If anything breaks you can try to
-1. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
-1. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
+1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
+1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
 ### Added
 
@@ -822,4 +819,4 @@ External Illumination
 
 [11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
 
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.0-RC8...HEAD
+[14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.2
