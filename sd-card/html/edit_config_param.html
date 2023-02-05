@@ -2042,7 +2042,7 @@ function ReadParameterAll()
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
 	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
-	category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBvw_enabled").checked;
+	category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
@@ -2087,8 +2087,14 @@ function ReadParameterAll()
 	ReadParameter(param, "InfluxDB", "Uri", true);	
 	ReadParameter(param, "InfluxDB", "Database", true);	
 	ReadParameter(param, "InfluxDB", "Measurement", true);	
-	ReadParameter(param, "InfluxDB", "Org", true);	
-	ReadParameter(param, "InfluxDB", "Token", true);	
+	ReadParameter(param, "InfluxDB", "user", true);	
+	ReadParameter(param, "InfluxDB", "password", true);	
+
+	ReadParameter(param, "InfluxDBv2", "Uri", true);	
+	ReadParameter(param, "InfluxDBv2", "Database", true);	
+	ReadParameter(param, "InfluxDBv2", "Measurement", true);	
+	ReadParameter(param, "InfluxDBv2", "Org", true);	
+	ReadParameter(param, "InfluxDBv2", "Token", true);	
 //	ReadParameter(param, "InfluxDB", "Fieldname", true);	
 
 	ReadParameter(param, "GPIO", "IO0", true);
