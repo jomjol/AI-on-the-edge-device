@@ -248,6 +248,8 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/firmware.bin" "manual_setup/firmware.bin"
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "manual_setup/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "manual_setup/partitions.bin"
+        rm -rf ./sd-card/html
+        cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
         cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
   
@@ -393,7 +395,7 @@ jobs:
       uses: InsonusK/get-latest-release@v1.0.1
       with:
         myToken: ${{ github.token }}
-        exclude_types: "release"
+        exclude_types: "draft|prerelease"
         view_top: 1     
       
     - name: Add binary to Web Installer and update manifest
