@@ -86,27 +86,29 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-        ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
+//        ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(splitted[0]) == "ORG") && (splitted.size() > 1))
+        std::string _param = GetParameterName(splitted[0]);
+
+        if ((toUpper(_param) == "ORG") && (splitted.size() > 1))
         {
             this->dborg = splitted[1];
         }  
-        if ((toUpper(splitted[0]) == "TOKEN") && (splitted.size() > 1))
+        if ((toUpper(_param) == "TOKEN") && (splitted.size() > 1))
         {
             this->dbtoken = splitted[1];
         }               
-        if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
+        if ((toUpper(_param) == "URI") && (splitted.size() > 1))
         {
             this->uri = splitted[1];
         }
-        if (((toUpper(splitted[0]) == "MEASUREMENT")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "MEASUREMENT")) && (splitted.size() > 1))
         {
             this->measurement = splitted[1];
         }
-        if (((toUpper(splitted[0]) == "FIELDNAME")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "FIELDNAME")) && (splitted.size() > 1))
         {
-            this->dbfield = splitted[1];
+            handleFieldname(splitted[0], splitted[1]);
         }
         if (((toUpper(splitted[0]) == "DATABASE")) && (splitted.size() > 1))
         {
@@ -138,6 +140,29 @@ string ClassFlowInfluxDBv2::GetInfluxDBMeasurement()
 {
     return measurement;
 }
+
+void ClassFlowInfluxDBv2::handleFieldname(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+    for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
+        {
+            flowpostprocessing->NUMBERS[j]->Fieldname = _value;
+        }
+        if (flowpostprocessing->NUMBERS[j]->name == _digit)
+        {
+            flowpostprocessing->NUMBERS[j]->Fieldname = _value;
+        }
+    }
+}
+
 
 
 bool ClassFlowInfluxDBv2::doFlow(string zwtime)

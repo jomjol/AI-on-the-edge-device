@@ -206,7 +206,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Measurement");
      ParamAddValue(param, catname, "Org");
      ParamAddValue(param, catname, "Token");
-     ParamAddValue(param, catname, "Fieldname");
+     ParamAddValue(param, catname, "Fieldname", 1, true);
 
      var catname = "GPIO";
      category[catname] = new Object(); 

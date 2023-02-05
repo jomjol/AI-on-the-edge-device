@@ -21,7 +21,9 @@ protected:
 	ClassFlowPostProcessing* flowpostprocessing;  
     bool InfluxDBenable;
 
-    void SetInitialParameter(void);        
+    void SetInitialParameter(void);     
+
+    void handleFieldname(string _decsep, string _value);   
 
 public:
     ClassFlowInfluxDBv2();
