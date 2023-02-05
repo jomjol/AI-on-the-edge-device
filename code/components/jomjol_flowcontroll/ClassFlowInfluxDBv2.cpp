@@ -22,6 +22,9 @@ void ClassFlowInfluxDBv2::SetInitialParameter(void)
     uri = "";
     database = "";
     measurement = "";
+    dborg = "";  
+    dbtoken = "";  
+    dbfield = "";
 
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -72,12 +75,13 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
     std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
+    printf("akt param: %s\n", aktparamgraph.c_str());
 
     if (aktparamgraph.size() == 0)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (toUpper(aktparamgraph).compare("[INFLUXDBv2]") != 0) 
+    if (toUpper(aktparamgraph).compare("[INFLUXDBV2]") != 0) 
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
@@ -86,11 +90,11 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
         splitted = ZerlegeZeile(aktparamgraph);
         if ((toUpper(splitted[0]) == "ORG") && (splitted.size() > 1))
         {
-            this->org = splitted[1];
+            this->dborg = splitted[1];
         }  
         if ((toUpper(splitted[0]) == "TOKEN") && (splitted.size() > 1))
         {
-            this->token = splitted[1];
+            this->dbtoken = splitted[1];
         }               
         if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
         {
@@ -100,16 +104,27 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->measurement = splitted[1];
         }
+        if (((toUpper(splitted[0]) == "FIELDNAME")) && (splitted.size() > 1))
+        {
+            this->dbfield = splitted[1];
+        }
         if (((toUpper(splitted[0]) == "DATABASE")) && (splitted.size() > 1))
         {
             this->database = splitted[1];
         }
     }
 
-    if ((uri.length() > 0) && (database.length() > 0) && (measurement.length() > 0) && (token.length() > 0) && (org.length() > 0)) 
+    printf("uri:         %s\n", uri.c_str());
+    printf("measurement: %s\n", measurement.c_str());
+    printf("org:         %s\n", dborg.c_str());
+    printf("token:       %s\n", dbtoken.c_str());
+
+    if ((uri.length() > 0) && (database.length() > 0) && (measurement.length() > 0) && (dbtoken.length() > 0) && (dborg.length() > 0)) 
     { 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", measurement: " + measurement + ", org: " + org + ", token: *****");
-        InfluxDB_V2_Init(uri, database, measurement, org, token); 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", measurement: " + measurement + ", org: " + dborg + ", token: *****");
+//        printf("vor V2 Init\n");
+        InfluxDB_V2_Init(uri, database, measurement, dborg, dbtoken); 
+//        printf("nach V2 Init\n");
         InfluxDBenable = true;
     } else {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBv2 (Verion2 !!!) init skipped as we are missing some parameters");
@@ -150,14 +165,24 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
-            namenumber = (*NUMBERS)[i]->name;
-            if (namenumber == "default")
-                namenumber = "value";
+            if (dbfield.length() > 0)
+            {
+                namenumber = dbfield;
+            }
             else
-                namenumber = namenumber + "/value";
+            {
+                namenumber = (*NUMBERS)[i]->name;
+                if (namenumber == "default")
+                    namenumber = "value";
+                else
+                    namenumber = namenumber + "/value";
+            }
+            
+            printf("vor sende Influx_DB_V2 - namenumber. %s, result: %s, timestampt: %s", namenumber.c_str(), result.c_str(), resulttimestamp.c_str());
 
-            if (result.length() > 0 && resulttimestamp.length() > 0)   
+            if (result.length() > 0)   
                 InfluxDB_V2_Publish(namenumber, result, resulttimestamp);
+//                InfluxDB_V2_Publish(namenumber, result, resulttimestamp);
         }
     }
    

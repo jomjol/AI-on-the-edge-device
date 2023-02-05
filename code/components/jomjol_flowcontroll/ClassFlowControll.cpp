@@ -61,7 +61,7 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
         _classname = "ClassFlowInfluxDB";
     }
     if ((_stepname.compare("[InfluxDBv2]") == 0) || (_stepname.compare(";[InfluxDBv2]") == 0)){
-        _classname = "ClassFlowInfluxDB";
+        _classname = "ClassFlowInfluxDBv2";
     }
     #endif //ENABLE_INFLUXDB
 
@@ -297,6 +297,7 @@ void ClassFlowControll::InitFlow(std::string config)
     while ((line.size() > 0) && !(feof(pFile)))
     {
         cfc = CreateClassFlow(line);
+//        printf("Name: %s\n", cfc->name().c_str());
         if (cfc)
         {
             ESP_LOGD(TAG, "Start ReadParameter (%s)", line.c_str());

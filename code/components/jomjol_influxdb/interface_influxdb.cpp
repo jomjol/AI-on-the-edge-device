@@ -62,18 +62,20 @@ void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _ti
         time_t utc = mktime(ptm);
 
         sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
-        payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774 " + nowTimestamp;
     }
     else
     {
-        payload = _influxDBMeasurement + " " + _key + "=" + _content;
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774";
     }
 
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
-    std::string apiURI = _influxDBURI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Database;
+    std::string apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Database;
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
     ESP_LOGI(TAG, "http_config: %s", http_config.url); // Add mark on log to see when it restarted

@@ -765,6 +765,99 @@ textarea {
 			</td>
 		</tr>
 
+
+
+
+		<tr>
+			<td colspan="3" style="padding-left: 20px;">
+			    <h4>
+				<input type="checkbox" id="Category_InfluxDBv2_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+				<label for=Category_InfluxDBv2_enabled>InfluxDB</h4><h5>Only InfluxDB v2.x is supported</h5></label>				
+			</td>
+		</tr> 		
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Uri")' unchecked >
+				<label for=InfluxDBv2_Uri_enabled><class id="InfluxDBv2_Uri_text" style="color:black;">Uri</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Uri_value1">
+			</td>
+			<td style="font-size: 80%;">
+				URI of the HTTP interface to InfluxDB (Version2), without traililing slash, e.g. http://IP-Address:Port
+			</td>
+		</tr>
+                <tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Database")' unchecked >
+				<label for=InfluxDBv2_Database_enabled><class id="InfluxDBv2_Database_text" style="color:black;">Database</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Database_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Database name in which to publish the read value.
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Measurement")' unchecked >
+				<label for=InfluxDBv2_Measurement_enabled><class id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Measurement_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Measurement name to use to publish the read value.
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Fieldname_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Fieldname")' unchecked >
+				<label for=InfluxDBv2_Fieldname_enabled><class id="InfluxDBv2_Fieldname_text" style="color:black;">Fieldname</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Fieldname_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Fieldname to use for saving.
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")' unchecked >
+				<label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Org</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Org_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Organisation (Org) for InfluxDBv2 authentication
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Token_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBvw", "Token")' unchecked >
+				<label for=InfluxDBv2_Token_enabled><class id="InfluxDBv2_Token_text" style="color:black;">Token</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Token_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Token for InfluxDB authentication
+			</td>
+		</tr>
+
+
+
+
+
+
+
+
+
+
+
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
@@ -1844,6 +1937,13 @@ function UpdateInput() {
 	WriteParameter(param, category, "InfluxDB", "user", true);	
 	WriteParameter(param, category, "InfluxDB", "password", true);	
 
+	WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Database", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Org", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Token", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Fieldname", true);
+
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
 	WriteParameter(param, category, "GPIO", "IO3", true);
@@ -1964,8 +2064,9 @@ function ReadParameterAll()
 	ReadParameter(param, "InfluxDB", "Uri", true);	
 	ReadParameter(param, "InfluxDB", "Database", true);	
 	ReadParameter(param, "InfluxDB", "Measurement", true);	
-	ReadParameter(param, "InfluxDB", "user", true);	
-	ReadParameter(param, "InfluxDB", "password", true);	
+	ReadParameter(param, "InfluxDB", "Org", true);	
+	ReadParameter(param, "InfluxDB", "Token", true);	
+	ReadParameter(param, "InfluxDB", "Fieldname", true);	
 
 	ReadParameter(param, "GPIO", "IO0", true);
 	ReadParameter(param, "GPIO", "IO1", true);
