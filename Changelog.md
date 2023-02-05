@@ -801,22 +801,14 @@ External Illumination
 
 -   Initial Version
 
-[13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
-
-[13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
-
-[13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.5
-
-[13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.4
-
-[13.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.1
-
-[12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v11.3.1...v12.0.1
-
-[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.3
-
-[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
-
-[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
 
 [14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.2
+[13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
+[13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
+[13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.5
+[13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.4
+[13.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.1
+[12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v11.3.1...v12.0.1
+[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.3
+[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
+[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
