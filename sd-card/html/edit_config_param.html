@@ -1891,6 +1891,7 @@ function UpdateInput() {
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
 	document.getElementById("Category_GPIO_enabled").checked = category["GPIO"]["enabled"];
 	document.getElementById("Category_InfluxDB_enabled").checked = category["InfluxDB"]["enabled"];
+	document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
 	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
 	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
@@ -2019,6 +2020,7 @@ function ReadParameterAll()
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
 	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
+	category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBvw_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "MakeImage", "LogImageLocation", true);
@@ -2048,7 +2050,6 @@ function ReadParameterAll()
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-//	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
 	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
 
