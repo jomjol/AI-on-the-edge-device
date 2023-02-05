@@ -248,6 +248,7 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/firmware.bin" "manual_setup/firmware.bin"
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "manual_setup/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "manual_setup/partitions.bin"
+        rm -f ./sd-card/html/*
         cp -r ./html ./sd-card/html # Overwrite the Web UI with the preprocessed files
         cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
