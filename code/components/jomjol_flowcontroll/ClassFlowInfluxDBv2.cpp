@@ -1,0 +1,169 @@
+#ifdef ENABLE_INFLUXDB
+#include <sstream>
+#include "ClassFlowInfluxDBv2.h"
+#include "Helper.h"
+#include "connect_wlan.h"
+
+#include "time_sntp.h"
+#include "interface_influxdb.h"
+
+#include "ClassFlowPostProcessing.h"
+#include "esp_log.h"
+#include "../../include/defines.h"
+
+#include "ClassLogFile.h"
+
+#include <time.h>
+
+static const char* TAG = "class_flow_influxDbv2";
+
+void ClassFlowInfluxDBv2::SetInitialParameter(void)
+{
+    uri = "";
+    database = "";
+    measurement = "";
+
+    OldValue = "";
+    flowpostprocessing = NULL;  
+    previousElement = NULL;
+    ListFlowControll = NULL; 
+    disabled = false;
+    InfluxDBenable = false;
+}       
+
+ClassFlowInfluxDBv2::ClassFlowInfluxDBv2()
+{
+    SetInitialParameter();
+}
+
+ClassFlowInfluxDBv2::ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc)
+{
+    SetInitialParameter();
+
+    ListFlowControll = lfc;
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
+        {
+            flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+        }
+    }
+}
+
+ClassFlowInfluxDBv2::ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
+{
+    SetInitialParameter();
+
+    previousElement = _prev;
+    ListFlowControll = lfc;
+
+    for (int i = 0; i < ListFlowControll->size(); ++i)
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
+        {
+            flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+        }
+    }
+}
+
+
+bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
+{
+    std::vector<string> splitted;
+
+    aktparamgraph = trim(aktparamgraph);
+
+    if (aktparamgraph.size() == 0)
+        if (!this->GetNextParagraph(pfile, aktparamgraph))
+            return false;
+
+    if (toUpper(aktparamgraph).compare("[INFLUXDBv2]") != 0) 
+        return false;
+
+    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
+    {
+        ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
+        splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "ORG") && (splitted.size() > 1))
+        {
+            this->org = splitted[1];
+        }  
+        if ((toUpper(splitted[0]) == "TOKEN") && (splitted.size() > 1))
+        {
+            this->token = splitted[1];
+        }               
+        if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
+        {
+            this->uri = splitted[1];
+        }
+        if (((toUpper(splitted[0]) == "MEASUREMENT")) && (splitted.size() > 1))
+        {
+            this->measurement = splitted[1];
+        }
+        if (((toUpper(splitted[0]) == "DATABASE")) && (splitted.size() > 1))
+        {
+            this->database = splitted[1];
+        }
+    }
+
+    if ((uri.length() > 0) && (database.length() > 0) && (measurement.length() > 0) && (token.length() > 0) && (org.length() > 0)) 
+    { 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", measurement: " + measurement + ", org: " + org + ", token: *****");
+        InfluxDB_V2_Init(uri, database, measurement, org, token); 
+        InfluxDBenable = true;
+    } else {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBv2 (Verion2 !!!) init skipped as we are missing some parameters");
+    }
+   
+    return true;
+}
+
+
+string ClassFlowInfluxDBv2::GetInfluxDBMeasurement()
+{
+    return measurement;
+}
+
+
+bool ClassFlowInfluxDBv2::doFlow(string zwtime)
+{
+    if (!InfluxDBenable)
+        return true;
+
+    std::string result;
+    std::string resulterror = "";
+    std::string resultraw = "";
+    std::string resultrate = "";
+    std::string resulttimestamp = "";
+    string zw = "";
+    string namenumber = "";
+
+    if (flowpostprocessing)
+    {
+        std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
+
+        for (int i = 0; i < (*NUMBERS).size(); ++i)
+        {
+            result =  (*NUMBERS)[i]->ReturnValue;
+            resultraw =  (*NUMBERS)[i]->ReturnRawValue;
+            resulterror = (*NUMBERS)[i]->ErrorMessageText;
+            resultrate = (*NUMBERS)[i]->ReturnRateValue;
+            resulttimestamp = (*NUMBERS)[i]->timeStamp;
+
+            namenumber = (*NUMBERS)[i]->name;
+            if (namenumber == "default")
+                namenumber = "value";
+            else
+                namenumber = namenumber + "/value";
+
+            if (result.length() > 0 && resulttimestamp.length() > 0)   
+                InfluxDB_V2_Publish(namenumber, result, resulttimestamp);
+        }
+    }
+   
+    OldValue = result;
+    
+    return true;
+}
+
+#endif //ENABLE_INFLUXDB

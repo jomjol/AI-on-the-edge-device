@@ -60,6 +60,9 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)){
         _classname = "ClassFlowInfluxDB";
     }
+    if ((_stepname.compare("[InfluxDBv2]") == 0) || (_stepname.compare(";[InfluxDBv2]") == 0)){
+        _classname = "ClassFlowInfluxDB";
+    }
     #endif //ENABLE_INFLUXDB
 
     for (int i = 0; i < FlowControll.size(); ++i)
@@ -90,6 +93,8 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     #ifdef ENABLE_INFLUXDB
         if (_input.compare("ClassFlowInfluxDB") == 0)
             return ("Sending InfluxDB");
+        if (_input.compare("ClassFlowInfluxDBv2") == 0)
+            return ("Sending InfluxDBv2");
     #endif //ENABLE_INFLUXDB
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
@@ -233,6 +238,8 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     #ifdef ENABLE_INFLUXDB
     if (toUpper(_type).compare("[INFLUXDB]") == 0)
         cfc = new ClassFlowInfluxDB(&FlowControll);
+    if (toUpper(_type).compare("[INFLUXDBV2]") == 0)
+        cfc = new ClassFlowInfluxDBv2(&FlowControll);
     #endif //ENABLE_INFLUXDB  
     if (toUpper(_type).compare("[WRITELIST]") == 0)
         cfc = new ClassFlowWriteList(&FlowControll);
