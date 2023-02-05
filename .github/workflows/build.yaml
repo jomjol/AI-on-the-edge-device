@@ -326,13 +326,13 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/') 
       uses: battila7/get-version-action@v2
 
-    # the changelog [unreleased] will now be changed to the release version
-    - name: Update changelog
-      uses: thomaseizinger/keep-a-changelog-new-release@v1
-      if: startsWith(github.ref, 'refs/tags/') 
-      with:
-        changelogPath: Changelog.md
-        version: ${{ steps.get_version.outputs.version-without-v }}
+#    # the changelog [unreleased] will now be changed to the release version
+#    - name: Update changelog
+#      uses: thomaseizinger/keep-a-changelog-new-release@v1
+#      if: startsWith(github.ref, 'refs/tags/') 
+#      with:
+#        changelogPath: Changelog.md
+#        version: ${{ steps.get_version.outputs.version-without-v }}
             
     # the release notes will be extracted from changelog 
     - name: Extract release notes
@@ -341,7 +341,6 @@ jobs:
       uses: ffurrer2/extract-release-notes@v1
       with:
           changelog_file: Changelog.md
-          
 
     # Releases should only be created on master by tagging the last commit.
     # all artifacts in firmware folder pushed to the release
