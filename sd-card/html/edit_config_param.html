@@ -79,6 +79,8 @@ textarea {
 
 <body style="font-family: arial; padding: 0px 10px;">
 	<h2>Configuration</h2>
+	<p><img src="help.png" width="16px"> The parameters are documented on <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters" target="_blank">jomjol.github.io/AI-on-the-edge-device-docs/Parameters</a>.</p>
+
 	<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
 	<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>	
 	<p></p>
@@ -93,7 +95,7 @@ textarea {
 				Value
 			</th>
 			<th style="text-align: left;">
-				Information
+				Documentation
 			</th>
 		</tr>
 
@@ -108,8 +110,8 @@ textarea {
 			<td>
 				<input type="text" name="name" id="MakeImage_LogImageLocation_value1">
 			</td>
-			<td class="description">
-				Location to store raw images for logging
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-LogImageLocation" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -120,8 +122,8 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
-			<td class="description">
-				Time to keep the raw image (in days, resp. "0" = forever)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>		
 		<tr class="expert" id="ex1">
@@ -135,10 +137,8 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use demo images instead of the real camera images.<br>
-				Make sure to have a demo folder on your SD-Card!
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode" target="_blank">documentation</a> for details.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Demo" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" id="ex1">
@@ -149,20 +149,19 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
 			</td>
-			<td class="description">
-				Wait time between switching illumination on and taking the picture (in seconds)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-WaitBeforeTakingPicture" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" id="ex2">
 			<td class="indent1">
-				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
+				<class id="MakeImage_ImageQuality_text" style="color:black;"></class>
 			</td>
 			<td>
 				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="0" max="63">
 			</td>
-			<td class="description">
-				Quality index for picture (default = "12" - "0" high ... "63" low) <br>
-				Remark: values smaller than 12 can result in a reboot, as the bigger sized JPEG might not fit in the available RAM!
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-ImageQuality" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
@@ -175,8 +174,8 @@ textarea {
 					<option value="QVGA" >QVGA</option>
 				</select>
 			</td>
-			<td class="description">
-				Size of camera picture (default = "VGA")
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-ImageSize" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -187,21 +186,20 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_LEDIntensity_value1" size="13" min="0" max="100">
 			</td>
-			<td style="font-size: 80%;">
-				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
-				Remark: as the camera autoillumination settings are used, this is rather for energy saving, than reducing reflections.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-LEDIntensity" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
 		<tr class="expert"  id="Brightness_ex3">
 			<td class="indent1">
-				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
+				<class id="MakeImage_Brightness_text" style="color:black;"></class>
 			</td>
 			<td>
 				<input type="number" id="MakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image Brightness (-2 .. 2 - default = "0")
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Brightness" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -212,9 +210,8 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image Contrast (-2 .. 2 - default = "0") <br>
-				Remark: camera driver is not fully supporting this setting yet (no impact on image)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Contrast" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -225,9 +222,8 @@ textarea {
 			<td>
 				<input type="number" id="MakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image Saturation (-2 .. 2 - default = "0") <br>
-				Remark: camera driver is not fully supporting this setting yet (no impact on image)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Saturation" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		
@@ -241,8 +237,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Fixes the illumination setting of camera at the startup and uses this later --> individual round is faster
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-FixedExposure" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -257,8 +253,8 @@ textarea {
 			<td>
 				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
 			</td>
-			<td style="font-size: 80%;">
-				x size (width) in which the reference is searched (default = "20") 
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Alignment-SearchFieldX" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex8">
@@ -268,14 +264,14 @@ textarea {
 			<td>
 				<input type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1">
 			</td>
-			<td style="font-size: 80%;">
-				y size (height) in which the reference is searched (default = "20") 
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Alignment-SearchFieldY" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
 			<td class="indent1">
 				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
-				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class></label>
+				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;"></class></label>
 			</td>
 			<td>
 				<select id="Alignment_AlignmentAlgo_value1">
@@ -285,8 +281,8 @@ textarea {
 					<option value="off" >Off</option><!-- add disable aligment algo |01.2023 -->
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				"Default" = use only R-Channel, "HighAccuracy" = use all Channels (RGB, 3x slower), <br> "Fast" (First time RGB, then only check if image is shifted) 
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Alignment-AlignmentAlgo" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -305,9 +301,8 @@ textarea {
 				<select id="Digits_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Path to CNN model file for image recognition.<br>
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-Model" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		
@@ -319,8 +314,8 @@ textarea {
 			<td>
 				<input width="40px" type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1">
 			</td>
-			<td style="font-size: 80%;">
-				EXPERIMENTAL - NOT WORKING FOR ALL CNNs! - Threshold above which the classification should be to accept the value (only for digits meaningfull)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-CNNGoodThreshold" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -332,8 +327,8 @@ textarea {
 			<td>
 				<input type="text" name="name" id="Digits_LogImageLocation_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Location to store separated digits for logging
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-LogImageLocation" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -344,8 +339,8 @@ textarea {
 			<td>
 				<input type="number" id="Digits_LogfileRetentionInDays_value1" min="0"  step="1">
 			</td>
-			<td style="font-size: 80%;">
-				Time to keep the separated digit images (in days, resp. "0" = forever)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -357,14 +352,15 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-			    <class id="Analog_Model_text" style="color:black;">Model</class>
+			    <class id="Analog_Model_text" style="color:black;"></class>
 			</td>
 			<td> 
 				<select id="Analog_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;"> Path to CNN model file for image recognition.<br>
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.</td>
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Analog-Model" target="_blank"><img src="help.png" width="32px"></a>
+			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -373,14 +369,18 @@ textarea {
 				</label>
 			</td>
 			<td> <input type="text" name="name" id="Analog_LogImageLocation_value1"> </td>
-			<td style="font-size: 80%;"> Location to store separated digits for logging </td>
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Analog-LogImageLocation" target="_blank"><img src="help.png" width="32px"></a>
+			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogfileRetentionInDays")' unchecked >
 				<label for=Analog_LogfileRetentionInDays_enabled><class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label></td>
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
-			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Analog-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
+			</td>
 		</tr>
 
 		<tr>
@@ -397,8 +397,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use the previous read value for consistency checks - also on reboots
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-PreValueUse" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex11">
@@ -409,14 +409,14 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0">
 			</td>
-			<td style="font-size: 80%;">
-				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-PreValueAgeStartup" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
-				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class></label>
+				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;"></class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
@@ -424,8 +424,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Do not show error message in return value - in error case, the last valid number will be send out
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-ErrorMessage" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" id="ex1dddd">
@@ -439,8 +439,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable additional consistency check - especially zero crossing check between digits
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-CheckDigitIncreaseConsistency" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -466,8 +466,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Set to "false" to ensure, that only positive changes are accepted (typically for counter)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.AllowNegativeRates" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -478,9 +478,8 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
-			<td style="font-size: 80%;">
-				Shift the decimal separator (positiv or negativ).<br>
-				Eg. to move from 'm&sup3;' to 'l' (Multiply by 1000), you need to set it to +3.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.DecimalShift" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -491,9 +490,8 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2">
 			</td>
-			<td style="font-size: 80%;">
-				If you have false Values, but the recognition is correct. Look for the start of changing of the first digit and note the analog pointer value behind. Set it here.
-				Only used on combination of digits and analog pointers. Default=9.2
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.AnalogDigitalTransitionStart" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -505,14 +503,14 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
-			<td style="font-size: 80%;">
-				Maximum change of a reading - if treated as absolute or relative change see next parameter.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.MaxRateValue" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
-				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class></label>
+				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;"></class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_MaxRateType_value1">
@@ -520,8 +518,8 @@ textarea {
 					<option value="RateChange" selected>RateChange</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the interval (RateChange = change/minute).
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.MaxRateType" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -535,8 +533,8 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use the decimal place of the last analog counter
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.ExtendedResolution" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		
@@ -551,8 +549,8 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Leading "N"'s will be deleted before further processing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.IgnoreLeadingNaN" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -574,26 +572,20 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI to the MQTT broker including port e.g.: mqtt://IP-Address:Port
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-Uri" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_MainTopic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopic")' unchecked >
-				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">MainTopic</class></label>
+				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;"></class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_MainTopic_value1">
 			</td>
-			<td style="font-size: 80%;">
-				MQTT main topic, under which the counters are published. <br>
-				The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMETER where
-				<ul>
-					<li> VALUE_NAME is the name of the value (a meter might have more than one value) as defined during analog and digital ROI configuration (defaults to "main")</li>
-					<li> and PARAMETERS are: value, rate, timestamp, error</li>
-				</ul>
-				The general connection status can be found in MAINTOPIC/CONNECTION
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-MainTopic" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -604,8 +596,8 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_ClientID_value1">
 			</td>
-			<td style="font-size: 80%;">
-				ClientID to connect to the MQTT broker
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-ClientID" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -616,8 +608,8 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_user_value1">
 			</td>
-			<td style="font-size: 80%;">
-				User for MQTT authentication
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-user" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -628,8 +620,8 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_password_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Password for MQTT authentication
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-password" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -643,8 +635,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable or disable the retain flag for all MQTT entries
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-SetRetainFlag" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -665,8 +657,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable or disable the <a href=https://www.home-assistant.io/docs/mqtt/discovery/ target=_blank>Homeassistant Discovery</a>
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-HomeassistantDiscovery" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -688,11 +680,8 @@ textarea {
 					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Select the meter type so the sensors have the right units in Homeassistant.<br>
-				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!<br>
-				Please also make sure that it matches the dimention of the value provided by the meter! Eg. if your meter provides m3, you need to also set it to m3.
-				Alternatively you could set 'DecimalShift' to '3' so the value is converted to 'l'!
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-MeterType" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -707,13 +696,13 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
-				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">Uri</class></label>
+				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;"></class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI of the HTTP interface to InfluxDB, without traililing slash, e.g. http://IP-Address:Port
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-Uri" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
                 <tr>
@@ -724,8 +713,8 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Database_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Database name in which to publish the read value.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-Database" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -736,8 +725,8 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Measurement_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Measurement name to use to publish the read value.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-Measurement" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -748,8 +737,8 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_user_value1">
 			</td>
-			<td style="font-size: 80%;">
-				User for InfluxDB authentication
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-user" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -760,8 +749,8 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_password_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Password for InfluxDB authentication
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-password" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -789,11 +778,7 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 0 Usable with restrictions.<br> 
-				<b>Must be disabled when camera is used.</b><br>
-				<b>Pin is used to activate flash mode and must therefore be HIGH when booting.</b>
-			</td>
+			<td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent2">
@@ -809,8 +794,8 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
-			<td class="description">
-				GPIO 0 enable interrupt trigger
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -818,8 +803,8 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 0 LEDC PWM duty resolution in bit
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -827,8 +812,8 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
-			<td class="description">
-				GPIO 0 enable MQTT publishing/subscribing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -836,8 +821,8 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
-			<td class="description">
-				GPIO 0 enable HTTP write/read
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -845,8 +830,8 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO0_value6"></td>
-			<td class="description">
-				GPIO 0 MQTT topic name (empty = GPIO0). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<!------------- GPIO0 end ------------------>
@@ -865,7 +850,7 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
+			<td>
 				GPIO 1 <br><span style="color: blue">Used by default for serial communication as TX pin.<br>Required for seriales monitor.</span>
 			</td>
 		</tr>
@@ -883,8 +868,8 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 1 enable interrupt trigger
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -892,8 +877,8 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 1 LEDC PWM duty resolution in bit
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -901,8 +886,8 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
-			<td class="description">
-				GPIO 1 enable MQTT publishing/subscribing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -910,8 +895,8 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
-			<td class="description">
-				GPIO 1 enable HTTP write/read
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -919,8 +904,8 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO1_value6"></td>
-			<td class="description">
-				GPIO 1 MQTT topic name (empty = GPIO1). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<!------------- GPIO1 end ------------------>
@@ -939,8 +924,8 @@ textarea {
 					<option value="output">output</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 3 <span style="color: blue">Used by default for serial communication as RX pin.</span>
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -957,8 +942,8 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 3 Used by default for serial communication as RX pin.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -966,8 +951,8 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 3 LEDC PWM duty resolution in bit
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -975,8 +960,8 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
-			<td class="description">
-				GPIO 3 enable MQTT publishing/subscribing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -984,8 +969,8 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
-			<td class="description">
-				GPIO 3 enable HTTP write/read
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -993,8 +978,8 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO3_value6"></td>
-			<td class="description">
-				GPIO 3 MQTT topic name (empty = GPIO3). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<!------------- GPIO3 end ------------------>
@@ -1014,9 +999,8 @@ textarea {
 					<option value="built-in-led">built-in led flash light</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 4 Usable with restrictions.<br> 
-				<b>Pin is used for build-in flash light.</b>
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1033,8 +1017,8 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>	
 			</td>
-			<td class="description">
-				GPIO 4 enable interrupt trigger
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1042,8 +1026,8 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 4 LEDC PWM duty resolution in bit
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1051,8 +1035,8 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
-			<td class="description">
-				GPIO 4 enable MQTT publishing/subscribing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1060,8 +1044,8 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
-			<td class="description">
-				GPIO 4 enable HTTP write/read
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1069,8 +1053,8 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO4_value6"></td>
-			<td class="description">
-				GPIO 4 MQTT topic name (empty = GPIO4). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<!------------- GPIO4 end ------------------>
@@ -1090,8 +1074,8 @@ textarea {
 					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 12 is usable without restrictions
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1108,8 +1092,8 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>	
 			</td>
-			<td class="description">
-				GPIO 12 enable interrupt trigger
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1117,8 +1101,8 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 12 LEDC PWM duty resolution in bit
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1126,8 +1110,8 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
-			<td class="description">
-				GPIO 12 enable MQTT publishing/subscribing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1135,8 +1119,8 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
-			<td class="description">
-				GPIO 12 enable HTTP write/read
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1144,8 +1128,8 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO12_value6"></td>
-			<td class="description">
-				GPIO 12 MQTT topic name (empty = GPIO12). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1161,8 +1145,8 @@ textarea {
 					<option value="WS2813">WS2813 (not tested)</option>
 				</select>
 			</td>
-			<td class="description">
-				Type of WS2812x, that is connected to GPIO12
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-LEDType" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1173,8 +1157,8 @@ textarea {
 			<td>
 				<input type="number" name="name" id="GPIO_LEDNumbers_value1" size="13" min="1">
 			</td>
-			<td style="font-size: 80%;">
-				Number of LEDs on the external LED-stripe 
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-LEDNumbers" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr  class="GPIO_IO12 GPIO_item" id="LEDRGBex9">
@@ -1186,8 +1170,8 @@ textarea {
 				G <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2" size="12">
 				B <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3" size="12">
 			</td>
-			<td style="font-size: 80%;">
-				Color of LEDs in (R)ed, (G)reen (B)lue from 0...255
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-LEDColor" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1208,8 +1192,8 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 13 is usable without restrictions
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1226,8 +1210,8 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
-			<td class="description">
-				GPIO 13 enable interrupt trigger
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1235,8 +1219,8 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 13 LEDC PWM duty resolution in bit
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1244,8 +1228,8 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
-			<td class="description">
-				GPIO 13 enable MQTT publishing/subscribing
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1253,8 +1237,8 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
-			<td class="description">
-				GPIO 13 enable HTTP write/read
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1262,8 +1246,8 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO13_value6"></td>
-			<td class="description">
-				GPIO 13 MQTT topic name (empty = GPIO13). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<!------------- GPIO13 end ------------------>
@@ -1281,8 +1265,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Start the image recognition immediatly after power up. false is basically for debugging.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#AutoTimer-AutoStart" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr>
@@ -1292,8 +1276,8 @@ textarea {
 			<td>
 				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
 			</td>
-			<td style="font-size: 80%;">
-				Interval in which the number(s) are read (in minutes). If a digitalization round takes longer than this interval, the next run gets postponed until the current run completes.
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#AutoTimer-Intervall" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1310,8 +1294,8 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td class="description">
-				Activate data log to SD card
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#DataLogging-DataLogActive" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1322,8 +1306,8 @@ textarea {
 			<td>
 				<input type="number" id="DataLogging_DataLogRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
-			<td class="description">
-				Time to keep the data files (in days - "0" = forever)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#DataLogging-DataLogRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1342,8 +1326,8 @@ textarea {
 					<option value="4">DEBUG</option>
 				</select>
 			</td>
-			<td class="description">
-				Set the level of the logging to the SD-Card.<br><b>Warning:</b> DEBUG or INFO might damage the SD-Card if enabled longterm due to excessive writes to the SD-Card!
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Debug-Logfile" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr> 		
 		<tr>
@@ -1353,8 +1337,8 @@ textarea {
 			<td>
 				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
-			<td class="description">
-				Time to keep the log files (in days - "0" = forever)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Debug-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
@@ -1369,9 +1353,8 @@ textarea {
 			<td>
 				<input type="text" id="System_TimeZone_value1">
 			</td>
-			<td class="description">
-				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)<br>
-				Use this <a href=timezones.html?v=$COMMIT_HASH target=_blank>table</a> to find the settings for your region. 
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-TimeZone" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -1382,12 +1365,8 @@ textarea {
 			<td>
 				<input type="text" id="System_TimeServer_value1">
 			</td>
-			<td class="description">
-				Time server to synchronize system time. If it is disabled or "undefined", "pool.ntp.org" will be used.<br>
-				You can also set it to the IP of your router. Many routers like 
-				<a href=https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-7590-AX/336_Configuring-time-synchronization-NTP-for-FRITZ-Box-and-network-devices/
-				target=_blank>Fritzboxes</a> can act as a local NTP server.<br>
-				To disable NTP, you need to activate it but set the TimeServer config to be empty. In such case the time always starts at 01.01.1970 after each power cycle!
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-TimeServer" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">
@@ -1397,8 +1376,8 @@ textarea {
 			</td>
 			<td>
 				<input type="text" id="System_Hostname_value1">
-			<td class="description">
-				Hostname for server - will be transfered to wlan.ini at next startup)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-Hostname" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 		<tr class="expert"  id="System_RSSIThreashold">
@@ -1408,9 +1387,8 @@ textarea {
 			</td>
 			<td>
 				<input type="number" name="name" id="System_RSSIThreashold_value1" min="-100"  max="0" step="1">
-			<td class="description">
-				WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.
-				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
+			<td>
+				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-RSSIThreashold" target="_blank"><img src="help.png" width="32px"></a>
 			</td>
 		</tr>
 
