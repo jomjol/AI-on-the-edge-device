@@ -996,8 +996,13 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
                 ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
+                std::string folder = path.substr(0, filename_zw.find_last_of('/'));
+                MakeDir(folder);
+
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
+
+
                 FILE* fpTargetFile = fopen(filename_zw.c_str(), "wb");
                 uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
                 fclose(fpTargetFile);
