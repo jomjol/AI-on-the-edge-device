@@ -912,7 +912,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
     size_t uncomp_size;
     mz_zip_archive zip_archive;
     void* p;
-    char archive_filename[64];
+    char archive_filename[100];
     std::string zw, ret = "";
     std::string directory = "";
 
@@ -995,6 +995,9 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 string filename_zw = zw + SUFFIX_ZW;
 
                 ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
+
+                std::string folder = filename_zw.substr(0, filename_zw.find_last_of('/'));
+                MakeDir(folder);
 
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
