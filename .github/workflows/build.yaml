@@ -85,8 +85,8 @@ jobs:
         cp -r tools/parameter-tooltip-generator/html/* html/param-tooltips/
         echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
-        ls -l html
-        ls -l html/param-tooltips/
+        ls -l
+        ls -l param-tooltips
         
 
 
