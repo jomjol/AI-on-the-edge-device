@@ -70,7 +70,7 @@ jobs:
       run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       #run: cd code; platformio run --environment esp32cam
 
-    - name: Prepare Web UI (copy data from repo and update hashes in all files)
+    - name: Prepare Web UI (copy data from repo, generate tooltip pages and update hashes in all files)
       run: |
         rm -rf ./html
         mkdir html
@@ -83,7 +83,10 @@ jobs:
         cd ../../
         echo "Copying generated tooltip pages to html folder..."
         cp -r tools/parameter-tooltip-generator/html/* html/param-tooltips/
+        echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+        ls -l html
+        ls -l html/param-tooltips/
         
 
 
