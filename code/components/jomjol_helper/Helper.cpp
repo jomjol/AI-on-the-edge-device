@@ -224,15 +224,51 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
 }
 
 
-bool MakeDir(std::string _what)
+
+/**
+ * Create a folder and its parent folders as needed
+ */
+bool MakeDir(std::string path)
 {
-	int mk_ret = mkdir(_what.c_str(), 0775);
-	if (mk_ret)
-	{
-		ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
-		return false;
+	std::string parent;
+
+	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Creating folder " + path + "...");
+
+	bool bSuccess = false;
+    int nRC = ::mkdir( path.c_str(), 0775 );
+    if( nRC == -1 )
+    {
+        switch( errno ) {
+            case ENOENT:
+                //parent didn't exist, try to create it
+				parent = path.substr(0, path.find_last_of('/'));
+        		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Need to create parent folder first: " + parent);
+                if(MakeDir(parent)) {
+                    //Now, try to create again.
+                    bSuccess = 0 == ::mkdir( path.c_str(), 0775 );
+				}
+                else {
+        			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create parent folder: " + parent);
+                    bSuccess = false;
+				}
+                break;
+
+            case EEXIST:
+                //Done!
+                bSuccess = true;
+                break;
+				
+            default:
+				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path);
+                bSuccess = false;
+                break;
+        }
+    }
+    else {
+        bSuccess = true;
 	}
-	return true;
+
+    return bSuccess;
 }
 
 
