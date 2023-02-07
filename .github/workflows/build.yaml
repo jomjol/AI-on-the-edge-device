@@ -74,14 +74,15 @@ jobs:
       run: |
         rm -rf ./html
         mkdir html
-        cp ./sd-card/html/* ./html/
+        cp -r ./sd-card/html/* ./html/
 
         python -m pip install markdown
         mkdir html/param-tooltips
         cd tools/parameter-tooltip-generator
         bash generate-param-doc-tooltip-pages.sh
         cd ../../
-        cp tools/parameter-tooltip-generator/html/* html/param-tooltips/
+        echo "Copying generated tooltip pages to html folder..."
+        cp -r tools/parameter-tooltip-generator/html/* html/param-tooltips/
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
         
 

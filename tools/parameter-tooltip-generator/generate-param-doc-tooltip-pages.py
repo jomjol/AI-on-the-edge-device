@@ -31,7 +31,7 @@ folders = sorted( filter( os.path.isdir, glob.glob(parameterDocsFolder + '/*') )
 
 
 def generateHtmlFile(section, parameter, markdownFile):
-    print(section, parameter, file)
+    #print(section, parameter, file)
 
     with open(markdownFile, 'r') as markdownFileHandle:
         markdownFileContent = markdownFileHandle.read()
@@ -47,6 +47,9 @@ def generateHtmlFile(section, parameter, markdownFile):
         htmlTooltipFileHandle.write(htmlContent)
         htmlTooltipFileHandle.write(htmlFooter)
 
+
+
+print("Generating Tooltip pages...")
 
 # Create HTML folder if it does not exist yet
 if not os.path.exists(htmlTooltipFolder):
