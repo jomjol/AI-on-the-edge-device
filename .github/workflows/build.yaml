@@ -76,6 +76,7 @@ jobs:
         mkdir html
         cp ./sd-card/html/* ./html/
 
+        python -m pip install markdown
         mkdir html/param-tooltips
         cd tools/parameter-tooltip-generator
         bash generate-param-doc-tooltip-pages.sh
