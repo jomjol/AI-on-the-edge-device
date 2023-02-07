@@ -97,7 +97,7 @@ jobs:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
-    #  - (optional) /html/*
+    #  - (optional) /html/* (inkl. subfolders)
     #  - (optional) /config/*.tfl
     runs-on: ubuntu-latest
     needs: build
@@ -135,6 +135,9 @@ jobs:
         mkdir -p ./update
         cp "./code/.pio/build/esp32cam/firmware.bin" "update/firmware.bin"
 
+        ls -l html
+        ls -l html/param-tooltips
+
     - name: Add Web UI to update
       run: cp -r ./html ./update/
 
@@ -160,7 +163,7 @@ jobs:
     # New Remote Setup concept
     # remote_setup__version.zip file with following content:
     #  - /firmware.bin
-    #  - /html/*
+    #  - /html/* (inkl. subfolders)
     #  - /config/*
     runs-on: ubuntu-latest
     needs: build
