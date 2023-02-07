@@ -13,9 +13,9 @@ htmlTooltipFolder = "html"
 
 htmlHeader = """
 <head>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
-    <link rel="stylesheet" href="../css/github.min.css" />
+    <link rel="stylesheet" href="../css/theme.css?v=$COMMIT_HASH" />
+    <link rel="stylesheet" href="../css/theme_extra.css?v=$COMMIT_HASH" />
+    <link rel="stylesheet" href="../css/github.min.css?v=$COMMIT_HASH" />
 </head>
 
 <body class="wy-body-for-nav" role="document" style="margin: 10px;">
