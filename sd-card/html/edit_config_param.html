@@ -44,7 +44,7 @@ textarea {
 }
 
 .disabled {
-    color:lightgrey;
+    color:darkgrey;
 }
 
 .smallSelect {
@@ -69,6 +69,38 @@ textarea {
 
 .indent2 {
     padding-left: 69px;
+}
+
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 600px;
+	height: 300px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	padding: 1px 0;
+
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+	top: 100%;
+	left: 100%;
+	margin-left: -600px;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+.tooltip-content {
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	padding: 1px;
 }
 
 </style>
@@ -111,7 +143,9 @@ textarea {
 				<input type="text" name="name" id="MakeImage_LogImageLocation_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-LogImageLocation" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/LogImageLocation.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -123,7 +157,9 @@ textarea {
 				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/LogfileRetentionInDays.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>		
 		<tr class="expert" id="ex1">
@@ -138,7 +174,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Demo" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/Demo.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" id="ex1">
@@ -150,18 +188,22 @@ textarea {
 				<input type="number" id="MakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-WaitBeforeTakingPicture" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/WaitBeforeTakingPicture.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" id="ex2">
 			<td class="indent1">
-				<class id="MakeImage_ImageQuality_text" style="color:black;"></class>
+				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
 			</td>
 			<td>
 				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="0" max="63">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-ImageQuality" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/ImageQuality.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
@@ -175,7 +217,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-ImageSize" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/ImageSize.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -187,19 +231,23 @@ textarea {
 				<input type="number" id="MakeImage_LEDIntensity_value1" size="13" min="0" max="100">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-LEDIntensity" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/LEDIntensity.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
 		<tr class="expert"  id="Brightness_ex3">
 			<td class="indent1">
-				<class id="MakeImage_Brightness_text" style="color:black;"></class>
+				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
 				<input type="number" id="MakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Brightness" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/Brightness.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -211,7 +259,9 @@ textarea {
 				<input type="number" id="MakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Contrast" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/Contrast.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -223,7 +273,9 @@ textarea {
 				<input type="number" id="MakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-Saturation" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/Saturation.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		
@@ -238,7 +290,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MakeImage-FixedExposure" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MakeImage/FixedExposure.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -254,7 +308,9 @@ textarea {
 				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Alignment-SearchFieldX" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/SearchFieldX.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex8">
@@ -265,13 +321,15 @@ textarea {
 				<input type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Alignment-SearchFieldY" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/SearchFieldY.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
 			<td class="indent1">
 				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
-				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;"></class></label>
+				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class></label>
 			</td>
 			<td>
 				<select id="Alignment_AlignmentAlgo_value1">
@@ -282,7 +340,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Alignment-AlignmentAlgo" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/AlignmentAlgo.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -290,7 +350,7 @@ textarea {
 		<tr id="Category_Digits_ex4">
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Digits_enabled>Digits</h4></label>
+				<label for=Category_Digits_enabled>Digits</label></h4>
 			</td>
 		</tr> 
 		<tr>
@@ -302,7 +362,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-Model" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/Model.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		
@@ -315,7 +377,9 @@ textarea {
 				<input width="40px" type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-CNNGoodThreshold" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/CNNGoodThreshold.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -328,7 +392,9 @@ textarea {
 				<input type="text" name="name" id="Digits_LogImageLocation_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-LogImageLocation" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/LogImageLocation.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -340,26 +406,30 @@ textarea {
 				<input type="number" id="Digits_LogfileRetentionInDays_value1" min="0"  step="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Digits-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/LogfileRetentionInDays.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
 		<tr id="Category_Analog_ex4">
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Analog_enabled>Analog</h4></label>
+				<label for=Category_Analog_enabled>Analog</label></h4>
 			</td>
 		</tr> 
 		<tr>
 			<td class="indent1">
-			    <class id="Analog_Model_text" style="color:black;"></class>
+			    <class id="Analog_Model_text" style="color:black;">Model</class>
 			</td>
 			<td> 
 				<select id="Analog_Model_value1">
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Analog-Model" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Analog/Model.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -370,7 +440,9 @@ textarea {
 			</td>
 			<td> <input type="text" name="name" id="Analog_LogImageLocation_value1"> </td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Analog-LogImageLocation" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Analog/LogImageLocation.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -379,7 +451,9 @@ textarea {
 				<label for=Analog_LogfileRetentionInDays_enabled><class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label></td>
 			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Analog-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Analog/LogfileRetentionInDays.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -398,7 +472,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-PreValueUse" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/PreValueUse.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex11">
@@ -410,13 +486,15 @@ textarea {
 				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-PreValueAgeStartup" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/PreValueAgeStartup.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
-				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;"></class></label>
+				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
@@ -425,7 +503,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-ErrorMessage" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/ErrorMessage.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" id="ex1dddd">
@@ -440,7 +520,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-CheckDigitIncreaseConsistency" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/CheckDigitIncreaseConsistency.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -467,7 +549,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.AllowNegativeRates" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.AllowNegativeRates.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -479,7 +563,9 @@ textarea {
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.DecimalShift" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.DecimalShift.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -491,7 +577,9 @@ textarea {
 				<input type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.AnalogDigitalTransitionStart" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.AnalogDigitalTransitionStart.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -504,13 +592,15 @@ textarea {
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.MaxRateValue" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.MaxRateValue.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
-				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;"></class></label>
+				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_MaxRateType_value1">
@@ -519,7 +609,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.MaxRateType" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.MaxRateType.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -534,7 +626,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.ExtendedResolution" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.ExtendedResolution.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		
@@ -550,7 +644,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#PostProcessing-NUMBER.IgnoreLeadingNaN" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.IgnoreLeadingNaN.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -573,19 +669,23 @@ textarea {
 				<input type="text" id="MQTT_Uri_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-Uri" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/Uri.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_MainTopic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopic")' unchecked >
-				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;"></class></label>
+				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">MainTopic</class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_MainTopic_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-MainTopic" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/MainTopic.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -597,7 +697,9 @@ textarea {
 				<input type="text" id="MQTT_ClientID_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-ClientID" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/ClientID.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -609,7 +711,9 @@ textarea {
 				<input type="text" id="MQTT_user_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-user" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/user.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -621,7 +725,9 @@ textarea {
 				<input type="text" id="MQTT_password_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-password" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/password.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -636,7 +742,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-SetRetainFlag" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/SetRetainFlag.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -658,7 +766,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-HomeassistantDiscovery" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/HomeassistantDiscovery.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -681,7 +791,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#MQTT-MeterType" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/MeterType.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -696,13 +808,15 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
-				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;"></class></label>
+				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">Uri</class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_Uri_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-Uri" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Uri.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
                 <tr>
@@ -714,7 +828,9 @@ textarea {
 				<input type="text" id="InfluxDB_Database_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-Database" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Database.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -726,7 +842,9 @@ textarea {
 				<input type="text" id="InfluxDB_Measurement_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-Measurement" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Measurement.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -738,7 +856,9 @@ textarea {
 				<input type="text" id="InfluxDB_user_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-user" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/user.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -750,7 +870,9 @@ textarea {
 				<input type="text" id="InfluxDB_password_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#InfluxDB-password" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/password.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -795,7 +917,9 @@ textarea {
 					</select>	
 				</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -804,7 +928,9 @@ textarea {
 			</td>
 			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -813,7 +939,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -822,7 +950,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -831,7 +961,9 @@ textarea {
 			</td>
 			<td><input type="text" id="GPIO_IO0_value6"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO0" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO0 end ------------------>
@@ -869,7 +1001,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -878,7 +1012,9 @@ textarea {
 			</td>
 			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -887,7 +1023,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -896,7 +1034,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -905,7 +1045,9 @@ textarea {
 			</td>
 			<td><input type="text" id="GPIO_IO1_value6"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO1" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO1 end ------------------>
@@ -925,7 +1067,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -943,7 +1087,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -952,7 +1098,9 @@ textarea {
 			</td>
 			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -961,7 +1109,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -970,7 +1120,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -979,7 +1131,9 @@ textarea {
 			</td>
 			<td><input type="text" id="GPIO_IO3_value6"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO3" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO3 end ------------------>
@@ -1000,7 +1154,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1018,7 +1174,9 @@ textarea {
 				</select>	
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1027,7 +1185,9 @@ textarea {
 			</td>
 			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1036,7 +1196,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1045,7 +1207,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1054,7 +1218,9 @@ textarea {
 			</td>
 			<td><input type="text" id="GPIO_IO4_value6"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO4" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO4 end ------------------>
@@ -1075,7 +1241,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1093,7 +1261,9 @@ textarea {
 				</select>	
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1102,7 +1272,9 @@ textarea {
 			</td>
 			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1111,7 +1283,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1120,7 +1294,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1129,7 +1305,9 @@ textarea {
 			</td>
 			<td><input type="text" id="GPIO_IO12_value6"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO12" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1146,7 +1324,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-LEDType" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/LEDType.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1158,7 +1338,9 @@ textarea {
 				<input type="number" name="name" id="GPIO_LEDNumbers_value1" size="13" min="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-LEDNumbers" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/LEDNumbers.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr  class="GPIO_IO12 GPIO_item" id="LEDRGBex9">
@@ -1171,7 +1353,9 @@ textarea {
 				B <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3" size="12">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-LEDColor" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/LEDColor.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1193,7 +1377,9 @@ textarea {
 					</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1211,7 +1397,9 @@ textarea {
 					</select>	
 				</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1220,7 +1408,9 @@ textarea {
 			</td>
 			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1229,7 +1419,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1238,7 +1430,9 @@ textarea {
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1247,7 +1441,9 @@ textarea {
 			</td>
 			<td><input type="text" id="GPIO_IO13_value6"></td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#GPIO-IO13" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO13 end ------------------>
@@ -1266,7 +1462,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#AutoTimer-AutoStart" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/AutoTimer/AutoStart.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -1277,7 +1475,9 @@ textarea {
 				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#AutoTimer-Intervall" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/AutoTimer/Intervall.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1295,7 +1495,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#DataLogging-DataLogActive" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/DataLogging/DataLogActive.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1307,7 +1509,9 @@ textarea {
 				<input type="number" id="DataLogging_DataLogRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#DataLogging-DataLogRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/DataLogging/DataLogRetentionInDays.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1327,7 +1531,9 @@ textarea {
 				</select>
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Debug-Logfile" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Debug/Logfile.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr> 		
 		<tr>
@@ -1338,7 +1544,9 @@ textarea {
 				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#Debug-LogfileRetentionInDays" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Debug/LogfileRetentionInDays.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1354,7 +1562,9 @@ textarea {
 				<input type="text" id="System_TimeZone_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-TimeZone" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/TimeZone.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -1366,7 +1576,9 @@ textarea {
 				<input type="text" id="System_TimeServer_value1">
 			</td>
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-TimeServer" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/TimeServer.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">
@@ -1377,7 +1589,9 @@ textarea {
 			<td>
 				<input type="text" id="System_Hostname_value1">
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-Hostname" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/Hostname.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="System_RSSIThreashold">
@@ -1388,7 +1602,9 @@ textarea {
 			<td>
 				<input type="number" name="name" id="System_RSSIThreashold_value1" min="-100"  max="0" step="1">
 			<td>
-				<a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#System-RSSIThreashold" target="_blank"><img src="help.png" width="32px"></a>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/RSSIThreashold.html" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1587,7 +1803,7 @@ function InvertEnableItem(_cat, _param)
 	_zw = _cat + "_" + _param + "_enabled";
 	_isOn = document.getElementById(_zw).checked;
 
-	_color = "color:lightgrey;";
+	_color = "color:darkgrey;";
 	if (_isOn) {
 		_color = "color:black;";
 	}
@@ -1600,12 +1816,12 @@ function InvertEnableItem(_cat, _param)
 
 	for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
 			document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
-			document.getElementById(_cat+"_"+_param+"_value"+j).style=_color;	
+			document.getElementById(_cat+"_"+_param+"_value"+j).style=_color;
 	}
 }
 
 function setEnabled(className, enabled) {
-	_color = "color:lightgrey;";
+	_color = "color:darkgrey;";
 	if (enabled) {
 		_color = "color:black;";
 	}
@@ -1648,7 +1864,7 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 {
 	_status = _category[_cat]["enabled"];
 
-	_color = "color:lightgrey;";
+	_color = "color:darkgrey;";
 	if (_status) {
 		_color = "color:black;";
 	}
@@ -1661,13 +1877,13 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 	if (_number == -1){
 		if (!_param[_cat][_name]["enabled"]) {
 			_status = false;
-			_color = "color:lightgrey;";
+			_color = "color:darkgrey;";
 		}
 	}
 	else
 		if (!NUMBERS[_number][_cat][_name]["enabled"]) {
 				_status = false;
-				_color = "color:lightgrey;";
+				_color = "color:darkgrey;";
 			}
 
 
