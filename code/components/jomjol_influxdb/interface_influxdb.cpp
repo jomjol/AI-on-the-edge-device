@@ -67,23 +67,21 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     // Format:     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
     struct tm tm;
     strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-    time_t t = mktime(&tm);  // t is now your desired time_t
+
+    time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
 
     struct tm * ptm;
     ptm = gmtime ( &t );
+
     time_t utc = mktime(ptm);
+    utc = 2*t - utc;
 
-//    time_t now;
-//    time(&now);
     char nowTimestamp[21];
-    // pad with zeroes to get nanoseconds
-//    sprintf(nowTimestamp,"%ld000000000", (long) now);
-//    sprintf(nowTimestamp,"%ld000000000", (long) t);           // Localtime
-    sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
-    
 
-//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - t: " + std::to_string(t) + ", utc: " + std::to_string(utc));
-//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now: " + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
+    sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+
+
+//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - t: " + std::to_string(t) + ", utc: " + std::to_string(utc) + ", now: " + std::to_string(now) + ", utc_local: " + std::to_string(utc_local));
 
     std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     payload.shrink_to_fit();
