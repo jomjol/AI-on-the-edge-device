@@ -24,7 +24,7 @@ void ClassFlowInfluxDBv2::SetInitialParameter(void)
     measurement = "";
     dborg = "";  
     dbtoken = "";  
-    dbfield = "";
+//    dbfield = "";
 
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -190,9 +190,9 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
-            if (dbfield.length() > 0)
+            if ((*NUMBERS)[i]->Fieldname.length() > 0)
             {
-                namenumber = dbfield;
+                namenumber = (*NUMBERS)[i]->Fieldname;
             }
             else
             {
