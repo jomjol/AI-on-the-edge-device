@@ -29,6 +29,7 @@
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
+#include "configFile.h"
 //#include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
@@ -77,6 +78,10 @@ extern const char* BUILD_TIME;
 extern std::string getFwVersion(void);
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
+
+
+bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+void migrateConfiguration(void);
 
 static const char *TAG = "MAIN";
 
@@ -197,6 +202,8 @@ extern "C" void app_main(void)
         xTaskCreate(&task_MainInitError_blink, "task_MainInitError_blink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
         return; // No way to continue without SD-Card!
     }
+
+    migrateConfiguration();
 
     setupTime();
 
@@ -398,3 +405,63 @@ extern "C" void app_main(void)
     }
 }
 
+
+/**
+ * Check the cibfigVersion parameter in the config file.
+ * If it is missing or not set to teh latestversion, migrate the configuration.
+*/
+void migrateConfiguration(void) {
+    bool found = false;
+
+    if (!FileExists(CONFIG_FILE)) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Config file seems to be missing!");
+        return;	
+    }
+
+	std::ifstream ifs(CONFIG_FILE);
+  	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	
+    found = found | replace_all(content, "[MakeImage]", "[TakeImage]");
+    found = found | replace_all(content, "Intervall", "Interval");
+    found = found | replace_all(content, "RSSIThreashold", "RSSIThreshold");
+
+    if (found) { // At least one replacement happened
+        if (! RenameFile(CONFIG_FILE, CONFIG_FILE_BACKUP)) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create backup of Config file!");
+            return;
+        }
+
+        FILE* pfile = fopen(CONFIG_FILE, "w");
+        fwrite(content.c_str(), content.length(), 1, pfile);
+        fclose(pfile);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Config file migrated. Saved backup at " + string(CONFIG_FILE_BACKUP));
+    }
+}
+
+
+bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    std::string buf;
+    std::size_t pos = 0;
+    std::size_t prevPos;
+    bool found = false;
+
+    // Reserves rough estimate of final size of string.
+    buf.reserve(s.size());
+
+    while (true) {
+        prevPos = pos;
+        pos = s.find(toReplace, pos);
+        if (pos == std::string::npos) {
+            break;
+        }
+        found = true;
+        buf.append(s, prevPos, pos - prevPos);
+        buf += replaceWith;
+        pos += toReplace.size();
+    }
+
+    buf.append(s, prevPos, s.size() - prevPos);
+    s.swap(buf);
+
+    return found;
+}

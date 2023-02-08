@@ -77,6 +77,7 @@
 
     //server_GPIO + server_file + SoftAP
     #define CONFIG_FILE "/sdcard/config/config.ini"
+    #define CONFIG_FILE_BACKUP "/sdcard/config/config.bak"
 
     //ClassFlowControll + Main + SoftAP
     #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
