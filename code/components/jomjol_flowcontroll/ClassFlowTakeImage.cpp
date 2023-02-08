@@ -1,4 +1,4 @@
-#include "ClassFlowMakeImage.h"
+#include "ClassFlowTakeImage.h"
 #include "Helper.h"
 #include "ClassLogFile.h"
 
@@ -17,7 +17,7 @@
 
 static const char* TAG = "flow_make_image";
 
-esp_err_t ClassFlowMakeImage::camera_capture(){
+esp_err_t ClassFlowTakeImage::camera_capture(){
     string nm =  namerawimage;
     Camera.CaptureToFile(nm);
     time(&TimeImageTaken);
@@ -26,7 +26,7 @@ esp_err_t ClassFlowMakeImage::camera_capture(){
     return ESP_OK;
 }
 
-void ClassFlowMakeImage::takePictureWithFlash(int flash_duration)
+void ClassFlowTakeImage::takePictureWithFlash(int flash_duration)
 {
     // in case the image is flipped, it must be reset here //
     rawImage->width = image_width;          
@@ -40,7 +40,7 @@ void ClassFlowMakeImage::takePictureWithFlash(int flash_duration)
     if (SaveAllFiles) rawImage->SaveToFile(namerawimage);
 }
 
-void ClassFlowMakeImage::SetInitialParameter(void)
+void ClassFlowTakeImage::SetInitialParameter(void)
 {
     waitbeforepicture = 5;
     isImageSize = false;
@@ -56,7 +56,7 @@ void ClassFlowMakeImage::SetInitialParameter(void)
 }     
 
 
-ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
+ClassFlowTakeImage::ClassFlowTakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
     LogImageLocation = "/log/source";
     logfileRetentionInDays = 5;
@@ -64,7 +64,7 @@ ClassFlowMakeImage::ClassFlowMakeImage(std::vector<ClassFlow*>* lfc) : ClassFlow
 }
 
 
-bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
+bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> splitted;
 
@@ -77,7 +77,7 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (aktparamgraph.compare("[MakeImage]") != 0)       // Paragraph does not fit MakeImage
+    if (aktparamgraph.compare("[TakeImage]") != 0)       // Paragraph does not fit TakeImage
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
@@ -173,7 +173,7 @@ bool ClassFlowMakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 }
 
 
-string ClassFlowMakeImage::getHTMLSingleStep(string host)
+string ClassFlowTakeImage::getHTMLSingleStep(string host)
 {
     string result;
     result = "Raw Image: <br>\n<img src=\"" + host + "/img_tmp/raw.jpg\">\n";
@@ -181,14 +181,14 @@ string ClassFlowMakeImage::getHTMLSingleStep(string host)
 }
 
 
-bool ClassFlowMakeImage::doFlow(string zwtime)
+bool ClassFlowTakeImage::doFlow(string zwtime)
 {
     string logPath = CreateLogFolder(zwtime);
 
     int flash_duration = (int) (waitbeforepicture * 1000);
  
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - Before takePictureWithFlash");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Before takePictureWithFlash");
     #endif
 
 
@@ -204,7 +204,7 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
 
 
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After takePictureWithFlash");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After takePictureWithFlash");
     #endif
 
     LogImage(logPath, "raw", NULL, NULL, zwtime, rawImage);
@@ -212,14 +212,14 @@ bool ClassFlowMakeImage::doFlow(string zwtime)
     RemoveOldLogs();
 
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowMakeImage::doFlow - After RemoveOldLogs");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After RemoveOldLogs");
     #endif
 
     return true;
 }
 
 
-esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
+esp_err_t ClassFlowTakeImage::SendRawJPG(httpd_req_t *req)
 {
     int flash_duration = (int) (waitbeforepicture * 1000);
     time(&TimeImageTaken);
@@ -229,7 +229,7 @@ esp_err_t ClassFlowMakeImage::SendRawJPG(httpd_req_t *req)
 }
 
 
-ImageData* ClassFlowMakeImage::SendRawImage()
+ImageData* ClassFlowTakeImage::SendRawImage()
 {
     CImageBasis *zw = new CImageBasis(rawImage);
     ImageData *id;
@@ -243,12 +243,12 @@ ImageData* ClassFlowMakeImage::SendRawImage()
     return id;  
 }
 
-time_t ClassFlowMakeImage::getTimeImageTaken()
+time_t ClassFlowTakeImage::getTimeImageTaken()
 {
     return TimeImageTaken;
 }
 
-ClassFlowMakeImage::~ClassFlowMakeImage(void)
+ClassFlowTakeImage::~ClassFlowTakeImage(void)
 {
     delete rawImage;
 }

@@ -184,9 +184,9 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 }
 
 
-bool ClassFlowMQTT::Start(float AutoIntervall) 
+bool ClassFlowMQTT::Start(float AutoInterval) 
 {
-    roundInterval = AutoIntervall; // Minutes
+    roundInterval = AutoInterval; // Minutes
     keepAlive = roundInterval * 60 * 2.5; // Seconds, make sure it is greater thatn 2 rounds!
 
     std::stringstream stream;

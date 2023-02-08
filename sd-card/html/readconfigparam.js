@@ -105,7 +105,7 @@ function ParseConfig() {
      param = new Object();
      category = new Object(); 
 
-     var catname = "MakeImage";
+     var catname = "TakeImage";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
@@ -224,7 +224,7 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "AutoStart");
-     ParamAddValue(param, catname, "Intervall");     
+     ParamAddValue(param, catname, "Interval");
 
      var catname = "DataLogging";
      category[catname] = new Object(); 
@@ -251,7 +251,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "AutoAdjustSummertime");
      ParamAddValue(param, catname, "Hostname");   
-     ParamAddValue(param, catname, "RSSIThreashold");   
+     ParamAddValue(param, catname, "RSSIThreshold");
      ParamAddValue(param, catname, "SetupMode"); 
      
      

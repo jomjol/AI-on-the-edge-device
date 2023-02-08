@@ -4,7 +4,7 @@
 #define CLASSFFLOWPOSTPROCESSING_H
 
 #include "ClassFlow.h"
-#include "ClassFlowMakeImage.h"
+#include "ClassFlowTakeImage.h"
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowDefineTypes.h"
 
@@ -29,7 +29,7 @@ protected:
 
     string FilePreValue;
 
-    ClassFlowMakeImage *flowMakeImage;
+    ClassFlowTakeImage *flowTakeImage;
 
     bool LoadPreValue(void);
     string ShiftDecimal(string in, int _decShift);

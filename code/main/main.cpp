@@ -249,10 +249,10 @@ extern "C" void app_main(void)
     ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
 #endif
     
-    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreashold = 0;
-    LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);
+    char *ssid = NULL, *passwd = NULL, *hostname = NULL, *ip = NULL, *gateway = NULL, *netmask = NULL, *dns = NULL; int rssithreshold = 0;
+    LoadWlanFromFile(WLAN_CONFIG_FILE, ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreshold);
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threashold: " + to_string(rssithreashold));
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN-Settings - RSSI-Threshold: " + to_string(rssithreshold));
 
     if (ssid != NULL && passwd != NULL)
 #ifdef __HIDE_PASSWORD
@@ -275,7 +275,7 @@ extern "C" void app_main(void)
        ESP_LOGD(TAG, "DNS IP: %s", dns);
 
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreashold);   
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns, rssithreshold);   
 
 
     xDelay = 2000 / portTICK_PERIOD_MS;

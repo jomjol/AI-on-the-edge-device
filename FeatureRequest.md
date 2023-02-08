@@ -180,9 +180,9 @@ haveing this state in the mqtt broker can trigger functions like closing the ate
 
 * Implementation of an authentication mechanism.
 
-#### #8 MQTT configurable readout intervall
+#### #8 MQTT configurable readout interval
 
-Make the readout intervall configurable via MQTT.
+Make the readout interval configurable via MQTT.
 
 * Change the mqtt part to receive and process input and not only sending
 

@@ -30,7 +30,7 @@ TaskHandle_t xHandletask_autodoFlow = NULL;
 bool bTaskAutoFlowCreated = false;
 bool flowisrunning = false;
 
-long auto_intervall = 0;
+long auto_interval = 0;
 bool auto_isrunning = false;
 
 int countRounds = 0;
@@ -620,8 +620,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
         Camera.SetLEDIntensity(intens);
-        ESP_LOGD(TAG, "test_take - vor MakeImage");
-        std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
+        ESP_LOGD(TAG, "test_take - vor TakeImage");
+        std::string zw = tfliteflow.doSingleStep("[TakeImage]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     } 
@@ -825,13 +825,13 @@ void task_autodoFlow(void *pvParameter)
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
 
-    auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
+    auto_isrunning = tfliteflow.isAutoStart(auto_interval);
 
     if (isSetupModusActive()) 
     {
         auto_isrunning = false;
         std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-        tfliteflow.doFlowMakeImageOnly(zw_time);
+        tfliteflow.doFlowTakeImageOnly(zw_time);
     }
     
     while (auto_isrunning)
@@ -873,9 +873,9 @@ void task_autodoFlow(void *pvParameter)
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-        if (auto_intervall > fr_delta_ms)
+        if (auto_interval > fr_delta_ms)
         {
-            const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
+            const TickType_t xDelay = (auto_interval - fr_delta_ms)  / portTICK_PERIOD_MS;
             ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long) xDelay);
             vTaskDelay( xDelay );        
         }

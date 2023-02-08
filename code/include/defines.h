@@ -58,7 +58,7 @@
     //#define CONFIG_IDF_TARGET_ARCH_XTENSA //not needed with platformio/espressif32 @ 5.2.0
 
 
-    //ClassControllCamera + ClassFlowMakeImage + connect_wlan + main
+    //ClassControllCamera + ClassFlowTakeImage + connect_wlan + main
     #define FLASH_GPIO GPIO_NUM_4
     #define BLINK_GPIO GPIO_NUM_33
 
@@ -71,7 +71,7 @@
     //server_GPIO
     #define __LEDGLOBAL
 
-    //ClassControllCamera + ClassFlowMakeImage
+    //ClassControllCamera + ClassFlowTakeImage
     #define CAMERA_MODEL_AI_THINKER
     #define BOARD_ESP32CAM_AITHINKER
 
