@@ -1,4 +1,4 @@
-## [14.0.2] - 2023-02-05
+## [Unreleased]
 
 **Stabilization and Improved User Experience**
 
@@ -47,6 +47,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
+-   **New 14.0.4:** Fix for InfluxDB timeshift problem [#1991](https://github.com/jomjol/AI-on-the-edge-device/issues/1991)
 
 #### Removed
 
