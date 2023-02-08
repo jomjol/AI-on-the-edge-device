@@ -503,7 +503,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph does not fit MakeImage
+    if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph does not fit PostProcessing
         return false;
 
     InitNUMBERS();

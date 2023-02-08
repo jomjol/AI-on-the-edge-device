@@ -739,10 +739,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
     httpd_resp_set_hdr(req, "Location", directory.c_str());
-
-    /* Redirect onto root to see the updated file list */
-    httpd_resp_set_status(req, "303 See Other");
-    httpd_resp_set_hdr(req, "Location", directory.c_str());
     httpd_resp_sendstr(req, "File uploaded successfully");
 
 /*
@@ -996,7 +992,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
                 ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
-                std::string folder = path.substr(0, filename_zw.find_last_of('/'));
+                std::string folder = filename_zw.substr(0, filename_zw.find_last_of('/'));
                 MakeDir(folder);
 
                 // extrahieren in zwischendatei

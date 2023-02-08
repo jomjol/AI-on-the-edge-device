@@ -74,7 +74,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (aktparamgraph.compare("[Alignment]") != 0)       //Paragraph does not fit MakeImage
+    if (aktparamgraph.compare("[Alignment]") != 0)       //Paragraph does not fit Alignment
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
