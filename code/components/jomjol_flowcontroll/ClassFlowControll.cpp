@@ -206,7 +206,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     _type = trim(_type);
 
-    if (toUpper(_type).compare("[MAKEIMAGE]") == 0)
+    if (toUpper(_type).compare("[TAKEIMAGE]") == 0)
     {
         cfc = new ClassFlowTakeImage(&FlowControll);
         flowtakeimage = (ClassFlowTakeImage*) cfc;
