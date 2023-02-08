@@ -421,9 +421,41 @@ void migrateConfiguration(void) {
 	std::ifstream ifs(CONFIG_FILE);
   	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	
+    /* Typos */
     found = found | replace_all(content, "[MakeImage]", "[TakeImage]");
     found = found | replace_all(content, "Intervall", "Interval");
     found = found | replace_all(content, "RSSIThreashold", "RSSIThreshold");
+    found = found | replace_all(content, "RSSIThreashold", "RSSIThreshold");
+
+    /* Boolean parameters which where set to false but commented out -> remove semicolon */
+    found = found | replace_all(content, ";Demo = false", "Demo = false");
+    found = found | replace_all(content, ";FixedExposure = false", "FixedExposure = false");
+    found = found | replace_all(content, ";InitialMirror = false", "InitialMirror = false");
+    found = found | replace_all(content, ";FlipImageSize = false", "FlipImageSize = false");
+    found = found | replace_all(content, ";ExtendedResolution = false", "ExtendedResolution = false");
+    found = found | replace_all(content, ";PreValueUse = false", "PreValueUse = false");
+    found = found | replace_all(content, ";ErrorMessage = false", "ErrorMessage = false");
+    found = found | replace_all(content, ";CheckDigitIncreaseConsistency = false", "CheckDigitIncreaseConsistency = false");
+    found = found | replace_all(content, ";SetRetainFlag = false", "SetRetainFlag = false");
+    found = found | replace_all(content, ";HomeassistantDiscovery = false", "HomeassistantDiscovery = false");
+    found = found | replace_all(content, ";AutoStart = false", "AutoStart = false");
+    found = found | replace_all(content, ";DataLogActive = false", "DataLogActive = false");
+    found = found | replace_all(content, ";SetupMode = false", "SetupMode = false");
+
+    /* Boolean parameters which where set to true but commented out -> remove semicolon and set to its default value */
+    found = found | replace_all(content, ";Demo = true", "Demo = false");
+    found = found | replace_all(content, ";FixedExposure = true", "FixedExposure = false");
+    found = found | replace_all(content, ";InitialMirror = true", "InitialMirror = false");
+    found = found | replace_all(content, ";FlipImageSize = true", "FlipImageSize = false");
+    found = found | replace_all(content, ";ExtendedResolution = true", "ExtendedResolution = false");
+    found = found | replace_all(content, ";PreValueUse = true", "PreValueUse = false");
+    found = found | replace_all(content, ";ErrorMessage = true", "ErrorMessage = false");
+    found = found | replace_all(content, ";CheckDigitIncreaseConsistency = true", "CheckDigitIncreaseConsistency = false");
+    found = found | replace_all(content, ";SetRetainFlag = true", "SetRetainFlag = false");
+    found = found | replace_all(content, ";HomeassistantDiscovery = true", "HomeassistantDiscovery = false");
+    found = found | replace_all(content, ";AutoStart = true", "AutoStart = false");
+    found = found | replace_all(content, ";DataLogActive = true", "DataLogActive = true"); // Enabled by default!
+    found = found | replace_all(content, ";SetupMode = true", "SetupMode = false");
 
     if (found) { // At least one replacement happened
         if (! RenameFile(CONFIG_FILE, CONFIG_FILE_BACKUP)) {
