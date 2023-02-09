@@ -1,18 +1,12 @@
-# Changelog
-
 ## [Unreleased]
 
-### Update Procedure
+**Rolling**
 
-Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
-### Changes
-
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v14.0.0)
 
 #### Added
 
--   n.a.
+-   Additional interface to InfluxDB Version 2 upwards
 
 #### Changed
 
@@ -20,13 +14,15 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 #### Fixed
 
--   [#1961](https://github.com/jomjol/AI-on-the-edge-device/issues/1961) Weird ROI Image with `FlipImageSize = true`
+-   n.a.
 
 #### Removed
 
 -   n.a.
 
-## [14.0.0] - 2023-02-02
+
+
+## [14.0.3] -2023-02-05
 
 **Stabilization and Improved User Experience**
 
@@ -75,6 +71,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
+-   **New 14.0.4:** Fix for InfluxDB timeshift problem [#1991](https://github.com/jomjol/AI-on-the-edge-device/issues/1991)
 
 #### Removed
 
@@ -829,24 +826,14 @@ External Illumination
 
 -   Initial Version
 
+
+[14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.2
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
-
 [13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
-
 [13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.5
-
 [13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.4
-
 [13.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.1
-
 [12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v11.3.1...v12.0.1
-
 [11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.3
-
 [11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
-
 [11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
-
-[Unreleased]: https://github.com/jomjol/AI-on-the-edge-device/compare/14.0.0...HEAD
-
-[14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/13.0.8...14.0.0

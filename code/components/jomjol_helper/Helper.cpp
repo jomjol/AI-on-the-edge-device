@@ -611,9 +611,6 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 {
 	std::vector<string> Output;
-
-	input = trim(input, delimiter);
-
 	/* The input can have multiple formats: 
 	 *  - key = value
      *  - key = value1 value2 value3 ...
@@ -628,12 +625,13 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 	 * As a workaround and to not break any legacy usage, we enforce to only use the
 	 * equal sign, if the key is "password"
 	*/
-	if (input.find("password") != string::npos) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+	if ((input.find("password") != string::npos) || (input.find("Token") != string::npos)) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
 		size_t pos = input.find("=");
 		Output.push_back(trim(input.substr(0, pos), ""));
 		Output.push_back(trim(input.substr(pos +1, string::npos), ""));
 	}
 	else { // Legacy Mode
+		input = trim(input, delimiter);							// sonst werden delimiter am Ende (z.B. == im Token) gelöscht)
 		size_t pos = findDelimiterPos(input, delimiter);
 		std::string token;
 		while (pos != std::string::npos) {

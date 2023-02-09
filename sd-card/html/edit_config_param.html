@@ -452,7 +452,8 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
 				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
 			</td>
 			<td>
@@ -466,7 +467,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
 				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class></label>
 			</td>
@@ -479,7 +480,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_AnalogDigitalTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogDigitalTransitionStart")' unchecked >
 				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">AnalogDigitalTransitionStart</class></label>
 			</td>
@@ -493,7 +494,7 @@ textarea {
 		</tr>
 
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
 				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class></label>
 			</td>
@@ -505,7 +506,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
 				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class></label>
 			</td>
@@ -520,8 +521,9 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
-				<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
+			<td class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="PostProcessing_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ExtendedResolution")' unchecked >
+			<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ExtendedResolution_value1">
@@ -533,10 +535,10 @@ textarea {
 				Enable to use the decimal place of the last analog counter
 			</td>
 		</tr>
-		
 		<tr>
-			<td id="ex121" class="indent1">
-				<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
+			<td id="ex121" class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="PostProcessing_IgnoreLeadingNaN_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "IgnoreLeadingNaN")' unchecked >
+			<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_IgnoreLeadingNaN_value1">
@@ -692,7 +694,7 @@ textarea {
 			<td colspan="3" style="padding-left: 20px;">
 			    <h4>
 				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDB_enabled>InfluxDB</h4><h5>Only InfluxDB v1.x is supported, v2.x has a changed interface</h5></label>				
+				<label for=Category_InfluxDB_enabled>InfluxDB</h4><h5>Only InfluxDB v1.x is configured here - v2.x see below [InfluxDBv2]</h5></label>				
 			</td>
 		</tr> 		
 		<tr>
@@ -755,6 +757,109 @@ textarea {
 				Password for InfluxDB authentication
 			</td>
 		</tr>
+
+
+
+		<tr>
+			<td colspan="3" style="padding-left: 20px;">
+			    <h4>
+				<input type="checkbox" id="Category_InfluxDBv2_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+				<label for=Category_InfluxDBv2_enabled>InfluxDBv2</h4><h5>Only InfluxDB v2.x is configured here, v1.x see above [InfluxDB]</h5></label>				
+			</td>
+		</tr> 		
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Uri")' unchecked >
+				<label for=InfluxDBv2_Uri_enabled><class id="InfluxDBv2_Uri_text" style="color:black;">Uri</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Uri_value1">
+			</td>
+			<td style="font-size: 80%;">
+				URI of the HTTP interface to InfluxDB (Version2), without traililing slash, e.g. http://IP-Address:Port
+			</td>
+		</tr>
+                <tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Database")' unchecked >
+				<label for=InfluxDBv2_Database_enabled><class id="InfluxDBv2_Database_text" style="color:black;">Database</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Database_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Database name in which to publish the read value.
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Measurement")' unchecked >
+				<label for=InfluxDBv2_Measurement_enabled><class id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Measurement_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Measurement name to use to publish the read value.
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")' unchecked >
+				<label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Org</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Org_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Organisation (Org) for InfluxDBv2 authentication
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1">
+				<input type="checkbox" id="InfluxDBv2_Token_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Token")' unchecked >
+				<label for=InfluxDBv2_Token_enabled><class id="InfluxDBv2_Token_text" style="color:black;">Token</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Token_value1">
+			</td>
+			<td style="font-size: 80%;">
+				Token for InfluxDB authentication
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1" colspan="3">
+				<br>
+				<b>Postprocessing Individual Parameters: 
+                <select id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()">
+                    <option value="0" selected>default</option>
+                    <option value="1" >NT</option>
+                    <option value="2" >HT</option>
+                </select></b>
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="InfluxDBv2_Fieldname_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Fieldname")' unchecked >
+				<label for=InfluxDBv2_Fieldname_enabled><class id="InfluxDBv2_Fieldname_text" style="color:black;">Fieldname</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Fieldname_value1">
+			</td>
+			<td style="font-size: 80%;">
+                                Fieldname to use for saving.
+			</td>
+		</tr>
+
+
+
+
+
+
+
+
+
+
 
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
@@ -1455,7 +1560,8 @@ function LoadConfigNeu() {
 	InitIndivParameter();
 
 	UpdateInput();
-	UpdateInputIndividual();
+	var sel = document.getElementById("Numbers_value1");
+	UpdateInputIndividual(sel);
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
 }
@@ -1467,14 +1573,23 @@ function InitIndivParameter()
     var _index = document.getElementById("Numbers_value1");
     while (_index.length)
         _index.remove(0);
+	var _indexInflux = document.getElementById("NumbersInfluxDB_value1");
+    while (_indexInflux.length)
+		_indexInflux.remove(0);
 
     for (var i = 0; i < NUMBERS.length; ++i){
         var option = document.createElement("option");
         option.text = NUMBERS[i]["name"];
         option.value = i;
         _index.add(option);
+
+		var optionInflux = document.createElement("option");
+        optionInflux.text = NUMBERS[i]["name"];
+        optionInflux.value = i;
+		_indexInflux.add(optionInflux);
         }
     _index.selectedIndex = 0; 
+	_indexInflux.selectedIndex = 0; 
 }
 
 
@@ -1759,7 +1874,7 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1){
 	}
 }
 
-function UpdateInputIndividual()
+function UpdateInputIndividual(sel)
 {
 	if (NUNBERSAkt != -1)
 	{
@@ -1767,20 +1882,32 @@ function UpdateInputIndividual()
 		ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
+/*
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt)		
+*/
+		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt)		
+		ReadParameter(param, "InfluxDBv2", "Fieldname", true, NUNBERSAkt)		
 	}
 
-	var sel = document.getElementById("Numbers_value1");
+//	var sel = document.getElementById("Numbers_value1");
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
+/*
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
+*/
+	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt);
+	WriteParameter(param, category, "InfluxDBv2", "Fieldname", true, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -1789,6 +1916,7 @@ function UpdateInput() {
 	document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
 	document.getElementById("Category_GPIO_enabled").checked = category["GPIO"]["enabled"];
 	document.getElementById("Category_InfluxDB_enabled").checked = category["InfluxDB"]["enabled"];
+	document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
 	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
 	WriteParameter(param, category, "TakeImage", "LogImageLocation", true);
@@ -1834,6 +1962,13 @@ function UpdateInput() {
 	WriteParameter(param, category, "InfluxDB", "Measurement", true);	
 	WriteParameter(param, category, "InfluxDB", "user", true);	
 	WriteParameter(param, category, "InfluxDB", "password", true);	
+
+	WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Database", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Org", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Token", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Fieldname", true);
 
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
@@ -1910,6 +2045,7 @@ function ReadParameterAll()
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
 	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
+	category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
 	ReadParameter(param, "TakeImage", "LogImageLocation", true);
@@ -1939,7 +2075,6 @@ function ReadParameterAll()
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", false);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-//	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
 	ReadParameter(param, "PostProcessing", "ErrorMessage", false);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
@@ -1957,6 +2092,13 @@ function ReadParameterAll()
 	ReadParameter(param, "InfluxDB", "Measurement", true);	
 	ReadParameter(param, "InfluxDB", "user", true);	
 	ReadParameter(param, "InfluxDB", "password", true);	
+
+	ReadParameter(param, "InfluxDBv2", "Uri", true);	
+	ReadParameter(param, "InfluxDBv2", "Database", true);	
+	ReadParameter(param, "InfluxDBv2", "Measurement", true);	
+	ReadParameter(param, "InfluxDBv2", "Org", true);	
+	ReadParameter(param, "InfluxDBv2", "Token", true);	
+//	ReadParameter(param, "InfluxDB", "Fieldname", true);	
 
 	ReadParameter(param, "GPIO", "IO0", true);
 	ReadParameter(param, "GPIO", "IO1", true);
@@ -1989,7 +2131,8 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeServer", true);	
 	ReadParameter(param, "System", "RSSIThreshold", true);
 
-	UpdateInputIndividual();
+	var sel = document.getElementById("Numbers_value1");	
+	UpdateInputIndividual(sel);
 	
 //	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
@@ -2009,10 +2152,12 @@ function UpdateAfterCategoryCheck() {
 	category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
 	category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
 	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
+	category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 
 	UpdateInput();
-	UpdateInputIndividual();
+	var sel = document.getElementById("Numbers_value1");
+	UpdateInputIndividual(sel);
 }
 
 function UpdateExpertModus()
@@ -2089,9 +2234,26 @@ function editConfigDirect() {
 
 function numberChanged()
 {
-	UpdateInputIndividual();
+	var sel = document.getElementById("Numbers_value1");
+	_neu = sel.selectedIndex;
+	UpdateInputIndividual(sel);
+
+	var _selInflux = document.getElementById("NumbersInfluxDB_value1");
+	if (_selInflux.selectedIndex != _neu)
+		_selInflux.selectedIndex = _neu
 }
  
+function numberInfluxDBChanged()
+{
+	var sel = document.getElementById("NumbersInfluxDB_value1");
+	_neu = sel.selectedIndex;
+	UpdateInputIndividual(sel);
+
+	var _sel2 = document.getElementById("Numbers_value1");
+	if (_sel2.selectedIndex != _neu)
+	_sel2.selectedIndex = _neu
+}
+
 LoadConfigNeu();
  
 </script>
