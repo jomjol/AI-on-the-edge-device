@@ -196,6 +196,18 @@ function ParseConfig() {
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
     
+     var catname = "InfluxDBv2";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "Uri");
+     ParamAddValue(param, catname, "Database");
+     ParamAddValue(param, catname, "Measurement");
+     ParamAddValue(param, catname, "Org");
+     ParamAddValue(param, catname, "Token");
+     ParamAddValue(param, catname, "Fieldname", 1, true);
+
      var catname = "GPIO";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
