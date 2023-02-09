@@ -45,7 +45,6 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
           var Output = Array(0);
 //          delimiter = " =,\t";
      
-          input = trim(input, delimiter);
 
           /* The input can have multiple formats: 
            *  - key = value
@@ -61,12 +60,14 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
            * As a workaround and to not break any legacy usage, we enforce to only use the
            * equal sign, if the key is "password"
            */
-          if (input.includes("password")) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+          if (input.includes("password") || input.includes("Token")) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
                var pos = input.indexOf("=");
+               delimiter = " \t\r"
                Output.push(trim(input.substr(0, pos), delimiter));
                Output.push(trim(input.substr(pos +1, input.length), delimiter));
           }
           else { // Legacy Mode
+               input = trim(input, delimiter);
                var pos = findDelimiterPos(input, delimiter);
                var token;
                while (pos > -1) {

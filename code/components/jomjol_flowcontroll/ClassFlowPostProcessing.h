@@ -15,7 +15,6 @@ class ClassFlowPostProcessing :
     public ClassFlow
 {
 protected:
-    std::vector<NumberPost*> NUMBERS;
     bool UpdatePreValueINI;
 
     int PreValueAgeStartup; 
@@ -54,6 +53,8 @@ protected:
 
 public:
     bool PreValueUse;
+    std::vector<NumberPost*> NUMBERS;
+
 
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
     virtual ~ClassFlowPostProcessing(){};
