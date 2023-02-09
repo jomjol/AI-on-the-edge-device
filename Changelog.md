@@ -1,5 +1,29 @@
 ## [Unreleased]
 
+**Rolling**
+
+
+
+#### Added
+
+-   Additional interface to InfluxDB Version 2 upwards
+
+#### Changed
+
+-   n.a.
+
+#### Fixed
+
+-   n.a.
+
+#### Removed
+
+-   n.a.
+
+
+
+## [14.0.3] -2023-02-05
+
 **Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
