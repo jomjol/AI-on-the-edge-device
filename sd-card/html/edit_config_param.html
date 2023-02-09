@@ -126,7 +126,6 @@ textarea {
 		</tr>		
 		<tr class="expert" id="ex1">
 			<td class="indent1">
-				<input type="checkbox" id="TakeImage_Demo_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "Demo")' unchecked >
 				<label for=TakeImage_Demo_enabled><class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
 			</td>
 			<td>
@@ -388,7 +387,6 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueUse")' unchecked >
 				<label for=PostProcessing_PreValueUse_enabled><class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class></label>
 			</td>
 			<td>
@@ -415,7 +413,6 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
 				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class></label>
 			</td>
 			<td>
@@ -430,7 +427,6 @@ textarea {
 		</tr>
 		<tr class="expert" id="ex1dddd">
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "CheckDigitIncreaseConsistency")' unchecked >
 				<label for=PostProcessing_CheckDigitIncreaseConsistency_enabled><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class></label>
 			</td>
 			<td>
@@ -457,7 +453,6 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
 				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
 			</td>
 			<td>
@@ -526,8 +521,7 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ExtendedResolution")' unchecked >
-			<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
+				<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ExtendedResolution_value1">
@@ -542,8 +536,7 @@ textarea {
 		
 		<tr>
 			<td id="ex121" class="indent1">
-				<input type="checkbox" id="PostProcessing_IgnoreLeadingNaN_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "IgnoreLeadingNaN")' unchecked >
-			<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
+				<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_IgnoreLeadingNaN_value1">
@@ -634,7 +627,6 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="MQTT_SetRetainFlag_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "SetRetainFlag")' unchecked >
 				<label for=MQTT_SetRetainFlag_enabled><class id="MQTT_SetRetainFlag_text" style="color:black;">Enable MQTT Retain Flag</class></label>
 			</td>
 			<td>
@@ -656,7 +648,6 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="MQTT_HomeassistantDiscovery_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "HomeassistantDiscovery")' unchecked >
 				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
 			</td>
 			<td>
@@ -1776,9 +1767,9 @@ function UpdateInputIndividual()
 		ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
-		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
-		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
-		ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt)		
 	}
 
 	var sel = document.getElementById("Numbers_value1");
@@ -1787,9 +1778,9 @@ function UpdateInputIndividual()
 	WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
-	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
-	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
-	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -1802,7 +1793,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "TakeImage", "LogImageLocation", true);
 	WriteParameter(param, category, "TakeImage", "LogfileRetentionInDays", true);
-	WriteParameter(param, category, "TakeImage", "Demo", true);
+	WriteParameter(param, category, "TakeImage", "Demo", false);
 	WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
 	WriteParameter(param, category, "TakeImage", "ImageQuality", false);
 	WriteParameter(param, category, "TakeImage", "Brightness", false);
@@ -1823,19 +1814,19 @@ function UpdateInput() {
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
 	
-	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
+	WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
 //	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
-	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
-	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
+	WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
+	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
 	WriteParameter(param, category, "MQTT", "Uri", true);	
 	WriteParameter(param, category, "MQTT", "MainTopic", true);	
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
-	WriteParameter(param, category, "MQTT", "SetRetainFlag", true);
-	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", true);
+	WriteParameter(param, category, "MQTT", "SetRetainFlag", false);
+	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", false);
 	WriteParameter(param, category, "MQTT", "MeterType", true);
 	
 	WriteParameter(param, category, "InfluxDB", "Uri", true);	
@@ -1923,7 +1914,7 @@ function ReadParameterAll()
 	
 	ReadParameter(param, "TakeImage", "LogImageLocation", true);
 	ReadParameter(param, "TakeImage", "LogfileRetentionInDays", true);
-	ReadParameter(param, "TakeImage", "Demo", true);
+	ReadParameter(param, "TakeImage", "Demo", false);
 	ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
 	ReadParameter(param, "TakeImage", "ImageQuality", false);
 	ReadParameter(param, "TakeImage", "Brightness", false);
@@ -1946,19 +1937,19 @@ function ReadParameterAll()
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
 
-	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
+	ReadParameter(param, "PostProcessing", "PreValueUse", false);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
 //	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
 	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
-	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
+	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
 	ReadParameter(param, "MQTT", "Uri", true);	
 	ReadParameter(param, "MQTT", "MainTopic", true);	
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
-	ReadParameter(param, "MQTT", "SetRetainFlag", true);	
-	ReadParameter(param, "MQTT", "HomeassistantDiscovery", true);
+	ReadParameter(param, "MQTT", "SetRetainFlag", false);	
+	ReadParameter(param, "MQTT", "HomeassistantDiscovery", false);
 	ReadParameter(param, "MQTT", "MeterType", true);
 
 	ReadParameter(param, "InfluxDB", "Uri", true);	
