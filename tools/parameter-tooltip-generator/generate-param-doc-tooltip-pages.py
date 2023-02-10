@@ -42,6 +42,10 @@ def generateHtmlFile(section, parameter, markdownFile):
     markdownFileContent = markdownFileContent.replace("# ", "### ") # Move all headings 2 level down
 
     htmlContent = markdown.markdown(markdownFileContent, extensions=['admonition'])
+
+    # Make all links to be opened in a new page
+    htmlContent = htmlContent.replace("a href", "a target=_blank href")
+
     with open(htmlTooltipFolder + "/" + section + "/" + parameter + ".html", 'w') as htmlTooltipFileHandle:
         htmlTooltipFileHandle.write(htmlHeader)
         htmlTooltipFileHandle.write(htmlContent)
