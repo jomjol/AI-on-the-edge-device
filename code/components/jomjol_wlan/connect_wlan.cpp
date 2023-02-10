@@ -469,7 +469,13 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
                                                         &instance_bss_rssi_low));
 	#endif
 
-    wifi_config_t wifi_config = { };
+
+    wifi_config_t wifi_config = {
+		/* Do not stop after the first found Access Point but scan for other
+		 * (possibly nearer/stronger) Access Points.
+		 * See https://www.esp32.com/viewtopic.php?f=19&t=18979&sid=827d644db405788d11e5747ec5e5f519&start=10 */
+		.failure_retry_cnt = 3, .scan_method = WIFI_ALL_CHANNEL_SCAN
+		};
 
     strcpy((char*)wifi_config.sta.ssid, (const char*)_ssid);
     strcpy((char*)wifi_config.sta.password, (const char*)_password);
