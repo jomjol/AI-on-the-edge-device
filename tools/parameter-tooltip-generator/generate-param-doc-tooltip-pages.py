@@ -1,7 +1,6 @@
 """
 Grab all parameter files (markdown) and convert them to html files
 """
-
 import os
 import glob
 import markdown
