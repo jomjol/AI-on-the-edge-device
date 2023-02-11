@@ -155,16 +155,16 @@ static bool ota_update_task(std::string fn)
 
     if (configured != running) {
         ESP_LOGW(TAG, "Configured OTA boot partition at offset 0x%08x, but running from offset 0x%08x",
-                 configured->address, running->address);
+                 (unsigned int)configured->address, (unsigned int)running->address);
         ESP_LOGW(TAG, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
     }
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-             running->type, running->subtype, running->address);
+             running->type, running->subtype, (unsigned int)running->address);
 
 
     update_partition = esp_ota_get_next_update_partition(NULL);
     ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
-             update_partition->subtype, update_partition->address);
+             update_partition->subtype, (unsigned int)update_partition->address);
 //    assert(update_partition != NULL);
 
     int binary_file_length = 0;
