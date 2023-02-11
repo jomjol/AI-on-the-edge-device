@@ -32,7 +32,7 @@ jobs:
       
     - name: Get version of last release
       id: last_release
-      uses: mrpoons-studio/get-latest-release@v1.0.1
+      uses: mindojo/get-latest-release@v1.0.1
       with:
         myToken: ${{ github.token }}
         exclude_types: "draft|prerelease"
