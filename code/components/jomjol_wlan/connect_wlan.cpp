@@ -94,7 +94,7 @@ int rrm_ctx = 0;
 static EventGroupHandle_t wifi_event_group;
 
 /* esp netif object representing the WIFI station */
-static esp_netif_t *sta_netif = NULL;
+esp_netif_t *sta_netif = NULL;
 
 //static const char *TAG = "roaming_example";
 

@@ -872,9 +872,9 @@ bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 
 
 time_t getUpTime(void) {
-	// todo fix me
+	// TODO ESP IDF 6.0.1: no longer working
    // return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
-    return (uint32_t)(0/1000/1000); // in seconds
+    return 0; // in seconds
 }
 
 

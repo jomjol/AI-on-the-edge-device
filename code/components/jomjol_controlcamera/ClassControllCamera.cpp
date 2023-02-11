@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include "driver/gpio.h"
-#include "esp_timer.h"
+// TODO ESP IDF 6.0.1: no longer working
+//#include "esp_timer.h"
 #include "esp_log.h"
 
 #include "Helper.h"
@@ -439,7 +440,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
-    int64_t fr_start = esp_timer_get_time();
+	// TODO ESP IDF 6.0.1: no longer working
+    int64_t fr_start = 0; //esp_timer_get_time();
 
 
     LEDOnOff(true);
@@ -493,7 +495,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         }
     }
     esp_camera_fb_return(fb);
-    int64_t fr_end = esp_timer_get_time();
+	// TODO ESP IDF 6.0.1: no longer working
+    int64_t fr_end = 0; //esp_timer_get_time();
     
     ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len/1024), (int)((fr_end - fr_start)/1000));
 

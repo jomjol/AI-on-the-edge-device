@@ -571,7 +571,13 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
 void hard_restart() 
 {
-  esp_task_wdt_init(1,true);
+  esp_task_wdt_config_t twdt_config = {
+    .timeout_ms = 1,
+    .idle_core_mask = (1 << portNUM_PROCESSORS) - 1,    // Bitmask of all cores
+    .trigger_panic = true,
+  };
+  ESP_ERROR_CHECK(esp_task_wdt_init(&twdt_config));
+
   esp_task_wdt_add(NULL);
   while(true);
 }

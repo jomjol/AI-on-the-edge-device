@@ -4,6 +4,8 @@
 #include <vector>
 #include "string.h"
 #include "esp_log.h"
+// TODO ESP IDF 6.0.1: no longer working
+//#include "esp_timer.h"
 
 #include <iomanip>
 #include <sstream>
@@ -845,7 +847,8 @@ void task_autodoFlow(void *pvParameter)
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
         time_t roundStartTime = getUpTime();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
-        fr_start = esp_timer_get_time();
+	// TODO ESP IDF 6.0.1: no longer working
+        fr_start = 0; //esp_timer_get_time();
 
         if (flowisrunning)
         {
@@ -877,7 +880,7 @@ void task_autodoFlow(void *pvParameter)
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
 
-        fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+        fr_delta_ms = 0; //(esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
         {
             const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
