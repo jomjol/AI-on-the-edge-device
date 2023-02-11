@@ -391,7 +391,7 @@ jobs:
       
     - name: Get version of last release
       id: last_release
-      uses: mrpoons-studio/get-latest-release@v1.0.1
+      uses: mindojo/get-latest-release@0b8ef1434d7468d6bffcc8263baff5c777f72321
       with:
         myToken: ${{ github.token }}
         exclude_types: "draft|prerelease"
