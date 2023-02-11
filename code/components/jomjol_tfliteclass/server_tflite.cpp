@@ -23,6 +23,11 @@
 #include "server_file.h"
 #include "connect_wlan.h"
 
+// support IDF 5.x
+#ifndef portTICK_RATE_MS
+#define portTICK_RATE_MS portTICK_PERIOD_MS
+#endif
+
 ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandletask_autodoFlow = NULL;

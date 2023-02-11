@@ -12,6 +12,7 @@
 #include "version.h"
 
 #include "esp_wifi.h"
+#include <netdb.h>
 
 #include "server_tflite.h"
 #include "esp_log.h"
@@ -346,8 +347,10 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     char freeheapmem[11];
     sprintf(freeheapmem, "%lu", (long) getESPHeapSize());
     
+    /* TODO check how we can enable it again */
     tcpip_adapter_ip_info_t ip_info;
     ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+ /*   //tcpip_adapter_ip_info_t ip_info;
     const char *hostname;
     ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
     
@@ -362,7 +365,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"hostname\": \"" + hostname + "\"," +
         "\"IPv4\": \"" + ip4addr_ntoa(&ip_info.ip) + "\"," +
         "\"freeHeapMem\": \"" + freeheapmem + "\"" +
-        "}]";
+        "}]";*/
+    zw = string("[{}]");
 
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, zw.c_str(), zw.length());

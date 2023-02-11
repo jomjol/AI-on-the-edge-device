@@ -23,6 +23,7 @@ extern "C" {
 
 #include <string.h>
 #include <esp_log.h>
+#include <esp_mac.h>
 #include "../../include/defines.h"
 
 
@@ -871,7 +872,9 @@ bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 
 
 time_t getUpTime(void) {
-    return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+	// todo fix me
+   // return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
+    return (uint32_t)(0/1000/1000); // in seconds
 }
 
 

@@ -29,7 +29,7 @@ extern "C" {
 #include "esp_err.h"
 #include "esp_log.h"
 
-#include "esp_vfs.h"
+//#include "esp_vfs.h"
 #include <esp_spiffs.h>
 #include "esp_http_server.h"
 
@@ -52,6 +52,7 @@ static const char *TAG = "OTA FILE";
 
 struct file_server_data {
     /* Base path of file storage */
+    #define ESP_VFS_PATH_MAX 15 // See https://github.com/espressif/esp-idf/blob/master/components/vfs/include/esp_vfs.h
     char base_path[ESP_VFS_PATH_MAX + 1];
 
     /* Scratch buffer for temporary storage during file transfer */
@@ -996,7 +997,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
                 ESP_LOGI(TAG, "Filename to extract: %s, Zwischenfilename: %s", zw.c_str(), filename_zw.c_str());
 
-                std::string folder = path.substr(0, filename_zw.find_last_of('/'));
+                std::string folder = filename_zw.substr(0, filename_zw.find_last_of('/'));
                 MakeDir(folder);
 
                 // extrahieren in zwischendatei

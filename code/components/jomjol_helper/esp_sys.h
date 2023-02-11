@@ -18,7 +18,7 @@
 
 // for esp_spiram_get_size
 extern "C" {
-    #include <esp32/spiram.h>
+    #include "esp_psram.h"
     #ifdef USE_HIMEM_IF_AVAILABLE
         #include <esp32/himem.h>
     #endif

@@ -10,12 +10,27 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include <netdb.h>
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
+
+
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#include "soc/periph_defs.h"
+#include "esp_private/periph_ctrl.h"
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
+#endif
 
 #include <fstream>
 #include <string>
@@ -191,9 +206,9 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 			pos += s_len;
 		}
 
-		ESP_LOGI(TAG, "RMM neigbor report bssid=" MACSTR
+		ESP_LOGI(TAG, "RMM neighbor report bssid=" MACSTR
 				" info=0x%x op_class=%u chan=%u phy_type=%u%s%s%s%s",
-				MAC2STR(nr), WPA_GET_LE32(nr + ETH_ALEN),
+				MAC2STR(nr), (unsigned int)WPA_GET_LE32(nr + ETH_ALEN),
 				nr[ETH_ALEN + 4], nr[ETH_ALEN + 5],
 				nr[ETH_ALEN + 6],
 				lci[0] ? " lci=" : "", lci,
@@ -206,7 +221,7 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 		/* , */
 		len += snprintf(buf + len, MAX_NEIGHBOR_LEN - len, ",");
 		/* bssid info */
-		len += snprintf(buf + len, MAX_NEIGHBOR_LEN - len, "0x%04x", WPA_GET_LE32(nr + ETH_ALEN));
+		len += snprintf(buf + len, MAX_NEIGHBOR_LEN - len, "0x%04x", (unsigned int)WPA_GET_LE32(nr + ETH_ALEN));
 		len += snprintf(buf + len, MAX_NEIGHBOR_LEN - len, ",");
 		/* operating class */
 		len += snprintf(buf + len, MAX_NEIGHBOR_LEN - len, "%u", nr[ETH_ALEN + 4]);
@@ -280,7 +295,7 @@ static void esp_bss_rssi_low_handler(void* arg, esp_event_base_t event_base,
 {
 	wifi_event_bss_rssi_low_t *event = (wifi_event_bss_rssi_low_t*) event_data;
 
-	ESP_LOGI(TAG, "%s:bss rssi is=%d", __func__, event->rssi);
+	ESP_LOGI(TAG, "%s:bss rssi is=%d", __func__, (int)(event->rssi));
 	/* Lets check channel conditions */
 	rrm_ctx++;
 	if (esp_rrm_send_neighbor_rep_request(neighbor_report_recv_cb, &rrm_ctx) < 0) {
@@ -469,13 +484,7 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
                                                         &instance_bss_rssi_low));
 	#endif
 
-
-    wifi_config_t wifi_config = {
-		/* Do not stop after the first found Access Point but scan for other
-		 * (possibly nearer/stronger) Access Points.
-		 * See https://www.esp32.com/viewtopic.php?f=19&t=18979&sid=827d644db405788d11e5747ec5e5f519&start=10 */
-		.failure_retry_cnt = 3, .scan_method = WIFI_ALL_CHANNEL_SCAN
-		};
+    wifi_config_t wifi_config = { };
 
     strcpy((char*)wifi_config.sta.ssid, (const char*)_ssid);
     strcpy((char*)wifi_config.sta.password, (const char*)_password);
@@ -486,7 +495,7 @@ void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostna
 
     if (_hostname != NULL)
     {
-        esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , _hostname);
+        esp_err_t ret = esp_netif_set_hostname(my_sta , _hostname);
         hostname = std::string(_hostname);
         if(ret != ESP_OK ){
             ESP_LOGE(TAG,"Failed to set hostname: %d",ret);  

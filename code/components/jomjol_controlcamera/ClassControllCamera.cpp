@@ -20,6 +20,7 @@
 #include <nvs_flash.h>
 #include <sys/param.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -28,6 +29,21 @@
 
 #include "driver/ledc.h"
 #include "server_tflite.h"
+
+
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#include "soc/periph_defs.h"
+#include "esp_private/periph_ctrl.h"
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
+#endif
+
 
 static const char *TAG = "CAM"; 
 
@@ -479,7 +495,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     esp_camera_fb_return(fb);
     int64_t fr_end = esp_timer_get_time();
     
-    ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
+    ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len/1024), (int)((fr_end - fr_start)/1000));
 
     if (delay > 0) 
     {

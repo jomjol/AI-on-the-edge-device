@@ -5,9 +5,7 @@
 
 //#include "driver/gpio.h"
 //#include "sdkconfig.h"
-//#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
-//#include "spiram.h"
-#include "esp32/spiram.h"
+#include "esp_psram.h"
 
 
 // SD-Card ////////////////////
@@ -54,6 +52,11 @@
 #endif
 #endif //DEBUG_ENABLE_SYSINFO
 
+// define `gpio_pad_select_gpip` for newer versions of IDF
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 3, 0))
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#endif
 
 #ifdef USE_HIMEM_IF_AVAILABLE
     #include "esp32/himem.h"
@@ -303,7 +306,7 @@ extern "C" void app_main(void)
 
     /* Check if PSRAM can be initalized */
     esp_err_t ret;
-    ret = esp_spiram_init();
+    ret = esp_psram_init();
     if (ret == ESP_FAIL) { // Failed to init PSRAM, most likely not available or broken
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize PSRAM (" + std::to_string(ret) + ")!");
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Either your device misses the PSRAM chip or it is broken!");
@@ -311,7 +314,7 @@ extern "C" void app_main(void)
     }
     else { // PSRAM init ok
         /* Check if PSRAM provides at least 4 MB */
-        size_t psram_size = esp_spiram_get_size();        
+        size_t psram_size = esp_psram_get_size();        
         // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The device has " + std::to_string(psram_size/1024/1024) + " MBytes of PSRAM");
         if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes
