@@ -99,7 +99,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGD(TAG, "MQTT_EVENT_DISCONNECTED");
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Disconnected from broker");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected from broker");
             mqtt_connected = false;
             break;
         case MQTT_EVENT_SUBSCRIBED:

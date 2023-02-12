@@ -5,6 +5,7 @@
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 #include "ClassLogFile.h"
 
 #include "time_sntp.h"
@@ -31,7 +32,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicError = "";
     topicRate = "";
     topicTimeStamp = "";
-    maintopic = hostname;
+    maintopic = wlan_config.hostname;
 
     topicUptime = "";
     topicFreeMem = "";
