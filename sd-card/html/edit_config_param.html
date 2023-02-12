@@ -102,23 +102,23 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="TakeImage_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "LogImageLocation")' unchecked >
-				<label for=TakeImage_LogImageLocation_enabled><class id="TakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class></label>
+				<input type="checkbox" id="TakeImage_CamImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "CamImagesLocation")' unchecked >
+				<label for=TakeImage_CamImagesLocation_enabled><class id="TakeImage_CamImagesLocation_text" style="color:black;">CamImagesLocation</class></label>
 			</td>
 			<td>
-				<input type="text" name="name" id="TakeImage_LogImageLocation_value1">
+				<input type="text" name="name" id="TakeImage_CamImagesLocation_value1">
 			</td>
 			<td class="description">
-				Location to store raw images for logging
+				Location to store raw camera images
 			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="TakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "LogfileRetentionInDays")' unchecked >
-				<label for=TakeImage_LogfileRetentionInDays_enabled><class id="TakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+				<input type="checkbox" id="TakeImage_CamImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "CamImagesRetention")' unchecked >
+				<label for=TakeImage_CamImagesRetention_enabled><class id="TakeImage_CamImagesRetention_text" style="color:black;">CamImagesRetention</class></label>
 			</td>
 			<td>
-				<input type="number" id="TakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
+				<input type="number" id="TakeImage_CamImagesRetention_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
@@ -325,11 +325,11 @@ textarea {
 
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="Digits_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogImageLocation")' unchecked >
-				<label for=Digits_LogImageLocation_enabled><class id="Digits_LogImageLocation_text" style="color:black;">LogImageLocation</class></label>
+				<input type="checkbox" id="Digits_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesLocation")' unchecked >
+				<label for=Digits_ROIImagesLocation_enabled><class id="Digits_ROIImagesLocation_text" style="color:black;">ROIImagesLocation</class></label>
 			</td>
 			<td>
-				<input type="text" name="name" id="Digits_LogImageLocation_value1">
+				<input type="text" name="name" id="Digits_ROIImagesLocation_value1">
 			</td>
 			<td style="font-size: 80%;">
 				Location to store separated digits for logging
@@ -337,11 +337,11 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="Digits_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "LogfileRetentionInDays")' unchecked >
-				<label for=Digits_LogfileRetentionInDays_enabled><class id="Digits_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+				<input type="checkbox" id="Digits_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesRetention")' unchecked >
+				<label for=Digits_ROIImagesRetention_enabled><class id="Digits_ROIImagesRetention_text" style="color:black;">ROIImagesRetention</class></label>
 			</td>
 			<td>
-				<input type="number" id="Digits_LogfileRetentionInDays_value1" min="0"  step="1">
+				<input type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1">
 			</td>
 			<td style="font-size: 80%;">
 				Time to keep the separated digit images (in days, resp. "0" = forever)
@@ -367,18 +367,18 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="Analog_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogImageLocation")' unchecked >
-				<label for=Analog_LogImageLocation_enabled><class id="Analog_LogImageLocation_text" style="color:black;">LogImageLocation</class>
+				<input type="checkbox" id="Analog_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesLocation")' unchecked >
+				<label for=Analog_ROIImagesLocation_enabled><class id="Analog_ROIImagesLocation_text" style="color:black;">ROIImagesLocation</class>
 				</label>
 			</td>
-			<td> <input type="text" name="name" id="Analog_LogImageLocation_value1"> </td>
+			<td> <input type="text" name="name" id="Analog_ROIImagesLocation_value1"> </td>
 			<td style="font-size: 80%;"> Location to store separated digits for logging </td>
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="Analog_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "LogfileRetentionInDays")' unchecked >
-				<label for=Analog_LogfileRetentionInDays_enabled><class id="Analog_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label></td>
-			<td> <input type="number" id="Analog_LogfileRetentionInDays_value1" min="0" step="1"> </td>
+				<input type="checkbox" id="Analog_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesRetention")' unchecked >
+				<label for=Analog_ROIImagesRetention_enabled><class id="Analog_ROIImagesRetention_text" style="color:black;">ROIImagesRetention</class></label></td>
+			<td> <input type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"> </td>
 			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
 		</tr>
 
@@ -629,10 +629,10 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<label for=MQTT_SetRetainFlag_enabled><class id="MQTT_SetRetainFlag_text" style="color:black;">Enable MQTT Retain Flag</class></label>
+				<label for=MQTT_RetainMessages_enabled><class id="MQTT_RetainMessages_text" style="color:black;">Enable MQTT Retain Flag</class></label>
 			</td>
 			<td>
-				<select id="MQTT_SetRetainFlag_value1">
+				<select id="MQTT_RetainMessages_value1">
 					<option value="true" selected>true</option>
 					<option value="false" >false</option>
 				</select>
@@ -1413,10 +1413,10 @@ textarea {
 
 		<tr>
 			<td class="indent1">
-				<class id="DataLogging_DataLogRetentionInDays_text" style="color:black;">DataLogRetentionInDays</class>
+				<class id="DataLogging_DataFilesRetention_text" style="color:black;">DataFilesRetention</class>
 			</td>
 			<td>
-				<input type="number" id="DataLogging_DataLogRetentionInDays_value1" size="13" min="0" step="1">
+				<input type="number" id="DataLogging_DataFilesRetention_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the data files (in days - "0" = forever)
@@ -1428,10 +1428,10 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<class id="Debug_Logfile_text" style="color:black;">Logfile Log Level</class>
+				<class id="Debug_LogLevel_text" style="color:black;">Logfile Log Level</class>
 			</td>
 			<td>
-				<select id="Debug_Logfile_value1">
+				<select id="Debug_LogLevel_value1">
 					<option value="1" selected>ERROR</option> <!-- matches esp_log_level_t -->
 					<option value="2">WARNING</option>
 					<option value="3">INFO</option>
@@ -1444,10 +1444,10 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<class id="Debug_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class>
+				<class id="Debug_LogfilesRetention_text" style="color:black;">LogfilesRetention</class>
 			</td>
 			<td>
-				<input type="number" id="Debug_LogfileRetentionInDays_value1" size="13" min="0" step="1">
+				<input type="number" id="Debug_LogfilesRetention_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the log files (in days - "0" = forever)
@@ -1919,8 +1919,8 @@ function UpdateInput() {
 	document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
 	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
-	WriteParameter(param, category, "TakeImage", "LogImageLocation", true);
-	WriteParameter(param, category, "TakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, category, "TakeImage", "CamImagesLocation", true);
+	WriteParameter(param, category, "TakeImage", "CamImagesRetention", true);
 	WriteParameter(param, category, "TakeImage", "Demo", false);
 	WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
 	WriteParameter(param, category, "TakeImage", "ImageQuality", false);
@@ -1936,11 +1936,11 @@ function UpdateInput() {
 	WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);		
 
 	WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
-	WriteParameter(param, category, "Digits", "LogImageLocation", true);		
-	WriteParameter(param, category, "Digits", "LogfileRetentionInDays", true);		
+	WriteParameter(param, category, "Digits", "ROIImagesLocation", true);		
+	WriteParameter(param, category, "Digits", "ROIImagesRetention", true);		
 	
-	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
-	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
+	WriteParameter(param, category, "Analog", "ROIImagesLocation", true);		
+	WriteParameter(param, category, "Analog", "ROIImagesRetention", true);		
 	
 	WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
@@ -1953,7 +1953,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
-	WriteParameter(param, category, "MQTT", "SetRetainFlag", false);
+	WriteParameter(param, category, "MQTT", "RetainMessages", false);
 	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", false);
 	WriteParameter(param, category, "MQTT", "MeterType", true);
 	
@@ -1984,10 +1984,10 @@ function UpdateInput() {
 	WriteParameter(param, category, "AutoTimer", "Interval", false);
 
 	WriteParameter(param, category, "DataLogging", "DataLogActive", false);	
-	WriteParameter(param, category, "DataLogging", "DataLogRetentionInDays", false);	
+	WriteParameter(param, category, "DataLogging", "DataFilesRetention", false);	
 
-	WriteParameter(param, category, "Debug", "Logfile", false);	
-	WriteParameter(param, category, "Debug", "LogfileRetentionInDays", false);	
+	WriteParameter(param, category, "Debug", "LogLevel", false);	
+	WriteParameter(param, category, "Debug", "LogfilesRetention", false);	
 
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
@@ -2048,8 +2048,8 @@ function ReadParameterAll()
 	category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
-	ReadParameter(param, "TakeImage", "LogImageLocation", true);
-	ReadParameter(param, "TakeImage", "LogfileRetentionInDays", true);
+	ReadParameter(param, "TakeImage", "CamImagesLocation", true);
+	ReadParameter(param, "TakeImage", "CamImagesRetention", true);
 	ReadParameter(param, "TakeImage", "Demo", false);
 	ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
 	ReadParameter(param, "TakeImage", "ImageQuality", false);
@@ -2066,12 +2066,12 @@ function ReadParameterAll()
 
 	ReadParameter(param, "Digits", "Model", false);
 	ReadParameter(param, "Digits", "CNNGoodThreshold", true);
-	ReadParameter(param, "Digits", "LogImageLocation", true);		
-	ReadParameter(param, "Digits", "LogfileRetentionInDays", true);		
+	ReadParameter(param, "Digits", "ROIImagesLocation", true);		
+	ReadParameter(param, "Digits", "ROIImagesRetention", true);		
 
 	ReadParameter(param, "Analog", "Model", false);		
-	ReadParameter(param, "Analog", "LogImageLocation", true);		
-	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
+	ReadParameter(param, "Analog", "ROIImagesLocation", true);		
+	ReadParameter(param, "Analog", "ROIImagesRetention", true);		
 
 	ReadParameter(param, "PostProcessing", "PreValueUse", false);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
@@ -2083,7 +2083,7 @@ function ReadParameterAll()
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
-	ReadParameter(param, "MQTT", "SetRetainFlag", false);	
+	ReadParameter(param, "MQTT", "RetainMessages", false);	
 	ReadParameter(param, "MQTT", "HomeassistantDiscovery", false);
 	ReadParameter(param, "MQTT", "MeterType", true);
 
@@ -2121,10 +2121,10 @@ function ReadParameterAll()
 	ReadParameter(param, "AutoTimer", "Interval", false);
 	
 	ReadParameter(param, "DataLogging", "DataLogActive", false);	
-	ReadParameter(param, "DataLogging", "DataLogRetentionInDays", false);	
+	ReadParameter(param, "DataLogging", "DataFilesRetention", false);	
 
-	ReadParameter(param, "Debug", "Logfile", false);	
-	ReadParameter(param, "Debug", "LogfileRetentionInDays", false);	
+	ReadParameter(param, "Debug", "LogLevel", false);	
+	ReadParameter(param, "Debug", "LogfilesRetention", false);	
 
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	

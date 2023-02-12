@@ -58,8 +58,8 @@ void ClassFlowTakeImage::SetInitialParameter(void)
 
 ClassFlowTakeImage::ClassFlowTakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    LogImageLocation = "/log/source";
-    logfileRetentionInDays = 5;
+    imagesLocation = "/log/source";
+    imagesRetention = 5;
     SetInitialParameter();
 }
 
@@ -83,9 +83,9 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((splitted[0] ==  "LogImageLocation") && (splitted.size() > 1))
+        if ((splitted[0] ==  "CAMIMAGESLOCATION") && (splitted.size() > 1))
         {
-            LogImageLocation = "/sdcard" + splitted[1];
+            imagesLocation = "/sdcard" + splitted[1];
             isLogImage = true;
         }
         if ((splitted[0] == "ImageQuality") && (splitted.size() > 1))
@@ -108,9 +108,9 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             waitbeforepicture = stoi(splitted[1]);
         }
 
-        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "CAMIMAGESRETENTION") && (splitted.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(splitted[1]);
+            this->imagesRetention = std::stoi(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "BRIGHTNESS") && (splitted.size() > 1))

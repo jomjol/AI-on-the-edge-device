@@ -456,13 +456,13 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[Digits]") {
-            migrated = migrated | replace(configLines[i], "LogImageLocation", "DigitImagesLocation");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "DigitImagesRetention");
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
         }
 
         if (section == "[Analog]") {
-            migrated = migrated | replace(configLines[i], "LogImageLocation", "AnalogImagesLocation");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "AnalogImagesRetention");
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
         }
 
         if (section == "[PostProcessing]") {
@@ -470,6 +470,7 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[MQTT]") {
+            migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages");
 
         }
 
