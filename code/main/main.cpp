@@ -494,7 +494,7 @@ void migrateConfiguration(void) {
 
         if (section == "[System]") {
             migrated = migrated | replace(configLines[i], "RSSIThreashold", "RSSIThreshold");
-            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";AutoAdjustSummertime ***THIS PARAMETER NO LONGER IS USED*** ");
+            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";"); // This parameter is no longer used
         }
     }
 
