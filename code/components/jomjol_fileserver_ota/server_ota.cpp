@@ -87,13 +87,13 @@ void task_do_Update_ZIP(void *pvParameter)
             ota_update_task(retfirmware);
         }
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     } else if (filetype == "BIN")
     {
        	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Do firmware update - file: " + _file_name_update);
         ota_update_task(_file_name_update);
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     }
     else
@@ -108,7 +108,7 @@ void CheckUpdate()
  	FILE *pfile;
     if ((pfile = fopen("/sdcard/update.txt", "r")) == NULL)
     {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No update triggered.");
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No pending update");
         return;
 	}
 
@@ -120,13 +120,14 @@ void CheckUpdate()
 		std::string _szw = std::string(zw);
         if (_szw == "init")
         {
-       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered.");
-            initial_setup = true;        }
+       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital setup triggered");
+            initial_setup = true;        
+        }
 	}
 
     fclose(pfile);
     DeleteFile("/sdcard/update.txt");   // Prevent Boot Loop!!!
-	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update during boot triggered - Update File: " + _file_name_update);
+	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start update process (" + _file_name_update + ")");
 
 
     xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
@@ -607,7 +608,7 @@ void task_reboot(void *KillAutoFlow)
 
 void doReboot()
 {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s)");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
     BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
