@@ -460,6 +460,7 @@ void migrateConfiguration(void) {
             migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
             migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
             migrated = migrated | replace(configLines[i], "ExtendedResolution", ";"); // This parameter is no longer used
+        }
 
         if (section == "[PostProcessing]") {
 
