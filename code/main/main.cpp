@@ -86,6 +86,7 @@ extern std::string getHTMLcommit(void);
 
 std::vector<std::string> splitString(const std::string& str);
 bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
 //bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith);
 void migrateConfiguration(void);
 
@@ -433,7 +434,7 @@ void migrateConfiguration(void) {
 
         if (configLines[i].find("[") != std::string::npos) { // Start of new section
             section = configLines[i];
-            replace(section, ";", ""); // Remove possible semicolon (just for the string comparison)
+            replace(section, ";", "", false); // Remove possible semicolon (just for the string comparison)
             //ESP_LOGI(TAG, "New section: %s", section.c_str());
         }
 
@@ -557,6 +558,10 @@ std::vector<std::string> splitString(const std::string& str) {
 
 
 bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    return replace(s, toReplace, replaceWith, true);
+}
+
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
     std::size_t pos = s.find(toReplace);
 
     if (pos == std::string::npos) { // Not found
@@ -565,6 +570,8 @@ bool replace(std::string& s, std::string const& toReplace, std::string const& re
 
     std::string old = s;
     s.replace(pos, toReplace.length(), replaceWith);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+    if (logIt) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+    }
     return true;
 }
