@@ -459,8 +459,7 @@ void migrateConfiguration(void) {
         if (section == "[Analog]") {
             migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
             migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
-            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";ExtendedResolution ***THIS PARAMETER NO LONGER IS USED*** ");
-        }
+            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";"); // This parameter is no longer used
 
         if (section == "[PostProcessing]") {
 
