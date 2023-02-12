@@ -42,19 +42,21 @@ bool isWlanINI = false;
 
 static const char *TAG = "wifi softAP";
 
+
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                     int32_t event_id, void* event_data)
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
         wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
+        ESP_LOGI(TAG, "station " MACSTR " join, AID=%d",
                  MAC2STR(event->mac), event->aid);
     } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
         wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d",
+        ESP_LOGI(TAG, "station " MACSTR " leave, AID=%d",
                  MAC2STR(event->mac), event->aid);
     }
 }
+
 
 void wifi_init_softAP(void)
 {
@@ -136,18 +138,18 @@ void SendHTTPResponse(httpd_req_t *req)
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
 //        message = "</tr><tr><td> Hostname</td><td><input type=\"text\" name=\"hostname\" id=\"hostname\"></td><td></td>";
-//        message += "</tr><tr><td>Fixed IP</td><td><input type=\"text\" name=\"ip\" id=\"ip\"></td><td>Leave emtpy if set by router</td></tr>";
-//        message += "<tr><td>gateway</td><td><input type=\"text\" name=\"gateway\" id=\"gateway\"></td><td>Leave emtpy if set by router</td></tr>";
-//        message += "<tr><td>netmask</td><td><input type=\"text\" name=\"netmask\" id=\"netmask\"></td><td>Leave emtpy if set by router</td>";
-//        message += "</tr><tr><td>DNS</td><td><input type=\"text\" name=\"dns\" id=\"dns\"></td><td>Leave emtpy if set by router</td></tr>";
-//        message += "<tr><td>RSSI Threashold</td><td><input type=\"number\" name=\"name\" id=\"threashold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
+//        message += "</tr><tr><td>Fixed IP</td><td><input type=\"text\" name=\"ip\" id=\"ip\"></td><td>Leave emtpy if set by router (DHCP)</td></tr>";
+//        message += "<tr><td>Gateway</td><td><input type=\"text\" name=\"gateway\" id=\"gateway\"></td><td>Leave emtpy if set by router (DHCP)</td></tr>";
+//        message += "<tr><td>Netmask</td><td><input type=\"text\" name=\"netmask\" id=\"netmask\"></td><td>Leave emtpy if set by router (DHCP)</td>";
+//        message += "</tr><tr><td>DNS</td><td><input type=\"text\" name=\"dns\" id=\"dns\"></td><td>Leave emtpy if set by router (DHCP)</td></tr>";
+//        message += "<tr><td>RSSI Threshold</td><td><input type=\"number\" name=\"name\" id=\"threshold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threshold for RSSI value to check for start switching access point in a mesh system (if actual RSSI is lower). Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
 //        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
 
         message = "<button class=\"button\" type=\"button\" onclick=\"wr()\">Write wlan.ini</button>";
         message += "<script language=\"JavaScript\">async function wr(){";
         message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value;";
-//        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssi=\"+document.getElementById(\"threashold\").value;";
+//        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssithreshold=\"+document.getElementById(\"threshold\").value;";
         message += "fetch(api);await new Promise(resolve => setTimeout(resolve, 1000));location.reload();}</script>";
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
         return;
@@ -162,8 +164,6 @@ void SendHTTPResponse(httpd_req_t *req)
     message += "fetch(api);await new Promise(resolve => setTimeout(resolve, 1000));location.reload();}</script>";
     httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 }
-
-
 
 
 esp_err_t test_handler(httpd_req_t *req)
@@ -182,7 +182,7 @@ esp_err_t reboot_handlerAP(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
     doRebootOTA();
     return ESP_OK;
-};
+}
 
 
 esp_err_t config_ini_handler(httpd_req_t *req)
@@ -201,9 +201,10 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     std::string hn = "";    // hostname
     std::string ip = "";
     std::string gw = "";    // gateway
-    std::string nm = "";    // nm
+    std::string nm = "";    // netmask
     std::string dns = "";
-    std::string rssi = "";
+    std::string rssithreshold = ""; //rssi threshold for WIFI roaming
+    std::string text = "";
 
 
     if (httpd_req_get_url_query_str(req, _query, 400) == ESP_OK)
@@ -258,77 +259,106 @@ esp_err_t config_ini_handler(httpd_req_t *req)
             dns = std::string(_valuechar);
         }
 
-        if (httpd_query_key_value(_query, "rssi", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "rssithreshold", _valuechar, 30) == ESP_OK)
         {
-            ESP_LOGD(TAG, "rssi is found: %s", _valuechar);
-            rssi = std::string(_valuechar);
+            ESP_LOGD(TAG, "rssithreshold is found: %s", _valuechar);
+            rssithreshold = std::string(_valuechar);
         }
-    };
+    }
 
     FILE* configfilehandle = fopen(WLAN_CONFIG_FILE, "w");
+
+    text  = ";++++++++++++++++++++++++++++++++++\n";
+    text += "; AI on the edge - WLAN configuration\n";
+    text += "; ssid: Name of WLAN network (mandatory), e.g. \"WLAN-SSID\"\n";
+    text += "; password: Password of WLAN network (mandatory), e.g. \"PASSWORD\"\n\n";
+    fputs(text.c_str(), configfilehandle);
     
     if (ssid.length())
         ssid = "ssid = \"" + ssid + "\"\n";
     else
-        ssid = ";ssid = \"\"\n";
-
+        ssid = "ssid = \"\"\n";
     fputs(ssid.c_str(), configfilehandle);
 
     if (pwd.length())
         pwd = "password = \"" + pwd + "\"\n";
     else
-        pwd = ";password = \"\"\n";
+        pwd = "password = \"\"\n";
     fputs(pwd.c_str(), configfilehandle);
+
+    text  = "\n;++++++++++++++++++++++++++++++++++\n";
+    text += "; Hostname: Name of device in network\n";
+    text += "; This parameter can be configured via WebUI configuration\n";
+    text += "; Default: \"watermeter\", if nothing is configured\n\n";
+    fputs(text.c_str(), configfilehandle);
 
     if (hn.length())
         hn = "hostname = \"" + hn + "\"\n";
     else
-        hn = ";hostname = \"\"\n";
+        hn = ";hostname = \"watermeter\"\n";
     fputs(hn.c_str(), configfilehandle);
+
+    text  = "\n;++++++++++++++++++++++++++++++++++\n";
+    text += "; Fixed IP: If you like to use fixed IP instead of DHCP (default), the following\n";
+    text += "; parameters needs to be configured: ip, gateway, netmask are mandatory, dns optional\n\n";
+    fputs(text.c_str(), configfilehandle);
 
     if (ip.length())
         ip = "ip = \"" + ip + "\"\n";
     else
-        ip = ";ip = \"\"\n";
+        ip = ";ip = \"xxx.xxx.xxx.xxx\"\n";
     fputs(ip.c_str(), configfilehandle);
 
     if (gw.length())
         gw = "gateway = \"" + gw + "\"\n";
     else
-        gw = ";gateway = \"\"\n";
+        gw = ";gateway = \"xxx.xxx.xxx.xxx\"\n";
     fputs(gw.c_str(), configfilehandle);
 
     if (nm.length())
         nm = "netmask = \"" + nm + "\"\n";
     else
-        nm = ";netmask = \"\"\n";
+        nm = ";netmask = \"xxx.xxx.xxx.xxx\"\n";
     fputs(nm.c_str(), configfilehandle);
+
+    text  = "\n;++++++++++++++++++++++++++++++++++\n";
+    text += "; DNS server (optional, if no DNS is configured, gateway address will be used)\n\n";
+    fputs(text.c_str(), configfilehandle);
 
     if (dns.length())
         dns = "dns = \"" + dns + "\"\n";
     else
-        dns = ";dns = \"\"\n";
+        dns = ";dns = \"xxx.xxx.xxx.xxx\"\n";
     fputs(dns.c_str(), configfilehandle);
 
-    if (rssi.length())
-        rssi = "RSSIThreashold = \"" + rssi + "\"\n";
+    text  = "\n;++++++++++++++++++++++++++++++++++\n";
+    text += "; WIFI Roaming:\n";
+    text += "; Network assisted roaming protocol is activated by default\n";
+    text += "; AP / mesh system needs to support roaming protocol 802.11k/v\n";
+    text += ";\n";
+    text += "; Optional feature (usually not neccessary):\n";
+    text += "; RSSI Threshold for client requested roaming query (RSSI < RSSIThreshold)\n";
+    text += "; Note: This parameter can be configured via WebUI configuration\n";
+    text += "; Default: 0 = Disable client requested roaming query\n\n";
+    fputs(text.c_str(), configfilehandle);
+
+    if (rssithreshold.length())
+        rssithreshold = "RSSIThreshold = " + rssithreshold + "\n";
     else
-        rssi = ";rssi = \"\"\n";
-    fputs(rssi.c_str(), configfilehandle);
+        rssithreshold = "RSSIThreshold = 0\n";
+    fputs(rssithreshold.c_str(), configfilehandle);
 
     fflush(configfilehandle);
     fclose(configfilehandle);
 
     std::string zw = "ota without parameter - should not be the case!";
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
-    httpd_resp_send_chunk(req, NULL, 0);  
+    httpd_resp_send(req, zw.c_str(), zw.length()); 
 
-    ESP_LOGE(TAG, "end config.ini");
-
+    ESP_LOGD(TAG, "end config.ini");
 
     return ESP_OK;
-};
+}
 
 
 esp_err_t upload_post_handlerAP(httpd_req_t *req)
@@ -470,21 +500,27 @@ httpd_handle_t start_webserverAP(void)
     return NULL;
 }
 
+
 void CheckStartAPMode()
 {
     isConfigINI = FileExists(CONFIG_FILE);
     isWlanINI = FileExists(WLAN_CONFIG_FILE);
 
-    if (!isConfigINI or !isWlanINI)
+    if (!isConfigINI)
+        ESP_LOGW(TAG, "config.ini not found!");
+
+    if (!isWlanINI)
+        ESP_LOGW(TAG, "wlan.ini not found!");
+
+    if (!isConfigINI || !isWlanINI)
     {
+        ESP_LOGI(TAG, "Starting access point for remote configuration");
         wifi_init_softAP();
         start_webserverAP();
         while(1) { // wait until reboot within task_do_Update_ZIP
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
     }
-
-
 }
 
 #endif //#ifdef ENABLE_SOFTAP
