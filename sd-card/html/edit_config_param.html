@@ -102,11 +102,11 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="MakeImage_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogImageLocation")' unchecked >
-				<label for=MakeImage_LogImageLocation_enabled><class id="MakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class></label>
+				<input type="checkbox" id="TakeImage_LogImageLocation_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "LogImageLocation")' unchecked >
+				<label for=TakeImage_LogImageLocation_enabled><class id="TakeImage_LogImageLocation_text" style="color:black;">LogImageLocation</class></label>
 			</td>
 			<td>
-				<input type="text" name="name" id="MakeImage_LogImageLocation_value1">
+				<input type="text" name="name" id="TakeImage_LogImageLocation_value1">
 			</td>
 			<td class="description">
 				Location to store raw images for logging
@@ -114,11 +114,11 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="MakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "LogfileRetentionInDays")' unchecked >
-				<label for=MakeImage_LogfileRetentionInDays_enabled><class id="MakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
+				<input type="checkbox" id="TakeImage_LogfileRetentionInDays_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "LogfileRetentionInDays")' unchecked >
+				<label for=TakeImage_LogfileRetentionInDays_enabled><class id="TakeImage_LogfileRetentionInDays_text" style="color:black;">LogfileRetentionInDays</class></label>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
+				<input type="number" id="TakeImage_LogfileRetentionInDays_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
@@ -126,11 +126,10 @@ textarea {
 		</tr>		
 		<tr class="expert" id="ex1">
 			<td class="indent1">
-				<input type="checkbox" id="MakeImage_Demo_enabled" value="1"  onclick = 'InvertEnableItem("MakeImage", "Demo")' unchecked >
-				<label for=MakeImage_Demo_enabled><class id="MakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
+				<label for=TakeImage_Demo_enabled><class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
 			</td>
 			<td>
-				<select id="MakeImage_Demo_value1">
+				<select id="TakeImage_Demo_value1">
 					<option value="true">true</option>
 					<option value="false" selected>false</option>
 				</select>
@@ -144,10 +143,10 @@ textarea {
 		<tr class="expert" id="ex1">
 			
 			<td class="indent1">
-				<class id="MakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
+				<class id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
+				<input type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
 			</td>
 			<td class="description">
 				Wait time between switching illumination on and taking the picture (in seconds)
@@ -155,10 +154,10 @@ textarea {
 		</tr>
 		<tr class="expert" id="ex2">
 			<td class="indent1">
-				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
+				<class id="TakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="0" max="63">
+				<input type="number" id="TakeImage_ImageQuality_value1" size="13" min="0" max="63">
 			</td>
 			<td class="description">
 				Quality index for picture (default = "12" - "0" high ... "63" low) <br>
@@ -167,10 +166,10 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex3">
 			<td class="indent1">
-				<class id="MakeImage_ImageSize_text" style="color:black;">ImageSize</class>
+				<class id="TakeImage_ImageSize_text" style="color:black;">ImageSize</class>
 			</td>
 			<td>
-				<select id="MakeImage_ImageSize_value1">
+				<select id="TakeImage_ImageSize_value1">
 					<option value="VGA" selected>VGA</option>
 					<option value="QVGA" >QVGA</option>
 				</select>
@@ -182,10 +181,10 @@ textarea {
 
 		<tr class="expert"  id="LEDIntensity_ex3">
 			<td class="indent1">
-				<class id="MakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
+				<class id="TakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_LEDIntensity_value1" size="13" min="0" max="100">
+				<input type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100">
 			</td>
 			<td style="font-size: 80%;">
 				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
@@ -195,10 +194,10 @@ textarea {
 
 		<tr class="expert"  id="Brightness_ex3">
 			<td class="indent1">
-				<class id="MakeImage_Brightness_text" style="color:black;">Brightness</class>
+				<class id="TakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Brightness_value1" size="13" min="-2" max="2">
+				<input type="number" id="TakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Brightness (-2 .. 2 - default = "0")
@@ -207,10 +206,10 @@ textarea {
 
 		<tr class="expert"  id="Contrast_ex3">
 			<td class="indent1">
-				<class id="MakeImage_Contrast_text" style="color:black;">Contrast</class>
+				<class id="TakeImage_Contrast_text" style="color:black;">Contrast</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Contrast_value1" size="13" min="-2" max="2">
+				<input type="number" id="TakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Contrast (-2 .. 2 - default = "0") <br>
@@ -220,10 +219,10 @@ textarea {
 
 		<tr class="expert"  id="Saturation_ex3">
 			<td class="indent1">
-				<class id="MakeImage_Saturation_text" style="color:black;">Saturation</class>
+				<class id="TakeImage_Saturation_text" style="color:black;">Saturation</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_Saturation_value1" size="13" min="-2" max="2">
+				<input type="number" id="TakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
 				Image Saturation (-2 .. 2 - default = "0") <br>
@@ -231,12 +230,12 @@ textarea {
 			</td>
 		</tr>
 		
-		<tr class="expert"  id="MakeImage_FixedExposure_ex10">
+		<tr class="expert"  id="TakeImage_FixedExposure_ex10">
 			<td class="indent1">
-				<class id="MakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
+				<class id="TakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
 			</td>
 			<td>
-				<select id="MakeImage_FixedExposure_value1">
+				<select id="TakeImage_FixedExposure_value1">
 					<option value="true" selected>true</option>
 					<option value="false" >false</option>
 				</select>
@@ -387,7 +386,6 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_PreValueUse_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueUse")' unchecked >
 				<label for=PostProcessing_PreValueUse_enabled><class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class></label>
 			</td>
 			<td>
@@ -414,7 +412,6 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_ErrorMessage_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ErrorMessage")' unchecked >
 				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class></label>
 			</td>
 			<td>
@@ -429,7 +426,6 @@ textarea {
 		</tr>
 		<tr class="expert" id="ex1dddd">
 			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_CheckDigitIncreaseConsistency_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "CheckDigitIncreaseConsistency")' unchecked >
 				<label for=PostProcessing_CheckDigitIncreaseConsistency_enabled><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class></label>
 			</td>
 			<td>
@@ -455,7 +451,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
 				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
 			</td>
@@ -470,7 +466,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
 				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class></label>
 			</td>
@@ -483,7 +479,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_AnalogDigitalTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogDigitalTransitionStart")' unchecked >
 				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">AnalogDigitalTransitionStart</class></label>
 			</td>
@@ -497,7 +493,7 @@ textarea {
 		</tr>
 
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
 				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class></label>
 			</td>
@@ -509,7 +505,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
 				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class></label>
 			</td>
@@ -524,7 +520,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td class="indent1">
+			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_ExtendedResolution_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ExtendedResolution")' unchecked >
 			<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
 			</td>
@@ -538,9 +534,8 @@ textarea {
 				Enable to use the decimal place of the last analog counter
 			</td>
 		</tr>
-		
 		<tr>
-			<td id="ex121" class="indent1">
+			<td id="ex121" class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_IgnoreLeadingNaN_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "IgnoreLeadingNaN")' unchecked >
 			<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
 			</td>
@@ -633,7 +628,6 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="MQTT_SetRetainFlag_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "SetRetainFlag")' unchecked >
 				<label for=MQTT_SetRetainFlag_enabled><class id="MQTT_SetRetainFlag_text" style="color:black;">Enable MQTT Retain Flag</class></label>
 			</td>
 			<td>
@@ -655,7 +649,6 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="MQTT_HomeassistantDiscovery_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "HomeassistantDiscovery")' unchecked >
 				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
 			</td>
 			<td>
@@ -1286,10 +1279,10 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-			    <class id="AutoTimer_Intervall_text" style="color:black;">Interval</class>
+			    <class id="AutoTimer_Interval_text" style="color:black;">Interval</class>
 			</td>
 			<td>
-				<input type="number" id="AutoTimer_Intervall_value1" size="13" min="3" step="any">
+				<input type="number" id="AutoTimer_Interval_value1" size="13" min="3" step="any">
 			</td>
 			<td style="font-size: 80%;">
 				Interval in which the number(s) are read (in minutes). If a digitalization round takes longer than this interval, the next run gets postponed until the current run completes.
@@ -1400,15 +1393,15 @@ textarea {
 				Hostname for server - will be transfered to wlan.ini at next startup)
 			</td>
 		</tr>
-		<tr class="expert"  id="System_RSSIThreashold">
+		<tr class="expert"  id="System_RSSIThreshold">
 			<td class="indent1">
-				<input type="checkbox" id="System_RSSIThreashold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreashold")' unchecked >
-				<label for=System_RSSIThreashold_enabled><class id="System_RSSIThreashold_text" style="color:black;">RSSIThreashold</class></label>
+				<input type="checkbox" id="System_RSSIThreshold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreshold")' unchecked >
+				<label for=System_RSSIThreshold_enabled><class id="System_RSSIThreshold_text" style="color:black;">RSSIThreshold</class></label>
 			</td>
 			<td>
-				<input type="number" name="name" id="System_RSSIThreashold_value1" min="-100"  max="0" step="1">
+				<input type="number" name="name" id="System_RSSIThreshold_value1" min="-100"  max="0" step="1">
 			<td class="description">
-				WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.
+				WLAN Mesh Parameter: Threshold for RSSI value to check for start switching access point in a mesh system.
 				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
 			</td>
 		</tr>
@@ -1463,7 +1456,8 @@ function LoadConfigNeu() {
 	InitIndivParameter();
 
 	UpdateInput();
-	UpdateInputIndividual();
+	var sel = document.getElementById("Numbers_value1");
+	UpdateInputIndividual(sel);
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
 }
@@ -1767,7 +1761,7 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1){
 	}
 }
 
-function UpdateInputIndividual()
+function UpdateInputIndividual(sel)
 {
 	if (NUNBERSAkt != -1)
 	{
@@ -1775,17 +1769,28 @@ function UpdateInputIndividual()
 		ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
+/*
+		ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt)		
+*/
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt)		
+		ReadParameter(param, "InfluxDBv2", "Fieldname", true, NUNBERSAkt)		
 	}
 
-	var sel = document.getElementById("Numbers_value1");
+//	var sel = document.getElementById("Numbers_value1");
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
+/*
+	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
+	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
+*/
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt);
@@ -1799,17 +1804,17 @@ function UpdateInput() {
 	document.getElementById("Category_InfluxDB_enabled").checked = category["InfluxDB"]["enabled"];
 	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
-	WriteParameter(param, category, "MakeImage", "LogImageLocation", true);
-	WriteParameter(param, category, "MakeImage", "LogfileRetentionInDays", true);
-	WriteParameter(param, category, "MakeImage", "Demo", true);
-	WriteParameter(param, category, "MakeImage", "WaitBeforeTakingPicture", false);		
-	WriteParameter(param, category, "MakeImage", "ImageQuality", false);		
-	WriteParameter(param, category, "MakeImage", "Brightness", false);		
-	WriteParameter(param, category, "MakeImage", "Contrast", false);		
-	WriteParameter(param, category, "MakeImage", "Saturation", false);		
-	WriteParameter(param, category, "MakeImage", "LEDIntensity", false);		
-	WriteParameter(param, category, "MakeImage", "ImageSize", false);		
-	WriteParameter(param, category, "MakeImage", "FixedExposure", false);		
+	WriteParameter(param, category, "TakeImage", "LogImageLocation", true);
+	WriteParameter(param, category, "TakeImage", "LogfileRetentionInDays", true);
+	WriteParameter(param, category, "TakeImage", "Demo", false);
+	WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
+	WriteParameter(param, category, "TakeImage", "ImageQuality", false);
+	WriteParameter(param, category, "TakeImage", "Brightness", false);
+	WriteParameter(param, category, "TakeImage", "Contrast", false);
+	WriteParameter(param, category, "TakeImage", "Saturation", false);
+	WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
+	WriteParameter(param, category, "TakeImage", "ImageSize", false);
+	WriteParameter(param, category, "TakeImage", "FixedExposure", false);
 
 	WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
 	WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
@@ -1822,19 +1827,19 @@ function UpdateInput() {
 	WriteParameter(param, category, "Analog", "LogImageLocation", true);		
 	WriteParameter(param, category, "Analog", "LogfileRetentionInDays", true);		
 	
-	WriteParameter(param, category, "PostProcessing", "PreValueUse", true);		
+	WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
 	WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
 //	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
-	WriteParameter(param, category, "PostProcessing", "ErrorMessage", true);
-	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", true);
+	WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
+	WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
 	WriteParameter(param, category, "MQTT", "Uri", true);	
 	WriteParameter(param, category, "MQTT", "MainTopic", true);	
 	WriteParameter(param, category, "MQTT", "ClientID", true);	
 	WriteParameter(param, category, "MQTT", "user", true);	
 	WriteParameter(param, category, "MQTT", "password", true);
-	WriteParameter(param, category, "MQTT", "SetRetainFlag", true);
-	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", true);
+	WriteParameter(param, category, "MQTT", "SetRetainFlag", false);
+	WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", false);
 	WriteParameter(param, category, "MQTT", "MeterType", true);
 	
 	WriteParameter(param, category, "InfluxDB", "Uri", true);	
@@ -1842,6 +1847,13 @@ function UpdateInput() {
 	WriteParameter(param, category, "InfluxDB", "Measurement", true);	
 	WriteParameter(param, category, "InfluxDB", "user", true);	
 	WriteParameter(param, category, "InfluxDB", "password", true);	
+
+	WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Database", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Org", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Token", true);	
+	WriteParameter(param, category, "InfluxDBv2", "Fieldname", true);
 
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
@@ -1854,7 +1866,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "GPIO", "LEDColor", false);
 
 	WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
-	WriteParameter(param, category, "AutoTimer", "Intervall", false);	
+	WriteParameter(param, category, "AutoTimer", "Interval", false);
 
 	WriteParameter(param, category, "DataLogging", "DataLogActive", false);	
 	WriteParameter(param, category, "DataLogging", "DataLogRetentionInDays", false);	
@@ -1865,7 +1877,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
-	WriteParameter(param, category, "System", "RSSIThreashold", true);
+	WriteParameter(param, category, "System", "RSSIThreshold", true);
 
 	WriteModelFiles();
 }
@@ -1920,17 +1932,17 @@ function ReadParameterAll()
 	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
-	ReadParameter(param, "MakeImage", "LogImageLocation", true);
-	ReadParameter(param, "MakeImage", "LogfileRetentionInDays", true);	
-	ReadParameter(param, "MakeImage", "Demo", true);
-	ReadParameter(param, "MakeImage", "WaitBeforeTakingPicture", false);		
-	ReadParameter(param, "MakeImage", "ImageQuality", false);		
-	ReadParameter(param, "MakeImage", "Brightness", false);		
-	ReadParameter(param, "MakeImage", "Contrast", false);		
-	ReadParameter(param, "MakeImage", "Saturation", false);		
-	ReadParameter(param, "MakeImage", "LEDIntensity", false);		
-	ReadParameter(param, "MakeImage", "ImageSize", false);	
-	ReadParameter(param, "MakeImage", "FixedExposure", false);	
+	ReadParameter(param, "TakeImage", "LogImageLocation", true);
+	ReadParameter(param, "TakeImage", "LogfileRetentionInDays", true);
+	ReadParameter(param, "TakeImage", "Demo", false);
+	ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
+	ReadParameter(param, "TakeImage", "ImageQuality", false);
+	ReadParameter(param, "TakeImage", "Brightness", false);
+	ReadParameter(param, "TakeImage", "Contrast", false);
+	ReadParameter(param, "TakeImage", "Saturation", false);
+	ReadParameter(param, "TakeImage", "LEDIntensity", false);
+	ReadParameter(param, "TakeImage", "ImageSize", false);
+	ReadParameter(param, "TakeImage", "FixedExposure", false);
 
 	ReadParameter(param, "Alignment", "SearchFieldX", false);		
 	ReadParameter(param, "Alignment", "SearchFieldY", false);
@@ -1945,19 +1957,18 @@ function ReadParameterAll()
 	ReadParameter(param, "Analog", "LogImageLocation", true);		
 	ReadParameter(param, "Analog", "LogfileRetentionInDays", true);		
 
-	ReadParameter(param, "PostProcessing", "PreValueUse", true);		
+	ReadParameter(param, "PostProcessing", "PreValueUse", false);		
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);		
-//	ReadParameter(param, "PostProcessing", "AllowNegativeRates", true);
-	ReadParameter(param, "PostProcessing", "ErrorMessage", true);
-	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", true);
+	ReadParameter(param, "PostProcessing", "ErrorMessage", false);
+	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
 	ReadParameter(param, "MQTT", "Uri", true);	
 	ReadParameter(param, "MQTT", "MainTopic", true);	
 	ReadParameter(param, "MQTT", "ClientID", true);	
 	ReadParameter(param, "MQTT", "user", true);	
 	ReadParameter(param, "MQTT", "password", true);	
-	ReadParameter(param, "MQTT", "SetRetainFlag", true);	
-	ReadParameter(param, "MQTT", "HomeassistantDiscovery", true);
+	ReadParameter(param, "MQTT", "SetRetainFlag", false);	
+	ReadParameter(param, "MQTT", "HomeassistantDiscovery", false);
 	ReadParameter(param, "MQTT", "MeterType", true);
 
 	ReadParameter(param, "InfluxDB", "Uri", true);	
@@ -1984,7 +1995,7 @@ function ReadParameterAll()
 	param["GPIO"]["LEDColor"]["found"] = true;
 
 	ReadParameter(param, "AutoTimer", "AutoStart", false);	
-	ReadParameter(param, "AutoTimer", "Intervall", false);	
+	ReadParameter(param, "AutoTimer", "Interval", false);
 	
 	ReadParameter(param, "DataLogging", "DataLogActive", false);	
 	ReadParameter(param, "DataLogging", "DataLogRetentionInDays", false);	
@@ -1995,7 +2006,7 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true);	
-	ReadParameter(param, "System", "RSSIThreashold", true);	
+	ReadParameter(param, "System", "RSSIThreshold", true);
 
 	UpdateInputIndividual();
 	
@@ -2020,7 +2031,8 @@ function UpdateAfterCategoryCheck() {
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 
 	UpdateInput();
-	UpdateInputIndividual();
+	var sel = document.getElementById("Numbers_value1");
+	UpdateInputIndividual(sel);
 }
 
 function UpdateExpertModus()

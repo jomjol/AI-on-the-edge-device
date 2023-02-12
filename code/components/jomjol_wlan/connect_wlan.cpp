@@ -63,7 +63,7 @@ std::string hostname = "";
 std::string std_hostname = "watermeter";
 std::string ipadress = "";
 std::string ssid = "";
-int RSSIThreashold;
+int RSSIThreshold;
 
 /////////////////////////////////
 /////////////////////////////////
@@ -403,9 +403,9 @@ void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
 }
 
 
-void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns, int _rssithreashold)
+void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns, int _rssithreshold)
 {
-	RSSI_Threshold = _rssithreashold;
+	RSSI_Threshold = _rssithreshold;
     s_wifi_event_group = xEventGroupCreate();
 
     ESP_ERROR_CHECK(esp_netif_init());

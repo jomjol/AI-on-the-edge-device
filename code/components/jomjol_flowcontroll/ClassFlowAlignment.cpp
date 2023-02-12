@@ -1,5 +1,5 @@
 #include "ClassFlowAlignment.h"
-#include "ClassFlowMakeImage.h"
+#include "ClassFlowTakeImage.h"
 #include "ClassFlow.h"
 #include "server_tflite.h"
 
@@ -46,9 +46,9 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowMakeImage") == 0)
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowTakeImage") == 0)
         {
-            ImageBasis = ((ClassFlowMakeImage*) (*ListFlowControll)[i])->rawImage;
+            ImageBasis = ((ClassFlowTakeImage*) (*ListFlowControll)[i])->rawImage;
         }
     }
 
@@ -74,7 +74,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (aktparamgraph.compare("[Alignment]") != 0)       //Paragraph does not fit MakeImage
+    if (aktparamgraph.compare("[Alignment]") != 0)       //Paragraph does not fit Alignment
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))

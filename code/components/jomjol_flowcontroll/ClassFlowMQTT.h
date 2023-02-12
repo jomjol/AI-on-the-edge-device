@@ -32,7 +32,7 @@ public:
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
     string GetMQTTMainTopic();
-    bool Start(float AutoIntervall);
+    bool Start(float AutoInterval);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);

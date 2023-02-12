@@ -1,6 +1,6 @@
 #include "ClassFlowPostProcessing.h"
 #include "Helper.h"
-#include "ClassFlowMakeImage.h"
+#include "ClassFlowTakeImage.h"
 #include "ClassLogFile.h"
 
 #include <iomanip>
@@ -285,7 +285,7 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, C
     ListFlowControll = NULL;
     FilePreValue = FormatFileName("/sdcard/config/prevalue.ini");
     ListFlowControll = lfc;
-    flowMakeImage = NULL;
+    flowTakeImage = NULL;
     UpdatePreValueINI = false;
     IgnoreLeadingNaN = false;
     flowAnalog = _analog;
@@ -293,9 +293,9 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, C
 
     for (int i = 0; i < ListFlowControll->size(); ++i)
     {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowMakeImage") == 0)
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowTakeImage") == 0)
         {
-            flowMakeImage = (ClassFlowMakeImage*) (*ListFlowControll)[i];
+            flowTakeImage = (ClassFlowTakeImage*) (*ListFlowControll)[i];
         }
     }
 }
@@ -503,7 +503,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
             return false;
 
 
-    if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph does not fit MakeImage
+    if (aktparamgraph.compare("[PostProcessing]") != 0)       // Paragraph does not fit PostProcessing
         return false;
 
     InitNUMBERS();
@@ -715,7 +715,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
     // Update decimal point, as the decimal places can also change when changing from CNNType Auto --> xyz:
 
-    imagetime = flowMakeImage->getTimeImageTaken();
+    imagetime = flowTakeImage->getTimeImageTaken();
     if (imagetime == 0)
         time(&imagetime);
 
