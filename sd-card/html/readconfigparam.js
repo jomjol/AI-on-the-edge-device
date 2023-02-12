@@ -177,7 +177,7 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "MainTopic", 1, false);
-     ParamAddValue(param, catname, "Topic", 1, false);
+     ParamAddValue(param, catname, "Topic", 1, false);      // Downward compatiblity: Not used anymore, included only for readback to new MainTopic
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
@@ -263,7 +263,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "AutoAdjustSummertime");
      ParamAddValue(param, catname, "Hostname");   
-     ParamAddValue(param, catname, "RSSIThreashold");   
+     ParamAddValue(param, catname, "RSSIThreshold");   
+     ParamAddValue(param, catname, "RSSIThreashold");   // Downward compatiblity: Not used anymore, included only for readback to new RSSIThreshold
      ParamAddValue(param, catname, "SetupMode"); 
      
      
@@ -300,7 +301,7 @@ function ParseConfig() {
      }
 
 
-     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     // Make the downward compatiblity with DataLogging
      if (category["DataLogging"]["found"] == false)
      {
           category["DataLogging"]["found"] = true;
@@ -332,7 +333,28 @@ function ParseConfig() {
           param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
      }
 
+     // Make the downward compatiblity for RSSIThreshold (due to typo: RSSIThreashold)
+     /* RSSIThreshold not available at all */
+     if (param["System"]["RSSIThreshold"]["found"] == false)
+     {
+          param["System"]["RSSIThreshold"]["found"] = true;
+          param["System"]["RSSIThreshold"]["enabled"] = true;
+          param["System"]["RSSIThreshold"]["value1"] = "0";
+     }
+     /* RSSIThreshold available but disabled -> enable and set value 0 */
+     if (param["System"]["RSSIThreshold"]["found"] == true && param["System"]["RSSIThreshold"]["enabled"] == false) {
+          param["System"]["RSSIThreshold"]["enabled"] = true
+          param["System"]["RSSIThreshold"]["value1"] = "0";
+     }
+     /* Parameter with typo RSSIThreashold available but RSSIThreshold not avialbale -> copy data to new parameter */
+     if (param["System"]["RSSIThreashold"]["found"] == true && param["System"]["RSSIThreshold"]["found"] == false)
+     {
+          param["System"]["RSSIThreshold"] = param["System"]["RSSIThreashold"]
+          param["System"]["RSSIThreshold"]["enabled"] = true;
+     }
+     delete param["System"]["RSSIThreashold"]
 }
+
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
      param[_cat][_param] = new Object(); 

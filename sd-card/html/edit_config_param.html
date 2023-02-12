@@ -1501,19 +1501,24 @@ textarea {
 			<td>
 				<input type="text" id="System_Hostname_value1">
 			<td class="description">
-				Hostname for server - will be transfered to wlan.ini at next startup)
+				Hostname for server
+				<br> Note: Threshold will be transfered to wlan.ini at next startup
 			</td>
 		</tr>
-		<tr class="expert"  id="System_RSSIThreashold">
+		<tr class="expert">
 			<td class="indent1">
-				<input type="checkbox" id="System_RSSIThreashold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreashold")' unchecked >
-				<label for=System_RSSIThreashold_enabled><class id="System_RSSIThreashold_text" style="color:black;">RSSIThreashold</class></label>
+				<class id="System_RSSIThreshold_text" style="color:black;">RSSIThreshold</class></label>
 			</td>
 			<td>
-				<input type="number" name="name" id="System_RSSIThreashold_value1" min="-100"  max="0" step="1">
+				<input type="number" name="name" id="System_RSSIThreshold_value1" min="-100"  max="0" step="1">
 			<td class="description">
-				WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.
-				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
+				WIFI Roaming:
+				<br>Network assisted roaming is activated by default. AP / mesh system needs to support roaming protocol 802.11k/v.
+				<br>Optional feature (usually not neccessary): RSSI Threshold for client requested roaming query (RSSI < RSSIThreshold)
+				<br>Note: Threshold will be transfered to wlan.ini at next startup
+				<br>Possible values: -100 to 0
+				<br>Default: 0 = Disable client requested roaming query
+
 			</td>
 		</tr>
 
@@ -1989,7 +1994,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "TimeZone", true);	
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
-	WriteParameter(param, category, "System", "RSSIThreashold", true);
+	WriteParameter(param, category, "System", "RSSIThreshold", false);
 
 	WriteModelFiles();
 }
@@ -2125,8 +2130,8 @@ function ReadParameterAll()
 
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	
-	ReadParameter(param, "System", "TimeServer", true);	
-	ReadParameter(param, "System", "RSSIThreashold", true);	
+	ReadParameter(param, "System", "TimeServer", true);
+	ReadParameter(param, "System", "RSSIThreshold", false);	
 
 	var sel = document.getElementById("Numbers_value1");	
 	UpdateInputIndividual(sel);
