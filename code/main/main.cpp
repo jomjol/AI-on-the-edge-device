@@ -571,7 +571,7 @@ bool replace(std::string& s, std::string const& toReplace, std::string const& re
     std::string old = s;
     s.replace(pos, toReplace.length(), replaceWith);
     if (logIt) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
     }
     return true;
 }
