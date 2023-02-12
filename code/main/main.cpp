@@ -1,4 +1,8 @@
-//#include <string>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <regex>
+
 //#include "freertos/FreeRTOS.h"
 //#include "freertos/task.h"
 //#include "freertos/event_groups.h"
@@ -80,7 +84,10 @@ extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
 
-bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+std::vector<std::string> splitString(const std::string& str);
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
+//bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith);
 void migrateConfiguration(void);
 
 static const char *TAG = "MAIN";
@@ -406,72 +413,123 @@ extern "C" void app_main(void)
 }
 
 
-/**
- * Check the cibfigVersion parameter in the config file.
- * If it is missing or not set to teh latestversion, migrate the configuration.
-*/
 void migrateConfiguration(void) {
-    bool found = false;
+    bool migrated = false;
 
     if (!FileExists(CONFIG_FILE)) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Config file seems to be missing!");
         return;	
     }
 
+    std::string section = "";
 	std::ifstream ifs(CONFIG_FILE);
   	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	
-    /* Typos */
-    found = found | replace_all(content, "[MakeImage]", "[TakeImage]");
-    found = found | replace_all(content, "Intervall", "Interval");
-    found = found | replace_all(content, "RSSIThreashold", "RSSIThreshold");
-    found = found | replace_all(content, "RSSIThreashold", "RSSIThreshold");
+    /* Split config file it array of lines */
+    std::vector<std::string> configLines = splitString(content);
 
-    /* Boolean parameters which where set to false but commented out -> remove semicolon */
-    found = found | replace_all(content, ";Demo = false", "Demo = false");
-    found = found | replace_all(content, ";FixedExposure = false", "FixedExposure = false");
-    found = found | replace_all(content, ";InitialMirror = false", "InitialMirror = false");
-    found = found | replace_all(content, ";FlipImageSize = false", "FlipImageSize = false");
-    found = found | replace_all(content, ";ExtendedResolution = false", "ExtendedResolution = false");
-    found = found | replace_all(content, ";PreValueUse = false", "PreValueUse = false");
-    found = found | replace_all(content, ";ErrorMessage = false", "ErrorMessage = false");
-    found = found | replace_all(content, ";CheckDigitIncreaseConsistency = false", "CheckDigitIncreaseConsistency = false");
-    found = found | replace_all(content, ";SetRetainFlag = false", "SetRetainFlag = false");
-    found = found | replace_all(content, ";HomeassistantDiscovery = false", "HomeassistantDiscovery = false");
-    found = found | replace_all(content, ";AutoStart = false", "AutoStart = false");
-    found = found | replace_all(content, ";DataLogActive = false", "DataLogActive = false");
-    found = found | replace_all(content, ";SetupMode = false", "SetupMode = false");
+    /* Process each line */
+    for (int i = 0; i < configLines.size(); i++) {
+        //ESP_LOGI(TAG, "Line %d: %s", i, configLines[i].c_str());
 
-    /* Boolean parameters which where set to true but commented out -> remove semicolon and set to its default value */
-    found = found | replace_all(content, ";Demo = true", "Demo = false");
-    found = found | replace_all(content, ";FixedExposure = true", "FixedExposure = false");
-    found = found | replace_all(content, ";InitialMirror = true", "InitialMirror = false");
-    found = found | replace_all(content, ";FlipImageSize = true", "FlipImageSize = false");
-    found = found | replace_all(content, ";ExtendedResolution = true", "ExtendedResolution = false");
-    found = found | replace_all(content, ";PreValueUse = true", "PreValueUse = false");
-    found = found | replace_all(content, ";ErrorMessage = true", "ErrorMessage = false");
-    found = found | replace_all(content, ";CheckDigitIncreaseConsistency = true", "CheckDigitIncreaseConsistency = false");
-    found = found | replace_all(content, ";SetRetainFlag = true", "SetRetainFlag = false");
-    found = found | replace_all(content, ";HomeassistantDiscovery = true", "HomeassistantDiscovery = false");
-    found = found | replace_all(content, ";AutoStart = true", "AutoStart = false");
-    found = found | replace_all(content, ";DataLogActive = true", "DataLogActive = true"); // Enabled by default!
-    found = found | replace_all(content, ";SetupMode = true", "SetupMode = false");
+        if (configLines[i].find("[") != std::string::npos) { // Start of new section
+            section = configLines[i];
+            replace(section, ";", "", false); // Remove possible semicolon (just for the string comparison)
+            //ESP_LOGI(TAG, "New section: %s", section.c_str());
+        }
 
-    if (found) { // At least one replacement happened
+        /* Migrate parameters as needed */
+        if (section == "[MakeImage]") {
+            migrated = migrated | replace(configLines[i], "[MakeImage]", "[TakeImage]"); // Rename the section itself
+        }
+
+        if (section == "[MakeImage]" || section == "[TakeImage]") {
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "CamImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "CamImagesRetention");
+        }
+
+        if (section == "[Alignment]") {
+
+        }
+
+        if (section == "[Digits]") {
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+        }
+
+        if (section == "[Analog]") {
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";UNUSED_PARAMETER"); // This parameter is no longer used
+        }
+
+        if (section == "[PostProcessing]") {
+
+        }
+
+        if (section == "[MQTT]") {
+            migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages");
+        }
+
+        if (section == "[InfluxDB]") {
+
+        }
+
+        if (section == "[GPIO]") {
+
+        }
+
+        if (section == "[DataLogging]") {
+            migrated = migrated | replace(configLines[i], "DataLogRetentionInDays", "DataFilesRetention");
+        }
+
+        if (section == "[AutoTimer]") {
+            migrated = migrated | replace(configLines[i], "Intervall", "Interval");
+        }
+
+        if (section == "[Debug]") {
+            migrated = migrated | replace(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
+        }
+
+        if (section == "[System]") {
+            migrated = migrated | replace(configLines[i], "RSSIThreashold", "RSSIThreshold");
+            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
+        }
+    }
+
+    if (migrated) { // At least one replacement happened
         if (! RenameFile(CONFIG_FILE, CONFIG_FILE_BACKUP)) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create backup of Config file!");
             return;
         }
 
-        FILE* pfile = fopen(CONFIG_FILE, "w");
-        fwrite(content.c_str(), content.length(), 1, pfile);
+        FILE* pfile = fopen(CONFIG_FILE, "w");        
+        for (int i = 0; i < configLines.size(); i++) {
+            fwrite(configLines[i].c_str() , configLines[i].length(), 1, pfile);
+            fwrite("\n" , 1, 1, pfile);
+        }
         fclose(pfile);
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Config file migrated. Saved backup at " + string(CONFIG_FILE_BACKUP));
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Config file migrated. Saved backup to " + string(CONFIG_FILE_BACKUP));
     }
 }
 
 
-bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+std::vector<std::string> splitString(const std::string& str) {
+    std::vector<std::string> tokens;
+ 
+    std::stringstream ss(str);
+    std::string token;
+
+    while (std::getline(ss, token, '\n')) {
+        tokens.push_back(token);
+    }
+ 
+    return tokens;
+}
+
+
+/*bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
     std::string buf;
     std::size_t pos = 0;
     std::size_t prevPos;
@@ -496,4 +554,24 @@ bool replace_all(std::string& s, std::string const& toReplace, std::string const
     s.swap(buf);
 
     return found;
+}*/
+
+
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    return replace(s, toReplace, replaceWith, true);
+}
+
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
+    std::size_t pos = s.find(toReplace);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+
+    std::string old = s;
+    s.replace(pos, toReplace.length(), replaceWith);
+    if (logIt) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+    }
+    return true;
 }

@@ -557,12 +557,12 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(splitted[0]) == "DATALOGRETENTIONINDAYS") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "DATAFILESRETENTION") && (splitted.size() > 1))
         {
             LogFile.SetDataLogRetention(std::stoi(splitted[1]));
         }
 
-        if ((toUpper(splitted[0]) == "LOGFILE") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGLEVEL") && (splitted.size() > 1))
         {
             /* matches esp_log_level_t */
             if ((toUpper(splitted[1]) == "TRUE") || (toUpper(splitted[1]) == "2"))
@@ -582,7 +582,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
             }
         }
-        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILESRETENTION") && (splitted.size() > 1))
         {
             LogFile.SetLogFileRetention(std::stoi(splitted[1]));
         }
