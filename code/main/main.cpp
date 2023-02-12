@@ -468,7 +468,6 @@ void migrateConfiguration(void) {
 
         if (section == "[MQTT]") {
             migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages");
-
         }
 
         if (section == "[InfluxDB]") {
