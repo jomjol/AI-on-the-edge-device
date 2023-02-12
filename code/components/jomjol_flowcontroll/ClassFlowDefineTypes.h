@@ -50,6 +50,7 @@ struct NumberPost {
     int DecimalShiftInitial;
     float AnalogDigitalTransitionStart; // When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;
+    string Fieldname; // Fieldname in InfluxDB2  
 
     bool isExtendedResolution;
 

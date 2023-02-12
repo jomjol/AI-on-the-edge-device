@@ -16,6 +16,101 @@ std::string _influxDBMeasurement;
 std::string _influxDBUser;
 std::string _influxDBPassword;
 
+std::string _influxDB_V2_URI;
+std::string _influxDB_V2_Database;
+std::string _influxDB_V2_Measurement;
+std::string _influxDB_V2_Token;
+std::string _influxDB_V2_Org;
+
+static esp_err_t http_event_handler(esp_http_client_event_t *evt);
+
+void InfluxDB_V2_Init(std::string _uri, std::string _database, std::string _measurement, std::string _org, std::string _token)
+{
+    _influxDB_V2_URI = _uri;
+    _influxDB_V2_Database = _database;
+    _influxDB_V2_Measurement = _measurement;
+    _influxDB_V2_Org = _org;
+    _influxDB_V2_Token = _token;
+}
+
+void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _timestamp) 
+{
+    char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
+    esp_http_client_config_t http_config = {
+       .user_agent = "ESP32 Meter reader",
+       .method = HTTP_METHOD_POST,
+       .event_handler = http_event_handler,
+       .buffer_size = MAX_HTTP_OUTPUT_BUFFER,
+       .user_data = response_buffer
+    };
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB_V2_Publish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
+
+    // Format:     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
+
+    char nowTimestamp[21];
+    std::string payload;
+
+    if (_timestamp.length() > 0)
+    {
+        struct tm tm;
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
+        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
+
+        struct tm * ptm;
+        ptm = gmtime ( &t );
+        time_t utc = mktime(ptm);
+        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+
+        sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774 " + nowTimestamp;
+    }
+    else
+    {
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774";
+    }
+
+    payload.shrink_to_fit();
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
+
+    std::string apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Database;
+    apiURI.shrink_to_fit();
+    http_config.url = apiURI.c_str();
+    ESP_LOGI(TAG, "http_config: %s", http_config.url); // Add mark on log to see when it restarted
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "API URI: " + apiURI);
+
+    esp_http_client_handle_t http_client = esp_http_client_init(&http_config);
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "client is initialized");
+
+    esp_http_client_set_header(http_client, "Content-Type", "text/plain");
+    std::string _zw = "Token " + _influxDB_V2_Token;
+    //    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Tokenheader: %s\n", _zw.c_str());
+    esp_http_client_set_header(http_client, "Authorization", _zw.c_str());
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "header is set");
+
+    ESP_ERROR_CHECK(esp_http_client_set_post_field(http_client, payload.c_str(), payload.length()));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "post payload is set");
+
+    esp_err_t err = ESP_ERROR_CHECK_WITHOUT_ABORT(esp_http_client_perform(http_client));
+
+    if( err == ESP_OK ) {
+      LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request was performed");
+      int status_code = esp_http_client_get_status_code(http_client);
+      LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP status code" + std::to_string(status_code));
+    } else {
+      LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request failed");
+    }
+    esp_http_client_cleanup(http_client);
+}
+
+
+
 static esp_err_t http_event_handler(esp_http_client_event_t *evt)
 {
     switch(evt->event_id)
@@ -64,28 +159,30 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
-    // Format:     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
-    struct tm tm;
-    strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-    time_t t = mktime(&tm);  // t is now your desired time_t
-
-    struct tm * ptm;
-    ptm = gmtime ( &t );
-    time_t utc = mktime(ptm);
-
-//    time_t now;
-//    time(&now);
     char nowTimestamp[21];
-    // pad with zeroes to get nanoseconds
-//    sprintf(nowTimestamp,"%ld000000000", (long) now);
-//    sprintf(nowTimestamp,"%ld000000000", (long) t);           // Localtime
-    sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
-    
+    std::string payload;
 
-//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - t: " + std::to_string(t) + ", utc: " + std::to_string(utc));
-//    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test Time Conversion - now: " + std::to_string(now) + ", timestamp: " + std::to_string(t)  + "(correct time not used yet)");
+    if (_timestamp.length() > 0)
+    {
+        struct tm tm;
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
+        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
 
-    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+        struct tm * ptm;
+        ptm = gmtime ( &t );
+        time_t utc = mktime(ptm);
+        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+
+        sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774 " + nowTimestamp;
+    }
+    else
+    {
+        payload = _influxDBMeasurement + " " + _key + "=" + _content;
+    }
+
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
