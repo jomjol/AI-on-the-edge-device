@@ -105,7 +105,7 @@ function ParseConfig() {
      param = new Object();
      category = new Object(); 
 
-     var catname = "MakeImage";
+     var catname = "TakeImage";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
