@@ -412,10 +412,6 @@ extern "C" void app_main(void)
 }
 
 
-/**
- * Check the cibfigVersion parameter in the config file.
- * If it is missing or not set to teh latestversion, migrate the configuration.
-*/
 void migrateConfiguration(void) {
     bool migrated = false;
 
@@ -463,6 +459,7 @@ void migrateConfiguration(void) {
         if (section == "[Analog]") {
             migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
             migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";ExtendedResolution ***THIS PARAMETER NO LONGER IS USED*** ");
         }
 
         if (section == "[PostProcessing]") {
