@@ -459,7 +459,7 @@ void migrateConfiguration(void) {
         if (section == "[Analog]") {
             migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
             migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
-            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";"); // This parameter is no longer used
+            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";UNUSED_PARAMETER"); // This parameter is no longer used
         }
 
         if (section == "[PostProcessing]") {
@@ -493,7 +493,7 @@ void migrateConfiguration(void) {
 
         if (section == "[System]") {
             migrated = migrated | replace(configLines[i], "RSSIThreashold", "RSSIThreshold");
-            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";"); // This parameter is no longer used
+            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
         }
     }
 
