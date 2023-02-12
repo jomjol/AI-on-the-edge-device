@@ -539,7 +539,7 @@ textarea {
 			</td>
 		</tr>
 		<tr>
-			<td id="ex121" class="indent1" style="padding-left: 75px;">
+			<td id="ex121" class="indent1">
 				<input type="checkbox" id="PostProcessing_IgnoreLeadingNaN_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "IgnoreLeadingNaN")' unchecked >
 			<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
 			</td>
@@ -654,6 +654,7 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
+				<input type="checkbox" id="MQTT_HomeassistantDiscovery_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "HomeassistantDiscovery")' unchecked >
 				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
 			</td>
 			<td>
@@ -1464,8 +1465,7 @@ function LoadConfigNeu() {
 	InitIndivParameter();
 
 	UpdateInput();
-	var sel = document.getElementById("Numbers_value1");
-	UpdateInputIndividual(sel);
+	UpdateInputIndividual();
 	UpdateExpertModus();
 	document.getElementById("divall").style.display = ''; 
 }
@@ -1484,13 +1484,8 @@ function InitIndivParameter()
         option.value = i;
         _index.add(option);
 
-		var optionInflux = document.createElement("option");
-        optionInflux.text = NUMBERS[i]["name"];
-        optionInflux.value = i;
-		_indexInflux.add(optionInflux);
         }
     _index.selectedIndex = 0; 
-	_indexInflux.selectedIndex = 0; 
 }
 
 
@@ -1775,7 +1770,7 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1){
 	}
 }
 
-function UpdateInputIndividual(sel)
+function UpdateInputIndividual()
 {
 	if (NUNBERSAkt != -1)
 	{
@@ -1783,27 +1778,19 @@ function UpdateInputIndividual(sel)
 		ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
-/*
-		ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt)		
-		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt)		
-		ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt)		
-*/
+
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt)		
 	}
 
-//	var sel = document.getElementById("Numbers_value1");
+	var sel = document.getElementById("Numbers_value1");
 	NUNBERSAkt = sel.selectedIndex;
 	WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
-/*
-	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
-	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
-	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
-*/
+
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", true, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true, NUNBERSAkt);
@@ -2014,8 +2001,7 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "TimeServer", true);	
 	ReadParameter(param, "System", "RSSIThreshold", true);
 
-	var sel = document.getElementById("Numbers_value1");	
-	UpdateInputIndividual(sel);
+	UpdateInputIndividual();
 	
 //	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
@@ -2038,8 +2024,7 @@ function UpdateAfterCategoryCheck() {
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 
 	UpdateInput();
-	var sel = document.getElementById("Numbers_value1");
-	UpdateInputIndividual(sel);
+	UpdateInputIndividual();
 }
 
 function UpdateExpertModus()
@@ -2116,24 +2101,7 @@ function editConfigDirect() {
 
 function numberChanged()
 {
-	var sel = document.getElementById("Numbers_value1");
-	_neu = sel.selectedIndex;
-	UpdateInputIndividual(sel);
-
-	var _selInflux = document.getElementById("NumbersInfluxDB_value1");
-	if (_selInflux.selectedIndex != _neu)
-		_selInflux.selectedIndex = _neu
-}
- 
-function numberInfluxDBChanged()
-{
-	var sel = document.getElementById("NumbersInfluxDB_value1");
-	_neu = sel.selectedIndex;
-	UpdateInputIndividual(sel);
-
-	var _sel2 = document.getElementById("Numbers_value1");
-	if (_sel2.selectedIndex != _neu)
-	_sel2.selectedIndex = _neu
+	UpdateInputIndividual();
 }
 
 LoadConfigNeu();
