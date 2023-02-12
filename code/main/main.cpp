@@ -487,8 +487,8 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[Debug]") {
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
             migrated = migrated | replace(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
         }
 
         if (section == "[System]") {
