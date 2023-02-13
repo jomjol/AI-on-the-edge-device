@@ -133,11 +133,11 @@ bool Init_NVS_SDCard()
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount filesystem.");
+            ESP_LOGE(TAG, "Failed to mount filesystem");
             StatusLED(SDCARD_INIT, 1, true);
         } 
         else {
-            ESP_LOGE(TAG, "Failed to initialize the card. Make sure SD card lines have pull-up resistors in place.");
+            ESP_LOGE(TAG, "Failed to initialize the card. Make sure SD card lines have pull-up resistors in place");
             StatusLED(SDCARD_INIT, 2, true);
         }
         return false;
@@ -266,7 +266,7 @@ extern "C" void app_main(void)
     int retval = LoadWlanFromFile(WLAN_CONFIG_FILE);
     if (retval == 0) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, WIFI init...");
-        if (wifi_init_sta() != ESP_OK) {    // Init WIFI: Errors could halt the system before exiting the function -> detailed logs only on serial console
+        if (wifi_init_sta() != ESP_OK) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Init aborted!");
             StatusLED(WLAN_INIT, 3, false);
             return;
