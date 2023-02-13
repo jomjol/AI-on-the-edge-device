@@ -42,7 +42,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     flowpostprocessing = NULL;  
     user = "";
     password = ""; 
-    SetRetainFlag = 0;
+    SetRetainFlag = false;
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
@@ -116,7 +116,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(splitted[0]) == "SETRETAINFLAG") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE") {
-                SetRetainFlag = 1;  
+                SetRetainFlag = true;  
                 setMqtt_Server_Retain(SetRetainFlag);
             }
         }
