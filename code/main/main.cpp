@@ -446,10 +446,13 @@ void migrateConfiguration(void) {
         if (section == "[MakeImage]" || section == "[TakeImage]") {
             migrated = migrated | replace(configLines[i], "LogImageLocation", "CamImagesLocation");
             migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "CamImagesRetention");
+            migrated = migrated | replace(configLines[i], ";Demo", "Demo");
+            migrated = migrated | replace(configLines[i], ";FixedExposure", "FixedExposure");
         }
 
         if (section == "[Alignment]") {
-
+            migrated = migrated | replace(configLines[i], ";InitialMirror", "InitialMirror");
+            migrated = migrated | replace(configLines[i], ";FlipImageSize", "FlipImageSize");
         }
 
         if (section == "[Digits]") {
@@ -464,11 +467,14 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[PostProcessing]") {
-
+            migrated = migrated | replace(configLines[i], ";PreValueUse", "PreValueUse");
+            migrated = migrated | replace(configLines[i], ";ErrorMessage", "ErrorMessage");
         }
 
         if (section == "[MQTT]") {
+            migrated = migrated | replace(configLines[i], ";RetainMessages", "RetainMessages");
             migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages");
+            migrated = migrated | replace(configLines[i], "MainTopic", "Topic");
         }
 
         if (section == "[InfluxDB]") {
@@ -481,15 +487,19 @@ void migrateConfiguration(void) {
 
         if (section == "[DataLogging]") {
             migrated = migrated | replace(configLines[i], "DataLogRetentionInDays", "DataFilesRetention");
+            migrated = migrated | replace(configLines[i], ";DataLogActive", "DataLogActive");
         }
 
         if (section == "[AutoTimer]") {
             migrated = migrated | replace(configLines[i], "Intervall", "Interval");
+            migrated = migrated | replace(configLines[i], ";AutoStart", "AutoStart");
         }
 
         if (section == "[Debug]") {
             migrated = migrated | replace(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
             migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
+            migrated = migrated | replace(configLines[i], "LogLevel = true", "LogLevel = 2");
+            migrated = migrated | replace(configLines[i], "LogLevel = false", "LogLevel = 2");
         }
 
         if (section == "[System]") {
