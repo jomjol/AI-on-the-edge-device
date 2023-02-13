@@ -102,11 +102,11 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="TakeImage_CamImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "CamImagesLocation")' unchecked >
-				<label for=TakeImage_CamImagesLocation_enabled><class id="TakeImage_CamImagesLocation_text" style="color:black;">CamImagesLocation</class></label>
+				<input type="checkbox" id="TakeImage_RawImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "RawImagesLocation")' unchecked >
+				<label for=TakeImage_RawImagesLocation_enabled><class id="TakeImage_RawImagesLocation_text" style="color:black;">RawImagesLocation</class></label>
 			</td>
 			<td>
-				<input type="text" name="name" id="TakeImage_CamImagesLocation_value1">
+				<input type="text" name="name" id="TakeImage_RawImagesLocation_value1">
 			</td>
 			<td class="description">
 				Location to store raw camera images
@@ -114,11 +114,11 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="TakeImage_CamImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "CamImagesRetention")' unchecked >
-				<label for=TakeImage_CamImagesRetention_enabled><class id="TakeImage_CamImagesRetention_text" style="color:black;">CamImagesRetention</class></label>
+				<input type="checkbox" id="TakeImage_RawImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "RawImagesRetention")' unchecked >
+				<label for=TakeImage_RawImagesRetention_enabled><class id="TakeImage_RawImagesRetention_text" style="color:black;">RawImagesRetention</class></label>
 			</td>
 			<td>
-				<input type="number" id="TakeImage_CamImagesRetention_value1" size="13" min="0" step="1">
+				<input type="number" id="TakeImage_RawImagesRetention_value1" size="13" min="0" step="1">
 			</td>
 			<td class="description">
 				Time to keep the raw image (in days, resp. "0" = forever)
@@ -1826,8 +1826,8 @@ function UpdateInput() {
 	document.getElementById("Category_InfluxDB_enabled").checked = category["InfluxDB"]["enabled"];
 	setVisible("GPIO_item", category["GPIO"]["enabled"]);
 
-	WriteParameter(param, category, "TakeImage", "CamImagesLocation", true);
-	WriteParameter(param, category, "TakeImage", "CamImagesRetention", true);
+	WriteParameter(param, category, "TakeImage", "RawImagesLocation", true);
+	WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
 	WriteParameter(param, category, "TakeImage", "Demo", false);
 	WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
 	WriteParameter(param, category, "TakeImage", "ImageQuality", false);
@@ -1947,8 +1947,8 @@ function ReadParameterAll()
 	category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
 	category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 	
-	ReadParameter(param, "TakeImage", "CamImagesLocation", true);
-	ReadParameter(param, "TakeImage", "CamImagesRetention", true);
+	ReadParameter(param, "TakeImage", "RawImagesLocation", true);
+	ReadParameter(param, "TakeImage", "RawImagesRetention", true);
 	ReadParameter(param, "TakeImage", "Demo", false);
 	ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
 	ReadParameter(param, "TakeImage", "ImageQuality", false);

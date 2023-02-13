@@ -83,7 +83,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((splitted[0] ==  "CAMIMAGESLOCATION") && (splitted.size() > 1))
+        if ((splitted[0] ==  "RAWIMAGESLOCATION") && (splitted.size() > 1))
         {
             imagesLocation = "/sdcard" + splitted[1];
             isLogImage = true;
@@ -108,7 +108,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             waitbeforepicture = stoi(splitted[1]);
         }
 
-        if ((toUpper(splitted[0]) == "CAMIMAGESRETENTION") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "RAWIMAGESRETENTION") && (splitted.size() > 1))
         {
             this->imagesRetention = std::stoi(splitted[1]);
         }

@@ -454,8 +454,8 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[MakeImage]" || section == "[TakeImage]") {
-            migrated = migrated | replace(configLines[i], "LogImageLocation", "CamImagesLocation");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "CamImagesRetention");
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "RawImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "RawImagesRetention");
 
             migrated = migrated | replace(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
             migrated = migrated | replace(configLines[i], ";Demo", "Demo"); // Enable it
