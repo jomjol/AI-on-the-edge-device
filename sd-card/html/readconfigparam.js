@@ -273,22 +273,7 @@ function ParseConfig() {
           aktline++;
      }
 
-
-     // Make the downward compatiblity with MQTT (Maintopic --> topic)
-     if (param["MQTT"]["Topic"]["found"] == true && param["MQTT"]["MainTopic"]["found"] == false)
-     {
-          param["MQTT"]["MainTopic"] = param["MQTT"]["Topic"]
-     }
-     delete param["MQTT"]["Topic"]                // Dient nur der Downwardskompatibilität
-
-
-     if (param["Debug"]["LogLevel"]["value1"] == "false" || param["Debug"]["LogLevel"]["value1"] == "true")
-     {
-          param["Debug"]["LogLevel"]["value1"] = "2";
-     }
-
-
-     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     // Make the downward compatiblity
      if (category["DataLogging"]["found"] == false)
      {
           category["DataLogging"]["found"] = true;
