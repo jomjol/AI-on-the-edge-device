@@ -474,7 +474,10 @@ void migrateConfiguration(void) {
         if (section == "[MQTT]") {
             migrated = migrated | replace(configLines[i], ";RetainMessages", "RetainMessages");
             migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages");
-            migrated = migrated | replace(configLines[i], "MainTopic", "Topic");
+            if (configLines[i].rfind("Topic", 0) != std::string::npos)  // only if string starts with "Topic"
+            {
+                migrated = migrated | replace(configLines[i], "Topic", "MainTopic");
+            }
         }
 
         if (section == "[InfluxDB]") {
