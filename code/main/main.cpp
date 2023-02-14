@@ -167,13 +167,13 @@ extern "C" void app_main(void)
         ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
     #endif
 
-    //********************************************
+    // ********************************************
     // Highlight start of app_main 
-    //********************************************
+    // ********************************************
     ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
  
     // Init camera
-    //********************************************
+    // ********************************************
     PowerResetCamera();
     esp_err_t camStatus = Camera.InitCam();
     Camera.LightOnOff(false);
@@ -183,7 +183,7 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );
 
     // Init SD card
-    //********************************************
+    // ********************************************
     if (!Init_NVS_SDCard())
     {
         ESP_LOGE(TAG, "SD card initialization failed. Init aborted!");
@@ -191,38 +191,38 @@ extern "C" void app_main(void)
     }
 
     // SD Card basic check
-    //********************************************
+    // ********************************************
     // TODO
 
     // Create directories (if not already existing)
-    //********************************************
+    // ********************************************
     LogFile.CreateLogDirectories();
     MakeDir("/sdcard/demo");            // needed for demo mode
 
-    //********************************************
+    // ********************************************
     // Highlight start of logfile logging
-    //********************************************
+    // ********************************************
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
     // Init time (as early as possible, but SD card must be accessible)
-    //********************************************
+    // ********************************************
     setupTime();
 
     // Check for updates
-    //********************************************
+    // ********************************************
     CheckOTAUpdate();
     CheckUpdate();
 
     // Start SoftAP for initial remote setup
-    //********************************************
+    // ********************************************
     #ifdef ENABLE_SOFTAP
         CheckStartAPMode(); // if no wlan.ini and/or config.ini --> Start SoftAP (function does not exit anymore until reboot)
     #endif
 
     // Check version information
-    //********************************************
+    // ********************************************
     std::string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
         ", Web UI: " + getHTMLversion();
 
@@ -240,7 +240,7 @@ extern "C" void app_main(void)
     }
 
     // Check reboot reason
-    //********************************************
+    // ********************************************
     CheckIsPlannedReboot();
     if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC)) {  // If system reboot was not triggered by user and reboot was caused by execption 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reset reason: " + getResetReason());
@@ -262,11 +262,11 @@ extern "C" void app_main(void)
     #endif
 
     // Read WLAN parameter and start WIFI
-    //********************************************
+    // ********************************************
     int retval = LoadWlanFromFile(WLAN_CONFIG_FILE);
     if (retval == 0) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, WIFI init...");
-        if (wifi_init_sta() != ESP_OK) {
+        if (wifi_init_sta() != ESP_OK) {    // Init WIFI: Errors could halt the system before exiting the function -> detailed logs only on serial console
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Init aborted!");
             StatusLED(WLAN_INIT, 3, false);
             return;
@@ -286,7 +286,7 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay );
 
     // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
-    //********************************************
+    // ********************************************
     esp_log_level_set("wifi", ESP_LOG_WARN);
   
     #ifdef HEAP_TRACING_MAIN_WIFI
@@ -311,7 +311,7 @@ extern "C" void app_main(void)
     #endif
 
     // Print Device info
-    //********************************************
+    // ********************************************
     esp_chip_info_t chipInfo;
     esp_chip_info(&chipInfo);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device info: CPU frequency: " + std::to_string(CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ) + 
@@ -319,12 +319,12 @@ extern "C" void app_main(void)
                                            ", Chip revision: " + std::to_string(chipInfo.revision));
     
     // Print SD-Card info
-    //********************************************
+    // ********************************************
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "SD card info: Name: " + std::string(card->cid.name) + ", Capacity: " + 
                         std::to_string(card->csd.capacity / 1024 / 1024 * card->csd.sector_size) + "MB");
     
     // Init external PSRAM
-    //********************************************
+    // ********************************************
     esp_err_t ret = esp_spiram_init();
     if (ret == ESP_OK) { // PSRAM init ok -> Check if PSRAM provides at least 4 MB
         size_t psram_size = esp_spiram_get_size(); // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
@@ -344,7 +344,7 @@ extern "C" void app_main(void)
     }
 
     // Check heap memory
-    //********************************************
+    // ********************************************
     size_t _hsize = getESPHeapSize();
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Total heap: " + std::to_string(_hsize) + " byte");
 
@@ -355,7 +355,7 @@ extern "C" void app_main(void)
     }
     else {
         // Check camera init
-        //********************************************
+        // ********************************************
         if (camStatus != ESP_OK) {
             char camStatusHex[33];
             sprintf(camStatusHex,"0x%02x", camStatus);
@@ -379,13 +379,13 @@ extern "C" void app_main(void)
         }
 
         // Inital camera check (framebuffer)
-        //********************************************
+        // ********************************************
         if (camStatus == ESP_OK) {
             if (!Camera.testCamera()) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initial camera check (framebuffer) not successful");
-                /* Easiest would be to simply restart here and try again,
-                    how ever there seem to be systems where it fails at startup but still work correctly later.
-                    Therefore we treat it still as successed! */
+                    // Easiest would be to simply restart here and try again,
+                    // how ever there seem to be systems where it fails at startup but still work correctly later.
+                    // Therefore we treat it still as successed!
                     setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
                     StatusLED(CAM_INIT, 2, false);
             }
@@ -394,7 +394,7 @@ extern "C" void app_main(void)
             }
 
             // Print camera infos
-            //********************************************
+            // ********************************************
             char caminfo[50];
             sensor_t * s = esp_camera_sensor_get();
             sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL);
@@ -407,7 +407,7 @@ extern "C" void app_main(void)
     vTaskDelay( xDelay ); 
 
     // Start webserver + register handler
-    //********************************************
+    // ********************************************
     ESP_LOGD(TAG, "starting servers");
 
     server = start_webserver();   
@@ -426,7 +426,7 @@ extern "C" void app_main(void)
 
     // Reduce log level to INFO (till level is going to be adapted to defined level in config.ini)
     // NOTE: If an exection occured, log level kept to DEBUG level and won't be adapted to defined level in config file (ClassFlowControll.cpp)
-    //********************************************
+    // ********************************************
     if (!getIsPlannedReboot() && esp_reset_reason() == ESP_RST_PANIC)
         LogFile.setLogLevel(ESP_LOG_DEBUG);
     else
@@ -437,7 +437,7 @@ extern "C" void app_main(void)
     //setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
 
     // Check main init + start TFlite task
-    //********************************************
+    // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow...");
         ESP_LOGD(TAG, "Before do autostart");
