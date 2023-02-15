@@ -77,7 +77,7 @@ void StatusLED(StatusLedSource _eSource, int _iCode, bool _bInfinite)
 		StatusLEDData.iBlinkTime = 250;
 		StatusLEDData.bInfinite = _bInfinite;
 	}
-	if (_eSource == SDCARD_INIT) {
+	else if (_eSource == SDCARD_INIT) {
 		StatusLEDData.iSourceBlinkCnt = SDCARD_INIT;
 		StatusLEDData.iCodeBlinkCnt = _iCode;
 		StatusLEDData.iBlinkTime = 250;
