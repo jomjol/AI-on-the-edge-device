@@ -38,7 +38,8 @@
 
 #include "ClassLogFile.h"
 
-#include "Helper.h"
+#include "Helper.h"#
+#include "statusled.h"
 #include "../../include/defines.h"
 
 /*an ota data write buffer ready to write to the flash*/
@@ -145,6 +146,7 @@ static bool ota_update_task(std::string fn)
     const esp_partition_t *update_partition = NULL;
 
     ESP_LOGI(TAG, "Starting OTA update");
+    StatusLED(AP_OR_OTA, 1, true);
 
     const esp_partition_t *configured = esp_ota_get_boot_partition();
     const esp_partition_t *running = esp_ota_get_running_partition();

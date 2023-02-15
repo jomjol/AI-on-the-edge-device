@@ -27,6 +27,7 @@
 #include "server_help.h"
 #include "defines.h"
 #include "Helper.h"
+#include "statusled.h"
 #include "server_ota.h"
 
 #include "lwip/err.h"
@@ -40,7 +41,7 @@
 bool isConfigINI = false;
 bool isWlanINI = false;
 
-static const char *TAG = "wifi softAP";
+static const char *TAG = "WIFI AP";
 
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
@@ -89,7 +90,7 @@ void wifi_init_softAP(void)
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
+    ESP_LOGI(TAG, "started with SSID \"%s\", password: \"%s\", channel: %d. Connect to AP and open http://192.168.4.1",
              EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
 }
 
@@ -515,6 +516,7 @@ void CheckStartAPMode()
     if (!isConfigINI || !isWlanINI)
     {
         ESP_LOGI(TAG, "Starting access point for remote configuration");
+        StatusLED(AP_OR_OTA, 2, true);
         wifi_init_softAP();
         start_webserverAP();
         while(1) { // wait until reboot within task_do_Update_ZIP
