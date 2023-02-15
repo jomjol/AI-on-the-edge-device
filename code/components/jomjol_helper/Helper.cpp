@@ -227,9 +227,9 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
 bool MakeDir(std::string _what)
 {
 	int mk_ret = mkdir(_what.c_str(), 0775);
-	if (mk_ret)
+	if (mk_ret < 0 && errno != EEXIST)	// Error excluding folder exists
 	{
-		ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
+		ESP_LOGE(TAG, "MakeDir: Failed to create %s , errno=%d", _what.c_str(), errno);
 		return false;
 	}
 	return true;

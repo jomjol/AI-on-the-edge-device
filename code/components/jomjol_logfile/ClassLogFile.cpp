@@ -386,14 +386,17 @@ void ClassLogFile::RemoveOldDataLog()
 }
 
 
-void ClassLogFile::CreateLogDirectories()
+bool ClassLogFile::CreateLogDirectories()
 {
-    MakeDir("/sdcard/log");
-    MakeDir("/sdcard/log/data");
-    MakeDir("/sdcard/log/analog");
-    MakeDir("/sdcard/log/digit");
-    MakeDir("/sdcard/log/message");
-    MakeDir("/sdcard/log/source");
+    bool bRetval = false;
+    bRetval = MakeDir("/sdcard/log");
+    bRetval = MakeDir("/sdcard/log/data");
+    bRetval = MakeDir("/sdcard/log/analog");
+    bRetval = MakeDir("/sdcard/log/digit");
+    bRetval = MakeDir("/sdcard/log/message");
+    bRetval = MakeDir("/sdcard/log/source");
+
+    return bRetval;
 }
 
 
