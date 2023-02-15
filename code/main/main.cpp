@@ -133,12 +133,16 @@ bool Init_NVS_SDCard()
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount filesystem");
+            ESP_LOGE(TAG, "SD card: Failed to mount filesystem. Try another card");
             StatusLED(SDCARD_INIT, 1, true);
         } 
-        else {
-            ESP_LOGE(TAG, "Failed to initialize the card. Make sure SD card lines have pull-up resistors in place");
+        else if (ret == 263) { // Error code: 0x107 --> usually: SD not found
+            ESP_LOGE(TAG, "SD card: Init failed. Check if SD card is properly inserted in the SD card slot or try another card");
             StatusLED(SDCARD_INIT, 2, true);
+        }
+        else {
+            ESP_LOGE(TAG, "SD card: Init failed. Try another card or check error code");
+            StatusLED(SDCARD_INIT, 3, true);
         }
         return false;
     }
@@ -190,14 +194,13 @@ extern "C" void app_main(void)
         return; // No way to continue without working SD card!
     }
 
-    // SD Card basic check
+    // SD card: Create directories (if not already existing)
     // ********************************************
-    // TODO
-
-    // Create directories (if not already existing)
-    // ********************************************
-    LogFile.CreateLogDirectories();
-    MakeDir("/sdcard/demo");            // needed for demo mode
+    bool bDirStatus = LogFile.CreateLogDirectories();
+    bDirStatus = MakeDir("/sdcard/demo");            // needed for demo mode
+    if (!bDirStatus) {
+        StatusLED(SDCARD_CHECK, 1, false);
+    }
 
     // ********************************************
     // Highlight start of logfile logging
@@ -206,9 +209,13 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    // Init time (as early as possible, but SD card must be accessible)
+    // Init time (as early as possible, but SD card needs to be initialized)
     // ********************************************
-    setupTime();
+    setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
+
+    // SD card: basic RW check
+    // ********************************************
+    // TODO
 
     // Check for updates
     // ********************************************
@@ -221,6 +228,10 @@ extern "C" void app_main(void)
         CheckStartAPMode(); // if no wlan.ini and/or config.ini --> Start SoftAP (function does not exit anymore until reboot)
     #endif
 
+    // SD card: Check folder structure
+    // ********************************************
+	// TODO
+
     // Check version information
     // ********************************************
     std::string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
@@ -232,7 +243,7 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
 
     if (getHTMLcommit().substr(0, 7) == "?")
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Failed to read file html\\version.txt to parse Web UI version"));
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Failed to read file html/version.txt to parse Web UI version"));
  
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ")");
@@ -244,8 +255,8 @@ extern "C" void app_main(void)
     CheckIsPlannedReboot();
     if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC)) {  // If system reboot was not triggered by user and reboot was caused by execption 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reset reason: " + getResetReason());
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device was rebooted due to a software exception! Log level is set to DEBUG until the next reboot.");
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization is delayed by 5 minutes to check the logs or do an OTA update."); 
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device was rebooted due to a software exception! Log level is set to DEBUG until the next reboot. "
+                                               "Initialization is delayed by 5 minutes to check the logs or do an OTA update."); 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Keep device running until crash occurs again and check logs after device is up again.");
     }
     else {
@@ -263,20 +274,20 @@ extern "C" void app_main(void)
 
     // Read WLAN parameter and start WIFI
     // ********************************************
-    int retval = LoadWlanFromFile(WLAN_CONFIG_FILE);
-    if (retval == 0) {
+    int iWLANStatus = LoadWlanFromFile(WLAN_CONFIG_FILE);
+    if (iWLANStatus == 0) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, WIFI init...");
         if (wifi_init_sta() != ESP_OK) {    // Init WIFI: Errors could halt the system before exiting the function -> detailed logs only on serial console
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Init aborted!");
-            StatusLED(WLAN_INIT, 3, false);
+            StatusLED(WLAN_INIT, 3, true);
             return;
         }
     }
-    else if (retval == -1) {  // wlan.ini not available, potentially empty or content not readable
+    else if (iWLANStatus == -1) {  // wlan.ini not available, potentially empty or content not readable
         StatusLED(WLAN_INIT, 1, true);
         return; // No way to continue without reading the wlan.ini
     }
-    else if (retval == -2) { // SSID or password not configured
+    else if (iWLANStatus == -2) { // SSID or password not configured
         StatusLED(WLAN_INIT, 2, true);
         return; // No way to continue with empty SSID or password!
     }
@@ -312,9 +323,9 @@ extern "C" void app_main(void)
    
     // Init external PSRAM
     // ********************************************
-    esp_err_t ret = esp_spiram_init();
-    if (ret != ESP_OK) {  // ESP_FAIL -> Failed to init PSRAM
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM init failed (" + std::to_string(ret) + ")! PSRAM not found or defective");
+    esp_err_t PSRAMStatus = esp_spiram_init();
+    if (PSRAMStatus != ESP_OK) {  // ESP_FAIL -> Failed to init PSRAM
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM init failed (" + std::to_string(PSRAMStatus) + ")! PSRAM not found or defective");
         setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
         StatusLED(PSRAM_INIT, 1, true);
     }
@@ -441,18 +452,17 @@ extern "C" void app_main(void)
     // Check main init + start TFlite task
     // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow...");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow task ...");
         ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
         isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow...");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow task ...");
         ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow start aborted!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted!");
     }
 }
-

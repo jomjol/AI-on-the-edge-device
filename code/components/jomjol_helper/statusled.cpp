@@ -26,7 +26,7 @@ void task_StatusLED(void *pvParameter)
 		gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT); // Set the GPIO as a push/pull output
 		gpio_set_level(BLINK_GPIO, 1);// LED off
 
-		for (int i=0; i<=1; ) // Default: repeat 1 times
+		for (int i=0; i<=3; ) // Default: repeat 3 times
 		{
 			if (!StatusLEDDataInt.bInfinite)
 				++i;
@@ -99,6 +99,18 @@ void StatusLED(StatusLedSource _eSource, int _iCode, bool _bInfinite)
 		StatusLEDData.iSourceBlinkCnt = PSRAM_INIT;
 		StatusLEDData.iCodeBlinkCnt = _iCode;
 		StatusLEDData.iBlinkTime = 250;
+		StatusLEDData.bInfinite = _bInfinite;
+	}
+	else if (_eSource == TIME_CHECK) {
+		StatusLEDData.iSourceBlinkCnt = TIME_CHECK;
+		StatusLEDData.iCodeBlinkCnt = _iCode;
+		StatusLEDData.iBlinkTime = 250;
+		StatusLEDData.bInfinite = _bInfinite;
+	}
+	else if (_eSource == AP_OR_OTA) {
+		StatusLEDData.iSourceBlinkCnt = AP_OR_OTA;
+		StatusLEDData.iCodeBlinkCnt = _iCode;
+		StatusLEDData.iBlinkTime = 350;
 		StatusLEDData.bInfinite = _bInfinite;
 	}
 
