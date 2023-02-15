@@ -10,6 +10,7 @@
 
 #include "../../include/defines.h"
 #include "Helper.h"
+#include "statusled.h"
 
 #include "esp_camera.h"
 #include "time_sntp.h"
@@ -862,16 +863,22 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOldLogFile();
             LogFile.RemoveOldDataLog();
         }
+
+        //Round finished -> Logfile
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
+                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
         
         //CPU Temp -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
         
         // WIFI Signal Strength (RSSI) -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
-        
-        //Round finished -> Logfile
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
-                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
+
+        // Check if time is synchronized (if NTP is configured)
+        if (getUseNtp() && !getTimeIsSet()) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set. Check configuration");
+            StatusLED(TIME_CHECK, 1, false);
+        }
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_intervall > fr_delta_ms)
