@@ -10,6 +10,11 @@
    
 
 ____
+#### #35 Use the same model, but provide the image from a Smartphone Camera
+as reading the Electricity or Water meter every few minutues only delivers apparent accuracy (DE: "Scheingenauigkeit") you could just as well take a picture with your Smartphone evey so often (e.g. once a week when you are in the Basement anyway), then with some "semi clever" tricks pass this image to the model developed here, and the values then on to who ever needs them e.g. via MQTT.
+IMO: It is not needed to have that many readings (datapoints) as our behaviour (Use of electricity or water) doesn't vary that much, say, over a weeks time. The interpolation between weekly readings will give sufficient information on the power and/or water usage. 
+
+
 #### #34 implement state and Roi for water leak detection
 for example see Roi on the next picture..
 ![grafik](https://user-images.githubusercontent.com/38385805/207858812-2a6ba41d-1a8c-4fa1-9b6a-53cdd113c106.png)
