@@ -54,7 +54,7 @@ int LoadWlanFromFile(std::string fn)
     fn = FormatFileName(fn);
     FILE* pFile = fopen(fn.c_str(), "r");
     if (pFile == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to open file (read), abort init!"); 
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to open file (read). Device init aborted!"); 
         return -1;
     }
 
@@ -63,7 +63,7 @@ int LoadWlanFromFile(std::string fn)
     char zw[256];
     if (fgets(zw, sizeof(zw), pFile) == NULL) {
         line = "";
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "file opened, but empty or content not readable, abort init!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "file opened, but empty or content not readable. Device init aborted!");
         return -1;
     }
     else {
@@ -168,13 +168,13 @@ int LoadWlanFromFile(std::string fn)
 
     /* Check if SSID is empty (mandatory parameter) */
     if (wlan_config.ssid.empty()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SSID not configured, abort init!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SSID empty. Device init aborted!");
         return -2;
     }
 
     /* Check if password is empty (mandatory parameter) */
     if (wlan_config.password.empty()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Password not configured, abort init!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Password empty. Device init aborted!");
         return -2;
     }
 

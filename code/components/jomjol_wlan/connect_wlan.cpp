@@ -299,6 +299,7 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 		wifi_event_sta_disconnected_t *disconn = (wifi_event_sta_disconnected_t *)event_data;
 		if (disconn->reason == WIFI_REASON_ROAMING) {
 			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Roaming)");
+			// --> no reconnect neccessary, it should automatically reconnect to new AP
 		}
 		else {
 			WIFIConnected = false;
@@ -322,8 +323,8 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 				LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ")");
 				StatusLED(WLAN_CONN, 4, false);
 			}
+			esp_wifi_connect(); // Try to connect again
 		}
-		esp_wifi_connect(); // Try to connect again
 	}
 	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED) 
 	{
@@ -486,7 +487,7 @@ esp_err_t wifi_init_sta(void)
         }
     }
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init completed");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init successful");
 	return ESP_OK;
 }
 

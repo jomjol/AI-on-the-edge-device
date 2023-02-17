@@ -93,7 +93,7 @@ bool Init_NVS_SDCard()
         ret = nvs_flash_init();
     }
 
-    ESP_LOGI(TAG, "Using SDMMC peripheral");
+    ESP_LOGD(TAG, "Using SDMMC peripheral");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
@@ -133,15 +133,15 @@ bool Init_NVS_SDCard()
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "SD card: Failed to mount filesystem. Try another card");
+            ESP_LOGE(TAG, "Failed to mount FAT filesystem on SD card. Check SD card filesystem (only FAT supported) or try another card");
             StatusLED(SDCARD_INIT, 1, true);
         } 
         else if (ret == 263) { // Error code: 0x107 --> usually: SD not found
-            ESP_LOGE(TAG, "SD card: Init failed. Check if SD card is properly inserted in the SD card slot or try another card");
+            ESP_LOGE(TAG, "SD card init failed. Check if SD card is properly inserted into SD card slot or try another card");
             StatusLED(SDCARD_INIT, 2, true);
         }
         else {
-            ESP_LOGE(TAG, "SD card: Init failed. Try another card or check error code");
+            ESP_LOGE(TAG, "SD card init failed. Check error code or try another card");
             StatusLED(SDCARD_INIT, 3, true);
         }
         return false;
@@ -183,14 +183,14 @@ extern "C" void app_main(void)
     Camera.LightOnOff(false);
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay);
+    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
     vTaskDelay( xDelay );
 
     // Init SD card
     // ********************************************
     if (!Init_NVS_SDCard())
     {
-        ESP_LOGE(TAG, "SD card initialization failed. Init aborted!");
+        ESP_LOGE(TAG, "Device init aborted!");
         return; // No way to continue without working SD card!
     }
 
@@ -246,7 +246,7 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Failed to read file html/version.txt to parse Web UI version"));
  
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Web UI version (") + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ")");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Web UI version (" + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ")");
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Recommendation: Repeat installation using AI-on-the-edge-device__update__*.zip");    
     }
 
@@ -256,8 +256,8 @@ extern "C" void app_main(void)
     if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC)) {  // If system reboot was not triggered by user and reboot was caused by execption 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reset reason: " + getResetReason());
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device was rebooted due to a software exception! Log level is set to DEBUG until the next reboot. "
-                                               "Initialization is delayed by 5 minutes to check the logs or do an OTA update."); 
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Keep device running until crash occurs again and check logs after device is up again.");
+                                               "Flow init is delayed by 5 minutes to check the logs or do an OTA update"); 
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Keep device running until crash occurs again and check logs after device is up again");
     }
     else {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
@@ -276,9 +276,9 @@ extern "C" void app_main(void)
     // ********************************************
     int iWLANStatus = LoadWlanFromFile(WLAN_CONFIG_FILE);
     if (iWLANStatus == 0) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, WIFI init...");
-        if (wifi_init_sta() != ESP_OK) {    // Init WIFI: Errors could halt the system before exiting the function -> detailed logs only on serial console
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Init aborted!");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, init WIFI...");
+        if (wifi_init_sta() != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Device init aborted!");
             StatusLED(WLAN_INIT, 3, true);
             return;
         }
@@ -293,7 +293,7 @@ extern "C" void app_main(void)
     }
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
+    ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
     vTaskDelay( xDelay );
 
     // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
@@ -304,8 +304,6 @@ extern "C" void app_main(void)
         ESP_ERROR_CHECK( heap_trace_stop() );
         heap_trace_dump(); 
     #endif   
-
-    //ESP_LOGD(TAG, "time %s", getCurrentTimeString("%Y%m%d-%H%M%S").c_str());
 
     #ifdef DEBUG_ENABLE_SYSINFO
         #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
@@ -355,7 +353,7 @@ extern "C" void app_main(void)
             else { // HEAP size OK --> continue to check camera init
                 // Check camera init
                 // ********************************************
-                if (camStatus != ESP_OK) { // Camera init failed
+                if (camStatus != ESP_OK) { // Camera init failed, retry to init
                     char camStatusHex[33];
                     sprintf(camStatusHex,"0x%02x", camStatus);
                     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Camera init failed (" + std::string(camStatusHex) + "), retrying...");
@@ -365,10 +363,10 @@ extern "C" void app_main(void)
                     Camera.LightOnOff(false);
 
                     xDelay = 2000 / portTICK_PERIOD_MS;
-                    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay);
+                    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
                     vTaskDelay( xDelay ); 
 
-                    if (camStatus != ESP_OK) { // Camera init failed, retry
+                    if (camStatus != ESP_OK) { // Camera init failed again
                         sprintf(camStatusHex,"0x%02x", camStatus);
                         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) +
                                                                 ")! Check camera module and/or proper electrical connection");
@@ -376,20 +374,18 @@ extern "C" void app_main(void)
                         StatusLED(CAM_INIT, 1, true);
                     }
                 }
-                else { // ESP_OK -> Camera init OK --> continue to perform initial camera check
-                    // Inital camera check (framebuffer)
+                else { // ESP_OK -> Camera init OK --> continue to perform camera framebuffer check
+                    // Camera framebuffer check
                     // ********************************************
                     if (!Camera.testCamera()) {
-                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initial camera check (framebuffer) not successful");
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera framebuffer check failed");
                         // Easiest would be to simply restart here and try again,
                         // how ever there seem to be systems where it fails at startup but still work correctly later.
                         // Therefore we treat it still as successed! */
                         setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
                         StatusLED(CAM_INIT, 2, false);
                     }
-                    else {
-                        Camera.LightOnOff(false);
-                    }
+                    Camera.LightOnOff(false);   // make sure flashlight is off before start of flow
 
                     // Print camera infos
                     // ********************************************
@@ -416,7 +412,7 @@ extern "C" void app_main(void)
                         std::to_string(card->csd.capacity / 1024 / 1024 * card->csd.sector_size) + "MB");
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay*10);
+    ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
     vTaskDelay( xDelay ); 
 
     // Start webserver + register handler
@@ -453,13 +449,11 @@ extern "C" void app_main(void)
     // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow task ...");
-        ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
         isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow task ...");
-        ESP_LOGD(TAG, "Before do autostart");
         TFliteDoAutoStart();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
