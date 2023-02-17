@@ -26,7 +26,7 @@ void task_StatusLED(void *pvParameter)
 		gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT); // Set the GPIO as a push/pull output
 		gpio_set_level(BLINK_GPIO, 1);// LED off
 
-		for (int i=0; i<=3; ) // Default: repeat 3 times
+		for (int i=0; i<3; ) // Default: repeat 3 times
 		{
 			if (!StatusLEDDataInt.bInfinite)
 				++i;
@@ -122,7 +122,7 @@ void StatusLED(StatusLedSource _eSource, int _iCode, bool _bInfinite)
 	}
 	else if (xHandle_task_StatusLED == NULL) {
 		StatusLEDData.bProcessingRequest = true;
-		BaseType_t xReturned = xTaskCreate(&task_StatusLED, "task_StatusLED", 1536, NULL, tskIDLE_PRIORITY+1, &xHandle_task_StatusLED);
+		BaseType_t xReturned = xTaskCreate(&task_StatusLED, "task_StatusLED", 1280, NULL, tskIDLE_PRIORITY+1, &xHandle_task_StatusLED);
 		if(xReturned != pdPASS)
 		{
 			xHandle_task_StatusLED = NULL;
@@ -134,4 +134,12 @@ void StatusLED(StatusLedSource _eSource, int _iCode, bool _bInfinite)
 		ESP_LOGD(TAG, "task_StatusLED still processing, request skipped");	// Requests with high frequency could be skipped, but LED is only helpful for static states 
 	}
 	//ESP_LOGD(TAG, "StatusLED - done");
+}
+
+
+void StatusLEDOff(void)
+{
+	gpio_pad_select_gpio(BLINK_GPIO); // Init the GPIO
+	gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT); // Set the GPIO as a push/pull output
+	gpio_set_level(BLINK_GPIO, 1);// LED off
 }

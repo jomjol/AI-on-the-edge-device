@@ -29,5 +29,6 @@ struct StatusLEDData {
 };
 
 void StatusLED(StatusLedSource _eSource, int _iCode, bool _bInfinite);
+void StatusLEDOff(void);
 
 #endif //STATUSLED_H

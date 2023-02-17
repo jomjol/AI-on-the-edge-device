@@ -38,7 +38,7 @@
 
 #include "ClassLogFile.h"
 
-#include "Helper.h"#
+#include "Helper.h"
 #include "statusled.h"
 #include "../../include/defines.h"
 
@@ -589,6 +589,9 @@ void task_reboot(void *KillAutoFlow)
         KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
+    Camera.LightOnOff(false);
+    StatusLEDOff();
+
     /* Stop service tasks */
     #ifdef ENABLE_MQTT
         MQTTdestroy_client(true);
@@ -627,6 +630,8 @@ void doRebootOTA()
 {
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
+    Camera.LightOnOff(false);
+    StatusLEDOff();
     esp_camera_deinit();
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
