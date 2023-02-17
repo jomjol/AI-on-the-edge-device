@@ -67,6 +67,8 @@ static void infinite_loop(void)
 
 void task_do_Update_ZIP(void *pvParameter)
 {
+    StatusLED(AP_OR_OTA, 1, true);  // Signaling an OTA update
+    
     std::string filetype = toUpper(getFileType(_file_name_update));
 
   	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
@@ -146,7 +148,6 @@ static bool ota_update_task(std::string fn)
     const esp_partition_t *update_partition = NULL;
 
     ESP_LOGI(TAG, "Starting OTA update");
-    StatusLED(AP_OR_OTA, 1, true);
 
     const esp_partition_t *configured = esp_ota_get_boot_partition();
     const esp_partition_t *running = esp_ota_get_running_partition();
