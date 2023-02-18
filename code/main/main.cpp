@@ -196,8 +196,10 @@ extern "C" void app_main(void)
 
     // SD card: Create directories (if not already existing)
     // ********************************************
-    bool bDirStatus = LogFile.CreateLogDirectories();
-    bDirStatus = MakeDir("/sdcard/demo");            // needed for demo mode
+    bool bDirStatus = LogFile.CreateLogDirectories(); // needed for logging + image saving
+    bDirStatus = MakeDir("/sdcard/firmware");         // needed for firmware update
+    bDirStatus = MakeDir("/sdcard/img_tmp");          // needed for setting up alignment marks
+    bDirStatus = MakeDir("/sdcard/demo");             // needed for demo mode
     if (!bDirStatus) {
         StatusLED(SDCARD_CHECK, 1, false);
     }
