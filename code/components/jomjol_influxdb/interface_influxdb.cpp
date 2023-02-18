@@ -175,8 +175,8 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
         sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
 
-        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
-//        payload = _influxDB_V2_Measurement + " " + _key + "=774 " + nowTimestamp;
+        payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+//        payload = _influxDBMeasurement + " " + _key + "=774 " + nowTimestamp;
     }
     else
     {

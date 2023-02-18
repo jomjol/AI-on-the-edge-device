@@ -93,4 +93,7 @@ std::string getFormatedUptime(bool compact);
 
 const char* get404(void);
 
+
+std::string UrlDecode(const std::string& value);
+
 #endif //HELPER_H

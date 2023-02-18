@@ -14,7 +14,7 @@
 
 #### Fixed
 
--   n.a.
+-   [2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Initial AP-Mode now decodes the parameters correctly
 
 #### Removed
 
