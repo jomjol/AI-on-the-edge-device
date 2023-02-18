@@ -375,7 +375,7 @@ esp_err_t wifi_init_sta(void)
 
     if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
     {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual config -> IP: " + wlan_config.ipaddress + ", Gateway: " + 
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> IP: " + wlan_config.ipaddress + ", Gateway: " + 
 												std::string(wlan_config.gateway) + ", Netmask: " + std::string(wlan_config.netmask));
 		esp_netif_dhcpc_stop(my_sta);	// Stop DHCP service
 
@@ -393,7 +393,7 @@ esp_err_t wifi_init_sta(void)
         esp_netif_set_ip_info(my_sta, &ip_info);	// Set static IP configuration
     }
 	else {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use DHCP service");
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Automatic interface config --> Use DHCP service");
 	}
 
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
