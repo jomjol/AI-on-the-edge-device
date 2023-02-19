@@ -113,7 +113,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->uri = splitted[1];
         }
-        if ((toUpper(splitted[0]) == "SETRETAINFLAG") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "RETAINMESSAGES") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE") {
                 SetRetainFlag = true;  
