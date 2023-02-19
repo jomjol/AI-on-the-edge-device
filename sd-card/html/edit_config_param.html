@@ -158,11 +158,12 @@ textarea {
 				<class id="MakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
 			</td>
 			<td>
-				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="0" max="63">
+				<input type="number" id="MakeImage_ImageQuality_value1" size="13" min="8" max="63">
 			</td>
 			<td class="description">
-				Quality index for picture (default = "12" - "0" high ... "63" low) <br>
-				Remark: values smaller than 12 can result in a reboot, as the bigger sized JPEG might not fit in the available RAM!
+				Image quality index (default = 12) <br>
+				Input range: 8 [highest quality] ... 63 [lowest quality] <br>
+				Remark: Value < 12 could result in system instabilities!
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
@@ -201,7 +202,8 @@ textarea {
 				<input type="number" id="MakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
-				Image Brightness (-2 .. 2 - default = "0")
+				Image brightness (default = 0) <br>
+				Input range: -2 ... 2
 			</td>
 		</tr>
 
@@ -213,8 +215,8 @@ textarea {
 				<input type="number" id="MakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
-				Image Contrast (-2 .. 2 - default = "0") <br>
-				Remark: camera driver is not fully supporting this setting yet (no impact on image)
+				Image contrast (default = 0) <br>
+				Input range: -2 ... 2
 			</td>
 		</tr>
 
@@ -226,8 +228,8 @@ textarea {
 				<input type="number" id="MakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
 			<td style="font-size: 80%;">
-				Image Saturation (-2 .. 2 - default = "0") <br>
-				Remark: camera driver is not fully supporting this setting yet (no impact on image)
+				Image saturation (default = 0) <br>
+				Input range: -2 ... 2
 			</td>
 		</tr>
 		
