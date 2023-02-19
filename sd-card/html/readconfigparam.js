@@ -110,9 +110,9 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "CamImagesLocation");
+     ParamAddValue(param, catname, "RawImagesLocation");
      ParamAddValue(param, catname, "WaitBeforeTakingPicture");
-     ParamAddValue(param, catname, "CamImagesRetention");
+     ParamAddValue(param, catname, "RawImagesRetention");
      ParamAddValue(param, catname, "Demo");
      ParamAddValue(param, catname, "Brightness");
      ParamAddValue(param, catname, "Contrast");
