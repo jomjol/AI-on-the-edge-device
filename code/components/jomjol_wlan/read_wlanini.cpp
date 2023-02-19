@@ -64,6 +64,7 @@ int LoadWlanFromFile(std::string fn)
     if (fgets(zw, sizeof(zw), pFile) == NULL) {
         line = "";
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "file opened, but empty or content not readable. Device init aborted!");
+        fclose(pFile);
         return -1;
     }
     else {
