@@ -1522,8 +1522,14 @@ function getParameterByName(name, url = window.location.href) {
 }	
 
 function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1){
-
-	let anzpara = _param[_cat][_name].anzParam;		
+	let anzpara;
+	try {
+		anzpara = _param[_cat][_name].anzParam;	
+	}
+	catch (error) {
+		firework.launch("Parameter '" + _name + "' in category '" + _cat + "' is unknown!", 'danger', 30000);
+		return;
+	}
 
 	if (_number > -1) {
 		if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined))
