@@ -324,7 +324,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(splitted[0]) == "ROIIMAGELOCATION") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "ROIIMAGESLOCATION") && (splitted.size() > 1))
         {
             this->imagesLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
