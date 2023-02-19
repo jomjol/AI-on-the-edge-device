@@ -83,15 +83,15 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((splitted[0] ==  "RAWIMAGESLOCATION") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) ==  "RAWIMAGESLOCATION") && (splitted.size() > 1))
         {
             imagesLocation = "/sdcard" + splitted[1];
             isLogImage = true;
         }
-        if ((splitted[0] == "ImageQuality") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "IMAGEQUALITY") && (splitted.size() > 1))
             ImageQuality = std::stod(splitted[1]);
 
-        if ((splitted[0] == "ImageSize") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "IMAGESIZE") && (splitted.size() > 1))
         {
             ImageSize = Camera.TextToFramesize(splitted[1].c_str());
             isImageSize = true;
