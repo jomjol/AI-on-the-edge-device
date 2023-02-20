@@ -7,6 +7,7 @@
 #### Added
 
 -   Additional interface to InfluxDB Version 2 upwards
+-   Updated the Hybrid CNN network to `dig-cont_0610_s3`
 
 #### Changed
 
