@@ -499,11 +499,14 @@ void migrateConfiguration(void) {
                 migrated = migrated | replace(configLines[i], ";", ""); // Enable it
             }
 
+            /* ExtendedResolution has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "ExtendedResolution") && isInString(configLines[i], ";")) { // It is the parameter "ExtendedResolution" and it is commented out
+                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+            }
+
             migrated = migrated | replace(configLines[i], ";ErrorMessage = true", ";ErrorMessage = false"); // Set it to its default value
             migrated = migrated | replace(configLines[i], ";ErrorMessage", "ErrorMessage"); // Enable it
-
-            migrated = migrated | replace(configLines[i], ";ExtendedResolution = true", ";ExtendedResolution = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";ExtendedResolution", "ExtendedResolution"); // Enable it
 
             migrated = migrated | replace(configLines[i], ";CheckDigitIncreaseConsistency = true", ";CheckDigitIncreaseConsistency = false"); // Set it to its default value
             migrated = migrated | replace(configLines[i], ";CheckDigitIncreaseConsistency", "CheckDigitIncreaseConsistency"); // Enable it
