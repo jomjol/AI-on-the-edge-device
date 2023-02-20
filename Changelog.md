@@ -8,6 +8,8 @@
 
 -   Additional interface to InfluxDB Version 2 upwards
 -   Updated the Hybrid CNN network to `dig-cont_0610_s3`
+-   :bangbang:  Update Camera driver: contrast, brightness and saturation now working
+    :bangbang:  **Attention**: this can effect old version as well, because there not all settings were effective!
 
 #### Changed
 
