@@ -44,7 +44,7 @@ textarea {
 }
 
 .disabled {
-    color:lightgrey;
+    color:darkgrey;
 }
 
 .smallSelect {
@@ -71,6 +71,38 @@ textarea {
     padding-left: 69px;
 }
 
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 600px;
+	height: 300px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	padding: 1px 0;
+
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+	top: 100%;
+	left: 100%;
+	margin-left: -600px;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+.tooltip-content {
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	padding: 1px;
+}
+
 </style>
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -79,6 +111,8 @@ textarea {
 
 <body style="font-family: arial; padding: 0px 10px;">
 	<h2>Configuration</h2>
+	<p><img src="help.png" width="16px"> The parameters are documented on <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters?v=$COMMIT_HASH" target="_blank">jomjol.github.io/AI-on-the-edge-device-docs/Parameters</a>.</p>
+
 	<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
 	<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>	
 	<p></p>
@@ -93,7 +127,7 @@ textarea {
 				Value
 			</th>
 			<th style="text-align: left;">
-				Information
+				Documentation
 			</th>
 		</tr>
 
@@ -108,8 +142,10 @@ textarea {
 			<td>
 				<input type="text" name="name" id="TakeImage_RawImagesLocation_value1">
 			</td>
-			<td class="description">
-				Location to store raw camera images
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/RawImagesLocation.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -120,8 +156,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_RawImagesRetention_value1" size="13" min="0" step="1">
 			</td>
-			<td class="description">
-				Time to keep the raw image (in days, resp. "0" = forever)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/RawImagesRetention.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>		
 		<tr class="expert" id="ex1">
@@ -134,10 +172,10 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use demo images instead of the real camera images.<br>
-				Make sure to have a demo folder on your SD-Card!
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode" target="_blank">documentation</a> for details.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/Demo.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" id="ex1">
@@ -148,8 +186,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
 			</td>
-			<td class="description">
-				Wait time between switching illumination on and taking the picture (in seconds)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/WaitBeforeTakingPicture.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" id="ex2">
@@ -159,10 +199,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_ImageQuality_value1" size="13" min="0" max="63">
 			</td>
-			<td class="description">
-				Image quality index (default = 12) <br>
-				Input range: 8 [highest quality] ... 63 [lowest quality] <br>
-				Remark: Value < 12 could result in system instabilities!
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/ImageQuality.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex3">
@@ -175,8 +215,10 @@ textarea {
 					<option value="QVGA" >QVGA</option>
 				</select>
 			</td>
-			<td class="description">
-				Size of camera picture (default = "VGA")
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/ImageSize.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -187,9 +229,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100">
 			</td>
-			<td style="font-size: 80%;">
-				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
-				Remark: as the camera autoillumination settings are used, this is rather for energy saving, than reducing reflections.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/LEDIntensity.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -200,9 +243,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image brightness (default = 0) <br>
-				Input range: -2 ... 2
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/Brightness.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -213,9 +257,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image contrast (default = 0) <br>
-				Input range: -2 ... 2
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/Contrast.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -226,9 +271,10 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image saturation (default = 0) <br>
-				Input range: -2 ... 2
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/Saturation.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		
@@ -242,8 +288,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Fixes the illumination setting of camera at the startup and uses this later --> individual round is faster
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/TakeImage/FixedExposure.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -258,8 +306,10 @@ textarea {
 			<td>
 				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
 			</td>
-			<td style="font-size: 80%;">
-				x size (width) in which the reference is searched (default = "20") 
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/SearchFieldX.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex8">
@@ -269,8 +319,10 @@ textarea {
 			<td>
 				<input type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1">
 			</td>
-			<td style="font-size: 80%;">
-				y size (height) in which the reference is searched (default = "20") 
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/SearchFieldY.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
@@ -286,8 +338,10 @@ textarea {
 					<option value="off" >Off</option><!-- add disable aligment algo |01.2023 -->
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				"Default" = use only R-Channel, "HighAccuracy" = use all Channels (RGB, 3x slower), <br> "Fast" (First time RGB, then only check if image is shifted) 
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/AlignmentAlgo.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -301,8 +355,10 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Rotate the viewport together with the alignment rotation.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/FlipImageSize.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -316,8 +372,10 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Rotate the viewport together with the alignment rotation.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Alignment/InitialMirror.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -326,7 +384,7 @@ textarea {
 		<tr id="Category_Digits_ex4">
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Digits_enabled>Digits</h4></label>
+				<label for=Category_Digits_enabled>Digits</label></h4>
 			</td>
 		</tr> 
 		<tr>
@@ -337,9 +395,10 @@ textarea {
 				<select id="Digits_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Path to CNN model file for image recognition.<br>
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/Model.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		
@@ -351,8 +410,10 @@ textarea {
 			<td>
 				<input width="40px" type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1">
 			</td>
-			<td style="font-size: 80%;">
-				EXPERIMENTAL - NOT WORKING FOR ALL CNNs! - Threshold above which the classification should be to accept the value (only for digits meaningfull)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/CNNGoodThreshold.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -364,8 +425,10 @@ textarea {
 			<td>
 				<input type="text" name="name" id="Digits_ROIImagesLocation_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Location to store separated digits for logging
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/ROIImagesLocation.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -376,15 +439,17 @@ textarea {
 			<td>
 				<input type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1">
 			</td>
-			<td style="font-size: 80%;">
-				Time to keep the separated digit images (in days, resp. "0" = forever)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Digits/ROIImagesRetention.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
 		<tr id="Category_Analog_ex4">
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Analog_enabled>Analog</h4></label>
+				<label for=Category_Analog_enabled>Analog</label></h4>
 			</td>
 		</tr> 
 		<tr>
@@ -395,8 +460,11 @@ textarea {
 				<select id="Analog_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;"> Path to CNN model file for image recognition.<br>
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.</td>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Analog/Model.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
+			</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -405,14 +473,24 @@ textarea {
 				</label>
 			</td>
 			<td> <input type="text" name="name" id="Analog_ROIImagesLocation_value1"> </td>
-			<td style="font-size: 80%;"> Location to store separated digits for logging </td>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Analog/ROIImagesLocation.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
+			</td>
 		</tr>
+
+
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Analog_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesRetention")' unchecked >
 				<label for=Analog_ROIImagesRetention_enabled><class id="Analog_ROIImagesRetention_text" style="color:black;">ROIImagesRetention</class></label></td>
 			<td> <input type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"> </td>
-			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Analog/ROIImagesRetention.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
+			</td>
 		</tr>
 
 		<tr>
@@ -428,8 +506,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use the previous read value for consistency checks - also on reboots
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/PreValueUse.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex11">
@@ -440,8 +520,10 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0">
 			</td>
-			<td style="font-size: 80%;">
-				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/PreValueAgeStartup.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex12">
@@ -454,8 +536,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Do not show error message in return value - in error case, the last valid number will be send out
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/ErrorMessage.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" id="ex1dddd">
@@ -468,8 +552,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable additional consistency check - especially zero crossing check between digits
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/CheckDigitIncreaseConsistency.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -495,8 +581,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Set to "false" to ensure, that only positive changes are accepted (typically for counter)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.AllowNegativeRates.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -507,9 +595,10 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
-			<td style="font-size: 80%;">
-				Shift the decimal separator (positiv or negativ).<br>
-				Eg. to move from 'm&sup3;' to 'l' (Multiply by 1000), you need to set it to +3.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.DecimalShift.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -520,9 +609,10 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2">
 			</td>
-			<td style="font-size: 80%;">
-				If you have false Values, but the recognition is correct. Look for the start of changing of the first digit and note the analog pointer value behind. Set it here.
-				Only used on combination of digits and analog pointers. Default=9.2
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.AnalogDigitalTransitionStart.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -534,8 +624,10 @@ textarea {
 			<td>
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
-			<td style="font-size: 80%;">
-				Maximum change of a reading - if treated as absolute or relative change see next parameter.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.MaxRateValue.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -549,8 +641,10 @@ textarea {
 					<option value="RateChange" selected>RateChange</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the interval (RateChange = change/minute).
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.MaxRateType.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -563,8 +657,10 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use the decimal place of the last analog counter
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.ExtendedResolution.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -577,8 +673,10 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Leading "N"'s will be deleted before further processing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/PostProcessing/NUMBER.IgnoreLeadingNaN.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -600,8 +698,10 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI to the MQTT broker including port e.g.: mqtt://IP-Address:Port
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/Uri.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -612,14 +712,10 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_MainTopic_value1">
 			</td>
-			<td style="font-size: 80%;">
-				MQTT main topic, under which the counters are published. <br>
-				The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMETER where
-				<ul>
-					<li> VALUE_NAME is the name of the value (a meter might have more than one value) as defined during analog and digital ROI configuration (defaults to "main")</li>
-					<li> and PARAMETERS are: value, rate, timestamp, error</li>
-				</ul>
-				The general connection status can be found in MAINTOPIC/CONNECTION
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/MainTopic.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -630,8 +726,10 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_ClientID_value1">
 			</td>
-			<td style="font-size: 80%;">
-				ClientID to connect to the MQTT broker
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/ClientID.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -642,8 +740,10 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_user_value1">
 			</td>
-			<td style="font-size: 80%;">
-				User for MQTT authentication
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/user.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -654,8 +754,10 @@ textarea {
 			<td>
 				<input type="text" id="MQTT_password_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Password for MQTT authentication
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/password.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -668,8 +770,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable or disable the retain flag for all MQTT entries
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/RetainMessages.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -689,8 +793,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable or disable the <a href=https://www.home-assistant.io/docs/mqtt/discovery/ target=_blank>Homeassistant Discovery</a>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/HomeassistantDiscovery.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -712,11 +818,10 @@ textarea {
 					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Select the meter type so the sensors have the right units in Homeassistant.<br>
-				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!<br>
-				Please also make sure that it matches the dimention of the value provided by the meter! Eg. if your meter provides m3, you need to also set it to m3.
-				Alternatively you could set 'DecimalShift' to '3' so the value is converted to 'l'!
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/MQTT/MeterType.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -736,8 +841,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI of the HTTP interface to InfluxDB, without traililing slash, e.g. http://IP-Address:Port
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Uri.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
                 <tr>
@@ -748,8 +855,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Database_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Database name in which to publish the read value.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Database.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -760,8 +869,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Measurement_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Measurement name to use to publish the read value.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Measurement.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -772,8 +883,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_user_value1">
 			</td>
-			<td style="font-size: 80%;">
-				User for InfluxDB authentication
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/user.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -784,8 +897,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_password_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Password for InfluxDB authentication
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDB/Password.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -804,8 +919,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI of the HTTP interface to InfluxDB (Version2), without traililing slash, e.g. http://IP-Address:Port
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDBv2/Uri.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
                 <tr>
@@ -816,8 +933,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Database_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Database name in which to publish the read value.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDBv2/Database.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -828,8 +947,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Measurement_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Measurement name to use to publish the read value.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDBv2/Measurement.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -840,8 +961,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Org_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Organisation (Org) for InfluxDBv2 authentication
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDBv2/Org.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -852,8 +975,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Token_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Token for InfluxDB authentication
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDBv2/Token.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -875,8 +1000,10 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Fieldname_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Fieldname to use for saving.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/InfluxDBv2/password.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -904,10 +1031,10 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 0 Usable with restrictions.<br> 
-				<b>Must be disabled when camera is used.</b><br>
-				<b>Pin is used to activate flash mode and must therefore be HIGH when booting.</b>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -924,8 +1051,10 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
-			<td class="description">
-				GPIO 0 enable interrupt trigger
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -933,8 +1062,10 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 0 LEDC PWM duty resolution in bit
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -942,8 +1073,10 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
-			<td class="description">
-				GPIO 0 enable MQTT publishing/subscribing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -951,8 +1084,10 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
-			<td class="description">
-				GPIO 0 enable HTTP write/read
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
@@ -960,8 +1095,10 @@ textarea {
 				<span class="GPIO_IO0 GPIO_item">GPIO 0 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO0_value6"></td>
-			<td class="description">
-				GPIO 0 MQTT topic name (empty = GPIO0). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO0.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO0 end ------------------>
@@ -998,8 +1135,10 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 1 enable interrupt trigger
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -1007,8 +1146,10 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 1 LEDC PWM duty resolution in bit
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -1016,8 +1157,10 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
-			<td class="description">
-				GPIO 1 enable MQTT publishing/subscribing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -1025,8 +1168,10 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
-			<td class="description">
-				GPIO 1 enable HTTP write/read
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
@@ -1034,8 +1179,10 @@ textarea {
 				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO1_value6"></td>
-			<td class="description">
-				GPIO 1 MQTT topic name (empty = GPIO1). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO1.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO1 end ------------------>
@@ -1054,8 +1201,10 @@ textarea {
 					<option value="output">output</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 3 <span style="color: blue">Used by default for serial communication as RX pin.</span>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -1072,8 +1221,10 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 3 Used by default for serial communication as RX pin.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -1081,8 +1232,10 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 3 LEDC PWM duty resolution in bit
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -1090,8 +1243,10 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
-			<td class="description">
-				GPIO 3 enable MQTT publishing/subscribing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -1099,8 +1254,10 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
-			<td class="description">
-				GPIO 3 enable HTTP write/read
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
@@ -1108,8 +1265,10 @@ textarea {
 				<span class="GPIO_IO3 GPIO_item">GPIO 3 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO3_value6"></td>
-			<td class="description">
-				GPIO 3 MQTT topic name (empty = GPIO3). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO3.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO3 end ------------------>
@@ -1129,9 +1288,10 @@ textarea {
 					<option value="built-in-led">built-in led flash light</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 4 Usable with restrictions.<br> 
-				<b>Pin is used for build-in flash light.</b>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1148,8 +1308,10 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>	
 			</td>
-			<td class="description">
-				GPIO 4 enable interrupt trigger
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1157,8 +1319,10 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 4 LEDC PWM duty resolution in bit
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1166,8 +1330,10 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
-			<td class="description">
-				GPIO 4 enable MQTT publishing/subscribing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1175,8 +1341,10 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
-			<td class="description">
-				GPIO 4 enable HTTP write/read
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
@@ -1184,8 +1352,10 @@ textarea {
 				<span class="GPIO_IO4 GPIO_item">GPIO 4 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO4_value6"></td>
-			<td class="description">
-				GPIO 4 MQTT topic name (empty = GPIO4). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO4.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO4 end ------------------>
@@ -1205,8 +1375,10 @@ textarea {
 					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 12 is usable without restrictions
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1223,8 +1395,10 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>	
 			</td>
-			<td class="description">
-				GPIO 12 enable interrupt trigger
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1232,8 +1406,10 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 12 LEDC PWM duty resolution in bit
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1241,8 +1417,10 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
-			<td class="description">
-				GPIO 12 enable MQTT publishing/subscribing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1250,8 +1428,10 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
-			<td class="description">
-				GPIO 12 enable HTTP write/read
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
@@ -1259,8 +1439,10 @@ textarea {
 				<span class="GPIO_IO12 GPIO_item">GPIO 12 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO12_value6"></td>
-			<td class="description">
-				GPIO 12 MQTT topic name (empty = GPIO12). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO12.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1276,8 +1458,10 @@ textarea {
 					<option value="WS2813">WS2813 (not tested)</option>
 				</select>
 			</td>
-			<td class="description">
-				Type of WS2812x, that is connected to GPIO12
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/LEDType.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1288,8 +1472,10 @@ textarea {
 			<td>
 				<input type="number" name="name" id="GPIO_LEDNumbers_value1" size="13" min="1">
 			</td>
-			<td style="font-size: 80%;">
-				Number of LEDs on the external LED-stripe 
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/LEDNumbers.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr  class="GPIO_IO12 GPIO_item" id="LEDRGBex9">
@@ -1301,8 +1487,10 @@ textarea {
 				G <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2" size="12">
 				B <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3" size="12">
 			</td>
-			<td style="font-size: 80%;">
-				Color of LEDs in (R)ed, (G)reen (B)lue from 0...255
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/LEDColor.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1323,8 +1511,10 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 13 is usable without restrictions
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1341,8 +1531,10 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
-			<td class="description">
-				GPIO 13 enable interrupt trigger
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1350,8 +1542,10 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 PWM duty resolution</span>
 			</td>
 			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 13 LEDC PWM duty resolution in bit
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1359,8 +1553,10 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
-			<td class="description">
-				GPIO 13 enable MQTT publishing/subscribing
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1368,8 +1564,10 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
-			<td class="description">
-				GPIO 13 enable HTTP write/read
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
@@ -1377,8 +1575,10 @@ textarea {
 				<span class="GPIO_IO13 GPIO_item">GPIO 13 name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO13_value6"></td>
-			<td class="description">
-				GPIO 13 MQTT topic name (empty = GPIO13). Allowed characters (a-z, A-Z, 0-9, _, -)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/GPIO/IO13.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<!------------- GPIO13 end ------------------>
@@ -1396,8 +1596,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Start the image recognition immediatly after power up. false is basically for debugging.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/AutoTimer/AutoStart.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr>
@@ -1407,8 +1609,10 @@ textarea {
 			<td>
 				<input type="number" id="AutoTimer_Interval_value1" size="13" min="3" step="any">
 			</td>
-			<td style="font-size: 80%;">
-				Interval in which the number(s) are read (in minutes). If a digitalization round takes longer than this interval, the next run gets postponed until the current run completes.
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/AutoTimer/Interval.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1425,8 +1629,10 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td class="description">
-				Activate data log to SD card
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/DataLogging/DataLogActive.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1437,8 +1643,10 @@ textarea {
 			<td>
 				<input type="number" id="DataLogging_DataFilesRetention_value1" size="13" min="0" step="1">
 			</td>
-			<td class="description">
-				Time to keep the data files (in days - "0" = forever)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/DataLogging/DataLogRetentionInDays.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1457,8 +1665,10 @@ textarea {
 					<option value="4">DEBUG</option>
 				</select>
 			</td>
-			<td class="description">
-				Set the level of the logging to the SD-Card.<br><b>Warning:</b> DEBUG or INFO might damage the SD-Card if enabled longterm due to excessive writes to the SD-Card!
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Debug/LogLevel.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr> 		
 		<tr>
@@ -1468,8 +1678,10 @@ textarea {
 			<td>
 				<input type="number" id="Debug_LogfilesRetention_value1" size="13" min="0" step="1">
 			</td>
-			<td class="description">
-				Time to keep the log files (in days - "0" = forever)
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/Debug/LogfilesRetention.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1484,9 +1696,10 @@ textarea {
 			<td>
 				<input type="text" id="System_TimeZone_value1">
 			</td>
-			<td class="description">
-				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)<br>
-				Use this <a href=timezones.html?v=$COMMIT_HASH target=_blank>table</a> to find the settings for your region. 
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/TimeZone.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="ex16">
@@ -1497,12 +1710,10 @@ textarea {
 			<td>
 				<input type="text" id="System_TimeServer_value1">
 			</td>
-			<td class="description">
-				Time server to synchronize system time. If it is disabled or "undefined", "pool.ntp.org" will be used.<br>
-				You can also set it to the IP of your router. Many routers like 
-				<a href=https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-7590-AX/336_Configuring-time-synchronization-NTP-for-FRITZ-Box-and-network-devices/
-				target=_blank>Fritzboxes</a> can act as a local NTP server.<br>
-				To disable NTP, you need to activate it but set the TimeServer config to be empty. In such case the time always starts at 01.01.1970 after each power cycle!
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/TimeServer.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">
@@ -1512,10 +1723,15 @@ textarea {
 			</td>
 			<td>
 				<input type="text" id="System_Hostname_value1">
-			<td class="description">
-				Hostname for server - will be transfered to wlan.ini at next startup)
+			</td>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/Hostname.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
+
+
 		<tr class="expert"  id="System_RSSIThreshold">
 			<td class="indent1">
 				<input type="checkbox" id="System_RSSIThreshold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreshold")' unchecked >
@@ -1523,9 +1739,11 @@ textarea {
 			</td>
 			<td>
 				<input type="number" name="name" id="System_RSSIThreshold_value1" min="-100"  max="0" step="1">
-			<td class="description">
-				WLAN Mesh Parameter: Threshold for RSSI value to check for start switching access point in a mesh system.
-				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
+			</td>
+			<td>
+				<div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+					<object class="tooltip-content" data="param-tooltips/System/RSSIThreshold.html?v=$COMMIT_HASH" target="_blank"><br><br><br><br>Loading<br></br>Documentation...</object>
+				</span></div>
 			</td>
 		</tr>
 
@@ -1740,7 +1958,7 @@ function InvertEnableItem(_cat, _param)
 	_zw = _cat + "_" + _param + "_enabled";
 	_isOn = document.getElementById(_zw).checked;
 
-	_color = "color:lightgrey;";
+	_color = "color:darkgrey;";
 	if (_isOn) {
 		_color = "color:black;";
 	}
@@ -1758,7 +1976,7 @@ function InvertEnableItem(_cat, _param)
 }
 
 function setEnabled(className, enabled) {
-	_color = "color:lightgrey;";
+	_color = "color:darkgrey;";
 	if (enabled) {
 		_color = "color:black;";
 	}
@@ -1801,7 +2019,7 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 {
 	_status = _category[_cat]["enabled"];
 
-	_color = "color:lightgrey;";
+	_color = "color:darkgrey;";
 	if (_status) {
 		_color = "color:black;";
 	}
@@ -1814,13 +2032,13 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 	if (_number == -1){
 		if (!_param[_cat][_name]["enabled"]) {
 			_status = false;
-			_color = "color:lightgrey;";
+			_color = "color:darkgrey;";
 		}
 	}
 	else
 		if (!NUMBERS[_number][_cat][_name]["enabled"]) {
 				_status = false;
-				_color = "color:lightgrey;";
+				_color = "color:darkgrey;";
 			}
 
 
