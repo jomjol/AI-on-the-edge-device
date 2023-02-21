@@ -3,7 +3,7 @@
 <head>
 <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <meta charset="utf-8"/>
-<title>Make Analog Alignment</title>
+<title>Analog ROI's</title>
 
 <style>
 h1 {font-size: 2em;}
@@ -67,10 +67,12 @@ th, td {
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-    <h2><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'EnDisableAnalog()' checked >
-        Edit Analog</h2>
+    <h2>Analog ROI's</h2>
+    <p>On this page you define ROI's for the analog counters.
+        See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/</a> for explanations.</p>
+    
+        <input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'EnDisableAnalog()' checked ><label for="Category_Analog_enabled">Enable Analog ROI's</label></p>
    
-
 <div id="div1">
 	<table>
 	  <tr>
@@ -134,10 +136,10 @@ th, td {
 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save" tabindex=9></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save" tabindex=9>
 	  </tr>  
 	  <tr>
-                <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button></td>
+                <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate the changes</button></td>
 	  </tr>  
     </table>	
 
