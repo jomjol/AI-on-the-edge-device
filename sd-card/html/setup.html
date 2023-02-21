@@ -83,53 +83,53 @@ function clickPrevious() {
 function LoadStep(){
    switch (aktstatu) {
       case 0:
-         document.getElementById('maincontent').src = '/edit_explain_0.html?v=$COMMIT_HASH';
+         document.getElementById('maincontent').src = 'edit_explain_0.html?v=$COMMIT_HASH';
          document.getElementById('h_iframe_explain').style.display = "none";  
          document.getElementById("previous").disabled = true;
          document.getElementById("next").disabled = false;
          break;
       case 1:
-         document.getElementById('maincontent').src = '/edit_reference.html?v=$COMMIT_HASH';
-         document.getElementById('explaincontent').src = '/explain_1.html?v=$COMMIT_HASH';
+         document.getElementById('maincontent').src = 'edit_reference.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = 'explain_1.html?v=$COMMIT_HASH';
          document.getElementById('h_iframe_explain').style.display = "";  
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
          break;
       case 2:
-         document.getElementById('maincontent').src = '/edit_alignment.html?v=$COMMIT_HASH';
-         document.getElementById('explaincontent').src = '/explain_2.html?v=$COMMIT_HASH';
+         document.getElementById('maincontent').src = 'edit_alignment.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = 'explain_2.html?v=$COMMIT_HASH';
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break;
       case 3:
-         document.getElementById('maincontent').src = '/edit_digits.html?v=$COMMIT_HASH';
-         document.getElementById('explaincontent').src = '/explain_3.html?v=$COMMIT_HASH';         
+         document.getElementById('maincontent').src = 'edit_digits.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = 'explain_3.html?v=$COMMIT_HASH';         
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break;
       case 4:
-         document.getElementById('maincontent').src = '/edit_analog.html?v=$COMMIT_HASH';
-         document.getElementById('explaincontent').src = '/explain_4.html?v=$COMMIT_HASH';   
+         document.getElementById('maincontent').src = 'edit_analog.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = 'explain_4.html?v=$COMMIT_HASH';   
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break;
       case 5:
-         document.getElementById('maincontent').src = '/edit_config_param.html?v=$COMMIT_HASH?InitialSetup=true';
-         document.getElementById('explaincontent').src = '/explain_5.html?v=$COMMIT_HASH';            
+         document.getElementById('maincontent').src = 'edit_config_param.html?v=$COMMIT_HASH?InitialSetup=true';
+         document.getElementById('explaincontent').src = 'explain_5.html?v=$COMMIT_HASH';            
          document.getElementById('h_iframe_explain').style.display = "";           
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = false;
 
          break; 
       case 6:
-         document.getElementById('maincontent').src = '/edit_explain_6.html?v=$COMMIT_HASH';
-         document.getElementById('explaincontent').src = '/explain_6.html?v=$COMMIT_HASH';            
+         document.getElementById('maincontent').src = 'edit_explain_6.html?v=$COMMIT_HASH';
+         document.getElementById('explaincontent').src = 'explain_6.html?v=$COMMIT_HASH';  // Note: The page never gets shown!    
          document.getElementById('h_iframe_explain').style.display = "none";  
          document.getElementById("previous").disabled = false;
          document.getElementById("next").disabled = true;
