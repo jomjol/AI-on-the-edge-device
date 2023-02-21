@@ -19,7 +19,7 @@ protected:
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
-    int SetRetainFlag;
+    bool SetRetainFlag;
     int keepAlive; // Seconds
     float roundInterval; // Minutes
 
@@ -32,7 +32,7 @@ public:
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
     string GetMQTTMainTopic();
-    bool Start(float AutoIntervall);
+    bool Start(float AutoInterval);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);

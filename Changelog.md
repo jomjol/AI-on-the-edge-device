@@ -1,3 +1,4 @@
+
 ## [Unreleased]
 
 **Rolling**
@@ -24,6 +25,13 @@
 -   n.a.
 
 
+## [14.1.0] - 2023-02-21
+
+This release only migrates some parameters, see https://github.com/jomjol/AI-on-the-edge-device/pull/2023.
+
+It does not change any functionality of the device!
+
+If you want to revert from a future release to an older one, this is the first release using the new parameter naming. If you want to go to an older release than this `v14.1.0`, you have to update the `config.ini` manually to the old namings!
 
 ## [14.0.3] -2023-02-05
 
@@ -830,6 +838,7 @@ External Illumination
 -   Initial Version
 
 
+[14.1.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v14.1.0
 [14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.2
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
 [13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7

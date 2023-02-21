@@ -41,7 +41,7 @@ std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter =
 
 
 
-bool LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, int &_rssithreashold)
+bool LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_hostname, char *&_ipadr, char *&_gw,  char *&_netmask, char *&_dns, int &_rssithreshold)
 {
     std::string ssid = "";
     std::string passphrase = "";
@@ -91,7 +91,7 @@ bool LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
             }
         }
 
-        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHREASHOLD")){
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHRESHOLD")){
             string _s = trim(splitted[1]);
             if ((_s[0] == '"') && (_s[_s.length()-1] == '"')){
                 _s = _s.substr(1, ssid.length()-2);
@@ -194,8 +194,8 @@ bool LoadWlanFromFile(std::string fn, char *&_ssid, char *&_password, char *&_ho
     else
         _dns = NULL;
 
-    _rssithreashold = rssithreshold;
-    RSSIThreashold = rssithreshold;
+    _rssithreshold = rssithreshold;
+    RSSIThreshold = rssithreshold;
     return true;
 }
 
@@ -274,9 +274,9 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 }
 
 
-bool ChangeRSSIThreashold(std::string fn, int _newrssithreashold)
+bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
 {
-    if (RSSIThreashold == _newrssithreashold)
+    if (RSSIThreshold == _newrssithreshold)
         return false;
 
     string line = "";
@@ -305,8 +305,8 @@ bool ChangeRSSIThreashold(std::string fn, int _newrssithreashold)
         splitted = ZerlegeZeileWLAN(line, "=");
         splitted[0] = trim(splitted[0], " ");
 
-        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHREASHOLD")){
-            line = "RSSIThreashold = " + to_string(_newrssithreashold) + "\n";
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHRESHOLD")){
+            line = "RSSIThreshold = " + to_string(_newrssithreshold) + "\n";
             found = true;
         }
 
@@ -324,7 +324,7 @@ bool ChangeRSSIThreashold(std::string fn, int _newrssithreashold)
 
     if (!found)
     {
-        line = "RSSIThreashold = " + to_string(_newrssithreashold) + "\n";
+        line = "RSSIThreshold = " + to_string(_newrssithreshold) + "\n";
         neuesfile.push_back(line);        
     }
 
@@ -340,7 +340,7 @@ bool ChangeRSSIThreashold(std::string fn, int _newrssithreashold)
 
     fclose(pFile);
 
-    ESP_LOGD(TAG, "*** RSSIThreashold update done ***");
+    ESP_LOGD(TAG, "*** RSSIThreshold update done ***");
 
     return true;
 }

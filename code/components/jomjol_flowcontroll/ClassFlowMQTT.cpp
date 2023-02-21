@@ -42,7 +42,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     flowpostprocessing = NULL;  
     user = "";
     password = ""; 
-    SetRetainFlag = 0;
+    SetRetainFlag = false;
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
@@ -95,7 +95,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (toUpper(aktparamgraph).compare("[MQTT]") != 0)       // Paragraph does not fit MakeImage
+    if (toUpper(aktparamgraph).compare("[MQTT]") != 0)       // Paragraph does not fit MQTT
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
@@ -113,10 +113,10 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->uri = splitted[1];
         }
-        if ((toUpper(splitted[0]) == "SETRETAINFLAG") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "RETAINMESSAGES") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE") {
-                SetRetainFlag = 1;  
+                SetRetainFlag = true;  
                 setMqtt_Server_Retain(SetRetainFlag);
             }
         }
@@ -184,9 +184,9 @@ string ClassFlowMQTT::GetMQTTMainTopic()
 }
 
 
-bool ClassFlowMQTT::Start(float AutoIntervall) 
+bool ClassFlowMQTT::Start(float AutoInterval) 
 {
-    roundInterval = AutoIntervall; // Minutes
+    roundInterval = AutoInterval; // Minutes
     keepAlive = roundInterval * 60 * 2.5; // Seconds, make sure it is greater thatn 2 rounds!
 
     std::stringstream stream;
