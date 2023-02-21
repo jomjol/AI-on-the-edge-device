@@ -25,11 +25,12 @@ bool mqtt_connected = false;
 
 esp_mqtt_client_handle_t client = NULL;
 std::string uri, client_id, lwt_topic, lwt_connected, lwt_disconnected, user, password, maintopic;
-int keepalive, SetRetainFlag;
-void (*callbackOnConnected)(std::string, int) = NULL;
+int keepalive;
+bool SetRetainFlag;
+void (*callbackOnConnected)(std::string, bool) = NULL;
 
 
-bool MQTTPublish(std::string _key, std::string _content, int retained_flag) 
+bool MQTTPublish(std::string _key, std::string _content, bool retained_flag) 
 {
     if (!mqtt_enabled) {                            // MQTT sevice not started / configured (MQTT_Init not called before)      
         return false;
@@ -153,7 +154,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
         std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
-                    int _keepalive, int _SetRetainFlag, void *_callbackOnConnected) {
+                    int _keepalive, bool _SetRetainFlag, void *_callbackOnConnected) {
     if ((_mqttURI.length() == 0) || (_maintopic.length() == 0) || (_clientid.length() == 0)) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init aborted! Config error (URI, MainTopic or ClientID missing)");
@@ -168,7 +169,7 @@ bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     keepalive = _keepalive;
     SetRetainFlag = _SetRetainFlag;
     maintopic = _maintopic;
-    callbackOnConnected = ( void (*)(std::string, int) )(_callbackOnConnected);
+    callbackOnConnected = ( void (*)(std::string, bool) )(_callbackOnConnected);
 
     if (_user.length() && _password.length()){
         user = _user;
