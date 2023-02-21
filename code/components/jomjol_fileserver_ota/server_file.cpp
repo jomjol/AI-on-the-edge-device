@@ -1002,7 +1002,6 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                 // extrahieren in zwischendatei
                 DeleteFile(filename_zw);
 
-
                 FILE* fpTargetFile = fopen(filename_zw.c_str(), "wb");
                 uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
                 fclose(fpTargetFile);
