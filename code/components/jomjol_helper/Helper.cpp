@@ -224,15 +224,50 @@ void FindReplace(std::string& line, std::string& oldString, std::string& newStri
 }
 
 
-bool MakeDir(std::string _what)
+/**
+ * Create a folder and its parent folders as needed
+ */
+bool MakeDir(std::string path)
 {
-	int mk_ret = mkdir(_what.c_str(), 0775);
-	if (mk_ret)
-	{
-		ESP_LOGD(TAG, "error with mkdir %s ret %d", _what.c_str(), mk_ret);
-		return false;
+	std::string parent;
+
+	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Creating folder " + path + "...");
+
+	bool bSuccess = false;
+    int nRC = ::mkdir( path.c_str(), 0775 );
+    if( nRC == -1 )
+    {
+        switch( errno ) {
+            case ENOENT:
+                //parent didn't exist, try to create it
+				parent = path.substr(0, path.find_last_of('/'));
+        		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Need to create parent folder first: " + parent);
+                if(MakeDir(parent)) {
+                    //Now, try to create again.
+                    bSuccess = 0 == ::mkdir( path.c_str(), 0775 );
+				}
+                else {
+        			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create parent folder: " + parent);
+                    bSuccess = false;
+				}
+                break;
+
+            case EEXIST:
+                //Done!
+                bSuccess = true;
+                break;
+				
+            default:
+				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path);
+                bSuccess = false;
+                break;
+        }
+    }
+    else {
+        bSuccess = true;
 	}
-	return true;
+
+    return bSuccess;
 }
 
 
@@ -576,9 +611,6 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 {
 	std::vector<string> Output;
-
-	input = trim(input, delimiter);
-
 	/* The input can have multiple formats: 
 	 *  - key = value
      *  - key = value1 value2 value3 ...
@@ -593,12 +625,13 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 	 * As a workaround and to not break any legacy usage, we enforce to only use the
 	 * equal sign, if the key is "password"
 	*/
-	if (input.find("password") != string::npos) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+	if ((input.find("password") != string::npos) || (input.find("Token") != string::npos)) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
 		size_t pos = input.find("=");
 		Output.push_back(trim(input.substr(0, pos), ""));
 		Output.push_back(trim(input.substr(pos +1, string::npos), ""));
 	}
 	else { // Legacy Mode
+		input = trim(input, delimiter);							// sonst werden delimiter am Ende (z.B. == im Token) gelöscht)
 		size_t pos = findDelimiterPos(input, delimiter);
 		std::string token;
 		while (pos != std::string::npos) {
@@ -899,4 +932,34 @@ const char* get404(void) {
 "\n\n"
 "                You could try your <a href=index.html target=_parent>luck</a> here!</pre>\n"
 "<script>document.cookie = \"page=overview.html\"</script>"; // Make sure we load the overview page
+}
+
+
+std::string UrlDecode(const std::string& value)
+{
+    std::string result;
+    result.reserve(value.size());
+    
+    for (std::size_t i = 0; i < value.size(); ++i)
+    {
+        auto ch = value[i];
+        
+        if (ch == '%' && (i + 2) < value.size())
+        {
+            auto hex = value.substr(i + 1, 2);
+            auto dec = static_cast<char>(std::strtol(hex.c_str(), nullptr, 16));
+            result.push_back(dec);
+            i += 2;
+        }
+        else if (ch == '+')
+        {
+            result.push_back(' ');
+        }
+        else
+        {
+            result.push_back(ch);
+        }
+    }
+    
+    return result;
 }

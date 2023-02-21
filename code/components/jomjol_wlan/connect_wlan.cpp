@@ -556,7 +556,9 @@ bool getWIFIisConnected()
 
 void WIFIDestroy() 
 {	
-    esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, event_handler);
+    esp_wifi_disconnect();
+	
+	esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, event_handler);
     esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, event_handler);
 	#ifdef WLAN_USE_MESH_ROAMING
 	esp_event_handler_unregister(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW, esp_bss_rssi_low_handler);

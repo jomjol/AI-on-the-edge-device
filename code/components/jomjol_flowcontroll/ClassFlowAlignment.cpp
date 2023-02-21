@@ -65,7 +65,7 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
     std::vector<string> splitted;
     int suchex = 40;
     int suchey = 40;
-    int alg_algo = 0;
+    int alg_algo = 0; //default=0; 1 =HIGHACCURACY; 2= FAST; 3= OFF //add disable aligment algo |01.2023
 
 
     aktparamgraph = trim(aktparamgraph);
@@ -130,6 +130,8 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
                 alg_algo = 1;
             if (toUpper(splitted[1]) == "FAST")
                 alg_algo = 2;
+            if (toUpper(splitted[1]) == "OFF") //no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
+                alg_algo = 3;
         }
     }
 
@@ -145,7 +147,10 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
         #endif
     }
 
-    LoadReferenceAlignmentValues();
+    //no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
+    if(References[0].alignment_algo != 3){
+        LoadReferenceAlignmentValues();
+    }
     
     return true;
 
@@ -234,14 +239,22 @@ bool ClassFlowAlignment::doFlow(string time)
             AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
     }
 
-    if (!AlignAndCutImage->Align(&References[0], &References[1])) 
-    {
-        SaveReferenceAlignmentValues();
-    }
+
+        //no align algo if set to 3 = off //add disable aligment algo |01.2023
+        if(References[0].alignment_algo != 3){
+            if (!AlignAndCutImage->Align(&References[0], &References[1])) 
+            {
+                SaveReferenceAlignmentValues();
+            }
+        }// no align
+
 
     #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
         if (AlgROI) {
-            DrawRef(ImageTMP);
+            //no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
+            if(References[0].alignment_algo != 3){
+                DrawRef(ImageTMP);
+            }
             tfliteflow.DigitalDrawROI(ImageTMP);
             tfliteflow.AnalogDrawROI(ImageTMP);
             ImageTMP->writeToMemoryAsJPG((ImageData*)AlgROI, 90);
@@ -258,7 +271,10 @@ bool ClassFlowAlignment::doFlow(string time)
     delete ImageTMP;
     ImageTMP = NULL;
 
-    LoadReferenceAlignmentValues();
+    //no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
+    if(References[0].alignment_algo != 3){
+        LoadReferenceAlignmentValues();
+    }
 
     return true;
 }

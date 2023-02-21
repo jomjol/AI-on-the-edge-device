@@ -28,12 +28,12 @@ p {font-size: 1em;}
 
     <p>
         This is the first time you started the digitizer after the initial installation. You have been automatically routed to the <b>initial setup procedure</b>. 
-        Here you adjust the settings for your counter within five steps. In the final step the inital setup will be disabled and it will restart to the normal mode.
-        All settings will also be accessible there.
-        <br>
-        <br>
-        You can navigate forward and backward during the setup with the buttons "Next" and "Previous".<br><br>
-        <span color=red>Do not forget to save in each step!</span><br>
+        Here you adjust the settings for your meter within five steps. In the final step the inital setup will be disabled and it will restart to the normal mode.
+        All settings will also be accessible there. See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/initial-setup target=_blank>
+            https://jomjol.github.io/AI-on-the-edge-device-docs/initial-setup</a> for additional explanations.</p>
+    </p>
+    <p>You can navigate forward and backward during the setup with the buttons "Next" and "Previous".<br><br>
+        <span color=red>Do not forget to save in each step before heading to another step!</span><br>
     </p>
     <p>
         This is an overview over the five steps:
@@ -41,26 +41,27 @@ p {font-size: 1em;}
 
     <p>
     <ol>
-    <li>Create reference image <br>
-        Base for the position referencing and the identification of the digits and counters.</li>
-    <li>Define two unique references <br>
-        Used to align the individual camera shot and identify the absolut positions</li>
-    <li>Define the digits <br>
-        Digital digits to be recognized</li>
-    <li>Define the analog counters <br>
-        Analog counters to be identified</li>
-    <li>General settings <br>
-        Most settings can be used with default value at the beginning. MQTT connection can be specified here</li>
+    <li><p>Create the <b>Reference Image</b>.<br>
+        It is the base for the position referencing and the identification of the digits and counters.</p></li>
+    <li><p>Define two unique <b>Reference Marks</b>.<br>
+        They is used to align the individual camera images and identify the absolut positions.</p></li>
+    <li></p>Define <b>ROI's</b> for the <b>Digits</b>.<br>
+        They will be used to digitize the digit part of your meter.<br>
+        If your meter has no digits, this step can be skipped.</p></li>
+    <li>Define <b>ROI's</b>> for the <b>Analog Counters</b>.<br>
+        They will be used to digitize the analog part of your meter.<br>
+        If your meter has no analog counters, this step can be skipped.</p></li>
+    <li><p><b>General Settings</b><br>
+        Further configuration of your device.</p></li>
     </ol>
-    <p>
 
-After step 5 setup mode is completed, it then reboots and starts into the normal mode.
-<br><br>
+<p>Please be patient when switching to another step. The device takes some time to load all needed information!</p>
 
-If you need support, have a look to the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs target=_blank>documenation</a> or the <a href=https://github.com/jomjol/AI-on-the-edge-device/discussions target=_blank>discussion</a> pages.<br>
+<p>After step 5 the setup is completed, you then can reboot and starts into the normal operation mode.</p>
 
-<h4>Have fun with the digitizer!</h4>
+<p>If you need support, have a look to the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs target=_blank>documentation</a> or the <a href=https://github.com/jomjol/AI-on-the-edge-device/discussions target=_blank>discussion</a> pages.</p>
 
+<p><b>Have fun with your digitizer!</b></p>
 
 </body>
 </html>
