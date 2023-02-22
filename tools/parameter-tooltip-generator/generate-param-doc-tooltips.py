@@ -51,7 +51,7 @@ def generateHtmlTooltip(section, parameter, markdownFile):
         configPageContent = configPageHandle.read()
 
     # print("replacing $TOOLTIP_" + section + "_" + parameter + " with the tooltip content...")
-    configPageContent = configPageContent.replace("$TOOLTIP_" + section + "_" + parameter, htmlTooltip)
+    configPageContent = configPageContent.replace("<td>$TOOLTIP_" + section + "_" + parameter + "</td>", "<td>" + htmlTooltip + "</td>")
 
     with open(docsMainFolder + "/" + configPage, 'w') as configPageHandle:
         configPageHandle.write(configPageContent)
