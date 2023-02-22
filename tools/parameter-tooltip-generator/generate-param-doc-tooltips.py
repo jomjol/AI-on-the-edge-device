@@ -10,30 +10,13 @@ parameterDocsFolder = "AI-on-the-edge-device-docs/param-docs/parameter-pages"
 #htmlTooltipFolder = "html"
 configPage = "../../sd-card/html/edit_config_param.html"
 
-
-htmlHeader = """
-<head>
-    <link rel="stylesheet" href="../css/theme.css?v=$COMMIT_HASH" />
-    <link rel="stylesheet" href="../css/theme_extra.css?v=$COMMIT_HASH" />
-    <link rel="stylesheet" href="../css/github.min.css?v=$COMMIT_HASH" />
-</head>
-
-<body class="wy-body-for-nav" role="document" style="margin: 10px;">
-    <div class="rst-content">
-"""
-
-htmlFooter = """
-    <p></p></div>
-</body>
-"""
-
 htmlTooltipPrefix = """
-    <div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
 """
 
 
 htmlTooltipSuffix = """
-    </span></div>
+    </span></div></div>
 """
 
 
@@ -46,20 +29,12 @@ def generateHtmlTooltip(section, parameter, markdownFile):
     with open(markdownFile, 'r') as markdownFileHandle:
         markdownFileContent = markdownFileHandle.read()
 
-#    if not os.path.exists(htmlTooltipFolder + "/" + section):
-#        os.mkdir(htmlTooltipFolder + "/" + section)
-
     markdownFileContent = markdownFileContent.replace("# ", "### ") # Move all headings 2 level down
 
     htmlTooltip = markdown.markdown(markdownFileContent, extensions=['admonition'])
 
     # Make all links to be opened in a new page
     htmlTooltip = htmlTooltip.replace("a href", "a target=_blank href")
-
-#    with open(htmlTooltipFolder + "/" + section + "/" + parameter + ".html", 'w') as htmlTooltipFileHandle:
-#        htmlTooltipFileHandle.write(htmlHeader)
-#        htmlTooltipFileHandle.write(htmlTooltip)
-#        htmlTooltipFileHandle.write(htmlFooter)
 
 
     htmlTooltip = htmlTooltipPrefix + htmlTooltip + htmlTooltipSuffix
@@ -76,11 +51,6 @@ def generateHtmlTooltip(section, parameter, markdownFile):
 
 
 print("Generating Tooltips...")
-
-# Create HTML folder if it does not exist yet
-#if not os.path.exists(htmlTooltipFolder):
-#    os.mkdir(htmlTooltipFolder)
-
 
 """
 Generate a HTML tooltip for each markdown page

@@ -134,10 +134,6 @@ form .search-query {
     border: none;
 }
 
-td, th {
-    border: 1px solid #e1e4e5 !important; /* csslint allow: important */
-    border-collapse: collapse;
-}
 
 /*
  * Without the following amendments, the navigation in the theme will be
