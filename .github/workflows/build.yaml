@@ -80,11 +80,11 @@ jobs:
         mkdir html/param-tooltips
         cd tools/parameter-tooltip-generator
         bash generate-param-doc-tooltips.sh
-        #cd ../../
-        #echo "Copying generated tooltip pages to html folder..."
-        #cp -r tools/parameter-tooltip-generator/html/* html/param-tooltips/
-        #echo "Replacing variables..."
-        #cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+
+        cp -r ./sd-card/html/* ./html/
+
+        echo "Replacing variables..."
+        cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
         
 
 #########################################################################################
