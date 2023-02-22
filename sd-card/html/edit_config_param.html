@@ -79,11 +79,11 @@ textarea {
 .tooltip .tooltiptext {
 	visibility: hidden;
 	width: 600px;
-	height: 300px;
-	background-color: black;
-	color: #fff;
-	text-align: center;
-	padding: 1px 0;
+	background-color: rgb(255, 255, 255);
+
+	padding: 5px;
+
+	border: solid black 2px; 
 
 	/* Position the tooltip */
 	position: absolute;
@@ -102,8 +102,12 @@ textarea {
 	height: calc(100% - 2px);
 	padding: 1px;
 }
-
 </style>
+
+<link rel="stylesheet" href="param_tooltips/theme.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="param_tooltips/theme_extra.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="param_tooltips/github.min.css?v=$COMMIT_HASH" />
+
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
 <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
