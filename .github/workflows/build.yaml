@@ -80,6 +80,7 @@ jobs:
         mkdir html/param-tooltips
         cd tools/parameter-tooltip-generator
         bash generate-param-doc-tooltips.sh
+        cd ../..
 
         cp -r ./sd-card/html/* ./html/
 
