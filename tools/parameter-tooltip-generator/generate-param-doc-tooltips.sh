@@ -13,5 +13,3 @@ else
 fi
 
 python generate-param-doc-tooltips.py
-
-
