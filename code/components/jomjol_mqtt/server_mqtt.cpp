@@ -30,7 +30,7 @@ std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
 float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
-int retainFlag;
+bool retainFlag;
 static std::string maintopic;
 
 
@@ -222,7 +222,7 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
     return ESP_OK;
 }
 
-void GotConnected(std::string maintopic, int retainFlag) {
+void GotConnected(std::string maintopic, bool retainFlag) {
     if (HomeassistantDiscovery) {
         MQTThomeassistantDiscovery();
     }
@@ -252,7 +252,7 @@ void SetHomeassistantDiscoveryEnabled(bool enabled) {
 }
 
 
-void setMqtt_Server_Retain(int _retainFlag) {
+void setMqtt_Server_Retain(bool _retainFlag) {
     retainFlag = _retainFlag;
 }
 

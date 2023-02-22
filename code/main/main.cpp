@@ -1,4 +1,8 @@
-//#include <string>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <regex>
+
 //#include "freertos/FreeRTOS.h"
 //#include "freertos/task.h"
 //#include "freertos/event_groups.h"
@@ -29,6 +33,7 @@
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
+#include "configFile.h"
 //#include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
@@ -81,6 +86,13 @@ extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
 sdmmc_card_t* card;
+
+std::vector<std::string> splitString(const std::string& str);
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
+//bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+bool isInString(std::string& s, std::string const& toFind);
+void migrateConfiguration(void);
 
 static const char *TAG = "MAIN";
 
@@ -212,6 +224,10 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
+    // Migrate parameter in config.ini to new naming (firmware 14.1 and newer)
+    // ********************************************
+    migrateConfiguration();
+
     // Init time (as early as possible, but SD card needs to be initialized)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
@@ -226,9 +242,10 @@ extern "C" void app_main(void)
     CheckUpdate();
 
     // Start SoftAP for initial remote setup
+    // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD empty; function does not exit anymore until reboot
     // ********************************************
     #ifdef ENABLE_SOFTAP
-        CheckStartAPMode(); // if no wlan.ini and/or config.ini --> Start SoftAP (function does not exit anymore until reboot)
+        CheckStartAPMode(); 
     #endif
 
     // SD card: Check folder structure
@@ -455,4 +472,245 @@ extern "C" void app_main(void)
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted!");
     }
+}
+
+
+void migrateConfiguration(void) {
+    bool migrated = false;
+
+    if (!FileExists(CONFIG_FILE)) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Config file seems to be missing!");
+        return;	
+    }
+
+    std::string section = "";
+	std::ifstream ifs(CONFIG_FILE);
+  	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	
+    /* Split config file it array of lines */
+    std::vector<std::string> configLines = splitString(content);
+
+    /* Process each line */
+    for (int i = 0; i < configLines.size(); i++) {
+        //ESP_LOGI(TAG, "Line %d: %s", i, configLines[i].c_str());
+
+        if (configLines[i].find("[") != std::string::npos) { // Start of new section
+            section = configLines[i];
+            replace(section, ";", "", false); // Remove possible semicolon (just for the string comparison)
+            //ESP_LOGI(TAG, "New section: %s", section.c_str());
+        }
+
+        /* Migrate parameters as needed
+         * For the boolean parameters, we make them enabled all the time now:
+         *  1. If they where disabled, set them to their default value
+         *  2. Enable them
+         * Notes:
+         * The migration has some simplifications:
+         *  - Case Sensitiveness must be like in the initial config.ini
+         *  - No Whitespace after a semicollon
+         *  - Only one whitespace before/after the equal sign
+         */
+        if (section == "[MakeImage]") {
+            migrated = migrated | replace(configLines[i], "[MakeImage]", "[TakeImage]"); // Rename the section itself
+        }
+
+        if (section == "[MakeImage]" || section == "[TakeImage]") {
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "RawImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "RawImagesRetention");
+
+            migrated = migrated | replace(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";Demo", "Demo"); // Enable it
+
+            migrated = migrated | replace(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
+        }
+
+        if (section == "[Alignment]") {
+            migrated = migrated | replace(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
+
+            migrated = migrated | replace(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
+        }
+
+        if (section == "[Digits]") {
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+        }
+
+        if (section == "[Analog]") {
+            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";UNUSED_PARAMETER"); // This parameter is no longer used
+        }
+
+        if (section == "[PostProcessing]") {
+            migrated = migrated | replace(configLines[i], ";PreValueUse = true", ";PreValueUse = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";PreValueUse", "PreValueUse"); // Enable it
+
+            /* AllowNegativeRates has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "AllowNegativeRates") && isInString(configLines[i], ";")) { // It is the parameter "AllowNegativeRates" and it is commented out
+                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+            }
+
+            /* IgnoreLeadingNaN has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "IgnoreLeadingNaN") && isInString(configLines[i], ";")) { // It is the parameter "IgnoreLeadingNaN" and it is commented out
+                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+            }
+
+            /* ExtendedResolution has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "ExtendedResolution") && isInString(configLines[i], ";")) { // It is the parameter "ExtendedResolution" and it is commented out
+                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+            }
+
+            migrated = migrated | replace(configLines[i], ";ErrorMessage = true", ";ErrorMessage = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";ErrorMessage", "ErrorMessage"); // Enable it
+
+            migrated = migrated | replace(configLines[i], ";CheckDigitIncreaseConsistency = true", ";CheckDigitIncreaseConsistency = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";CheckDigitIncreaseConsistency", "CheckDigitIncreaseConsistency"); // Enable it
+        }
+
+        if (section == "[MQTT]") {
+            migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages"); // First rename it, enable it with its default value
+            migrated = migrated | replace(configLines[i], ";RetainMessages = true", ";RetainMessages = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";RetainMessages", "RetainMessages"); // Enable it
+
+            migrated = migrated | replace(configLines[i], ";HomeassistantDiscovery = true", ";HomeassistantDiscovery = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";HomeassistantDiscovery", "HomeassistantDiscovery"); // Enable it
+
+            if (configLines[i].rfind("Topic", 0) != std::string::npos)  // only if string starts with "Topic" (Was the naming in very old version)
+            {
+                migrated = migrated | replace(configLines[i], "Topic", "MainTopic");
+            }
+        }
+
+        if (section == "[InfluxDB]") {
+
+        }
+
+        if (section == "[GPIO]") {
+
+        }
+
+        if (section == "[DataLogging]") {
+            migrated = migrated | replace(configLines[i], "DataLogRetentionInDays", "DataFilesRetention");
+            /* DataLogActive is true by default! */
+            migrated = migrated | replace(configLines[i], ";DataLogActive = true", ";DataLogActive = true"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";DataLogActive", "DataLogActive"); // Enable it
+        }
+
+        if (section == "[AutoTimer]") {
+            migrated = migrated | replace(configLines[i], "Intervall", "Interval");
+            migrated = migrated | replace(configLines[i], ";AutoStart = true", ";AutoStart = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";AutoStart", "AutoStart"); // Enable it
+
+        }
+
+        if (section == "[Debug]") {
+            migrated = migrated | replace(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
+            /* LogLevel (resp. LogFile) was originally a boolean, but we switched it to an int
+             * For both cases (true/false), we set it to level 2 (WARNING) */
+            migrated = migrated | replace(configLines[i], "LogLevel = true", "LogLevel = 2");
+            migrated = migrated | replace(configLines[i], "LogLevel = false", "LogLevel = 2");
+            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
+        }
+
+        if (section == "[System]") {
+            migrated = migrated | replace(configLines[i], "RSSIThreashold", "RSSIThreshold");
+            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
+
+            migrated = migrated | replace(configLines[i], ";SetupMode = true", ";SetupMode = false"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";SetupMode", "SetupMode"); // Enable it
+        }
+    }
+
+    if (migrated) { // At least one replacement happened
+        if (! RenameFile(CONFIG_FILE, CONFIG_FILE_BACKUP)) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create backup of Config file!");
+            return;
+        }
+
+        FILE* pfile = fopen(CONFIG_FILE, "w");        
+        for (int i = 0; i < configLines.size(); i++) {
+            fwrite(configLines[i].c_str() , configLines[i].length(), 1, pfile);
+            fwrite("\n" , 1, 1, pfile);
+        }
+        fclose(pfile);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Config file migrated. Saved backup to " + string(CONFIG_FILE_BACKUP));
+    }
+}
+
+
+std::vector<std::string> splitString(const std::string& str) {
+    std::vector<std::string> tokens;
+ 
+    std::stringstream ss(str);
+    std::string token;
+
+    while (std::getline(ss, token, '\n')) {
+        tokens.push_back(token);
+    }
+ 
+    return tokens;
+}
+
+
+/*bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    std::string buf;
+    std::size_t pos = 0;
+    std::size_t prevPos;
+    bool found = false;
+
+    // Reserves rough estimate of final size of string.
+    buf.reserve(s.size());
+
+    while (true) {
+        prevPos = pos;
+        pos = s.find(toReplace, pos);
+        if (pos == std::string::npos) {
+            break;
+        }
+        found = true;
+        buf.append(s, prevPos, pos - prevPos);
+        buf += replaceWith;
+        pos += toReplace.size();
+    }
+
+    buf.append(s, prevPos, s.size() - prevPos);
+    s.swap(buf);
+
+    return found;
+}*/
+
+
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    return replace(s, toReplace, replaceWith, true);
+}
+
+bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
+    std::size_t pos = s.find(toReplace);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+
+    std::string old = s;
+    s.replace(pos, toReplace.length(), replaceWith);
+    if (logIt) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+    }
+    return true;
+}
+
+
+bool isInString(std::string& s, std::string const& toFind) {
+    std::size_t pos = s.find(toFind);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+    return true;
 }

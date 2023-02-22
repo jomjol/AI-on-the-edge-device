@@ -10,9 +10,9 @@ using namespace std;
 class ClassFlowImage : public ClassFlow
 {
 protected:
-	string LogImageLocation;
+	string imagesLocation;
     bool isLogImage;
-    unsigned short logfileRetentionInDays;
+    unsigned short imagesRetention;
 	const char* logTag;
 
 	string CreateLogFolder(string time);

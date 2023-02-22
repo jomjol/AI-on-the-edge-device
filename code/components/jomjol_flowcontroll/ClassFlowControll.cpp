@@ -39,8 +39,8 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
     ESP_LOGD(TAG, "Step %s start", _stepname.c_str());
 
-    if ((_stepname.compare("[MakeImage]") == 0) || (_stepname.compare(";[MakeImage]") == 0)){
-        _classname = "ClassFlowMakeImage";
+    if ((_stepname.compare("[TakeImage]") == 0) || (_stepname.compare(";[TakeImage]") == 0)){
+        _classname = "ClassFlowTakeImage";
     }
     if ((_stepname.compare("[Alignment]") == 0) || (_stepname.compare(";[Alignment]") == 0)){
         _classname = "ClassFlowAlignment";
@@ -68,7 +68,7 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
-            if (!(FlowControll[i]->name().compare("ClassFlowMakeImage") == 0))      // if it is a MakeImage, the image does not need to be included, this happens automatically with the html query.
+            if (!(FlowControll[i]->name().compare("ClassFlowTakeImage") == 0))      // if it is a TakeImage, the image does not need to be included, this happens automatically with the html query.
                 FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
@@ -81,7 +81,7 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
 std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 {
-    if (_input.compare("ClassFlowMakeImage") == 0)
+    if (_input.compare("ClassFlowTakeImage") == 0)
         return ("Take Image");
     if (_input.compare("ClassFlowAlignment") == 0)
         return ("Aligning");
@@ -177,7 +177,7 @@ bool ClassFlowControll::StartMQTTService() {
     /* Start the MQTT service */
         for (int i = 0; i < FlowControll.size(); ++i) {
             if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {
-                return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoIntervall);
+                return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoInterval);
             }  
         } 
     return false;
@@ -189,7 +189,7 @@ void ClassFlowControll::SetInitialParameter(void)
 {
     AutoStart = false;
     SetupModeActive = false;
-    AutoIntervall = 10; // Minutes
+    AutoInterval = 10; // Minutes
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
@@ -199,9 +199,9 @@ void ClassFlowControll::SetInitialParameter(void)
 }
 
 
-bool ClassFlowControll::isAutoStart(long &_intervall)
+bool ClassFlowControll::isAutoStart(long &_interval)
 {
-    _intervall = AutoIntervall * 60 * 1000; // AutoInterval: minutes -> ms
+    _interval = AutoInterval * 60 * 1000; // AutoInterval: minutes -> ms
     return AutoStart;
 }
 
@@ -212,10 +212,10 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     _type = trim(_type);
 
-    if (toUpper(_type).compare("[MAKEIMAGE]") == 0)
+    if (toUpper(_type).compare("[TAKEIMAGE]") == 0)
     {
-        cfc = new ClassFlowMakeImage(&FlowControll);
-        flowmakeimage = (ClassFlowMakeImage*) cfc;
+        cfc = new ClassFlowTakeImage(&FlowControll);
+        flowtakeimage = (ClassFlowTakeImage*) cfc;
     }
     if (toUpper(_type).compare("[ALIGNMENT]") == 0)
     {
@@ -331,13 +331,13 @@ void ClassFlowControll::setActStatus(std::string _aktstatus)
 }
 
 
-void ClassFlowControll::doFlowMakeImageOnly(string time)
+void ClassFlowControll::doFlowTakeImageOnly(string time)
 {
     std::string zw_time;
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
-        if (FlowControll[i]->name() == "ClassFlowMakeImage") {
+        if (FlowControll[i]->name() == "ClassFlowTakeImage") {
             zw_time = getCurrentTimeString("%H:%M:%S");
             std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatus = flowStatus + " (" + zw_time + ")";
@@ -536,7 +536,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 
     if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
-        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht zu MakeImage
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht zu Debug oder DataLogging
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
@@ -550,9 +550,9 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(splitted[0]) == "INTERVALL") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "INTERVAL") && (splitted.size() > 1))
         {
-            AutoIntervall = std::stof(splitted[1]);
+            AutoInterval = std::stof(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1))
@@ -566,12 +566,12 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(splitted[0]) == "DATALOGRETENTIONINDAYS") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "DATAFILESRETENTION") && (splitted.size() > 1))
         {
             LogFile.SetDataLogRetention(std::stoi(splitted[1]));
         }
 
-        if ((toUpper(splitted[0]) == "LOGFILE") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGLEVEL") && (splitted.size() > 1))
         {
             /* matches esp_log_level_t */
             if ((toUpper(splitted[1]) == "TRUE") || (toUpper(splitted[1]) == "2"))
@@ -595,7 +595,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC))
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
         }
-        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "LOGFILESRETENTION") && (splitted.size() > 1))
         {
             LogFile.SetLogFileRetention(std::stoi(splitted[1]));
         }
@@ -603,7 +603,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         /* TimeServer and TimeZone got already read from the config, see setupTime () */
 
         #ifdef WLAN_USE_MESH_ROAMING
-        if (((toUpper(splitted[0]) == "RSSITHRESHOLD") || (toUpper(splitted[0]) == "RSSITHREASHOLD")) && (splitted.size() > 1)) // Workaround for typo RSSITHREASHOLD
+        if ((toUpper(splitted[0]) == "RSSITHRESHOLD") && (splitted.size() > 1))
         {
             int RSSIThresholdTMP = atoi(splitted[1].c_str());
             RSSIThresholdTMP = min(0, max(-100, RSSIThresholdTMP)); // Verify input limits (-100 - 0)
@@ -612,7 +612,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new RSSITHRESHOLD ...");              
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new RSSITHRESHOLD ...");
                 doReboot();
             }
         }
@@ -674,7 +674,7 @@ int ClassFlowControll::CleanTempFolder() {
 
 esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 {
-    return flowmakeimage != NULL ? flowmakeimage->SendRawJPG(req) : ESP_FAIL;
+    return flowtakeimage != NULL ? flowtakeimage->SendRawJPG(req) : ESP_FAIL;
 }
 
 

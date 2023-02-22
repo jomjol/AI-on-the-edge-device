@@ -34,7 +34,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     CNNType = AutoDetect;
     CNNType = _cnntype;
     flowpostalignment = _flowalign;
-    logfileRetentionInDays = 5;
+    imagesRetention = 5;
 }
 
 
@@ -324,9 +324,9 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(splitted[0]) == "LOGIMAGELOCATION") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "ROIIMAGESLOCATION") && (splitted.size() > 1))
         {
-            this->LogImageLocation = "/sdcard" + splitted[1];
+            this->imagesLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
         }
         if ((toUpper(splitted[0]) == "LOGIMAGESELECT") && (splitted.size() > 1))
@@ -335,9 +335,9 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             isLogImageSelect = true;            
         }
 
-        if ((toUpper(splitted[0]) == "LOGFILERETENTIONINDAYS") && (splitted.size() > 1))
+        if ((toUpper(splitted[0]) == "ROIIMAGESRETENTION") && (splitted.size() > 1))
         {
-            this->logfileRetentionInDays = std::stoi(splitted[1]);
+            this->imagesRetention = std::stoi(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "MODEL") && (splitted.size() > 1))

@@ -64,7 +64,6 @@ static camera_config_t camera_config = {
     .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
     .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
     .grab_mode = CAMERA_GRAB_LATEST,      // only from new esp32cam version
-    
 };
 
 
@@ -127,63 +126,97 @@ void CCamera::ledc_init(void)
 }
 
 
-static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
+static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len)
+{
     jpg_chunking_t *j = (jpg_chunking_t *)arg;
-    if(!index){
+
+    if(!index) {
         j->len = 0;
     }
-    if(httpd_resp_send_chunk(j->req, (const char *)data, len) != ESP_OK){
+
+    if(httpd_resp_send_chunk(j->req, (const char *)data, len) != ESP_OK) {
         return 0;
     }
+
     j->len += len;
+
     return len;
 }
 
 
 bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation)
 {
-    bool result = false;
-    sensor_t * s = esp_camera_sensor_get(); 
-    if (_brightness > -100)
-        _brightness = min(2, max(-2, _brightness));
-    if (_contrast > -100)
-        _contrast = min(2, max(-2, _contrast));
-    if (_saturation > -100)
-        _saturation = min(2, max(-2, _saturation));
+    _brightness = min(2, max(-2, _brightness));
+    _contrast = min(2, max(-2, _contrast));
+    _saturation = min(2, max(-2, _saturation));
 
-    if (_saturation > -100)
+    sensor_t * s = esp_camera_sensor_get();
+    if (s) {
         s->set_saturation(s, _saturation);
-    if (_contrast > -100)
         s->set_contrast(s, _contrast);
-    if (_brightness > -100)
         s->set_brightness(s, _brightness);
 
-    if ((_brightness != brightness) && (_brightness > -100))
-        result = true;
-    if ((_contrast != contrast) && (_contrast > -100))
-        result = true;
-    if ((_saturation != saturation) && (_saturation > -100))
-        result = true;
-    
-    if (_brightness > -100)
-        brightness = _brightness;
-    if (_contrast > -100)
-        contrast = _contrast;
-    if (_saturation > -100)
-       saturation = _saturation;
+        /* Workaround - bug in cam library - enable bits are set without using bitwise OR logic -> only latest enable setting is used */
+        /* Library version: https://github.com/espressif/esp32-camera/commit/5c8349f4cf169c8a61283e0da9b8cff10994d3f3 */
+        /* Reference: https://esp32.com/viewtopic.php?f=19&t=14376#p93178 */
+        /* The memory structure is as follows for 
+        byte_0 = enable_bits
+            byte_0->bit0 = enable saturation and hue --> OK
+            byte_0->bit1 = enable saturation --> OK
+            byte_0->bit2 = enable brightness and contrast --> OK
+            byte_0->bit3 = enable green -> blue spitial effect (Antique and blunish and greenish and readdish and b&w) enable
+            byte_0->bit4 = anable gray -> read spitial effect (Antique and blunish and greenish and readdish and b&w) enable
+            byte_0->bit5 = remove (UV) in YUV color system
+            byte_0->bit6 = enable negative
+            byte_0->bit7 = remove (Y) in YUV color system
+        byte_1 = saturation1 0-255 --> ?
+        byte_2 = hue 0-255 --> OK
+        byte_3 = saturation2 0-255 --> OK
+        byte_4 = reenter saturation2 in documents --> ?
+        byte_5 = spital effect green -> blue 0-255 --> ?
+        byte_6 = spital effect gray -> read 0-255 --> ?
+        byte_7 = contrast lower byte 0-255 --> OK
+        byte_8 = contrast higher byte 0-255 --> OK
+        byte_9 = brightness 0-255 --> OK
+        byte_10= if byte_10==4 contrast effective --> ?
+        */
 
-    if (result && isFixedExposure)
+        //s->set_reg(s, 0x7C, 0xFF, 2); // Optional feature - hue setting: Select byte 2 in register 0x7C to set hue value
+        //s->set_reg(s, 0x7D, 0xFF, 0); // Optional feature - hue setting: Hue value 0 - 255
+        s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
+        s->set_reg(s, 0x7C, 0xFF, 0); // Select byte 0 in register 0x7C
+        s->set_reg(s, 0x7D, 7, 7); // Set bit 0, 1, 2 in register 0x7D to enable saturation, contrast, brightness and hue control
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetBrightnessContrastSaturation: Failed to get control structure");
+    }
+
+    if (((_brightness != brightness) || (_contrast != contrast) || (_saturation != saturation)) && isFixedExposure)
         EnableAutoExposure(waitbeforepicture_org);
 
-    return result;
+    brightness = _brightness;
+    contrast = _contrast;
+    saturation = _saturation;
+
+    ESP_LOGD(TAG, "brightness %d, contrast: %d, saturation %d", brightness, contrast, saturation);
+
+    return true;
 }
 
 
 void CCamera::SetQualitySize(int qual, framesize_t resol)
 {
-    sensor_t * s = esp_camera_sensor_get();   
-    s->set_quality(s, qual);    
-    s->set_framesize(s, resol); 
+    qual = min(63, max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
+    
+    sensor_t * s = esp_camera_sensor_get();
+    if (s) {
+        s->set_quality(s, qual);    
+        s->set_framesize(s, resol);
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetQualitySize: Failed to get control structure");
+    }
+
     ActualResolution = resol;
     ActualQuality = qual;
 
@@ -192,41 +225,45 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
         image_height = 240;
         image_width = 320;             
     }
-    if (resol == FRAMESIZE_VGA)
+    else if (resol == FRAMESIZE_VGA)
     {
         image_height = 480;
         image_width = 640;             
     }
-
 }
 
 
 void CCamera::EnableAutoExposure(int flash_duration)
 {
     ESP_LOGD(TAG, "EnableAutoExposure");
+    
     LEDOnOff(true);
-    if (flash_duration > 0)
+    if (flash_duration > 0) {
         LightOnOff(true);
-    const TickType_t xDelay = flash_duration / portTICK_PERIOD_MS;
-    vTaskDelay( xDelay );
+        const TickType_t xDelay = flash_duration / portTICK_PERIOD_MS;
+        vTaskDelay( xDelay );
+    }
 
     camera_fb_t * fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAG, "Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Capture Failed (Procedure 'EnableAutoExposure') --> Reboot! "
-                "Check that your camera module is working and connected properly.");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EnableAutoExposure: Capture Failed. "
+                                                "Check camera module and/or proper electrical connection");
         //doReboot();
     }
     esp_camera_fb_return(fb);        
 
     sensor_t * s = esp_camera_sensor_get(); 
-    s->set_gain_ctrl(s, 0);
-    s->set_exposure_ctrl(s, 0);
-
+    if (s) {
+        s->set_gain_ctrl(s, 0);
+        s->set_exposure_ctrl(s, 0);
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EnableAutoExposure: Failed to get control structure to set gain+exposure");
+    }
 
     LEDOnOff(false);  
     LightOnOff(false);
@@ -238,22 +275,21 @@ void CCamera::EnableAutoExposure(int flash_duration)
 esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 {
 	#ifdef DEBUG_DETAIL_ON
-	    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Start");
+	    LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 	#endif
 
     _Image->EmptyImage(); //Delete previous stored raw image -> black image
     
     LEDOnOff(true);
 
-    if (delay > 0) 
-    {
+    if (delay > 0) {
         LightOnOff(true);
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay( xDelay );
     }
 
 	#ifdef DEBUG_DETAIL_ON
-	    LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LightOn");
+	    LogFile.WriteHeapInfo("CaptureToBasisImage - After LightOn");
 	#endif
 
     camera_fb_t * fb = esp_camera_fb_get();
@@ -263,9 +299,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LEDOnOff(false);
         LightOnOff(false);
 
-        ESP_LOGE(TAG, "CaptureToBasisImage: Capture Failed");
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CCamera::CaptureToBasisImage) - most probably caused by a hardware problem (instablility, ...). "
-                "System will reboot.");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
+                                                "by a hardware problem (instablility, ...). System will reboot.");
         doReboot();
 
         return ESP_FAIL;
@@ -277,11 +312,16 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     }
 
     CImageBasis* _zwImage = new CImageBasis();
-    _zwImage->LoadFromMemory(fb->buf, fb->len);
+    if (_zwImage) {
+        _zwImage->LoadFromMemory(fb->buf, fb->len);
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
+    }
     esp_camera_fb_return(fb);        
 
     #ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After fb_get");
+        LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
     #endif
 
     LEDOnOff(false);  
@@ -293,7 +333,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 //    vTaskDelay( xDelay );  // wait for power to recover
     
     #ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - After LoadFromMemory");
+        LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
     #endif
 
     stbi_uc* p_target;
@@ -321,7 +361,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     delete _zwImage;
 
     #ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("CCamera::CaptureToBasisImage - Done");
+        LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
     #endif
 
     return ESP_OK;    
@@ -334,8 +374,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
      LEDOnOff(true);              // Switched off to save power !
 
-    if (delay > 0) 
-    {
+    if (delay > 0) {
         LightOnOff(true);
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay( xDelay );
@@ -345,11 +384,10 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAG, "CaptureToFile: Camera Capture Failed");
         LEDOnOff(false);
         LightOnOff(false);
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Capture Failed (CCamera::CaptureToFile) --> Reboot! "
-                "Check that your camera module is working and connected properly.");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
+                                                "Check camera module and/or proper electrical connection");
         //doReboot();
 
         return ESP_FAIL;
@@ -396,24 +434,21 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     }
 
     FILE * fp = fopen(nm.c_str(), "wb");
-    if (fp == NULL)  /* If an error occurs during the file creation */
-    {
-        fprintf(stderr, "fopen() failed for '%s'\n", nm.c_str());
+    if (fp == NULL) { // If an error occurs during the file creation
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Failed to open file " + nm);
     }
-    else
-    {
+    else {
         fwrite(buf, sizeof(uint8_t), buf_len, fp); 
         fclose(fp);
-    }    
+    }   
+
     if (converted)
         free(buf);
 
     esp_camera_fb_return(fb);
 
     if (delay > 0) 
-    {
         LightOnOff(false);
-    }
 
     return ESP_OK;    
 }
@@ -421,29 +456,26 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
 esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 {
-    camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
 
-
     LEDOnOff(true);
 
-    if (delay > 0) 
-    {
+    if (delay > 0) {
         LightOnOff(true);
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay( xDelay );
     }
 
-
-    fb = esp_camera_fb_get();
+    camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
-        ESP_LOGE(TAG, "Camera capture failed");
         LEDOnOff(false);
         LightOnOff(false);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
+                                        "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
 //        doReboot();
 
@@ -483,9 +515,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
 
     if (delay > 0) 
-    {
         LightOnOff(false);
-    }
 
     return res;
 }
@@ -495,19 +525,18 @@ void CCamera::LightOnOff(bool status)
 {
     GpioHandler* gpioHandler = gpio_handler_get();
     if ((gpioHandler != NULL) && (gpioHandler->isEnabled())) {
-        ESP_LOGD(TAG, "Use gpioHandler flashLigh");
+        ESP_LOGD(TAG, "Use gpioHandler to trigger flashlight");
         gpioHandler->flashLightEnable(status);
-    }  else {
+    }  
+    else {
     #ifdef USE_PWM_LEDFLASH
-        if (status)
-        {
+        if (status) {
             ESP_LOGD(TAG, "Internal Flash-LED turn on with PWM %d", led_intensity);
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, led_intensity));
             // Update duty to apply the new value
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
-        else
-        {
+        else {
             ESP_LOGD(TAG, "Internal Flash-LED turn off PWM");
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0));
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
@@ -558,33 +587,33 @@ void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol
         ESP_LOGD(TAG, "Query: %s", _query);
         if (httpd_query_key_value(_query, "size", _size, 10) == ESP_OK)
         {
-#ifdef DEBUG_DETAIL_ON   
+            #ifdef DEBUG_DETAIL_ON   
             ESP_LOGD(TAG, "Size: %s", _size);
-#endif
+            #endif
             if (strcmp(_size, "QVGA") == 0)
                 resol = FRAMESIZE_QVGA;       // 320x240
-            if (strcmp(_size, "VGA") == 0)
+            else if (strcmp(_size, "VGA") == 0)
                 resol = FRAMESIZE_VGA;      // 640x480
-            if (strcmp(_size, "SVGA") == 0)
+            else if (strcmp(_size, "SVGA") == 0)
                 resol = FRAMESIZE_SVGA;     // 800x600
-            if (strcmp(_size, "XGA") == 0)
+            else if (strcmp(_size, "XGA") == 0)
                 resol = FRAMESIZE_XGA;      // 1024x768
-            if (strcmp(_size, "SXGA") == 0)
+            else if (strcmp(_size, "SXGA") == 0)
                 resol = FRAMESIZE_SXGA;     // 1280x1024
-            if (strcmp(_size, "UXGA") == 0)
+            else if (strcmp(_size, "UXGA") == 0)
                  resol = FRAMESIZE_UXGA;     // 1600x1200   
         }
         if (httpd_query_key_value(_query, "quality", _qual, 10) == ESP_OK)
         {
-#ifdef DEBUG_DETAIL_ON   
+            #ifdef DEBUG_DETAIL_ON   
             ESP_LOGD(TAG, "Quality: %s", _qual);
-#endif
+            #endif
             qual = atoi(_qual);
                 
-            if (qual > 63)
+            if (qual > 63)      // Limit to max. 63
                 qual = 63;
-            if (qual < 0)
-                qual = 0;
+            else if (qual < 8)  // Limit to min. 8
+                qual = 8;
         }
     }
 }
@@ -594,28 +623,29 @@ framesize_t CCamera::TextToFramesize(const char * _size)
 {
     if (strcmp(_size, "QVGA") == 0)
         return FRAMESIZE_QVGA;       // 320x240
-    if (strcmp(_size, "VGA") == 0)
+    else if (strcmp(_size, "VGA") == 0)
         return FRAMESIZE_VGA;      // 640x480
-    if (strcmp(_size, "SVGA") == 0)
+    else if (strcmp(_size, "SVGA") == 0)
         return FRAMESIZE_SVGA;     // 800x600
-    if (strcmp(_size, "XGA") == 0)
+    else if (strcmp(_size, "XGA") == 0)
         return FRAMESIZE_XGA;      // 1024x768
-    if (strcmp(_size, "SXGA") == 0)
+    else if (strcmp(_size, "SXGA") == 0)
         return FRAMESIZE_SXGA;     // 1280x1024
-    if (strcmp(_size, "UXGA") == 0)
-        return FRAMESIZE_UXGA;     // 1600x1200   
+    else if (strcmp(_size, "UXGA") == 0)
+        return FRAMESIZE_UXGA;     // 1600x1200  
+
     return ActualResolution;
 }
 
 
 CCamera::CCamera()
 {
-#ifdef DEBUG_DETAIL_ON    
-    ESP_LOGD(TAG, "CreateClassCamera");
-#endif
-    brightness = -5;
-    contrast = -5;
-    saturation = -5;
+    #ifdef DEBUG_DETAIL_ON    
+        ESP_LOGD(TAG, "CreateClassCamera");
+    #endif
+    brightness = 0;
+    contrast = 0;
+    saturation = 0;
     isFixedExposure = false;
 
     ledc_init();    

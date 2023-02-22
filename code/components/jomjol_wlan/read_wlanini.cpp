@@ -146,7 +146,7 @@ int LoadWlanFromFile(std::string fn)
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DNS: " + wlan_config.dns);
             }
             #ifdef WLAN_USE_MESH_ROAMING
-            else if ((splitted.size() > 1) && ((toUpper(splitted[0]) == "RSSITHRESHOLD") || (toUpper(splitted[0]) == "RSSITHREASHOLD"))) {  // Workaround for typo RSSITHREASHOLD
+            else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHRESHOLD")) {
                 tmp = trim(splitted[1]);
                 if ((tmp[0] == '"') && (tmp[tmp.length()-1] == '"')){
                     tmp = tmp.substr(1, tmp.length()-2);
