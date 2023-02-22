@@ -140,14 +140,14 @@ void SendHTTPResponse(httpd_req_t *req)
 //        message += "<tr><td>gateway</td><td><input type=\"text\" name=\"gateway\" id=\"gateway\"></td><td>Leave emtpy if set by router</td></tr>";
 //        message += "<tr><td>netmask</td><td><input type=\"text\" name=\"netmask\" id=\"netmask\"></td><td>Leave emtpy if set by router</td>";
 //        message += "</tr><tr><td>DNS</td><td><input type=\"text\" name=\"dns\" id=\"dns\"></td><td>Leave emtpy if set by router</td></tr>";
-//        message += "<tr><td>RSSI Threashold</td><td><input type=\"number\" name=\"name\" id=\"threashold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threashold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
+//        message += "<tr><td>RSSI Threshold</td><td><input type=\"number\" name=\"name\" id=\"threshold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threshold for RSSI value to check for start switching access point in a mesh system.Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
 //        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
 
         message = "<button class=\"button\" type=\"button\" onclick=\"wr()\">Write wlan.ini</button>";
         message += "<script language=\"JavaScript\">async function wr(){";
         message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value;";
-//        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssi=\"+document.getElementById(\"threashold\").value;";
+//        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssi=\"+document.getElementById(\"threshold\").value;";
         message += "fetch(api);await new Promise(resolve => setTimeout(resolve, 1000));location.reload();}</script>";
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
         return;
@@ -213,55 +213,55 @@ esp_err_t config_ini_handler(httpd_req_t *req)
         if (httpd_query_key_value(_query, "ssid", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "ssid is found: %s", _valuechar);
-            ssid = std::string(_valuechar);
+            ssid = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "pwd", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "pwd is found: %s", _valuechar);
-            pwd = std::string(_valuechar);
+            pwd = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "ssid", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "ssid is found: %s", _valuechar);
-            ssid = std::string(_valuechar);
+            ssid = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "hn", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "hostname is found: %s", _valuechar);
-            hn = std::string(_valuechar);
+            hn = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "ip", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "ip is found: %s", _valuechar);
-            ip = std::string(_valuechar);
+            ip = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "gw", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "gateway is found: %s", _valuechar);
-            gw = std::string(_valuechar);
+            gw = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "nm", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "netmask is found: %s", _valuechar);
-            nm = std::string(_valuechar);
+            nm = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "dns", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "dns is found: %s", _valuechar);
-            dns = std::string(_valuechar);
+            dns = UrlDecode(std::string(_valuechar));
         }
 
         if (httpd_query_key_value(_query, "rssi", _valuechar, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "rssi is found: %s", _valuechar);
-            rssi = std::string(_valuechar);
+            rssi = UrlDecode(std::string(_valuechar));
         }
     };
 
@@ -311,7 +311,7 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     fputs(dns.c_str(), configfilehandle);
 
     if (rssi.length())
-        rssi = "RSSIThreashold = \"" + rssi + "\"\n";
+        rssi = "RSSIThreshold = \"" + rssi + "\"\n";
     else
         rssi = ";rssi = \"\"\n";
     fputs(rssi.c_str(), configfilehandle);
