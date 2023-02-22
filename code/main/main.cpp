@@ -206,6 +206,7 @@ extern "C" void app_main(void)
 
     // ********************************************
     // Highlight start of logfile logging
+    // Default Log Level: INFO -> Everything which needs to be logged during boot should be have level INFO, WARN OR ERROR
     // ********************************************
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
@@ -260,6 +261,7 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device was rebooted due to a software exception! Log level is set to DEBUG until the next reboot. "
                                                "Flow init is delayed by 5 minutes to check the logs or do an OTA update"); 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Keep device running until crash occurs again and check logs after device is up again");
+        LogFile.setLogLevel(ESP_LOG_DEBUG);
     }
     else {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
@@ -434,14 +436,6 @@ extern "C" void app_main(void)
 
     ESP_LOGD(TAG, "Before reg server main");
     register_server_main_uri(server, "/sdcard");
-
-    // Reduce log level to INFO (till level is going to be adapted to defined level in config.ini)
-    // NOTE: If an exection occured, log level kept to DEBUG level and won't be adapted to defined level in config file (ClassFlowControll.cpp)
-    // ********************************************
-    if (!getIsPlannedReboot() && esp_reset_reason() == ESP_RST_PANIC)
-        LogFile.setLogLevel(ESP_LOG_DEBUG);
-    else
-        LogFile.setLogLevel(ESP_LOG_INFO);
 
     // Only for testing purpose
     //setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
