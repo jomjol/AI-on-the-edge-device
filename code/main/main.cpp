@@ -85,8 +85,6 @@ extern std::string getFwVersion(void);
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
-sdmmc_card_t* card;
-
 std::vector<std::string> splitString(const std::string& str);
 bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith);
 bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
@@ -137,6 +135,7 @@ bool Init_NVS_SDCard()
         .allocation_unit_size = 16 * 1024
     };
 
+    sdmmc_card_t* card;
     // Use settings defined above to initialize SD card and mount FAT filesystem.
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
@@ -429,8 +428,8 @@ extern "C" void app_main(void)
     
     // Print SD-Card info
     // ********************************************
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "SD card info: Name: " + std::string(card->cid.name) + ", Capacity: " + 
-                        std::to_string(card->csd.capacity / 1024 / 1024 * card->csd.sector_size) + "MB");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "SD card info: Name: " + getSDCardName() + ", Capacity: " + 
+                        getSDCardCapacity() + "MB, Free: " + getSDCardFreePartitionSpace() + "MB");
 
     xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);

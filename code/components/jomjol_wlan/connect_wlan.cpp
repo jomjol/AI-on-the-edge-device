@@ -410,7 +410,7 @@ esp_err_t wifi_init_sta(void)
 			 wlan_config.dns = wlan_config.gateway;
 		} 
 		else {
-			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual config -> DNS: " + wlan_config.dns);
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> DNS: " + wlan_config.dns);
 		}
      
         esp_netif_dns_info_t dns_info;
