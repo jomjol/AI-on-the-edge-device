@@ -177,7 +177,6 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "MainTopic", 1, false);
-     ParamAddValue(param, catname, "Topic", 1, false);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
