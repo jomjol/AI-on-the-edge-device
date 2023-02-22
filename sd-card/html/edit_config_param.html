@@ -803,10 +803,11 @@ textarea {
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
-				    <label for=Category_GPIO_enabled>GPIO Settings
+				    <label for=Category_GPIO_enabled>GPIO Settings</label></h4>
 					<span class="GPIO_Item">
-					<h5>Enabling GPIO handler, disable by default integrated flash light.<br>Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
-				</h4>
+						<h5>GPIO4 is by default used for the built-in flash LED! If you enable the GPIO Settings,
+							you have to explicitely enable it again on GPIO4 or on GPIO12 with an external LED!</h5>
+					</span>
 			</td>
 		</tr> 	
 
