@@ -44,7 +44,7 @@ textarea {
 }
 
 .disabled {
-    color:darkgrey;
+    color:rgb(122, 122, 122);
 }
 
 .smallSelect {
@@ -1559,7 +1559,7 @@ function InvertEnableItem(_cat, _param)
 	_zw = _cat + "_" + _param + "_enabled";
 	_isOn = document.getElementById(_zw).checked;
 
-	_color = "color:darkgrey;";
+	_color = "color: rgb(122, 122, 122);";
 	if (_isOn) {
 		_color = "color:black;";
 	}
@@ -1577,7 +1577,7 @@ function InvertEnableItem(_cat, _param)
 }
 
 function setEnabled(className, enabled) {
-	_color = "color:darkgrey;";
+	_color = "color: rgb(122, 122, 122);";
 	if (enabled) {
 		_color = "color:black;";
 	}
@@ -1620,7 +1620,7 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 {
 	_status = _category[_cat]["enabled"];
 
-	_color = "color:darkgrey;";
+	_color = "color: rgb(122, 122, 122);";
 	if (_status) {
 		_color = "color:black;";
 	}
@@ -1633,13 +1633,13 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 	if (_number == -1){
 		if (!_param[_cat][_name]["enabled"]) {
 			_status = false;
-			_color = "color:darkgrey;";
+			_color = "color: rgb(122, 122, 122);";
 		}
 	}
 	else
 		if (!NUMBERS[_number][_cat][_name]["enabled"]) {
 				_status = false;
-				_color = "color:darkgrey;";
+				_color = "color: rgb(122, 122, 122);";
 			}
 
 
