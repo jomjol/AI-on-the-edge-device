@@ -537,7 +537,7 @@ void migrateConfiguration(void) {
         if (section == "[DataLogging]") {
             migrated = migrated | replace(configLines[i], "DataLogRetentionInDays", "DataFilesRetention");
             /* DataLogActive is true by default! */
-            migrated = migrated | replace(configLines[i], ";DataLogActive = true", ";DataLogActive = true"); // Set it to its default value
+            migrated = migrated | replace(configLines[i], ";DataLogActive = false", ";DataLogActive = true"); // Set it to its default value
             migrated = migrated | replace(configLines[i], ";DataLogActive", "DataLogActive"); // Enable it
         }
 
