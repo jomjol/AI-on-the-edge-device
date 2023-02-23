@@ -177,7 +177,6 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "MainTopic", 1, false);
-     ParamAddValue(param, catname, "Topic", 1, false);      // Downward compatiblity: Not used anymore, included only for readback to new MainTopic
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
