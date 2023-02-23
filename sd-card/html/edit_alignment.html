@@ -133,7 +133,7 @@ function SaveToConfig(){
     WriteConfigININew();
     UpdateConfigReference(domainname)
     SaveConfigToServer(domainname);
-    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
+    firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
 }
 
 function EnhanceContrast(){

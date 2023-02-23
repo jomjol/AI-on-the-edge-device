@@ -470,7 +470,6 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
-				<input type="checkbox" id="PostProcessing_AllowNegativeRates_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AllowNegativeRates")' unchecked >
 				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rates</class></label>
 			</td>
 			<td>
@@ -2042,7 +2041,7 @@ function saveTextAsFile()
 		ReadParameterAll();
 		WriteConfigININew();
 	    SaveConfigToServer(domainname);
-		firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
+		firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
 	}
 }
 
