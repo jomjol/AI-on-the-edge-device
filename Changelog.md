@@ -1,4 +1,4 @@
-## [15.0.0] - 2023-02-22
+## [15.0.1] - 2023-02-23
 
 **Parameter Migration**
 
@@ -837,8 +837,8 @@ External Illumination
 -   Initial Version
 
 
-[14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.0
-[14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.3
+[15.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.1
+[14.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.3
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
 [13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
 [13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.5
