@@ -450,9 +450,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 txt = "<h3>Aligned Image (current round)</h3>\n";
                 if ((*status == std::string("Initialization")) || 
                     (*status == std::string("Initialization (delayed)")) || 
-                    (*status == std::string("Take Image")) ||
-                    (*status == std::string("Aligning"))) {
-                    txt += "<h3>Current state: " + *status + "</h3>\n";
+                    (*status == std::string("Take Image")) {
+                    txt += "<p>Current state: " + *status + "</p>\n";
                 }
                 else {
                     txt += "<img src=\"/img_tmp/alg_roi.jpg\">\n";
