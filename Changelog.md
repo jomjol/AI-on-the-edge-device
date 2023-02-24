@@ -1,4 +1,3 @@
-
 ## [Unreleased]
 
 **Rolling**
@@ -18,20 +17,44 @@
 
 #### Fixed
 
--   [2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Initial AP-Mode now decodes the parameters correctly
+-   
 
 #### Removed
 
 -   n.a.
 
 
-## [14.1.0] - 2023-02-21
+## [15.0.1] - 2023-02-23
 
-This release only migrates some parameters, see https://github.com/jomjol/AI-on-the-edge-device/pull/2023.
+**Parameter Migration**
 
-It does not change any functionality of the device!
+### Update Procedure
 
-If you want to revert from a future release to an older one, this is the first release using the new parameter naming. If you want to go to an older release than this `v14.1.0`, you have to update the `config.ini` manually to the old namings!
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+
+### Changes
+
+This release only migrates some parameters, see #2023 for details and a list of all parameter changes.
+The parameter migration happens automatically on the next startup. No user interaction is required.
+A backup of the config is stored on the SD-card as `config.bak`.
+
+Beside of the parameter change and the bugfix listed below, no changes are contained in this release!
+
+If you want to revert back to `v14` or earlier, you will have to revert the migration changes in `config.ini` manually!
+
+#### Added
+
+-   n.a.
+
+#### Changed
+
+-   [#2023](https://github.com/jomjol/AI-on-the-edge-device/pull/2023) Migrated Parameters
+-   Removed old `Topic` parameter, it is not used anymore
+
+#### Fixed
+
+-   [2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+
 
 ## [14.0.3] -2023-02-05
 
@@ -838,8 +861,8 @@ External Illumination
 -   Initial Version
 
 
-[14.1.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v14.1.0
-[14.0.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.2
+[15.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.1
+[14.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.3
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
 [13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
 [13.0.5]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.5

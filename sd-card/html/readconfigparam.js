@@ -194,7 +194,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Measurement");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
-    
+
      var catname = "InfluxDBv2";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
