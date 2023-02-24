@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>Make Reference</title>
+<title>Reference Image</title>
 <meta charset="utf-8"/>
 	
 <style>
@@ -36,8 +36,12 @@ table {
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-    <h2>Create Reference out of Raw Image</h2>
-    <p><b>Note: After saving a new Reference Image, make sure to update the Alignment Marks and the ROI's and reboot once!</b></p>
+    <h2>Reference Image</h2>
+    <p>On this page you define the Reference Image.
+        See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/</a> for explanations.</p>
+    <p>After saving a new Reference Image, make sure to update the <a href=edit_alignment.html>Alignment Marks</a> and then
+        the <a href=edit_digits.html>digit</a> resp. <a href=edit_analog.html>analog</a> ROI's.<br>
+    Only after those steps a reboot is required.</p>
 
 	<table>
 	  <tr>
@@ -87,10 +91,8 @@ table {
 			<td><canvas id="canvas"></canvas></td>
 		</tr>			
 		<tr>		
-			<td><input class="button" type="button" id="updatereferenceimage" value="Save" onclick="SaveReference()"></td>
-		</tr>		
-		<tr>		
-			<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate saved Reference</button></td>
+			<td><input class="button" type="button" id="updatereferenceimage" value="Save" onclick="SaveReference()">
+                <p>Proceed to update the <a href=edit_alignment.html>Alignment Marks</a> when you are done.</p></td>
 		</tr>
 	</table>
 
@@ -129,7 +131,7 @@ table {
                 _contrast = document.getElementById("TakeImage_Contrast_value1").value;
                 _saturation = document.getElementById("TakeImage_Saturation_value1").value;
                 url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
-                url = url + "&con=" + _saturation + "&sat=" + _saturation + "&int=" + _intensity;
+                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
             }
             else
             {
@@ -270,7 +272,7 @@ table {
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
                 showReference(param);
                 UpdatePage();
-                firework.launch('Reference got updated. Please reboot to activate changes!', 'success', 5000);
+                firework.launch('Reference got updated. It will get applied after the next reboot!', 'success', 5000);
             }
         }
 
