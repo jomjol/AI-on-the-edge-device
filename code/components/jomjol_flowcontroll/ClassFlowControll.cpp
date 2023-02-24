@@ -195,6 +195,7 @@ void ClassFlowControll::SetInitialParameter(void)
     disabled = false;
     aktRunNr = 0;
     aktstatus = "Flow task not yet created";
+    aktstatusWithTime = aktstatus;
 }
 
 
@@ -272,6 +273,8 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 void ClassFlowControll::InitFlow(std::string config)
 {
     aktstatus = "Initialization";
+    aktstatusWithTime = aktstatus;
+
     //#ifdef ENABLE_MQTT
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false); // Right now, not possible -> MQTT Service is going to be started later
     //#endif //ENABLE_MQTT
@@ -318,6 +321,12 @@ void ClassFlowControll::InitFlow(std::string config)
 }
 
 
+std::string* ClassFlowControll::getActStatusWithTime()
+{
+    return &aktstatusWithTime;
+}
+
+
 std::string* ClassFlowControll::getActStatus()
 {
     return &aktstatus;
@@ -327,6 +336,7 @@ std::string* ClassFlowControll::getActStatus()
 void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
     aktstatus = _aktstatus;
+    aktstatusWithTime = aktstatus;
 }
 
 
@@ -338,10 +348,10 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
     {
         if (FlowControll[i]->name() == "ClassFlowTakeImage") {
             zw_time = getCurrentTimeString("%H:%M:%S");
-            std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
-            aktstatus = flowStatus + " (" + zw_time + ")";
+            aktstatus = TranslateAktstatus(FlowControll[i]->name());
+            aktstatusWithTime = aktstatus + " (" + zw_time + ")";
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
             #endif //ENABLE_MQTT
 
             FlowControll[i]->doFlow(time);
@@ -371,11 +381,11 @@ bool ClassFlowControll::doFlow(string time)
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = getCurrentTimeString("%H:%M:%S");
-        std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
-        aktstatus = flowStatus + " (" + zw_time + ")";
-        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
+        aktstatus = TranslateAktstatus(FlowControll[i]->name());
+        aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
         #ifdef ENABLE_MQTT
-            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
         #endif //ENABLE_MQTT
 
         #ifdef DEBUG_DETAIL_ON
@@ -405,11 +415,11 @@ bool ClassFlowControll::doFlow(string time)
     }
 
     zw_time = getCurrentTimeString("%H:%M:%S");
-    std::string flowStatus = "Flow finished";
-    aktstatus = flowStatus + " (" + zw_time + ")";
-    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
+    aktstatus = "Flow finished";
+    aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT
-        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
     #endif //ENABLE_MQTT
 
     return result;
