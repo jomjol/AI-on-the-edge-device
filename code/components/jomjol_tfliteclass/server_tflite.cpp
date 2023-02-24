@@ -30,9 +30,7 @@
 ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandletask_autodoFlow = NULL;
-
 bool bTaskAutoFlowCreated = false;
-bool flowisrunning = false;
 
 long auto_interval = 0;
 bool auto_isrunning = false;
@@ -84,9 +82,9 @@ esp_err_t GetRawJPG(httpd_req_t *req)
 }
 
 
-bool isSetupModusActive() {
+bool isSetupModusActive() 
+{
     return tfliteflow.getStatusSetupModus();
-    return false;
 }
 
 
@@ -106,14 +104,19 @@ void KillTFliteTasks()
 }
 
 
-void doInit(void)
+bool doInit(void)
 {
+    bool bRetVal = true;
+    
     #ifdef DEBUG_DETAIL_ON             
-        ESP_LOGD(TAG, "Start tfliteflow.InitFlow(config);");
+        ESP_LOGD(TAG, "Start tfliteflow.InitFlow");
     #endif
-    tfliteflow.InitFlow(CONFIG_FILE);
+
+    if (!tfliteflow.InitFlow(CONFIG_FILE))
+        bRetVal = false;
+
     #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
+        ESP_LOGD(TAG, "Finished tfliteflow.InitFlow");
     #endif
     
     /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
@@ -122,16 +125,20 @@ void doInit(void)
     #ifdef ENABLE_MQTT
         tfliteflow.StartMQTTService();
     #endif //ENABLE_MQTT
+
+    return bRetVal;
 }
 
 
 bool doflow(void)
 {   
     std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-    ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
-    flowisrunning = true;
+
+    #ifdef DEBUG_DETAIL_ON    
+        ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
+    #endif
+
     tfliteflow.doFlow(zw_time);
-    flowisrunning = false;
 
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "doflow - end %s", zw_time.c_str());
@@ -181,7 +188,9 @@ esp_err_t handler_get_heap(httpd_req_t *req)
     return ESP_OK;
 }
 
-
+/* 
+// Disable function to avoid call init in wrong device state, e.g. during flow is processing
+// Could be potentially used for reloading parameters in init phase without reboot
 esp_err_t handler_init(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON      
@@ -204,6 +213,7 @@ esp_err_t handler_init(httpd_req_t *req)
 
     return ESP_OK;
 }
+*/
 
 
 esp_err_t handler_flow_start(httpd_req_t *req) {
@@ -812,63 +822,67 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 void task_autodoFlow(void *pvParameter)
 {
     int64_t fr_start, fr_delta_ms;
-
     bTaskAutoFlowCreated = true;
 
+    // Delay flow initialization if reboot was triggered by software sexception
+    // Note: Logging of the event is handled already in "main.cpp"
+    // ********************************************
     if (!isPlannedReboot && (esp_reset_reason() == ESP_RST_PANIC))
     {
         tfliteflow.setActStatus("Initialization (delayed)");
-        //#ifdef ENABLE_MQTT
-            //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
+        //#ifdef ENABLE_MQTT --> // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
+            //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false);
         //#endif //ENABLE_MQTT
         vTaskDelay(60*5000 / portTICK_PERIOD_MS); // Wait 5 minutes to give time to do an OTA update or fetch the log
     }
 
-    ESP_LOGD(TAG, "task_autodoFlow: start");
-    doInit();
+    #ifdef DEBUG_DETAIL_ON    
+        ESP_LOGD(TAG, "task_autodoFlow: start");
+    #endif
 
-    auto_isrunning = tfliteflow.isAutoStart(auto_interval);
+    // Start flow initialization
+    // ********************************************
+    if (!doInit()) {
+        auto_isrunning = false;
+        tfliteflow.setActStatus("Initialization failed");
+    }
+    else {
+        auto_isrunning = tfliteflow.isAutoStart(auto_interval);
+    }
 
+    // Start setup modus if parameter in config is true
+    // ********************************************
     if (isSetupModusActive()) 
     {
         auto_isrunning = false;
         std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-        tfliteflow.doFlowTakeImageOnly(zw_time);
+        tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
     }
     
+    // Process flow runs
+    // ********************************************
     while (auto_isrunning)
     {
+        #ifdef DEBUG_DETAIL_ON       
+            ESP_LOGD(TAG, "task_autodoFlow: while loop started");
+        #endif
+
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
         time_t roundStartTime = getUpTime();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
 
-        if (flowisrunning)
-        {
-            #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "Autoflow: doFlow is already running!");
-            #endif
-        }
-        else
-        {
-            #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "Autoflow: doFlow is started");
-            #endif
-            flowisrunning = true;
-            doflow();
-            #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "Remove older log files");
-            #endif
-            LogFile.RemoveOldLogFile();
-            LogFile.RemoveOldDataLog();
-        }
+        doflow();
 
-        //Round finished -> Logfile
+        LogFile.RemoveOldLogFile();
+        LogFile.RemoveOldDataLog();
+
+        // Round finished -> Logfile
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
         
-        //CPU Temp -> Logfile
+        // CPU Temp -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
         
         // WIFI Signal Strength (RSSI) -> Logfile
@@ -888,7 +902,10 @@ void task_autodoFlow(void *pvParameter)
             vTaskDelay( xDelay );        
         }
     }
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
+
+    // Delete task if it exits from the loop above (setup mode or flow init failed)
+    // ********************************************
+    vTaskDelete(NULL);
     xHandletask_autodoFlow = NULL;
     ESP_LOGD(TAG, "task_autodoFlow: end");
 }
@@ -896,17 +913,19 @@ void task_autodoFlow(void *pvParameter)
 
 void TFliteDoAutoStart()
 {
-    BaseType_t xReturned;
+    #ifdef DEBUG_DETAIL_ON      
+            LogFile.WriteHeapInfo("TFliteDoAutoStart: start");
+    #endif
 
-    ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
-
-    xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
-    //xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow);
-    if( xReturned != pdPASS )
-    {
-       ESP_LOGD(TAG, "ERROR task_autodoFlow konnte nicht erzeugt werden!");
+    BaseType_t xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
+    if( xReturned != pdPASS ) {
+       LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create task_autodoFlow");
+       LogFile.WriteHeapInfo("TFliteDoAutoStart: Failed to create task");
     }
-    ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
+
+    #ifdef DEBUG_DETAIL_ON      
+            LogFile.WriteHeapInfo("TFliteDoAutoStart: end");
+    #endif
 }
 
 
@@ -925,10 +944,12 @@ void register_server_tflite_uri(httpd_handle_t server)
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;
 
+    /*
     camuri.uri       = "/doinit";
     camuri.handler   = handler_init;
     camuri.user_ctx  = (void*) "Light On";    
     httpd_register_uri_handler(server, &camuri);
+    */
 
     // Legacy API => New: "/setPreValue"
     camuri.uri       = "/setPreValue.html";

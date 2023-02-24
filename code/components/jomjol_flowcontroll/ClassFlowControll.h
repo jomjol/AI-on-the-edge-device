@@ -41,7 +41,7 @@ protected:
 	int aktRunNr;
 
 public:
-	void InitFlow(std::string config);
+	bool InitFlow(std::string config);
 	bool doFlow(string time);
 	void doFlowTakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};

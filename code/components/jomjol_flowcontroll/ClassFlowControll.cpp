@@ -270,14 +270,16 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 }
 
 
-void ClassFlowControll::InitFlow(std::string config)
+bool ClassFlowControll::InitFlow(std::string config)
 {
+    bool bRetVal = true;
     aktstatus = "Initialization";
     //#ifdef ENABLE_MQTT
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false); // Right now, not possible -> MQTT Service is going to be started later
     //#endif //ENABLE_MQTT
     
-    string line;
+    std::string line = "";
+    std::string section = "";
     flowpostprocessing = NULL;
 
     ClassFlow* cfc;
@@ -285,37 +287,48 @@ void ClassFlowControll::InitFlow(std::string config)
     config = FormatFileName(config);
     pFile = fopen(config.c_str(), "r");
 
-    line = "";
+    if (pFile == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "InitFlow: Unable to open config file"); 
+        return false;
+    }
 
-    char zw[1024];
-    if (pFile != NULL)
-    {
-        fgets(zw, 1024, pFile);
-        ESP_LOGD(TAG, "%s", zw);
+    char zw[256];
+    if (fgets(zw, sizeof(zw), pFile) == NULL) {
+        line = "";
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "InitFlow: Config file opened, but empty or content not readable");
+        fclose(pFile);
+        return false;
+    }
+    else {
         line = std::string(zw);
     }
 
     while ((line.size() > 0) && !(feof(pFile)))
     {
         cfc = CreateClassFlow(line);
-//        printf("Name: %s\n", cfc->name().c_str());
         if (cfc)
         {
-            ESP_LOGD(TAG, "Start ReadParameter (%s)", line.c_str());
-            cfc->ReadParameter(pFile, line);
+            //ESP_LOGD(TAG, "Start ReadParameter (%s)", line.c_str());
+            section = line;
+            if (!cfc->ReadParameter(pFile, line)) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "InitFlow: Error loading parameter of section " +
+                                                         section + " -> \"" + cfc->name() + "\"");
+                bRetVal = false;
+            }
         }
         else
         {
             line = "";
-            if (fgets(zw, 1024, pFile) && !feof(pFile))
+            if (fgets(zw, sizeof(zw), pFile) && !feof(pFile))
                 {
-                    ESP_LOGD(TAG, "Read: %s", zw);
+                    //ESP_LOGD(TAG, "Read: %s", zw);
                     line = std::string(zw);
                 }
         }
     }
-
     fclose(pFile);
+
+    return bRetVal;
 }
 
 
@@ -355,63 +368,44 @@ bool ClassFlowControll::doFlow(string time)
 {
     bool result = true;
     std::string zw_time;
-    int repeat = 0;
-
-    #ifdef DEBUG_DETAIL_ON 
-        LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
-    #endif
-
-    /* Check if we have a valid date/time and if not restart the NTP client */
-   /* if (! getTimeIsSet()) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time not set, restarting NTP Client!");
-        restartNtpClient();
-    }*/
-
-    //checkNtpStatus(0);
+    std::string flowStatus;
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
+        #ifdef DEBUG_DETAIL_ON  
+            LogFile.WriteHeapInfo("ClassFlowControll::doFlow: " + FlowControll[i]->name());
+        #endif
+        
         zw_time = getCurrentTimeString("%H:%M:%S");
-        std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
+        flowStatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatus = flowStatus + " (" + zw_time + ")";
         //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
         #ifdef ENABLE_MQTT
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
         #endif //ENABLE_MQTT
 
-        #ifdef DEBUG_DETAIL_ON
-            string zw = "FlowControll.doFlow - " + FlowControll[i]->name();
-            LogFile.WriteHeapInfo(zw);
-        #endif
-
         if (!FlowControll[i]->doFlow(time)){
-            repeat++;
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            if (i) i -= 1;    // vPrevious step must be repeated (probably take pictures)
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error during processing of state \"" + flowStatus + "\". Flow aborted!");
             result = false;
-            if (repeat > 5) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
-                doReboot();
-                //Step was repeated 5x --> reboot
-            }
+            break;
         }
-        else
-        {
-            result = true;
-        }
-        
-        #ifdef DEBUG_DETAIL_ON  
-            LogFile.WriteHeapInfo("ClassFlowControll::doFlow");
-        #endif
     }
 
+    if (result)
+        flowStatus = "Flow finished";
+    else
+        flowStatus = "Flow aborted - ERROR";
+
     zw_time = getCurrentTimeString("%H:%M:%S");
-    std::string flowStatus = "Flow finished";
     aktstatus = flowStatus + " (" + zw_time + ")";
     //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
     #ifdef ENABLE_MQTT
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
     #endif //ENABLE_MQTT
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("ClassFlowControll::doFlow - done");
+    #endif
 
     return result;
 }
