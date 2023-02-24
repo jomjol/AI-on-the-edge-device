@@ -386,7 +386,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
             if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
                 txt = "<body style=\"font-family: arial\">";
-                txt += "<h3>Please wait for the first round to complete</h3>\n";
+                txt += "<h3>Please wait for the first round to complete</h3><h3>Current state: " + *status + "</h3>\n";
                 httpd_resp_sendstr_chunk(req, txt.c_str());
             }
             else {
