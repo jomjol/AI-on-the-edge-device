@@ -23,8 +23,9 @@ static const char* TAG = "CNN";
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
     string cnnmodelfile = "";
-    modelxsize = 1;
-    modelysize = 1;
+    modelxsize = 32;
+    modelysize = 32;
+    modelchannel = 3;
     CNNGoodThreshold = 0.0;
     ListFlowControll = NULL;
     previousElement = NULL;   
@@ -248,7 +249,6 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     }
 
     return result;
-
 }
 
 
@@ -297,6 +297,7 @@ int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder
 
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
+    bool bRetVal = true;
     std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
@@ -349,6 +350,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             CNNGoodThreshold = std::stof(splitted[1]);
         }
+
         if (splitted.size() >= 5)
         {
             general* _analog = GetGENERAL(splitted[0], true);
@@ -375,8 +377,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
     if (!getNetworkParameter())
-        return false;
-
+        bRetVal = false;
 
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
@@ -385,7 +386,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             GENERAL[_ana]->ROI[i]->image_org = new CImageBasis(GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, 3);
         }
 
-    return true;
+    return bRetVal;
 }
 
 
@@ -467,31 +468,32 @@ string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
 
 bool ClassFlowCNNGeneral::doFlow(string time)
 {
-
-#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
-    //register a buffer to record the memory trace
-    ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
-    // start tracing
-    ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
-#endif
+    #ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+        //register a buffer to record the memory trace
+        ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
+        // start tracing
+        ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
+    #endif
 
     if (disabled)
-      return true;
+        return true;
 
-    if (!doAlignAndCut(time)){
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "start AlignandCut");
+
+    if (!doAlignAndCut(time))
         return false;
-    };
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow after alignment");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "start NeuralNetwork");
 
-    doNeuralNetwork(time);
+    if (!doNeuralNetwork(time))
+        return false;
 
     RemoveOldLogs();
 
-#ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
-    ESP_ERROR_CHECK( heap_trace_stop() );
-    heap_trace_dump(); 
-#endif   
+    #ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
+        ESP_ERROR_CHECK( heap_trace_stop() );
+        heap_trace_dump(); 
+    #endif   
 
     return true;
 }
@@ -502,7 +504,12 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time)
     if (disabled)
         return true;
 
-    CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();    
+    CAlignAndCutImage *caic = flowpostalignment->GetAlignAndCutImage();
+
+    if (caic == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "doAlignAndCut: Aligned image not available");
+        return false;
+    }
 
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
@@ -571,14 +578,14 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Init aborted!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "TFLITE: Failed to load model: " + cnnmodelfile);
         LogFile.WriteHeapInfo("getNetworkParameter-LoadModel");
         delete tflite;
         return false;
     } 
 
     if (!tflite->MakeAllocate()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tflite model -> Init aborted!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "TFLITE: Allocation of tensors failed!");
         LogFile.WriteHeapInfo("getNetworkParameter-MakeAllocate");
         delete tflite;
         return false;
@@ -586,48 +593,58 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
 
     if (CNNType == AutoDetect)
     {
-        tflite->GetInputDimension(false);
-        modelxsize = tflite->ReadInputDimenstion(0);
-        modelysize = tflite->ReadInputDimenstion(1);
-        modelchannel = tflite->ReadInputDimenstion(2);
-
+        if (tflite->GetInputDimension(false)) {
+            modelxsize = tflite->ReadInputDimenstion(0);
+            modelysize = tflite->ReadInputDimenstion(1);
+            modelchannel = tflite->ReadInputDimenstion(2);
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "TFLITE: Failed to load input dimensions!");
+            return false;
+        }
         int _anzoutputdimensions = tflite->GetAnzOutPut();
         switch (_anzoutputdimensions) 
         {
+            case -1:
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "TFLITE: Failed to load output dimensions!");
+                return false;
             case 2:
                 CNNType = Analogue;
-                ESP_LOGD(TAG, "TFlite-Type set to Analogue");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: Analogue");
                 break;
             case 10:
                 CNNType = DoubleHyprid10;
-                ESP_LOGD(TAG, "TFlite-Type set to DoubleHyprid10");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: DoubleHyprid10");
                 break;
             case 11:
                 CNNType = Digital;
-                ESP_LOGD(TAG, "TFlite-Type set to Digital");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: Digital");
                 break;
 /*            case 20:
                 CNNType = DigitalHyprid10;
-                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid10");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: DigitalHyprid10");
                 break;
 */
 //            case 22:
 //                CNNType = DigitalHyprid;
-//                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid");
+//                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: DigitalHyprid");
 //                break;
              case 100:
                 if (modelxsize==32 && modelysize == 32) {
                     CNNType = Analogue100;
-                    ESP_LOGD(TAG, "TFlite-Type set to Analogue100");
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: Analogue100");
                 } else {
                     CNNType = Digital100;
-                    ESP_LOGD(TAG, "TFlite-Type set to Digital");
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN-Type: Digital");
                 }
                 break;
             default:
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "tflite does not fit the firmware (outout_dimension=" + std::to_string(_anzoutputdimensions) + ")");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CNN-Type does not fit the firmware (output_dimension=" + std::to_string(_anzoutputdimensions) + ")");
+                return false;
         }
     }
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Network parameter loaded: " + cnnmodelfile);
 
     delete tflite;
     return true;
@@ -647,14 +664,14 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
 
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Exec aborted this round!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to load TFLITE model " + cnnmodelfile + "!");
         LogFile.WriteHeapInfo("doNeuralNetwork-LoadModel");
         delete tflite;
         return false;
     }
 
     if (!tflite->MakeAllocate()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tfilte model -> Exec aborted this round!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Allocation of TFLITE tensors failed!");
         LogFile.WriteHeapInfo("doNeuralNetwork-MakeAllocate");
         delete tflite;
         return false;
@@ -675,9 +692,15 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         float f1, f2;
                         f1 = 0; f2 = 0;
 
-                        tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
-                        tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After Invoke");
+                        if (tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image)) {
+                            tflite->Invoke();
+                            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Invoke done");
+                        }
+                        else {
+                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invoke aborted");
+                            delete tflite;
+                            return false;
+                        }
 
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
@@ -715,18 +738,23 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         }
                     } break;
 
-
                 case DoubleHyprid10:
                     {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DoubleHyprid10");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: DoubleHyprid10");
                         int _num, _numplus, _numminus;
                         float _val, _valplus, _valminus;
                         float _fit;
                         float _result_save_file;
 
-                        tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
-                        tflite->Invoke();
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "After Invoke");
+                        if (tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image)) {
+                            tflite->Invoke();
+                            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Invoke done");
+                        }
+                        else {
+                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invoke aborted");
+                            delete tflite;
+                            return false;
+                        }
 
                         _num = tflite->GetOutClassification(0, 9);
                         _numplus = (_num + 1) % 10;
@@ -747,8 +775,8 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         {
                             result = result - _valminus / (_val + _valminus);
                             _fit = _val + _valminus;
-
                         }
+
                         if (result >= 10)
                             result = result - 10;
                         if (result < 0)
@@ -794,15 +822,23 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         }
                     }
                     break;
+                
                 case Digital100:
                 case Analogue100:
                     {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital100 or Analogue100");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital100 or Analogue100");
                         int _num;
                         float _result_save_file;
                         
-                        tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
-                        tflite->Invoke();
+                        if (tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image)) {
+                            tflite->Invoke();
+                            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Invoke done");
+                        }
+                        else {
+                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invoke aborted");
+                            delete tflite;
+                            return false;
+                        }
     
                         _num = tflite->GetOutClassification();
                         
@@ -831,9 +867,9 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                                 LogImage(logPath, _imagename, &_result_save_file, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                             }
                         }
-
-                    } break;
-            
+                    }
+                    break;
+                           
                 default:
                     break;
             }
@@ -841,7 +877,6 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     }
 
     delete tflite;
-
     return true;
 }
 
@@ -967,4 +1002,3 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
     }
     return rt;
 }
-
