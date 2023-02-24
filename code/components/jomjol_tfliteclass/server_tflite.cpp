@@ -382,8 +382,6 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
             std::string *status = tfliteflow.getActStatus();
 
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "'" + *status + "', " + std::string("Flow finished"));
-
             if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
                 txt = "<body style=\"font-family: arial\">";
                 txt += "<h3>Please wait for the first round to complete</h3><h3>Current state: " + *status + "</h3>\n";
@@ -392,7 +390,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             else {
                 /* Digital ROIs */
                 txt = "<body style=\"font-family: arial\">";
-                txt += "<h3>Recognized Digit ROIs</h3>\n";
+                txt += "<h3>Recognized Digit ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center\">\n";
 
                 std::vector<HTMLInfo*> htmlinfodig;
@@ -427,7 +425,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 
                 /* Analog ROIs */
-                txt = "<h3>Recognized Analog ROIs</h3>\n";
+                txt = "<h3>Recognized Analog ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center\">\n";
                 
                 std::vector<HTMLInfo*> htmlinfoana;
@@ -447,8 +445,18 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 httpd_resp_sendstr_chunk(req, txt.c_str()); 
 
 
-                /* Full Image */
-                txt = "<h3>Aligned Image</h3><img src=\"/img_tmp/alg_roi.jpg\">\n";
+                /* Full Image 
+                 * Only show it after the image got taken and aligned */
+                txt = "<h3>Aligned Image (current round)</h3>\n";
+                if ((*status == std::string("Initialization")) || 
+                    (*status == std::string("Initialization (delayed)")) || 
+                    (*status == std::string("Take Image")) ||
+                    (*status == std::string("Aligning"))) {
+                    txt += "<h3>Current state: " + *status + "</h3>\n";
+                }
+                else {
+                    txt += "<img src=\"/img_tmp/alg_roi.jpg\">\n";
+                }
                 httpd_resp_sendstr_chunk(req, txt.c_str()); 
             }
         }   
