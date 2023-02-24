@@ -44,7 +44,7 @@ textarea {
 }
 
 .disabled {
-    color:lightgrey;
+    color:rgb(122, 122, 122);
 }
 
 .smallSelect {
@@ -71,7 +71,44 @@ textarea {
     padding-left: 69px;
 }
 
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 600px;
+	background-color: #fcfcfc;
+
+	padding: 5px;
+	padding-bottom: 0;
+
+	border: solid black 2px; 
+
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+	top: 100%;
+	left: 100%;
+	margin-left: -600px;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+.tooltip-content {
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	padding: 1px;
+}
 </style>
+
+<link rel="stylesheet" href="param_tooltips/theme.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="param_tooltips/theme_extra.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="param_tooltips/github.min.css?v=$COMMIT_HASH" />
+
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
 <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
@@ -79,6 +116,9 @@ textarea {
 
 <body style="font-family: arial; padding: 0px 10px;">
 	<h2>Configuration</h2>
+	<p>The documentation of each parameter can be shown with hovering over the <img src="help.png" width="16px"> icon.<br>
+	The latest version of the documentation is available on <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters?v=$COMMIT_HASH" target="_blank">jomjol.github.io/AI-on-the-edge-device-docs/Parameters</a>.</p>
+
 	<input type="checkbox" id="ExpertModus_enabled" value="1"  onclick = 'UpdateExpertModus()' unchecked><label for="ExpertModus_enabled"> Expert Mode </label> 
 	<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config.ini direct</button>	
 	<p></p>
@@ -86,14 +126,14 @@ textarea {
 
 	<table>
 		<tr>
-			<th  width="350px"  style="text-align: left;">
+			<th  width="400px"  style="text-align: left;">
 				Parameter
 			</th>
 			<th style="text-align: left;">
 				Value
 			</th>
 			<th style="text-align: left;">
-				Information
+				Documentation
 			</th>
 		</tr>
 
@@ -103,26 +143,22 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="TakeImage_RawImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "RawImagesLocation")' unchecked >
-				<label for=TakeImage_RawImagesLocation_enabled><class id="TakeImage_RawImagesLocation_text" style="color:black;">RawImagesLocation</class></label>
+				<label for=TakeImage_RawImagesLocation_enabled><class id="TakeImage_RawImagesLocation_text" style="color:black;">Raw Images Location</class></label>
 			</td>
 			<td>
 				<input type="text" name="name" id="TakeImage_RawImagesLocation_value1">
 			</td>
-			<td class="description">
-				Location to store raw camera images
-			</td>
+			<td>$TOOLTIP_TakeImage_RawImagesLocation</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="TakeImage_RawImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("TakeImage", "RawImagesRetention")' unchecked >
-				<label for=TakeImage_RawImagesRetention_enabled><class id="TakeImage_RawImagesRetention_text" style="color:black;">RawImagesRetention</class></label>
+				<label for=TakeImage_RawImagesRetention_enabled><class id="TakeImage_RawImagesRetention_text" style="color:black;">Raw Images Retention</class></label>
 			</td>
 			<td>
-				<input type="number" id="TakeImage_RawImagesRetention_value1" size="13" min="0" step="1">
+				<input type="number" id="TakeImage_RawImagesRetention_value1" size="13" min="0" step="1"> Days
 			</td>
-			<td class="description">
-				Time to keep the raw image (in days, resp. "0" = forever)
-			</td>
+			<td>$TOOLTIP_TakeImage_RawImagesRetention</td>
 		</tr>		
 		<tr class="expert" id="ex1">
 			<td class="indent1">
@@ -134,40 +170,30 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use demo images instead of the real camera images.<br>
-				Make sure to have a demo folder on your SD-Card!
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Demo-Mode" target="_blank">documentation</a> for details.
-			</td>
+			<td>$TOOLTIP_TakeImage_Demo</td>
 		</tr>
 		<tr class="expert" id="ex1">
 			
 			<td class="indent1">
-				<class id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">WaitBeforeTakingPicture</class>
+				<class id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">Wait Before Taking Picture</class>
 			</td>
 			<td>
-				<input type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any">
+				<input type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any"> Seconds
 			</td>
-			<td class="description">
-				Wait time between switching illumination on and taking the picture (in seconds)
-			</td>
+			<td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
 		</tr>
 		<tr class="expert" id="ex2">
 			<td class="indent1">
-				<class id="TakeImage_ImageQuality_text" style="color:black;">ImageQuality</class>
+				<class id="TakeImage_ImageQuality_text" style="color:black;">Image Quality</class>
 			</td>
 			<td>
 				<input type="number" id="TakeImage_ImageQuality_value1" size="13" min="0" max="63">
 			</td>
-			<td class="description">
-				Image quality index (default = 12) <br>
-				Input range: 8 [highest quality] ... 63 [lowest quality] <br>
-				Remark: Value < 12 could result in system instabilities!
-			</td>
+			<td>$TOOLTIP_TakeImage_ImageQuality</td>
 		</tr>
 		<tr class="expert"  id="ex3">
 			<td class="indent1">
-				<class id="TakeImage_ImageSize_text" style="color:black;">ImageSize</class>
+				<class id="TakeImage_ImageSize_text" style="color:black;">Image Size</class>
 			</td>
 			<td>
 				<select id="TakeImage_ImageSize_value1">
@@ -175,22 +201,17 @@ textarea {
 					<option value="QVGA" >QVGA</option>
 				</select>
 			</td>
-			<td class="description">
-				Size of camera picture (default = "VGA")
-			</td>
+			<td>$TOOLTIP_TakeImage_ImageSize</td>
 		</tr>
 
 		<tr class="expert"  id="LEDIntensity_ex3">
 			<td class="indent1">
-				<class id="TakeImage_LEDIntensity_text" style="color:black;">LEDIntensity</class>
+				<class id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</class>
 			</td>
 			<td>
 				<input type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100">
 			</td>
-			<td style="font-size: 80%;">
-				Internal LED Flash Intensity (PWM from 0% - 100%). <br>
-				Remark: as the camera autoillumination settings are used, this is rather for energy saving, than reducing reflections.
-			</td>
+			<td>$TOOLTIP_TakeImage_LEDIntensity</td>
 		</tr>
 
 		<tr class="expert"  id="Brightness_ex3">
@@ -200,10 +221,7 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_Brightness_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image brightness (default = 0) <br>
-				Input range: -2 ... 2
-			</td>
+			<td>$TOOLTIP_TakeImage_Brightness</td>
 		</tr>
 
 		<tr class="expert"  id="Contrast_ex3">
@@ -213,10 +231,7 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_Contrast_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image contrast (default = 0) <br>
-				Input range: -2 ... 2
-			</td>
+			<td>$TOOLTIP_TakeImage_Contrast</td>
 		</tr>
 
 		<tr class="expert"  id="Saturation_ex3">
@@ -226,15 +241,12 @@ textarea {
 			<td>
 				<input type="number" id="TakeImage_Saturation_value1" size="13" min="-2" max="2">
 			</td>
-			<td style="font-size: 80%;">
-				Image saturation (default = 0) <br>
-				Input range: -2 ... 2
-			</td>
+			<td>$TOOLTIP_TakeImage_Saturation</td>
 		</tr>
 		
 		<tr class="expert"  id="TakeImage_FixedExposure_ex10">
 			<td class="indent1">
-				<class id="TakeImage_FixedExposure_text" style="color:black;">FixedExposure</class>
+				<class id="TakeImage_FixedExposure_text" style="color:black;">Fixed Exposure</class>
 			</td>
 			<td>
 				<select id="TakeImage_FixedExposure_value1">
@@ -242,9 +254,7 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Fixes the illumination setting of camera at the startup and uses this later --> individual round is faster
-			</td>
+			<td>$TOOLTIP_TakeImage_FixedExposure</td>
 		</tr>
 
 
@@ -253,30 +263,26 @@ textarea {
 		</tr> 
 		<tr class="expert"  id="ex6">
 			<td class="indent1">
-			    <class id="Alignment_SearchFieldX_text" style="color:black;">SearchFieldX</class>
+			    <class id="Alignment_SearchFieldX_text" style="color:black;">Search Field X</class>
 			</td>
 			<td>
-				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1">
+				<input type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1"> Pixel
 			</td>
-			<td style="font-size: 80%;">
-				x size (width) in which the reference is searched (default = "20") 
-			</td>
+			<td>$TOOLTIP_Alignment_SearchFieldX</td>
 		</tr>
 		<tr class="expert"  id="ex8">
 			<td class="indent1">
-				<class id="Alignment_SearchFieldY_text" style="color:black;">SearchFieldY</class>
+				<class id="Alignment_SearchFieldY_text" style="color:black;">Search Field Y</class>
 			</td>
 			<td>
-				<input type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1">
+				<input type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1"> Pixel
 			</td>
-			<td style="font-size: 80%;">
-				y size (height) in which the reference is searched (default = "20") 
-			</td>
+			<td>$TOOLTIP_Alignment_SearchFieldY</td>
 		</tr>
 		<tr class="expert"  id="AlignmentAlgo_ex8">
 			<td class="indent1">
 				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
-				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">AlignmentAlgo</class></label>
+				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">Alignment Algorithm</class></label>
 			</td>
 			<td>
 				<select id="Alignment_AlignmentAlgo_value1">
@@ -286,14 +292,12 @@ textarea {
 					<option value="off" >Off</option><!-- add disable aligment algo |01.2023 -->
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				"Default" = use only R-Channel, "HighAccuracy" = use all Channels (RGB, 3x slower), <br> "Fast" (First time RGB, then only check if image is shifted) 
-			</td>
+			<td>$TOOLTIP_Alignment_AlignmentAlgo</td>
 		</tr>
 
 		<tr class="expert"  id="ex13">
 			<td class="indent1">
-			    <class id="Alignment_FlipImageSize_text" style="color:black;">FlipImageSize</class>
+			    <class id="Alignment_FlipImageSize_text" style="color:black;">Flip Image Size</class>
 			</td>
 			<td>
 				<select id="Alignment_FlipImageSize_value1">
@@ -301,14 +305,12 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Rotate the viewport together with the alignment rotation.
-			</td>
+			<td>$TOOLTIP_Alignment_FlipImageSize</td>
 		</tr>
 
 		<tr class="expert"  id="ex13">
 			<td class="indent1">
-			    <class id="Alignment_InitialMirror_text" style="color:black;">InitialMirror</class>
+			    <class id="Alignment_InitialMirror_text" style="color:black;">Initial Mirror</class>
 			</td>
 			<td>
 				<select id="Alignment_InitialMirror_value1">
@@ -316,9 +318,7 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Rotate the viewport together with the alignment rotation.
-			</td>
+			<td>$TOOLTIP_Alignment_InitialMirror</td>
 		</tr>
 
 
@@ -326,7 +326,7 @@ textarea {
 		<tr id="Category_Digits_ex4">
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Digits_enabled>Digits</h4></label>
+				<label for=Category_Digits_enabled>Digits</label></h4>
 			</td>
 		</tr> 
 		<tr>
@@ -337,54 +337,45 @@ textarea {
 				<select id="Digits_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Path to CNN model file for image recognition.<br>
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.
-			</td>
+			<td>$TOOLTIP_Digits_Model</td>
 		</tr>
 		
 		<tr class="expert"  id="ex91">
 			<td class="indent1">
 				<input type="checkbox" id="Digits_CNNGoodThreshold_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "CNNGoodThreshold")' unchecked >
-				<label for=Digits_CNNGoodThreshold_enabled><class id="Digits_CNNGoodThreshold_text" style="color:black;">CNNGoodThreshold</class></label>
+				<label for=Digits_CNNGoodThreshold_enabled><class id="Digits_CNNGoodThreshold_text" style="color:black;">CNN Good Threshold</class></label>
 			</td>
 			<td>
 				<input width="40px" type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1">
 			</td>
-			<td style="font-size: 80%;">
-				EXPERIMENTAL - NOT WORKING FOR ALL CNNs! - Threshold above which the classification should be to accept the value (only for digits meaningfull)
-			</td>
+			<td>$TOOLTIP_Digits_CNNGoodThreshold</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Digits_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesLocation")' unchecked >
-				<label for=Digits_ROIImagesLocation_enabled><class id="Digits_ROIImagesLocation_text" style="color:black;">ROIImagesLocation</class></label>
+				<label for=Digits_ROIImagesLocation_enabled><class id="Digits_ROIImagesLocation_text" style="color:black;">ROI Images Location</class></label>
 			</td>
 			<td>
 				<input type="text" name="name" id="Digits_ROIImagesLocation_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Location to store separated digits for logging
-			</td>
+			<td>$TOOLTIP_Digits_ROIImagesLocation</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Digits_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesRetention")' unchecked >
-				<label for=Digits_ROIImagesRetention_enabled><class id="Digits_ROIImagesRetention_text" style="color:black;">ROIImagesRetention</class></label>
+				<label for=Digits_ROIImagesRetention_enabled><class id="Digits_ROIImagesRetention_text" style="color:black;">ROI Images Retention</class></label>
 			</td>
 			<td>
-				<input type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1">
+				<input type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1"> Days
 			</td>
-			<td style="font-size: 80%;">
-				Time to keep the separated digit images (in days, resp. "0" = forever)
-			</td>
+			<td>$TOOLTIP_Digits_ROIImagesRetention</td>
 		</tr>
 
 		<tr id="Category_Analog_ex4">
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Analog_enabled>Analog</h4></label>
+				<label for=Category_Analog_enabled>Analog</label></h4>
 			</td>
 		</tr> 
 		<tr>
@@ -395,24 +386,25 @@ textarea {
 				<select id="Analog_Model_value1">
 				</select>
 			</td>
-			<td style="font-size: 80%;"> Path to CNN model file for image recognition.<br>
-				Check the <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Choosing-the-Model" target="_blank">documentation</a> for details.</td>
+			<td>$TOOLTIP_Analog_Model</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Analog_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesLocation")' unchecked >
-				<label for=Analog_ROIImagesLocation_enabled><class id="Analog_ROIImagesLocation_text" style="color:black;">ROIImagesLocation</class>
+				<label for=Analog_ROIImagesLocation_enabled><class id="Analog_ROIImagesLocation_text" style="color:black;">ROI Images Location</class>
 				</label>
 			</td>
 			<td> <input type="text" name="name" id="Analog_ROIImagesLocation_value1"> </td>
-			<td style="font-size: 80%;"> Location to store separated digits for logging </td>
+			<td>$TOOLTIP_Analog_ROIImagesLocation</td>
 		</tr>
+
+
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="Analog_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesRetention")' unchecked >
-				<label for=Analog_ROIImagesRetention_enabled><class id="Analog_ROIImagesRetention_text" style="color:black;">ROIImagesRetention</class></label></td>
-			<td> <input type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"> </td>
-			<td style="font-size: 80%;"> Time to keep the separated digit images (in days, resp. "0" = forever) </td>
+				<label for=Analog_ROIImagesRetention_enabled><class id="Analog_ROIImagesRetention_text" style="color:black;">ROI Images Retention</class></label></td>
+			<td> <input type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"> Days</td>
+			<td>$TOOLTIP_Analog_ROIImagesRetention</td>
 		</tr>
 
 		<tr>
@@ -420,7 +412,7 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<label for=PostProcessing_PreValueUse_enabled><class id="PostProcessing_PreValueUse_text" style="color:black;">PreValueUse</class></label>
+				<label for=PostProcessing_PreValueUse_enabled><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_PreValueUse_value1">
@@ -428,25 +420,21 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use the previous read value for consistency checks - also on reboots
-			</td>
+			<td>$TOOLTIP_PostProcessing_PreValueUse</td>
 		</tr>
 		<tr class="expert"  id="ex11">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
-				<label for=PostProcessing_PreValueAgeStartup_enabled><class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">PreValueAgeStartup</class></label>
+				<label for=PostProcessing_PreValueAgeStartup_enabled><class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">Maximum Age of Previous Value after Startup</class></label>
 			</td>
 			<td>
-				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0">
+				<input type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0"> Seconds
 			</td>
-			<td style="font-size: 80%;">
-				Time (in minutes), how long a previous read value is valid after reboot (default = 720 min)
-			</td>
+			<td>$TOOLTIP_PostProcessing_PreValueAgeStartup</td>
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
-				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">ErrorMessage</class></label>
+				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">Skip Messages on Error</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
@@ -454,13 +442,11 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Do not show error message in return value - in error case, the last valid number will be send out
-			</td>
+			<td>$TOOLTIP_PostProcessing_ErrorMessage</td>
 		</tr>
 		<tr class="expert" id="ex1dddd">
 			<td class="indent1">
-				<label for=PostProcessing_CheckDigitIncreaseConsistency_enabled><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">CheckDigitIncreaseConsistency</class></label>
+				<label for=PostProcessing_CheckDigitIncreaseConsistency_enabled><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
@@ -468,9 +454,7 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable additional consistency check - especially zero crossing check between digits
-			</td>
+			<td>$TOOLTIP_PostProcessing_CheckDigitIncreaseConsistency</td>
 		</tr>
 
 		<tr>
@@ -486,7 +470,7 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
-				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">AllowNegativeRates</class></label>
+				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rates</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_AllowNegativeRates_value1">
@@ -494,53 +478,43 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Set to "false" to ensure, that only positive changes are accepted (typically for counter)
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.AllowNegativeRates</td>
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
-				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">DecimalShift</class></label>
+				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">Decimal Shift</class></label>
 			</td>
 			<td>
 				<input type="number" id="PostProcessing_DecimalShift_value1" step="1">
 			</td>
-			<td style="font-size: 80%;">
-				Shift the decimal separator (positiv or negativ).<br>
-				Eg. to move from 'm&sup3;' to 'l' (Multiply by 1000), you need to set it to +3.
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.DecimalShift</td>
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_AnalogDigitalTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogDigitalTransitionStart")' unchecked >
-				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">AnalogDigitalTransitionStart</class></label>
+				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">Analog/Digital Transition Start</class></label>
 			</td>
 			<td>
 				<input type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2">
 			</td>
-			<td style="font-size: 80%;">
-				If you have false Values, but the recognition is correct. Look for the start of changing of the first digit and note the analog pointer value behind. Set it here.
-				Only used on combination of digits and analog pointers. Default=9.2
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogDigitalTransitionStart</td>
 		</tr>
 
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
-				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">MaxRateValue</class></label>
+				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">Maximum Rate Value</class></label>
 			</td>
 			<td>
 				<input type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any">
 			</td>
-			<td style="font-size: 80%;">
-				Maximum change of a reading - if treated as absolute or relative change see next parameter.
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateValue</td>
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
 				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
-				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">MaxRateType</class></label>
+				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">Maximum Rate Type</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_MaxRateType_value1">
@@ -548,13 +522,11 @@ textarea {
 					<option value="RateChange" selected>RateChange</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Defines if the change rate compared to the previous value is calculated as absolute change (AbsoluteChange) or as rate normalized to the interval (RateChange = change/minute).
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateType</td>
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
-				<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">ExtendedResolution</class></label>
+				<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ExtendedResolution_value1">
@@ -562,13 +534,11 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable to use the decimal place of the last analog counter
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.ExtendedResolution</td>
 		</tr>
 		<tr>
 			<td id="ex121" class="indent1" style="padding-left: 75px;">
-				<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">IgnoreLeadingNaN</class></label>
+				<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_IgnoreLeadingNaN_value1">
@@ -576,9 +546,7 @@ textarea {
 					<option value="false" selected>false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Leading "N"'s will be deleted before further processing
-			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreLeadingNaN</td>
 		</tr>
 
 
@@ -594,72 +562,56 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "Uri")' unchecked >
-				<label for=MQTT_Uri_enabled><class id="MQTT_Uri_text" style="color:black;">Uri</class></label>
+				<label for=MQTT_Uri_enabled><class id="MQTT_Uri_text" style="color:black;">URI</class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI to the MQTT broker including port e.g.: mqtt://IP-Address:Port
-			</td>
+			<td>$TOOLTIP_MQTT_Uri</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_MainTopic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopic")' unchecked >
-				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">MainTopic</class></label>
+				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">Main Topic</class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_MainTopic_value1">
 			</td>
-			<td style="font-size: 80%;">
-				MQTT main topic, under which the counters are published. <br>
-				The single value will be published with the following key: MAINTOPIC/VALUE_NAME/PARAMETER where
-				<ul>
-					<li> VALUE_NAME is the name of the value (a meter might have more than one value) as defined during analog and digital ROI configuration (defaults to "main")</li>
-					<li> and PARAMETERS are: value, rate, timestamp, error</li>
-				</ul>
-				The general connection status can be found in MAINTOPIC/CONNECTION
-			</td>
+			<td>$TOOLTIP_MQTT_MainTopic</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
-				<label for=MQTT_ClientID_enabled><class id="MQTT_ClientID_text" style="color:black;">ClientID</class></label>
+				<label for=MQTT_ClientID_enabled><class id="MQTT_ClientID_text" style="color:black;">Client ID</class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_ClientID_value1">
 			</td>
-			<td style="font-size: 80%;">
-				ClientID to connect to the MQTT broker
-			</td>
+			<td>$TOOLTIP_MQTT_ClientID</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "user")' unchecked >
-				<label for=MQTT_user_enabled><class id="MQTT_user_text" style="color:black;">user</class></label>
+				<label for=MQTT_user_enabled><class id="MQTT_user_text" style="color:black;">Username</class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_user_value1">
 			</td>
-			<td style="font-size: 80%;">
-				User for MQTT authentication
-			</td>
+			<td>$TOOLTIP_MQTT_user</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "password")' unchecked >
-				<label for=MQTT_password_enabled><class id="MQTT_password_text" style="color:black;">password</class></label>
+				<label for=MQTT_password_enabled><class id="MQTT_password_text" style="color:black;">Password</class></label>
 			</td>
 			<td>
 				<input type="text" id="MQTT_password_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Password for MQTT authentication
-			</td>
+			<td>$TOOLTIP_MQTT_password</td>
 		</tr>
 		<tr>
 			<td class="indent1">
-				<label for=MQTT_RetainMessages_enabled><class id="MQTT_RetainMessages_text" style="color:black;">Enable MQTT Retain Flag</class></label>
+				<label for=MQTT_RetainMessages_enabled><class id="MQTT_RetainMessages_text" style="color:black;">MQTT Retain Flag</class></label>
 			</td>
 			<td>
 				<select id="MQTT_RetainMessages_value1">
@@ -667,9 +619,7 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable or disable the retain flag for all MQTT entries
-			</td>
+			<td>$TOOLTIP_MQTT_RetainMessages</td>
 		</tr>
 		<tr>
 			<td class="indent1" colspan="3">
@@ -688,9 +638,7 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Enable or disable the <a href=https://www.home-assistant.io/docs/mqtt/discovery/ target=_blank>Homeassistant Discovery</a>
-			</td>
+			<td>$TOOLTIP_MQTT_HomeassistantDiscovery</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -711,12 +659,7 @@ textarea {
 					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Select the meter type so the sensors have the right units in Homeassistant.<br>
-				Note: For 'Watermeter' you need to have Homeassistant 2022.11 or never!<br>
-				Please also make sure that it matches the dimention of the value provided by the meter! Eg. if your meter provides m3, you need to also set it to m3.
-				Alternatively you could set 'DecimalShift' to '3' so the value is converted to 'l'!
-			</td>
+			<td>$TOOLTIP_MQTT_MeterType</td>
 		</tr>
 
 		
@@ -724,20 +667,18 @@ textarea {
 			<td colspan="3" style="padding-left: 20px;">
 			    <h4>
 				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDB_enabled>InfluxDB</h4><h5>Only InfluxDB v1.x is supported as of now</h5></label>
+				<label for=Category_InfluxDB_enabled>InfluxDBv1</label></h4><h5>For InfluxDB v2.x see below [InfluxDBv2]</h5>
 			</td>
 		</tr> 		
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
-				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">Uri</class></label>
+				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">URI</class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI of the HTTP interface to InfluxDB, without traililing slash, e.g. http://IP-Address:Port
-			</td>
+			<td>$TOOLTIP_InfluxDB_Uri</td>
 		</tr>
                 <tr>
 			<td class="indent1">
@@ -747,9 +688,7 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Database_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Database name in which to publish the read value.
-			</td>
+			<td>$TOOLTIP_InfluxDB_Database</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -759,53 +698,45 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDB_Measurement_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Measurement name to use to publish the read value.
-			</td>
+			<td>$TOOLTIP_InfluxDB_Measurement</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")' unchecked >
-				<label for=InfluxDB_user_enabled><class id="InfluxDB_user_text" style="color:black;">user</class></label>
+				<label for=InfluxDB_user_enabled><class id="InfluxDB_user_text" style="color:black;">Username</class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_user_value1">
 			</td>
-			<td style="font-size: 80%;">
-				User for InfluxDB authentication
-			</td>
+			<td>$TOOLTIP_InfluxDB_user</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDB_password_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "password")' unchecked >
-				<label for=InfluxDB_password_enabled><class id="InfluxDB_password_text" style="color:black;">password</class></label>
+				<label for=InfluxDB_password_enabled><class id="InfluxDB_password_text" style="color:black;">Password</class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDB_password_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Password for InfluxDB authentication
-			</td>
+			<td>$TOOLTIP_InfluxDB_password</td>
 		</tr>
 
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 			    <h4>
 				<input type="checkbox" id="Category_InfluxDBv2_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDBv2_enabled>InfluxDBv2</h4><h5>Only InfluxDB v2.x is configured here, v1.x see above [InfluxDB]</h5></label>				
+				<label for=Category_InfluxDBv2_enabled>InfluxDBv2</label></h4><h5>For InfluxDB v1.x see above [InfluxDBv1]</h5>			
 			</td>
 		</tr> 		
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDBv2_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Uri")' unchecked >
-				<label for=InfluxDBv2_Uri_enabled><class id="InfluxDBv2_Uri_text" style="color:black;">Uri</class></label>
+				<label for=InfluxDBv2_Uri_enabled><class id="InfluxDBv2_Uri_text" style="color:black;">URI</class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDBv2_Uri_value1">
 			</td>
-			<td style="font-size: 80%;">
-				URI of the HTTP interface to InfluxDB (Version2), without traililing slash, e.g. http://IP-Address:Port
-			</td>
+			<td>$TOOLTIP_InfluxDBv2_Uri</td>
 		</tr>
                 <tr>
 			<td class="indent1">
@@ -815,9 +746,7 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Database_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Database name in which to publish the read value.
-			</td>
+			<td>$TOOLTIP_InfluxDBv2_Database</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -827,21 +756,17 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Measurement_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Measurement name to use to publish the read value.
-			</td>
+			<td>$TOOLTIP_InfluxDBv2_Measurement</td>
 		</tr>
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")' unchecked >
-				<label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Org</class></label>
+				<label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Organization (Org)</class></label>
 			</td>
 			<td>
 				<input type="text" id="InfluxDBv2_Org_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Organisation (Org) for InfluxDBv2 authentication
-			</td>
+			<td>$TOOLTIP_InfluxDBv2_Org</td>
 		</tr>
 		<tr>
 			<td class="indent1">
@@ -851,9 +776,7 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Token_value1">
 			</td>
-			<td style="font-size: 80%;">
-				Token for InfluxDB authentication
-			</td>
+			<td>$TOOLTIP_InfluxDBv2_Token</td>
 		</tr>
 		<tr>
 			<td class="indent1" colspan="3">
@@ -874,18 +797,17 @@ textarea {
 			<td>
 				<input type="text" id="InfluxDBv2_Fieldname_value1">
 			</td>
-			<td style="font-size: 80%;">
-                                Fieldname to use for saving.
-			</td>
+			<td>$TOOLTIP_InfluxDBv2_NUMBER.Fieldname</td>
 		</tr>
 
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
 				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
-				    <label for=Category_GPIO_enabled>GPIO Settings
+				    <label for=Category_GPIO_enabled>GPIO Settings</label></h4>
 					<span class="GPIO_Item">
-					<h5>Enabling GPIO handler, disable by default integrated flash light.<br>Please enable it with GPIO4 (internal flash LED) settings or GPIO12 (external LED).</span></label>
-				</h4>
+						<h5>By default GPIO4 is used for the built-in flash LED! If you enable the GPIO Settings,
+							you have to explicitely enable it again on GPIO4 or on GPIO12 with an external LED!</h5>
+					</span>
 			</td>
 		</tr> 	
 
@@ -893,7 +815,7 @@ textarea {
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent1">
 				<input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' unchecked>
-				<label for=GPIO_IO0_enabled><span id="GPIO_IO0_text">GPIO 0 state</span></label>
+				<label for=GPIO_IO0_enabled><span id="GPIO_IO0_text">GPIO 0 State</span></label>
 			</td>
 			<td>
 					<select id="GPIO_IO0_value1">
@@ -903,15 +825,11 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 0 Usable with restrictions.<br> 
-				<b>Must be disabled when camera is used.</b><br>
-				<b>Pin is used to activate flash mode and must therefore be HIGH when booting.</b>
-			</td>
+			<td>$TOOLTIP_GPIO_IO0</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent2">
-				<span id="GPIO_IO0_text" class="GPIO_IO0 GPIO_item">GPIO 0 use interrupt</span>
+				<span id="GPIO_IO0_text" class="GPIO_IO0 GPIO_item">GPIO 0 Use Interrupt</span>
 			</td>
 			<td>
 					<select id="GPIO_IO0_value2">
@@ -923,45 +841,35 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
-			<td class="description">
-				GPIO 0 enable interrupt trigger
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO 0 PWM duty resolution</span>
+				<span class="GPIO_IO0 GPIO_item">GPIO 0 PWM Duty Cycle Resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 0 LEDC PWM duty resolution in bit
-			</td>
+			<td><input type="number" id="GPIO_IO0_value3" min="1" max="20"> <span class="GPIO_IO0 GPIO_item">Bits</span></td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable MQTT</span>
+				<span class="GPIO_IO0 GPIO_item">GPIO 0 Enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
-			<td class="description">
-				GPIO 0 enable MQTT publishing/subscribing
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO 0 enable HTTP</span>
+				<span class="GPIO_IO0 GPIO_item">GPIO 0 Enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
-			<td class="description">
-				GPIO 0 enable HTTP write/read
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO0 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO 0 name</span>
+				<span class="GPIO_IO0 GPIO_item">GPIO 0 Name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO0_value6"></td>
-			<td class="description">
-				GPIO 0 MQTT topic name (empty = GPIO0). Allowed characters (a-z, A-Z, 0-9, _, -)
-			</td>
+			<td></td>
 		</tr>
 		<!------------- GPIO0 end ------------------>
 
@@ -969,7 +877,7 @@ textarea {
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td class="indent1">
 				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
-				<label=GPIO_IO1_enabled><span id="GPIO_IO1_text" class="GPIO_IO1 GPIO_item">GPIO 1 state</span>
+				<label for=GPIO_IO1_enabled><span id="GPIO_IO1_text">GPIO 1 State</span></label>
 			</td>
 			<td>
 					<select id="GPIO_IO1_value1">
@@ -979,13 +887,11 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 1 <br><span style="color: blue">Used by default for serial communication as TX pin.<br>Required for seriales monitor.</span>
-			</td>
+			<td>$TOOLTIP_GPIO_IO1</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 use interrupt</span>
+				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 Use Interrupt</span>
 			</td>
 			<td>
 				<select id="GPIO_IO1_value2">
@@ -997,45 +903,35 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 1 enable interrupt trigger
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO 1 PWM duty resolution</span>
+				<span class="GPIO_IO1 GPIO_item">GPIO 1 PWM Duty Cycle Resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 1 LEDC PWM duty resolution in bit
-			</td>
+			<td><input type="number" id="GPIO_IO1_value3" min="1" max="20"> <span class="GPIO_IO1 GPIO_item">Bits</span></td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable MQTT</span>
+				<span class="GPIO_IO1 GPIO_item">GPIO 1 Enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
-			<td class="description">
-				GPIO 1 enable MQTT publishing/subscribing
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO 1 enable HTTP</span>
+				<span class="GPIO_IO1 GPIO_item">GPIO 1 Enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
-			<td class="description">
-				GPIO 1 enable HTTP write/read
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO1 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 name</span>
+				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO 1 Name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO1_value6"></td>
-			<td class="description">
-				GPIO 1 MQTT topic name (empty = GPIO1). Allowed characters (a-z, A-Z, 0-9, _, -)
-			</td>
+			<td></td>
 		</tr>
 		<!------------- GPIO1 end ------------------>
 
@@ -1043,7 +939,7 @@ textarea {
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td class="indent1">
 				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
-				<label=GPIO_IO3_enabled><span id="GPIO_IO3_text" class="GPIO_IO3 GPIO_item">GPIO 3 state</span>
+				<label for=GPIO_IO3_enabled><span id="GPIO_IO3_text">GPIO 3 State</span></label>
 			</td>
 			<td>
 				<select id="GPIO_IO3_value1">
@@ -1053,13 +949,11 @@ textarea {
 					<option value="output">output</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 3 <span style="color: blue">Used by default for serial communication as RX pin.</span>
-			</td>
+			<td>$TOOLTIP_GPIO_IO3</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO 3 use interrupt</span>
+				<span class="GPIO_IO3 GPIO_item">GPIO 3 Use Interrupt</span>
 			</td>
 			<td>
 				<select id="GPIO_IO3_value2">
@@ -1071,53 +965,43 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 3 Used by default for serial communication as RX pin.
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO 3 PWM duty resolution</span>
+				<span class="GPIO_IO3 GPIO_item">GPIO 3 PWM Duty Cycle Resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 3 LEDC PWM duty resolution in bit
-			</td>
+			<td><input type="number" id="GPIO_IO3_value3" min="1" max="20"> <span class="GPIO_IO3 GPIO_item">Bits</span></td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable MQTT</span>
+				<span class="GPIO_IO3 GPIO_item">GPIO 3 Enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
-			<td class="description">
-				GPIO 3 enable MQTT publishing/subscribing
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO 3 enable HTTP</span>
+				<span class="GPIO_IO3 GPIO_item">GPIO 3 Enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
-			<td class="description">
-				GPIO 3 enable HTTP write/read
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO3 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO 3 name</span>
+				<span class="GPIO_IO3 GPIO_item">GPIO 3 Name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO3_value6"></td>
-			<td class="description">
-				GPIO 3 MQTT topic name (empty = GPIO3). Allowed characters (a-z, A-Z, 0-9, _, -)
-			</td>
+			<td></td>
 		</tr>
 		<!------------- GPIO3 end ------------------>
 
 		<!------------- GPIO4 begin ------------------>
-		<tr class="GPIO_IO4 GPIO_item">
+		<tr class="GPIO_item">
 			<td class="indent1">
 				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO4")' unchecked>
-				<label for=GPIO_IO4_enabled><span id="GPIO_IO4_text" class="GPIO_IO4 GPIO_item">GPIO 4 state</span></label>
+				<label for=GPIO_IO4_enabled><span id="GPIO_IO4_text">GPIO 4 State</span></label>
 			</td>
 			<td>
 				<select id="GPIO_IO4_value1">
@@ -1128,14 +1012,11 @@ textarea {
 					<option value="built-in-led">built-in led flash light</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 4 Usable with restrictions.<br> 
-				<b>Pin is used for build-in flash light.</b>
-			</td>
+			<td>$TOOLTIP_GPIO_IO4</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO 4 use interrupt</span>
+				<span class="GPIO_IO4 GPIO_item">GPIO 4 Use Interrupt</span>
 			</td>
 			<td>
 				<select id="GPIO_IO4_value2">
@@ -1147,53 +1028,43 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>	
 			</td>
-			<td class="description">
-				GPIO 4 enable interrupt trigger
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO 4 PWM duty resolution</span>
+				<span class="GPIO_IO4 GPIO_item">GPIO 4 PWM Duty Cycle Resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 4 LEDC PWM duty resolution in bit
-			</td>
+			<td><input type="number" id="GPIO_IO4_value3" min="1" max="20"> <span class="GPIO_IO4 GPIO_item">Bits</span></td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable MQTT</span>
+				<span class="GPIO_IO4 GPIO_item">GPIO 4 Enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
-			<td class="description">
-				GPIO 4 enable MQTT publishing/subscribing
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO 4 enable HTTP</span>
+				<span class="GPIO_IO4 GPIO_item">GPIO 4 Enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
-			<td class="description">
-				GPIO 4 enable HTTP write/read
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO4 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO 4 name</span>
+				<span class="GPIO_IO4 GPIO_item">GPIO 4 Name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO4_value6"></td>
-			<td class="description">
-				GPIO 4 MQTT topic name (empty = GPIO4). Allowed characters (a-z, A-Z, 0-9, _, -)
-			</td>
+			<td></td>
 		</tr>
 		<!------------- GPIO4 end ------------------>
 
 		<!------------- GPIO12 begin ------------------>
-		<tr class="GPIO_IO12 GPIO_item">
+		<tr class="GPIO_item">
 			<td class="indent1">
 				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
-				<label for=GPIO_IO12_enabled><span class="GPIO_IO12 GPIO_item" id="GPIO_IO12_text">GPIO 12 state</span></label>
+				<label for=GPIO_IO12_enabled><span id="GPIO_IO12_text">GPIO 12 State</span></label>
 			</td>
 			<td>
 				<select id="GPIO_IO12_value1">
@@ -1204,13 +1075,11 @@ textarea {
 					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
 				</select>
 			</td>
-			<td class="description">
-				GPIO 12 is usable without restrictions
-			</td>
+			<td>$TOOLTIP_GPIO_IO12</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO 12 use interrupt</span>
+				<span class="GPIO_IO12 GPIO_item">GPIO 12 Use Interrupt</span>
 			</td>
 			<td>
 				<select class="GPIO_IO12 GPIO_item" id="GPIO_IO12_value2">
@@ -1222,87 +1091,71 @@ textarea {
 					<option value="high-level-trigger">high level trigger</option>
 				</select>	
 			</td>
-			<td class="description">
-				GPIO 12 enable interrupt trigger
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO 12 PWM duty resolution</span>
+				<span class="GPIO_IO12 GPIO_item">GPIO 12 PWM Duty Cycle Resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 12 LEDC PWM duty resolution in bit
-			</td>
+			<td><input type="number" id="GPIO_IO12_value3" min="1" max="20"> <span class="GPIO_IO12 GPIO_item">Bits</span></td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable MQTT</span>
+				<span class="GPIO_IO12 GPIO_item">GPIO 12 Enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
-			<td class="description">
-				GPIO 12 enable MQTT publishing/subscribing
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO 12 enable HTTP</span>
+				<span class="GPIO_IO12 GPIO_item">GPIO 12 Enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
-			<td class="description">
-				GPIO 12 enable HTTP write/read
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO12 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO 12 name</span>
+				<span class="GPIO_IO12 GPIO_item">GPIO 12 Name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO12_value6"></td>
-			<td class="description">
-				GPIO 12 MQTT topic name (empty = GPIO12). Allowed characters (a-z, A-Z, 0-9, _, -)
-			</td>
+			<td></td>
 		</tr>
 
-		<tr class="GPIO_IO12 GPIO_item" id="wstypeex3">
+		<tr class="GPIO_item" id="wstypeex3">
 			<td class="indent1">
-				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED-Type</span>
+				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED Type (NeoPixel)</span>
 			</td>
-			<td class="GPIO_IO12 GPIO_item">
-				<select class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_value1">
+			<td class="GPIO_item">
+				<select class="GPIO_item" id="GPIO_LEDType_value1">
 					<option value="WS2812" selected>WS2812</option>
 					<option value="WS2812B">WS2812B</option>
-					<option value="SK6812">SK6812 (not tested)</option>
+					<option value="SK6812">SK6812</option>
 					<option value="WS2813">WS2813 (not tested)</option>
 				</select>
 			</td>
-			<td class="description">
-				Type of WS2812x, that is connected to GPIO12
-			</td>
+			<td>$TOOLTIP_GPIO_LEDType</td>
 		</tr>
 
-		<tr  class="GPIO_IO12 GPIO_item" id="LEDANZex8" >
+		<tr  class="GPIO_item" id="LEDANZex8" >
 			<td class="indent1">
-				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
+				<span class="GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
 			</td>
 			<td>
 				<input type="number" name="name" id="GPIO_LEDNumbers_value1" size="13" min="1">
 			</td>
-			<td style="font-size: 80%;">
-				Number of LEDs on the external LED-stripe 
-			</td>
+			<td>$TOOLTIP_GPIO_LEDNumbers</td>
 		</tr>
-		<tr  class="GPIO_IO12 GPIO_item" id="LEDRGBex9">
+		<tr  class="GPIO_item" id="LEDRGBex9">
 			<td class="indent1">
-				<span class="GPIO_IO12 GPIO_item"  id="GPIO_LEDColor_text">LED Color</span>
+				<span class="GPIO_item"  id="GPIO_LEDColor_text">LED Color</span>
 			</td>
-			<td class="GPIO_IO12 GPIO_item">
+			<td class="GPIO_item">
 				R <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1" size="12">
 				G <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2" size="12">
 				B <input class="smallSelect" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3" size="12">
 			</td>
-			<td style="font-size: 80%;">
-				Color of LEDs in (R)ed, (G)reen (B)lue from 0...255
-			</td>
+			<td>$TOOLTIP_GPIO_LEDColor</td>
 		</tr>
 
 
@@ -1312,7 +1165,7 @@ textarea {
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td class="indent1">
 				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
-				<label=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO 13 state</span>
+				<label for=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO 13 State</span></label>
 			</td>
 			<td>
 					<select id="GPIO_IO13_value1">
@@ -1322,13 +1175,11 @@ textarea {
 						<option value="output">output</option>
 					</select>
 			</td>
-			<td class="description">
-				GPIO 13 is usable without restrictions
-			</td>
+			<td>$TOOLTIP_GPIO_IO13</td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO 13 use interrupt</span>
+				<span class="GPIO_IO13 GPIO_item">GPIO 13 Use Interrupt</span>
 			</td>
 			<td>
 					<select id="GPIO_IO13_value2">
@@ -1340,45 +1191,35 @@ textarea {
 						<option value="high-level-trigger">high level trigger</option>
 					</select>	
 				</td>
-			<td class="description">
-				GPIO 13 enable interrupt trigger
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO 13 PWM duty resolution</span>
+				<span class="GPIO_IO13 GPIO_item">GPIO 13 PWM Duty Cycle Resolution</span>
 			</td>
-			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"></td>
-			<td class="description">
-				GPIO 13 LEDC PWM duty resolution in bit
-			</td>
+			<td><input type="number" id="GPIO_IO13_value3" min="1" max="20"> <span class="GPIO_IO13 GPIO_item">Bits</span></td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable MQTT</span>
+				<span class="GPIO_IO13 GPIO_item">GPIO 13 Enable MQTT</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
-			<td class="description">
-				GPIO 13 enable MQTT publishing/subscribing
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO 13 enable HTTP</span>
+				<span class="GPIO_IO13 GPIO_item">GPIO 13 Enable HTTP</span>
 			</td>
 			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
-			<td class="description">
-				GPIO 13 enable HTTP write/read
-			</td>
+			<td></td>
 		</tr>
 		<tr class="expert" class="GPIO_IO13 GPIO_item">
 			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO 13 name</span>
+				<span class="GPIO_IO13 GPIO_item">GPIO 13 Name</span>
 			</td>
 			<td><input type="text" id="GPIO_IO13_value6"></td>
-			<td class="description">
-				GPIO 13 MQTT topic name (empty = GPIO13). Allowed characters (a-z, A-Z, 0-9, _, -)
-			</td>
+			<td></td>
 		</tr>
 		<!------------- GPIO13 end ------------------>
 
@@ -1387,7 +1228,7 @@ textarea {
 		</tr> 			
 		<tr class="expert"  id="ex13">
 			<td class="indent1">
-			    <class id="AutoTimer_AutoStart_text" style="color:black;">AutoStart</class>
+			    <class id="AutoTimer_AutoStart_text" style="color:black;">Automatically Round Start</class>
 			</td>
 			<td>
 				<select id="AutoTimer_AutoStart_value1">
@@ -1395,28 +1236,24 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td style="font-size: 80%;">
-				Start the image recognition immediatly after power up. false is basically for debugging.
-			</td>
+			<td>$TOOLTIP_AutoTimer_AutoStart</td>
 		</tr>
 		<tr>
 			<td class="indent1">
-			    <class id="AutoTimer_Interval_text" style="color:black;">Interval</class>
+			    <class id="AutoTimer_Interval_text" style="color:black;">Round Interval</class>
 			</td>
 			<td>
-				<input type="number" id="AutoTimer_Interval_value1" size="13" min="3" step="any">
+				<input type="number" id="AutoTimer_Interval_value1" size="13" min="3" step="any"> Minutes
 			</td>
-			<td style="font-size: 80%;">
-				Interval in which the number(s) are read (in minutes). If a digitalization round takes longer than this interval, the next run gets postponed until the current run completes.
-			</td>
+			<td>$TOOLTIP_AutoTimer_Interval</td>
 		</tr>
 
 		<tr>
-			<td colspan="3" style="padding-left: 20px;"><h4>DataLogging</h4></td>
+			<td colspan="3" style="padding-left: 20px;"><h4>Data Logging</h4></td>
 		</tr>
 		<tr>
 			<td class="indent1">
-				<class id="DataLogging_DataLogActive_text" style="color:black;">DataLogActive</class>
+				<class id="DataLogging_DataLogActive_text" style="color:black;">Data Logging</class>
 			</td>
 			<td>
 				<select id="DataLogging_DataLogActive_value1">
@@ -1424,21 +1261,17 @@ textarea {
 					<option value="false" >false</option>
 				</select>
 			</td>
-			<td class="description">
-				Activate data log to SD card
-			</td>
+			<td>$TOOLTIP_DataLogging_DataLogActive</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<class id="DataLogging_DataFilesRetention_text" style="color:black;">DataFilesRetention</class>
+				<class id="DataLogging_DataFilesRetention_text" style="color:black;">Data Files Retention</class>
 			</td>
 			<td>
-				<input type="number" id="DataLogging_DataFilesRetention_value1" size="13" min="0" step="1">
+				<input type="number" id="DataLogging_DataFilesRetention_value1" size="13" min="0" step="1"> Days
 			</td>
-			<td class="description">
-				Time to keep the data files (in days - "0" = forever)
-			</td>
+			<td>$TOOLTIP_DataLogging_DataFilesRetention</td>
 		</tr>
 
 		<tr>
@@ -1456,20 +1289,16 @@ textarea {
 					<option value="4">DEBUG</option>
 				</select>
 			</td>
-			<td class="description">
-				Set the level of the logging to the SD-Card.<br><b>Warning:</b> DEBUG or INFO might damage the SD-Card if enabled longterm due to excessive writes to the SD-Card!
-			</td>
+			<td>$TOOLTIP_Debug_LogLevel</td>
 		</tr> 		
 		<tr>
 			<td class="indent1">
 				<class id="Debug_LogfilesRetention_text" style="color:black;">LogfilesRetention</class>
 			</td>
 			<td>
-				<input type="number" id="Debug_LogfilesRetention_value1" size="13" min="0" step="1">
+				<input type="number" id="Debug_LogfilesRetention_value1" size="13" min="0" step="1"> Days
 			</td>
-			<td class="description">
-				Time to keep the log files (in days - "0" = forever)
-			</td>
+			<td>$TOOLTIP_Debug_LogfilesRetention</td>
 		</tr>
 
 		<tr>
@@ -1478,31 +1307,22 @@ textarea {
 		<tr>
 			<td class="indent1">
 				<input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked >
-				<label for=System_TimeZone_enabled><class id="System_TimeZone_text" style="color:black;">TimeZone</class></label>
+				<label for=System_TimeZone_enabled><class id="System_TimeZone_text" style="color:black;">Time Zone</class></label>
 			</td>
 			<td>
 				<input type="text" id="System_TimeZone_value1">
 			</td>
-			<td class="description">
-				Time zone in POSIX syntax (Europe/Berlin = "CET-1CEST,M3.5.0,M10.5.0/3" - incl. daylight saving)<br>
-				Use this <a href=timezones.html?v=$COMMIT_HASH target=_blank>table</a> to find the settings for your region. 
-			</td>
+			<td>$TOOLTIP_System_TimeZone</td>
 		</tr>
 		<tr class="expert"  id="ex16">
 			<td class="indent1">
 				<input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked >
-				<label for=System_TimeServer_enabled><class id="System_TimeServer_text" style="color:black;">TimeServer</class></label>
+				<label for=System_TimeServer_enabled><class id="System_TimeServer_text" style="color:black;">Time Server (NTP)</class></label>
 			</td>
 			<td>
 				<input type="text" id="System_TimeServer_value1">
 			</td>
-			<td class="description">
-				Time server to synchronize system time. If it is disabled or "undefined", "pool.ntp.org" will be used.<br>
-				You can also set it to the IP of your router. Many routers like 
-				<a href=https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-7590-AX/336_Configuring-time-synchronization-NTP-for-FRITZ-Box-and-network-devices/
-				target=_blank>Fritzboxes</a> can act as a local NTP server.<br>
-				To disable NTP, you need to activate it but set the TimeServer config to be empty. In such case the time always starts at 01.01.1970 after each power cycle!
-			</td>
+			<td>$TOOLTIP_System_TimeServer</td>
 		</tr>
 		<tr class="expert"  id="System_Hostname">
 			<td class="indent1">
@@ -1511,21 +1331,20 @@ textarea {
 			</td>
 			<td>
 				<input type="text" id="System_Hostname_value1">
-			<td class="description">
-				Hostname for server - will be transfered to wlan.ini at next startup)
 			</td>
+			<td>$TOOLTIP_System_Hostname</td>
 		</tr>
+
+
 		<tr class="expert"  id="System_RSSIThreshold">
 			<td class="indent1">
 				<input type="checkbox" id="System_RSSIThreshold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreshold")' unchecked >
-				<label for=System_RSSIThreshold_enabled><class id="System_RSSIThreshold_text" style="color:black;">RSSIThreshold</class></label>
+				<label for=System_RSSIThreshold_enabled><class id="System_RSSIThreshold_text" style="color:black;">RSSI Threshold</class></label>
 			</td>
 			<td>
-				<input type="number" name="name" id="System_RSSIThreshold_value1" min="-100"  max="0" step="1">
-			<td class="description">
-				WLAN Mesh Parameter: Threshold for RSSI value to check for start switching access point in a mesh system.
-				Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)
+				<input type="number" name="name" id="System_RSSIThreshold_value1" min="-100"  max="0" step="1"> dBm
 			</td>
+			<td>$TOOLTIP_System_RSSIThreshold</td>
 		</tr>
 
 	</table>
@@ -1739,7 +1558,7 @@ function InvertEnableItem(_cat, _param)
 	_zw = _cat + "_" + _param + "_enabled";
 	_isOn = document.getElementById(_zw).checked;
 
-	_color = "color:lightgrey;";
+	_color = "color: rgb(122, 122, 122);";
 	if (_isOn) {
 		_color = "color:black;";
 	}
@@ -1757,7 +1576,7 @@ function InvertEnableItem(_cat, _param)
 }
 
 function setEnabled(className, enabled) {
-	_color = "color:lightgrey;";
+	_color = "color: rgb(122, 122, 122);";
 	if (enabled) {
 		_color = "color:black;";
 	}
@@ -1800,7 +1619,7 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 {
 	_status = _category[_cat]["enabled"];
 
-	_color = "color:lightgrey;";
+	_color = "color: rgb(122, 122, 122);";
 	if (_status) {
 		_color = "color:black;";
 	}
@@ -1813,13 +1632,13 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
 	if (_number == -1){
 		if (!_param[_cat][_name]["enabled"]) {
 			_status = false;
-			_color = "color:lightgrey;";
+			_color = "color: rgb(122, 122, 122);";
 		}
 	}
 	else
 		if (!NUMBERS[_number][_cat][_name]["enabled"]) {
 				_status = false;
-				_color = "color:lightgrey;";
+				_color = "color: rgb(122, 122, 122);";
 			}
 
 
