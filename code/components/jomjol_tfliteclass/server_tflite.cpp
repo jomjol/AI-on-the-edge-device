@@ -379,13 +379,21 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
 
 
+        std::string *status = tfliteflow.getActStatus();
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
         if (query.find("full") != std::string::npos)
         {
             string txt;
             txt = "<body style=\"font-family: arial\">";
-            txt += "<h3>Value</h3>";
+
+            if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
+                txt = "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
+            }
+            else {
+                txt += "<h3>Value</h3>";
+            }
+
             httpd_resp_sendstr_chunk(req, txt.c_str());
         }
 
@@ -399,11 +407,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         {
             string txt, zw;
 
-            std::string *status = tfliteflow.getActStatus();
-
             if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
-                txt = "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
-                httpd_resp_sendstr_chunk(req, txt.c_str());
+                // Nothing to do
             }
             else {
                 /* Digital ROIs */
