@@ -148,10 +148,10 @@ static bool ota_update_task(std::string fn)
     const esp_partition_t *configured = esp_ota_get_boot_partition();
     const esp_partition_t *running = esp_ota_get_running_partition();
 
-    if (configured != running) {
-        ESP_LOGW(TAG, "Configured OTA boot partition at offset 0x%08x, but running from offset 0x%08x",
-                 configured->address, running->address);
-        ESP_LOGW(TAG, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
+    if (configured != running) {        
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Configured OTA boot partition at offset " + to_string(configured->address) + 
+                ", but running from offset " + to_string(running->address));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
     }
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
              running->type, running->subtype, running->address);
@@ -179,7 +179,7 @@ static bool ota_update_task(std::string fn)
 
     while (data_read > 0) {
         if (data_read < 0) {
-            ESP_LOGE(TAG, "Error: SSL data read error");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error: SSL data read error");
             return false;
         } else if (data_read > 0) {
             if (image_header_was_checked == false) {
@@ -203,16 +203,17 @@ static bool ota_update_task(std::string fn)
                     // check current version with last invalid partition
                     if (last_invalid_app != NULL) {
                         if (memcmp(invalid_app_info.version, new_app_info.version, sizeof(new_app_info.version)) == 0) {
-                            ESP_LOGW(TAG, "New version is the same as invalid version.");
-                            ESP_LOGW(TAG, "Previously, there was an attempt to launch the firmware with %s version, but it failed.", invalid_app_info.version);
-                            ESP_LOGW(TAG, "The firmware has been rolled back to the previous version.");
+                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "New version is the same as invalid version");
+                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Previously, there was an attempt to launch the firmware with " + 
+                                    string(invalid_app_info.version) + " version, but it failed");
+                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "The firmware has been rolled back to the previous version");
                             infinite_loop();
                         }
                     }
 
 /*
                     if (memcmp(new_app_info.version, running_app_info.version, sizeof(new_app_info.version)) == 0) {
-                        ESP_LOGW(TAG, "Current running version is the same as a new. We will not continue the update.");
+                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Current running version is the same as a new. We will not continue the update");
                         infinite_loop();
                     }
 */
@@ -220,12 +221,12 @@ static bool ota_update_task(std::string fn)
 
                     err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &update_handle);
                     if (err != ESP_OK) {
-                        ESP_LOGE(TAG, "esp_ota_begin failed (%s)", esp_err_to_name(err));
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_begin failed (" + string(esp_err_to_name(err)) + ")");
                         return false;
                     }
                     ESP_LOGI(TAG, "esp_ota_begin succeeded");
                 } else {
-                    ESP_LOGE(TAG, "received package is not fit len");
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "received package is not fit len");
                     return false;
                 }
             }            
@@ -241,7 +242,7 @@ static bool ota_update_task(std::string fn)
            // * `errno` to check for underlying transport connectivity closure if any
            //
             if (errno == ECONNRESET || errno == ENOTCONN) {
-                ESP_LOGE(TAG, "Connection closed, errno = %d", errno);
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection closed, errno = " + to_string(errno));
                 break;
             }
         }
@@ -254,15 +255,15 @@ static bool ota_update_task(std::string fn)
     err = esp_ota_end(update_handle);
     if (err != ESP_OK) {
         if (err == ESP_ERR_OTA_VALIDATE_FAILED) {
-            ESP_LOGE(TAG, "Image validation failed, image is corrupted");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image validation failed, image is corrupted");
         }
-        ESP_LOGE(TAG, "esp_ota_end failed (%s)!", esp_err_to_name(err));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_end failed (" + string(esp_err_to_name(err)) + ")!");
         return false;
     }
 
     err = esp_ota_set_boot_partition(update_partition);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "esp_ota_set_boot_partition failed (%s)!", esp_err_to_name(err));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_set_boot_partition failed (" + string(esp_err_to_name(err)) + ")!");
 
     }
 //    ESP_LOGI(TAG, "Prepare to restart system!");
@@ -329,7 +330,7 @@ void CheckOTAUpdate(void)
                         ESP_LOGI(TAG, "Diagnostics completed successfully! Continuing execution...");
                         esp_ota_mark_app_valid_cancel_rollback();
                     } else {
-                        ESP_LOGE(TAG, "Diagnostics failed! Start rollback to the previous version...");
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Diagnostics failed! Start rollback to the previous version...");
                         esp_ota_mark_app_invalid_rollback_and_reboot();
                     }
                 }
@@ -353,7 +354,7 @@ void CheckOTAUpdate(void)
                 ESP_LOGI(TAG, "Diagnostics completed successfully! Continuing execution...");
                 esp_ota_mark_app_valid_cancel_rollback();
             } else {
-                ESP_LOGE(TAG, "Diagnostics failed! Start rollback to the previous version...");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Diagnostics failed! Start rollback to the previous version...");
                 esp_ota_mark_app_invalid_rollback_and_reboot();
             }
         }
@@ -522,7 +523,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         }
         else
         {
-            ESP_LOGD(TAG, "File does not exist: %s", fn.c_str());
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File does not exist: " + fn);
         }
         /* Respond with an empty chunk to signal HTTP response completion */
         std::string zw = "file deleted\n";
@@ -537,7 +538,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
     httpd_resp_send_chunk(req, NULL, 0);  
 
-    ESP_LOGE(TAG, "ota without parameter - should not be the case!");
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ota without parameter - should not be the case!");
 
 /*  
     const char* resp_str;    
@@ -600,7 +601,7 @@ void task_reboot(void *KillAutoFlow)
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 
-    ESP_LOGE(TAG, "Reboot failed!");
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Reboot failed!");
     vTaskDelete(NULL); //Delete this task if it comes to this point
 }
 
@@ -613,7 +614,7 @@ void doReboot()
     BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
     if( xReturned != pdPASS )
     {
-        ESP_LOGE(TAG, "task_reboot not created -> force reboot without killing flow");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void*) false);
     }
     vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
