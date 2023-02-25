@@ -56,9 +56,9 @@ bool initial_setup = false;
 static void infinite_loop(void)
 {
     int i = 0;
-    ESP_LOGI(TAG, "When a new firmware is available on the server, press the reset button to download it");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "When a new firmware is available on the server, press the reset button to download it");
     while(1) {
-        ESP_LOGI(TAG, "Waiting for a new firmware... %d", ++i);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Waiting for a new firmware... (" + to_string(++i) + ")");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -87,13 +87,13 @@ void task_do_Update_ZIP(void *pvParameter)
             ota_update_task(retfirmware);
         }
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     } else if (filetype == "BIN")
     {
        	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Do firmware update - file: " + _file_name_update);
         ota_update_task(_file_name_update);
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     }
     else
@@ -120,7 +120,7 @@ void CheckUpdate()
 		std::string _szw = std::string(zw);
         if (_szw == "init")
         {
-       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered.");
+       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered");
             initial_setup = true;        }
 	}
 
@@ -446,7 +446,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         if ((filetype == "ZIP") || (filetype == "BIN"))
         {
            	FILE *pfile;
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot.");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot");
             pfile = fopen("/sdcard/update.txt", "w");
             fwrite(fn.c_str(), fn.length(), 1, pfile);
             fclose(pfile);
@@ -608,7 +608,7 @@ void task_reboot(void *KillAutoFlow)
 
 void doReboot()
 {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s)");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
     BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
@@ -642,7 +642,7 @@ esp_err_t handler_reboot(httpd_req_t *req)
     #endif    
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
-    ESP_LOGI(TAG, "!!! System will restart within 5 sec!!!");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "!!! System will restart within 5 sec!!!");
 
     std::string response = 
         "<html><head><script>"

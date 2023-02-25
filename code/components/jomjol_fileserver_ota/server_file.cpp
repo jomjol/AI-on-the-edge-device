@@ -845,7 +845,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             return ESP_FAIL;
         }
 
-        ESP_LOGI(TAG, "Deleting file: %s", filename);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + string(filename));
         /* Delete file */
         unlink(filepath);
 
@@ -896,7 +896,7 @@ void delete_all_in_directory(std::string _directory)
         if (!(entry->d_type == DT_DIR)){
             if (strcmp("wlan.ini", entry->d_name) != 0){                    // auf wlan.ini soll nicht zugegriffen werden !!!
                 filename = _directory + "/" + std::string(entry->d_name);
-                ESP_LOGI(TAG, "Deleting file: %s", filename.c_str());
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + filename);
                 /* Delete file */
                 unlink(filename.c_str());    
             }
@@ -930,7 +930,7 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
 
     // Get and print information about each file in the archive.
     int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
-    ESP_LOGI(TAG, "Numbers of files to be extracted: %d", numberoffiles);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Numbers of files to be extracted: " + to_string(numberoffiles));
 
     sort_iter = 0;
     {
