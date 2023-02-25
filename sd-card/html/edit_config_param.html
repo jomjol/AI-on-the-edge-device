@@ -105,9 +105,9 @@ textarea {
 }
 </style>
 
-<link rel="stylesheet" href="param_tooltips/theme.css?v=$COMMIT_HASH" />
-<link rel="stylesheet" href="param_tooltips/theme_extra.css?v=$COMMIT_HASH" />
-<link rel="stylesheet" href="param_tooltips/github.min.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
 
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -720,6 +720,9 @@ textarea {
 			</td>
 			<td>$TOOLTIP_InfluxDB_password</td>
 		</tr>
+
+
+
 
 		<tr>
 			<td colspan="3" style="padding-left: 20px;">
@@ -1415,11 +1418,6 @@ function InitIndivParameter()
 		_indexInflux.remove(0);
 
     for (var i = 0; i < NUMBERS.length; ++i){
-        var option = document.createElement("option");
-        option.text = NUMBERS[i]["name"];
-        option.value = i;
-        _index.add(option);
-
 		var optionInflux = document.createElement("option");
         optionInflux.text = NUMBERS[i]["name"];
         optionInflux.value = i;
@@ -1724,11 +1722,11 @@ function UpdateInputIndividual(sel)
 		ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt)		
-		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)		
+		ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt)
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt)		
-		ReadParameter(param, "InfluxDBv2", "Fieldname", true, NUNBERSAkt)		
+		ReadParameter(param, "InfluxDBv2", "Fieldname", true, NUNBERSAkt)
 	}
 
 //	var sel = document.getElementById("Numbers_value1");
@@ -1906,7 +1904,7 @@ function ReadParameterAll()
 	ReadParameter(param, "Analog", "ROIImagesLocation", true);		
 	ReadParameter(param, "Analog", "ROIImagesRetention", true);		
 
-	ReadParameter(param, "PostProcessing", "PreValueUse", false);		
+	ReadParameter(param, "PostProcessing", "PreValueUse", false);
 	ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);
 	ReadParameter(param, "PostProcessing", "ErrorMessage", false);
 	ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);

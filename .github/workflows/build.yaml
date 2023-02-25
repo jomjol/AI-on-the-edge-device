@@ -333,7 +333,7 @@ jobs:
     # extract the version used in next step
     - id: get_version
       if: startsWith(github.ref, 'refs/tags/') 
-      uses: battila7/get-version-action@v2
+      uses: Simply007/get-version-action@v2
 
 #    # the changelog [unreleased] will now be changed to the release version
 #    - name: Update changelog
@@ -400,7 +400,7 @@ jobs:
       
     - name: Get version of last release
       id: last_release
-      uses: InsonusK/get-latest-release@v1.0.1
+      uses: mindojo/get-latest-release@0b8ef1434d7468d6bffcc8263baff5c777f72321
       with:
         myToken: ${{ github.token }}
         exclude_types: "draft|prerelease"

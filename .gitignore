@@ -25,4 +25,3 @@ code/edgeAI.code-workspace
 .DS_Store
 tools/parameter-tooltip-generator/html
 tools/parameter-tooltip-generator/AI-on-the-edge-device-docs
-sd-card/html/param_tooltips

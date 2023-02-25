@@ -939,11 +939,11 @@ std::string UrlDecode(const std::string& value)
 {
     std::string result;
     result.reserve(value.size());
-    
+
     for (std::size_t i = 0; i < value.size(); ++i)
     {
         auto ch = value[i];
-        
+
         if (ch == '%' && (i + 2) < value.size())
         {
             auto hex = value.substr(i + 1, 2);
@@ -960,6 +960,6 @@ std::string UrlDecode(const std::string& value)
             result.push_back(ch);
         }
     }
-    
+
     return result;
 }
