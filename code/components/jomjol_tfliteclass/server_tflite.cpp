@@ -384,14 +384,14 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
             if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
                 txt = "<body style=\"font-family: arial\">";
-                txt += "<h3>Please wait for the first round to complete</h3><h3>Current state: " + *status + "</h3>\n";
+                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
                 httpd_resp_sendstr_chunk(req, txt.c_str());
             }
             else {
                 /* Digital ROIs */
                 txt = "<body style=\"font-family: arial\">";
                 txt += "<h3>Recognized Digit ROIs (previous round)</h3>\n";
-                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center\">\n";
+                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
 
                 std::vector<HTMLInfo*> htmlinfodig;
                 htmlinfodig = tfliteflow.GetAllDigital(); 
@@ -405,7 +405,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                         else
                             zw = to_string((int) htmlinfodig[i]->val);
 
-                        txt += "<td><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p><p>" + zw + "</p></td>\n";
+                        txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p></td>\n";
                     }
                     else
                     {
@@ -413,7 +413,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                         stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
                         zw = stream.str();
 
-                        txt += "<td><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p><p>" + zw + "</p></td>\n";
+                        txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p></td>\n";
                     }
                     delete htmlinfodig[i];
                 }
@@ -426,7 +426,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
                 /* Analog ROIs */
                 txt = "<h3>Recognized Analog ROIs (previous round)</h3>\n";
-                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center\">\n";
+                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
                 
                 std::vector<HTMLInfo*> htmlinfoana;
                 htmlinfoana = tfliteflow.GetAllAnalog();
@@ -436,7 +436,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                     stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
                     zw = stream.str();
 
-                    txt += "<td><p><img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"></p><p>" + zw + "</p></td>\n";
+                    txt += "<td style=\"width: 150px;\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"></p></td>\n";
                 delete htmlinfoana[i];
                 }
                 htmlinfoana.clear();   
@@ -450,7 +450,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 txt = "<h3>Aligned Image (current round)</h3>\n";
                 if ((*status == std::string("Initialization")) || 
                     (*status == std::string("Initialization (delayed)")) || 
-                    (*status == std::string("Take Image")) {
+                    (*status == std::string("Take Image"))) {
                     txt += "<p>Current state: " + *status + "</p>\n";
                 }
                 else {
