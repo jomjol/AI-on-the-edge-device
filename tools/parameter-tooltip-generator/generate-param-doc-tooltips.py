@@ -9,7 +9,6 @@ import markdown
 parameterDocsFolder = "AI-on-the-edge-device-docs/param-docs/parameter-pages"
 docsMainFolder = "../../sd-card/html"
 configPage = "edit_config_param.html"
-imagesFolder = "param_tooltips"
 
 htmlTooltipPrefix = """
     <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
@@ -42,7 +41,7 @@ def generateHtmlTooltip(section, parameter, markdownFile):
 
     # Update image paths and copy images to right folder
     if "../img/" in htmlTooltip:
-        htmlTooltip = htmlTooltip.replace("../img/", imagesFolder + "/")
+        htmlTooltip = htmlTooltip.replace("../img/", "/")
 
     htmlTooltip = htmlTooltipPrefix + htmlTooltip + htmlTooltipSuffix
 
@@ -77,4 +76,4 @@ for folder in folders:
 """
 Copy images to main folder
 """
-os.system("cp " + parameterDocsFolder + "/img/* " + docsMainFolder + "/" + imagesFolder)
+os.system("cp " + parameterDocsFolder + "/img/* " + docsMainFolder + "/")
