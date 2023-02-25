@@ -113,7 +113,7 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
         }
 
         _fileext = _filename;
-        pos = _fileext.find_last_of("");
+        pos = _fileext.find_last_of(".");
         if (pos != std::string::npos)
             _fileext = _fileext.erase(0, pos + 1);
 
@@ -157,7 +157,7 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
         }
 
         _fileext = _filename;
-        pos = _fileext.find_last_of("");
+        pos = _fileext.find_last_of(".");
         if (pos != std::string::npos)
             _fileext = _fileext.erase(0, pos + 1);
 
