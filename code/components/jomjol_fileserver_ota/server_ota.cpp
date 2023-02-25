@@ -58,7 +58,7 @@ static void infinite_loop(void)
     int i = 0;
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "When a new firmware is available on the server, press the reset button to download it");
     while(1) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Waiting for a new firmware... " + to_string(++i));
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Waiting for a new firmware... (" + to_string(++i) + ")");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -79,7 +79,7 @@ void task_do_Update_ZIP(void *pvParameter)
         outbin = "/sdcard/firmware";
 
         retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
-    	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
+    	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Files unzipped");
 
         if (retfirmware.length() > 0)
         {
@@ -87,13 +87,13 @@ void task_do_Update_ZIP(void *pvParameter)
             ota_update_task(retfirmware);
         }
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     } else if (filetype == "BIN")
     {
-       	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Do firmware update - file: " + _file_name_update);
+       	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Do firmware update - file: " + _file_name_update);
         ota_update_task(_file_name_update);
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update.");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     }
     else
@@ -108,7 +108,7 @@ void CheckUpdate()
  	FILE *pfile;
     if ((pfile = fopen("/sdcard/update.txt", "r")) == NULL)
     {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No update triggered.");
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No update triggered");
         return;
 	}
 
@@ -120,7 +120,7 @@ void CheckUpdate()
 		std::string _szw = std::string(zw);
         if (_szw == "init")
         {
-       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered.");
+       		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered");
             initial_setup = true;        }
 	}
 
@@ -203,17 +203,17 @@ static bool ota_update_task(std::string fn)
                     // check current version with last invalid partition
                     if (last_invalid_app != NULL) {
                         if (memcmp(invalid_app_info.version, new_app_info.version, sizeof(new_app_info.version)) == 0) {
-                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "New version is the same as invalid version.");
+                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "New version is the same as invalid version");
                             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Previously, there was an attempt to launch the firmware with " + 
-                                    string(invalid_app_info.version) + " version, but it failed.");
-                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "The firmware has been rolled back to the previous version.");
+                                    string(invalid_app_info.version) + " version, but it failed");
+                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "The firmware has been rolled back to the previous version");
                             infinite_loop();
                         }
                     }
 
 /*
                     if (memcmp(new_app_info.version, running_app_info.version, sizeof(new_app_info.version)) == 0) {
-                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Current running version is the same as a new. We will not continue the update.");
+                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Current running version is the same as a new. We will not continue the update");
                         infinite_loop();
                     }
 */
@@ -327,7 +327,7 @@ void CheckOTAUpdate(void)
                     // run diagnostic function ...
                     bool diagnostic_is_ok = diagnostic();
                     if (diagnostic_is_ok) {
-                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Diagnostics completed successfully! Continuing execution...");
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Diagnostics completed successfully! Continuing execution...");
                         esp_ota_mark_app_valid_cancel_rollback();
                     } else {
                         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Diagnostics failed! Start rollback to the previous version...");
@@ -351,7 +351,7 @@ void CheckOTAUpdate(void)
             // run diagnostic function ...
             bool diagnostic_is_ok = diagnostic();
             if (diagnostic_is_ok) {
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Diagnostics completed successfully! Continuing execution...");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Diagnostics completed successfully! Continuing execution...");
                 esp_ota_mark_app_valid_cancel_rollback();
             } else {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Diagnostics failed! Start rollback to the previous version...");
@@ -389,13 +389,13 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         if (httpd_query_key_value(_query, "file", _filename, 100) == ESP_OK)
         {
             fn.append(_filename);
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File: " + string(fn.c_str()));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File: " + fn);
         }
         if (httpd_query_key_value(_query, "delete", _filename, 100) == ESP_OK)
         {
             fn.append(_filename);
             _file_del = true;
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Delete Default File: " + string(fn.c_str()));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Delete Default File: " + fn);
         }
 
     }
@@ -408,7 +408,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "" + zw);
     
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
+        httpd_resp_send(req, zw.c_str(), zw.length()); 
         /* Respond with an empty chunk to signal HTTP response completion */
         httpd_resp_send_chunk(req, NULL, 0);  
 
@@ -445,7 +445,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         if ((filetype == "ZIP") || (filetype == "BIN"))
         {
            	FILE *pfile;
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot.");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot");
             pfile = fopen("/sdcard/update.txt", "w");
             fwrite(fn.c_str(), fn.length(), 1, pfile);
             fclose(pfile);
@@ -453,7 +453,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             std::string zw = "reboot\n";
             httpd_resp_sendstr_chunk(req, zw.c_str());
             httpd_resp_sendstr_chunk(req, NULL);  
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Send reboot");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Send reboot");
             return ESP_OK;                
 
         }
@@ -470,7 +470,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
                 std::string zw = "reboot\n";
                 httpd_resp_sendstr_chunk(req, zw.c_str());
                 httpd_resp_sendstr_chunk(req, NULL);  
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Send reboot");
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Send reboot");
                 return ESP_OK;                
             }
 
@@ -504,37 +504,37 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
         unzip(in, out+"/");
         zw = "Web Interface Update Successfull!\nNo reboot necessary";
-        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
+        httpd_resp_send(req, zw.c_str(), zw.length());
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
 
     if (_file_del)
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Delete !! _file_del: " + string(fn.c_str()));
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleteing file: " + fn);
         struct stat file_stat;
         int _result = stat(fn.c_str(), &file_stat);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Ergebnis " + to_string(_result));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Result: " + to_string(_result));
         if (_result == 0) {
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Deleting file: " + string(fn.c_str()));
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + fn);
             /* Delete file */
             unlink(fn.c_str());
         }
         else
         {
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File does not exist: " + string(fn.c_str()));
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File does not exist: " + fn);
         }
         /* Respond with an empty chunk to signal HTTP response completion */
         std::string zw = "file deleted\n";
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, string(zw.c_str()));
-        httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw);
+        httpd_resp_send(req, zw.c_str(), zw.length()));
         httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
     }
 
     string zw = "ota without parameter - should not be the case!";
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_send(req, zw.c_str(), strlen(zw.c_str())); 
+    httpd_resp_send(req, zw.c_str(), zw.length()); 
     httpd_resp_send_chunk(req, NULL, 0);  
 
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ota without parameter - should not be the case!");
@@ -607,7 +607,7 @@ void task_reboot(void *KillAutoFlow)
 
 void doReboot()
 {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s).");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s)");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
     BaseType_t xReturned = xTaskCreate(&task_reboot, "task_reboot", configMINIMAL_STACK_SIZE * 3, (void*) true, 10, NULL);
