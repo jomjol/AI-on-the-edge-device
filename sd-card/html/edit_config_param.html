@@ -1418,6 +1418,11 @@ function InitIndivParameter()
 		_indexInflux.remove(0);
 
     for (var i = 0; i < NUMBERS.length; ++i){
+		var option = document.createElement("option");
+        option.text = NUMBERS[i]["name"];
+        option.value = i;
+        _index.add(option);
+
 		var optionInflux = document.createElement("option");
         optionInflux.text = NUMBERS[i]["name"];
         optionInflux.value = i;
