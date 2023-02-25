@@ -41,6 +41,7 @@ static const char *TAG = "WIFI";
 
 
 bool WIFIConnected = false;
+int WIFIReconnectCnt = 0;
 
 
 #ifdef WLAN_USE_MESH_ROAMING
@@ -293,18 +294,19 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
         WIFIConnected = false;
         esp_wifi_connect();
     }
+	
 	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) 
 	{
 		/* Disconnect reason: https://github.com/espressif/esp-idf/blob/d825753387c1a64463779bbd2369e177e5d59a79/components/esp_wifi/include/esp_wifi_types.h */
 		wifi_event_sta_disconnected_t *disconn = (wifi_event_sta_disconnected_t *)event_data;
 		if (disconn->reason == WIFI_REASON_ROAMING) {
-			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Roaming)");
+			LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Roaming)");
 			// --> no reconnect neccessary, it should automatically reconnect to new AP
 		}
 		else {
 			WIFIConnected = false;
 			if (disconn->reason == WIFI_REASON_NO_AP_FOUND) {
-				LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", No AP)");
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", No AP)");
 				StatusLED(WLAN_CONN, 1, false);
 			}
 			else if (disconn->reason == WIFI_REASON_AUTH_EXPIRE ||
@@ -312,28 +314,38 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 					 disconn->reason == WIFI_REASON_NOT_AUTHED ||
 					 disconn->reason == WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT || 
 					 disconn->reason == WIFI_REASON_HANDSHAKE_TIMEOUT) {
-				LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Auth fail)");
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Auth fail)");
 				StatusLED(WLAN_CONN, 2, false);
 			}
 			else if (disconn->reason == WIFI_REASON_BEACON_TIMEOUT) {
-				LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Timeout)");
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Timeout)");
 				StatusLED(WLAN_CONN, 3, false);
 			}
 			else {
-				LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected (" + std::to_string(disconn->reason) + ")");
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ")");
 				StatusLED(WLAN_CONN, 4, false);
 			}
+			WIFIReconnectCnt++;
 			esp_wifi_connect(); // Try to connect again
 		}
+
+		if (WIFIReconnectCnt >= 10) {
+			WIFIReconnectCnt = 0;
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Disconnected, multiple reconnect attempts failed (" + 
+													 std::to_string(disconn->reason) + "), still retrying...");
+		}
 	}
+	
 	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED) 
 	{
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to: " + wlan_config.ssid + ", RSSI: " + 
 												std::to_string(get_WIFI_RSSI()));
 	}
+	
 	else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) 
 	{
         WIFIConnected = true;
+		WIFIReconnectCnt = 0;
 
 		ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         wlan_config.ipaddress = std::string(ip4addr_ntoa((const ip4_addr*) &event->ip_info.ip));
