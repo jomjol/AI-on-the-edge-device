@@ -78,6 +78,7 @@ void task_do_Update_ZIP(void *pvParameter)
         out = "/sdcard/html";
         outbin = "/sdcard/firmware";
 
+    	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "unzipping...");
         retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Files unzipped");
 
