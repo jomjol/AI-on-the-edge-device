@@ -378,9 +378,12 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             return ESP_OK;
         }
 
-        zw = tfliteflow.getReadout(_rawValue, _noerror);
-        if (zw.length() > 0)
-            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+        if (_rawValue || _noerror) {
+            zw = tfliteflow.getReadout(_rawValue, _noerror);
+            if (zw.length() > 0)
+                httpd_resp_sendstr_chunk(req, zw.c_str()); 
+            return ESP_OK;
+        }
 
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
