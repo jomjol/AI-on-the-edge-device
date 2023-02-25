@@ -162,7 +162,7 @@ textarea {
 		</tr>		
 		<tr class="expert" id="ex1">
 			<td class="indent1">
-				<label for=TakeImage_Demo_enabled><class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
+				<label><class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
 			</td>
 			<td>
 				<select id="TakeImage_Demo_value1">
@@ -412,7 +412,7 @@ textarea {
 		</tr> 		
 		<tr>
 			<td class="indent1">
-				<label for=PostProcessing_PreValueUse_enabled><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
+				<label><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_PreValueUse_value1">
@@ -434,7 +434,7 @@ textarea {
 		</tr>
 		<tr class="expert"  id="ex12">
 			<td class="indent1">
-				<label for=PostProcessing_ErrorMessage_enabled><class id="PostProcessing_ErrorMessage_text" style="color:black;">Skip Messages on Error</class></label>
+				<label><class id="PostProcessing_ErrorMessage_text" style="color:black;">Skip Messages on Error</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
@@ -446,7 +446,7 @@ textarea {
 		</tr>
 		<tr class="expert" id="ex1dddd">
 			<td class="indent1">
-				<label for=PostProcessing_CheckDigitIncreaseConsistency_enabled><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
+				<label><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
@@ -470,7 +470,7 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
-				<label for=PostProcessing_AllowNegativeRates_enabled><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rates</class></label>
+				<label><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rates</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_AllowNegativeRates_value1">
@@ -526,7 +526,7 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
-				<label for=PostProcessing_ExtendedResolution_enabled><class id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</class></label>
+				<label><class id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ExtendedResolution_value1">
@@ -538,7 +538,7 @@ textarea {
 		</tr>
 		<tr>
 			<td id="ex121" class="indent1" style="padding-left: 75px;">
-				<label for=PostProcessing_IgnoreLeadingNaN_enabled><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</class></label>
+				<label><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_IgnoreLeadingNaN_value1">
@@ -611,7 +611,7 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<label for=MQTT_RetainMessages_enabled><class id="MQTT_RetainMessages_text" style="color:black;">MQTT Retain Flag</class></label>
+				<label><class id="MQTT_RetainMessages_text" style="color:black;">MQTT Retain Flag</class></label>
 			</td>
 			<td>
 				<select id="MQTT_RetainMessages_value1">
@@ -630,7 +630,7 @@ textarea {
 		</tr> 
 		<tr>
 			<td class="indent1">
-				<label for=MQTT_HomeassistantDiscovery_enabled><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
+				<label><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
 			</td>
 			<td>
 				<select id="MQTT_HomeassistantDiscovery_value1">
@@ -1418,6 +1418,11 @@ function InitIndivParameter()
 		_indexInflux.remove(0);
 
     for (var i = 0; i < NUMBERS.length; ++i){
+		var option = document.createElement("option");
+        option.text = NUMBERS[i]["name"];
+        option.value = i;
+        _index.add(option);
+
 		var optionInflux = document.createElement("option");
         optionInflux.text = NUMBERS[i]["name"];
         optionInflux.value = i;
