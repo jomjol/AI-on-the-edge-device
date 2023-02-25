@@ -380,20 +380,29 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 
         string query = std::string(_query);
-        if (query.find("full") == std::string::npos) {
-            zw = tfliteflow.getReadout(_rawValue, _noerror);
-            if (zw.length() > 0)
-                httpd_resp_sendstr_chunk(req, zw.c_str()); 
-            return ESP_OK;
+    //    ESP_LOGD(TAG, "Query: %s, query.c_str());
+        if (query.find("full") != std::string::npos)
+        {
+            string txt;
+            txt = "<body style=\"font-family: arial\">";
+            txt += "<h3>Value</h3>";
+            httpd_resp_sendstr_chunk(req, txt.c_str());
         }
-        else {
+
+
+        zw = tfliteflow.getReadout(_rawValue, _noerror);
+        if (zw.length() > 0)
+            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+
+
+        if (query.find("full") != std::string::npos)
+        {
             string txt, zw;
 
             std::string *status = tfliteflow.getActStatus();
 
             if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
-                txt = "<body style=\"font-family: arial\">";
-                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
+                txt = "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
                 httpd_resp_sendstr_chunk(req, txt.c_str());
             }
             else {
