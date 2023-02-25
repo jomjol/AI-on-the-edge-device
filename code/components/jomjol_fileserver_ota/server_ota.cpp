@@ -527,7 +527,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         /* Respond with an empty chunk to signal HTTP response completion */
         std::string zw = "file deleted\n";
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw);
-        httpd_resp_send(req, zw.c_str(), zw.length()));
+        httpd_resp_send(req, zw.c_str(), zw.length());
         httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
     }
