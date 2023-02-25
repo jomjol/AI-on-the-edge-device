@@ -37,6 +37,7 @@ protected:
 	float AutoInterval;
 	bool SetupModeActive;
 	void SetInitialParameter(void);	
+	std::string aktstatusWithTime;
 	std::string aktstatus;
 	int aktRunNr;
 
@@ -71,6 +72,7 @@ public:
 
 	bool isAutoStart(long &_interval);
 
+	std::string* getActStatusWithTime();
 	std::string* getActStatus();
 	void setActStatus(std::string _aktstatus);
 

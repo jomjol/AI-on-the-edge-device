@@ -39,6 +39,7 @@
 #include "ClassLogFile.h"
 
 #include "Helper.h"
+#include "statusled.h"
 #include "../../include/defines.h"
 
 /*an ota data write buffer ready to write to the flash*/
@@ -66,6 +67,8 @@ static void infinite_loop(void)
 
 void task_do_Update_ZIP(void *pvParameter)
 {
+    StatusLED(AP_OR_OTA, 1, true);  // Signaling an OTA update
+    
     std::string filetype = toUpper(getFileType(_file_name_update));
 
   	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
@@ -108,7 +111,7 @@ void CheckUpdate()
  	FILE *pfile;
     if ((pfile = fopen("/sdcard/update.txt", "r")) == NULL)
     {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No update triggered.");
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No pending update");
         return;
 	}
 
@@ -121,12 +124,12 @@ void CheckUpdate()
         if (_szw == "init")
         {
        		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered");
-            initial_setup = true;        }
+        }
 	}
 
     fclose(pfile);
     DeleteFile("/sdcard/update.txt");   // Prevent Boot Loop!!!
-	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update during boot triggered - Update File: " + _file_name_update);
+	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start update process (" + _file_name_update + ")");
 
 
     xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
@@ -587,6 +590,9 @@ void task_reboot(void *KillAutoFlow)
         KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
+    Camera.LightOnOff(false);
+    StatusLEDOff();
+
     /* Stop service tasks */
     #ifdef ENABLE_MQTT
         MQTTdestroy_client(true);
@@ -625,6 +631,8 @@ void doRebootOTA()
 {
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
+    Camera.LightOnOff(false);
+    StatusLEDOff();
     esp_camera_deinit();
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);

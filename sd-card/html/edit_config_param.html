@@ -105,9 +105,9 @@ textarea {
 }
 </style>
 
-<link rel="stylesheet" href="param_tooltips/theme.css?v=$COMMIT_HASH" />
-<link rel="stylesheet" href="param_tooltips/theme_extra.css?v=$COMMIT_HASH" />
-<link rel="stylesheet" href="param_tooltips/github.min.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" />
+<link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
 
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -1959,7 +1959,7 @@ function ReadParameterAll()
 
 	ReadParameter(param, "System", "TimeZone", true);	
 	ReadParameter(param, "System", "Hostname", true);	
-	ReadParameter(param, "System", "TimeServer", true);	
+	ReadParameter(param, "System", "TimeServer", true); 
 	ReadParameter(param, "System", "RSSIThreshold", true);
 
 	var sel = document.getElementById("Numbers_value1");	

@@ -8,6 +8,7 @@
 #include "time_sntp.h"
 
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 
 #include "version.h"
 
@@ -83,7 +84,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
     else if (_task.compare("Hostname") == 0)
     {
         std::string zw;
-        zw = std::string(hostname);
+        zw = std::string(wlan_config.hostname);
         httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }

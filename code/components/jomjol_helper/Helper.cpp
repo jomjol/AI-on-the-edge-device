@@ -258,7 +258,7 @@ bool MakeDir(std::string path)
                 break;
 				
             default:
-				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path);
+				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path + " (errno: " + std::to_string(errno) + ")");
                 bSuccess = false;
                 break;
         }
