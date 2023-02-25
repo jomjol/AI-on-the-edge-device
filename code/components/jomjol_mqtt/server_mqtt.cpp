@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "ClassLogFile.h"
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 #include "server_mqtt.h"
 #include "interface_mqtt.h"
 #include "time_sntp.h"
@@ -201,7 +202,7 @@ void publishStaticData() {
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
-    MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);
+    MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, retainFlag);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << roundInterval; // minutes

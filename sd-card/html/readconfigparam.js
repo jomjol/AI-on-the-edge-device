@@ -283,7 +283,7 @@ function ParseConfig() {
           aktline++;
      }
 
-     // Make the downward compatiblity
+     // Make the downward compatiblity with DataLogging
      if (category["DataLogging"]["found"] == false)
      {
           category["DataLogging"]["found"] = true;
@@ -315,7 +315,15 @@ function ParseConfig() {
           param["DataLogging"]["DataFilesRetention"]["value1"] = "3";
      }
 
+     // Downward compatiblity: Create RSSIThreshold if not available
+     if (param["System"]["RSSIThreshold"]["found"] == false)
+     {
+          param["System"]["RSSIThreshold"]["found"] = true;
+          param["System"]["RSSIThreshold"]["enabled"] = false;
+          param["System"]["RSSIThreshold"]["value1"] = "0";
+     }
 }
+
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
      param[_cat][_param] = new Object(); 

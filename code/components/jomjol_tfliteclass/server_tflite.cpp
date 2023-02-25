@@ -10,6 +10,7 @@
 
 #include "../../include/defines.h"
 #include "Helper.h"
+#include "statusled.h"
 
 #include "esp_camera.h"
 #include "time_sntp.h"
@@ -21,7 +22,10 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+
+#include "read_wlanini.h"
 #include "connect_wlan.h"
+
 
 ClassFlowControll tfliteflow;
 
@@ -44,17 +48,21 @@ static const char *TAG = "TFLITE SERVER";
 void CheckIsPlannedReboot()
 {
  	FILE *pfile;
-    if ((pfile = fopen("/sdcard/reboot.txt", "r")) == NULL)
-    {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not a planned reboot.");
+    if ((pfile = fopen("/sdcard/reboot.txt", "r")) == NULL) {
+		//LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Initial boot or not a planned reboot");
         isPlannedReboot = false;
 	}
-    else
-    {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Planned reboot.");
+    else {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Planned reboot");
         DeleteFile("/sdcard/reboot.txt");   // Prevent Boot Loop!!!
         isPlannedReboot = true;
 	}
+}
+
+
+bool getIsPlannedReboot() 
+{
+    return isPlannedReboot;
 }
 
 
@@ -837,20 +845,14 @@ void task_autodoFlow(void *pvParameter)
 
     bTaskAutoFlowCreated = true;
 
-    if (!isPlannedReboot)
+    if (!isPlannedReboot && (esp_reset_reason() == ESP_RST_PANIC))
     {
-        if (esp_reset_reason() == ESP_RST_PANIC) {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA Update or to fetch the log!"); 
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
-            LogFile.setLogLevel(ESP_LOG_DEBUG);
-            tfliteflow.setActStatus("Initialization (delayed)");
-            //#ifdef ENABLE_MQTT
-                //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
-            //#endif //ENABLE_MQTT
-            vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA Update or fetch the log
-        }
+        tfliteflow.setActStatus("Initialization (delayed)");
+        //#ifdef ENABLE_MQTT
+            //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
+        //#endif //ENABLE_MQTT
+        vTaskDelay(60*5000 / portTICK_PERIOD_MS); // Wait 5 minutes to give time to do an OTA update or fetch the log
     }
-
 
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
@@ -891,16 +893,22 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOldLogFile();
             LogFile.RemoveOldDataLog();
         }
+
+        //Round finished -> Logfile
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
+                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
         
         //CPU Temp -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
         
         // WIFI Signal Strength (RSSI) -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
-        
-        //Round finished -> Logfile
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
-                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
+
+        // Check if time is synchronized (if NTP is configured)
+        if (getUseNtp() && !getTimeIsSet()) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set. Check configuration");
+            StatusLED(TIME_CHECK, 1, false);
+        }
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_interval > fr_delta_ms)
