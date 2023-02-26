@@ -5,17 +5,115 @@
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
     <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
     <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
-
     <style>
-        textarea {
-            width: 600px;
-            height: 300px;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
         }
     </style>
+  
     <script>
     function run() {
-      var el = document.getElementById('cnsl');
-      el && eval(el.value);
+        datefile = document.getElementById("datafiles").value;
+        numbername = document.getElementById("numbers").value;
+        showRrelativeValues = document.getElementById("showRrelativeValues").checked;
+        //alert("Auslesen: " + datefile + " " + numbername);
+
+        _domainname = getDomainname();
+        fetch(_domainname + '/fileserver/log/data/' + datefile)
+        .then(response => {
+            // handle the response
+            if (response.status == 404) {
+                firework.launch("No log data available for " + dateString, 'warning', 10000);
+            }
+            response.text()
+            .then( result => {
+                var lines = result.split("\n");
+                var traceValue =          { x: [], y: [], type: 'scatter', line: {width: 6}, name: 'Value'};
+                var tracePreValue =       { x: [], y: [], type: 'scatter', line: {width: 2}, name: 'Previous Value', visible: 'legendonly'};
+                var traceChangeRate =     { x: [], y: [], type: 'bar', yaxis: 'y2', opacity: 0.2, name: 'Change Rate'};
+                var traceChangeAbsolute = { x: [], y: [], type: 'bar', yaxis: 'y2', opacity: 0.2, name: 'Change Absolute', visible: 'legendonly'};
+
+                var timex = 1;
+                for (let line of lines) {
+                    {
+                        //console.log(line);
+                        if (line.split(",")[1] == numbername)
+                        {
+                            var value = line.split(",")[3];
+                            var preValue = line.split(",")[4];
+                            var changeRate = line.split(",")[5];
+                            var changeAbsolute = line.split(",")[6];
+                            var time  = line.split(",")[0];
+                            //console.log("> "+time+" "+value+"\n");
+
+                            traceValue.x.push(time);
+
+                            traceValue.y.push(value);
+                            tracePreValue.y.push(preValue);
+                            traceChangeRate.y.push(changeRate);
+                            traceChangeAbsolute.y.push(changeAbsolute);
+                        }
+                    }
+                }
+                //console.log(trace);
+
+                // Copy time to all traces
+                tracePreValue.x = traceValue.x;
+                traceChangeRate.x = traceValue.x;
+                traceChangeAbsolute.x = traceValue.x;
+
+                //console.log(traceValue.y);
+
+                var offsetValue = traceValue.y[0];
+                var offsetPreValue = tracePreValue.y[0];
+
+                if (showRrelativeValues) {
+                    traceValue.y.forEach(function(part, index, arr) {
+                        arr[index] = arr[index] - offsetValue;
+                    });
+
+                    tracePreValue.y.forEach(function(part, index, arr) {
+                        arr[index] = arr[index] - offsetPreValue;
+                    });
+                }
+
+              //  console.log(traceValue.x)
+
+                var data = [traceValue, tracePreValue, traceChangeRate, traceChangeAbsolute];
+
+                var layout = {
+                    showlegend: true,
+                    colorway: ['green', 'black', 'blue', 'black'],
+
+                    yaxis: {title: 'Value'},
+                    yaxis2: {
+                        title: 'Change',
+                        overlaying: 'y',
+                        side: 'right'
+                    },
+
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        b: 50,
+                        t: 50,
+                        pad: 4
+                    },
+
+                    legend: {
+                        x: 0.2,
+                        y: 0.9,
+                        xanchor: 'right'
+                    }
+                };
+
+                document.getElementById("chart").innerHTML = "";
+                Plotly.newPlot('chart', data, layout, {displayModeBar: true});
+            });
+        }).catch((error) => {
+            // handle the error
+            console.log(error);
+        });
     }
     </script>
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
@@ -23,67 +121,16 @@
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
     </head>
     <body>
-    <div id='chart'></div>
+        <h3>Data Graph</h3>
+        <div id='chart'><p>Loading...<br></p></div>
         <select id="datafiles" onchange="run();"></select>
         <select id="numbers" onchange="run();"></select>
-        <select id="datatype" onchange="run();">
-            <option value="3">Value</option>
-            <option value="4">PreValue</option>
-            <option value="5">Change-Rate</option>
-            <option value="6">Change-Absolut</option>
-        </select>
-        
+        <input type="checkbox" id="showRrelativeValues" onclick = 'run();' unchecked ><label for="showRrelativeValues">Show relative values</label>
+        <button onclick="run();">Refresh</button>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <button onClick="window.location.href = 'data.html?v=$COMMIT_HASH'">Show data</button>
         <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show data files</button>
 
-  <!-- <button onclick="document.getElementById('editor').hidden = false; this.hidden = true;" >Editor</button> -->
-    <div id='editor' hidden='true'>
-    <textarea id="cnsl">
-datefile = document.getElementById("datafiles").value;
-numbername = document.getElementById("numbers").value;
-datatype = document.getElementById("datatype").value;
-//alert("Auslesen: " + datefile + " " + numbername);
-
-_domainname = getDomainname(); 
-fetch(_domainname + '/fileserver/log/data/' + datefile)
-.then(response => {
-    // handle the response
-    if (response.status == 404) {
-        firework.launch("No log data available for " + dateString, 'warning', 10000);
-    }
-    response.text()
-    .then( result => {
-        var lines = result.split("\n");
-        var trace = {
-        x: [],
-        y: [],
-        type: 'scatter'
-        };
-
-        var timex = 1;
-        for (let line of lines) {
-            {
-                console.log(line);
-                if (line.split(",")[1] == numbername)
-                {
-                    var value = line.split(",")[datatype];
-                    var time  = line.split(",")[0];
-                    console.log("> "+time+" "+value+"\n");
-                    trace.x.push(time);
-//                    timex += 1;
-                    trace.y.push(value);
-                }
-            }
-        }
-        console.log(trace);
-        var data = [trace];
-        Plotly.newPlot('chart', data);
-    });
-}).catch((error) => {
-    // handle the error
-    console.log(error);
-});        
-</textarea><br />
-<button onclick="run();">run</button>
 </div>
 
 <script>

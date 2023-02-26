@@ -5,6 +5,7 @@
             body {
                 height: 100%;
                 margin: 2px;
+                font-family: Arial, Helvetica, sans-serif;
             }
 
             .box {
@@ -33,19 +34,22 @@
         <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
     </head>
     <body>
+            <h3>Todays Data</h3>
+            <h4>Last part of Todays Data</h4>
         <div class="box">
             <div class="row header">
-                <button onClick="reload();">Reload</button>
-                <button onClick="window.open(getDomainname() + '/datafileact');">Show full data</button>
-                <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show older data files</button>
-                <button onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show graph</button>
+                <button onClick="reload();">Refresh</button>
+                <button onClick="window.open(getDomainname() + '/datafileact');">Show Full File</button>
+                <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
+                <button onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show Graph</button>
             </div>
             <div class="row content" id="data"><br><br><br><b>Loading Data file, please wait...</b></div>
             <div class="row footer">
-                <button onClick="reload();">Reload</button>
-                <button onClick="window.open(getDomainname() + '/datafileact');">Show full data</button>
-                <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show older data files</button>
-                <button onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show graph</button>
+                <button onClick="reload();">Refresh</button>
+                <button onClick="window.open(getDomainname() + '/datafileact');">Show Full File</button>
+                <button onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
+                <button onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show Graph</button>
+                <p></p>
             </div>
           </div>
     </body>
