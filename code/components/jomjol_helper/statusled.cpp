@@ -26,7 +26,7 @@ void task_StatusLED(void *pvParameter)
 		gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT); // Set the GPIO as a push/pull output
 		gpio_set_level(BLINK_GPIO, 1);// LED off
 
-		for (int i=0; i<3; ) // Default: repeat 3 times
+		for (int i=0; i<2; ) // Default: repeat 2 times
 		{
 			if (!StatusLEDDataInt.bInfinite)
 				++i;
