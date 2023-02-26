@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "ClassLogFile.h"
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 #include "server_mqtt.h"
 #include "interface_mqtt.h"
 #include "time_sntp.h"
@@ -29,7 +30,7 @@ std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
 float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
-int retainFlag;
+bool retainFlag;
 static std::string maintopic;
 
 
@@ -201,7 +202,7 @@ void publishStaticData() {
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
     MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
     MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
-    MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);
+    MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, retainFlag);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << roundInterval; // minutes
@@ -221,7 +222,7 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
     return ESP_OK;
 }
 
-void GotConnected(std::string maintopic, int retainFlag) {
+void GotConnected(std::string maintopic, bool retainFlag) {
     if (HomeassistantDiscovery) {
         MQTThomeassistantDiscovery();
     }
@@ -251,7 +252,7 @@ void SetHomeassistantDiscoveryEnabled(bool enabled) {
 }
 
 
-void setMqtt_Server_Retain(int _retainFlag) {
+void setMqtt_Server_Retain(bool _retainFlag) {
     retainFlag = _retainFlag;
 }
 

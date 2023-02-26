@@ -3,7 +3,7 @@
 <head>
 <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <meta charset="utf-8"/>
-<title>Make Digital Alignment</title>
+<title>Digit ROI's</title>
 
 <style>
 h1 {font-size: 2em;}
@@ -58,8 +58,15 @@ th, td {
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-    <h2><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'EnDisableDigits()' checked >
-        Edit Digits</h2>
+    <h2>Digit ROI's</h2>
+        <p>On this page you define ROI's for the digits.
+            See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/</a> for explanations.</p>
+        
+        <p><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'EnDisableDigits()' checked><label for="Category_Digits_enabled">Enable Digit ROI's</label></p>
+
+        <p>After saving the digit ROI's, you can define the <a href=edit_analog.html>analog</a> ROI's if your meter has analog counters.<br>
+            Only after those steps a reboot is required.</p>
+    
 
 <div id="div1">
 
@@ -126,11 +133,9 @@ th, td {
 			 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save" tabindex=10></td>
+		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save" tabindex=10>
+            <p>Proceed to update the <a href=edit_analog.html>analog</a> ROI's when you are done or <a href=reboot_page.html>reboot</a> if there are no analogue counters.</p></td>
 	  </tr> 
-	  <tr>
-                <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button></td>
-	  </tr>  
 	</table>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
@@ -156,7 +161,7 @@ th, td {
             domainname = getDomainname();
 
     function doReboot() {
-        if (confirm("Are you sure you want to reboot? Did you save the config?")) {
+        if (confirm("Are you sure you want to reboot? Did you save your changes?")) {
                 var stringota = getDomainname() + "/reboot";
                 window.location = stringota;
                 window.location.href = stringota;
@@ -291,7 +296,7 @@ function SaveToConfig(){
     cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     WriteConfigININew();
     SaveConfigToServer(domainname); 
-    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
+    firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
 }
 
 

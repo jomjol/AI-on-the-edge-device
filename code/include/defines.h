@@ -58,11 +58,11 @@
     //#define CONFIG_IDF_TARGET_ARCH_XTENSA //not needed with platformio/espressif32 @ 5.2.0
 
 
-    //ClassControllCamera + ClassFlowMakeImage + connect_wlan + main
+    //ClassControllCamera + ClassFlowTakeImage + connect_wlan + main
     #define FLASH_GPIO GPIO_NUM_4
     #define BLINK_GPIO GPIO_NUM_33
 
-    //ClassFlowMQTT + interface_mqtt + connect_wlan + main
+    //interface_mqtt + read_wlanini
     #define __HIDE_PASSWORD
 
     //ClassControllCamera
@@ -71,12 +71,13 @@
     //server_GPIO
     #define __LEDGLOBAL
 
-    //ClassControllCamera + ClassFlowMakeImage
+    //ClassControllCamera + ClassFlowTakeImage
     #define CAMERA_MODEL_AI_THINKER
     #define BOARD_ESP32CAM_AITHINKER
 
     //server_GPIO + server_file + SoftAP
     #define CONFIG_FILE "/sdcard/config/config.ini"
+    #define CONFIG_FILE_BACKUP "/sdcard/config/config.bak"
 
     //ClassFlowControll + Main + SoftAP
     #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
@@ -163,12 +164,7 @@
     //connect_wlan
     #define WLAN_USE_MESH_ROAMING
     #define WLAN_WIFI_RSSI_THRESHOLD -50
-    #define EXAMPLE_ESP_MAXIMUM_RETRY  1000
-    /* The event group allows multiple bits for each event, but we only care about two events:
-    * - we are connected to the AP with an IP
-    * - we failed to connect after the maximum amount of retries */
-    #define WIFI_CONNECTED_BIT BIT0
-    #define WIFI_FAIL_BIT      BIT1
+
 
     //ClassFlowCNNGeneral
     #define Analog_error 3

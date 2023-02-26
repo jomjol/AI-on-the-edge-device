@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef CLASSFFLOWMAKEIMAGE_H
-#define CLASSFFLOWMAKEIMAGE_H
+#ifndef CLASSFFLOWTAKEIMAGE_H
+#define CLASSFFLOWTAKEIMAGE_H
 
 #include "ClassFlowImage.h"
 #include "ClassControllCamera.h"
@@ -9,7 +9,7 @@
 
 #include <string>
 
-class ClassFlowMakeImage :
+class ClassFlowTakeImage :
     public ClassFlowImage
 {
 protected:
@@ -37,19 +37,19 @@ protected:
 public:
     CImageBasis *rawImage;
 
-    ClassFlowMakeImage(std::vector<ClassFlow*>* lfc);
+    ClassFlowTakeImage(std::vector<ClassFlow*>* lfc);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getHTMLSingleStep(string host);
     time_t getTimeImageTaken();
-    string name(){return "ClassFlowMakeImage";};
+    string name(){return "ClassFlowTakeImage";};
 
     ImageData* SendRawImage();
     esp_err_t SendRawJPG(httpd_req_t *req);
 
-    ~ClassFlowMakeImage(void);
+    ~ClassFlowTakeImage(void);
 };
 
 
-#endif //CLASSFFLOWMAKEIMAGE_H
+#endif //CLASSFFLOWTAKEIMAGE_H

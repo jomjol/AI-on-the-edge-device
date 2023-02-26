@@ -1,12 +1,24 @@
 #include "connect_wlan.h"
 
 #include <string.h>
+#include <stdlib.h>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <iostream>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
+
 #include "driver/gpio.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
+#include "esp_wnm.h"
+#include "esp_rrm.h"
+#include "esp_mbo.h"
+#include "esp_mac.h"
+#include "esp_netif.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
@@ -17,56 +29,20 @@
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
 
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <iostream>
+#include "ClassLogFile.h"
+#include "read_wlanini.h"
+#include "Helper.h"
+#include "statusled.h"
 
-//////////////////////
-#include <string.h>
-#include <stdlib.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_wnm.h"
-#include "esp_rrm.h"
-#include "esp_mbo.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_mac.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
-
-
-/////////////////////
 #include "../../include/defines.h"
 
 
-/* FreeRTOS event group to signal when we are connected*/
-static EventGroupHandle_t s_wifi_event_group;
-
 static const char *TAG = "WIFI";
 
-static int s_retry_num = 0;
+
 bool WIFIConnected = false;
+int WIFIReconnectCnt = 0;
 
-///////////////////////////////////////////////////////////
-
-int BlinkDauer;
-int BlinkAnzahl;
-bool BlinkOff;
-bool BlinkIsRunning = false;
-
-std::string hostname = "";
-std::string std_hostname = "watermeter";
-std::string ipadress = "";
-std::string ssid = "";
-int RSSIThreashold;
-
-/////////////////////////////////
-/////////////////////////////////
 
 #ifdef WLAN_USE_MESH_ROAMING
 
@@ -301,97 +277,87 @@ static void esp_bss_rssi_low_handler(void* arg, esp_event_base_t event_base,
 
 std::string* getIPAddress()
 {
-    return &ipadress;
+    return &wlan_config.ipaddress;
 }
 
 
 std::string* getSSID()
 {
-    return &ssid;
+    return &wlan_config.ssid;
 }
 
 
-void task_doBlink(void *pvParameter)
+static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
-    ESP_LOGI("BLINK", "Flash - start");
-    while (BlinkIsRunning)
-    {
-//        ESP_LOGI("BLINK", "Blinken - wait");
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-    }
-
-    BlinkIsRunning = true;
-
-	// Init the GPIO
-    gpio_pad_select_gpio(BLINK_GPIO);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
-
-    for (int i = 0; i < BlinkAnzahl; ++i)
-    {
-		if (BlinkAnzahl > 1)
-		{
-	        gpio_set_level(BLINK_GPIO, 1);
-    	    vTaskDelay(BlinkDauer / portTICK_PERIOD_MS);
-		}
-        gpio_set_level(BLINK_GPIO, 0);      
-        vTaskDelay(BlinkDauer / portTICK_PERIOD_MS);
-    }
-
-    if (BlinkOff)
-        gpio_set_level(BLINK_GPIO, 1);
-
-    ESP_LOGI("BLINK", "Flash - done");
-    BlinkIsRunning = false;
-
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
-}
-
-
-void LEDBlinkTask(int _dauer, int _anz, bool _off)
-{
-	BlinkDauer = _dauer;
-	BlinkAnzahl = _anz;
-	BlinkOff = _off;
-
-    xTaskCreate(&task_doBlink, "task_doBlink", 4 * 1024, NULL, tskIDLE_PRIORITY+1, NULL);
-}
-/////////////////////////////////////////////////////////
-
-
-static void event_handler(void* arg, esp_event_base_t event_base,
-                                int32_t event_id, void* event_data)
-{
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) 
+	{
         WIFIConnected = false;
-        LEDBlinkTask(200, 1, true);
         esp_wifi_connect();
-    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        WIFIConnected = false;
-//        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
-            esp_wifi_connect();
-            s_retry_num++;
-            ESP_LOGI(TAG, "retrying connection to the AP");
-//        } else {
-//            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
-//        }
-        ESP_LOGI(TAG,"connection to the AP failed");
-    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-        ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        ipadress = std::string(ip4addr_ntoa((const ip4_addr*) &event->ip_info.ip));
-        s_retry_num = 0;
-        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
-        LEDBlinkTask(1000, 5, true);
+    }
+	
+	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) 
+	{
+		/* Disconnect reason: https://github.com/espressif/esp-idf/blob/d825753387c1a64463779bbd2369e177e5d59a79/components/esp_wifi/include/esp_wifi_types.h */
+		wifi_event_sta_disconnected_t *disconn = (wifi_event_sta_disconnected_t *)event_data;
+		if (disconn->reason == WIFI_REASON_ROAMING) {
+			LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Roaming)");
+			// --> no reconnect neccessary, it should automatically reconnect to new AP
+		}
+		else {
+			WIFIConnected = false;
+			if (disconn->reason == WIFI_REASON_NO_AP_FOUND) {
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", No AP)");
+				StatusLED(WLAN_CONN, 1, false);
+			}
+			else if (disconn->reason == WIFI_REASON_AUTH_EXPIRE ||
+					 disconn->reason == WIFI_REASON_AUTH_FAIL || 
+					 disconn->reason == WIFI_REASON_NOT_AUTHED ||
+					 disconn->reason == WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT || 
+					 disconn->reason == WIFI_REASON_HANDSHAKE_TIMEOUT) {
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Auth fail)");
+				StatusLED(WLAN_CONN, 2, false);
+			}
+			else if (disconn->reason == WIFI_REASON_BEACON_TIMEOUT) {
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ", Timeout)");
+				StatusLED(WLAN_CONN, 3, false);
+			}
+			else {
+				LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected (" + std::to_string(disconn->reason) + ")");
+				StatusLED(WLAN_CONN, 4, false);
+			}
+			WIFIReconnectCnt++;
+			esp_wifi_connect(); // Try to connect again
+		}
 
+		if (WIFIReconnectCnt >= 10) {
+			WIFIReconnectCnt = 0;
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Disconnected, multiple reconnect attempts failed (" + 
+													 std::to_string(disconn->reason) + "), still retrying...");
+		}
+	}
+	
+	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED) 
+	{
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to: " + wlan_config.ssid + ", RSSI: " + 
+												std::to_string(get_WIFI_RSSI()));
+	}
+	
+	else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) 
+	{
         WIFIConnected = true;
-        #ifdef ENABLE_MQTT
+		WIFIReconnectCnt = 0;
+
+		ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
+        wlan_config.ipaddress = std::string(ip4addr_ntoa((const ip4_addr*) &event->ip_info.ip));
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Got IP: " + wlan_config.ipaddress);
+
+		#ifdef ENABLE_MQTT
             if (getMQTTisEnabled()) {
                 vTaskDelay(5000 / portTICK_PERIOD_MS); 
                 MQTT_Init();    // Init when WIFI is getting connected    
             }
-        #endif //ENABLE_MQTT
-    }
+        #endif //ENABLE_MQTT   
+	}
 }
 
 
@@ -403,148 +369,148 @@ void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
 }
 
 
-void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns, int _rssithreashold)
+esp_err_t wifi_init_sta(void)
 {
-	RSSI_Threshold = _rssithreashold;
-    s_wifi_event_group = xEventGroupCreate();
+	esp_err_t retval = esp_netif_init();
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_netif_init: Error: "  + std::to_string(retval));
+		return retval;
+	}
 
-    ESP_ERROR_CHECK(esp_netif_init());
-
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    retval = esp_event_loop_create_default();
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_loop_create_default: Error: "  + std::to_string(retval));
+		return retval;
+	}
+	
     esp_netif_t *my_sta = esp_netif_create_default_wifi_sta();
 
-    if ((_ipadr != NULL) && (_gw != NULL) && (_netmask != NULL))
+    if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
     {
-
-        ESP_LOGI(TAG, "set IP %s, GW %s, Netmask %s manual", _ipadr, _gw, _netmask);
-        esp_netif_dhcpc_stop(my_sta);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> IP: " + wlan_config.ipaddress + ", Gateway: " + 
+												std::string(wlan_config.gateway) + ", Netmask: " + std::string(wlan_config.netmask));
+		esp_netif_dhcpc_stop(my_sta);	// Stop DHCP service
 
         esp_netif_ip_info_t ip_info;
         int a, b, c, d;
-        strinttoip4(_ipadr, a, b, c, d);
-        IP4_ADDR(&ip_info.ip, a, b, c, d);
-        strinttoip4(_gw, a, b, c, d);
-        IP4_ADDR(&ip_info.gw, a, b, c, d);
-        strinttoip4(_netmask, a, b, c, d);
-        IP4_ADDR(&ip_info.netmask, a, b, c, d);
+        strinttoip4(wlan_config.ipaddress.c_str(), a, b, c, d);
+        IP4_ADDR(&ip_info.ip, a, b, c, d);	// Set static IP address
 
-        esp_netif_set_ip_info(my_sta, &ip_info);
+        strinttoip4(wlan_config.gateway.c_str(), a, b, c, d);
+        IP4_ADDR(&ip_info.gw, a, b, c, d);	// Set gateway
+
+        strinttoip4(wlan_config.netmask.c_str(), a, b, c, d);
+        IP4_ADDR(&ip_info.netmask, a, b, c, d);	// Set netmask
+
+        esp_netif_set_ip_info(my_sta, &ip_info);	// Set static IP configuration
     }
+	else {
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Automatic interface config --> Use DHCP service");
+	}
 
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    retval = esp_wifi_init(&cfg);
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_init: Error: "  + std::to_string(retval));
+		return retval;
+	}
 
-    if ((_ipadr != NULL) && (_gw != NULL) && (_netmask != NULL))
+    if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
     {
-        if (_dns == NULL)
-            _dns = _gw;
-            
-        ESP_LOGI(TAG, "set DNS manual");
+        if (wlan_config.dns.empty()) {
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "No DNS server, use gateway");
+			 wlan_config.dns = wlan_config.gateway;
+		} 
+		else {
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> DNS: " + wlan_config.dns);
+		}
+     
         esp_netif_dns_info_t dns_info;
         ip4_addr_t ip;
-        ip.addr = esp_ip4addr_aton(_dns);
+        ip.addr = esp_ip4addr_aton(wlan_config.dns.c_str());
         ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
-        ESP_ERROR_CHECK(esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info));
-    }
 
-    esp_event_handler_instance_t instance_any_id;
-    esp_event_handler_instance_t instance_got_ip;
-    esp_event_handler_instance_t instance_bss_rssi_low;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &event_handler,
-                                                        NULL,
-                                                        &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &event_handler,
-                                                        NULL,
-                                                        &instance_got_ip));
+        retval = esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info);
+		if (retval != ESP_OK) {
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_netif_set_dns_info: Error: "  + std::to_string(retval));
+			return retval;
+		}
+	}
+
+    retval = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
+                                                        &event_handler, NULL, NULL);
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - WIFI_ANY: Error: "  + std::to_string(retval));
+		return retval;
+	}
+
+    retval = esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
+                                                        &event_handler, NULL, NULL);
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - GOT_IP: Error: "  + std::to_string(retval));
+		return retval;
+	}
 
 	#ifdef WLAN_USE_MESH_ROAMING
-	ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, 
-                                                        WIFI_EVENT_STA_BSS_RSSI_LOW,
-                                                        &esp_bss_rssi_low_handler, 
-                                                        NULL,
-                                                        &instance_bss_rssi_low));
+	retval = esp_event_handler_instance_register(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW,
+                                                        &esp_bss_rssi_low_handler, NULL, NULL);
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - BSS_RSSI_LOW: Error: "  + std::to_string(retval));
+		return retval;
+	}
 	#endif
 
     wifi_config_t wifi_config = { };
 
-    strcpy((char*)wifi_config.sta.ssid, (const char*)_ssid);
-    strcpy((char*)wifi_config.sta.password, (const char*)_password);
+    strcpy((char*)wifi_config.sta.ssid, (const char*)wlan_config.ssid.c_str());
+    strcpy((char*)wifi_config.sta.password, (const char*)wlan_config.password.c_str());
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
-    ESP_ERROR_CHECK(esp_wifi_start() );
+    retval = esp_wifi_set_mode(WIFI_MODE_STA);
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_set_mode: Error: "  + std::to_string(retval));
+		return retval;
+	}
 
-    if (_hostname != NULL)
+    retval = esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+	if (retval != ESP_OK) {
+		if (retval == ESP_ERR_WIFI_PASSWORD) {
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_set_config: SSID password invalid! Error: " + std::to_string(retval));
+		}
+		else {
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_set_config: Error: "  + std::to_string(retval));
+		}
+		return retval;
+	}
+
+	retval = esp_wifi_start();
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_start: Error: "  + std::to_string(retval));
+		return retval;
+	}
+
+    if (!wlan_config.hostname.empty())
     {
-        esp_err_t ret = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , _hostname);
-        hostname = std::string(_hostname);
-        if(ret != ESP_OK ){
-            ESP_LOGE(TAG,"Failed to set hostname: %d",ret);  
+        retval = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , wlan_config.hostname.c_str());
+        if(retval != ESP_OK ) {
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set hostname! Error: " + std::to_string(retval));
         }
         else {
-            ESP_LOGI(TAG,"Set hostname to: %s", _hostname); 
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set hostname to: " + wlan_config.hostname);
         }
-
     }
 
-    ESP_LOGI(TAG, "wifi_init_sta finished.");
-
-    /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
-     * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-            pdFALSE,
-            pdFALSE,
-            portMAX_DELAY);
-
-    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
-     * happened. */
-    if (bits & WIFI_CONNECTED_BIT) {
-        #ifdef __HIDE_PASSWORD
-            ESP_LOGI(TAG, "Connected with AP: %s, password: XXXXXXX", _ssid);
-        #else
-            ESP_LOGI(TAG, "Connected with AP: %s, password: %s", _ssid, _password);
-        #endif        
-    } else if (bits & WIFI_FAIL_BIT) {
-        #ifdef __HIDE_PASSWORD
-            ESP_LOGI(TAG, "Failed to connect with AP: %s, password: XXXXXXXX", _ssid);
-        #else
-            ESP_LOGI(TAG, "Failed to connect with AP: %s, password: %s", _ssid, _password);
-        #endif        
-    } else {
-        ESP_LOGE(TAG, "UNEXPECTED EVENT");
-    }
-    ssid = std::string(_ssid);
-
-
-    /* The event will not be processed after unregister */
-//    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
-//    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, instance_any_id));
-//    vEventGroupDelete(s_wifi_event_group);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init successful");
+	return ESP_OK;
 }
 
 
 int get_WIFI_RSSI()
 {
-    wifi_ap_record_t ap;
-    esp_wifi_sta_get_ap_info(&ap);
-    return ap.rssi;
-}
-
-
-void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname)
-{
-    wifi_init_sta(_ssid, _password, _hostname, NULL, NULL, NULL, NULL, 0);
-}
-
-
-void wifi_init_sta(const char *_ssid, const char *_password)
-{
-    wifi_init_sta(_ssid, _password, NULL, NULL, NULL, NULL, NULL, 0);
+	wifi_ap_record_t ap;
+	if (esp_wifi_sta_get_ap_info(&ap) == ESP_OK) 
+		return ap.rssi;
+	else
+		return -127;	// Return -127 if no info available e.g. not connected
 }
 
 
@@ -556,14 +522,13 @@ bool getWIFIisConnected()
 
 void WIFIDestroy() 
 {	
-    esp_wifi_disconnect();
-	
 	esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, event_handler);
     esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, event_handler);
 	#ifdef WLAN_USE_MESH_ROAMING
 	esp_event_handler_unregister(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW, esp_bss_rssi_low_handler);
 	#endif
-	
+
+	esp_wifi_disconnect();
 	esp_wifi_stop();
 	esp_wifi_deinit();
 }

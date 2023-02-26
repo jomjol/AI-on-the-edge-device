@@ -121,8 +121,14 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
     else if (retry == 1) { // longer timeout
         xhr.timeout = 5000; // time in milliseconds
     }
-    else { // very long timeout
+    else if (retry == 2) { // longer timeout
         xhr.timeout = 20000; // time in milliseconds
+    }
+    else if (retry == 3) { // longer timeout
+        xhr.timeout = 30000; // time in milliseconds
+    }
+    else { // very long timeout
+        xhr.timeout = 60000; // time in milliseconds
     }
 
     xhr.onload = () => { // Request finished

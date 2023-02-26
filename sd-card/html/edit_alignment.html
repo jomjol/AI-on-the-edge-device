@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>Make Alignment</title>
+<title>Alignment Marks</title>
 <meta charset="utf-8"/>
 	
 <style>
@@ -48,7 +48,11 @@ select {
 
 <body style="font-family: arial; padding: 0px 10px;">
 	
-	<h2>Define Alignment Structure in Reference Image</h2>
+	<h2>Alignment Marks</h2>
+    <p>On this page you define two Reference Marks.
+        See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Alignment/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/Alignment/</a> for explanations.</p>
+    <p>After saving the Reference Marks, you can define the <a href=edit_digits.html>digit</a> resp. <a href=edit_analog.html>analog</a> ROI's.<br>
+    Only after those steps a reboot is required.</p>
 
 	<table>
 	  <tr>
@@ -88,11 +92,9 @@ select {
 
 	<table>
 	  <tr>
-		<td><input class="button" type="submit" name="saveroi" onclick="SaveToConfig()" value="Save"></td>
+		<td><input class="button" type="submit" name="saveroi" onclick="SaveToConfig()" value="Save">
+            <p>Proceed to update the <a href=edit_digits.html>digit</a> resp. <a href=edit_analog.html>analog</a> ROI's when you are done.</p></td>
 	  </tr> 
-	  <tr>
-                <td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button></td>
-	  </tr>  
 	</table>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
@@ -113,7 +115,7 @@ select {
             param;
     
 function doReboot() {
-    if (confirm("Are you sure you want to reboot? Did you save the config?")) {
+    if (confirm("Are you sure you want to reboot? Did you save your changes?")) {
             var stringota = getDomainname() + "/reboot";
             window.location = stringota;
             window.location.href = stringota;
@@ -131,7 +133,7 @@ function SaveToConfig(){
     WriteConfigININew();
     UpdateConfigReference(domainname)
     SaveConfigToServer(domainname);
-    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
+    firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
 }
 
 function EnhanceContrast(){

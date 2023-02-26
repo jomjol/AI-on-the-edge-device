@@ -10,6 +10,7 @@
 
 #include "../../include/defines.h"
 #include "Helper.h"
+#include "statusled.h"
 
 #include "esp_camera.h"
 #include "time_sntp.h"
@@ -21,7 +22,10 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+
+#include "read_wlanini.h"
 #include "connect_wlan.h"
+
 
 ClassFlowControll tfliteflow;
 
@@ -30,7 +34,7 @@ TaskHandle_t xHandletask_autodoFlow = NULL;
 bool bTaskAutoFlowCreated = false;
 bool flowisrunning = false;
 
-long auto_intervall = 0;
+long auto_interval = 0;
 bool auto_isrunning = false;
 
 int countRounds = 0;
@@ -44,17 +48,21 @@ static const char *TAG = "TFLITE SERVER";
 void CheckIsPlannedReboot()
 {
  	FILE *pfile;
-    if ((pfile = fopen("/sdcard/reboot.txt", "r")) == NULL)
-    {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not a planned reboot.");
+    if ((pfile = fopen("/sdcard/reboot.txt", "r")) == NULL) {
+		//LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Initial boot or not a planned reboot");
         isPlannedReboot = false;
 	}
-    else
-    {
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Planned reboot.");
+    else {
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Planned reboot");
         DeleteFile("/sdcard/reboot.txt");   // Prevent Boot Loop!!!
         isPlannedReboot = true;
 	}
+}
+
+
+bool getIsPlannedReboot() 
+{
+    return isPlannedReboot;
 }
 
 
@@ -370,64 +378,109 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             return ESP_OK;
         }
 
-        zw = tfliteflow.getReadout(_rawValue, _noerror);
-        if (zw.length() > 0)
-            httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
+        std::string *status = tfliteflow.getActStatus();
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
         if (query.find("full") != std::string::npos)
         {
+            string txt;
+            txt = "<body style=\"font-family: arial\">";
+
+            if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
+                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
+            }
+            else {
+                txt += "<h3>Value</h3>";
+            }
+
+            httpd_resp_sendstr_chunk(req, txt.c_str());
+        }
+
+
+        zw = tfliteflow.getReadout(_rawValue, _noerror);
+        if (zw.length() > 0)
+            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+
+
+        if (query.find("full") != std::string::npos)
+        {
             string txt, zw;
-            
-            txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
-            txt = txt + "Digital Counter: <p> ";
-            httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            
-            std::vector<HTMLInfo*> htmlinfodig;
-            htmlinfodig = tfliteflow.GetAllDigital();  
 
-            for (int i = 0; i < htmlinfodig.size(); ++i)
-            {
-                if (tfliteflow.GetTypeDigital() == Digital)
+            if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
+                // Nothing to do
+            }
+            else {
+                /* Digital ROIs */
+                txt = "<body style=\"font-family: arial\">";
+                txt += "<h3>Recognized Digit ROIs (previous round)</h3>\n";
+                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
+
+                std::vector<HTMLInfo*> htmlinfodig;
+                htmlinfodig = tfliteflow.GetAllDigital(); 
+
+                for (int i = 0; i < htmlinfodig.size(); ++i)
                 {
-                    if (htmlinfodig[i]->val == 10)
-                        zw = "NaN";
-                    else
-                        zw = to_string((int) htmlinfodig[i]->val);
+                    if (tfliteflow.GetTypeDigital() == Digital)
+                    {
+                        if (htmlinfodig[i]->val == 10)
+                            zw = "NaN";
+                        else
+                            zw = to_string((int) htmlinfodig[i]->val);
 
-                    txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                        txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p></td>\n";
+                    }
+                    else
+                    {
+                        std::stringstream stream;
+                        stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                        zw = stream.str();
+
+                        txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p></td>\n";
+                    }
+                    delete htmlinfodig[i];
                 }
-                else
+
+                htmlinfodig.clear();
+            
+                txt += "</tr></table>\n";
+                httpd_resp_sendstr_chunk(req, txt.c_str()); 
+
+
+                /* Analog ROIs */
+                txt = "<h3>Recognized Analog ROIs (previous round)</h3>\n";
+                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
+                
+                std::vector<HTMLInfo*> htmlinfoana;
+                htmlinfoana = tfliteflow.GetAllAnalog();
+                for (int i = 0; i < htmlinfoana.size(); ++i)
                 {
                     std::stringstream stream;
-                    stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                    stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
                     zw = stream.str();
 
-                    txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                    txt += "<td style=\"width: 150px;\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"></p></td>\n";
+                delete htmlinfoana[i];
+                }
+                htmlinfoana.clear();   
+
+                txt += "</tr>\n</table>\n";
+                httpd_resp_sendstr_chunk(req, txt.c_str()); 
+
+
+                /* Full Image 
+                 * Only show it after the image got taken and aligned */
+                txt = "<h3>Aligned Image (current round)</h3>\n";
+                if ((*status == std::string("Initialization")) || 
+                    (*status == std::string("Initialization (delayed)")) || 
+                    (*status == std::string("Take Image"))) {
+                    txt += "<p>Current state: " + *status + "</p>\n";
+                }
+                else {
+                    txt += "<img src=\"/img_tmp/alg_roi.jpg\">\n";
                 }
                 httpd_resp_sendstr_chunk(req, txt.c_str()); 
-                delete htmlinfodig[i];
             }
-            htmlinfodig.clear();
-        
-            txt = " <p> Analog Meter: <p> ";
-            httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            
-            std::vector<HTMLInfo*> htmlinfoana;
-            htmlinfoana = tfliteflow.GetAllAnalog();
-            for (int i = 0; i < htmlinfoana.size(); ++i)
-            {
-                std::stringstream stream;
-                stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
-                zw = stream.str();
-
-                txt = "<img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"> " + zw;
-                httpd_resp_sendstr_chunk(req, txt.c_str()); 
-                delete htmlinfoana[i];
-            }
-            htmlinfoana.clear();   
-
         }   
 
         /* Respond with an empty chunk to signal HTTP response completion */
@@ -620,8 +673,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
         Camera.SetLEDIntensity(intens);
-        ESP_LOGD(TAG, "test_take - vor MakeImage");
-        std::string zw = tfliteflow.doSingleStep("[MakeImage]", _host);
+        ESP_LOGD(TAG, "test_take - vor TakeImage");
+        std::string zw = tfliteflow.doSingleStep("[TakeImage]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     } 
@@ -664,7 +717,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
             ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
         #endif
 
-        string* zw = tfliteflow.getActStatus();
+        string* zw = tfliteflow.getActStatusWithTime();
         resp_str = zw->c_str();
 
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);   
@@ -807,31 +860,25 @@ void task_autodoFlow(void *pvParameter)
 
     bTaskAutoFlowCreated = true;
 
-    if (!isPlannedReboot)
+    if (!isPlannedReboot && (esp_reset_reason() == ESP_RST_PANIC))
     {
-        if (esp_reset_reason() == ESP_RST_PANIC) {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Restarted due to an Exception/panic! Postponing first round start by 5 minutes to allow for an OTA Update or to fetch the log!"); 
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setting logfile level to DEBUG until the next reboot!");
-            LogFile.setLogLevel(ESP_LOG_DEBUG);
-            tfliteflow.setActStatus("Initialization (delayed)");
-            //#ifdef ENABLE_MQTT
-                //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
-            //#endif //ENABLE_MQTT
-            vTaskDelay(60*5000 / portTICK_RATE_MS); // Wait 5 minutes to give time to do an OTA Update or fetch the log
-        }
+        tfliteflow.setActStatus("Initialization (delayed)");
+        //#ifdef ENABLE_MQTT
+            //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
+        //#endif //ENABLE_MQTT
+        vTaskDelay(60*5000 / portTICK_PERIOD_MS); // Wait 5 minutes to give time to do an OTA update or fetch the log
     }
-
 
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
 
-    auto_isrunning = tfliteflow.isAutoStart(auto_intervall);
+    auto_isrunning = tfliteflow.isAutoStart(auto_interval);
 
     if (isSetupModusActive()) 
     {
         auto_isrunning = false;
         std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-        tfliteflow.doFlowMakeImageOnly(zw_time);
+        tfliteflow.doFlowTakeImageOnly(zw_time);
     }
     
     while (auto_isrunning)
@@ -861,21 +908,27 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOldLogFile();
             LogFile.RemoveOldDataLog();
         }
+
+        //Round finished -> Logfile
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
+                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
         
         //CPU Temp -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
         
         // WIFI Signal Strength (RSSI) -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
-        
-        //Round finished -> Logfile
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
-                " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
+
+        // Check if time is synchronized (if NTP is configured)
+        if (getUseNtp() && !getTimeIsSet()) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set. Check configuration");
+            StatusLED(TIME_CHECK, 1, false);
+        }
 
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-        if (auto_intervall > fr_delta_ms)
+        if (auto_interval > fr_delta_ms)
         {
-            const TickType_t xDelay = (auto_intervall - fr_delta_ms)  / portTICK_PERIOD_MS;
+            const TickType_t xDelay = (auto_interval - fr_delta_ms)  / portTICK_PERIOD_MS;
             ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long) xDelay);
             vTaskDelay( xDelay );        
         }

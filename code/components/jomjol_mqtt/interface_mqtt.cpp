@@ -14,6 +14,7 @@ std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;
 
 int failedOnRound = -1;
+int MQTTReconnectCnt = 0;
  
 esp_mqtt_event_id_t esp_mqtt_ID = MQTT_EVENT_ANY;
 // ESP_EVENT_ANY_ID
@@ -25,11 +26,12 @@ bool mqtt_connected = false;
 
 esp_mqtt_client_handle_t client = NULL;
 std::string uri, client_id, lwt_topic, lwt_connected, lwt_disconnected, user, password, maintopic;
-int keepalive, SetRetainFlag;
-void (*callbackOnConnected)(std::string, int) = NULL;
+int keepalive;
+bool SetRetainFlag;
+void (*callbackOnConnected)(std::string, bool) = NULL;
 
 
-bool MQTTPublish(std::string _key, std::string _content, int retained_flag) 
+bool MQTTPublish(std::string _key, std::string _content, bool retained_flag) 
 {
     if (!mqtt_enabled) {                            // MQTT sevice not started / configured (MQTT_Init not called before)      
         return false;
@@ -88,29 +90,39 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
-            ESP_LOGD(TAG, "MQTT_EVENT_BEFORE_CONNECT");
             mqtt_initialized = true;
             break;
+        
         case MQTT_EVENT_CONNECTED:
-            ESP_LOGD(TAG, "MQTT_EVENT_CONNECTED");
+            MQTTReconnectCnt = 0;
             mqtt_initialized = true;
             mqtt_connected = true;
             MQTTconnected();
             break;
+        
         case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGD(TAG, "MQTT_EVENT_DISCONNECTED");
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Disconnected from broker");
             mqtt_connected = false;
+            MQTTReconnectCnt++;
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected, trying to reconnect");
+
+            if (MQTTReconnectCnt >= 5) {
+                MQTTReconnectCnt = 0;
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Disconnected, multiple reconnect attempts failed, still retrying...");
+            }
             break;
+        
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
             break;
+        
         case MQTT_EVENT_UNSUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
             break;
+        
         case MQTT_EVENT_PUBLISHED:
             ESP_LOGD(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
             break;
+        
         case MQTT_EVENT_DATA:
             ESP_LOGD(TAG, "MQTT_EVENT_DATA");
             ESP_LOGD(TAG, "TOPIC=%.*s", event->topic_len, event->topic);
@@ -125,6 +137,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
                 ESP_LOGW(TAG, "no handler available\r\n");
             }
             break;
+        
         case MQTT_EVENT_ERROR:
             #ifdef DEBUG_DETAIL_ON 
                 ESP_LOGD(TAG, "MQTT_EVENT_ERROR - esp_mqtt_error_codes:");
@@ -135,8 +148,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
                 ESP_LOGD(TAG, "esp_tls_stack_err:%d", event->error_handle->esp_tls_stack_err);
                 ESP_LOGD(TAG, "esp_tls_cert_verify_flags:%d", event->error_handle->esp_tls_cert_verify_flags);
             #endif
-            mqtt_connected = false;
+            //mqtt_connected = false;
             break;
+        
         default:
             ESP_LOGD(TAG, "Other event id:%d", event->event_id);
             break;
@@ -153,7 +167,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
         std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
-                    int _keepalive, int _SetRetainFlag, void *_callbackOnConnected) {
+                    int _keepalive, bool _SetRetainFlag, void *_callbackOnConnected) {
     if ((_mqttURI.length() == 0) || (_maintopic.length() == 0) || (_clientid.length() == 0)) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init aborted! Config error (URI, MainTopic or ClientID missing)");
@@ -168,7 +182,7 @@ bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     keepalive = _keepalive;
     SetRetainFlag = _SetRetainFlag;
     maintopic = _maintopic;
-    callbackOnConnected = ( void (*)(std::string, int) )(_callbackOnConnected);
+    callbackOnConnected = ( void (*)(std::string, bool) )(_callbackOnConnected);
 
     if (_user.length() && _password.length()){
         user = _user;

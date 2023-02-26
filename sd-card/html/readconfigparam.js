@@ -105,14 +105,14 @@ function ParseConfig() {
      param = new Object();
      category = new Object(); 
 
-     var catname = "MakeImage";
+     var catname = "TakeImage";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "LogImageLocation");
+     ParamAddValue(param, catname, "RawImagesLocation");
      ParamAddValue(param, catname, "WaitBeforeTakingPicture");
-     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "RawImagesRetention");
      ParamAddValue(param, catname, "Demo");
      ParamAddValue(param, catname, "Brightness");
      ParamAddValue(param, catname, "Contrast");
@@ -141,8 +141,8 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "Model");
      ParamAddValue(param, catname, "CNNGoodThreshold", 1); 
-     ParamAddValue(param, catname, "LogImageLocation");
-     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "ROIImagesLocation");
+     ParamAddValue(param, catname, "ROIImagesRetention");
 
      var catname = "Analog";
      category[catname] = new Object(); 
@@ -150,8 +150,8 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Model");
-     ParamAddValue(param, catname, "LogImageLocation");
-     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "ROIImagesLocation");
+     ParamAddValue(param, catname, "ROIImagesRetention");
 
      var catname = "PostProcessing";
      category[catname] = new Object(); 
@@ -177,11 +177,10 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
      ParamAddValue(param, catname, "MainTopic", 1, false);
-     ParamAddValue(param, catname, "Topic", 1, false);
      ParamAddValue(param, catname, "ClientID");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
-     ParamAddValue(param, catname, "SetRetainFlag");
+     ParamAddValue(param, catname, "RetainMessages");
      ParamAddValue(param, catname, "HomeassistantDiscovery");
      ParamAddValue(param, catname, "MeterType");
 
@@ -195,7 +194,19 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Measurement");
      ParamAddValue(param, catname, "user");
      ParamAddValue(param, catname, "password");
-    
+
+     var catname = "InfluxDBv2";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = false;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddValue(param, catname, "Uri");
+     ParamAddValue(param, catname, "Database");
+     ParamAddValue(param, catname, "Measurement");
+     ParamAddValue(param, catname, "Org");
+     ParamAddValue(param, catname, "Token");
+     ParamAddValue(param, catname, "Fieldname", 1, true);
+
      var catname = "GPIO";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
@@ -224,7 +235,7 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "AutoStart");
-     ParamAddValue(param, catname, "Intervall");     
+     ParamAddValue(param, catname, "Interval");     
 
      var catname = "DataLogging";
      category[catname] = new Object(); 
@@ -232,15 +243,15 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "DataLogActive");
-     ParamAddValue(param, catname, "DataLogRetentionInDays");     
+     ParamAddValue(param, catname, "DataFilesRetention");     
 
      var catname = "Debug";
      category[catname] = new Object(); 
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "Logfile");
-     ParamAddValue(param, catname, "LogfileRetentionInDays");
+     ParamAddValue(param, catname, "LogLevel");
+     ParamAddValue(param, catname, "LogfilesRetention");
 
      var catname = "System";
      category[catname] = new Object(); 
@@ -249,9 +260,8 @@ function ParseConfig() {
      param[catname] = new Object();
      ParamAddValue(param, catname, "TimeZone");
      ParamAddValue(param, catname, "TimeServer");         
-     ParamAddValue(param, catname, "AutoAdjustSummertime");
      ParamAddValue(param, catname, "Hostname");   
-     ParamAddValue(param, catname, "RSSIThreashold");   
+     ParamAddValue(param, catname, "RSSIThreshold");   
      ParamAddValue(param, catname, "SetupMode"); 
      
      
@@ -273,22 +283,7 @@ function ParseConfig() {
           aktline++;
      }
 
-
-     // Make the downward compatiblity with MQTT (Maintopic --> topic)
-     if (param["MQTT"]["Topic"]["found"] == true && param["MQTT"]["MainTopic"]["found"] == false)
-     {
-          param["MQTT"]["MainTopic"] = param["MQTT"]["Topic"]
-     }
-     delete param["MQTT"]["Topic"]                // Dient nur der Downwardskompatibilität
-
-
-     if (param["Debug"]["Logfile"]["value1"] == "false" || param["Debug"]["Logfile"]["value1"] == "true")
-     {
-          param["Debug"]["Logfile"]["value1"] = "2";
-     }
-
-
-     // Make the downward compatiblity with MQTT (Maintopic --> topic)
+     // Make the downward compatiblity with DataLogging
      if (category["DataLogging"]["found"] == false)
      {
           category["DataLogging"]["found"] = true;
@@ -298,9 +293,9 @@ function ParseConfig() {
           param["DataLogging"]["DataLogActive"]["enabled"] = true;
           param["DataLogging"]["DataLogActive"]["value1"] = "true";
           
-          param["DataLogging"]["DataLogRetentionInDays"]["found"] = true;
-          param["DataLogging"]["DataLogRetentionInDays"]["enabled"] = true;
-          param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
+          param["DataLogging"]["DataFilesRetention"]["found"] = true;
+          param["DataLogging"]["DataFilesRetention"]["enabled"] = true;
+          param["DataLogging"]["DataFilesRetention"]["value1"] = "3";
      }
 
      if (category["DataLogging"]["enabled"] == false)
@@ -313,14 +308,22 @@ function ParseConfig() {
           param["DataLogging"]["DataLogActive"]["value1"] = "true";
      }
 
-     if (param["DataLogging"]["DataLogRetentionInDays"]["enabled"] == false && param["DataLogging"]["DataLogRetentionInDays"]["value1"] == "")
+     if (param["DataLogging"]["DataFilesRetention"]["enabled"] == false && param["DataLogging"]["DataFilesRetention"]["value1"] == "")
      {
-          param["DataLogging"]["DataLogRetentionInDays"]["found"] = true;
-          param["DataLogging"]["DataLogRetentionInDays"]["enabled"] = true;
-          param["DataLogging"]["DataLogRetentionInDays"]["value1"] = "3";
+          param["DataLogging"]["DataFilesRetention"]["found"] = true;
+          param["DataLogging"]["DataFilesRetention"]["enabled"] = true;
+          param["DataLogging"]["DataFilesRetention"]["value1"] = "3";
      }
 
+     // Downward compatiblity: Create RSSIThreshold if not available
+     if (param["System"]["RSSIThreshold"]["found"] == false)
+     {
+          param["System"]["RSSIThreshold"]["found"] = true;
+          param["System"]["RSSIThreshold"]["enabled"] = false;
+          param["System"]["RSSIThreshold"]["value1"] = "0";
+     }
 }
+
 
 function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
      param[_cat][_param] = new Object(); 

@@ -6,7 +6,7 @@
 #include <string>
 
 #include "ClassFlow.h"
-#include "ClassFlowMakeImage.h"
+#include "ClassFlowTakeImage.h"
 #include "ClassFlowAlignment.h"
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
@@ -15,6 +15,7 @@
 #endif //ENABLE_MQTT
 #ifdef ENABLE_INFLUXDB
 	#include "ClassFlowInfluxDB.h"
+	#include "ClassFlowInfluxDBv2.h"
 #endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowWriteList.h"
@@ -29,20 +30,21 @@ protected:
 	ClassFlowCNNGeneral* flowanalog;
 	ClassFlowCNNGeneral* flowdigit;
 //	ClassFlowDigit* flowdigit;
-	ClassFlowMakeImage* flowmakeimage;
+	ClassFlowTakeImage* flowtakeimage;
 	ClassFlow* CreateClassFlow(std::string _type);
 
 	bool AutoStart;
-	float AutoIntervall;
+	float AutoInterval;
 	bool SetupModeActive;
 	void SetInitialParameter(void);	
+	std::string aktstatusWithTime;
 	std::string aktstatus;
 	int aktRunNr;
 
 public:
 	void InitFlow(std::string config);
 	bool doFlow(string time);
-	void doFlowMakeImageOnly(string time);
+	void doFlowTakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};
 	string getReadout(bool _rawvalue, bool _noerror);
 	string getReadoutAll(int _type);	
@@ -68,8 +70,9 @@ public:
 
 	std::string doSingleStep(std::string _stepname, std::string _host);
 
-	bool isAutoStart(long &_intervall);
+	bool isAutoStart(long &_interval);
 
+	std::string* getActStatusWithTime();
 	std::string* getActStatus();
 	void setActStatus(std::string _aktstatus);
 

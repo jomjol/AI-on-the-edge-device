@@ -13,7 +13,7 @@ function getbasepath(){
     {
 //        host = "http://192.168.2.219";          // jomjol interner test
 //        host = "http://192.168.178.46";          // jomjol interner test
-        host = "http://192.168.178.62";          // jomjol interner Real
+        host = "http://192.168.178.44";          // jomjol interner Real
 //        host = "http://192.168.43.191";
 //        host = ".";                           // jomjol interner localhost   
 
