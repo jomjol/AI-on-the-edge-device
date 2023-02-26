@@ -378,22 +378,37 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             return ESP_OK;
         }
 
-        zw = tfliteflow.getReadout(_rawValue, _noerror);
-        if (zw.length() > 0)
-            httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
+        std::string *status = tfliteflow.getActStatus();
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
         if (query.find("full") != std::string::npos)
         {
-            string txt, zw;
-
-            std::string *status = tfliteflow.getActStatus();
+            string txt;
+            txt = "<body style=\"font-family: arial\">";
 
             if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
-                txt = "<body style=\"font-family: arial\">";
                 txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
-                httpd_resp_sendstr_chunk(req, txt.c_str());
+            }
+            else {
+                txt += "<h3>Value</h3>";
+            }
+
+            httpd_resp_sendstr_chunk(req, txt.c_str());
+        }
+
+
+        zw = tfliteflow.getReadout(_rawValue, _noerror);
+        if (zw.length() > 0)
+            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+
+
+        if (query.find("full") != std::string::npos)
+        {
+            string txt, zw;
+
+            if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
+                // Nothing to do
             }
             else {
                 /* Digital ROIs */
