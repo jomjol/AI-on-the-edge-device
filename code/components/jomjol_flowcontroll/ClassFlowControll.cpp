@@ -28,7 +28,7 @@ extern "C" {
 #include "server_tflite.h"
 #include "../../include/defines.h"
 
-static const char* TAG = "CTRL";
+static const char* TAG = "FLOWCTRL";
 
 //#define DEBUG_DETAIL_ON
 
@@ -194,7 +194,7 @@ void ClassFlowControll::SetInitialParameter(void)
     flowanalog = NULL;
     flowpostprocessing = NULL;
     disabled = false;
-    aktRunNr = 0;
+    readParameterDone = false;
     aktstatus = "Flow task not yet created";
 }
 
@@ -274,13 +274,13 @@ bool ClassFlowControll::InitFlow(std::string config)
 {
     bool bRetVal = true;
     aktstatus = "Initialization";
-    //#ifdef ENABLE_MQTT
-        //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false); // Right now, not possible -> MQTT Service is going to be started later
+    //#ifdef ENABLE_MQTT --> // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
+        //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false);
     //#endif //ENABLE_MQTT
     
     std::string line = "";
     std::string section = "";
-    flowpostprocessing = NULL;
+    //flowpostprocessing = NULL;
 
     ClassFlow* cfc;
     FILE* pFile;
@@ -327,6 +327,12 @@ bool ClassFlowControll::InitFlow(std::string config)
         }
     }
     fclose(pFile);
+
+    if (flowtakeimage == NULL || flowalignment == NULL || flowpostprocessing == NULL || !this->readParameterDone) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "InitFlow: One mandatory parameter section [TAKEIMAGE], [ALIGNMENT], [POSTPROCESSING], "
+                                                "[AUTOTIMER], [DATALOGGING], [DEBUG] or [SYSTEM] missing. Check config file");
+        return false;
+    }
 
     return bRetVal;
 }
@@ -530,7 +536,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 
     if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
-        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht zu Debug oder DataLogging
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht
         return false;
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
@@ -631,6 +637,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }        
         }
     }
+
+    readParameterDone = true;
     return true;
 }
 

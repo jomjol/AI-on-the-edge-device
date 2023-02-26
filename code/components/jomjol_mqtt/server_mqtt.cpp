@@ -32,12 +32,16 @@ float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
 bool retainFlag;
 static std::string maintopic;
+bool isParameterSet = false;
 
 
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
     NUMBERS = _NUMBERS;
     keepAlive = _keepAlive;
-    roundInterval = _roundInterval; 
+    roundInterval = _roundInterval;
+
+    if (NUMBERS)
+        isParameterSet = true;
 }
 
 void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std::string _timeUnit,std::string _rateUnit) {
@@ -135,10 +139,14 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
 }
 
 void MQTThomeassistantDiscovery() {  
-    if (!getMQTTisConnected()) 
+    if (!getMQTTisConnected() || !isParameterSet) {
+        if (!isParameterSet)       
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Paramater not set -> skip sending HA Discovery");
+        
         return;
+    }
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Sending HA Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + ", Rate Unit: " + rateUnit + ")");
 
     //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
     sendHomeAssistantDiscoveryTopic("",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
@@ -196,7 +204,7 @@ void publishSystemData() {
 
 
 void publishStaticData() {
-    if (!getMQTTisConnected()) 
+    if (!getMQTTisConnected())
         return;
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");

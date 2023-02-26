@@ -15,7 +15,7 @@
 
 #include <time.h>
 
-static const char* TAG = "class_flow_influxDb";
+static const char* TAG = "INFLUXDB";
 
 void ClassFlowInfluxDB::SetInitialParameter(void)
 {
@@ -111,11 +111,13 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
     if ((uri.length() > 0) && (database.length() > 0) && (measurement.length() > 0)) 
     { 
 //        ESP_LOGD(TAG, "Init InfluxDB with uri: %s, measurement: %s, user: %s, password: %s", uri.c_str(), measurement.c_str(), user.c_str(), password.c_str());
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", measurement: " + measurement + ", user: " + user + ", password: " + password);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init with uri: " + uri + ", measurement: " + measurement + ", user: " + user + ", password: " + password);
         InfluxDBInit(uri, database, measurement, user, password); 
         InfluxDBenable = true;
-    } else {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB init skipped as we are missing some parameters");
+    } 
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init aborted: uri, database or measurement not configured");
+        //return false; // TODO: Init should fail or continue flow?
     }
    
     return true;

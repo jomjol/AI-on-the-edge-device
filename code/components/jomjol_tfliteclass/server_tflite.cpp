@@ -844,19 +844,29 @@ void task_autodoFlow(void *pvParameter)
     // ********************************************
     if (!doInit()) {
         auto_isrunning = false;
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Flow initialization failed. Flow start disabled");
         tfliteflow.setActStatus("Initialization failed");
     }
     else {
         auto_isrunning = tfliteflow.isAutoStart(auto_interval);
-    }
 
-    // Start setup modus if parameter in config is true
-    // ********************************************
-    if (isSetupModusActive()) 
-    {
-        auto_isrunning = false;
-        std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-        tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
+        // Start setup modus if parameter in config is true
+        // ********************************************
+        if (isSetupModusActive()) 
+        {
+            auto_isrunning = false;
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setup mode active. Flow start disabled");
+            tfliteflow.setActStatus("Setup mode active");
+
+            std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
+            tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
+        }
+        else {
+            if (!auto_isrunning) {
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start disabled");
+                tfliteflow.setActStatus("Flow start disabled");
+            }
+        }
     }
     
     // Process flow runs

@@ -38,7 +38,7 @@ protected:
 	bool SetupModeActive;
 	void SetInitialParameter(void);	
 	std::string aktstatus;
-	int aktRunNr;
+	bool readParameterDone;
 
 public:
 	bool InitFlow(std::string config);

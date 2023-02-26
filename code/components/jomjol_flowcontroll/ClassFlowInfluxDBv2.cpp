@@ -15,7 +15,7 @@
 
 #include <time.h>
 
-static const char* TAG = "class_flow_influxDbv2";
+static const char* TAG = "INFLUXDBV2";
 
 void ClassFlowInfluxDBv2::SetInitialParameter(void)
 {
@@ -128,8 +128,10 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
         InfluxDB_V2_Init(uri, database, measurement, dborg, dbtoken); 
 //        printf("nach V2 Init\n");
         InfluxDBenable = true;
-    } else {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBv2 (Verion2 !!!) init skipped as we are missing some parameters");
+    } 
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Init aborted: uri, database or measurement, token or org not configured!");
+        //return false; // TODO: Init should fail or continue flow?
     }
    
     return true;
