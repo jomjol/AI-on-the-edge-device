@@ -206,15 +206,9 @@ extern "C" void app_main(void)
         return; // No way to continue without working SD card!
     }
 
-    // SD card: Create directories (if not already existing)
+    // SD card: Create log directories (if not already existing)
     // ********************************************
-    bool bDirStatus = LogFile.CreateLogDirectories(); // needed for logging + image saving
-    bDirStatus = MakeDir("/sdcard/firmware");         // needed for firmware update
-    bDirStatus = MakeDir("/sdcard/img_tmp");          // needed for setting up alignment marks
-    bDirStatus = MakeDir("/sdcard/demo");             // needed for demo mode
-    if (!bDirStatus) {
-        StatusLED(SDCARD_CHECK, 1, false);
-    }
+    bool bDirStatus = LogFile.CreateLogDirectories(); // mandatory for logging + image saving
 
     // ********************************************
     // Highlight start of logfile logging
@@ -224,7 +218,24 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    // Migrate parameter in config.ini to new naming (firmware 14.1 and newer)
+    // SD card: basic R/W check
+    // ********************************************
+    int iSDCardStatus = SDCardCheckRW();
+    if (iSDCardStatus < 0) {
+        if (iSDCardStatus <= -1 && iSDCardStatus >= -2) { // write error
+            StatusLED(SDCARD_CHECK, 2, true);
+        }
+        else if (iSDCardStatus <= -3 && iSDCardStatus >= -5) {   // read error
+            StatusLED(SDCARD_CHECK, 3, true);
+        }
+        else if (iSDCardStatus == -6) {   // delete error
+            StatusLED(SDCARD_CHECK, 4, true);
+        }
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Device init aborted!");
+        return;   // Stopp here because of bad SD card condition
+    }
+
+    // Migrate parameter in config.ini to new naming (firmware 15.0 and newer)
     // ********************************************
     migrateConfiguration();
 
@@ -232,20 +243,13 @@ extern "C" void app_main(void)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
 
-    // SD card: basic RW check
+    // SD card: Create further mandatory directories (if not already existing)
     // ********************************************
-    int iSDCardStatus = SDCardCheckRW();
-    if (iSDCardStatus < 0) {
-        if (iSDCardStatus <= -1 && iSDCardStatus >= -2) { // write error
-            StatusLED(SDCARD_CHECK, 2, false);
-        }
-        else if (iSDCardStatus <= -3 && iSDCardStatus >= -5) {   // read error
-            StatusLED(SDCARD_CHECK, 3, false);
-        }
-        else if (iSDCardStatus == -6) {   // delete error
-            StatusLED(SDCARD_CHECK, 4, false);
-        }
-        //return;   // ??Stopp here, if yes -> blink infinite??
+    bDirStatus = MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
+    bDirStatus = MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
+    bDirStatus = MakeDir("/sdcard/demo");             // mandatory for demo mode
+    if (!bDirStatus) {
+        StatusLED(SDCARD_CHECK, 1, false);
     }
 
     // Check for updates
