@@ -15,6 +15,7 @@
     function run() {
         datefile = document.getElementById("datafiles").value;
         numbername = document.getElementById("numbers").value;
+        showRrelativeValues = document.getElementById("showRrelativeValues").checked;
         //alert("Auslesen: " + datefile + " " + numbername);
 
         _domainname = getDomainname();
@@ -56,9 +57,27 @@
                 }
                 //console.log(trace);
 
+                // Copy time to all traces
                 tracePreValue.x = traceValue.x;
                 traceChangeRate.x = traceValue.x;
                 traceChangeAbsolute.x = traceValue.x;
+
+                //console.log(traceValue.y);
+
+                var offsetValue = traceValue.y[0];
+                var offsetPreValue = tracePreValue.y[0];
+
+                if (showRrelativeValues) {
+                    traceValue.y.forEach(function(part, index, arr) {
+                        arr[index] = arr[index] - offsetValue;
+                    });
+
+                    tracePreValue.y.forEach(function(part, index, arr) {
+                        arr[index] = arr[index] - offsetPreValue;
+                    });
+                }
+
+              //  console.log(traceValue.x)
 
                 var data = [traceValue, tracePreValue, traceChangeRate, traceChangeAbsolute];
 
@@ -106,6 +125,7 @@
         <div id='chart'><p>Loading...<br></p></div>
         <select id="datafiles" onchange="run();"></select>
         <select id="numbers" onchange="run();"></select>
+        <input type="checkbox" id="showRrelativeValues" onclick = 'run();' unchecked ><label for="showRrelativeValues">Show relative values</label>
         <button onclick="run();">Refresh</button>
         &nbsp;&nbsp;|&nbsp;&nbsp;
         <button onClick="window.location.href = 'data.html?v=$COMMIT_HASH'">Show data</button>
