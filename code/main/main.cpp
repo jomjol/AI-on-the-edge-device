@@ -42,6 +42,7 @@
 #endif //ENABLE_MQTT
 #include "Helper.h"
 #include "statusled.h"
+#include "sdcard_check.h"
 
 #include "../../include/defines.h"
 //#include "server_GPIO.h"
@@ -233,7 +234,19 @@ extern "C" void app_main(void)
 
     // SD card: basic RW check
     // ********************************************
-    // TODO
+    int iSDCardStatus = SDCardCheckRW();
+    if (iSDCardStatus < 0) {
+        if (iSDCardStatus <= -1 && iSDCardStatus >= -2) { // write error
+            StatusLED(SDCARD_CHECK, 2, false);
+        }
+        else if (iSDCardStatus <= -3 && iSDCardStatus >= -5) {   // read error
+            StatusLED(SDCARD_CHECK, 3, false);
+        }
+        else if (iSDCardStatus == -6) {   // delete error
+            StatusLED(SDCARD_CHECK, 4, false);
+        }
+        //return;   // ??Stopp here, if yes -> blink infinite??
+    }
 
     // Check for updates
     // ********************************************
@@ -249,7 +262,9 @@ extern "C" void app_main(void)
 
     // SD card: Check folder structure
     // ********************************************
-	// TODO
+    if (!SDCardCheckFolderStructure()) {    // check presence of some folders / files -> only warnings
+        StatusLED(SDCARD_CHECK, 5, false);
+    }
 
     // Check version information
     // ********************************************
