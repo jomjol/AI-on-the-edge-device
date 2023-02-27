@@ -166,7 +166,6 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (((toUpper(splitted[0]) == "TOPIC") || (toUpper(splitted[0]) == "MAINTOPIC")) && (splitted.size() > 1))
         {
             maintopic = splitted[1];
-            mqttServer_setMainTopic(maintopic);
         }
     }
 
@@ -174,6 +173,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
      * Originally, we started the MQTT client here.
      * How ever we need the interval parameter from the ClassFlowControll, but that only gets started later.
      * To work around this, we delay the start and trigger it from ClassFlowControll::ReadParameter() */
+
+    mqttServer_setMainTopic(maintopic);
 
     return true;
 }
