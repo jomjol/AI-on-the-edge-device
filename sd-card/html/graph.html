@@ -48,6 +48,43 @@
 
                             traceValue.x.push(time);
 
+                            /* Catch empty fields */
+                            if (value == "" || isNaN(value)) {
+                                if (traceValue.y.length > 0) {
+                                    value = traceValue.y[traceValue.y.length-1];
+                                }
+                                else {
+                                    value = 0;
+                                }
+                            }
+
+                            if (preValue == "" || isNaN(preValue)) {
+                                if (tracePreValue.y.length > 0) {
+                                    preValue = tracePreValue.y[tracePreValue.y.length-1];
+                                }
+                                else {
+                                    preValue = 0;
+                                }
+                            }
+
+                            if (changeRate == "" || isNaN(changeRate)) {
+                                if (traceChangeRate.y.length > 0) {
+                                    changeRate = traceChangeRate.y[traceChangeRate.y.length-1];
+                                }
+                                else {
+                                    changeRate = 0;
+                                }
+                            }
+
+                            if (changeAbsolute == "" || isNaN(changeAbsolute)) {
+                                if (traceChangeAbsolute.y.length > 0) {
+                                    changeAbsolute = traceChangeAbsolute.y[traceChangeAbsolute.y.length-1];
+                                }
+                                else {
+                                    changeAbsolute = 0;
+                                }
+                            }
+
                             traceValue.y.push(value);
                             tracePreValue.y.push(preValue);
                             traceChangeRate.y.push(changeRate);
