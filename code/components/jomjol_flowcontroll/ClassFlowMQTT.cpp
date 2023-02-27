@@ -37,7 +37,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicUptime = "";
     topicFreeMem = "";
 
-    clientname = "AIOTED-" + getMac();
+    clientname = wlan_config.hostname;
 
     OldValue = "";
     flowpostprocessing = NULL;  
