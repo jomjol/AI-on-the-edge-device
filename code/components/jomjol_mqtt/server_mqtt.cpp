@@ -238,10 +238,9 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
 
     success |= publishStaticData();
 
-    const char* resp_str = (const char*) req->user_ctx;
-
     if (success) {
-        httpd_resp_send(req, resp_str, strlen(resp_str));  
+        char msg[] = "MQTT Homeassistant Discovery and Static Topics sent!";
+        httpd_resp_send(req, msg, strlen(msg));  
         return ESP_OK;
     }
     else {
@@ -289,7 +288,7 @@ void register_server_mqtt_uri(httpd_handle_t server) {
 
     uri.uri       = "/mqtt_publish_discovery";
     uri.handler   = sendDiscovery_and_static_Topics;
-    uri.user_ctx  = (void*) "MQTT Discovery and Static Topics sent";    
+    uri.user_ctx  = (void*) "";    
     httpd_register_uri_handler(server, &uri); 
 }
 
