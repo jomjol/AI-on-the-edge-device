@@ -255,7 +255,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 success |= MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
 
             if (resultrate.length() > 0) {
-                MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
                 
                 std::string resultRatePerTimeUnit;
                 if (getTimeUnit() == "h") { // Need conversion to be per hour
@@ -297,7 +297,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     //                 result = result + "\t" + zw;
     //         }
     //     }
-    //     MQTTPublish(topic, result, SetRetainFlag);
+    //     success |= MQTTPublish(topic, result, SetRetainFlag);
     // }
     
     OldValue = result;
