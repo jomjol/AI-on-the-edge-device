@@ -1,31 +1,5 @@
 ## [Unreleased]
 
-**Rolling**
-
-
-
-#### Added
-
--   Additional interface to InfluxDB Version 2 upwards
--   Updated the Hybrid CNN network to `dig-cont_0610_s3`
--   :bangbang:  Update Camera driver: contrast, brightness and saturation now working
-    :bangbang:  **Attention**: this can effect old version as well, because there not all settings were effective!
-
-#### Changed
-
--   n.a.
-
-#### Fixed
-
--   
-
-#### Removed
-
--   n.a.
-
-
-## [15.0.1] - 2023-02-23
-
 **Parameter Migration**
 
 ### Update Procedure
@@ -53,10 +27,14 @@ If you want to revert back to `v14` or earlier, you will have to revert the migr
 
 #### Fixed
 
--   [2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+-   [#2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+-   **NEW v15.0.2:**  [#1933](https://github.com/jomjol/AI-on-the-edge-device/issues/1933) Bugfix InfluxDB Timestamp
 
+#### Removed
 
-## [14.0.3] -2023-02-05
+-   n.a.
+
+## [14.0.3] - 2023-02-05
 
 **Stabilization and Improved User Experience**
 
@@ -105,7 +83,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
--   **New 14.0.4:** Fix for InfluxDB timeshift problem [#1991](https://github.com/jomjol/AI-on-the-edge-device/issues/1991)
 
 #### Removed
 
