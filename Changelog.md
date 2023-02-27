@@ -1,4 +1,4 @@
-## [15.0.1] - 2023-02-23
+## [Unreleased]
 
 **Parameter Migration**
 
@@ -27,7 +27,8 @@ If you want to revert back to `v14` or earlier, you will have to revert the migr
 
 #### Fixed
 
--   [2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+-   [#2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+-   **NEW v15.0.2:**  [#1933](https://github.com/jomjol/AI-on-the-edge-device/issues/1933) Bugfix InfluxDB Timestamp
 
 #### Removed
 
