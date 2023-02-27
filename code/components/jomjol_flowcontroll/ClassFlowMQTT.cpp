@@ -211,6 +211,7 @@ bool ClassFlowMQTT::Start(float AutoInterval)
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
+    bool success;
     std::string result;
     std::string resulterror = "";
     std::string resultraw = "";
@@ -222,7 +223,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    publishSystemData();
+    success = publishSystemData();
 
     if (flowpostprocessing && getMQTTisConnected())
     {
@@ -248,10 +249,10 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
 
             if (result.length() > 0)   
-                MQTTPublish(namenumber + "value", result, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "value", result, SetRetainFlag);
 
             if (resulterror.length() > 0)  
-                MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
 
             if (resultrate.length() > 0) {
                 MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
@@ -263,22 +264,22 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 else { // Keep per minute
                     resultRatePerTimeUnit = resultrate;
                 }
-                MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, SetRetainFlag);
             }
 
             if (resultchangabs.length() > 0) {
-                MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag); // Legacy API
-                MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag); // Legacy API
+                success |= MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, SetRetainFlag);
             }
 
             if (resultraw.length() > 0)   
-                MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
 
             if (resulttimestamp.length() > 0)
-                MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
             std::string json = flowpostprocessing->getJsonFromNumber(i, "\n");
-            MQTTPublish(namenumber + "json", json, SetRetainFlag);
+            success |= MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
     
@@ -300,6 +301,10 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     // }
     
     OldValue = result;
+
+    if (!success) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");
+    }
     
     return true;
 }
