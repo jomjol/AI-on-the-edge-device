@@ -191,6 +191,8 @@ bool publishSystemData() {
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
 
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + std::string(LWT_TOPIC), LWT_CONNECTED, retainFlag); // Publish "connected" to maintopic/connection
+
     sprintf(tmp_char, "%ld", (long)getUpTime());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
     
