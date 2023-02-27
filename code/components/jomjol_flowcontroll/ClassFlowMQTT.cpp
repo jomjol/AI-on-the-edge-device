@@ -37,7 +37,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicUptime = "";
     topicFreeMem = "";
 
-    clientname = "AIOTED-" + getMac();
+    clientname = wlan_config.hostname;
 
     OldValue = "";
     flowpostprocessing = NULL;  
@@ -166,7 +166,6 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (((toUpper(splitted[0]) == "TOPIC") || (toUpper(splitted[0]) == "MAINTOPIC")) && (splitted.size() > 1))
         {
             maintopic = splitted[1];
-            mqttServer_setMainTopic(maintopic);
         }
     }
 
@@ -174,6 +173,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
      * Originally, we started the MQTT client here.
      * How ever we need the interval parameter from the ClassFlowControll, but that only gets started later.
      * To work around this, we delay the start and trigger it from ClassFlowControll::ReadParameter() */
+
+    mqttServer_setMainTopic(maintopic);
 
     return true;
 }
@@ -210,6 +211,7 @@ bool ClassFlowMQTT::Start(float AutoInterval)
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
+    bool success;
     std::string result;
     std::string resulterror = "";
     std::string resultraw = "";
@@ -221,7 +223,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
-    publishSystemData();
+    success = publishSystemData();
 
     if (flowpostprocessing && getMQTTisConnected())
     {
@@ -247,13 +249,13 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
 
             if (result.length() > 0)   
-                MQTTPublish(namenumber + "value", result, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "value", result, SetRetainFlag);
 
             if (resulterror.length() > 0)  
-                MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
 
             if (resultrate.length() > 0) {
-                MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
                 
                 std::string resultRatePerTimeUnit;
                 if (getTimeUnit() == "h") { // Need conversion to be per hour
@@ -262,22 +264,22 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 else { // Keep per minute
                     resultRatePerTimeUnit = resultrate;
                 }
-                MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, SetRetainFlag);
             }
 
             if (resultchangabs.length() > 0) {
-                MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag); // Legacy API
-                MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag); // Legacy API
+                success |= MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, SetRetainFlag);
             }
 
             if (resultraw.length() > 0)   
-                MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
 
             if (resulttimestamp.length() > 0)
-                MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
 
             std::string json = flowpostprocessing->getJsonFromNumber(i, "\n");
-            MQTTPublish(namenumber + "json", json, SetRetainFlag);
+            success |= MQTTPublish(namenumber + "json", json, SetRetainFlag);
         }
     }
     
@@ -295,10 +297,14 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     //                 result = result + "\t" + zw;
     //         }
     //     }
-    //     MQTTPublish(topic, result, SetRetainFlag);
+    //     success |= MQTTPublish(topic, result, SetRetainFlag);
     // }
     
     OldValue = result;
+
+    if (!success) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");
+    }
     
     return true;
 }

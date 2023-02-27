@@ -326,8 +326,7 @@ bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len) {
 void MQTTconnected(){
     if (mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
-        MQTTPublish(lwt_topic, lwt_connected, true);                        // Publish "connected" to maintopic/connection
-
+        
         if (connectFunktionMap != NULL) {
             for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
                 it->second();

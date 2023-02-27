@@ -86,10 +86,6 @@ extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
 std::vector<std::string> splitString(const std::string& str);
-bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith);
-bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
-//bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith);
-bool isInString(std::string& s, std::string const& toFind);
 void migrateConfiguration(void);
 
 static const char *TAG = "MAIN";
@@ -495,7 +491,7 @@ void migrateConfiguration(void) {
 
         if (configLines[i].find("[") != std::string::npos) { // Start of new section
             section = configLines[i];
-            replace(section, ";", "", false); // Remove possible semicolon (just for the string comparison)
+            replaceString(section, ";", "", false); // Remove possible semicolon (just for the string comparison)
             //ESP_LOGI(TAG, "New section: %s", section.c_str());
         }
 
@@ -510,79 +506,79 @@ void migrateConfiguration(void) {
          *  - Only one whitespace before/after the equal sign
          */
         if (section == "[MakeImage]") {
-            migrated = migrated | replace(configLines[i], "[MakeImage]", "[TakeImage]"); // Rename the section itself
+            migrated = migrated | replaceString(configLines[i], "[MakeImage]", "[TakeImage]"); // Rename the section itself
         }
 
         if (section == "[MakeImage]" || section == "[TakeImage]") {
-            migrated = migrated | replace(configLines[i], "LogImageLocation", "RawImagesLocation");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "RawImagesRetention");
+            migrated = migrated | replaceString(configLines[i], "LogImageLocation", "RawImagesLocation");
+            migrated = migrated | replaceString(configLines[i], "LogfileRetentionInDays", "RawImagesRetention");
 
-            migrated = migrated | replace(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";Demo", "Demo"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";Demo", "Demo"); // Enable it
 
-            migrated = migrated | replace(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
         }
 
         if (section == "[Alignment]") {
-            migrated = migrated | replace(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
 
-            migrated = migrated | replace(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
         }
 
         if (section == "[Digits]") {
-            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+            migrated = migrated | replaceString(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replaceString(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
         }
 
         if (section == "[Analog]") {
-            migrated = migrated | replace(configLines[i], "LogImageLocation", "ROIImagesLocation");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
-            migrated = migrated | replace(configLines[i], "ExtendedResolution", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], "LogImageLocation", "ROIImagesLocation");
+            migrated = migrated | replaceString(configLines[i], "LogfileRetentionInDays", "ROIImagesRetention");
+            migrated = migrated | replaceString(configLines[i], "ExtendedResolution", ";UNUSED_PARAMETER"); // This parameter is no longer used
         }
 
         if (section == "[PostProcessing]") {
-            migrated = migrated | replace(configLines[i], ";PreValueUse = true", ";PreValueUse = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";PreValueUse", "PreValueUse"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";PreValueUse = true", ";PreValueUse = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";PreValueUse", "PreValueUse"); // Enable it
 
             /* AllowNegativeRates has a <NUMBER> as prefix! */
             if (isInString(configLines[i], "AllowNegativeRates") && isInString(configLines[i], ";")) { // It is the parameter "AllowNegativeRates" and it is commented out
-                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
-                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+                migrated = migrated | replaceString(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
             }
 
             /* IgnoreLeadingNaN has a <NUMBER> as prefix! */
             if (isInString(configLines[i], "IgnoreLeadingNaN") && isInString(configLines[i], ";")) { // It is the parameter "IgnoreLeadingNaN" and it is commented out
-                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
-                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+                migrated = migrated | replaceString(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
             }
 
             /* ExtendedResolution has a <NUMBER> as prefix! */
             if (isInString(configLines[i], "ExtendedResolution") && isInString(configLines[i], ";")) { // It is the parameter "ExtendedResolution" and it is commented out
-                migrated = migrated | replace(configLines[i], "true", "false"); // Set it to its default value
-                migrated = migrated | replace(configLines[i], ";", ""); // Enable it
+                migrated = migrated | replaceString(configLines[i], "true", "false"); // Set it to its default value
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
             }
 
-            migrated = migrated | replace(configLines[i], ";ErrorMessage = true", ";ErrorMessage = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";ErrorMessage", "ErrorMessage"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";ErrorMessage = true", ";ErrorMessage = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";ErrorMessage", "ErrorMessage"); // Enable it
 
-            migrated = migrated | replace(configLines[i], ";CheckDigitIncreaseConsistency = true", ";CheckDigitIncreaseConsistency = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";CheckDigitIncreaseConsistency", "CheckDigitIncreaseConsistency"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";CheckDigitIncreaseConsistency = true", ";CheckDigitIncreaseConsistency = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";CheckDigitIncreaseConsistency", "CheckDigitIncreaseConsistency"); // Enable it
         }
 
         if (section == "[MQTT]") {
-            migrated = migrated | replace(configLines[i], "SetRetainFlag", "RetainMessages"); // First rename it, enable it with its default value
-            migrated = migrated | replace(configLines[i], ";RetainMessages = true", ";RetainMessages = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";RetainMessages", "RetainMessages"); // Enable it
+            migrated = migrated | replaceString(configLines[i], "SetRetainFlag", "RetainMessages"); // First rename it, enable it with its default value
+            migrated = migrated | replaceString(configLines[i], ";RetainMessages = true", ";RetainMessages = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";RetainMessages", "RetainMessages"); // Enable it
 
-            migrated = migrated | replace(configLines[i], ";HomeassistantDiscovery = true", ";HomeassistantDiscovery = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";HomeassistantDiscovery", "HomeassistantDiscovery"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";HomeassistantDiscovery = true", ";HomeassistantDiscovery = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";HomeassistantDiscovery", "HomeassistantDiscovery"); // Enable it
 
             if (configLines[i].rfind("Topic", 0) != std::string::npos)  // only if string starts with "Topic" (Was the naming in very old version)
             {
-                migrated = migrated | replace(configLines[i], "Topic", "MainTopic");
+                migrated = migrated | replaceString(configLines[i], "Topic", "MainTopic");
             }
         }
 
@@ -595,34 +591,34 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[DataLogging]") {
-            migrated = migrated | replace(configLines[i], "DataLogRetentionInDays", "DataFilesRetention");
+            migrated = migrated | replaceString(configLines[i], "DataLogRetentionInDays", "DataFilesRetention");
             /* DataLogActive is true by default! */
-            migrated = migrated | replace(configLines[i], ";DataLogActive = false", ";DataLogActive = true"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";DataLogActive", "DataLogActive"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";DataLogActive = false", ";DataLogActive = true"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";DataLogActive", "DataLogActive"); // Enable it
         }
 
         if (section == "[AutoTimer]") {
-            migrated = migrated | replace(configLines[i], "Intervall", "Interval");
-            migrated = migrated | replace(configLines[i], ";AutoStart = true", ";AutoStart = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";AutoStart", "AutoStart"); // Enable it
+            migrated = migrated | replaceString(configLines[i], "Intervall", "Interval");
+            migrated = migrated | replaceString(configLines[i], ";AutoStart = true", ";AutoStart = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";AutoStart", "AutoStart"); // Enable it
 
         }
 
         if (section == "[Debug]") {
-            migrated = migrated | replace(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
+            migrated = migrated | replaceString(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
             /* LogLevel (resp. LogFile) was originally a boolean, but we switched it to an int
              * For both cases (true/false), we set it to level 2 (WARNING) */
-            migrated = migrated | replace(configLines[i], "LogLevel = true", "LogLevel = 2");
-            migrated = migrated | replace(configLines[i], "LogLevel = false", "LogLevel = 2");
-            migrated = migrated | replace(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
+            migrated = migrated | replaceString(configLines[i], "LogLevel = true", "LogLevel = 2");
+            migrated = migrated | replaceString(configLines[i], "LogLevel = false", "LogLevel = 2");
+            migrated = migrated | replaceString(configLines[i], "LogfileRetentionInDays", "LogfilesRetention");
         }
 
         if (section == "[System]") {
-            migrated = migrated | replace(configLines[i], "RSSIThreashold", "RSSIThreshold");
-            migrated = migrated | replace(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], "RSSIThreashold", "RSSIThreshold");
+            migrated = migrated | replaceString(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
 
-            migrated = migrated | replace(configLines[i], ";SetupMode = true", ";SetupMode = false"); // Set it to its default value
-            migrated = migrated | replace(configLines[i], ";SetupMode", "SetupMode"); // Enable it
+            migrated = migrated | replaceString(configLines[i], ";SetupMode = true", ";SetupMode = false"); // Set it to its default value
+            migrated = migrated | replaceString(configLines[i], ";SetupMode", "SetupMode"); // Enable it
         }
     }
 
@@ -683,33 +679,3 @@ std::vector<std::string> splitString(const std::string& str) {
 
     return found;
 }*/
-
-
-bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
-    return replace(s, toReplace, replaceWith, true);
-}
-
-bool replace(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
-    std::size_t pos = s.find(toReplace);
-
-    if (pos == std::string::npos) { // Not found
-        return false;
-    }
-
-    std::string old = s;
-    s.replace(pos, toReplace.length(), replaceWith);
-    if (logIt) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
-    }
-    return true;
-}
-
-
-bool isInString(std::string& s, std::string const& toFind) {
-    std::size_t pos = s.find(toFind);
-
-    if (pos == std::string::npos) { // Not found
-        return false;
-    }
-    return true;
-}
