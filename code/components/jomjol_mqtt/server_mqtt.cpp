@@ -164,7 +164,7 @@ bool MQTThomeassistantDiscovery() {
 
     //                                                       Group | Field                 | User Friendly Name                | Icon                   | Unit     | Device Class | State Class       | Entity Category
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",              "Value",                            "gauge",                 valueUnit, meterType,     "total_increasing", "");
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   valueUnit, "",            "total_increasing", "diagnostic");
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   "",        "",            "",                 "diagnostic");
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",              "Error",                            "alert-circle-outline",  "",        "",            "",                 "diagnostic");
         /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitalization_round */
         // allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
