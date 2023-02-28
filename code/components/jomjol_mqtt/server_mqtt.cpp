@@ -131,7 +131,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     "}"  +
     "}";
 
-    return MQTTPublish(topicFull, payload, true);
+    return MQTTPublish(topicFull, payload, true, true); //surpress HA discovery topic debug logs to reduce memory usage 
 }
 
 bool MQTThomeassistantDiscovery() {  

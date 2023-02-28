@@ -31,7 +31,7 @@ bool SetRetainFlag;
 void (*callbackOnConnected)(std::string, bool) = NULL;
 
 
-bool MQTTPublish(std::string _key, std::string _content, bool retained_flag) 
+bool MQTTPublish(std::string _key, std::string _content, bool retained_flag, bool _no_logging) 
 {
     if (!mqtt_enabled) {                            // MQTT sevice not started / configured (MQTT_Init not called before)      
         return false;
@@ -76,11 +76,15 @@ bool MQTTPublish(std::string _key, std::string _content, bool retained_flag)
             _content.append("..");
         }
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Published topic: " + _key + ", content: " + _content + " (msg_id=" + std::to_string(msg_id) + ")");
+        if (!_no_logging)
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Published topic: " + _key + ", content: " + _content + " (msg_id=" + std::to_string(msg_id) + ")");
+        
         return true;
     }
     else {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publish skipped. Client not initalized or not connected. (topic: " + _key + ")");
+        if (!_no_logging)
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publish skipped. Client not initalized or not connected. (topic: " + _key + ")");
+        
         return false;
     }
 }
