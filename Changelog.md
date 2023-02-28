@@ -1,10 +1,12 @@
-## [Unreleased]
+## [15.0.3] - 2023-02-28
 
 **Parameter Migration**
 
 ### Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+
+:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it).
 
 ### Changes
 
@@ -29,6 +31,7 @@ If you want to revert back to `v14` or earlier, you will have to revert the migr
 
 -   [#2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
 -   **NEW v15.0.2:**  [#1933](https://github.com/jomjol/AI-on-the-edge-device/issues/1933) Bugfix InfluxDB Timestamp
+-   **NEW v15.0.3:**  Re-added lost dropdownbox filling for Postprocessing Individual Parameters
 
 #### Removed
 
