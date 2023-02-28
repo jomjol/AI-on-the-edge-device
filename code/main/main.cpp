@@ -42,6 +42,7 @@
 #endif //ENABLE_MQTT
 #include "Helper.h"
 #include "statusled.h"
+#include "sdcard_check.h"
 
 #include "../../include/defines.h"
 //#include "server_GPIO.h"
@@ -201,15 +202,9 @@ extern "C" void app_main(void)
         return; // No way to continue without working SD card!
     }
 
-    // SD card: Create directories (if not already existing)
+    // SD card: Create log directories (if not already existing)
     // ********************************************
-    bool bDirStatus = LogFile.CreateLogDirectories(); // needed for logging + image saving
-    bDirStatus = MakeDir("/sdcard/firmware");         // needed for firmware update
-    bDirStatus = MakeDir("/sdcard/img_tmp");          // needed for setting up alignment marks
-    bDirStatus = MakeDir("/sdcard/demo");             // needed for demo mode
-    if (!bDirStatus) {
-        StatusLED(SDCARD_CHECK, 1, false);
-    }
+    LogFile.CreateLogDirectories(); // mandatory for logging + image saving
 
     // ********************************************
     // Highlight start of logfile logging
@@ -219,7 +214,23 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    // Migrate parameter in config.ini to new naming (firmware 14.1 and newer)
+    // SD card: basic R/W check
+    // ********************************************
+    int iSDCardStatus = SDCardCheckRW();
+    if (iSDCardStatus < 0) {
+        if (iSDCardStatus <= -1 && iSDCardStatus >= -2) { // write error
+            StatusLED(SDCARD_CHECK, 1, true);
+        }
+        else if (iSDCardStatus <= -3 && iSDCardStatus >= -5) { // read error
+            StatusLED(SDCARD_CHECK, 2, true);
+        }
+        else if (iSDCardStatus == -6) { // delete error
+            StatusLED(SDCARD_CHECK, 3, true);
+        }
+        setSystemStatusFlag(SYSTEM_STATUS_SDCARD_CHECK_BAD); // reduced web interface going to be loaded
+    }
+
+    // Migrate parameter in config.ini to new naming (firmware 15.0 and newer)
     // ********************************************
     migrateConfiguration();
 
@@ -227,9 +238,12 @@ extern "C" void app_main(void)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
 
-    // SD card: basic RW check
+    // SD card: Create further mandatory directories (if not already existing)
+    // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
     // ********************************************
-    // TODO
+    MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
+    MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
+    MakeDir("/sdcard/demo");             // mandatory for demo mode
 
     // Check for updates
     // ********************************************
@@ -237,15 +251,18 @@ extern "C" void app_main(void)
     CheckUpdate();
 
     // Start SoftAP for initial remote setup
-    // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD empty; function does not exit anymore until reboot
+    // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD card empty; function does not exit anymore until reboot
     // ********************************************
     #ifdef ENABLE_SOFTAP
         CheckStartAPMode(); 
     #endif
 
-    // SD card: Check folder structure
+    // SD card: Check presence of some mandatory folders / files
     // ********************************************
-	// TODO
+    if (!SDCardCheckFolderFilePresence()) {
+        StatusLED(SDCARD_CHECK, 4, true);
+        setSystemStatusFlag(SYSTEM_STATUS_FOLDER_CHECK_BAD); // reduced web interface going to be loaded
+    }
 
     // Check version information
     // ********************************************
@@ -460,12 +477,12 @@ extern "C" void app_main(void)
         TFliteDoAutoStart();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
-        isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
+             isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow task ...");
         TFliteDoAutoStart();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted. Loading reduced web interface...");
     }
 }
 
