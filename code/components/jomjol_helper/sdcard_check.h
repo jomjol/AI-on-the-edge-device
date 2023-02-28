@@ -6,6 +6,6 @@
 #include "../../include/defines.h"
 
 int SDCardCheckRW(void);
-bool SDCardCheckFolderStructure(void);
+bool SDCardCheckFolderFilePresence(void);
 
 #endif /* COMPONENTS_HELPER_SDCARD_CHECK_H */
