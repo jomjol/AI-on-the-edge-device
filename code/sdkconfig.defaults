@@ -133,6 +133,8 @@ CONFIG_GC032A_SUPPORT=n
 CONFIG_GC0308_SUPPORT=n
 CONFIG_BF3005_SUPPORT=n
 
+CONFIG_SYSTEM_EVENT_TASK_STACK_SIZE=4864
+
 #only necessary for task analysis (include/defines -> TASK_ANALYSIS_ON)
 #set in [env:esp32cam-dev-task-analysis]
 #CONFIG_FREERTOS_USE_TRACE_FACILITY=1

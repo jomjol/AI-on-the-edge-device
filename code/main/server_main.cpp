@@ -8,6 +8,7 @@
 #include "time_sntp.h"
 
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 
 #include "version.h"
 
@@ -83,7 +84,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
     else if (_task.compare("Hostname") == 0)
     {
         std::string zw;
-        zw = std::string(hostname);
+        zw = std::string(wlan_config.hostname);
         httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
@@ -214,7 +215,10 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 
     if (filetosend == "/sdcard/html/index.html") {
         if (isSetSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD) || // Initialization failed with crritical errors!
-                isSetSystemStatusFlag(SYSTEM_STATUS_CAM_BAD)) {
+            isSetSystemStatusFlag(SYSTEM_STATUS_CAM_BAD) ||
+            isSetSystemStatusFlag(SYSTEM_STATUS_SDCARD_CHECK_BAD) ||
+            isSetSystemStatusFlag(SYSTEM_STATUS_FOLDER_CHECK_BAD)) 
+        {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "We have a critical error, not serving main page!");
 
             char buf[20];
@@ -227,13 +231,13 @@ esp_err_t hello_main_handler(httpd_req_t *req)
                 }
             }
 
-            message += "<br>Please check <a href=\"https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes\" target=_blank>jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes</a> for more information!";
+            message += "<br>Please check logs with log viewer and/or <a href=\"https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes\" target=_blank>jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes</a> for more information!";
             message += "<br><br><button onclick=\"window.location.href='/reboot';\">Reboot</button>";
             message += "&nbsp;<button onclick=\"window.open('/ota_page.html');\">OTA Update</button>";
             message += "&nbsp;<button onclick=\"window.open('/log.html');\">Log Viewer</button>";
             message += "&nbsp;<button onclick=\"window.open('/info.html');\">Show System Info</button>";
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, message.c_str());
-            return ESP_FAIL;
+            httpd_resp_send(req, message.c_str(), message.length());
+            return ESP_OK;
         }
         else if (isSetupModusActive()) {
             ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");

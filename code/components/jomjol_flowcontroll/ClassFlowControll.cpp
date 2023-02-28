@@ -25,6 +25,7 @@ extern "C" {
 #endif //ENABLE_MQTT
 
 #include "server_help.h"
+#include "server_tflite.h"
 #include "../../include/defines.h"
 
 static const char* TAG = "CTRL";
@@ -195,6 +196,7 @@ void ClassFlowControll::SetInitialParameter(void)
     disabled = false;
     aktRunNr = 0;
     aktstatus = "Flow task not yet created";
+    aktstatusWithTime = aktstatus;
 }
 
 
@@ -272,6 +274,8 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 void ClassFlowControll::InitFlow(std::string config)
 {
     aktstatus = "Initialization";
+    aktstatusWithTime = aktstatus;
+
     //#ifdef ENABLE_MQTT
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false); // Right now, not possible -> MQTT Service is going to be started later
     //#endif //ENABLE_MQTT
@@ -318,6 +322,12 @@ void ClassFlowControll::InitFlow(std::string config)
 }
 
 
+std::string* ClassFlowControll::getActStatusWithTime()
+{
+    return &aktstatusWithTime;
+}
+
+
 std::string* ClassFlowControll::getActStatus()
 {
     return &aktstatus;
@@ -327,6 +337,7 @@ std::string* ClassFlowControll::getActStatus()
 void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
     aktstatus = _aktstatus;
+    aktstatusWithTime = aktstatus;
 }
 
 
@@ -338,10 +349,10 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
     {
         if (FlowControll[i]->name() == "ClassFlowTakeImage") {
             zw_time = getCurrentTimeString("%H:%M:%S");
-            std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
-            aktstatus = flowStatus + " (" + zw_time + ")";
+            aktstatus = TranslateAktstatus(FlowControll[i]->name());
+            aktstatusWithTime = aktstatus + " (" + zw_time + ")";
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
             #endif //ENABLE_MQTT
 
             FlowControll[i]->doFlow(time);
@@ -371,11 +382,11 @@ bool ClassFlowControll::doFlow(string time)
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = getCurrentTimeString("%H:%M:%S");
-        std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
-        aktstatus = flowStatus + " (" + zw_time + ")";
-        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
+        aktstatus = TranslateAktstatus(FlowControll[i]->name());
+        aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
         #ifdef ENABLE_MQTT
-            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
         #endif //ENABLE_MQTT
 
         #ifdef DEBUG_DETAIL_ON
@@ -405,11 +416,11 @@ bool ClassFlowControll::doFlow(string time)
     }
 
     zw_time = getCurrentTimeString("%H:%M:%S");
-    std::string flowStatus = "Flow finished";
-    aktstatus = flowStatus + " (" + zw_time + ")";
-    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
+    aktstatus = "Flow finished";
+    aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT
-        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
     #endif //ENABLE_MQTT
 
     return result;
@@ -589,6 +600,10 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
             }
+
+            /* If system reboot was not triggered by user and reboot was caused by execption -> keep log level to DEBUG */
+            if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC))
+                LogFile.setLogLevel(ESP_LOG_DEBUG);
         }
         if ((toUpper(splitted[0]) == "LOGFILESRETENTION") && (splitted.size() > 1))
         {
@@ -597,18 +612,21 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
         /* TimeServer and TimeZone got already read from the config, see setupTime () */
 
+        #ifdef WLAN_USE_MESH_ROAMING
         if ((toUpper(splitted[0]) == "RSSITHRESHOLD") && (splitted.size() > 1))
         {
-            if (ChangeRSSIThreshold(WLAN_CONFIG_FILE, atoi(splitted[1].c_str())))
+            int RSSIThresholdTMP = atoi(splitted[1].c_str());
+            RSSIThresholdTMP = min(0, max(-100, RSSIThresholdTMP)); // Verify input limits (-100 - 0)
+            
+            if (ChangeRSSIThreshold(WLAN_CONFIG_FILE, RSSIThresholdTMP))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Rebooting to activate new RSSITHRESHOLD ...");
-                esp_restart();
-                hard_restart();                   
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new RSSITHRESHOLD ...");
                 doReboot();
             }
         }
+        #endif
 
         if ((toUpper(splitted[0]) == "HOSTNAME") && (splitted.size() > 1))
         {
@@ -616,9 +634,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Rebooting to activate new HOSTNAME...");
-                esp_restart();
-                hard_restart();                   
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new HOSTNAME...");             
                 doReboot();
             }
         }

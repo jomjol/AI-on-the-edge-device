@@ -78,11 +78,11 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
 }
 
 
-void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
-    loglevel = _logLevel;
-
+void ClassLogFile::setLogLevel(esp_log_level_t _logLevel)
+{
     std::string levelText;
 
+    // Print log level to log file
     switch(_logLevel) {            
         case ESP_LOG_WARN:
             levelText = "WARNING";
@@ -95,13 +95,16 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
         case ESP_LOG_DEBUG:
             levelText = "DEBUG";
             break;
+    
         case ESP_LOG_ERROR:
         default:
             levelText = "ERROR";
             break;
     }
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set log level to " + levelText);
 
-    ESP_LOGI(TAG, "Log Level set to %s", levelText.c_str());
+    // set new log level
+    loglevel = _logLevel;
 
     /*
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Test");
@@ -386,14 +389,17 @@ void ClassLogFile::RemoveOldDataLog()
 }
 
 
-void ClassLogFile::CreateLogDirectories()
+bool ClassLogFile::CreateLogDirectories()
 {
-    MakeDir("/sdcard/log");
-    MakeDir("/sdcard/log/data");
-    MakeDir("/sdcard/log/analog");
-    MakeDir("/sdcard/log/digit");
-    MakeDir("/sdcard/log/message");
-    MakeDir("/sdcard/log/source");
+    bool bRetval = false;
+    bRetval = MakeDir("/sdcard/log");
+    bRetval = MakeDir("/sdcard/log/data");
+    bRetval = MakeDir("/sdcard/log/analog");
+    bRetval = MakeDir("/sdcard/log/digit");
+    bRetval = MakeDir("/sdcard/log/message");
+    bRetval = MakeDir("/sdcard/log/source");
+
+    return bRetval;
 }
 
 

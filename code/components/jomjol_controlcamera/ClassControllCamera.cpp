@@ -7,6 +7,7 @@
 #include "esp_log.h"
 
 #include "Helper.h"
+#include "statusled.h"
 #include "CImageBasis.h"
 
 #include "server_ota.h"
@@ -557,15 +558,17 @@ void CCamera::LightOnOff(bool status)
 
 void CCamera::LEDOnOff(bool status)
 {
-	// Init the GPIO
-    gpio_pad_select_gpio(BLINK_GPIO);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
+	if (xHandle_task_StatusLED == NULL) {
+        // Init the GPIO
+        gpio_pad_select_gpio(BLINK_GPIO);
+        /* Set the GPIO as a push/pull output */
+        gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
 
-    if (!status)  
-        gpio_set_level(BLINK_GPIO, 1);
-    else
-        gpio_set_level(BLINK_GPIO, 0);      
+        if (!status)  
+            gpio_set_level(BLINK_GPIO, 1);
+        else
+            gpio_set_level(BLINK_GPIO, 0);   
+    }
 }
 
 
