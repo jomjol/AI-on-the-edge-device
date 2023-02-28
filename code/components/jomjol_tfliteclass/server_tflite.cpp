@@ -925,6 +925,10 @@ void task_autodoFlow(void *pvParameter)
             StatusLED(TIME_CHECK, 1, false);
         }
 
+        #if (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES)
+            wifiRoamingQuery();
+        #endif
+
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_interval > fr_delta_ms)
         {

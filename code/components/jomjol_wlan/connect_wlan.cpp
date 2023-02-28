@@ -45,19 +45,16 @@ int WIFIReconnectCnt = 0;
 
 
 #ifdef WLAN_USE_MESH_ROAMING
-
-int RSSI_Threshold = WLAN_WIFI_RSSI_THRESHOLD;
-
 /* rrm ctx */
 int rrm_ctx = 0;
 
-/* FreeRTOS event group to signal when we are connected & ready to make a request */
-static EventGroupHandle_t wifi_event_group;
 
-/* esp netif object representing the WIFI station */
-static esp_netif_t *sta_netif = NULL;
+std::string BssidToString(const char* c) {
+	char cBssid[25];
+	sprintf(cBssid, "%02x:%02x:%02x:%02x:%02x:%02x", c[0], c[1], c[2], c[3], c[4], c[5]);
+	return std::string(cBssid);
+}
 
-//static const char *TAG = "roaming_example";
 
 static inline uint32_t WPA_GET_LE32(const uint8_t *a)
 {
@@ -81,6 +78,7 @@ static inline uint32_t WPA_GET_LE32(const uint8_t *a)
 #define ETH_ALEN 6
 #endif
 
+
 #define MAX_NEIGHBOR_LEN 512
 static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 {
@@ -97,10 +95,10 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 	 * PHY Type[1]
 	 * Optional Subelements[variable]
 	 */
-#define NR_IE_MIN_LEN (ETH_ALEN + 4 + 1 + 1 + 1)
+	#define NR_IE_MIN_LEN (ETH_ALEN + 4 + 1 + 1 + 1)
 
 	if (!report || report_len == 0) {
-		ESP_LOGI(TAG, "RRM neighbor report is not valid");
+		ESP_LOGD(TAG, "Roaming: RRM neighbor report is not valid");
 		return NULL;
 	}
 
@@ -116,14 +114,14 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 
 		if (pos[0] != WLAN_EID_NEIGHBOR_REPORT ||
 		    nr_len < NR_IE_MIN_LEN) {
-			ESP_LOGI(TAG, "CTRL: Invalid Neighbor Report element: id=%u len=%u",
+			ESP_LOGD(TAG, "Roaming CTRL: Invalid Neighbor Report element: id=%u len=%u",
 					data[0], nr_len);
 			ret = -1;
 			goto cleanup;
 		}
 
 		if (2U + nr_len > report_len) {
-			ESP_LOGI(TAG, "CTRL: Invalid Neighbor Report element: id=%u len=%zu nr_len=%u",
+			ESP_LOGD(TAG, "Roaming CTRL: Invalid Neighbor Report element: id=%u len=%zu nr_len=%u",
 					data[0], report_len, nr_len);
 			ret = -1;
 			goto cleanup;
@@ -166,14 +164,18 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 
 			pos += s_len;
 		}
-
-		ESP_LOGI(TAG, "RMM neigbor report bssid=" MACSTR
+				
+		ESP_LOGI(TAG, "Roaming: RMM neigbor report bssid=" MACSTR
 				" info=0x%x op_class=%u chan=%u phy_type=%u%s%s%s%s",
 				MAC2STR(nr), WPA_GET_LE32(nr + ETH_ALEN),
 				nr[ETH_ALEN + 4], nr[ETH_ALEN + 5],
 				nr[ETH_ALEN + 6],
 				lci[0] ? " lci=" : "", lci,
 				civic[0] ? " civic=" : "", civic);
+
+		
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: RMM neigbor report BSSID: " + BssidToString((char*)nr) + 
+		                                        ", Channel: " + std::to_string(nr[ETH_ALEN + 5]));
 
 		/* neighbor start */
 		len += snprintf(buf + len, MAX_NEIGHBOR_LEN - len, " neighbor=");
@@ -212,18 +214,19 @@ void neighbor_report_recv_cb(void *ctx, const uint8_t *report, size_t report_len
 	int *val = (int*) ctx;
 	uint8_t *pos = (uint8_t *)report;
 	int cand_list = 0;
+	int ret;
 
 	if (!report) {
-		ESP_LOGE(TAG, "report is null");
+		ESP_LOGD(TAG, "Roaming: Neighbor report is null");
 		return;
 	}
 	if (*val != rrm_ctx) {
-		ESP_LOGE(TAG, "rrm_ctx value didn't match, not initiated by us");
+		ESP_LOGE(TAG, "Roaming: rrm_ctx value didn't match, not initiated by us");
 		return;
 	}
 	/* dump report info */
-	ESP_LOGI(TAG, "rrm: neighbor report len=%d", report_len);
-	ESP_LOG_BUFFER_HEXDUMP(TAG, pos, report_len, ESP_LOG_INFO);
+	ESP_LOGD(TAG, "Roaming: RRM neighbor report len=%d", report_len);
+	ESP_LOG_BUFFER_HEXDUMP(TAG, pos, report_len, ESP_LOG_DEBUG);
 
 	/* create neighbor list */
 	char *neighbor_list = get_btm_neighbor_list(pos + 1, report_len - 1);
@@ -242,8 +245,10 @@ void neighbor_report_recv_cb(void *ctx, const uint8_t *report, size_t report_len
 		esp_wifi_scan_get_ap_records(&number, &ap_records);
 		cand_list = 1;
 	}
-	/* send AP btm query, this will cause STA to roam as well */
-	esp_wnm_send_bss_transition_mgmt_query(REASON_FRAME_LOSS, neighbor_list, cand_list);
+	/* send AP btm query requesting to roam depending on candidate list of AP */
+	// btm_query_reasons: https://github.com/espressif/esp-idf/blob/release/v4.4/components/wpa_supplicant/esp_supplicant/include/esp_wnm.h
+	ret = esp_wnm_send_bss_transition_mgmt_query((btm_query_reason)16, neighbor_list, cand_list);	// query reason 16 -> LOW RSSI
+	ESP_LOGD(TAG, "neighbor_report_recv_cb retval - bss_transisition_query: %d", ret);
 
 cleanup:
 	if (neighbor_list)
@@ -251,28 +256,72 @@ cleanup:
 }
 
 
-static void esp_bss_rssi_low_handler(void* arg, esp_event_base_t event_base,
-		int32_t event_id, void* event_data)
+static void esp_bss_rssi_low_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
+	int retval = -1;
 	wifi_event_bss_rssi_low_t *event = (wifi_event_bss_rssi_low_t*) event_data;
 
-	ESP_LOGI(TAG, "%s:bss rssi is=%d", __func__, event->rssi);
-	/* Lets check channel conditions */
-	rrm_ctx++;
-	if (esp_rrm_send_neighbor_rep_request(neighbor_report_recv_cb, &rrm_ctx) < 0) {
-		/* failed to send neighbor report request */
-		ESP_LOGI(TAG, "failed to send neighbor report request");
-		if (esp_wnm_send_bss_transition_mgmt_query(REASON_FRAME_LOSS, NULL, 0) < 0) {
-			ESP_LOGI(TAG, "failed to send btm query");
-		}
+	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming Event: RSSI " + std::to_string(event->rssi) + 
+								" < RSSI_Threshold " + std::to_string(wlan_config.rssi_threshold));
+
+	/* If RRM is supported, call RRM and then send BTM query to AP */
+	if (esp_rrm_is_rrm_supported_connection() && esp_wnm_is_btm_supported_connection()) 
+	{
+		/* Lets check channel conditions */
+		rrm_ctx++;
+
+		retval = esp_rrm_send_neighbor_rep_request(neighbor_report_recv_cb, &rrm_ctx);
+		ESP_LOGD(TAG, "esp_rrm_send_neighbor_rep_request retval: %d", retval);
+		if (retval == 0)
+			LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: RRM + BTM query sent");
+		else
+			ESP_LOGD(TAG, "esp_rrm_send_neighbor_rep_request retval: %d", retval);
+	}
+
+	/* If RRM is not supported or RRM request failed, send directly BTM query to AP */
+	if (retval < 0 && esp_wnm_is_btm_supported_connection()) 
+	{
+		// btm_query_reasons: https://github.com/espressif/esp-idf/blob/release/v4.4/components/wpa_supplicant/esp_supplicant/include/esp_wnm.h
+		retval = esp_wnm_send_bss_transition_mgmt_query((btm_query_reason)16, NULL, 0);	// query reason 16 -> LOW RSSI
+		ESP_LOGD(TAG, "esp_wnm_send_bss_transition_mgmt_query retval: %d", retval);
+		if (retval == 0)
+			LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: BTM query sent");
+		else
+			ESP_LOGD(TAG, "esp_wnm_send_bss_transition_mgmt_query retval: %d", retval);
 	}
 }
 
 
-#endif
+void printRoamingFeatureSupport(void) 
+{
+	if (esp_rrm_is_rrm_supported_connection())
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Roaming: RRM (802.11k) supported by AP");
+	else
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Roaming: RRM (802.11k) NOT supported by AP");
 
-//////////////////////////////////
-//////////////////////////////////
+	if (esp_wnm_is_btm_supported_connection())
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Roaming: BTM (802.11v) supported by AP");
+	else
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Roaming: BTM (802.11v) NOT supported by AP");
+}
+
+
+#ifdef WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES
+void wifiRoamingQuery(void) 
+{
+	/* Query only if WIFI is connected and feature is supported by AP */
+	if (WIFIConnected && (esp_rrm_is_rrm_supported_connection() || esp_wnm_is_btm_supported_connection())) {
+		/* Client is allowed to send query to AP for roaming request if RSSI is lower than threshold */
+		/* Note 1: Set RSSI threshold funtion needs to be called to trigger WIFI_EVENT_STA_BSS_RSSI_LOW */
+		/* Note 2: Additional querys will be sent after flow round is finshed --> server_tflite.cpp - function "task_autodoFlow" */
+		/* Note 3: RSSI_Threshold = 0 --> Disable client query by application (WebUI parameter) */
+		
+		if (wlan_config.rssi_threshold != 0 && get_WIFI_RSSI() != -127 && (get_WIFI_RSSI() < wlan_config.rssi_threshold))
+			esp_wifi_set_rssi_threshold(wlan_config.rssi_threshold);
+	}
+}
+#endif // WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES
+#endif // WLAN_USE_MESH_ROAMING
 
 
 std::string* getIPAddress()
@@ -294,7 +343,6 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
         WIFIConnected = false;
         esp_wifi_connect();
     }
-	
 	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) 
 	{
 		/* Disconnect reason: https://github.com/espressif/esp-idf/blob/d825753387c1a64463779bbd2369e177e5d59a79/components/esp_wifi/include/esp_wifi_types.h */
@@ -340,6 +388,15 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 	{
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to: " + wlan_config.ssid + ", RSSI: " + 
 												std::to_string(get_WIFI_RSSI()));
+
+		#ifdef WLAN_USE_MESH_ROAMING	
+			printRoamingFeatureSupport();
+
+			#ifdef WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES
+			// wifiRoamingQuery();	// Avoid client triggered query during processing flow (reduce risk of heap shortage). Request will be triggered at the end of every round anyway
+			#endif //WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES
+			
+		#endif //WLAN_USE_MESH_ROAMING
 	}
 	
 	else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) 
@@ -461,6 +518,18 @@ esp_err_t wifi_init_sta(void)
 	#endif
 
     wifi_config_t wifi_config = { };
+
+	wifi_config.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;		// Scan all channels instead of stopping after first match
+	wifi_config.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;	// Sort by signal strength and keep up to 4 best APs
+	//wifi_config.sta.failure_retry_cnt = 10;	// Upcoming IDF version 5.0 will support this (after this value a new scan will be initiated)
+
+	#ifdef WLAN_USE_MESH_ROAMING
+	wifi_config.sta.rm_enabled = 1;		 // 802.11k (Radio Resource Management)
+	wifi_config.sta.btm_enabled = 1;	 // 802.11v (BSS Transition Management)
+	//wifi_config.sta.mbo_enabled = 1;	 // Multiband Operation (better use of Wi-Fi network resources in roaming decisions) -> not activated to save heap
+	wifi_config.sta.pmf_cfg.capable = 1; // 802.11w (Protected Management Frame, activated by default if other device also advertizes PMF capability)
+	//wifi_config.sta.ft_enabled = 1;	 // 802.11r (BSS Fast Transition) -> Upcoming IDF version 5.0 will support 11r
+	#endif
 
     strcpy((char*)wifi_config.sta.ssid, (const char*)wlan_config.ssid.c_str());
     strcpy((char*)wifi_config.sta.password, (const char*)wlan_config.password.c_str());
