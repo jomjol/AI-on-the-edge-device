@@ -247,7 +247,7 @@ void neighbor_report_recv_cb(void *ctx, const uint8_t *report, size_t report_len
 	}
 	/* send AP btm query requesting to roam depending on candidate list of AP */
 	// btm_query_reasons: https://github.com/espressif/esp-idf/blob/release/v4.4/components/wpa_supplicant/esp_supplicant/include/esp_wnm.h
-	ret = esp_wnm_send_bss_transition_mgmt_query((btm_query_reason)16, neighbor_list, cand_list);	// query reason 16 -> LOW RSSI
+	ret = esp_wnm_send_bss_transition_mgmt_query(REASON_FRAME_LOSS, neighbor_list, cand_list);	// query reason 16 -> LOW RSSI --> (btm_query_reason)16
 	ESP_LOGD(TAG, "neighbor_report_recv_cb retval - bss_transisition_query: %d", ret);
 
 cleanup:
@@ -282,7 +282,7 @@ static void esp_bss_rssi_low_handler(void* arg, esp_event_base_t event_base, int
 	if (retval < 0 && esp_wnm_is_btm_supported_connection()) 
 	{
 		// btm_query_reasons: https://github.com/espressif/esp-idf/blob/release/v4.4/components/wpa_supplicant/esp_supplicant/include/esp_wnm.h
-		retval = esp_wnm_send_bss_transition_mgmt_query((btm_query_reason)16, NULL, 0);	// query reason 16 -> LOW RSSI
+		retval = esp_wnm_send_bss_transition_mgmt_query(REASON_FRAME_LOSS, NULL, 0);	// query reason 16 -> LOW RSSI --> (btm_query_reason)16
 		ESP_LOGD(TAG, "esp_wnm_send_bss_transition_mgmt_query retval: %d", retval);
 		if (retval == 0)
 			LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: BTM query sent");
