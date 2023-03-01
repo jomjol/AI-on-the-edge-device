@@ -275,6 +275,7 @@ bool ClassFlowControll::InitFlow(std::string config)
 {
     bool bRetVal = true;
     aktstatus = "Initialization";
+    aktstatusWithTime = aktstatus;
     //#ifdef ENABLE_MQTT --> // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false);
     //#endif //ENABLE_MQTT
@@ -339,6 +340,12 @@ bool ClassFlowControll::InitFlow(std::string config)
 }
 
 
+std::string* ClassFlowControll::getActStatusWithTime()
+{
+    return &aktstatusWithTime;
+}
+
+
 std::string* ClassFlowControll::getActStatus()
 {
     return &aktstatus;
@@ -376,7 +383,6 @@ bool ClassFlowControll::doFlow(string time)
 {
     bool result = true;
     std::string zw_time;
-    std::string flowStatus;
 
     for (int i = 0; i < FlowControll.size(); ++i)
     {
@@ -393,16 +399,16 @@ bool ClassFlowControll::doFlow(string time)
         #endif //ENABLE_MQTT
 
         if (!FlowControll[i]->doFlow(time)){
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error during processing of state \"" + flowStatus + "\". Flow aborted!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error during processing of state \"" + aktstatus + "\". Flow aborted!");
             result = false;
             break;
         }
     }
 
     if (result)
-        flowStatus = "Flow finished";
+        aktstatus = "Flow finished";
     else
-        flowStatus = "Flow aborted - ERROR";
+        aktstatus = "Flow aborted - ERROR";
 
     zw_time = getCurrentTimeString("%H:%M:%S");
     aktstatus = "Flow finished";
