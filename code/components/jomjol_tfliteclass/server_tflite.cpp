@@ -388,64 +388,109 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             return ESP_OK;
         }
 
-        zw = tfliteflow.getReadout(_rawValue, _noerror);
-        if (zw.length() > 0)
-            httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
+        std::string *status = tfliteflow.getActStatus();
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
         if (query.find("full") != std::string::npos)
         {
+            string txt;
+            txt = "<body style=\"font-family: arial\">";
+
+            if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
+                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
+            }
+            else {
+                txt += "<h3>Value</h3>";
+            }
+
+            httpd_resp_sendstr_chunk(req, txt.c_str());
+        }
+
+
+        zw = tfliteflow.getReadout(_rawValue, _noerror);
+        if (zw.length() > 0)
+            httpd_resp_sendstr_chunk(req, zw.c_str()); 
+
+
+        if (query.find("full") != std::string::npos)
+        {
             string txt, zw;
-            
-            txt = "<p>Aligned Image: <p><img src=\"/img_tmp/alg_roi.jpg\"> <p>\n";
-            txt = txt + "Digital Counter: <p> ";
-            httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            
-            std::vector<HTMLInfo*> htmlinfodig;
-            htmlinfodig = tfliteflow.GetAllDigital();  
 
-            for (int i = 0; i < htmlinfodig.size(); ++i)
-            {
-                if (tfliteflow.GetTypeDigital() == Digital)
+            if ((countRounds <= 1) && (*status != std::string("Flow finished"))) { // First round not completed yet
+                // Nothing to do
+            }
+            else {
+                /* Digital ROIs */
+                txt = "<body style=\"font-family: arial\">";
+                txt += "<h3>Recognized Digit ROIs (previous round)</h3>\n";
+                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
+
+                std::vector<HTMLInfo*> htmlinfodig;
+                htmlinfodig = tfliteflow.GetAllDigital(); 
+
+                for (int i = 0; i < htmlinfodig.size(); ++i)
                 {
-                    if (htmlinfodig[i]->val == 10)
-                        zw = "NaN";
-                    else
-                        zw = to_string((int) htmlinfodig[i]->val);
+                    if (tfliteflow.GetTypeDigital() == Digital)
+                    {
+                        if (htmlinfodig[i]->val == 10)
+                            zw = "NaN";
+                        else
+                            zw = to_string((int) htmlinfodig[i]->val);
 
-                    txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                        txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p></td>\n";
+                    }
+                    else
+                    {
+                        std::stringstream stream;
+                        stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                        zw = stream.str();
+
+                        txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"></p></td>\n";
+                    }
+                    delete htmlinfodig[i];
                 }
-                else
+
+                htmlinfodig.clear();
+            
+                txt += "</tr></table>\n";
+                httpd_resp_sendstr_chunk(req, txt.c_str()); 
+
+
+                /* Analog ROIs */
+                txt = "<h3>Recognized Analog ROIs (previous round)</h3>\n";
+                txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
+                
+                std::vector<HTMLInfo*> htmlinfoana;
+                htmlinfoana = tfliteflow.GetAllAnalog();
+                for (int i = 0; i < htmlinfoana.size(); ++i)
                 {
                     std::stringstream stream;
-                    stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                    stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
                     zw = stream.str();
 
-                    txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+                    txt += "<td style=\"width: 150px;\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"></p></td>\n";
+                delete htmlinfoana[i];
+                }
+                htmlinfoana.clear();   
+
+                txt += "</tr>\n</table>\n";
+                httpd_resp_sendstr_chunk(req, txt.c_str()); 
+
+
+                /* Full Image 
+                 * Only show it after the image got taken and aligned */
+                txt = "<h3>Aligned Image (current round)</h3>\n";
+                if ((*status == std::string("Initialization")) || 
+                    (*status == std::string("Initialization (delayed)")) || 
+                    (*status == std::string("Take Image"))) {
+                    txt += "<p>Current state: " + *status + "</p>\n";
+                }
+                else {
+                    txt += "<img src=\"/img_tmp/alg_roi.jpg\">\n";
                 }
                 httpd_resp_sendstr_chunk(req, txt.c_str()); 
-                delete htmlinfodig[i];
             }
-            htmlinfodig.clear();
-        
-            txt = " <p> Analog Meter: <p> ";
-            httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            
-            std::vector<HTMLInfo*> htmlinfoana;
-            htmlinfoana = tfliteflow.GetAllAnalog();
-            for (int i = 0; i < htmlinfoana.size(); ++i)
-            {
-                std::stringstream stream;
-                stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
-                zw = stream.str();
-
-                txt = "<img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"> " + zw;
-                httpd_resp_sendstr_chunk(req, txt.c_str()); 
-                delete htmlinfoana[i];
-            }
-            htmlinfoana.clear();   
-
         }   
 
         /* Respond with an empty chunk to signal HTTP response completion */
@@ -682,7 +727,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
             ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
         #endif
 
-        string* zw = tfliteflow.getActStatus();
+        string* zw = tfliteflow.getActStatusWithTime();
         resp_str = zw->c_str();
 
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);   

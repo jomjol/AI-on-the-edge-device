@@ -14,6 +14,7 @@ std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;
 std::map<std::string, std::function<bool(std::string, char*, int)>>* subscribeFunktionMap = NULL;
 
 int failedOnRound = -1;
+int MQTTReconnectCnt = 0;
  
 esp_mqtt_event_id_t esp_mqtt_ID = MQTT_EVENT_ANY;
 // ESP_EVENT_ANY_ID
@@ -89,29 +90,39 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     std::string topic = "";
     switch (event->event_id) {
         case MQTT_EVENT_BEFORE_CONNECT:
-            ESP_LOGD(TAG, "MQTT_EVENT_BEFORE_CONNECT");
             mqtt_initialized = true;
             break;
+        
         case MQTT_EVENT_CONNECTED:
-            ESP_LOGD(TAG, "MQTT_EVENT_CONNECTED");
+            MQTTReconnectCnt = 0;
             mqtt_initialized = true;
             mqtt_connected = true;
             MQTTconnected();
             break;
+        
         case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGD(TAG, "MQTT_EVENT_DISCONNECTED");
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Disconnected from broker");
             mqtt_connected = false;
+            MQTTReconnectCnt++;
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Disconnected, trying to reconnect");
+
+            if (MQTTReconnectCnt >= 5) {
+                MQTTReconnectCnt = 0;
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Disconnected, multiple reconnect attempts failed, still retrying...");
+            }
             break;
+        
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
             break;
+        
         case MQTT_EVENT_UNSUBSCRIBED:
             ESP_LOGD(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
             break;
+        
         case MQTT_EVENT_PUBLISHED:
             ESP_LOGD(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
             break;
+        
         case MQTT_EVENT_DATA:
             ESP_LOGD(TAG, "MQTT_EVENT_DATA");
             ESP_LOGD(TAG, "TOPIC=%.*s", event->topic_len, event->topic);
@@ -126,6 +137,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
                 ESP_LOGW(TAG, "no handler available\r\n");
             }
             break;
+        
         case MQTT_EVENT_ERROR:
             #ifdef DEBUG_DETAIL_ON 
                 ESP_LOGD(TAG, "MQTT_EVENT_ERROR - esp_mqtt_error_codes:");
@@ -136,8 +148,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
                 ESP_LOGD(TAG, "esp_tls_stack_err:%d", event->error_handle->esp_tls_stack_err);
                 ESP_LOGD(TAG, "esp_tls_cert_verify_flags:%d", event->error_handle->esp_tls_cert_verify_flags);
             #endif
-            mqtt_connected = false;
+            //mqtt_connected = false;
             break;
+        
         default:
             ESP_LOGD(TAG, "Other event id:%d", event->event_id);
             break;
@@ -313,8 +326,7 @@ bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len) {
 void MQTTconnected(){
     if (mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
-        MQTTPublish(lwt_topic, lwt_connected, true);                        // Publish "connected" to maintopic/connection
-
+        
         if (connectFunktionMap != NULL) {
             for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
                 it->second();

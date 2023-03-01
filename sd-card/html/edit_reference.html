@@ -238,7 +238,7 @@ table {
         }			
                 
         function SaveReference(){
-            if (confirm("Are you sure you want to update the reference image?")) {
+            if (confirm("Are you sure you want to update the Reference Image?")) {
                 param["Alignment"]["InitialRotate"].value1 = document.getElementById("prerotateangle").value;
 
                 if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
@@ -272,7 +272,7 @@ table {
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
                 showReference(param);
                 UpdatePage();
-                firework.launch('Reference got updated. Please reboot to activate changes!', 'success', 5000);
+                firework.launch('Reference got updated. It will get applied after the next reboot!', 'success', 5000);
             }
         }
 

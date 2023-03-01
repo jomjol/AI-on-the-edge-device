@@ -196,6 +196,7 @@ void ClassFlowControll::SetInitialParameter(void)
     disabled = false;
     readParameterDone = false;
     aktstatus = "Flow task not yet created";
+    aktstatusWithTime = aktstatus;
 }
 
 
@@ -347,6 +348,7 @@ std::string* ClassFlowControll::getActStatus()
 void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
     aktstatus = _aktstatus;
+    aktstatusWithTime = aktstatus;
 }
 
 
@@ -358,10 +360,10 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
     {
         if (FlowControll[i]->name() == "ClassFlowTakeImage") {
             zw_time = getCurrentTimeString("%H:%M:%S");
-            std::string flowStatus = TranslateAktstatus(FlowControll[i]->name());
-            aktstatus = flowStatus + " (" + zw_time + ")";
+            aktstatus = TranslateAktstatus(FlowControll[i]->name());
+            aktstatusWithTime = aktstatus + " (" + zw_time + ")";
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
             #endif //ENABLE_MQTT
 
             FlowControll[i]->doFlow(time);
@@ -383,11 +385,11 @@ bool ClassFlowControll::doFlow(string time)
         #endif
         
         zw_time = getCurrentTimeString("%H:%M:%S");
-        flowStatus = TranslateAktstatus(FlowControll[i]->name());
-        aktstatus = flowStatus + " (" + zw_time + ")";
-        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
+        aktstatus = TranslateAktstatus(FlowControll[i]->name());
+        aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
         #ifdef ENABLE_MQTT
-            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
         #endif //ENABLE_MQTT
 
         if (!FlowControll[i]->doFlow(time)){
@@ -403,10 +405,11 @@ bool ClassFlowControll::doFlow(string time)
         flowStatus = "Flow aborted - ERROR";
 
     zw_time = getCurrentTimeString("%H:%M:%S");
-    aktstatus = flowStatus + " (" + zw_time + ")";
-    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatus);
+    aktstatus = "Flow finished";
+    aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+    //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT
-        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowStatus, false);
+        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
     #endif //ENABLE_MQTT
 
     #ifdef DEBUG_DETAIL_ON 

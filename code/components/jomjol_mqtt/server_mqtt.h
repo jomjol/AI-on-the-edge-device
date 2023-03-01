@@ -16,7 +16,7 @@ std::string mqttServer_getMainTopic();
 
 void register_server_mqtt_uri(httpd_handle_t server);
 
-void publishSystemData();
+bool publishSystemData();
 
 std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, bool SetRetainFlag);

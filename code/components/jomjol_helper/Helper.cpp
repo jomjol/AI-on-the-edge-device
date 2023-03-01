@@ -939,11 +939,11 @@ std::string UrlDecode(const std::string& value)
 {
     std::string result;
     result.reserve(value.size());
-    
+
     for (std::size_t i = 0; i < value.size(); ++i)
     {
         auto ch = value[i];
-        
+
         if (ch == '%' && (i + 2) < value.size())
         {
             auto hex = value.substr(i + 1, 2);
@@ -960,6 +960,37 @@ std::string UrlDecode(const std::string& value)
             result.push_back(ch);
         }
     }
-    
+
     return result;
+}
+
+
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    return replaceString(s, toReplace, replaceWith, true);
+}
+
+
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
+    std::size_t pos = s.find(toReplace);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+
+    std::string old = s;
+    s.replace(pos, toReplace.length(), replaceWith);
+    if (logIt) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+    }
+    return true;
+}
+
+
+bool isInString(std::string& s, std::string const& toFind) {
+    std::size_t pos = s.find(toFind);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+    return true;
 }

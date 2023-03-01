@@ -6,6 +6,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css?v=$COMMIT_HASH" type="text/css" >
+<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
@@ -82,15 +83,23 @@
         </li>
       </ul>
 
-    <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
-    <li><a href="#" onclick="loadPage('graph.html?v=$COMMIT_HASH');">Data Graph</a></li>
-    <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/');">File Server</a></li>
+
+    <li><a>Data <i class="arrow down"></i></a>
+        <ul class="submenu">
+            <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
+            <li><a href="#" onclick="loadPage('graph.html?v=$COMMIT_HASH');">Data Graph</a></li>
+            <li><a href="#" onclick="loadPage('data.html?v=$COMMIT_HASH');">Data Viewer</a></li>
+            <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/log/data/');">Data Files</a></li>
+        </ul>
+    </li>
+
+
     <li><a>System <i class="arrow down"></i></a>
         <ul class="submenu">
             <li><a href="#" onclick="loadPage('backup.html?v=$COMMIT_HASH');">Backup/Restore</a></li>
             <li><a href="#" onclick="loadPage('ota_page.html?v=$COMMIT_HASH');">OTA Update</a></li>
             <li><a href="#" onclick="loadPage('log.html?v=$COMMIT_HASH');">Log Viewer</a></li>
-            <li><a href="#" onclick="loadPage('data.html?v=$COMMIT_HASH');">Data Viewer</a></li>
+            <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/');">File Server</a></li>
             <li><a href="#" onclick="loadPage('reboot_page.html?v=$COMMIT_HASH');">Reboot</a></li>
             <li><a href="#" onclick="loadPage('info.html?v=$COMMIT_HASH');">Info</a></li>
         </ul>

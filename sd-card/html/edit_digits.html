@@ -161,7 +161,7 @@ th, td {
             domainname = getDomainname();
 
     function doReboot() {
-        if (confirm("Are you sure you want to reboot? Did you save the config?")) {
+        if (confirm("Are you sure you want to reboot? Did you save your changes?")) {
                 var stringota = getDomainname() + "/reboot";
                 window.location = stringota;
                 window.location.href = stringota;
@@ -296,7 +296,7 @@ function SaveToConfig(){
     cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     WriteConfigININew();
     SaveConfigToServer(domainname); 
-    firework.launch('Configuration got updated. Please reboot to activate changes!', 'success', 5000);
+    firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
 }
 
 
