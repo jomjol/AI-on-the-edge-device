@@ -423,7 +423,7 @@ httpd_handle_t start_webserver(void)
     httpd_config_t config = { };
 
     config.task_priority = tskIDLE_PRIORITY+3; // previously -> 2022-12-11: tskIDLE_PRIORITY+1; 2021-09-24: tskIDLE_PRIORITY+5
-    config.stack_size = 12288; // previously -> 2023-01-02: 32768
+    config.stack_size = 10240; // previously -> 202302-28: 12288, 2023-01-02: 32768
     config.core_id = 1; // previously -> 2023-01-02: 0, 2022-12-11: tskNO_AFFINITY;
     config.server_port = 80;
     config.ctrl_port = 32768;

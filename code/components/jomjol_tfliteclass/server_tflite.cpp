@@ -910,6 +910,10 @@ void task_autodoFlow(void *pvParameter)
             StatusLED(TIME_CHECK, 1, false);
         }
 
+        #if (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES)
+            wifiRoamingQuery();
+        #endif
+
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_interval > fr_delta_ms)
         {
@@ -930,11 +934,12 @@ void TFliteDoAutoStart()
 
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 
-    xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
-    //xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow);
+    uint32_t stackSize = 11 * 1024;
+    xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", stackSize, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
     if( xReturned != pdPASS )
     {
-       ESP_LOGD(TAG, "ERROR task_autodoFlow konnte nicht erzeugt werden!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Creation task_autodoFlow failed. Requested stack size:" + std::to_string(stackSize));
+        LogFile.WriteHeapInfo("Creation task_autodoFlow failed");
     }
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 }
