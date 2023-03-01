@@ -343,13 +343,13 @@ jobs:
 #        changelogPath: Changelog.md
 #        version: ${{ steps.get_version.outputs.version-without-v }}
             
-    # the release notes will be extracted from changelog 
-    - name: Extract release notes
-      id: extract-release-notes
-      if: startsWith(github.ref, 'refs/tags/') 
-      uses: ffurrer2/extract-release-notes@v1
-      with:
-          changelog_file: Changelog.md
+#    # the release notes will be extracted from changelog 
+#    - name: Extract release notes
+#      id: extract-release-notes
+#      if: startsWith(github.ref, 'refs/tags/') 
+#      uses: ffurrer2/extract-release-notes@v1
+#      with:
+#          changelog_file: Changelog.md
 
     # Releases should only be created on master by tagging the last commit.
     # all artifacts in firmware folder pushed to the release

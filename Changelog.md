@@ -1,8 +1,22 @@
 ## [Unreleased]
 
-**Rolling**
+xxx
 
+### Update Procedure
 
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+
+:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it).
+
+### Changes
+
+This release only migrates some parameters, see #2023 for details and a list of all parameter changes.
+The parameter migration happens automatically on the next startup. No user interaction is required.
+A backup of the config is stored on the SD-card as `config.bak`.
+
+Beside of the parameter change and the bugfix listed below, no changes are contained in this release!
+
+If you want to revert back to `v14` or earlier, you will have to revert the migration changes in `config.ini` manually!
 
 #### Added
 
@@ -14,24 +28,26 @@
 
 #### Changed
 
--   n.a.
+-   [#2023](https://github.com/jomjol/AI-on-the-edge-device/pull/2023) Migrated Parameters
+-   Removed old `Topic` parameter, it is not used anymore
 
 #### Fixed
-
--   
+-  n.a.
 
 #### Removed
 
 -   n.a.
 
 
-## [15.0.1] - 2023-02-23
+## [15.0.3] - 2023-02-28
 
 **Parameter Migration**
 
 ### Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+
+:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it).
 
 ### Changes
 
@@ -54,7 +70,13 @@ If you want to revert back to `v14` or earlier, you will have to revert the migr
 
 #### Fixed
 
--   [2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+-   [#2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
+-   **NEW v15.0.2:**  [#1933](https://github.com/jomjol/AI-on-the-edge-device/issues/1933) Bugfix InfluxDB Timestamp
+-   **NEW v15.0.3:**  Re-added lost dropdownbox filling for Postprocessing Individual Parameters
+
+#### Removed
+
+-   n.a.
 
 
 ## [14.0.3] -2023-02-05
@@ -106,7 +128,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1530](https://github.com/jomjol/AI-on-the-edge-device/pull/1530) Homeassistant `Problem Sensor`
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
--   **New 14.0.4:** Fix for InfluxDB timeshift problem [#1991](https://github.com/jomjol/AI-on-the-edge-device/issues/1991)
 
 #### Removed
 
@@ -862,7 +883,7 @@ External Illumination
 -   Initial Version
 
 
-[15.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.1
+[15.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.3
 [14.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.3
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
 [13.0.7]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.7
