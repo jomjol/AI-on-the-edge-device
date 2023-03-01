@@ -22,6 +22,7 @@ std::string ConvertTimeToString(time_t _time, const char * frm);
 
 
 bool getTimeIsSet(void);
+bool getTimeWasNotSetAtBoot(void);
 
 bool getUseNtp(void);
 bool setupTime();

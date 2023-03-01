@@ -15,6 +15,7 @@ extern "C" {
 #endif
 
 #include "Helper.h"
+#include "time_sntp.h"
 #include "../../include/defines.h"
 
 static const char *TAG = "LOGFILE";
@@ -321,15 +322,23 @@ void ClassLogFile::RemoveOldLogFile()
             //ESP_LOGD(TAG, "compare log file: %s to %s", entry->d_name, cmpfilename);
             if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
                 //ESP_LOGD(TAG, "delete log file: %s", entry->d_name);
-                std::string filepath = logroot + "/" + entry->d_name; 
-                if (unlink(filepath.c_str()) == 0) {
-                    deleted ++;
-                } else {
-                    ESP_LOGE(TAG, "can't delete file: %s", entry->d_name);
-                    notDeleted ++;
+                std::string filepath = logroot + "/" + entry->d_name;
+                if ((strcmp(entry->d_name, "log_1970-01-01.txt") == 0) && getTimeWasNotSetAtBoot()) { // keep logfile log_1970-01-01.txt if time was not set at boot (some boot logs are in there)
+                    //ESP_LOGD(TAG, "Skip deleting this file: %s", entry->d_name); 
+                    notDeleted++;
                 }
-            } else {
-                notDeleted ++;
+                else {          
+                    if (unlink(filepath.c_str()) == 0) {
+                        deleted++;
+                    } 
+                    else {
+                        ESP_LOGE(TAG, "can't delete file: %s", entry->d_name);
+                        notDeleted++;
+                    }
+                }
+            } 
+            else {
+                notDeleted++;
             }
         }
     }
