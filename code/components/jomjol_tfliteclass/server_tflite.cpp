@@ -921,7 +921,7 @@ void task_autodoFlow(void *pvParameter)
 
         // Check if time is synchronized (if NTP is configured)
         if (getUseNtp() && !getTimeIsSet()) {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set. Check configuration");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set!");
             StatusLED(TIME_CHECK, 1, false);
         }
 
