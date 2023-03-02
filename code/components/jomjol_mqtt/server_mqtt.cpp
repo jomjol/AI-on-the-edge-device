@@ -135,7 +135,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     return MQTTPublish(topicFull, payload, true);
 }
 
-bool MQTThomeassistantDiscovery() {  
+bool MQTThomeassistantDiscovery(int qos) {  
     bool allSendsSuccessed = false;
 
     if (!getMQTTisConnected()) {
@@ -180,7 +180,7 @@ bool MQTThomeassistantDiscovery() {
     return allSendsSuccessed;
 }
 
-bool publishSystemData() {
+bool publishSystemData(int qos) {
     bool allSendsSuccessed = false;
 
     if (!getMQTTisConnected()) {
@@ -192,26 +192,26 @@ bool publishSystemData() {
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
 
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + std::string(LWT_TOPIC), LWT_CONNECTED, retainFlag); // Publish "connected" to maintopic/connection
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + std::string(LWT_TOPIC), LWT_CONNECTED, qos, retainFlag); // Publish "connected" to maintopic/connection
 
     sprintf(tmp_char, "%ld", (long)getUpTime());
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), qos, retainFlag);
     
     sprintf(tmp_char, "%lu", (long) getESPHeapSize());
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), qos, retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), qos, retainFlag);
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), qos, retainFlag);
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all System MQTT topics");
     return allSendsSuccessed;
 }
 
 
-bool publishStaticData() {
+bool publishStaticData(int qos) {
     bool allSendsSuccessed = false;
 
     if (!getMQTTisConnected()) {
@@ -220,13 +220,13 @@ bool publishStaticData() {
     }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, retainFlag);
 
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "MAC", getMac(), qos, retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), qos, retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, qos, retainFlag);
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << roundInterval; // minutes
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "interval", stream.str(), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "interval", stream.str(), qos, retainFlag);
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all Static MQTT topics");
     return allSendsSuccessed;
@@ -243,6 +243,7 @@ esp_err_t scheduleSendingDiscovery_and_static_Topics(httpd_req_t *req) {
 
 esp_err_t sendDiscovery_and_static_Topics(void) {
     bool success = false;
+    int qos = 1;
 
     if (!scheduledSendingOf_DiscoveryAndStaticTopics) {
         // Flag not set, nothing to do
@@ -250,10 +251,10 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
     }
 
     if (HomeassistantDiscovery) {
-        success = MQTThomeassistantDiscovery();
+        success = MQTThomeassistantDiscovery(qos);
     }
 
-    success |= publishStaticData();
+    success |= publishStaticData(qos);
 
     if (success) { // Success, clear the flag
         scheduledSendingOf_DiscoveryAndStaticTopics = false;
@@ -270,14 +271,15 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
 void GotConnected(std::string maintopic, bool retainFlag) {
     static bool initialStaticOrHomeassistantDiscoveryTopicsGotSent = false;
     bool success = false;
+    int qos = 1;
 
     /* Only send Homeassistant Discovery and Static topics on the first time connecting */
     if (!initialStaticOrHomeassistantDiscoveryTopicsGotSent) {
         if (HomeassistantDiscovery) {
-            success = MQTThomeassistantDiscovery();
+            success = MQTThomeassistantDiscovery(qos);
         }
 
-        success |= publishStaticData();
+        success |= publishStaticData(qos);
 
         if (success) {
             /* Sending of all Homeassistant Discovery and Static Topics was successfull.
@@ -291,7 +293,7 @@ void GotConnected(std::string maintopic, bool retainFlag) {
     }
 
     /* The System Data changes at runtime, therefore we always send it after a re-connect */
-    success |= publishSystemData();
+    success |= publishSystemData(qos);
 
     if (!success) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");

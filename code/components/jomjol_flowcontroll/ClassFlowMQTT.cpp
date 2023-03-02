@@ -222,11 +222,12 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     std::string resultchangabs = "";
     string zw = "";
     string namenumber = "";
+    int qos = 1;
 
     /* Send the the Homeassistant Discovery and the Static Topics in case they where flagged */
     sendDiscovery_and_static_Topics();
 
-    success = publishSystemData();
+    success = publishSystemData(qos);
 
     if (flowpostprocessing && getMQTTisConnected())
     {
@@ -252,13 +253,13 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
 
             if (result.length() > 0)   
-                success |= MQTTPublish(namenumber + "value", result, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "value", result, qos, SetRetainFlag);
 
             if (resulterror.length() > 0)  
-                success |= MQTTPublish(namenumber + "error", resulterror, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "error", resulterror, qos, SetRetainFlag);
 
             if (resultrate.length() > 0) {
-                success |= MQTTPublish(namenumber + "rate", resultrate, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate", resultrate, qos, SetRetainFlag);
                 
                 std::string resultRatePerTimeUnit;
                 if (getTimeUnit() == "h") { // Need conversion to be per hour
@@ -267,22 +268,22 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 else { // Keep per minute
                     resultRatePerTimeUnit = resultrate;
                 }
-                success |= MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate_per_time_unit", resultRatePerTimeUnit, qos, SetRetainFlag);
             }
 
             if (resultchangabs.length() > 0) {
-                success |= MQTTPublish(namenumber + "changeabsolut", resultchangabs, SetRetainFlag); // Legacy API
-                success |= MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "changeabsolut", resultchangabs, qos, SetRetainFlag); // Legacy API
+                success |= MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, qos, SetRetainFlag);
             }
 
             if (resultraw.length() > 0)   
-                success |= MQTTPublish(namenumber + "raw", resultraw, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "raw", resultraw, qos, SetRetainFlag);
 
             if (resulttimestamp.length() > 0)
-                success |= MQTTPublish(namenumber + "timestamp", resulttimestamp, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "timestamp", resulttimestamp, qos, SetRetainFlag);
 
             std::string json = flowpostprocessing->getJsonFromNumber(i, "\n");
-            success |= MQTTPublish(namenumber + "json", json, SetRetainFlag);
+            success |= MQTTPublish(namenumber + "json", json, qos, SetRetainFlag);
         }
     }
     
@@ -300,7 +301,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     //                 result = result + "\t" + zw;
     //         }
     //     }
-    //     success |= MQTTPublish(topic, result, SetRetainFlag);
+    //     success |= MQTTPublish(topic, result, qos, SetRetainFlag);
     // }
     
     OldValue = result;
