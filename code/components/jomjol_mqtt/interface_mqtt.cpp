@@ -345,7 +345,7 @@ void MQTTconnected(){
             }
         }
 
-        vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
+        /* Send Static Topics and Homeassistant Discovery */
         if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
             callbackOnConnected(maintopic, SetRetainFlag);
         }
