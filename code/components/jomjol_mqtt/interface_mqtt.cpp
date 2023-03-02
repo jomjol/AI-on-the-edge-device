@@ -31,7 +31,7 @@ bool SetRetainFlag;
 void (*callbackOnConnected)(std::string, bool) = NULL;
 
 
-bool MQTTPublish(std::string _key, std::string _content, bool retained_flag) 
+bool MQTTPublish(std::string _key, std::string _content, int qos, bool retained_flag) 
 {
     if (!mqtt_enabled) {                            // MQTT sevice not started / configured (MQTT_Init not called before)      
         return false;
@@ -51,7 +51,7 @@ bool MQTTPublish(std::string _key, std::string _content, bool retained_flag)
         #ifdef DEBUG_DETAIL_ON 
             long long int starttime = esp_timer_get_time();
         #endif
-        int msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
+        int msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, qos, retained_flag);
         #ifdef DEBUG_DETAIL_ON 
             ESP_LOGD(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
         #endif
@@ -60,7 +60,7 @@ bool MQTTPublish(std::string _key, std::string _content, bool retained_flag)
             #ifdef DEBUG_DETAIL_ON 
                 starttime = esp_timer_get_time();
             #endif
-            msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
+            msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, qos, retained_flag);
             #ifdef DEBUG_DETAIL_ON 
                 ESP_LOGD(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
             #endif
