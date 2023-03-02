@@ -32,6 +32,7 @@ float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
 bool retainFlag;
 static std::string maintopic;
+bool scheduledSendingOf_DiscoveryAndStaticTopics = false;
 
 
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
@@ -231,8 +232,22 @@ bool publishStaticData() {
     return allSendsSuccessed;
 }
 
-esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
+
+esp_err_t scheduleSendingDiscovery_and_static_Topics(httpd_req_t *req) {
+    scheduledSendingOf_DiscoveryAndStaticTopics = true;
+    char msg[] = "MQTT Homeassistant Discovery and Static Topics scheduled";
+    httpd_resp_send(req, msg, strlen(msg));  
+    return ESP_OK;
+}
+
+
+esp_err_t sendDiscovery_and_static_Topics(void) {
     bool success = false;
+
+    if (!scheduledSendingOf_DiscoveryAndStaticTopics) {
+        // Flag not set, nothing to do
+        return ESP_OK;
+    }
 
     if (HomeassistantDiscovery) {
         success = MQTThomeassistantDiscovery();
@@ -240,18 +255,17 @@ esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
 
     success |= publishStaticData();
 
-    if (success) {
-        char msg[] = "MQTT Homeassistant Discovery and Static Topics sent!";
-        httpd_resp_send(req, msg, strlen(msg));  
+    if (success) { // Success, clear the flag
+        scheduledSendingOf_DiscoveryAndStaticTopics = false;
         return ESP_OK;
     }
     else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");
-        char msg[] = "Failed to send MQTT topics!";
-        httpd_resp_send(req, msg, strlen(msg)); 
+        /* Keep scheduledSendingOf_DiscoveryAndStaticTopics set so we can retry after the next round */
         return ESP_FAIL;
     }
 }
+
 
 void GotConnected(std::string maintopic, bool retainFlag) {
     static bool initialStaticOrHomeassistantDiscoveryTopicsGotSent = false;
@@ -272,7 +286,7 @@ void GotConnected(std::string maintopic, bool retainFlag) {
             initialStaticOrHomeassistantDiscoveryTopicsGotSent = true;
         }
         else {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more static or Homeassistant Discovery MQTT topics failed to be published! Will try again on the next round.");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more static or Homeassistant Discovery MQTT topics failed to be published! Will try again on the next round.");
         }
     }
 
@@ -289,7 +303,7 @@ void register_server_mqtt_uri(httpd_handle_t server) {
     uri.method    = HTTP_GET;
 
     uri.uri       = "/mqtt_publish_discovery";
-    uri.handler   = sendDiscovery_and_static_Topics;
+    uri.handler   = scheduleSendingDiscovery_and_static_Topics;
     uri.user_ctx  = (void*) "";    
     httpd_register_uri_handler(server, &uri); 
 }
