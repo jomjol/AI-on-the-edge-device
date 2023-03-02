@@ -180,8 +180,13 @@ bool MQTThomeassistantDiscovery(int qos) {
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all Homeassistant Discovery MQTT topics");
 
-	int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
-	int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+    if (qos > 0) { // It takes up to CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS for an MQTT message to be transmitted when using QOS > 0
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting %ds for all MQTT messages to get sent or expired...", (CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS + 1000)/1000);
+        vTaskDelay((CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS + 1000) / portTICK_PERIOD_MS);
+    }
+
+    int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+    int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Int. Heap Usage before Publishing Homeassistand Discovery Topics: " + 
             to_string(aFreeInternalHeapSizeBefore) + ", after: " + to_string(aFreeInternalHeapSizeAfter) + ", delta: " + 
@@ -220,6 +225,10 @@ bool publishSystemData(int qos) {
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all System MQTT topics");
 
+    if (qos > 0) { // It takes up to CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS for an MQTT message to be transmitted when using QOS > 0
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting %ds for all MQTT messages to get sent or expired...", (CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS + 1000)/1000);
+        vTaskDelay((CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS + 1000) / portTICK_PERIOD_MS);
+    }
 	int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 	int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 
@@ -253,6 +262,10 @@ bool publishStaticData(int qos) {
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all Static MQTT topics");
 
+    if (qos > 0) { // It takes up to CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS for an MQTT message to be transmitted when using QOS > 0
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting %ds for all MQTT messages to get sent or expired...", (CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS + 1000)/1000);
+        vTaskDelay((CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS + 1000) / portTICK_PERIOD_MS);
+    }
 
 	int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 	int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
