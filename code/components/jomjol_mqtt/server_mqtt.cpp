@@ -297,7 +297,7 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
     }
 
     if (HomeassistantDiscovery) {
-        success = MQTThomeassistantDiscovery(0);
+        success = MQTThomeassistantDiscovery(qos);
     }
 
     success |= publishStaticData(qos);
@@ -322,7 +322,7 @@ void GotConnected(std::string maintopic, bool retainFlag) {
     /* Only send Homeassistant Discovery and Static topics on the first time connecting */
     if (!initialStaticOrHomeassistantDiscoveryTopicsGotSent) {
         if (HomeassistantDiscovery) {
-            success = MQTThomeassistantDiscovery(0);
+            success = MQTThomeassistantDiscovery(qos);
         }
 
         success |= publishStaticData(qos);
