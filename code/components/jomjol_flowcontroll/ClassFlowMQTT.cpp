@@ -156,6 +156,9 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             else if (toUpper(splitted[1]) == "ENERGY_MWH") {
                 mqttServer_setMeterType("energy", "MWh", "h", "MW");
             }
+            else if (toUpper(splitted[1]) == "ENERGY_GJ") {
+                mqttServer_setMeterType("energy", "GJ", "h", "GJ/h");
+            }
         }
 
         if ((toUpper(splitted[0]) == "CLIENTID") && (splitted.size() > 1))
