@@ -53,10 +53,10 @@ outbox_item_handle_t outbox_enqueue(outbox_handle_t outbox, outbox_message_handl
     item->tick = tick;
     item->len =  message->len + message->remaining_len;
     item->pending = QUEUED;
-#ifdef USE_PSRAWM
-    item->buffer = malloc(message->len + message->remaining_len);
-#else
+#ifdef USE_PSRAM
     item->buffer = heap_caps_malloc(message->len + message->remaining_len, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+#else
+    item->buffer = malloc(message->len + message->remaining_len);
 #endif
     /*ESP_MEM_CHECK(TAG, item->buffer, {
         free(item);
