@@ -289,7 +289,6 @@ esp_err_t scheduleSendingDiscovery_and_static_Topics(httpd_req_t *req) {
 
 esp_err_t sendDiscovery_and_static_Topics(void) {
     bool success = false;
-    int qos = 1;
 
     if (!sendingOf_DiscoveryAndStaticTopics_scheduled) {
         // Flag not set, nothing to do
@@ -297,17 +296,17 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
     }
 
     if (HomeassistantDiscovery) {
-        success = MQTThomeassistantDiscovery(qos);
+        success = MQTThomeassistantDiscovery(1);
     }
 
-    success |= publishStaticData(qos);
+    success |= publishStaticData(1);
 
     if (success) { // Success, clear the flag
         sendingOf_DiscoveryAndStaticTopics_scheduled = false;
         return ESP_OK;
     }
     else {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published, will try sending them in the next round!");
         /* Keep sendingOf_DiscoveryAndStaticTopics_scheduled set so we can retry after the next round */
         return ESP_FAIL;
     }
@@ -315,34 +314,7 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
 
 
 void GotConnected(std::string maintopic, bool retainFlag) {
-    bool success = false;
-    int qos = 1;
-
-    /* Only send Homeassistant Discovery and Static topics when it was scheduled */
-    if (sendingOf_DiscoveryAndStaticTopics_scheduled) {
-        if (HomeassistantDiscovery) {
-            success = MQTThomeassistantDiscovery(qos);
-        }
-
-        success |= publishStaticData(qos);
-
-        if (success) {
-            /* Sending of all Homeassistant Discovery and Static Topics was successfull.
-             * Will no no longer send it unless it gets scheduled again!
-             * (Possible through the REST API). */
-            sendingOf_DiscoveryAndStaticTopics_scheduled = false;
-        }
-        else {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more static or Homeassistant Discovery MQTT topics failed to be published! Will try again on the next round.");
-        }
-    }
-
-    /* The System Data changes at runtime, therefore we always send it after a re-connect */
-    success |= publishSystemData(qos);
-
-    if (!success) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");
-    }
+    // Nothing to do
 }
 
 void register_server_mqtt_uri(httpd_handle_t server) {

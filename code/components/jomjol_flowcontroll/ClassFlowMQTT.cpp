@@ -224,7 +224,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     string namenumber = "";
     int qos = 1;
 
-    /* Send the the Homeassistant Discovery and the Static Topics in case they where flagged */
+    /* Send the the Homeassistant Discovery and the Static Topics in case they where scheduled */
     sendDiscovery_and_static_Topics();
 
     success = publishSystemData(qos);
