@@ -869,7 +869,7 @@ void task_autodoFlow(void *pvParameter)
     int64_t fr_start, fr_delta_ms;
     bTaskAutoFlowCreated = true;
 
-    // Delay flow initialization if reboot was triggered by software sexception
+    // Delay flow initialization if reboot was triggered by software exception
     // Note: Logging of the event is handled already in "main.cpp"
     // ********************************************
     if (!isPlannedReboot && (esp_reset_reason() == ESP_RST_PANIC))
@@ -893,8 +893,6 @@ void task_autodoFlow(void *pvParameter)
         tfliteflow.setActStatus("Initialization failed");
     }
     else {
-        auto_isrunning = tfliteflow.isAutoStart(auto_interval);
-
         // Start setup modus if parameter in config is true
         // ********************************************
         if (isSetupModusActive()) 
@@ -907,13 +905,15 @@ void task_autodoFlow(void *pvParameter)
             tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
         }
         else {
+            auto_isrunning = tfliteflow.isAutoStart(auto_interval);
+            
             if (!auto_isrunning) {
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start disabled");
                 tfliteflow.setActStatus("Flow start disabled");
             }
         }
     }
-    
+
     // Process flow runs
     // ********************************************
     while (auto_isrunning)
@@ -958,7 +958,16 @@ void task_autodoFlow(void *pvParameter)
         }
     }
 
-    // Delete task if it exits from the loop above (setup mode or flow init failed)
+    // Init failed, setup mode active or process flow disabled
+    // Keep task running to have still all other functionalities like reboot, etc... available
+    // ********************************************
+    if (!auto_isrunning) {
+        while (1) {
+            vTaskDelay(60000 / portTICK_PERIOD_MS);
+        }
+    }
+
+    // Delete task if it exits from the loop above
     // ********************************************
     vTaskDelete(NULL);
     xHandletask_autodoFlow = NULL;
