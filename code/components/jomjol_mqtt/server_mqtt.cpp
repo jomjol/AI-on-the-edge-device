@@ -32,7 +32,7 @@ float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
 bool retainFlag;
 static std::string maintopic;
-bool scheduledSendingOf_DiscoveryAndStaticTopics = false;
+bool sendingOf_DiscoveryAndStaticTopics_scheduled = true; // Set it to true to make sure it gets sent at least once after startup
 
 
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
@@ -280,7 +280,7 @@ bool publishStaticData(int qos) {
 
 
 esp_err_t scheduleSendingDiscovery_and_static_Topics(httpd_req_t *req) {
-    scheduledSendingOf_DiscoveryAndStaticTopics = true;
+    sendingOf_DiscoveryAndStaticTopics_scheduled = true;
     char msg[] = "MQTT Homeassistant Discovery and Static Topics scheduled";
     httpd_resp_send(req, msg, strlen(msg));  
     return ESP_OK;
@@ -291,7 +291,7 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
     bool success = false;
     int qos = 1;
 
-    if (!scheduledSendingOf_DiscoveryAndStaticTopics) {
+    if (!sendingOf_DiscoveryAndStaticTopics_scheduled) {
         // Flag not set, nothing to do
         return ESP_OK;
     }
@@ -303,24 +303,23 @@ esp_err_t sendDiscovery_and_static_Topics(void) {
     success |= publishStaticData(qos);
 
     if (success) { // Success, clear the flag
-        scheduledSendingOf_DiscoveryAndStaticTopics = false;
+        sendingOf_DiscoveryAndStaticTopics_scheduled = false;
         return ESP_OK;
     }
     else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published!");
-        /* Keep scheduledSendingOf_DiscoveryAndStaticTopics set so we can retry after the next round */
+        /* Keep sendingOf_DiscoveryAndStaticTopics_scheduled set so we can retry after the next round */
         return ESP_FAIL;
     }
 }
 
 
 void GotConnected(std::string maintopic, bool retainFlag) {
-    static bool initialStaticOrHomeassistantDiscoveryTopicsGotSent = false;
     bool success = false;
     int qos = 1;
 
-    /* Only send Homeassistant Discovery and Static topics on the first time connecting */
-    if (!initialStaticOrHomeassistantDiscoveryTopicsGotSent) {
+    /* Only send Homeassistant Discovery and Static topics when it was scheduled */
+    if (sendingOf_DiscoveryAndStaticTopics_scheduled) {
         if (HomeassistantDiscovery) {
             success = MQTThomeassistantDiscovery(qos);
         }
@@ -329,9 +328,9 @@ void GotConnected(std::string maintopic, bool retainFlag) {
 
         if (success) {
             /* Sending of all Homeassistant Discovery and Static Topics was successfull.
-             * Will no no longer send it on a re-connect!
-             * (But it is still possible to trigger sending through the REST API). */
-            initialStaticOrHomeassistantDiscoveryTopicsGotSent = true;
+             * Will no no longer send it unless it gets scheduled again!
+             * (Possible through the REST API). */
+            sendingOf_DiscoveryAndStaticTopics_scheduled = false;
         }
         else {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more static or Homeassistant Discovery MQTT topics failed to be published! Will try again on the next round.");
