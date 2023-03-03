@@ -30,8 +30,7 @@ STAILQ_HEAD(outbox_list_t, outbox_item);
 outbox_handle_t outbox_init(void)
 {
 #ifdef USE_PSRAM
-    outbox_handle_t outbox = heap_caps_malloc(sizeof(struct outbox_list_t), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
-    // TODO init with zero as done with calloc!
+    outbox_handle_t outbox = heap_caps_calloc(1, sizeof(struct outbox_list_t), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
 #else
     outbox_handle_t outbox = calloc(1, sizeof(struct outbox_list_t));
 #endif
@@ -43,8 +42,7 @@ outbox_handle_t outbox_init(void)
 outbox_item_handle_t outbox_enqueue(outbox_handle_t outbox, outbox_message_handle_t message, outbox_tick_t tick)
 {
 #ifdef USE_PSRAM
-    outbox_item_handle_t item = heap_caps_malloc(sizeof(outbox_item_t), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
-    // TODO init with zero as done with calloc!
+    outbox_item_handle_t item = heap_caps_calloc(1, sizeof(outbox_item_t), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
 #else
     outbox_item_handle_t item = calloc(1, sizeof(outbox_item_t));
 #endif
