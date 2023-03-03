@@ -374,7 +374,7 @@ void wifi_scan(void)
 	esp_wifi_sta_get_ap_info(&currentAP);
 
 	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: Current AP BSSID=" + BssidToString((char*)currentAP.bssid));
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: Scan completed, APs found (with configured SSID): " + std::to_string(max_number_of_ap_found));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: Scan completed, APs found with configured SSID: " + std::to_string(max_number_of_ap_found));
     for (int i = 0; i < max_number_of_ap_found; i++) {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: " + std::to_string(i+1) +
                                                 ": SSID=" + std::string((char*)wifi_ap_records[i].ssid) +
