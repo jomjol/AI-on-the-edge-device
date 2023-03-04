@@ -1345,6 +1345,17 @@ textarea {
 			<td>$TOOLTIP_System_RSSIThreshold</td>
 		</tr>
 
+		<tr class="expert"  id="System_CPUFrequency">
+			<td class="indent1">
+				<input type="checkbox" id="System_CPUFrequency_enabled" value="1"  onclick = 'InvertEnableItem("System", "CPUFrequency")' unchecked >
+				<label for=System_CPUFrequency_enabled><class id="System_CPUFrequency_text" style="color:black;">RSSI Threshold</class></label>
+			</td>
+			<td>
+				<input type="number" name="name" id="System_CPUFrequency_value1" min="-100"  max="0" step="1"> dBm
+			</td>
+			<td>$TOOLTIP_System_CPUFrequency</td>
+		</tr>
+
 	</table>
 
 	<p>
@@ -1824,6 +1835,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
 	WriteParameter(param, category, "System", "RSSIThreshold", true);
+	WriteParameter(param, category, "System", "CPUFrequency", true);
 
 	WriteModelFiles();
 }
@@ -1961,6 +1973,7 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true); 
 	ReadParameter(param, "System", "RSSIThreshold", true);
+	ReadParameter(param, "System", "CPUFrequency", true);
 
 	var sel = document.getElementById("Numbers_value1");	
 	UpdateInputIndividual(sel);
