@@ -144,7 +144,7 @@ bool MQTThomeassistantDiscovery(int qos) {
         return false;
     }
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing Homeassistant Discovery topics (Meter Type: '" + meterType + "', Value Unit: '" + valueUnit + "' , Rate Unit: '" + rateUnit + "') ...");
 
 	int aFreeInternalHeapSizeBefore = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 
