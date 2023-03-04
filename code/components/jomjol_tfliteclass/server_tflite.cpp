@@ -940,7 +940,7 @@ void TFliteDoAutoStart()
 
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 
-    uint32_t stackSize = 11 * 1024;
+    uint32_t stackSize = 16 * 1024;
     xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", stackSize, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
     if( xReturned != pdPASS )
     {
