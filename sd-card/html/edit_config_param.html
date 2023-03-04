@@ -1351,7 +1351,10 @@ textarea {
 				<label for=System_CPUFrequency_enabled><class id="System_CPUFrequency_text" style="color:black;">CPU Frequency</class></label>
 			</td>
 			<td>
-				<input type="number" name="name" id="System_CPUFrequency_value1" min="-100"  max="0" step="1"> dBm
+				<select id="System_CPUFrequency_value1">
+					<option value="160" selected>160 MHz</option>
+					<option value="240">240 MHz</option>
+				</select>
 			</td>
 			<td>$TOOLTIP_System_CPUFrequency</td>
 		</tr>
