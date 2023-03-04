@@ -161,8 +161,10 @@
         }
     #define SUPRESS_TFLITE_ERRORS // use, to avoid error messages from TFLITE
 
-    //connect_wlan
-    /* WIFI roaming functionalities 802.11k+v (uses ca. 6kB - 8kB internal RAM; if SCAN CACHE: + 1kB / beacon)
+
+    // connect_wlan.cpp
+    //******************************
+    /* WIFI roaming functionalities 802.11k+v (uses ca. 6kB - 8kB internal RAM; if SCAN CACHE activated: + 1kB / beacon)
     PLEASE BE AWARE: The following CONFIG parameters have to to be set in 
     sdkconfig.defaults before use of this function is possible!!
     CONFIG_WPA_11KV_SUPPORT=y
@@ -170,8 +172,11 @@
     CONFIG_WPA_MBO_SUPPORT=n
     CONFIG_WPA_11R_SUPPORT=n
     */
-    #define WLAN_USE_MESH_ROAMING   // 802.11v (BSS Transition Management) + 802.11k (Radio Resource Management) (ca. 6kB - 8kB internal RAM neccessary)
-    #define WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES  // Client can send query to AP requesting to roam (if RSSI lower than RSSI threshold)
+    //#define WLAN_USE_MESH_ROAMING   // 802.11v (BSS Transition Management) + 802.11k (Radio Resource Management) (ca. 6kB - 8kB internal RAM neccessary)
+    //#define WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES  // Client can send query to AP requesting to roam (if RSSI lower than RSSI threshold)
+
+    /* WIFI roaming only client triggered by scanning the channels after each round (only if RSSI < RSSIThreshold) and trigger a disconnect to switch AP */
+    #define WLAN_USE_ROAMING_BY_SCANNING
 
 
     //ClassFlowCNNGeneral

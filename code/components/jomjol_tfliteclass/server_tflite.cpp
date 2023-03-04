@@ -894,11 +894,11 @@ void task_autodoFlow(void *pvParameter)
             LogFile.RemoveOldDataLog();
         }
 
-        //Round finished -> Logfile
+        // Round finished -> Logfile
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
         
-        //CPU Temp -> Logfile
+        // CPU Temp -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
         
         // WIFI Signal Strength (RSSI) -> Logfile
@@ -913,7 +913,13 @@ void task_autodoFlow(void *pvParameter)
         #if (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES)
             wifiRoamingQuery();
         #endif
-
+        
+        // Scan channels and check if an AP with better RSSI is available, then disconnect and try to reconnect to AP with better RSSI
+        // NOTE: Keep this direct before the following task delay, because scan is done in blocking mode and this takes ca. 1,5 - 2s.
+        #ifdef WLAN_USE_ROAMING_BY_SCANNING
+            wifiRoamByScanning();
+        #endif
+        
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
         if (auto_interval > fr_delta_ms)
         {
