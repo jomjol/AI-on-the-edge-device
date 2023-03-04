@@ -138,7 +138,14 @@ CONFIG_BF3005_SUPPORT=n
 
 CONFIG_SYSTEM_EVENT_TASK_STACK_SIZE=4864
 
-#only necessary for task analysis (include/defines -> TASK_ANALYSIS_ON)
+#only necessary for WIFI mesh roaming (include/defines.h -> WLAN_USE_MESH_ROAMING)
+#CONFIG_WPA_11KV_SUPPORT=y
+#CONFIG_WPA_SCAN_CACHE=n
+#CONFIG_WPA_MBO_SUPPORT=n
+#CONFIG_WPA_11R_SUPPORT=n // Will be supported with ESP-IDF v5.0
+#CONFIG_WPA_DEBUG_PRINT=n
+
+#only necessary for task analysis (include/defines.h -> TASK_ANALYSIS_ON)
 #set in [env:esp32cam-dev-task-analysis]
 #CONFIG_FREERTOS_USE_TRACE_FACILITY=1
 #CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
