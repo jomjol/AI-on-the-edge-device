@@ -443,8 +443,8 @@ extern "C" void app_main(void)
     // ********************************************
     esp_chip_info_t chipInfo;
     esp_chip_info(&chipInfo);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device info: CPU frequency: " + std::to_string(CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ) + 
-                                           "Mhz, CPU cores: " + std::to_string(chipInfo.cores) + 
+    
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device info: CPU cores: " + std::to_string(chipInfo.cores) + 
                                            ", Chip revision: " + std::to_string(chipInfo.revision));
     
     // Print SD-Card info
@@ -758,15 +758,15 @@ bool setCpuFrequency(void) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set new CPU frequency!");
             return false;
         }
-
-        if (esp_pm_get_configuration(&pm_config) == ESP_OK) {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, string("New CPU frequency: ") + to_string(pm_config.max_freq_mhz) + " MHz");
-        }
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unknown CPU frequency: " + cpuFrequency + "! "
                 "It must be 160 or 240!");
         return false;
+    }
+
+    if (esp_pm_get_configuration(&pm_config) == ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, string("CPU frequency: ") + to_string(pm_config.max_freq_mhz) + " MHz");
     }
 
     return true;
