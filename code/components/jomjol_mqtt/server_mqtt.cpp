@@ -167,16 +167,16 @@ bool MQTThomeassistantDiscovery(int qos) {
         }
 
     //                                                       Group | Field                          | User Friendly Name                | Icon                   | Unit                 | Device Class | State Class       | Entity Category
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",                      "Value",                            "gauge",                 valueUnit,             meterType,      "total_increasing", "");
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                        "Raw Value",                        "raw",                   "",                    "",             "",                 "diagnostic");
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",                      "Error",                            "alert-circle-outline",  "",                    "",             "",                 "diagnostic");
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",                      "Value",                            "gauge",                 valueUnit,             meterType,      "total_increasing", "", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                        "Raw Value",                        "raw",                   "",                    "",             "",                 "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",                      "Error",                            "alert-circle-outline",  "",                    "",             "",                 "diagnostic", qos);
         /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitalization_round */
         // allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,              "",             "measurement",      "");
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round",  "arrow-expand-vertical", valueUnit,  "",             "measurement",      ""); // correctly the Unit is Uint/Interval!
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "timestamp",                  "Timestamp",                     "clock-time-eight-outline", "",                    "timestamp",    "",                 "diagnostic");
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "json",                       "JSON",                             "code-json",             "",                    "",             "",                 "diagnostic");
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "problem",                    "Problem",                          "alert-outline",         "",                    "problem",      "",                 ""); // Special binary sensor which is based on error topic
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,              "",             "measurement",      "", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round",  "arrow-expand-vertical", valueUnit,  "",             "measurement",      "", qos); // correctly the Unit is Uint/Interval!
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "timestamp",                  "Timestamp",                     "clock-time-eight-outline", "",                    "timestamp",    "",                 "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "json",                       "JSON",                             "code-json",             "",                    "",             "",                 "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "problem",                    "Problem",                          "alert-outline",         "",                    "problem",      "",                 "", qos); // Special binary sensor which is based on error topic
     }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all Homeassistant Discovery MQTT topics");
