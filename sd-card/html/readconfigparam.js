@@ -262,6 +262,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "Hostname");   
      ParamAddValue(param, catname, "RSSIThreshold");   
+     ParamAddValue(param, catname, "CPUFrequency");
      ParamAddValue(param, catname, "SetupMode"); 
      
      
@@ -315,7 +316,7 @@ function ParseConfig() {
           param["DataLogging"]["DataFilesRetention"]["value1"] = "3";
      }
 
-     // Downward compatiblity: Create RSSIThreshold if not available
+     // Downward compatibility: Create RSSIThreshold if not available
      if (param["System"]["RSSIThreshold"]["found"] == false)
      {
           param["System"]["RSSIThreshold"]["found"] = true;

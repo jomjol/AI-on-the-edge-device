@@ -743,11 +743,25 @@ bool setCpuFrequency(void) {
         }
     }
 
-    if (cpuFrequency == "160") {
-        pm_config.max_freq_mhz = 160;
+    if (esp_pm_get_configuration(&pm_config) != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read CPU Frequency!");
+        return false;
+    }
+
+    if (cpuFrequency == "160") { // 160 is the default
+        // No change needed
     }
     else if (cpuFrequency == "240") {
         pm_config.max_freq_mhz = 240;
+        pm_config.min_freq_mhz = pm_config.max_freq_mhz;
+        if (esp_pm_configure(&pm_config) != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set new CPU frequency!");
+            return false;
+        }
+
+        if (esp_pm_get_configuration(&pm_config) == ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, string("New CPU frequency: ") + to_string(pm_config.max_freq_mhz) + " MHz");
+        }
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unknown CPU frequency: " + cpuFrequency + "! "
@@ -755,14 +769,5 @@ bool setCpuFrequency(void) {
         return false;
     }
 
-    pm_config.min_freq_mhz = pm_config.max_freq_mhz;
-    if (esp_pm_configure(&pm_config) != ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set new CPU frequency!");
-        return false;
-    }
-
-    if (esp_pm_get_configuration(&pm_config) == ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, string("New CPU frequency: ") + to_string(pm_config.max_freq_mhz) + " MHz");
-    }
     return true;
 }
