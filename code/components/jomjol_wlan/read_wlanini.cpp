@@ -145,8 +145,8 @@ int LoadWlanFromFile(std::string fn)
                 wlan_config.dns = tmp;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DNS: " + wlan_config.dns);
             }
-            #ifdef WLAN_USE_MESH_ROAMING
-            else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHRESHOLD")) {
+            #if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
+            else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHRESHOLD")){
                 tmp = trim(splitted[1]);
                 if ((tmp[0] == '"') && (tmp[tmp.length()-1] == '"')){
                     tmp = tmp.substr(1, tmp.length()-2);
@@ -266,7 +266,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     return true;
 }
 
-#ifdef WLAN_USE_MESH_ROAMING
+#if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
 bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
 {
     if (wlan_config.rssi_threshold == _newrssithreshold)

@@ -611,8 +611,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
 
         /* TimeServer and TimeZone got already read from the config, see setupTime () */
-
-        #ifdef WLAN_USE_MESH_ROAMING
+        
+        #if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
         if ((toUpper(splitted[0]) == "RSSITHRESHOLD") && (splitted.size() > 1))
         {
             int RSSIThresholdTMP = atoi(splitted[1].c_str());
