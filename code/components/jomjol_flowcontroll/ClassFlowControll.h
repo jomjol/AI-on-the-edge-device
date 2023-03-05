@@ -25,21 +25,24 @@ class ClassFlowControll :
 {
 protected:
 	std::vector<ClassFlow*> FlowControll;
-	ClassFlowPostProcessing* flowpostprocessing;
+
+	ClassFlowTakeImage* flowtakeimage;
 	ClassFlowAlignment* flowalignment;	
 	ClassFlowCNNGeneral* flowanalog;
 	ClassFlowCNNGeneral* flowdigit;
-//	ClassFlowDigit* flowdigit;
-	ClassFlowTakeImage* flowtakeimage;
+	ClassFlowPostProcessing* flowpostprocessing;
+
 	ClassFlow* CreateClassFlow(std::string _type);
 
-	bool AutoStart;
-	float AutoInterval;
-	bool SetupModeActive;
 	void SetInitialParameter(void);	
-	std::string aktstatusWithTime;
-	std::string aktstatus;
+
+	bool AutoStart;
+	bool SetupModeActive;
 	bool readParameterDone;
+	float AutoInterval;
+	std::string aktstatus;
+	std::string aktstatusWithTime;
+
 
 public:
 	bool InitFlow(std::string config);

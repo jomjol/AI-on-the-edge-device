@@ -893,28 +893,28 @@ void task_autodoFlow(void *pvParameter)
         tfliteflow.setActStatus("Initialization failed");
     }
     else {
-        // Start setup modus if parameter in config is true
-        // ********************************************
-        if (isSetupModusActive()) 
-        {
-            auto_isrunning = false;
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setup mode active. Flow start disabled");
-            tfliteflow.setActStatus("Setup mode active");
-
-            std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-            tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
-        }
-        else {
-            auto_isrunning = tfliteflow.isAutoStart(auto_interval);
-            
-            if (!auto_isrunning) {
-                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start disabled");
-                tfliteflow.setActStatus("Flow start disabled");
-            }
+        auto_isrunning = tfliteflow.isAutoStart(auto_interval);
+        
+        if (!auto_isrunning) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start disabled");
+            tfliteflow.setActStatus("Flow start disabled");
         }
     }
 
-    // Process flow runs
+    // Start setup modus if parameter in config is true
+    // Setup mode can be started even initialization failed --> default values in firmware are sufficient to run this mode
+    // ********************************************
+    if (isSetupModusActive())
+    {
+        auto_isrunning = false;
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Setup mode active. Flow start disabled");
+        tfliteflow.setActStatus("Setup mode active");
+
+        std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
+        tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images, even doIit failed, this will work with default values
+    }
+
+    // Process flow
     // ********************************************
     while (auto_isrunning)
     {
@@ -959,7 +959,7 @@ void task_autodoFlow(void *pvParameter)
     }
 
     // Init failed, setup mode active or process flow disabled
-    // Keep task running to have still all other functionalities like reboot, etc... available
+    // Keep task running to have still the functionalities available which are called in this task context 
     // ********************************************
     if (!auto_isrunning) {
         while (1) {

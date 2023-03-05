@@ -187,16 +187,18 @@ bool ClassFlowControll::StartMQTTService() {
 
 void ClassFlowControll::SetInitialParameter(void)
 {
-    AutoStart = false;
-    SetupModeActive = false;
-    AutoInterval = 10; // Minutes
+    flowtakeimage = NULL;
+    flowalignment = NULL;
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
+    AutoStart = false;
+    AutoInterval = 5; // in Minutes
+    SetupModeActive = true;
     disabled = false;
-    readParameterDone = false;
     aktstatus = "Flow task not yet created";
     aktstatusWithTime = aktstatus;
+    readParameterDone = false;
 }
 
 
@@ -282,7 +284,6 @@ bool ClassFlowControll::InitFlow(std::string config)
     
     std::string line = "";
     std::string section = "";
-    //flowpostprocessing = NULL;
 
     ClassFlow* cfc;
     FILE* pFile;
@@ -333,7 +334,7 @@ bool ClassFlowControll::InitFlow(std::string config)
     if (flowtakeimage == NULL || flowalignment == NULL || flowpostprocessing == NULL || !this->readParameterDone) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "InitFlow: One mandatory parameter section [TAKEIMAGE], [ALIGNMENT], [POSTPROCESSING], "
                                                 "[AUTOTIMER], [DATALOGGING], [DEBUG] or [SYSTEM] missing. Check config file");
-        return false;
+        bRetVal = false;
     }
 
     return bRetVal;
@@ -398,7 +399,7 @@ bool ClassFlowControll::doFlow(string time)
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
         #endif //ENABLE_MQTT
 
-        if (!FlowControll[i]->doFlow(time)){
+        if (!FlowControll[i]->doFlow(time)) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error during processing of state \"" + aktstatus + "\". Flow aborted!");
             result = false;
             break;
@@ -685,7 +686,13 @@ int ClassFlowControll::CleanTempFolder() {
 
 esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 {
-    return flowtakeimage != NULL ? flowtakeimage->SendRawJPG(req) : ESP_FAIL;
+    if (flowtakeimage) {
+        return flowtakeimage->SendRawJPG(req);
+    }
+    else {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "flowtakeimage not available: Raw image cannot be served!");
+        return ESP_ERR_NOT_FOUND;
+    }
 }
 
 
