@@ -85,7 +85,7 @@ void GpioPin::gpioInterrupt(int value) {
     if (_mqttTopic != "") {
         ESP_LOGD(TAG, "gpioInterrupt %s %d", _mqttTopic.c_str(), value);
 
-        MQTTPublish(_mqttTopic, value ? "true" : "false");        
+        MQTTPublish(_mqttTopic, value ? "true" : "false", 1);        
     }
 #endif //ENABLE_MQTT
     currentState = value;
@@ -142,7 +142,7 @@ void GpioPin::setValue(bool value, gpio_set_source setSource, std::string* error
 
 #ifdef ENABLE_MQTT
         if ((_mqttTopic != "") && (setSource != GPIO_SET_SOURCE_MQTT)) {
-            MQTTPublish(_mqttTopic, value ? "true" : "false");
+            MQTTPublish(_mqttTopic, value ? "true" : "false", 1);
         }
 #endif //ENABLE_MQTT
     }
@@ -153,7 +153,7 @@ void GpioPin::publishState() {
     if (newState != currentState) {
         ESP_LOGD(TAG,"publish state of GPIO %d new state %d", _gpio, newState);
 #ifdef ENABLE_MQTT
-        MQTTPublish(_mqttTopic, newState ? "true" : "false");
+        MQTTPublish(_mqttTopic, newState ? "true" : "false", 1);
 #endif //ENABLE_MQTT
         currentState = newState;
     }
