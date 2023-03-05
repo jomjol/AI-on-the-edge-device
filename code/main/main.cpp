@@ -12,6 +12,7 @@
 //#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
 //#include "spiram.h"
 #include "esp32/spiram.h"
+#include "esp_pm.h"
 
 
 // SD-Card ////////////////////
@@ -88,6 +89,7 @@ extern std::string getHTMLcommit(void);
 
 std::vector<std::string> splitString(const std::string& str);
 void migrateConfiguration(void);
+bool setCpuFrequency(void);
 
 static const char *TAG = "MAIN";
 
@@ -237,6 +239,12 @@ extern "C" void app_main(void)
     // Init time (as early as possible, but SD card needs to be initialized)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
+
+
+    // Set CPU Frequency
+    // ********************************************
+    setCpuFrequency();
+
 
     // SD card: Create further mandatory directories (if not already existing)
     // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
@@ -435,8 +443,8 @@ extern "C" void app_main(void)
     // ********************************************
     esp_chip_info_t chipInfo;
     esp_chip_info(&chipInfo);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device info: CPU frequency: " + std::to_string(CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ) + 
-                                           "Mhz, CPU cores: " + std::to_string(chipInfo.cores) + 
+    
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device info: CPU cores: " + std::to_string(chipInfo.cores) + 
                                            ", Chip revision: " + std::to_string(chipInfo.revision));
     
     // Print SD-Card info
@@ -696,3 +704,70 @@ std::vector<std::string> splitString(const std::string& str) {
 
     return found;
 }*/
+
+
+bool setCpuFrequency(void) {
+    ConfigFile configFile = ConfigFile(CONFIG_FILE); 
+    string cpuFrequency = "160";
+    esp_pm_config_esp32_t  pm_config; 
+
+    if (!configFile.ConfigFileExists()){
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "No ConfigFile defined - exit setCpuFrequency()!");
+        return false;
+    }
+
+    std::vector<std::string> splitted;
+    std::string line = "";
+    bool disabledLine = false;
+    bool eof = false;
+
+
+    /* Load config from config file */
+    while ((!configFile.GetNextParagraph(line, disabledLine, eof) || 
+            (line.compare("[System]") != 0)) && !eof) {}
+    if (eof) {
+        return false;
+    }
+
+    if (disabledLine) {
+        return false;
+    }
+
+    while (configFile.getNextLine(&line, disabledLine, eof) && 
+            !configFile.isNewParagraph(line)) {
+        splitted = ZerlegeZeile(line);
+
+        if (toUpper(splitted[0]) == "CPUFREQUENCY") {
+            cpuFrequency = splitted[1];
+            break;
+        }
+    }
+
+    if (esp_pm_get_configuration(&pm_config) != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read CPU Frequency!");
+        return false;
+    }
+
+    if (cpuFrequency == "160") { // 160 is the default
+        // No change needed
+    }
+    else if (cpuFrequency == "240") {
+        pm_config.max_freq_mhz = 240;
+        pm_config.min_freq_mhz = pm_config.max_freq_mhz;
+        if (esp_pm_configure(&pm_config) != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set new CPU frequency!");
+            return false;
+        }
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unknown CPU frequency: " + cpuFrequency + "! "
+                "It must be 160 or 240!");
+        return false;
+    }
+
+    if (esp_pm_get_configuration(&pm_config) == ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, string("CPU frequency: ") + to_string(pm_config.max_freq_mhz) + " MHz");
+    }
+
+    return true;
+}

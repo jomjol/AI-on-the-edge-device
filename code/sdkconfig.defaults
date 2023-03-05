@@ -156,3 +156,5 @@ CONFIG_SYSTEM_EVENT_TASK_STACK_SIZE=4864
 #I (2112) esp_himem: Initialized. Using last 8 32KB address blocks for bank switching on 4352 KB of physical memory.
 CONFIG_SPIRAM_BANKSWITCH_ENABLE=n
 #CONFIG_SPIRAM_BANKSWITCH_RESERVE is not set
+
+CONFIG_PM_ENABLE=y
