@@ -26,6 +26,7 @@ static std::string timeZone = "";
 static std::string timeServer = "undefined";
 static bool useNtp = true;
 static bool timeWasNotSetAtBoot = false;
+static bool timeWasNotSetAtBoot_PrintStartBlock = false;
 
 std::string getNtpStatusText(sntp_sync_status_t status);
 static void setTimeZone(std::string _tzstring);
@@ -60,10 +61,11 @@ std::string getCurrentTimeString(const char * frm)
 
 void time_sync_notification_cb(struct timeval *tv)
 {
-    if (timeWasNotSetAtBoot) {
+    if (timeWasNotSetAtBoot_PrintStartBlock) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "== Logs before time sync -> log_1970-01-01.txt ==");
+        timeWasNotSetAtBoot_PrintStartBlock = false;
     }
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " +
             getServerName() + ": " + getCurrentTimeString("%Y-%m-%d %H:%M:%S"));
@@ -237,6 +239,7 @@ bool setupTime() {
         if (useNtp) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Once the NTP server provides a time, we will switch to that one");
             timeWasNotSetAtBoot = true;
+            timeWasNotSetAtBoot_PrintStartBlock = true;
         }
     }
 
