@@ -76,6 +76,8 @@ enum SystemStatusFlag_t {          // One bit per error
     SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
     SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 1, //  2, Critical Error
     SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  4, Critical Error
+    SYSTEM_STATUS_SDCARD_CHECK_BAD  = 1 << 3, //  8, Critical Error
+    SYSTEM_STATUS_FOLDER_CHECK_BAD  = 1 << 4, //  16, Critical Error
 
     // Second Byte
     SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  8, Flow still might work
@@ -94,5 +96,9 @@ std::string getFormatedUptime(bool compact);
 const char* get404(void);
 
 std::string UrlDecode(const std::string& value);
+
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith);
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
+bool isInString(std::string& s, std::string const& toFind);
 
 #endif //HELPER_H

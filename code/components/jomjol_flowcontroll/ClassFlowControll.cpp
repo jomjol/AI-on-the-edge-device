@@ -277,7 +277,7 @@ void ClassFlowControll::InitFlow(std::string config)
     aktstatusWithTime = aktstatus;
 
     //#ifdef ENABLE_MQTT
-        //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", false); // Right now, not possible -> MQTT Service is going to be started later
+        //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", 1, false); // Right now, not possible -> MQTT Service is going to be started later
     //#endif //ENABLE_MQTT
     
     string line;
@@ -352,7 +352,7 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
             aktstatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatusWithTime = aktstatus + " (" + zw_time + ")";
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, 1, false);
             #endif //ENABLE_MQTT
 
             FlowControll[i]->doFlow(time);
@@ -366,6 +366,7 @@ bool ClassFlowControll::doFlow(string time)
     bool result = true;
     std::string zw_time;
     int repeat = 0;
+    int qos = 1;
 
     #ifdef DEBUG_DETAIL_ON 
         LogFile.WriteHeapInfo("ClassFlowControll::doFlow - Start");
@@ -386,7 +387,7 @@ bool ClassFlowControll::doFlow(string time)
         aktstatusWithTime = aktstatus + " (" + zw_time + ")";
         //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
         #ifdef ENABLE_MQTT
-            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
+            MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
         #endif //ENABLE_MQTT
 
         #ifdef DEBUG_DETAIL_ON
@@ -420,7 +421,7 @@ bool ClassFlowControll::doFlow(string time)
     aktstatusWithTime = aktstatus + " (" + zw_time + ")";
     //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT
-        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, false);
+        MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
     #endif //ENABLE_MQTT
 
     return result;
@@ -611,8 +612,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
 
         /* TimeServer and TimeZone got already read from the config, see setupTime () */
-
-        #ifdef WLAN_USE_MESH_ROAMING
+        
+        #if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
         if ((toUpper(splitted[0]) == "RSSITHRESHOLD") && (splitted.size() > 1))
         {
             int RSSIThresholdTMP = atoi(splitted[1].c_str());

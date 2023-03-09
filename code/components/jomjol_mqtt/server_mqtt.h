@@ -16,10 +16,11 @@ std::string mqttServer_getMainTopic();
 
 void register_server_mqtt_uri(httpd_handle_t server);
 
-void publishSystemData();
+bool publishSystemData(int qos);
 
 std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, bool SetRetainFlag);
+esp_err_t sendDiscovery_and_static_Topics(void);
 
 
 #endif //SERVERMQTT_H

@@ -12,4 +12,12 @@ int get_WIFI_RSSI();
 bool getWIFIisConnected();
 void WIFIDestroy();
 
+#if (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES)
+void wifiRoamingQuery(void);
+#endif
+
+#ifdef WLAN_USE_ROAMING_BY_SCANNING
+void wifiRoamByScanning(void);
+#endif
+
 #endif //CONNECT_WLAN_H

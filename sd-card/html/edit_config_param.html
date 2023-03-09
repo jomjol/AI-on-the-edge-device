@@ -187,7 +187,7 @@ textarea {
 				<class id="TakeImage_ImageQuality_text" style="color:black;">Image Quality</class>
 			</td>
 			<td>
-				<input type="number" id="TakeImage_ImageQuality_value1" size="13" min="0" max="63">
+				<input type="number" id="TakeImage_ImageQuality_value1" size="13" min="8" max="63">
 			</td>
 			<td>$TOOLTIP_TakeImage_ImageQuality</td>
 		</tr>
@@ -462,9 +462,6 @@ textarea {
 				<br>
 				<b>Postprocessing Individual Parameters: 
                 <select id="Numbers_value1" onchange="numberChanged()">
-                    <option value="0" selected>default</option>
-                    <option value="1" >NT</option>
-                    <option value="2" >HT</option>
                 </select></b>
 			</td>
 		</tr>
@@ -657,6 +654,7 @@ textarea {
 					<option value="energy_wh">Energymeter (Value: Wh, Rate: W)</option>
 					<option value="energy_kwh">Energymeter (Value: kWh, Rate: kW)</option>
 					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
+					<option value="energy_gj">Energymeter (Value: GJ, Rate: GJ/h)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_MQTT_MeterType</td>
@@ -786,9 +784,6 @@ textarea {
 				<br>
 				<b>Postprocessing Individual Parameters: 
                 <select id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()">
-                    <option value="0" selected>default</option>
-                    <option value="1" >NT</option>
-                    <option value="2" >HT</option>
                 </select></b>
 			</td>
 		</tr>
@@ -1350,6 +1345,20 @@ textarea {
 			<td>$TOOLTIP_System_RSSIThreshold</td>
 		</tr>
 
+		<tr class="expert"  id="System_CPUFrequency">
+			<td class="indent1">
+				<input type="checkbox" id="System_CPUFrequency_enabled" value="1"  onclick = 'InvertEnableItem("System", "CPUFrequency")' unchecked >
+				<label for=System_CPUFrequency_enabled><class id="System_CPUFrequency_text" style="color:black;">CPU Frequency</class></label>
+			</td>
+			<td>
+				<select id="System_CPUFrequency_value1">
+					<option value="160" selected>160 MHz</option>
+					<option value="240">240 MHz</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_System_CPUFrequency</td>
+		</tr>
+
 	</table>
 
 	<p>
@@ -1829,6 +1838,7 @@ function UpdateInput() {
 	WriteParameter(param, category, "System", "Hostname", true);	
 	WriteParameter(param, category, "System", "TimeServer", true);
 	WriteParameter(param, category, "System", "RSSIThreshold", true);
+	WriteParameter(param, category, "System", "CPUFrequency", true);
 
 	WriteModelFiles();
 }
@@ -1966,6 +1976,7 @@ function ReadParameterAll()
 	ReadParameter(param, "System", "Hostname", true);	
 	ReadParameter(param, "System", "TimeServer", true); 
 	ReadParameter(param, "System", "RSSIThreshold", true);
+	ReadParameter(param, "System", "CPUFrequency", true);
 
 	var sel = document.getElementById("Numbers_value1");	
 	UpdateInputIndividual(sel);

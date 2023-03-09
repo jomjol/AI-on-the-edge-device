@@ -25,6 +25,8 @@ static const char *TAG = "SNTP";
 static std::string timeZone = "";
 static std::string timeServer = "undefined";
 static bool useNtp = true;
+static bool timeWasNotSetAtBoot = false;
+static bool timeWasNotSetAtBoot_PrintStartBlock = false;
 
 std::string getNtpStatusText(sntp_sync_status_t status);
 static void setTimeZone(std::string _tzstring);
@@ -59,7 +61,13 @@ std::string getCurrentTimeString(const char * frm)
 
 void time_sync_notification_cb(struct timeval *tv)
 {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is now successfully synced with NTP Server " +
+    if (timeWasNotSetAtBoot_PrintStartBlock) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "== Logs before time sync -> log_1970-01-01.txt ==");
+        timeWasNotSetAtBoot_PrintStartBlock = false;
+    }
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " +
             getServerName() + ": " + getCurrentTimeString("%Y-%m-%d %H:%M:%S"));
 }
 
@@ -111,6 +119,11 @@ bool getUseNtp(void) {
     return useNtp;
 }
 
+bool getTimeWasNotSetAtBoot(void)
+{
+    return timeWasNotSetAtBoot;
+}
+
 
 std::string getServerName(void) {
     char buf[100];
@@ -140,7 +153,7 @@ bool setupTime() {
     ConfigFile configFile = ConfigFile(CONFIG_FILE); 
 
     if (!configFile.ConfigFileExists()){
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "No ConfigFile defined - exit setupTime() ");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "No ConfigFile defined - exit setupTime()!");
         return false;
     }
 
@@ -225,6 +238,8 @@ bool setupTime() {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "The local time is unknown, starting with " + std::string(strftime_buf));
         if (useNtp) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Once the NTP server provides a time, we will switch to that one");
+            timeWasNotSetAtBoot = true;
+            timeWasNotSetAtBoot_PrintStartBlock = true;
         }
     }
 
