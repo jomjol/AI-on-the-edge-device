@@ -76,3 +76,30 @@ void testNegative() {
 
 }
 
+/**
+ * @brief Fehlerberichte aus Issues
+ * 
+ */
+void testNegative_Issues() {
+        // Ohne decimal_shift
+        std::vector<float> digits = { 2.0, 2.0, 0.0, 1.0, 7.2, 9.0, 8.0};
+        std::vector<float> analogs = { };
+        double preValue_extended = 22018.080;
+        double preValue = 22018.08;
+        
+        const char* expected = "22017.98";
+
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/2145#issuecomment-1461899094
+        // extendResolution=false
+        // value < preValue
+        // Prüfung eingeschaltet => Fehler
+        preValue = 22018.08; // zu groß
+        UnderTestPost* underTestPost = init_do_flow(analogs, digits, Digital100, false, false, -2);
+        setAllowNegatives(underTestPost, false);
+        setPreValue(underTestPost, preValue_extended);
+        std::string result = process_doFlow(underTestPost);
+        TEST_ASSERT_EQUAL_STRING("Neg. Rate - Read:  - Raw: 22017.98 - Pre: 22018.08 ", underTestPost->getReadoutError().c_str());
+        TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+        delete underTestPost;
+
+}
