@@ -155,7 +155,7 @@ th, td {
             param,
             enhanceCon = false;
             lockAspectRatio = true;
-            lockSizes = true;
+            lockSizes = false;
             lockSpaceEquidistant = true;
             space = 3;
             domainname = getDomainname();
@@ -438,6 +438,29 @@ function UpdateROIs(_sel){
 					}
 				}
 			}
+			/* Check if the ROIs have same y, dy and dx. If so, tick the sync checkbox */
+           var all_x_dx_dy_Identical = true;
+            if (ROIInfo.length > 1) {
+				var aspectRatioROI0 = parseFloat(ROIInfo[0].dx) / parseFloat(ROIInfo[0].dy);
+				console.log("ROI0 Aspect Ratio: " + aspectRatioROI0);
+
+                for (var i = 1; i < (ROIInfo.length); ++i) { // 2nd .. last ROI
+				    console.log("ROI" + i + " Aspect Ratio: " + (parseFloat(ROIInfo[i].dx) / parseFloat(ROIInfo[i].dy)));
+                    if (aspectRatioROI0 != (parseFloat(ROIInfo[i].dx) / parseFloat(ROIInfo[i].dy))) { 
+                        all_x_dx_dy_Identical = false;
+						break;
+                    }
+                }
+			}
+
+            if (all_x_dx_dy_Identical) {
+                lockSizes = true;
+                console.log("All ROI have the same X, dXand dY, ticking the sync checkbox!");
+                document.getElementById("lockSizes").checked = lockSizes;
+            }
+            else {
+                console.log("Not all ROI have the same X, dXand dY, unticking the sync checkbox!");
+            }
             space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
             document.getElementById("space").value = space;
 
