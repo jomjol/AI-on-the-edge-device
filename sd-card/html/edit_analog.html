@@ -160,7 +160,7 @@ th, td {
             param,
             enhanceCon = false;
             lockAR = true;
-            lockSizes = true;
+            lockSizes = false;
             domainname = getDomainname();
 
     
@@ -419,6 +419,29 @@ function UpdateROIs(_sel){
             param = getConfigParameters(); 
             cofcat = getConfigCategory();
             UpdateNUMBERS();
+
+			/* Check if the ROIs have same dy and dx. If so, tick the sync checkbox */
+            var all_dx_dy_Identical = true;
+            if (ROIInfo.length > 1) {
+                for (var i = 1; i < (ROIInfo.length); ++i) { // 2nd .. last ROI
+                    if (parseInt(ROIInfo[i].dx) != parseInt(ROIInfo[0].dx) ||
+                        parseInt(ROIInfo[i].dy) != parseInt(ROIInfo[0].dy)) { 
+                        all_dx_dy_Identical = false;
+						break;
+                    }
+                }
+			}
+
+            if (all_dx_dy_Identical) {
+                lockSizes = true;
+                console.log("All ROI have the same dX and dY, ticking the sync checkbox!");
+                document.getElementById("lockSizes").checked = lockSizes;
+            }
+            else {
+                console.log("Not all ROI have the same dX and dY, unticking the sync checkbox!");
+            }
+
+
             drawImage();
             draw();
         }
