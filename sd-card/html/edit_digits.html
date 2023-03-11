@@ -115,7 +115,7 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6><label for="lockAR"> Lock aspect ratio </label></td>
+		<td><input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
@@ -154,7 +154,7 @@ th, td {
             cofcat,
             param,
             enhanceCon = false;
-            lockAR = true;
+            lockAspectRatio = true;
             lockSizes = true;
             lockSpaceEquidistant = true;
             space = 3;
@@ -269,8 +269,8 @@ function moveNext(){
     valuemanualchanged();
 }
 
-function changelockAR(){
-    lockAR = document.getElementById("lockAR").checked;
+function changelockAspectRatio(){
+    lockAspectRatio = document.getElementById("lockAspectRatio").checked;
 }
 
 function changelockSizes(){
@@ -287,7 +287,7 @@ function changeLockSpaceEquidistant(){
 
 function ChangeSelection(){
     aktindex = parseInt(document.getElementById("index").value);
-//    lockAR = true;
+//    lockAspectRatio = true;
     UpdateROIs();
 }
 
@@ -367,7 +367,7 @@ function UpdateROIs(_sel){
         document.getElementById("moveNext").disabled = true;
     }  
     
-    document.getElementById("lockAR").checked = lockAR;
+    document.getElementById("lockAspectRatio").checked = lockAspectRatio;
     document.getElementById("lockSizes").checked = lockSizes;
     document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
     document.getElementById("space").value = space;
@@ -650,7 +650,7 @@ function draw() {
                 return;
             }
 
-            if (lockAR) {
+            if (lockAspectRatio) {
                 rect.h = (e.pageY - zw.top) - rect.startY;
                 rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);            }
             else {
@@ -690,7 +690,7 @@ function draw() {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
 
-            if (lockAR) {
+            if (lockAspectRatio) {
                 rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);
                 document.getElementById("refdx").value = rect.w;
             }
@@ -715,7 +715,7 @@ function draw() {
             rect.w = document.getElementById("refdx").value;
             rect.h = document.getElementById("refdy").value;
 
-            if (lockAR) {
+            if (lockAspectRatio) {
                 rect.h = Math.round(rect.w / ROIInfo[aktindex]["ar"]);
                 document.getElementById("refdy").value = rect.h;
             }
