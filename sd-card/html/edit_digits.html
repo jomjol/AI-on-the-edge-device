@@ -423,6 +423,21 @@ function UpdateROIs(_sel){
             cofcat = getConfigCategory();
             UpdateNUMBERS();
 
+
+            /* Check if the ROIs are equidistant. Only if not, untick the checkbox */
+            if (ROIInfo.length > 1) {
+				var distanceROI0_to_ROI1 = parseInt(ROIInfo[1].x) - (parseInt(ROIInfo[0].x) + parseInt(ROIInfo[0].dx)); // Distance between 1st and 2nd ROI
+				//console.log("0->1: " + distanceROI0_to_ROI1);
+				for (var i = 1; i < (ROIInfo.length - 1); ++i) { // 2nd .. 2nd-last ROI
+					//console.log(i + "->" + i+1 + ": " + (parseInt(ROIInfo[i+1].x) - (parseInt(ROIInfo[i].x) + parseInt(ROIInfo[i].dx))));
+					if (distanceROI0_to_ROI1 != (parseInt(ROIInfo[i+1].x) - (parseInt(ROIInfo[i].x) + parseInt(ROIInfo[i].dx)))) {
+						console.log("Not equidistant, unticking the checkbox!");
+						lockSpaceEquidistant = false;
+    					document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
+						break;
+					}
+				}
+			}
             space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
             document.getElementById("space").value = space;
 
