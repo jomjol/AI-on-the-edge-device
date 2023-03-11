@@ -15,6 +15,7 @@ extern "C" {
 #endif
 
 #include "Helper.h"
+#include "time_sntp.h"
 #include "../../include/defines.h"
 
 static const char *TAG = "LOGFILE";
@@ -78,11 +79,11 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
 }
 
 
-void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
-    loglevel = _logLevel;
-
+void ClassLogFile::setLogLevel(esp_log_level_t _logLevel)
+{
     std::string levelText;
 
+    // Print log level to log file
     switch(_logLevel) {            
         case ESP_LOG_WARN:
             levelText = "WARNING";
@@ -95,13 +96,16 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel){
         case ESP_LOG_DEBUG:
             levelText = "DEBUG";
             break;
+    
         case ESP_LOG_ERROR:
         default:
             levelText = "ERROR";
             break;
     }
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set log level to " + levelText);
 
-    ESP_LOGI(TAG, "Log Level set to %s", levelText.c_str());
+    // set new log level
+    loglevel = _logLevel;
 
     /*
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Test");
@@ -318,15 +322,23 @@ void ClassLogFile::RemoveOldLogFile()
             //ESP_LOGD(TAG, "compare log file: %s to %s", entry->d_name, cmpfilename);
             if ((strlen(entry->d_name) == strlen(cmpfilename)) && (strcmp(entry->d_name, cmpfilename) < 0)) {
                 //ESP_LOGD(TAG, "delete log file: %s", entry->d_name);
-                std::string filepath = logroot + "/" + entry->d_name; 
-                if (unlink(filepath.c_str()) == 0) {
-                    deleted ++;
-                } else {
-                    ESP_LOGE(TAG, "can't delete file: %s", entry->d_name);
-                    notDeleted ++;
+                std::string filepath = logroot + "/" + entry->d_name;
+                if ((strcmp(entry->d_name, "log_1970-01-01.txt") == 0) && getTimeWasNotSetAtBoot()) { // keep logfile log_1970-01-01.txt if time was not set at boot (some boot logs are in there)
+                    //ESP_LOGD(TAG, "Skip deleting this file: %s", entry->d_name); 
+                    notDeleted++;
                 }
-            } else {
-                notDeleted ++;
+                else {          
+                    if (unlink(filepath.c_str()) == 0) {
+                        deleted++;
+                    } 
+                    else {
+                        ESP_LOGE(TAG, "can't delete file: %s", entry->d_name);
+                        notDeleted++;
+                    }
+                }
+            } 
+            else {
+                notDeleted++;
             }
         }
     }
@@ -386,14 +398,17 @@ void ClassLogFile::RemoveOldDataLog()
 }
 
 
-void ClassLogFile::CreateLogDirectories()
+bool ClassLogFile::CreateLogDirectories()
 {
-    MakeDir("/sdcard/log");
-    MakeDir("/sdcard/log/data");
-    MakeDir("/sdcard/log/analog");
-    MakeDir("/sdcard/log/digit");
-    MakeDir("/sdcard/log/message");
-    MakeDir("/sdcard/log/source");
+    bool bRetval = false;
+    bRetval = MakeDir("/sdcard/log");
+    bRetval = MakeDir("/sdcard/log/data");
+    bRetval = MakeDir("/sdcard/log/analog");
+    bRetval = MakeDir("/sdcard/log/digit");
+    bRetval = MakeDir("/sdcard/log/message");
+    bRetval = MakeDir("/sdcard/log/source");
+
+    return bRetval;
 }
 
 

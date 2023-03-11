@@ -82,10 +82,10 @@ static void gpioHandlerTask(void *arg) {
 
 void GpioPin::gpioInterrupt(int value) {
 #ifdef ENABLE_MQTT    
-    if (_mqttTopic != "") {
+    if (_mqttTopic.compare("") != 0) {
         ESP_LOGD(TAG, "gpioInterrupt %s %d", _mqttTopic.c_str(), value);
 
-        MQTTPublish(_mqttTopic, value ? "true" : "false");        
+        MQTTPublish(_mqttTopic, value ? "true" : "false", 1);        
     }
 #endif //ENABLE_MQTT
     currentState = value;
@@ -115,7 +115,7 @@ void GpioPin::init()
     }
 
 #ifdef ENABLE_MQTT
-    if ((_mqttTopic != "") && ((_mode == GPIO_PIN_MODE_OUTPUT) || (_mode == GPIO_PIN_MODE_OUTPUT_PWM) || (_mode == GPIO_PIN_MODE_BUILT_IN_FLASH_LED))) {
+    if ((_mqttTopic.compare("") != 0) && ((_mode == GPIO_PIN_MODE_OUTPUT) || (_mode == GPIO_PIN_MODE_OUTPUT_PWM) || (_mode == GPIO_PIN_MODE_BUILT_IN_FLASH_LED))) {
         std::function<bool(std::string, char*, int)> f = std::bind(&GpioPin::handleMQTT, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
         MQTTregisterSubscribeFunction(_mqttTopic, f);
     }
@@ -141,8 +141,8 @@ void GpioPin::setValue(bool value, gpio_set_source setSource, std::string* error
         gpio_set_level(_gpio, value);
 
 #ifdef ENABLE_MQTT
-        if ((_mqttTopic != "") && (setSource != GPIO_SET_SOURCE_MQTT)) {
-            MQTTPublish(_mqttTopic, value ? "true" : "false");
+        if ((_mqttTopic.compare("") != 0) && (setSource != GPIO_SET_SOURCE_MQTT)) {
+            MQTTPublish(_mqttTopic, value ? "true" : "false", 1);
         }
 #endif //ENABLE_MQTT
     }
@@ -153,7 +153,8 @@ void GpioPin::publishState() {
     if (newState != currentState) {
         ESP_LOGD(TAG,"publish state of GPIO %d new state %d", _gpio, newState);
 #ifdef ENABLE_MQTT
-        MQTTPublish(_mqttTopic, newState ? "true" : "false");
+    if (_mqttTopic.compare("") != 0)
+        MQTTPublish(_mqttTopic, newState ? "true" : "false", 1);
 #endif //ENABLE_MQTT
         currentState = newState;
     }
@@ -359,9 +360,9 @@ bool GpioHandler::readConfig()
             gpio_int_type_t intType = resolveIntType(toLower(splitted[2]));
             uint16_t dutyResolution = (uint8_t)atoi(splitted[3].c_str());
 #ifdef ENABLE_MQTT 
-            bool mqttEnabled = toLower(splitted[4]) == "true";
+            bool mqttEnabled = (toLower(splitted[4]) == "true");
 #endif // ENABLE_MQTT
-            bool httpEnabled = toLower(splitted[5]) == "true";
+            bool httpEnabled = (toLower(splitted[5]) == "true");
             char gpioName[100];
             if (splitted.size() >= 7) {
                 strcpy(gpioName, trim(splitted[6]).c_str());

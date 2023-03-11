@@ -35,7 +35,7 @@ public:
 
     void CloseLogFileAppendHandle();
 
-    void CreateLogDirectories();
+    bool CreateLogDirectories();
     void RemoveOldLogFile();
     void RemoveOldDataLog();
 

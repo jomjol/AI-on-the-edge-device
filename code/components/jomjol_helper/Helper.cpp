@@ -258,7 +258,7 @@ bool MakeDir(std::string path)
                 break;
 				
             default:
-				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path);
+				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path + " (errno: " + std::to_string(errno) + ")");
                 bSuccess = false;
                 break;
         }
@@ -962,4 +962,35 @@ std::string UrlDecode(const std::string& value)
     }
 
     return result;
+}
+
+
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+    return replaceString(s, toReplace, replaceWith, true);
+}
+
+
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
+    std::size_t pos = s.find(toReplace);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+
+    std::string old = s;
+    s.replace(pos, toReplace.length(), replaceWith);
+    if (logIt) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+    }
+    return true;
+}
+
+
+bool isInString(std::string& s, std::string const& toFind) {
+    std::size_t pos = s.find(toFind);
+
+    if (pos == std::string::npos) { // Not found
+        return false;
+    }
+    return true;
 }

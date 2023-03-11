@@ -162,11 +162,11 @@ function ParseConfig() {
      ParamAddValue(param, catname, "AnalogDigitalTransitionStart", 1, true);
      ParamAddValue(param, catname, "PreValueUse");
      ParamAddValue(param, catname, "PreValueAgeStartup");
-     ParamAddValue(param, catname, "AllowNegativeRates", 1, true);
+     ParamAddValue(param, catname, "AllowNegativeRates", 1, true, "true");
      ParamAddValue(param, catname, "MaxRateValue", 1, true);
      ParamAddValue(param, catname, "MaxRateType", 1, true);
-     ParamAddValue(param, catname, "ExtendedResolution", 1, true);
-     ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true);
+     ParamAddValue(param, catname, "ExtendedResolution", 1, true, "false");
+     ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true, "false");
      ParamAddValue(param, catname, "ErrorMessage");
      ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");     
 
@@ -212,12 +212,12 @@ function ParseConfig() {
      category[catname]["enabled"] = false;
      category[catname]["found"] = false;
      param[catname] = new Object();
-     ParamAddValue(param, catname, "IO0", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO1", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO3", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO4", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO12", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
-     ParamAddValue(param, catname, "IO13", 6, false, [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO0", 6, false, "", [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO1", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO3", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO4", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO12", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+     ParamAddValue(param, catname, "IO13", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
      ParamAddValue(param, catname, "LEDType");
      ParamAddValue(param, catname, "LEDNumbers");
      ParamAddValue(param, catname, "LEDColor", 3);
@@ -262,6 +262,7 @@ function ParseConfig() {
      ParamAddValue(param, catname, "TimeServer");         
      ParamAddValue(param, catname, "Hostname");   
      ParamAddValue(param, catname, "RSSIThreshold");   
+     ParamAddValue(param, catname, "CPUFrequency");
      ParamAddValue(param, catname, "SetupMode"); 
      
      
@@ -283,7 +284,7 @@ function ParseConfig() {
           aktline++;
      }
 
-     // Make the downward compatiblity
+     // Make the downward compatiblity with DataLogging
      if (category["DataLogging"]["found"] == false)
      {
           category["DataLogging"]["found"] = true;
@@ -315,14 +316,23 @@ function ParseConfig() {
           param["DataLogging"]["DataFilesRetention"]["value1"] = "3";
      }
 
+     // Downward compatibility: Create RSSIThreshold if not available
+     if (param["System"]["RSSIThreshold"]["found"] == false)
+     {
+          param["System"]["RSSIThreshold"]["found"] = true;
+          param["System"]["RSSIThreshold"]["enabled"] = false;
+          param["System"]["RSSIThreshold"]["value1"] = "0";
+     }
 }
 
-function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _checkRegExList = null){
+
+function ParamAddValue(param, _cat, _param, _anzParam = 1, _isNUMBER = false, _defaultValue = "", _checkRegExList = null){
      param[_cat][_param] = new Object(); 
      param[_cat][_param]["found"] = false;
      param[_cat][_param]["enabled"] = false;
      param[_cat][_param]["line"] = -1; 
      param[_cat][_param]["anzParam"] = _anzParam;
+     param[_cat][_param]["defaultValue"] = _defaultValue;
      param[_cat][_param]["Numbers"] = _isNUMBER;
      param[_cat][_param].checkRegExList = _checkRegExList;
 };
@@ -761,8 +771,18 @@ function CreateNUMBER(_numbernew){
                          _ret[_cat] = new Object();
                     }
                     _ret[_cat][_param] = new Object();
-                    _ret[_cat][_param]["found"] = false;
-                    _ret[_cat][_param]["enabled"] = false;
+                    if (param[_cat][_param]["defaultValue"] === "")
+                    {
+                         _ret[_cat][_param]["found"] = false;
+                         _ret[_cat][_param]["enabled"] = false;
+                    }
+                    else
+                    {
+                         _ret[_cat][_param]["found"] = true;
+                         _ret[_cat][_param]["enabled"] = true;
+                         _ret[_cat][_param]["value1"] = param[_cat][_param]["defaultValue"];
+
+                    }
                     _ret[_cat][_param]["anzParam"] = param[_cat][_param]["anzParam"]; 
 
                }

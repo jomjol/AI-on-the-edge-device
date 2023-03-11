@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "ClassLogFile.h"
 #include "connect_wlan.h"
+#include "read_wlanini.h"
 #include "server_mqtt.h"
 #include "interface_mqtt.h"
 #include "time_sntp.h"
@@ -31,6 +32,7 @@ float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
 bool retainFlag;
 static std::string maintopic;
+bool sendingOf_DiscoveryAndStaticTopics_scheduled = true; // Set it to true to make sure it gets sent at least once after startup
 
 
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
@@ -46,8 +48,9 @@ void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std
     rateUnit = _rateUnit;
 }
 
-void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
-    std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory) {
+bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
+    std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory,
+    int qos) {
     std::string version = std::string(libfive_git_version());
 
     if (version == "") {
@@ -130,26 +133,31 @@ void sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     "}"  +
     "}";
 
-    MQTTPublish(topicFull, payload, true);
+    return MQTTPublish(topicFull, payload, qos, true);
 }
 
-void MQTThomeassistantDiscovery() {  
-    if (!getMQTTisConnected()) 
-        return;
+bool MQTThomeassistantDiscovery(int qos) {  
+    bool allSendsSuccessed = false;
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MQTT - Sending Homeassistant Discovery Topics (Meter Type: " + meterType + ", Value Unit: " + valueUnit + " , Rate Unit: " + rateUnit + ")...");
+    if (!getMQTTisConnected()) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Unable to send Homeassistant Discovery Topics, we are not connected to the MQTT broker!");
+        return false;
+    }
 
-    //                              Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
-    sendHomeAssistantDiscoveryTopic("",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "MAC",             "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "hostname",        "Hostname",          "network-outline",          "",    "",                "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "freeMem",         "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "wifiRSSI",        "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "CPUtemp",         "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic");
-    sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing Homeassistant Discovery topics (Meter Type: '" + meterType + "', Value Unit: '" + valueUnit + "' , Rate Unit: '" + rateUnit + "') ...");
 
+	int aFreeInternalHeapSizeBefore = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+    //                                                   Group | Field            | User Friendly Name | Icon                      | Unit | Device Class     | State Class  | Entity Category
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "uptime",          "Uptime",            "clock-time-eight-outline", "s",   "",                "",            "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "MAC",             "MAC Address",       "network-outline",          "",    "",                "",            "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "hostname",        "Hostname",          "network-outline",          "",    "",                "",            "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "freeMem",         "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "wifiRSSI",        "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "CPUtemp",         "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic", qos);
 
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
@@ -158,76 +166,141 @@ void MQTThomeassistantDiscovery() {
             group = "";
         }
 
-    //                                  Group | Field                 | User Friendly Name                | Icon                   | Unit     | Device Class | State Class       | Entity Category
-        sendHomeAssistantDiscoveryTopic(group,   "value",              "Value",                            "gauge",                 valueUnit, meterType,     "total_increasing", "");
-        sendHomeAssistantDiscoveryTopic(group,   "raw",                "Raw Value",                        "raw",                   valueUnit, "",            "total_increasing", "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "error",              "Error",                            "alert-circle-outline",  "",        "",            "",                 "diagnostic");
+    //                                                       Group | Field                          | User Friendly Name                | Icon                   | Unit                 | Device Class | State Class       | Entity Category
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",                      "Value",                            "gauge",                 valueUnit,             meterType,      "total_increasing", "", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                        "Raw Value",                        "raw",                   "",                    "",             "",                 "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",                      "Error",                            "alert-circle-outline",  "",                    "",             "",                 "diagnostic", qos);
         /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitalization_round */
-        // sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
-        sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit", "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,  "",            "",                 "");        
-        sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round", "arrow-expand-vertical", valueUnit, "",            "measurement",      ""); // correctly the Unit is Uint/Interval!
-        sendHomeAssistantDiscoveryTopic(group,   "timestamp",          "Timestamp",                  "clock-time-eight-outline", "",        "timestamp",   "",                "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "json",               "JSON",                       "code-json",                "",        "",            "",                 "diagnostic");
-        sendHomeAssistantDiscoveryTopic(group,   "problem",            "Problem",                    "alert-outline",            "",        "problem",            "",                 ""); // Special binary sensor which is based on error topic
+        // allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,              "",             "measurement",      "", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round",  "arrow-expand-vertical", valueUnit,  "",             "measurement",      "", qos); // correctly the Unit is Unit/Interval!
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "timestamp",                  "Timestamp",                     "clock-time-eight-outline", "",                    "timestamp",    "",                 "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "json",                       "JSON",                             "code-json",             "",                    "",             "",                 "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "problem",                    "Problem",                          "alert-outline",         "",                    "problem",      "",                 "", qos); // Special binary sensor which is based on error topic
     }
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all Homeassistant Discovery MQTT topics");
+
+    int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+    int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Int. Heap Usage before Publishing Homeassistand Discovery Topics: " + 
+            to_string(aFreeInternalHeapSizeBefore) + ", after: " + to_string(aFreeInternalHeapSizeAfter) + ", delta: " + 
+            to_string(aFreeInternalHeapSizeBefore - aFreeInternalHeapSizeAfter) + ", lowest free: " + to_string(aMinFreeInternalHeapSize));
+
+    return allSendsSuccessed;
 }
 
-void publishSystemData() {
-    if (!getMQTTisConnected()) 
-        return;
+bool publishSystemData(int qos) {
+    bool allSendsSuccessed = false;
+
+    if (!getMQTTisConnected()) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Unable to send System Topics, we are not connected to the MQTT broker!");
+        return false;
+    }
 
     char tmp_char[50];
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing system MQTT topics...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing System MQTT topics...");
+
+	int aFreeInternalHeapSizeBefore = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + std::string(LWT_TOPIC), LWT_CONNECTED, qos, retainFlag); // Publish "connected" to maintopic/connection
 
     sprintf(tmp_char, "%ld", (long)getUpTime());
-    MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), qos, retainFlag);
     
     sprintf(tmp_char, "%lu", (long) getESPHeapSize());
-    MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), qos, retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
-    MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "wifiRSSI", std::string(tmp_char), qos, retainFlag);
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
-    MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), qos, retainFlag);
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all System MQTT topics");
+
+	int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+	int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Int. Heap Usage before publishing System Topics: " + 
+            to_string(aFreeInternalHeapSizeBefore) + ", after: " + to_string(aFreeInternalHeapSizeAfter) + ", delta: " + 
+            to_string(aFreeInternalHeapSizeBefore - aFreeInternalHeapSizeAfter) + ", lowest free: " + to_string(aMinFreeInternalHeapSize));
+
+    return allSendsSuccessed;
 }
 
 
-void publishStaticData() {
-    if (!getMQTTisConnected()) 
-        return;
+bool publishStaticData(int qos) {
+    bool allSendsSuccessed = false;
+
+    if (!getMQTTisConnected()) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Unable to send Static Topics, we are not connected to the MQTT broker!");
+        return false;
+    }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Publishing static MQTT topics...");
-    MQTTPublish(maintopic + "/" + "MAC", getMac(), retainFlag);
-    MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), retainFlag);
-    MQTTPublish(maintopic + "/" + "hostname", hostname, retainFlag);
+
+	int aFreeInternalHeapSizeBefore = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "MAC", getMac(), qos, retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), qos, retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, qos, retainFlag);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << roundInterval; // minutes
-    MQTTPublish(maintopic + "/" + "interval", stream.str(), retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "interval", stream.str(), qos, retainFlag);
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all Static MQTT topics");
+
+	int aFreeInternalHeapSizeAfter = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+	int aMinFreeInternalHeapSize =  heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Int. Heap Usage before Publishing Static Topics: " + 
+            to_string(aFreeInternalHeapSizeBefore) + ", after: " + to_string(aFreeInternalHeapSizeAfter) + ", delta: " + 
+            to_string(aFreeInternalHeapSizeBefore - aFreeInternalHeapSizeAfter) + ", lowest free: " + to_string(aMinFreeInternalHeapSize));
+
+    return allSendsSuccessed;
 }
 
-esp_err_t sendDiscovery_and_static_Topics(httpd_req_t *req) {
-    if (HomeassistantDiscovery) {
-        MQTThomeassistantDiscovery();
-    }
 
-    publishStaticData();
-
-    const char* resp_str = (const char*) req->user_ctx;
-    httpd_resp_send(req, resp_str, strlen(resp_str));  
-
+esp_err_t scheduleSendingDiscovery_and_static_Topics(httpd_req_t *req) {
+    sendingOf_DiscoveryAndStaticTopics_scheduled = true;
+    char msg[] = "MQTT Homeassistant Discovery and Static Topics scheduled";
+    httpd_resp_send(req, msg, strlen(msg));  
     return ESP_OK;
 }
 
-void GotConnected(std::string maintopic, bool retainFlag) {
-    if (HomeassistantDiscovery) {
-        MQTThomeassistantDiscovery();
+
+esp_err_t sendDiscovery_and_static_Topics(void) {
+    bool success = false;
+
+    if (!sendingOf_DiscoveryAndStaticTopics_scheduled) {
+        // Flag not set, nothing to do
+        return ESP_OK;
     }
 
-    publishStaticData();
-    publishSystemData();
+    if (HomeassistantDiscovery) {
+        success = MQTThomeassistantDiscovery(1);
+    }
+
+    success |= publishStaticData(1);
+
+    if (success) { // Success, clear the flag
+        sendingOf_DiscoveryAndStaticTopics_scheduled = false;
+        return ESP_OK;
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "One or more MQTT topics failed to be published, will try sending them in the next round!");
+        /* Keep sendingOf_DiscoveryAndStaticTopics_scheduled set so we can retry after the next round */
+        return ESP_FAIL;
+    }
+}
+
+
+void GotConnected(std::string maintopic, bool retainFlag) {
+    // Nothing to do
 }
 
 void register_server_mqtt_uri(httpd_handle_t server) {
@@ -235,8 +308,8 @@ void register_server_mqtt_uri(httpd_handle_t server) {
     uri.method    = HTTP_GET;
 
     uri.uri       = "/mqtt_publish_discovery";
-    uri.handler   = sendDiscovery_and_static_Topics;
-    uri.user_ctx  = (void*) "MQTT Discovery and Static Topics sent";    
+    uri.handler   = scheduleSendingDiscovery_and_static_Topics;
+    uri.user_ctx  = (void*) "";    
     httpd_register_uri_handler(server, &uri); 
 }
 

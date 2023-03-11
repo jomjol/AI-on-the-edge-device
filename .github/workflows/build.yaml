@@ -70,14 +70,23 @@ jobs:
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
-    - name: Prepare Web UI (copy data from repo and update hashes in all files)
+    - name: Prepare Web UI (copy data from repo, generate tooltip pages and update hashes in all files)
       run: |
         rm -rf ./html
         mkdir html
-        cp ./sd-card/html/* ./html/
+        cp -r ./sd-card/html/* ./html/
+
+        python -m pip install markdown
+        mkdir html/param-tooltips
+        cd tools/parameter-tooltip-generator
+        bash generate-param-doc-tooltips.sh
+        cd ../..
+
+        cp -r ./sd-card/html/* ./html/
+
+        echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
         
-
 
 #########################################################################################
 ## Pack for Update
@@ -86,7 +95,7 @@ jobs:
     # New OTA concept
     # update__version.zip file with following content:
     #  - /firmware.bin
-    #  - (optional) /html/*
+    #  - (optional) /html/* (inkl. subfolders)
     #  - (optional) /config/*.tfl
     runs-on: ubuntu-latest
     needs: build
@@ -149,7 +158,7 @@ jobs:
     # New Remote Setup concept
     # remote_setup__version.zip file with following content:
     #  - /firmware.bin
-    #  - /html/*
+    #  - /html/* (inkl. subfolders)
     #  - /config/*
     runs-on: ubuntu-latest
     needs: build
@@ -334,13 +343,13 @@ jobs:
 #        changelogPath: Changelog.md
 #        version: ${{ steps.get_version.outputs.version-without-v }}
             
-    # the release notes will be extracted from changelog 
-    - name: Extract release notes
-      id: extract-release-notes
-      if: startsWith(github.ref, 'refs/tags/') 
-      uses: ffurrer2/extract-release-notes@v1
-      with:
-          changelog_file: Changelog.md
+#    # the release notes will be extracted from changelog 
+#    - name: Extract release notes
+#      id: extract-release-notes
+#      if: startsWith(github.ref, 'refs/tags/') 
+#      uses: ffurrer2/extract-release-notes@v1
+#      with:
+#          changelog_file: Changelog.md
 
     # Releases should only be created on master by tagging the last commit.
     # all artifacts in firmware folder pushed to the release

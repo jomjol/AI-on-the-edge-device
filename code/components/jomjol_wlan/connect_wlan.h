@@ -5,18 +5,19 @@
 
 #include <string>
 
-void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname, const char *_ipadr, const char *_gw,  const char *_netmask, const char *_dns, int _rssithreshold);
-void wifi_init_sta(const char *_ssid, const char *_password, const char *_hostname);
-void wifi_init_sta(const char *_ssid, const char *_password);
-
+int wifi_init_sta(void);
 std::string* getIPAddress();
 std::string* getSSID();
 int get_WIFI_RSSI();
 bool getWIFIisConnected();
 void WIFIDestroy();
 
-extern std::string hostname;
-extern std::string std_hostname;
-extern int RSSIThreshold;
+#if (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES)
+void wifiRoamingQuery(void);
+#endif
+
+#ifdef WLAN_USE_ROAMING_BY_SCANNING
+void wifiRoamByScanning(void);
+#endif
 
 #endif //CONNECT_WLAN_H
