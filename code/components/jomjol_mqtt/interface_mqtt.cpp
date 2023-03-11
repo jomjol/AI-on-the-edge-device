@@ -31,7 +31,7 @@ bool SetRetainFlag;
 void (*callbackOnConnected)(std::string, bool) = NULL;
 
 
-bool MQTTPublish(std::string _key, std::string _content, bool retained_flag) 
+bool MQTTPublish(std::string _key, std::string _content, int qos, bool retained_flag) 
 {
     if (!mqtt_enabled) {                            // MQTT sevice not started / configured (MQTT_Init not called before)      
         return false;
@@ -51,7 +51,7 @@ bool MQTTPublish(std::string _key, std::string _content, bool retained_flag)
         #ifdef DEBUG_DETAIL_ON 
             long long int starttime = esp_timer_get_time();
         #endif
-        int msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
+        int msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, qos, retained_flag);
         #ifdef DEBUG_DETAIL_ON 
             ESP_LOGD(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
         #endif
@@ -60,7 +60,7 @@ bool MQTTPublish(std::string _key, std::string _content, bool retained_flag)
             #ifdef DEBUG_DETAIL_ON 
                 starttime = esp_timer_get_time();
             #endif
-            msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, 1, retained_flag);
+            msg_id = esp_mqtt_client_publish(client, _key.c_str(), _content.c_str(), 0, qos, retained_flag);
             #ifdef DEBUG_DETAIL_ON 
                 ESP_LOGD(TAG, "Publish msg_id %d in %lld ms", msg_id, (esp_timer_get_time() - starttime)/1000);
             #endif
@@ -234,7 +234,7 @@ int MQTT_Init() {
         .buffer_size = 1536,                    // size of MQTT send/receive buffer (Default: 1024)
         .reconnect_timeout_ms = 15000,          // Try to reconnect to broker (Default: 10000ms)
         .network_timeout_ms = 20000,            // Network Timeout (Default: 10000ms)
-        .message_retransmit_timeout = 3000      // Tiem after message resent when broker not acknowledged (QoS1, QoS2)
+        .message_retransmit_timeout = 3000      // Time after message resent when broker not acknowledged (QoS1, QoS2)
 
     };
 
@@ -345,7 +345,7 @@ void MQTTconnected(){
             }
         }
 
-        vTaskDelay(10000 / portTICK_PERIOD_MS);                 // Delay execution of callback routine after connection got established   
+        /* Send Static Topics and Homeassistant Discovery */
         if (callbackOnConnected) {                              // Call onConnected callback routine --> mqtt_server
             callbackOnConnected(maintopic, SetRetainFlag);
         }
