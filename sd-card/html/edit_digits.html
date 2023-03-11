@@ -620,6 +620,15 @@ function draw() {
                     drawTextBG(context, ROIInfo[_nb]["name"], x0+dx/2, y0-12, 5);
                 }
 
+                lw = 4
+                context.lineWidth = lw;
+                context.strokeStyle = "#990000";
+                var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                context.lineWidth = 1;
+                context.strokeRect(x0+dx*0.2, y0+dy*0.2, dx*0.6, dy*0.6);
             }
 
             lw = 4
