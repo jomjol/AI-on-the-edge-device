@@ -402,7 +402,7 @@ void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _va
         _digit = _decsep.substr(0, _pospunkt);
     else
         _digit = "default";
-
+  
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
         bool _rt = false;
@@ -841,6 +841,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         if (!NUMBERS[j]->AllowNegativeRates)
         {
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
             if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue))
             {
                 #ifdef SERIAL_DEBUG
@@ -848,6 +849,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                      NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
                       ) ;
                 #endif
+            
                 // Include inaccuracy of 0.2 for isExtendedResolution.
                 if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
