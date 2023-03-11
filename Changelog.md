@@ -21,18 +21,30 @@ If you want to revert back to `v14` or earlier, you will have to revert the migr
 #### Added
 
 -   Additional interface to InfluxDB Version 2 upwards
--   Updated the Hybrid CNN network to `dig-cont_0610_s3`
+-   Updated the network and corrected problems with quantized version:
+  -   Hybrid CNN network to `dig-cont_0611_s3` 
+  -   Analog CNN network to `ana-cont-11.0.5` and `ana-clas100-1.5.7`
+  -   Digital CNN network to `dig-class100-1.6.0`
+
 -   :bangbang:  Update Camera driver: contrast, brightness and saturation now working
    
     :bangbang:  **Attention**: this can effect old version as well, because there not all settings were effective!
+    
+- Option to change the CPU frequency (stability vs. speed)
+- Homeassistant: add GJ (giga joule)
+- Implementes "poor mans" wifi roaming to connect to the nearest access point
+- Additional startup checks (sd card, folder / file prescence, boot phase)
+- Internal updates (log file handling, boot phase)
 
 #### Changed
 
 -   [#2023](https://github.com/jomjol/AI-on-the-edge-device/pull/2023) Migrated Parameters
 -   Removed old `Topic` parameter, it is not used anymore
+-   Internal optimization of memory usage to enable new features
+-   Improve MQTT
 
 #### Fixed
--  n.a.
+-  Problem with timestamp in InfluxDB interface
 
 #### Removed
 
