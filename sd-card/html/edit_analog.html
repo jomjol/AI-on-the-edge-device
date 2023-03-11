@@ -120,16 +120,16 @@ th, td {
 	  <tr>
         <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
 		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td><label for="lockAR"> Lock aspect ratio: </label><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6></td>
+		<td><input type="checkbox" id="lockAR" name="lockAR" value="1" onclick="changelockAR()" checked tabindex=6><label for="lockAR"> Lock aspect ratio</label></td>
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
 		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-		<td><label for="lockSizes"> Synchronize Δx and Δy between ROIs</label><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7></td>
+		<td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize Δx and Δy between ROIs</label></td>
 	  </tr>
       <tr>
         <td colspan="2"></td>
-        <td><label for="CCW"> Counter-Clockwise Rotation: </label><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" unchecked tabindex=8></td>
+        <td><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" unchecked tabindex=8><label for="CCW"> Counter-Clockwise Rotation: </label></td>
       </tr>
 	</table>			 
 </div>	 
