@@ -14,6 +14,11 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
     - Add `GJ` (`gigajoule`) as an energy meter unit
     - Removed State Class and unit from `raw` topic
 - Added Expert Parameter to change CPU Clock from `160` to `240 Mhz`
+- SD card basic read/write check and a folder/file presence check at boot to indicate SD card issues or missing folders / files (#2085)
+- Simplified "WIFI roaming" by client triggered channel scan (AP switching at low RSSI) -> using expert parameter "RSSIThreshold" (#2120)
+- Log WLAN disconnect reason codes (code description: https://jomjol.github.io/AI-on-the-edge-device-docs/WLAN-disconnect-reason/)
+- Support of InfluxDB v2 (#2004)
+
 
 #### Changed
 -   Various Web interface Imrpovements/Enhancements:
@@ -23,10 +28,19 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
     - Various minor improvements
 - Added log file logs for Firmware Update
 - Improved memory management (moved various stuff to external PSRAM, https://github.com/jomjol/AI-on-the-edge-device/pull/2117)
+- Camera driver update: Support of contrast and saturation (#2048)
+   
+  :bangbang:  **Attention**: This could have impact to old configurations. Please check your configuration and potentially adapt parametrization, if detection is negativly affected.
+- Improved error handling and more provide verbose output in error cases during boot phase (#2020)
+- Red board LED is indicating more different errors and states (code description: https://jomjol.github.io/AI-on-the-edge-device-docs/StatusLED-BlinkCodes/)
+- Logfile: Print start indication block after time is synced to indicate start in logfile after a cold boot
+- Image Quality Index: Limit lower input range to 8 to avoid system instabilities
+
 
 #### Fixed
--  Various minor fixes
--  Added State Class "measurement" to rate_per_time_unit
+- Various minor fixes
+- Added State Class "measurement" to rate_per_time_unit
+- GPIO: Avoid MQTT publishing to empty topic when "MQTT enable" flag is not set
 
 #### Removed
 -   n.a.
