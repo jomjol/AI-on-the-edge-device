@@ -9,17 +9,24 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 :bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it).
 
 #### Added
--   
+- The Configuration page has now tooltips with enhanced documentation
+- Add GJ (gigajoule) as an energy meter unit
 
 #### Changed
-
--   
+-   Various Web interface Imrpovements/Enhancements:
+    - Restructured Menu (Needs cache clearing to be applied)
+    - Enhanced `Previous Value` page
+    - Improved/faster Graph page
+    - Various minor improvements
+- Added log file logs for Firmware Update
+- Improved memory management (moved various stuff to external PSRAM, https://github.com/jomjol/AI-on-the-edge-device/pull/2117)
 
 #### Fixed
--  
+-  Various minor fixes
+-  Added State Class "measurement" to rate_per_time_unit
 
 #### Removed
--   
+-   n.a.
 
 
 
