@@ -8,8 +8,6 @@
 #include "esp_system.h"
 #include "esp_event.h"
 
-#include "server_tflite.h"
-
 #include "esp_log.h"
 
 #include <sys/stat.h>

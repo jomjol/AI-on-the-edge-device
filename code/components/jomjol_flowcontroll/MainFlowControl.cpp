@@ -1,4 +1,4 @@
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 
 #include <string>
 #include <vector>
@@ -22,6 +22,7 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+#include "server_help.h"
 
 #include "read_wlanini.h"
 #include "connect_wlan.h"
@@ -32,17 +33,14 @@
 #endif //ENABLE_MQTT
 
 
-ClassFlowControll tfliteflow;
+ClassFlowControll flowctrl;
 
 static bool isPlannedReboot = false;
-
 static TaskHandle_t xHandletask_autodoFlow = NULL;
 static bool bTaskAutoFlowCreated = false;
-
 static int taskAutoFlowState = FLOW_TASK_STATE_INIT;
 static bool reloadConfig = false;
 static bool manualFlowStart = false;
-
 static long auto_interval = 0;
 static int countRounds = 0;
 
@@ -87,26 +85,26 @@ void setTaskAutoFlowState(uint8_t _value)
 
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req)
 {
-    return tfliteflow.GetJPGStream(_filename, req);
+    return flowctrl.GetJPGStream(_filename, req);
 }
 
 
 esp_err_t GetRawJPG(httpd_req_t *req)
 {
-    return tfliteflow.SendRawJPG(req);
+    return flowctrl.SendRawJPG(req);
 }
 
 
 bool isSetupModusActive() 
 {
-    return tfliteflow.getStatusSetupModus();
+    return flowctrl.getStatusSetupModus();
 }
 
 
-void KillTFliteTasks()
+void DeleteMainFlowTask()
 {
     #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "KillTFliteTasks: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
+        ESP_LOGD(TAG, "DeleteMainFlowTask: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
     #endif
     if( xHandletask_autodoFlow != NULL )
     {
@@ -123,14 +121,14 @@ bool doInit(void)
 {
     bool bRetVal = true;
 
-    if (!tfliteflow.InitFlow(CONFIG_FILE))
+    if (!flowctrl.InitFlow(CONFIG_FILE))
         bRetVal = false;
     
     /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
     gpio_handler_init();
 
     #ifdef ENABLE_MQTT
-        tfliteflow.StartMQTTService();
+        flowctrl.StartMQTTService();
     #endif //ENABLE_MQTT
 
     return bRetVal;
@@ -145,7 +143,7 @@ bool doflow(void)
         ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
     #endif
 
-    tfliteflow.doFlow(zw_time);
+    flowctrl.doFlow(zw_time);
 
     #ifdef DEBUG_DETAIL_ON      
         ESP_LOGD(TAG, "doflow - end %s", zw_time.c_str());
@@ -200,12 +198,14 @@ esp_err_t handler_reload_config(httpd_req_t *req)
 {
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    if (taskAutoFlowState >= 1 && taskAutoFlowState <= 3) {
+    if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
+        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
+    {
         const char* resp_str = "Reload config and redo flow initialization...";
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
         reloadConfig = true;
     }
-    else if (taskAutoFlowState == 6) {
+    else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) {
         const char* resp_str = "Abort waiting delay, reload config and redo flow initialization...";
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state.                                                                 // TODO: Skip delay
@@ -224,17 +224,22 @@ esp_err_t handler_flow_start(httpd_req_t *req)
 {
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    if (taskAutoFlowState == 3 || taskAutoFlowState == 6) {
+    if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
+        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
+    {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start");
         const char* resp_str = "INFO: Flow start triggered by REST API /flow_start";
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
 
-        if (taskAutoFlowState == 6)
+        if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
             xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state
 
         manualFlowStart = true;
     }
-    else if (taskAutoFlowState == 4 || taskAutoFlowState == 5) {
+    else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING || 
+             taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
+             taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
+    {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start, but flow is processing");
         const char* resp_str = "WARNING: Flow start triggered but flow is already processing";
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);  
@@ -261,15 +266,20 @@ esp_err_t MQTTCtrlFlowStart(std::string _topic) {
 
     ESP_LOGD(TAG, "MQTTCtrlFlowStart: topic %s", _topic.c_str());
 
-    if (taskAutoFlowState == 3 || taskAutoFlowState == 6) {
+    if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
+        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
+    {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic " + _topic);
 
-        if (taskAutoFlowState == 6)
+        if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
             xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state
 
         manualFlowStart = true;
     }
-    else if (taskAutoFlowState == 4 || taskAutoFlowState == 5) {
+    else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING || 
+             taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
+             taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
+    {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic "+ _topic + ", but flow is processing");
     }
     else 
@@ -299,7 +309,7 @@ esp_err_t handler_json(httpd_req_t *req)
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "application/json");
 
-        std::string zw = tfliteflow.getJSON();
+        std::string zw = flowctrl.getJSON();
         if (zw.length() > 0) 
         {
             httpd_resp_send(req, zw.c_str(), zw.length());
@@ -392,7 +402,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 _intype = READOUT_TYPE_ERROR;
 
 
-            zw = tfliteflow.getReadoutAll(_intype);
+            zw = flowctrl.getReadoutAll(_intype);
             ESP_LOGD(TAG, "ZW: %s", zw.c_str());
             if (zw.length() > 0)
                 httpd_resp_send(req, zw.c_str(), zw.length()); 
@@ -401,7 +411,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
 
 
-        std::string status = tfliteflow.getActStatus();
+        std::string status = flowctrl.getActStatus();
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
         if (query.find("full") != std::string::npos)
@@ -409,7 +419,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             string txt;
             txt = "<body style=\"font-family: arial\">";
 
-            if ((countRounds <= 1) && (taskAutoFlowState <= 4)) { // First round not completed yet
+            if ((countRounds <= 1) && (taskAutoFlowState <= FLOW_TASK_STATE_IMG_PROCESSING)) { // First round not completed yet
                 txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + status + "</h3>\n";
             }
             else {
@@ -420,7 +430,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
 
 
-        zw = tfliteflow.getReadout(_rawValue, _noerror);
+        zw = flowctrl.getReadout(_rawValue, _noerror);
         if (zw.length() > 0)
             httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
@@ -429,7 +439,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         {
             string txt, zw;
 
-            if ((countRounds <= 1) && (taskAutoFlowState <= 4)) { // First round not completed yet
+            if ((countRounds <= 1) && (taskAutoFlowState <= FLOW_TASK_STATE_IMG_PROCESSING)) { // First round not completed yet
                 // Nothing to do
             }
             else {
@@ -439,11 +449,11 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
 
                 std::vector<HTMLInfo*> htmlinfodig;
-                htmlinfodig = tfliteflow.GetAllDigital(); 
+                htmlinfodig = flowctrl.GetAllDigital(); 
 
                 for (int i = 0; i < htmlinfodig.size(); ++i)
                 {
-                    if (tfliteflow.GetTypeDigital() == Digital)
+                    if (flowctrl.GetTypeDigital() == Digital)
                     {
                         if (htmlinfodig[i]->val == 10)
                             zw = "NaN";
@@ -474,7 +484,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
                 
                 std::vector<HTMLInfo*> htmlinfoana;
-                htmlinfoana = tfliteflow.GetAllAnalog();
+                htmlinfoana = flowctrl.GetAllAnalog();
                 for (int i = 0; i < htmlinfoana.size(); ++i)
                 {
                     std::stringstream stream;
@@ -696,7 +706,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
         Camera.SetLEDIntensity(intens);
         ESP_LOGD(TAG, "test_take - vor TakeImage");
-        std::string zw = tfliteflow.doSingleStep("[TakeImage]", _host);
+        std::string zw = flowctrl.doSingleStep("[TakeImage]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     } 
@@ -711,7 +721,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        ESP_LOGD(TAG, "Parameter host: %s", _host.c_str());
 
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
+        std::string zw = flowctrl.doSingleStep("[Alignment]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     }
@@ -738,7 +748,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
             ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
         #endif
 
-        std::string zw = tfliteflow.getActStatusWithTime();
+        std::string zw = flowctrl.getActStatusWithTime();
         httpd_resp_send(req, zw.c_str(), zw.length());   
     }
     else 
@@ -851,11 +861,11 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
     if (strlen(_size) == 0)
     {
-        zw = tfliteflow.GetPrevalue(std::string(_numbers));
+        zw = flowctrl.GetPrevalue(std::string(_numbers));
     }
     else
     {
-        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size, _numbers, true);
+        zw = "SetPrevalue to " + flowctrl.UpdatePrevalue(_size, _numbers, true);
     }
     
     resp_str = zw.c_str();
@@ -886,7 +896,7 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************
         if (taskAutoFlowState == FLOW_TASK_STATE_INIT_DELAYED) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + (std::string)FLOW_INIT_DELAYED);
-            tfliteflow.setActStatus(FLOW_INIT_DELAYED);
+            flowctrl.setActStatus(FLOW_INIT_DELAYED);
             // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
 
             vTaskDelay(60*5000 / portTICK_PERIOD_MS); // Wait 5 minutes to give time to do an OTA update or fetch the log 
@@ -898,22 +908,22 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_INIT) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_INIT);
-            tfliteflow.setActStatus(FLOW_INIT);
+            flowctrl.setActStatus(FLOW_INIT);
             // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
 
             if (!doInit()) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + (std::string)FLOW_INIT_FAILED);
-                tfliteflow.setActStatus(FLOW_INIT_FAILED);
+                flowctrl.setActStatus(FLOW_INIT_FAILED);
                 #ifdef ENABLE_MQTT
                 if (getMQTTisConnected())
-                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", tfliteflow.getActStatus(), false);
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
                 #endif //ENABLE_MQTT
 
                 while (true) {                                      // Waiting for a REQUEST
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
-                        tfliteflow.DeinitFlow();
+                        flowctrl.DeinitFlow();
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;   // Repeat FLOW INIT
                         break;
                     }
@@ -931,19 +941,19 @@ void task_autodoFlow(void *pvParameter)
             if (isSetupModusActive())
             {
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_SETUP_MODE);
-                tfliteflow.setActStatus(FLOW_SETUP_MODE);
+                flowctrl.setActStatus(FLOW_SETUP_MODE);
                 #ifdef ENABLE_MQTT
-                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", tfliteflow.getActStatus(), false);
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
                 #endif //ENABLE_MQTT
 
                 //std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-                //tfliteflow.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
+                //flowctrl.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
 
                 while (true) {                              // Waiting for a REQUEST
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
-                        tfliteflow.DeinitFlow();
+                        flowctrl.DeinitFlow();
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;       // Setup Mode done --> Do FLOW INIT
                         break;
                     }
@@ -958,30 +968,30 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************      
         else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART) {
     
-            if (!tfliteflow.isAutoStart(auto_interval)) {
+            if (!flowctrl.isAutoStart(auto_interval)) {
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_IDLE_NO_AUTOSTART);
-                tfliteflow.setActStatus(FLOW_IDLE_NO_AUTOSTART);
+                flowctrl.setActStatus(FLOW_IDLE_NO_AUTOSTART);
                 #ifdef ENABLE_MQTT
-                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", tfliteflow.getActStatus(), false);
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
                 #endif //ENABLE_MQTT
 
                 while (true) {                              // Waiting for a REQUEST
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
-                        tfliteflow.DeinitFlow();
+                        flowctrl.DeinitFlow();
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;           // Return to state "FLOW INIT"
                         break;
                     }
                     if (manualFlowStart) { 
-                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start evalutaion process (manual triggered)");
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start process (manual trigger)");
                         taskAutoFlowState = FLOW_TASK_STATE_IMG_PROCESSING; // Start manual triggered single round of "FLOW PROCESSING"  
                         break;
                     }
                 }   
             }
             else {
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start evalutaion process (automatic triggered)");
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start process (automatic trigger)");
                 taskAutoFlowState = FLOW_TASK_STATE_IMG_PROCESSING;         // Continue to state "FLOW PROCESSING"
             }
         }
@@ -995,7 +1005,7 @@ void task_autodoFlow(void *pvParameter)
             roundStartTime = getUpTime();
             fr_start = esp_timer_get_time();
                    
-            if (tfliteflow.doFlowImageEvaluation(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
+            if (flowctrl.doFlowImageEvaluation(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Image evaluation completed (" + 
                                     std::to_string(getUpTime() - roundStartTime) + "s)");
             }
@@ -1009,11 +1019,8 @@ void task_autodoFlow(void *pvParameter)
         // ******************************************** 
         else if (taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA) {  
 
-            if (tfliteflow.doFlowPublishData(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Publishing completed"); 
-            }
-            else {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Publishing failed"); 
+            if (!flowctrl.doFlowPublishData(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Publish data failed"); 
             }
             taskAutoFlowState = FLOW_TASK_STATE_ADDITIONAL_TASKS;           // Continue with TASKS after FLOW FINISHED
         }
@@ -1023,9 +1030,9 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_ADDITIONAL_TASKS);
-            tfliteflow.setActStatus(FLOW_ADDITIONAL_TASKS);
+            flowctrl.setActStatus(FLOW_ADDITIONAL_TASKS);
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", tfliteflow.getActStatus(), false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
             #endif //ENABLE_MQTT
 
             // Cleanup outdated log and data files (retention policy)  
@@ -1048,9 +1055,9 @@ void task_autodoFlow(void *pvParameter)
             /* Automatic error handling (if neccessary)
             // ********************************************
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "State: " + (std::string)FLOW_AUTO_ERROR_HANDLING);
-            tfliteflow.setActStatus(FLOW_AUTO_ERROR_HANDLING);
+            flowctrl.setActStatus(FLOW_AUTO_ERROR_HANDLING);
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", tfliteflow.getActStatus(), false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
             #endif //ENABLE_MQTT
             
             // nothing to do
@@ -1078,9 +1085,9 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Flow state: " + (std::string)FLOW_IDLE_AUTOSTART);
-            tfliteflow.setActStatus(FLOW_IDLE_AUTOSTART);
+            flowctrl.setActStatus(FLOW_IDLE_AUTOSTART);
             #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", tfliteflow.getActStatus(), false);
+                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
             #endif //ENABLE_MQTT
             int64_t fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
             if (auto_interval > fr_delta_ms)
@@ -1094,7 +1101,7 @@ void task_autodoFlow(void *pvParameter)
             // ********************************************    
             if (reloadConfig) {                     
                 reloadConfig = false;
-                tfliteflow.DeinitFlow();
+                flowctrl.DeinitFlow();
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;               // Return to state "FLOW INIT"
             }
             else {
@@ -1106,7 +1113,7 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************
         else {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error taskAutoFlowState: Invalid state called. Programming error!");
-            tfliteflow.setActStatus(FLOW_INVALID_STATE);
+            flowctrl.setActStatus(FLOW_INVALID_STATE);
         }
     }
 
@@ -1117,39 +1124,31 @@ void task_autodoFlow(void *pvParameter)
 }
 
 
-void TFliteDoAutoStart()
+void StartMainFlowTask()
 {
     #ifdef DEBUG_DETAIL_ON      
-            LogFile.WriteHeapInfo("TFliteDoAutoStart: start");
+            LogFile.WriteHeapInfo("CreateFlowTask: start");
     #endif
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " FLOW_START_FLOW_TASK);
-    tfliteflow.setActStatus(FLOW_START_FLOW_TASK);
+    flowctrl.setActStatus(FLOW_START_FLOW_TASK);
 
     BaseType_t xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
     if( xReturned != pdPASS ) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create task_autodoFlow");
-        LogFile.WriteHeapInfo("TFliteDoAutoStart: Failed to create task");
-        tfliteflow.setActStatus(FLOW_FLOW_TASK_FAILED);
+        LogFile.WriteHeapInfo("CreateFlowTask: Failed to create task");
+        flowctrl.setActStatus(FLOW_FLOW_TASK_FAILED);
     }
 
     #ifdef DEBUG_DETAIL_ON      
-            LogFile.WriteHeapInfo("TFliteDoAutoStart: end");
+            LogFile.WriteHeapInfo("CreateFlowTask: end");
     #endif
 }
 
-/*
-#ifdef ENABLE_MQTT
-std::string GetMQTTMainTopic()
-{
-    return tfliteflow.GetMQTTMainTopic();
-}
-#endif//ENABLE_MQTT
-*/
 
-void register_server_tflite_uri(httpd_handle_t server)
+void register_server_main_flow_task_uri(httpd_handle_t server)
 {
-    ESP_LOGI(TAG, "server_tflite - Registering URI handlers");
+    ESP_LOGI(TAG, "server_main_flow_task - Registering URI handlers");
     
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;

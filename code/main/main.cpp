@@ -22,14 +22,13 @@
 //#include "driver/sdmmc_defs.h"
 ///////////////////////////////
 
-
 #include "ClassLogFile.h"
 
 #include "connect_wlan.h"
 #include "read_wlanini.h"
 
 #include "server_main.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
@@ -183,7 +182,7 @@ extern "C" void app_main(void)
     // Highlight start of app_main 
     // ********************************************
     ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
- 
+
     // Init camera
     // ********************************************
     PowerResetCamera();
@@ -454,8 +453,8 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "starting servers");
 
     server = start_webserver();   
-    register_server_camera_uri(server); 
-    register_server_tflite_uri(server);
+    register_server_camera_uri(server);
+    register_server_main_flow_task_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
     #ifdef ENABLE_MQTT
@@ -475,12 +474,12 @@ extern "C" void app_main(void)
     // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully");
-        TFliteDoAutoStart();
+        StartMainFlowTask();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
              isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors");
-        TFliteDoAutoStart();
+        StartMainFlowTask();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted. Loading reduced web interface...");

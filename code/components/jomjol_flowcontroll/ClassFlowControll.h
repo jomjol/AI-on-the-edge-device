@@ -46,6 +46,7 @@ protected:
 	std::string aktstatusWithTime;
 
 public:
+	ClassFlowControll();
 	bool InitFlow(std::string config);
 	void DeinitFlow(void);
 	bool doFlowImageEvaluation(string time);

@@ -1,7 +1,7 @@
 #include "ClassFlowAlignment.h"
 #include "ClassFlowTakeImage.h"
 #include "ClassFlow.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 
 #include "CRotateImage.h"
 #include "esp_log.h"
@@ -259,8 +259,8 @@ bool ClassFlowAlignment::doFlow(string time)
             if(References[0].alignment_algo != 3){
                 DrawRef(ImageTMP);
             }
-            tfliteflow.DigitalDrawROI(ImageTMP);
-            tfliteflow.AnalogDrawROI(ImageTMP);
+            flowctrl.DigitalDrawROI(ImageTMP);
+            flowctrl.AnalogDrawROI(ImageTMP);
             ImageTMP->writeToMemoryAsJPG((ImageData*)AlgROI, 90);
         }
     #endif

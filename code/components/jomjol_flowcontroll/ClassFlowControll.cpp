@@ -26,7 +26,7 @@ extern "C" {
 #endif //ENABLE_MQTT
 
 #include "server_help.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "server_GPIO.h"
 #include "../../include/defines.h"
 
@@ -53,6 +53,12 @@ void ClassFlowControll::SetInitialParameter(void)
     disabled = false;
     readParameterDone = false;
     setActStatus(FLOW_NO_TASK);
+}
+
+
+ClassFlowControll::ClassFlowControll()
+{
+    SetInitialParameter();
 }
 
 
@@ -143,9 +149,9 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (ChangeRSSIThreshold(WLAN_CONFIG_FILE, RSSIThresholdTMP))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
-                fclose(pfile);
+                //fclose(pfile);
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new RSSITHRESHOLD ...");
-                doReboot();
+                //doReboot();
             }
         }
         #endif
@@ -155,18 +161,20 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (ChangeHostName(WLAN_CONFIG_FILE, splitted[1]))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
-                fclose(pfile);
+                //fclose(pfile);
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new HOSTNAME...");             
-                doReboot();
+                //doReboot();
             }
         }
 
         if ((toUpper(splitted[0]) == "SETUPMODE") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
+            if (toUpper(splitted[1]) == "FALSE") {
+                SetupModeActive = false;
+            }
+            else if (toUpper(splitted[1]) == "TRUE") {
                 SetupModeActive = true;
-            }        
+            }    
         }
     }
 
