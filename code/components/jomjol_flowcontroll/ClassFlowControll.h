@@ -47,6 +47,7 @@ protected:
 
 public:
 	ClassFlowControll();
+	virtual ~ClassFlowControll();
 	bool InitFlow(std::string config);
 	void DeinitFlow(void);
 	bool doFlowImageEvaluation(string time);

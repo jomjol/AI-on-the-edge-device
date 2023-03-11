@@ -198,22 +198,39 @@ esp_err_t handler_reload_config(httpd_req_t *req)
 {
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
-        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
+    if (taskAutoFlowState == FLOW_TASK_STATE_INIT ||
+        taskAutoFlowState == FLOW_TASK_STATE_SETUPMODE ||
+        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
     {
-        const char* resp_str = "Reload config and redo flow initialization...";
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Reload config and redo flow initialization...";
+        httpd_resp_send(req, zw.c_str(), zw.length());
         reloadConfig = true;
     }
-    else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) {
-        const char* resp_str = "Abort waiting delay, reload config and redo flow initialization...";
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+    else if (taskAutoFlowState == FLOW_TASK_STATE_INIT_DELAYED) 
+    {
+        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Abort waiting delay and continue with flow initialization...";
+        httpd_resp_send(req, zw.c_str(), zw.length());
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state.      
+    }
+    else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
+    {
+        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Abort waiting delay, reload config and redo flow initialization...";
+        httpd_resp_send(req, zw.c_str(), zw.length());
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state.                                                                 // TODO: Skip delay
         reloadConfig = true;
     }
-    else {
-        const char* resp_str = "Flow is processing, reloading of configuration impossible. Wait until flow processing is completed";
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+    else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING || 
+             taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
+             taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
+    {
+        const std::string zw = getCurrentTimeString(LOGFILE_TIME_FORMAT) + ": Reload config and redo flow initialization as soon as possible";
+        httpd_resp_send(req, zw.c_str(), zw.length());
+        reloadConfig = true;
+    }
+    else 
+    {
+        const std::string zw = getCurrentTimeString(LOGFILE_TIME_FORMAT) + ": Reload config not possible because flow not available";
+        httpd_resp_send(req, zw.c_str(), zw.length());
     }
 
     return ESP_OK;
@@ -227,9 +244,9 @@ esp_err_t handler_flow_start(httpd_req_t *req)
     if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
         taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start");
-        const char* resp_str = "INFO: Flow start triggered by REST API /flow_start";
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API");
+        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Flow start triggered by REST API";
+        httpd_resp_send(req, zw.c_str(), zw.length());
 
         if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
             xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state
@@ -240,32 +257,25 @@ esp_err_t handler_flow_start(httpd_req_t *req)
              taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
              taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start, but flow is processing");
-        const char* resp_str = "WARNING: Flow start triggered but flow is already processing";
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);  
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API (flow is processing, request delayed)");
+        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Flow start triggered (flow is processing -> request delayed)";
+        httpd_resp_send(req, zw.c_str(), zw.length());
+
+        manualFlowStart = true;
     }
     else {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not yet initialized");
-        const char* resp_str = "WARNING: Flow start triggered by REST API, but flow is not yet initialized";
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not yet initialized. Request processing not possible");
+        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Flow start triggered by REST API, but flow is not yet initialized";
+        httpd_resp_send(req, zw.c_str(), zw.length());
     }
-
-    #ifdef DEBUG_DETAIL_ON   
-        LogFile.WriteHeapInfo("handler_flow_start - Done");       
-    #endif
 
     return ESP_OK;
 }
 
 
 #ifdef ENABLE_MQTT
-esp_err_t MQTTCtrlFlowStart(std::string _topic) {
-
-    #ifdef DEBUG_DETAIL_ON          
-        LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Start");       
-    #endif
-
-    ESP_LOGD(TAG, "MQTTCtrlFlowStart: topic %s", _topic.c_str());
-
+esp_err_t MQTTCtrlFlowStart(std::string _topic) 
+{
     if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
         taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
     {
@@ -280,16 +290,13 @@ esp_err_t MQTTCtrlFlowStart(std::string _topic) {
              taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
              taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic "+ _topic + ", but flow is processing");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic "+ _topic + " (flow is processing, request delayed)");
+        
+        manualFlowStart = true;
     }
-    else 
-    {
+    else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by MQTT topic " + _topic + ", but flow is not yet initialized");
     }  
-
-    #ifdef DEBUG_DETAIL_ON   
-        LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Done");       
-    #endif
 
     return ESP_OK;
 }
@@ -923,7 +930,7 @@ void task_autodoFlow(void *pvParameter)
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
-                        flowctrl.DeinitFlow();
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;   // Repeat FLOW INIT
                         break;
                     }
@@ -953,7 +960,7 @@ void task_autodoFlow(void *pvParameter)
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
-                        flowctrl.DeinitFlow();
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;       // Setup Mode done --> Do FLOW INIT
                         break;
                     }
@@ -979,7 +986,7 @@ void task_autodoFlow(void *pvParameter)
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
-                        flowctrl.DeinitFlow();
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;           // Return to state "FLOW INIT"
                         break;
                     }
@@ -1012,6 +1019,7 @@ void task_autodoFlow(void *pvParameter)
             else {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image evaluation failed");
             }
+
             taskAutoFlowState = FLOW_TASK_STATE_PUBLISH_DATA;               // Continue with TASKS after FLOW FINISHED
         }
 
@@ -1069,14 +1077,19 @@ void task_autodoFlow(void *pvParameter)
                     " completed (" + std::to_string(getUpTime() - roundStartTime) + "s)");   
 
 
-            // Check if manually triggered single round
+            // Check if triggerd reload config or manually triggered single round
             // ********************************************    
-            if (manualFlowStart) {
+            if (reloadConfig) {
+                reloadConfig = false;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
+                taskAutoFlowState = FLOW_TASK_STATE_INIT;                   // Return to state "FLOW INIT"
+            }
+            else if (manualFlowStart) {
                 manualFlowStart = false;
-                taskAutoFlowState = FLOW_TASK_STATE_IDLE_NO_AUTOSTART;      // Return to state "READY (AUTOSTART DISABLED)"
+                taskAutoFlowState = FLOW_TASK_STATE_IDLE_NO_AUTOSTART;      // Return to state "Idle (NO AUTOSTART)"
             }
             else {
-                taskAutoFlowState = FLOW_TASK_STATE_IDLE_AUTOSTART;         // Continue to state "READY (AUTOSTART / WAITING STATE)"
+                taskAutoFlowState = FLOW_TASK_STATE_IDLE_AUTOSTART;         // Continue to state "Idle (AUTOSTART / WAITING STATE)"
             }
         }
 
@@ -1101,7 +1114,7 @@ void task_autodoFlow(void *pvParameter)
             // ********************************************    
             if (reloadConfig) {                     
                 reloadConfig = false;
-                flowctrl.DeinitFlow();
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;               // Return to state "FLOW INIT"
             }
             else {
@@ -1112,7 +1125,7 @@ void task_autodoFlow(void *pvParameter)
         // INVALID STATE
         // ********************************************
         else {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error taskAutoFlowState: Invalid state called. Programming error!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "taskAutoFlowState: Invalid state called. Programming error!");
             flowctrl.setActStatus(FLOW_INVALID_STATE);
         }
     }

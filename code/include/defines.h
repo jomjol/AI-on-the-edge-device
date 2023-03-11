@@ -194,15 +194,15 @@
     #define FLOW_TASK_STATE_IDLE_AUTOSTART      7
 
     // Process state names
-    #define FLOW_NO_TASK                "Flow task not yet created"
+    #define FLOW_NO_TASK                "No flow task"
     #define FLOW_START_FLOW_TASK        "Start flow task"
     #define FLOW_FLOW_TASK_FAILED       "Flow creation failed"
-    #define FLOW_INIT_DELAYED           "Initialization (delayed)"
+    #define FLOW_INIT_DELAYED           "Initialization (DELAYED)"
     #define FLOW_INIT                   "Initialization"
     #define FLOW_INIT_FAILED            "Initialization failed"
     #define FLOW_SETUP_MODE             "Setup mode"
-    #define FLOW_IDLE_NO_AUTOSTART      "Idle (no autostart)"
-    #define FLOW_IDLE_AUTOSTART         "Idle (autostart)"
+    #define FLOW_IDLE_NO_AUTOSTART      "Idle (NO AUTOSTART)"
+    #define FLOW_IDLE_AUTOSTART         "Idle (AUTOSTART)"
 
     #define FLOW_TAKE_IMAGE             "Take image"
     #define FLOW_ALIGNMENT              "Image alignment"
@@ -213,7 +213,7 @@
     #define FLOW_PUBLISH_INFLUXDB2      "Publish to InfluxDB2"
 
     #define FLOW_ADDITIONAL_TASKS       "Additional tasks"
-    #define FLOW_AUTO_ERROR_HANDLING    "Error handling"
+    #define FLOW_AUTO_ERROR_HANDLING    "Auto Error handling"
     #define FLOW_INVALID_STATE          "Invalid state"
 
 

@@ -62,6 +62,12 @@ ClassFlowControll::ClassFlowControll()
 }
 
 
+ClassFlowControll::~ClassFlowControll()
+{
+    DeinitFlow();
+}
+
+
 bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> splitted;
@@ -335,7 +341,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
             flowInfluxDB = (ClassFlowInfluxDB*) cfc;
             FlowControlPublish.push_back(cfc);
         }
-}
+    }
     else if (toUpper(_type).compare("[INFLUXDBV2]") == 0) 
     {
         cfc = new ClassFlowInfluxDBv2(&FlowControlPublish);
@@ -350,17 +356,21 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         cfc = new ClassFlowWriteList(&FlowControll);
     }
     */
-    else if (toUpper(_type).compare("[AUTOTIMER]") == 0)
+    else if (toUpper(_type).compare("[AUTOTIMER]") == 0) {
         cfc = this;
+    }
 
-    else if (toUpper(_type).compare("[DATALOGGING]") == 0)
+    else if (toUpper(_type).compare("[DATALOGGING]") == 0) {
         cfc = this;
+    }
 
-    else if (toUpper(_type).compare("[DEBUG]") == 0)
+    else if (toUpper(_type).compare("[DEBUG]") == 0) {
         cfc = this;
+    }
 
-    else if (toUpper(_type).compare("[SYSTEM]") == 0)
+    else if (toUpper(_type).compare("[SYSTEM]") == 0) {
         cfc = this;      
+    }
 
     return cfc;
 }
@@ -368,7 +378,8 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
 bool ClassFlowControll::InitFlow(std::string config)
 {
-
+    DeinitFlow();
+    
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init flow...");
     LogFile.WriteHeapInfo("InitFlow start");
 

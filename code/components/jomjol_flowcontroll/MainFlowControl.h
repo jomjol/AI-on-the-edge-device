@@ -15,18 +15,18 @@ extern ClassFlowControll flowctrl;
 
 void register_server_main_flow_task_uri(httpd_handle_t server);
 
-void StartMainFlowTask();
-void DeleteMainFlowTask();
-
 void CheckIsPlannedReboot();
 bool getIsPlannedReboot();
 
+void StartMainFlowTask();
+void DeleteMainFlowTask();
 bool isSetupModusActive();
 void setTaskAutoFlowState(uint8_t _value);
+
 int getCountFlowRounds();
 
 #ifdef ENABLE_MQTT
-esp_err_t MQTTCtrlFlowStart(std::string);
+esp_err_t MQTTCtrlFlowStart(std::string _topic);
 #endif //ENABLE_MQTT
 
 esp_err_t GetRawJPG(httpd_req_t *req);
