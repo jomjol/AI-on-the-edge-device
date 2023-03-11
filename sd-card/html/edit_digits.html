@@ -283,6 +283,12 @@ function changelockSizes(){
 
 function changeLockSpaceEquidistant(){
     lockSpaceEquidistant = document.getElementById("lockSpaceEquidistant").checked;
+    if (!lockSpaceEquidistant) {
+        document.getElementById("space").disabled = true;
+    }
+    else {
+        document.getElementById("space").disabled = false;
+    }
 }
 
 function ChangeSelection(){
@@ -371,6 +377,12 @@ function UpdateROIs(_sel){
     document.getElementById("lockSizes").checked = lockSizes;
     document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
     document.getElementById("space").value = space;
+    if (!lockSpaceEquidistant) {
+        document.getElementById("space").disabled = true;
+    }
+    else {
+        document.getElementById("space").disabled = false;
+    }
        
     document.getElementById("refx").value = ROIInfo[aktindex]["x"];
     document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
@@ -434,6 +446,12 @@ function UpdateROIs(_sel){
 						console.log("Not equidistant, unticking the checkbox!");
 						lockSpaceEquidistant = false;
     					document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
+                        if (!lockSpaceEquidistant) {
+                            document.getElementById("space").disabled = true;
+                        }
+                        else {
+                            document.getElementById("space").disabled = false;
+                        }
 						break;
 					}
 				}
