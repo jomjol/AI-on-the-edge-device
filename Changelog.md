@@ -11,14 +11,13 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 #### Added
 - The Configuration page has now tooltips with enhanced documentation
 - MQTT:
-    - Add `GJ` (`gigajoule`) as an energy meter unit
+    - Added `GJ` (`gigajoule`) as an energy meter unit
     - Removed State Class and unit from `raw` topic
 - Added Expert Parameter to change CPU Clock from `160` to `240 Mhz`
 - SD card basic read/write check and a folder/file presence check at boot to indicate SD card issues or missing folders / files ([#2085](https://github.com/jomjol/AI-on-the-edge-device/pull/2085))
 - Simplified "WIFI roaming" by client triggered channel scan (AP switching at low RSSI) -> using expert parameter "RSSIThreshold" ([#2120](https://github.com/jomjol/AI-on-the-edge-device/pull/2120))
-- Log WLAN disconnect reason codes (code description: https://jomjol.github.io/AI-on-the-edge-device-docs/WLAN-disconnect-reason/)
+- Log WLAN disconnect reason codes (see [WLAN disconnect reasons](https://jomjol.github.io/AI-on-the-edge-device-docs/WLAN-disconnect-reason))
 - Support of InfluxDB v2 ([#2004](https://github.com/jomjol/AI-on-the-edge-device/pull/2004))
-
 
 #### Changed
 -   Various Web interface Imrpovements/Enhancements:
@@ -30,8 +29,8 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 - Improved memory management (moved various stuff to external PSRAM, https://github.com/jomjol/AI-on-the-edge-device/pull/2117)
 - Camera driver update: Support of contrast and saturation ([#2048](https://github.com/jomjol/AI-on-the-edge-device/pull/2048))   
   :bangbang:  **Attention**: This could have impact to old configurations. Please check your configuration and potentially adapt parametrization, if detection is negativly affected.
-- Improved error handling and more provide verbose output in error cases during boot phase ([#2020](https://github.com/jomjol/AI-on-the-edge-device/pull/2020))
-- Red board LED is indicating more different errors and states (code description: https://jomjol.github.io/AI-on-the-edge-device-docs/StatusLED-BlinkCodes/)
+- Improved error handling and provide more verbose output in error cases during boot phase ([#2020](https://github.com/jomjol/AI-on-the-edge-device/pull/2020))
+- Red board LED is indicating more different errors and states (see [Status LED Blink Codes](https://jomjol.github.io/AI-on-the-edge-device-docs/StatusLED-BlinkCodes))
 - Logfile: Print start indication block after time is synced to indicate start in logfile after a cold boot
 - `Image Quality Index`: Limit lower input range to 8 to avoid system instabilities
 
