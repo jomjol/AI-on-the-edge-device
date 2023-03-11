@@ -10,7 +10,10 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 
 #### Added
 - The Configuration page has now tooltips with enhanced documentation
-- Add GJ (gigajoule) as an energy meter unit
+- MQTT:
+    - Add `GJ` (`gigajoule`) as an energy meter unit
+    - Removed State Class and unit from `raw` topic
+- Added Expert Parameter to change CPU Clock from `160` to `240 Mhz`
 
 #### Changed
 -   Various Web interface Imrpovements/Enhancements:
