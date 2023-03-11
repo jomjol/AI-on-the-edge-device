@@ -563,7 +563,7 @@ function drawTextBG(context, txt, x, y, padding) {
             {
                 if (_nb != _number)
                 {
-                    lw = 1;
+                    lw = 2;
                     context.lineWidth = lw;
                     context.strokeStyle = "#990000";
                     var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
@@ -572,10 +572,23 @@ function drawTextBG(context, txt, x, y, padding) {
                     var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
                     context.strokeRect(x0, y0, dx, dy);
                     drawTextBG(context, ROIInfo[_nb]["name"], x0+dx/2-0.5, y0-13, 5);
+
+                    lw = 1;
+                    var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                    var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                    var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                    var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                    context.strokeRect(x0, y0, dx, dy); 
+                    context.lineWidth = lw;
+                    context.beginPath();
+                    context.arc(x0+dx/2, y0+dy/2, dx/2, 0, 2 * Math.PI);
+                    context.moveTo(x0+dx/2, y0);
+                    context.lineTo(x0+dx/2, y0+dy);
+                    context.moveTo(x0, y0+dy/2);
+                    context.lineTo(x0+dx, y0+dy/2);
+                    context.stroke();  
                 }
-
             }
-
 
 
             lw = 4
