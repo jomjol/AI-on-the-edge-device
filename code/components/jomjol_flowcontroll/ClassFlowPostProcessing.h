@@ -11,8 +11,7 @@
 #include <string>
 
 
-class ClassFlowPostProcessing :
-    public ClassFlow
+class ClassFlowPostProcessing : public ClassFlow
 {
 protected:
     bool UpdatePreValueINI;
@@ -57,7 +56,7 @@ public:
 
 
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
-    virtual ~ClassFlowPostProcessing(){};
+    virtual ~ClassFlowPostProcessing();
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getReadout(int _number);

@@ -371,7 +371,7 @@ CImageBasis::CImageBasis()
 }
 
 
-void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
+bool CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
 {
     bpp = _channels;
     width = _width;
@@ -392,7 +392,7 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CreateEmptyImage: Can't allocate enough memory: " + std::to_string(memsize));
         LogFile.WriteHeapInfo("CreateEmptyImage");
         RGBImageRelease();
-        return;
+        return false;
     }
 
     stbi_uc* p_source;    
@@ -406,6 +406,8 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
         }
 
     RGBImageRelease();
+
+    return true;
 }
 
 

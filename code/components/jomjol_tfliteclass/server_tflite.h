@@ -10,8 +10,6 @@
 #include "CImageBasis.h"
 #include "ClassFlowControll.h"
 
-//#include "ClassControllCamera.h"
-
 extern ClassFlowControll tfliteflow;
 void register_server_tflite_uri(httpd_handle_t server);
 
@@ -22,6 +20,7 @@ int getCountFlowRounds();
 
 void CheckIsPlannedReboot();
 bool getIsPlannedReboot();
+void setTaskAutoFlowState(uint8_t _value);
 
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req);
 esp_err_t GetRawJPG(httpd_req_t *req);

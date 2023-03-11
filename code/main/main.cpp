@@ -291,6 +291,7 @@ extern "C" void app_main(void)
                                                "Flow init is delayed by 5 minutes to check the logs or do an OTA update"); 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Keep device running until crash occurs again and check logs after device is up again");
         LogFile.setLogLevel(ESP_LOG_DEBUG);
+        setTaskAutoFlowState(FLOW_TASK_STATE_INIT_DELAYED);
     }
     else {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
@@ -473,12 +474,12 @@ extern "C" void app_main(void)
     // Check main init + start TFlite task
     // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow task ...");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully");
         TFliteDoAutoStart();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
              isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow task ...");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors");
         TFliteDoAutoStart();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.

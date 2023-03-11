@@ -32,7 +32,6 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     SaveAllFiles = false; 
     disabled = false;
     isLogImageSelect = false;
-    CNNType = AutoDetect;
     CNNType = _cnntype;
     flowpostalignment = _flowalign;
     imagesRetention = 5;
@@ -1001,4 +1000,14 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
         }
     }
     return rt;
+}
+
+ClassFlowCNNGeneral::~ClassFlowCNNGeneral()
+{
+    for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
+        for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
+        {
+            delete GENERAL[_ana]->ROI[i]->image;
+            delete GENERAL[_ana]->ROI[i]->image_org;
+        }
 }

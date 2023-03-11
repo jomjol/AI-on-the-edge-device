@@ -23,6 +23,7 @@ public:
 	ClassFlowImage(const char* logTag);
 	ClassFlowImage(std::vector<ClassFlow*> * lfc, const char* logTag);
 	ClassFlowImage(std::vector<ClassFlow*> * lfc, ClassFlow *_prev, const char* logTag);
+	virtual ~ClassFlowImage();
 	
 	void RemoveOldLogs();
 };

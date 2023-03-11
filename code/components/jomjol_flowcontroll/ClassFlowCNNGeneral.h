@@ -18,8 +18,7 @@ enum t_CNNType {
     None
  };
 
-class ClassFlowCNNGeneral :
-    public ClassFlowImage
+class ClassFlowCNNGeneral : public ClassFlowImage
 {
 protected:
     t_CNNType CNNType;
@@ -56,6 +55,7 @@ protected:
 
 public:
     ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype = AutoDetect);
+    virtual ~ClassFlowCNNGeneral();
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);

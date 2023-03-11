@@ -16,6 +16,8 @@ static const char *TAG = "ALIGN";
 // #define DEBUG_DETAIL_ON  
 
 
+bool ImageBasisToDelete = false;
+
 void ClassFlowAlignment::SetInitialParameter(void)
 {
     initalrotate = 0;
@@ -24,7 +26,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     use_antialiasing = false;
     initialflip = false;
     SaveAllFiles = false;
-    namerawimage =  "/sdcard/img_tmp/raw.jpg";
+    namerawimage =  "/sdcard/img_tmp/raw.jpg"; // will be set from ClassFLowTakeImage
     FileStoreRefAlignment = "/sdcard/config/align.txt";
     ListFlowControll = NULL;
     AlignAndCutImage = NULL;
@@ -49,13 +51,15 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
         if (((*ListFlowControll)[i])->name().compare("ClassFlowTakeImage") == 0)
         {
             ImageBasis = ((ClassFlowTakeImage*) (*ListFlowControll)[i])->rawImage;
+            //namerawimage = ((ClassFlowTakeImage*) (*ListFlowControll)[i])->getFileNameRawImage();
         }
     }
 
-    if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
+    if (ImageBasis == NULL)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
         ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis(namerawimage);
+        ImageBasisToDelete = true;
     }
 }
 
@@ -389,4 +393,14 @@ void ClassFlowAlignment::DrawRef(CImageBasis *_zw)
         _zw->drawRect(References[0].target_x, References[0].target_y, References[0].width, References[0].height, 255, 0, 0, 2);
         _zw->drawRect(References[1].target_x, References[1].target_y, References[1].width, References[1].height, 255, 0, 0, 2);
     }
+}
+
+
+ClassFlowAlignment::~ClassFlowAlignment()
+{
+    heap_caps_free(AlgROI);
+    if (ImageBasisToDelete)
+        delete ImageBasis;
+    delete ImageTMP;
+    delete AlignAndCutImage;
 }

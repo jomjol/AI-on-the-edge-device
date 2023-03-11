@@ -218,4 +218,11 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
     return true;
 }
 
+
+ClassFlowInfluxDBv2::~ClassFlowInfluxDBv2()
+{
+    // nothing to do
+}
+
+
 #endif //ENABLE_INFLUXDB

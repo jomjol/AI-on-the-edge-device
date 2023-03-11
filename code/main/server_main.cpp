@@ -102,13 +102,13 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr(req, zw->c_str());
         return ESP_OK;        
     }
-    else if (_task.compare("FlowStatus") == 0)
+    /*else if (_task.compare("FlowStatus") == 0)
     {
         std::string zw;
         zw = std::string("FlowStatus");
         httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
-    }
+    }*/
     else if (_task.compare("Round") == 0)
     {
         char formated[10] = "";    

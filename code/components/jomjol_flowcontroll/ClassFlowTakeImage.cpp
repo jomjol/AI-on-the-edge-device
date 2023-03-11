@@ -13,66 +13,41 @@
 
 // #define DEBUG_DETAIL_ON 
 
-// #define WIFITURNOFF
+static const char* TAG = "TAKEIMAGE";
 
-static const char* TAG = "flow_make_image";
-
-esp_err_t ClassFlowTakeImage::camera_capture(){
-    string nm =  namerawimage;
-    Camera.CaptureToFile(nm);
-    time(&TimeImageTaken);
-    localtime(&TimeImageTaken);
-
-    return ESP_OK;
-}
-
-void ClassFlowTakeImage::takePictureWithFlash(int flash_duration)
-{
-    // in case the image is flipped, it must be reset here //
-    rawImage->width = image_width;          
-    rawImage->height = image_height;
-    /////////////////////////////////////////////////////////////////////////////////////
-    ESP_LOGD(TAG, "flash_duration: %d", flash_duration);
-    Camera.CaptureToBasisImage(rawImage, flash_duration);
-    time(&TimeImageTaken);
-    localtime(&TimeImageTaken);
-
-    if (SaveAllFiles) rawImage->SaveToFile(namerawimage);
-}
 
 void ClassFlowTakeImage::SetInitialParameter(void)
 {
-    waitbeforepicture = 5;
+    waitbeforepicture = 5.0; // Flash duration in s
+    flash_duration = (int)(waitbeforepicture * 1000);   // Flash duration in ms
     isImageSize = false;
-    ImageQuality = -1;    
-    TimeImageTaken = 0;
-    ImageQuality = 5;
-    rawImage = NULL;
     ImageSize = FRAMESIZE_VGA;
+    TimeImageTaken = 0;
+    ImageQuality = 12;
     SaveAllFiles = false;
     disabled = false;
     FixedExposure = false;
+    rawImage = NULL;
     namerawimage = "/sdcard/img_tmp/raw.jpg";
 }     
 
 
 ClassFlowTakeImage::ClassFlowTakeImage(std::vector<ClassFlow*>* lfc) : ClassFlowImage(lfc, TAG)
 {
-    imagesLocation = "/log/source";
-    imagesRetention = 5;
     SetInitialParameter();
+    // Init of ClassFlowImage variables --> ClassFlowImage.cpp
 }
 
 
 bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> splitted;
+    int _brightness = 0;
+    int _contrast = 0;
+    int _saturation = 0;
+    int ledintensity = 50;
 
     aktparamgraph = trim(aktparamgraph);
-    int _brightness = -100;
-    int _contrast = -100;
-    int _saturation = -100;
-
     if (aktparamgraph.size() == 0)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
@@ -105,7 +80,8 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         
         if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
         {
-            waitbeforepicture = stoi(splitted[1]);
+            waitbeforepicture = stof(splitted[1]);
+            flash_duration = (int)(waitbeforepicture * 1000);
         }
 
         if ((toUpper(splitted[0]) == "RAWIMAGESRETENTION") && (splitted.size() > 1))
@@ -136,10 +112,12 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
         if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
         {
-            float ledintensity = stof(splitted[1]);
-            ledintensity = min((float) 100, ledintensity);
-            ledintensity = max((float) 0, ledintensity);
-            Camera.SetLEDIntensity(ledintensity);
+            ledintensity = stoi(splitted[1]);
+            //checkMinMax(&ledintensity, 0, 100);
+            //ESP_LOGI(TAG, "ledintensity: %d", ledintensity);
+            ledintensity = min(100, ledintensity);
+            ledintensity = max(0, ledintensity);
+            //Camera.SetLEDIntensity(ledintensity);
         }
 
         if ((toUpper(splitted[0]) == "DEMO") && (splitted.size() > 1))
@@ -149,59 +127,43 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
+    Camera.ledc_init(); // PWM init needs to be repeated after online config update
+    Camera.SetLEDIntensity(ledintensity);
     Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation);
     Camera.SetQualitySize(ImageQuality, ImageSize);
 
     image_width = Camera.image_width;
     image_height = Camera.image_height;
     rawImage = new CImageBasis();
-    rawImage->CreateEmptyImage(image_width, image_height, 3);
+    if (rawImage) {
+        if(!rawImage->CreateEmptyImage(image_width, image_height, 3)) {
+            return false;
+        }
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ReadParameter: Can't create CImageBasis for rawImage");
+        return false;
+    }
 
-    waitbeforepicture_store = waitbeforepicture;
-    if (FixedExposure && (waitbeforepicture > 0))
-    {
-//        ESP_LOGD(TAG, "Fixed Exposure enabled!");
-        int flash_duration = (int) (waitbeforepicture * 1000);
+    if (FixedExposure && (waitbeforepicture > 0)) {
+//      ESP_LOGD(TAG, "Fixed Exposure enabled!");
         Camera.EnableAutoExposure(flash_duration);
-        waitbeforepicture = 0.2;
-//        flash_duration = (int) (waitbeforepicture * 1000);
-//        takePictureWithFlash(flash_duration);
-//        rawImage->SaveToFile("/sdcard/init2.jpg");
     }
 
     return true;
 }
 
 
-string ClassFlowTakeImage::getHTMLSingleStep(string host)
-{
-    string result;
-    result = "Raw Image: <br>\n<img src=\"" + host + "/img_tmp/raw.jpg\">\n";
-    return result;
-}
-
-
 bool ClassFlowTakeImage::doFlow(string zwtime)
 {
-    string logPath = CreateLogFolder(zwtime);
-
-    int flash_duration = (int) (waitbeforepicture * 1000);
+    std::string logPath = CreateLogFolder(zwtime);
  
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Before takePictureWithFlash");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Start");
     #endif
 
-
-    #ifdef WIFITURNOFF
-        esp_wifi_stop();        // to save power usage and 
-    #endif
-
-    takePictureWithFlash(flash_duration);
-
-    #ifdef WIFITURNOFF
-        esp_wifi_start();
-    #endif
-
+    if (takePictureWithFlash(flash_duration))
+        return false;
 
     #ifdef DEBUG_DETAIL_ON  
         LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After takePictureWithFlash");
@@ -212,8 +174,54 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
     RemoveOldLogs();
 
     #ifdef DEBUG_DETAIL_ON  
-        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After RemoveOldLogs");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Done");
     #endif
+
+    return true;
+}
+
+
+string ClassFlowTakeImage::getHTMLSingleStep(string host)
+{
+    string result = "Raw Image: <br>\n<img src=\"" + host + "/img_tmp/raw.jpg\">\n";
+    return result;
+}
+
+
+esp_err_t ClassFlowTakeImage::camera_capture()
+{
+    std::string nm =  namerawimage;
+
+    if (!Camera.CaptureToFile(nm))
+        return ESP_FAIL;
+
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
+    return ESP_OK;
+}
+
+
+bool ClassFlowTakeImage::takePictureWithFlash(int _flash_duration)
+{
+    if (rawImage == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "takePictureWithFlash: rawImage not initialized");
+        return false;
+    }
+
+    // in case the image is flipped, it must be reset here //
+    rawImage->width = image_width;          
+    rawImage->height = image_height;
+
+    ESP_LOGD(TAG, "flash_duration: %d", _flash_duration);
+    if (!Camera.CaptureToBasisImage(rawImage, _flash_duration))
+        return false;
+
+    time(&TimeImageTaken);
+    localtime(&TimeImageTaken);
+
+    if (SaveAllFiles)
+        rawImage->SaveToFile(namerawimage);
 
     return true;
 }
@@ -221,7 +229,6 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 
 esp_err_t ClassFlowTakeImage::SendRawJPG(httpd_req_t *req)
 {
-    int flash_duration = (int) (waitbeforepicture * 1000);
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
@@ -233,8 +240,10 @@ ImageData* ClassFlowTakeImage::SendRawImage()
 {
     CImageBasis *zw = new CImageBasis(rawImage);
     ImageData *id;
-    int flash_duration = (int) (waitbeforepicture * 1000);
-    Camera.CaptureToBasisImage(zw, flash_duration);
+
+    if (!Camera.CaptureToBasisImage(rawImage, flash_duration))
+        return NULL;
+
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
@@ -243,13 +252,20 @@ ImageData* ClassFlowTakeImage::SendRawImage()
     return id;  
 }
 
+
 time_t ClassFlowTakeImage::getTimeImageTaken()
 {
     return TimeImageTaken;
 }
 
-ClassFlowTakeImage::~ClassFlowTakeImage(void)
+
+std::string ClassFlowTakeImage::getFileNameRawImage(void)
+{
+    return namerawimage;
+}
+
+
+ClassFlowTakeImage::~ClassFlowTakeImage()
 {
     delete rawImage;
 }
-

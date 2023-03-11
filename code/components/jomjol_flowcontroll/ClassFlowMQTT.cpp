@@ -310,4 +310,9 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 }
 
 
+ClassFlowMQTT::~ClassFlowMQTT()
+{
+    MQTTdestroy_client(true);
+}
+
 #endif //ENABLE_MQTT

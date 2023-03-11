@@ -15,16 +15,23 @@
 #include "CImageBasis.h"
 #include "../../include/defines.h"
 
+
+typedef struct {
+        httpd_req_t *req;
+        size_t len;
+} jpg_chunking_t;
+
+
 class CCamera {
     protected:
+        uint8_t *demoImage; // Buffer holding the demo image in bytes
         int ActualQuality;
         framesize_t ActualResolution;
         int brightness, contrast, saturation;
         bool isFixedExposure;
-        int waitbeforepicture_org;
-        int led_intensity = 4095;
+        int flashduration;
+        int led_intensity;
 
-        void ledc_init(void);
         bool CameraInitSuccessful = false;
         bool demoMode = false;
 
@@ -35,6 +42,7 @@ class CCamera {
         int image_height, image_width;
         
         CCamera();
+        ~CCamera();
         esp_err_t InitCam();
 
         void LightOnOff(bool status);
@@ -43,11 +51,12 @@ class CCamera {
         void SetQualitySize(int qual, framesize_t resol);
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
-        void SetLEDIntensity(float _intrel);
+        void SetLEDIntensity(int _intrel);
         bool testCamera(void);
-        void EnableAutoExposure(int flash_duration);
+        bool EnableAutoExposure(int flash_duration);
         bool getCameraInitSuccessful();
         void useDemoMode(void);
+        void ledc_init(void);
        
 
         framesize_t TextToFramesize(const char * text);

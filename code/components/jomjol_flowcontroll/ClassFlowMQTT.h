@@ -11,8 +11,7 @@
 
 #include <string>
 
-class ClassFlowMQTT :
-    public ClassFlow
+class ClassFlowMQTT : public ClassFlow
 {
 protected:
     std::string uri, topic, topicError, clientname, topicRate, topicTimeStamp, topicUptime, topicFreeMem;
@@ -30,6 +29,7 @@ public:
     ClassFlowMQTT();
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc);
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
+    virtual ~ClassFlowMQTT();
 
     string GetMQTTMainTopic();
     bool Start(float AutoInterval);

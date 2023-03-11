@@ -22,8 +22,10 @@
 #include "ClassLogFile.h"
 #include "configFile.h"
 #include "Helper.h"
+
 #ifdef ENABLE_MQTT
-    #include "interface_mqtt.h"
+#include "interface_mqtt.h"
+#include "server_mqtt.h"
 #endif //ENABLE_MQTT
 
 
@@ -330,7 +332,7 @@ bool GpioHandler::readConfig()
 
 #ifdef ENABLE_MQTT
 //    std::string mainTopicMQTT = "";
-    std::string mainTopicMQTT = GetMQTTMainTopic();
+    std::string mainTopicMQTT = mqttServer_getMainTopic();
     if (mainTopicMQTT.length() > 0)
     {
         mainTopicMQTT = mainTopicMQTT + "/GPIO";

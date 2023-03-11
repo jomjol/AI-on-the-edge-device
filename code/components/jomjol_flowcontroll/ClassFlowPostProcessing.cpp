@@ -1107,3 +1107,7 @@ string ClassFlowPostProcessing::getReadoutError(int _number)
 }
 
 
+ClassFlowPostProcessing::~ClassFlowPostProcessing()
+{
+    // nothing to do
+}

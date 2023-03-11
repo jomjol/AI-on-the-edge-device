@@ -51,6 +51,10 @@
     // ClassLogFile
     //#define KEEP_LOGFILE_OPEN_FOR_APPENDING
 
+
+    /* General DEBUG FLAG */
+    //#define DEBUG_DETAIL_ON 
+
   //****************************************
 
     //compiler optimization for tflite-micro-esp-examples
@@ -74,6 +78,7 @@
     //ClassControllCamera + ClassFlowTakeImage
     #define CAMERA_MODEL_AI_THINKER
     #define BOARD_ESP32CAM_AITHINKER
+    #define DEMO_IMAGE_SIZE 30000 // Max size of demo image in bytes
 
     //server_GPIO + server_file + SoftAP
     #define CONFIG_FILE "/sdcard/config/config.ini"
@@ -176,9 +181,40 @@
     #define Digital_Transition_Area_Forward 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
 
 
+    /* MAIN FLOW CONTROL */
+    /*********************/
+    // Flow task states
+    #define FLOW_TASK_STATE_INIT_DELAYED        0
+    #define FLOW_TASK_STATE_INIT                1
+    #define FLOW_TASK_STATE_SETUPMODE           2
+    #define FLOW_TASK_STATE_IDLE_NO_AUTOSTART   3
+    #define FLOW_TASK_STATE_IMG_PROCESSING      4
+    #define FLOW_TASK_STATE_PUBLISH_DATA        5
+    #define FLOW_TASK_STATE_ADDITIONAL_TASKS    6
+    #define FLOW_TASK_STATE_IDLE_AUTOSTART      7
 
+    // Process state names
+    #define FLOW_NO_TASK                "Flow task not yet created"
+    #define FLOW_START_FLOW_TASK        "Start flow task"
+    #define FLOW_FLOW_TASK_FAILED       "Flow creation failed"
+    #define FLOW_INIT_DELAYED           "Initialization (delayed)"
+    #define FLOW_INIT                   "Initialization"
+    #define FLOW_INIT_FAILED            "Initialization failed"
+    #define FLOW_SETUP_MODE             "Setup mode"
+    #define FLOW_IDLE_NO_AUTOSTART      "Idle (no autostart)"
+    #define FLOW_IDLE_AUTOSTART         "Idle (autostart)"
 
-    //#define DEBUG_DETAIL_ON 
+    #define FLOW_TAKE_IMAGE             "Take image"
+    #define FLOW_ALIGNMENT              "Image alignment"
+    #define FLOW_PROCESS_ROI            "Digitalization of ROIs"
+    #define FLOW_POSTPROCESSING         "Post-Processing"
+    #define FLOW_PUBLISH_MQTT           "Publish to MQTT"
+    #define FLOW_PUBLISH_INFLUXDB       "Publish to InfluxDB"
+    #define FLOW_PUBLISH_INFLUXDB2      "Publish to InfluxDB2"
+
+    #define FLOW_ADDITIONAL_TASKS       "Additional tasks"
+    #define FLOW_AUTO_ERROR_HANDLING    "Error handling"
+    #define FLOW_INVALID_STATE          "Invalid state"
 
 
 /////////////////////////////////////////////
@@ -302,6 +338,7 @@
     #define LEDC_OUTPUT_IO          FLASH_GPIO // Define the output GPIO
     #define LEDC_CHANNEL            LEDC_CHANNEL_1
     #define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
+    #define LEDC_RESOLUTION         (1 << LEDC_TIMER_13_BIT) -1 // 13bit resolution --> 8192: 0 .. 8191
     //#define LEDC_DUTY               (195) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
     #define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
 

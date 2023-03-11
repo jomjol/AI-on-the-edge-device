@@ -9,46 +9,41 @@
 
 #include <string>
 
-class ClassFlowTakeImage :
-    public ClassFlowImage
+class ClassFlowTakeImage : public ClassFlowImage
 {
 protected:
     float waitbeforepicture;
-    float waitbeforepicture_store;
+    int flash_duration;
     framesize_t ImageSize;
     bool isImageSize;
     int ImageQuality;
     time_t TimeImageTaken;
-    string namerawimage;
+    std::string namerawimage;
     int image_height, image_width;
     bool SaveAllFiles;
     bool FixedExposure;
 
-
-
+    void SetInitialParameter(void);    
     void CopyFile(string input, string output);
 
     esp_err_t camera_capture();
-    void takePictureWithFlash(int flash_duration);
-
-
-    void SetInitialParameter(void);       
+    bool takePictureWithFlash(int flash_duration);
 
 public:
     CImageBasis *rawImage;
 
     ClassFlowTakeImage(std::vector<ClassFlow*>* lfc);
+    virtual ~ClassFlowTakeImage();
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
     string getHTMLSingleStep(string host);
     time_t getTimeImageTaken();
+    std::string getFileNameRawImage();
     string name(){return "ClassFlowTakeImage";};
 
     ImageData* SendRawImage();
     esp_err_t SendRawJPG(httpd_req_t *req);
-
-    ~ClassFlowTakeImage(void);
 };
 
 

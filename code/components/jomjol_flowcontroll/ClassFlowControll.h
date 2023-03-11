@@ -20,20 +20,22 @@
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowWriteList.h"
 
-class ClassFlowControll :
-    public ClassFlow
+class ClassFlowControll : public ClassFlow
 {
 protected:
 	std::vector<ClassFlow*> FlowControll;
+	std::vector<ClassFlow*> FlowControlPublish;
 
 	ClassFlowTakeImage* flowtakeimage;
 	ClassFlowAlignment* flowalignment;	
 	ClassFlowCNNGeneral* flowanalog;
 	ClassFlowCNNGeneral* flowdigit;
 	ClassFlowPostProcessing* flowpostprocessing;
-
+	ClassFlowMQTT* flowMQTT;
+	ClassFlowInfluxDB* flowInfluxDB;
+	ClassFlowInfluxDBv2* flowInfluxDBv2;
+	
 	ClassFlow* CreateClassFlow(std::string _type);
-
 	void SetInitialParameter(void);	
 
 	bool AutoStart;
@@ -43,10 +45,11 @@ protected:
 	std::string aktstatus;
 	std::string aktstatusWithTime;
 
-
 public:
 	bool InitFlow(std::string config);
-	bool doFlow(string time);
+	void DeinitFlow(void);
+	bool doFlowImageEvaluation(string time);
+	bool doFlowPublishData(string time);
 	void doFlowTakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};
 	string getReadout(bool _rawvalue, bool _noerror);
@@ -60,6 +63,7 @@ public:
 	string TranslateAktstatus(std::string _input);
 
 	#ifdef ENABLE_MQTT
+	bool StartMQTTService();
 	string GetMQTTMainTopic();
 	#endif //ENABLE_MQTT
 
@@ -75,8 +79,8 @@ public:
 
 	bool isAutoStart(long &_interval);
 
-	std::string* getActStatusWithTime();
-	std::string* getActStatus();
+	std::string getActStatusWithTime();
+	std::string getActStatus();
 	void setActStatus(std::string _aktstatus);
 
 	std::vector<HTMLInfo*> GetAllDigital();
@@ -84,17 +88,13 @@ public:
 
 	t_CNNType GetTypeDigital();
 	t_CNNType GetTypeAnalog();
-	
-	#ifdef ENABLE_MQTT
-	bool StartMQTTService();
-	#endif //ENABLE_MQTT
 
 	int CleanTempFolder();
 
 	string name(){return "ClassFlowControll";};
 };
 
-#endif
+#endif //CLASSFLOWCONTROLL_H
 
 
 

@@ -30,7 +30,11 @@
 #include "driver/ledc.h"
 #include "server_tflite.h"
 
+
+CCamera Camera;
+
 static const char *TAG = "CAM"; 
+
 
 static camera_config_t camera_config = {
     .pin_pwdn = CAM_PIN_PWDN,
@@ -67,37 +71,8 @@ static camera_config_t camera_config = {
 };
 
 
-CCamera Camera;
-
-uint8_t *demoImage = NULL; // Buffer holding the demo image in bytes
-
-#define DEMO_IMAGE_SIZE 30000 // Max size of demo image in bytes
-
-typedef struct {
-        httpd_req_t *req;
-        size_t len;
-} jpg_chunking_t;
-
-
-bool CCamera::testCamera(void) {
-    bool success;
-    camera_fb_t *fb = esp_camera_fb_get();
-    if (fb)  {
-        success = true;
-    }
-    else {
-        success = false;
-    }
-    
-    esp_camera_fb_return(fb);
-    return success;
-}
-
-
 void CCamera::ledc_init(void)
 {
-#ifdef USE_PWM_LEDFLASH
-
     // Prepare and then apply the LEDC PWM timer configuration
     ledc_timer_config_t ledc_timer = { };
 
@@ -121,26 +96,60 @@ void CCamera::ledc_init(void)
     ledc_channel.hpoint         = 0;
 
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
-
-#endif
 }
 
 
-static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len)
+CCamera::CCamera()
 {
-    jpg_chunking_t *j = (jpg_chunking_t *)arg;
+    #ifdef DEBUG_DETAIL_ON    
+        ESP_LOGD(TAG, "CreateClassCamera");
+    #endif
 
-    if(!index) {
-        j->len = 0;
+    brightness = 0;
+    contrast = 0;
+    saturation = 0;
+    isFixedExposure = false;
+    flashduration = 5000;
+    led_intensity = 4095;
+    demoImage = NULL;
+
+    #ifdef USE_PWM_LEDFLASH
+        ledc_init();   
+    #endif
+}
+
+
+esp_err_t CCamera::InitCam()
+{
+    ESP_LOGD(TAG, "Init Camera");
+    ActualQuality = camera_config.jpeg_quality;
+    ActualResolution = camera_config.frame_size;
+    //initialize the camera
+    esp_camera_deinit(); // De-init in case it was already initialized
+    esp_err_t err = esp_camera_init(&camera_config);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Camera Init Failed");
+        return err;
     }
 
-    if(httpd_resp_send_chunk(j->req, (const char *)data, len) != ESP_OK) {
-        return 0;
+    CameraInitSuccessful = true;
+    return ESP_OK;
+}
+
+
+bool CCamera::testCamera(void) 
+{
+    bool success;
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (fb)  {
+        success = true;
     }
+    else {
+        success = false;
+    }  
+    esp_camera_fb_return(fb);
 
-    j->len += len;
-
-    return len;
+    return success;
 }
 
 
@@ -192,7 +201,7 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     }
 
     if (((_brightness != brightness) || (_contrast != contrast) || (_saturation != saturation)) && isFixedExposure)
-        EnableAutoExposure(waitbeforepicture_org);
+        EnableAutoExposure(flashduration);
 
     brightness = _brightness;
     contrast = _contrast;
@@ -233,28 +242,42 @@ void CCamera::SetQualitySize(int qual, framesize_t resol)
 }
 
 
-void CCamera::EnableAutoExposure(int flash_duration)
+void CCamera::SetLEDIntensity(int _intensity)
 {
+    _intensity = min(_intensity, 100);
+    _intensity = max(_intensity, 0);
+    led_intensity = ((_intensity * LEDC_RESOLUTION) / 100);
+    ESP_LOGI(TAG, "Set led_intensity to %d of %d", led_intensity, LEDC_RESOLUTION); // TODO: LOGD
+}
+
+
+bool CCamera::EnableAutoExposure(int _flashduration)
+{
+    flashduration = _flashduration; // save last flashduration internally
     ESP_LOGD(TAG, "EnableAutoExposure");
     
-    LEDOnOff(true);
-    if (flash_duration > 0) {
+    if (flashduration > 0) {
+        LEDOnOff(true);
         LightOnOff(true);
-        const TickType_t xDelay = flash_duration / portTICK_PERIOD_MS;
-        vTaskDelay( xDelay );
+        vTaskDelay(flashduration / portTICK_PERIOD_MS);
     }
 
     camera_fb_t * fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
-    if (!fb) {
-        LEDOnOff(false);
+
+    if (flashduration > 0) {
+        LEDOnOff(false);  
         LightOnOff(false);
+    }    
+
+    if (!fb) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EnableAutoExposure: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         //doReboot();
+        return false;
     }
-    esp_camera_fb_return(fb);        
+    esp_camera_fb_return(fb);
 
     sensor_t * s = esp_camera_sensor_get(); 
     if (s) {
@@ -265,27 +288,23 @@ void CCamera::EnableAutoExposure(int flash_duration)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EnableAutoExposure: Failed to get control structure to set gain+exposure");
     }
 
-    LEDOnOff(false);  
-    LightOnOff(false);
     isFixedExposure = true;
-    waitbeforepicture_org = flash_duration;
+    return true;
 }
 
 
-esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
+esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int _flashduration)
 {
 	#ifdef DEBUG_DETAIL_ON
 	    LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 	#endif
 
-    _Image->EmptyImage(); //Delete previous stored raw image -> black image
-    
-    LEDOnOff(true);
+    flashduration = _flashduration; // save last flashduration internally
 
-    if (delay > 0) {
+    if (flashduration > 0) {    // Switch on for defined time if a flashduration is set
+        LEDOnOff(true);
         LightOnOff(true);
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay( xDelay );
+        vTaskDelay(flashduration / portTICK_PERIOD_MS);
     }
 
 	#ifdef DEBUG_DETAIL_ON
@@ -295,14 +314,15 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     camera_fb_t * fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);        
     fb = esp_camera_fb_get();
-    if (!fb) {
-        LEDOnOff(false);
-        LightOnOff(false);
 
+    if (flashduration > 0) {    // Switch off if flashlight was on
+        LEDOnOff(false);  
+        LightOnOff(false);
+    }
+
+    if (!fb) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
-        doReboot();
-
         return ESP_FAIL;
     }
 
@@ -319,19 +339,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
     }
     esp_camera_fb_return(fb);        
-
-    #ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
-    #endif
-
-    LEDOnOff(false);  
-
-    if (delay > 0) 
-        LightOnOff(false);
- 
-//    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;     
-//    vTaskDelay( xDelay );  // wait for power to recover
-    
+  
     #ifdef DEBUG_DETAIL_ON
         LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
     #endif
@@ -368,31 +376,31 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 }
 
 
-esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
+esp_err_t CCamera::CaptureToFile(std::string nm, int _flashduration)
 {
     string ftype;
+    flashduration = _flashduration; // save last flashduration internally
 
-     LEDOnOff(true);              // Switched off to save power !
-
-    if (delay > 0) {
+    if (flashduration > 0) {    // Switch on for defined time if a flashduration is set
+        LEDOnOff(true);
         LightOnOff(true);
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay( xDelay );
+        vTaskDelay(flashduration / portTICK_PERIOD_MS);
     }
 
     camera_fb_t * fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
-    if (!fb) {
-        LEDOnOff(false);
+
+    if (flashduration > 0) {    // Switch off if flashlight was on
+        LEDOnOff(false);    
         LightOnOff(false);
+    }
+
+    if (!fb) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
-        //doReboot();
-
         return ESP_FAIL;
     }
-    LEDOnOff(false);    
 
     #ifdef DEBUG_DETAIL_ON    
         ESP_LOGD(TAG, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
@@ -433,6 +441,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         }
     }
 
+    esp_camera_fb_return(fb);
+
     FILE * fp = fopen(nm.c_str(), "wb");
     if (fp == NULL) { // If an error occurs during the file creation
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Failed to open file " + nm);
@@ -445,45 +455,57 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     if (converted)
         free(buf);
 
-    esp_camera_fb_return(fb);
-
-    if (delay > 0) 
-        LightOnOff(false);
-
     return ESP_OK;    
 }
 
 
-esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
+static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len)
+{
+    jpg_chunking_t *j = (jpg_chunking_t *)arg;
+
+    if(!index) {
+        j->len = 0;
+    }
+
+    if(httpd_resp_send_chunk(j->req, (const char *)data, len) != ESP_OK) {
+        return 0;
+    }
+
+    j->len += len;
+
+    return len;
+}
+
+
+esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int _flashduration)
 {
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
+    flashduration = _flashduration; // save last flashduration internally
 
-    LEDOnOff(true);
-
-    if (delay > 0) {
+    if (flashduration > 0) {
+        LEDOnOff(true);
         LightOnOff(true);
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay( xDelay );
+        vTaskDelay(flashduration / portTICK_PERIOD_MS);
     }
 
     camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
-    if (!fb) {
-        LEDOnOff(false);
+
+    if (flashduration > 0) {    // Switch off if flashlight was on
+        LEDOnOff(false); 
         LightOnOff(false);
+    }
+
+    if (!fb) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                         "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
-//        doReboot();
-
         return ESP_FAIL;
     }
-
-    LEDOnOff(false); 
-    
+  
     res = httpd_resp_set_type(req, "image/jpeg");
     if(res == ESP_OK){
         res = httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=raw.jpg");
@@ -510,12 +532,9 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         }
     }
     esp_camera_fb_return(fb);
-    int64_t fr_end = esp_timer_get_time();
-    
-    ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
 
-    if (delay > 0) 
-        LightOnOff(false);
+    int64_t fr_end = esp_timer_get_time();  
+    ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
 
     return res;
 }
@@ -638,49 +657,6 @@ framesize_t CCamera::TextToFramesize(const char * _size)
 }
 
 
-CCamera::CCamera()
-{
-    #ifdef DEBUG_DETAIL_ON    
-        ESP_LOGD(TAG, "CreateClassCamera");
-    #endif
-    brightness = 0;
-    contrast = 0;
-    saturation = 0;
-    isFixedExposure = false;
-
-    ledc_init();    
-}
-
-
-esp_err_t CCamera::InitCam()
-{
-    ESP_LOGD(TAG, "Init Camera");
-    ActualQuality = camera_config.jpeg_quality;
-    ActualResolution = camera_config.frame_size;
-    //initialize the camera
-    esp_camera_deinit(); // De-init in case it was already initialized
-    esp_err_t err = esp_camera_init(&camera_config);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Camera Init Failed");
-        return err;
-    }
-
-    CameraInitSuccessful = true;
-    return ESP_OK;
-}
-
-
-void CCamera::SetLEDIntensity(float _intrel)
-{
-    _intrel = min(_intrel, (float) 100);
-    _intrel = max(_intrel, (float) 0);
-    _intrel = _intrel / 100;
-    led_intensity = (int) (_intrel * 8191);
-    ESP_LOGD(TAG, "Set led_intensity to %d of 8191", led_intensity);
-
-}
-
-
 bool CCamera::getCameraInitSuccessful() 
 {
     return CameraInitSuccessful;
@@ -767,4 +743,10 @@ long CCamera::GetFileSize(std::string filename)
     struct stat stat_buf;
     long rc = stat(filename.c_str(), &stat_buf);
     return rc == 0 ? stat_buf.st_size : -1;
+}
+
+
+CCamera::~CCamera()
+{
+    free(demoImage);
 }

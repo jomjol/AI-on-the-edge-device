@@ -11,8 +11,7 @@
 
 #include <string>
 
-class ClassFlowInfluxDB :
-    public ClassFlow
+class ClassFlowInfluxDB : public ClassFlow
 {
 protected:
     std::string uri, database, measurement;
@@ -27,6 +26,7 @@ public:
     ClassFlowInfluxDB();
     ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc);
     ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
+    virtual ~ClassFlowInfluxDB();
 
     string GetInfluxDBMeasurement();
 
