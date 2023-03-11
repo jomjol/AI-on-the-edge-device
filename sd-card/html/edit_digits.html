@@ -275,6 +275,8 @@ function changelockAspectRatio(){
 
 function changelockSizes(){
     lockSizes = document.getElementById("lockSizes").checked;
+    UpdateROIs(); 
+    valuemanualchangedspace();
 
     if (!lockSizes) {
         firework.launch("For best results it is in most cases advised to keep the y, Δx and Δy identical!", 'warning', 10000);
@@ -289,6 +291,7 @@ function changeLockSpaceEquidistant(){
     else {
         document.getElementById("space").disabled = false;
     }
+    UpdateROIs(); 
 }
 
 function ChangeSelection(){
