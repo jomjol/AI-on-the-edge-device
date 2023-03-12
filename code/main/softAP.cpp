@@ -212,55 +212,55 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     {
         ESP_LOGD(TAG, "Query: %s", _query);
         
-        if (httpd_query_key_value(_query, "ssid", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "ssid", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "ssid is found: %s", _valuechar);
             ssid = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "pwd", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "pwd", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "pwd is found: %s", _valuechar);
             pwd = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "ssid", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "ssid", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "ssid is found: %s", _valuechar);
             ssid = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "hn", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "hn", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "hostname is found: %s", _valuechar);
             hn = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "ip", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "ip", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "ip is found: %s", _valuechar);
             ip = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "gw", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "gw", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "gateway is found: %s", _valuechar);
             gw = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "nm", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "nm", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "netmask is found: %s", _valuechar);
             nm = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "dns", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "dns", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "dns is found: %s", _valuechar);
             dns = UrlDecode(std::string(_valuechar));
         }
 
-        if (httpd_query_key_value(_query, "rssithreshold", _valuechar, 30) == ESP_OK)
+        if (httpd_query_key_value(_query, "rssithreshold", _valuechar, 100) == ESP_OK)
         {
             ESP_LOGD(TAG, "rssithreshold is found: %s", _valuechar);
             rssithreshold = UrlDecode(std::string(_valuechar));

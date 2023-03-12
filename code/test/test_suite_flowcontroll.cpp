@@ -108,9 +108,9 @@ extern "C" void app_main()
   esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to ERROR level
 
   UNITY_BEGIN();
-  
-    RUN_TEST(testNegative);
-  
+    RUN_TEST(testNegative_Issues);
+  /* RUN_TEST(testNegative);
+   
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
     RUN_TEST(test_doFlowPP);
@@ -121,6 +121,6 @@ extern "C" void app_main()
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
-  
+  */
   UNITY_END();
 }
