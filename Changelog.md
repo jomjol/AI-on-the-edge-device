@@ -1,47 +1,63 @@
-## [Unreleased]
-
-xxx
+## [15.1.0] - 2023-03-12
 
 ### Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
-:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it).
+:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it)!
+
+:bangbang: Afterwards you should check your configuration for errors!
 
 ### Changes
 
-This release only migrates some parameters, see #2023 for details and a list of all parameter changes.
-The parameter migration happens automatically on the next startup. No user interaction is required.
-A backup of the config is stored on the SD-card as `config.bak`.
-
-Beside of the parameter change and the bugfix listed below, no changes are contained in this release!
-
-If you want to revert back to `v14` or earlier, you will have to revert the migration changes in `config.ini` manually!
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0)
 
 #### Added
-
--   Additional interface to InfluxDB Version 2 upwards
--   Updated the Hybrid CNN network to `dig-cont_0610_s3`
--   :bangbang:  Update Camera driver: contrast, brightness and saturation now working
-   
-    :bangbang:  **Attention**: this can effect old version as well, because there not all settings were effective!
+- The Configuration page has now tooltips with enhanced documentation
+- MQTT:
+    - Added `GJ` (`gigajoule`) as an energy meter unit
+    - Removed State Class and unit from `raw` topic
+    - Various Improvements (Only send Homeassistant Discovery the first time we connect, ...) (https://github.com/jomjol/AI-on-the-edge-device/pull/2091
+- Added Expert Parameter to change CPU Clock from `160` to `240 Mhz`
+- SD card basic read/write check and a folder/file presence check at boot to indicate SD card issues or missing folders / files ([#2085](https://github.com/jomjol/AI-on-the-edge-device/pull/2085))
+- Simplified "WIFI roaming" by client triggered channel scan (AP switching at low RSSI) -> using expert parameter "RSSIThreshold" ([#2120](https://github.com/jomjol/AI-on-the-edge-device/pull/2120))
+- Log WLAN disconnect reason codes (see [WLAN disconnect reasons](https://jomjol.github.io/AI-on-the-edge-device-docs/WLAN-disconnect-reason))
+- Support of InfluxDB v2 ([#2004](https://github.com/jomjol/AI-on-the-edge-device/pull/2004))
 
 #### Changed
+- Updated models (tflite files), removed old versions (https://github.com/jomjol/AI-on-the-edge-device/pull/2089, https://github.com/jomjol/AI-on-the-edge-device/pull/2133)
+  :bangbang: **Attention:** Update your configuration!
+-   Various Web interface Improvements/Enhancements:
+    - Restructured Menu (Needs cache clearing to be applied)
+    - Enhanced `Previous Value` page
+    - Improved/faster Graph page
+    - Various minor improvements
+    - ROI config pages improvements
+    - Improved Backup Functionality
+- Added log file logs for Firmware Update
+- Improved memory management (moved various stuff to external PSRAM, https://github.com/jomjol/AI-on-the-edge-device/pull/2117)
+- Camera driver update: Support of contrast and saturation ([#2048](https://github.com/jomjol/AI-on-the-edge-device/pull/2048))   
+  :bangbang:  **Attention**: This could have impact to old configurations. Please check your configuration and potentially adapt parametrization, if detection is negativly affected.
+- Improved error handling and provide more verbose output in error cases during boot phase ([#2020](https://github.com/jomjol/AI-on-the-edge-device/pull/2020))
+- Red board LED is indicating more different errors and states (see [Status LED Blink Codes](https://jomjol.github.io/AI-on-the-edge-device-docs/StatusLED-BlinkCodes))
+- Logfile: Print start indication block after time is synced to indicate start in logfile after a cold boot
+- `Image Quality Index`: Limit lower input range to 8 to avoid system instabilities
 
--   [#2023](https://github.com/jomjol/AI-on-the-edge-device/pull/2023) Migrated Parameters
--   Removed old `Topic` parameter, it is not used anymore
 
 #### Fixed
--  n.a.
+- Various minor fixes
+- Added State Class "measurement" to rate_per_time_unit
+- GPIO: Avoid MQTT publishing to empty topic when "MQTT enable" flag is not set
+- Fix timezone config parser
+- Remote Setup truncated long passwords (https://github.com/jomjol/AI-on-the-edge-device/issues/2167)
 
 #### Removed
-
 -   n.a.
 
 
 ## [15.0.3] - 2023-02-28
 
-**Parameter Migration**
+**Name: Parameter Migration**
 
 ### Update Procedure
 
@@ -81,7 +97,7 @@ If you want to revert back to `v14` or earlier, you will have to revert the migr
 
 ## [14.0.3] -2023-02-05
 
-**Stabilization and Improved User Experience**
+**Name: Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
 
@@ -135,7 +151,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 ## [13.0.8] - 2022-12-19
 
-**Home Assistant MQTT Discovery Support**
+**Name: Home Assistant MQTT Discovery Support**
 
 ### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
@@ -215,7 +231,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 ## [12.0.1] 2022-09-29
 
-Improve **u**ser e**x**perience 
+Name: Improve **u**ser e**x**perience 
 
 :bangbang: The release breaks a few things in ota update :bangbang:
 
@@ -883,6 +899,7 @@ External Illumination
 -   Initial Version
 
 
+[15.1.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0
 [15.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.3
 [14.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.3
 [13.0.8]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.8
