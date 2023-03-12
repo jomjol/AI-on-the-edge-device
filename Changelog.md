@@ -24,9 +24,13 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 - Log WLAN disconnect reason codes (see [WLAN disconnect reasons](https://jomjol.github.io/AI-on-the-edge-device-docs/WLAN-disconnect-reason))
 - Support of InfluxDB v2 ([#2004](https://github.com/jomjol/AI-on-the-edge-device/pull/2004))
 
+
 #### Changed
 - Updated models (tflite files), removed old versions (https://github.com/jomjol/AI-on-the-edge-device/pull/2089, https://github.com/jomjol/AI-on-the-edge-device/pull/2133)
   :bangbang: **Attention:** Update your configuration!
+    -   Hybrid CNN network to `dig-cont_0611_s3` 
+    -   Analog CNN network to `ana-cont-11.0.5` and `ana-clas100-1.5.7`
+    -   Digital CNN network to `dig-class100-1.6.0`
 -   Various Web interface Improvements/Enhancements:
     - Restructured Menu (Needs cache clearing to be applied)
     - Enhanced `Previous Value` page
@@ -43,13 +47,13 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 - Logfile: Print start indication block after time is synced to indicate start in logfile after a cold boot
 - `Image Quality Index`: Limit lower input range to 8 to avoid system instabilities
 
-
 #### Fixed
 - Various minor fixes
 - Added State Class "measurement" to rate_per_time_unit
 - GPIO: Avoid MQTT publishing to empty topic when "MQTT enable" flag is not set
 - Fix timezone config parser
 - Remote Setup truncated long passwords (https://github.com/jomjol/AI-on-the-edge-device/issues/2167)
+-  Problem with timestamp in InfluxDB interface
 
 #### Removed
 -   n.a.
