@@ -122,13 +122,13 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
         xhr.timeout = 5000; // time in milliseconds
     }
     else if (retry == 2) { // longer timeout
-        xhr.timeout = 20000; // time in milliseconds
+        xhr.timeout = 10000; // time in milliseconds
     }
     else if (retry == 3) { // longer timeout
-        xhr.timeout = 30000; // time in milliseconds
+        xhr.timeout = 20000; // time in milliseconds
     }
     else { // very long timeout
-        xhr.timeout = 60000; // time in milliseconds
+        xhr.timeout = 30000; // time in milliseconds
     }
 
     xhr.onload = () => { // Request finished
@@ -145,7 +145,6 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
             fetchFiles(urls, filesData, index+1, 0, zipFilename);
         }
     };
-
 
     xhr.onprogress = (e) => { // XMLHttpRequest progress ... extend timeout
         xhr.timeout = xhr.timeout + 500;
