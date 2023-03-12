@@ -481,8 +481,10 @@ function UpdateROIs(_sel){
                 console.log("Not all ROI have the same Y, dX and dY, unticking the sync checkbox!");
             }
 
-            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
-            document.getElementById("space").value = space;
+            if (ROIInfo.length > 1) {
+                space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+                document.getElementById("space").value = space;
+            }
 
             drawImage();
             draw();

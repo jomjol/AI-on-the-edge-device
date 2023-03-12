@@ -222,6 +222,7 @@ function deleteROI(){
         aktindex = ROIInfo.length - 1;
     }
     UpdateROIs();
+    draw();
 }
 
 function newROI(){
@@ -318,6 +319,7 @@ function UpdateROIs(_sel){
         document.getElementById("newROI").disabled = false;
         document.getElementById("deleteROI").disabled = true;
         document.getElementById("index").disabled = true;
+        document.getElementById("saveroi").disabled = true;
         document.getElementById("renameROI").disabled = true;
         document.getElementById("moveNext").disabled = true;
         document.getElementById("movePrevious").disabled = true;
@@ -534,10 +536,16 @@ function drawTextBG(context, txt, x, y, padding) {
     if (typeof ROIInfo === 'undefined') { // During init, ROIInfo is not defined yet
         return;
     }
+
+
     
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
+
+        if (ROIInfo.length == 0) {
+            return;
+        } 
 
         context.font = "15px Arial";
         context.fillStyle = "red";
@@ -590,7 +598,6 @@ function drawTextBG(context, txt, x, y, padding) {
                     context.stroke();  
                 }
             }
-
 
             lw = 4
             context.lineWidth = lw;
