@@ -146,6 +146,21 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
         }
     };
 
+
+    xhr.onprogress = (e) => { // XMLHttpRequest progress ... extend timeout
+        xhr.timeout = xhr.timeout + 500;
+    };
+
+    xhr.onerror = (e) => { // XMLHttpRequest error loading
+        console.log("Error on fetching " + url + "!");
+        if (retry > 5) {
+            setStatus("<span style=\"color: red\">Backup failed, please restart the device and try again!</span>");
+        }
+        else {
+            fetchFiles(urls, filesData, index, retry+1, zipFilename);
+        }
+    };
+
     xhr.ontimeout = (e) => { // XMLHttpRequest timed out
         console.log("Timeout on fetching " + url + "!");
         if (retry > 5) {
