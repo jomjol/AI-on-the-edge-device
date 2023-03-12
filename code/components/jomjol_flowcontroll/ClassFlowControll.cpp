@@ -53,6 +53,7 @@ void ClassFlowControll::SetInitialParameter(void)
     disabled = false;
     readParameterDone = false;
     setActStatus(FLOW_NO_TASK);
+    setActFlowError(false);
 }
 
 
@@ -577,10 +578,22 @@ std::string ClassFlowControll::getActStatus()
 }
 
 
+void ClassFlowControll::setActFlowError(bool _aktflowerror)
+{
+    aktflowerror = _aktflowerror;
+}
+
+
+bool ClassFlowControll::getActFlowError()
+{
+    return aktflowerror;
+}
+
+
 void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
     aktstatus = _aktstatus;
-    aktstatusWithTime = _aktstatus + " (" + getCurrentTimeString("%H:%M:%S") + ")";
+    aktstatusWithTime = "[" + getCurrentTimeString("%H:%M:%S") + "] " + _aktstatus;
 }
 
 

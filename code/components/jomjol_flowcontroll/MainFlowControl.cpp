@@ -200,36 +200,38 @@ esp_err_t handler_reload_config(httpd_req_t *req)
 
     if (taskAutoFlowState == FLOW_TASK_STATE_INIT ||
         taskAutoFlowState == FLOW_TASK_STATE_SETUPMODE ||
-        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
+        taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART)
     {
-        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Reload config and redo flow initialization...";
+        const std::string zw = "001: Reload config and redo flow initialization (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
         reloadConfig = true;
     }
     else if (taskAutoFlowState == FLOW_TASK_STATE_INIT_DELAYED) 
     {
-        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Abort waiting delay and continue with flow initialization...";
+        const std::string zw = "002: Abort waiting delay and continue with flow initialization (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state.      
     }
     else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
     {
-        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Abort waiting delay, reload config and redo flow initialization...";
+        const std::string zw = "003: Abort waiting delay, reload config and redo flow initialization (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
-        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state.                                                                 // TODO: Skip delay
         reloadConfig = true;
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state.
     }
     else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING || 
              taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
              taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
     {
-        const std::string zw = getCurrentTimeString(LOGFILE_TIME_FORMAT) + ": Reload config and redo flow initialization as soon as possible";
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Reload config and redo flow initialization got scheduled ");
+        const std::string zw = "004: Reload config and redo flow initialization got scheduled (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
         reloadConfig = true;
     }
     else 
     {
-        const std::string zw = getCurrentTimeString(LOGFILE_TIME_FORMAT) + ": Reload config not possible because flow not available";
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reload configuration not possible. No flow task. Request rejected");
+        const std::string zw = "099: Reload config not possible. No flow task. Request rejected (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
     }
 
@@ -245,27 +247,26 @@ esp_err_t handler_flow_start(httpd_req_t *req)
         taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API");
-        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Flow start triggered by REST API";
+        const std::string zw = "001: Flow start triggered by REST API (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
+        manualFlowStart = true;
 
         if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
             xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state
-
-        manualFlowStart = true;
     }
     else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING || 
              taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
              taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API (flow is processing, request delayed)");
-        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Flow start triggered (flow is processing -> request delayed)";
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API got scheduled");
+        const std::string zw = "002: Flow start triggered by REST API got scheduled (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
 
         manualFlowStart = true;
     }
     else {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not yet initialized. Request processing not possible");
-        const std::string zw = getCurrentTimeString("%H:%M:%S") + ": Flow start triggered by REST API, but flow is not yet initialized";
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API. Flow not initialized. Request rejected");
+        const std::string zw = "099: Flow start triggered by REST API. Flow not initialized. Request rejected (" + getCurrentTimeString("%H:%M:%S") + ")";
         httpd_resp_send(req, zw.c_str(), zw.length());
     }
 
@@ -279,23 +280,21 @@ esp_err_t MQTTCtrlFlowStart(std::string _topic)
     if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
         taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic " + _topic);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic " + _topic);  
+        manualFlowStart = true;
 
         if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART)
             xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state
-
-        manualFlowStart = true;
     }
     else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING || 
              taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA ||
              taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) 
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic "+ _topic + " (flow is processing, request delayed)");
-        
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic "+ _topic + " got scheduled");      
         manualFlowStart = true;
     }
     else {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by MQTT topic " + _topic + ", but flow is not yet initialized");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by MQTT topic " + _topic + ". Flow not initialized. Request rejected");
     }  
 
     return ESP_OK;
@@ -744,7 +743,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 esp_err_t handler_statusflow(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - Start");       
+        LogFile.WriteHeapInfo("handler_statusflow - Start");       
     #endif
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -752,7 +751,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     if (bTaskAutoFlowCreated) 
     {
         #ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
+            ESP_LOGD(TAG, "handler_statusflow: %s", req->uri);
         #endif
 
         std::string zw = flowctrl.getActStatusWithTime();
@@ -764,7 +763,39 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     }
 
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - Done");       
+        LogFile.WriteHeapInfo("handler_statusflow - Done");       
+    #endif
+
+    return ESP_OK;
+}
+
+
+esp_err_t handler_flowerror(httpd_req_t *req)
+{
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_flowerror - Start");       
+    #endif
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    if (bTaskAutoFlowCreated) 
+    {
+        #ifdef DEBUG_DETAIL_ON       
+            ESP_LOGD(TAG, "handler_flowerror: %s", req->uri);
+        #endif
+
+        if (flowctrl.getActFlowError())
+            httpd_resp_send(req, "TRUE", HTTPD_RESP_USE_STRLEN);
+        else
+            httpd_resp_send(req, "FALSE", HTTPD_RESP_USE_STRLEN);
+    }
+    else 
+    {
+        httpd_resp_send(req, "Flow task not yet created", HTTPD_RESP_USE_STRLEN);  
+    }
+
+    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_flowerror - Done");       
     #endif
 
     return ESP_OK;
@@ -921,6 +952,7 @@ void task_autodoFlow(void *pvParameter)
             if (!doInit()) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + (std::string)FLOW_INIT_FAILED);
                 flowctrl.setActStatus(FLOW_INIT_FAILED);
+                flowctrl.setActFlowError(true);
                 #ifdef ENABLE_MQTT
                 if (getMQTTisConnected())
                     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
@@ -937,6 +969,7 @@ void task_autodoFlow(void *pvParameter)
                 }
             }
             else {
+                flowctrl.setActFlowError(false);
                 taskAutoFlowState = FLOW_TASK_STATE_SETUPMODE;      // Continue to test if SETUP is ACTIVE
             }
         }
@@ -986,11 +1019,12 @@ void task_autodoFlow(void *pvParameter)
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     if (reloadConfig) {
                         reloadConfig = false;
+                        manualFlowStart = false;    // Reload config has higher prio
                         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;           // Return to state "FLOW INIT"
                         break;
                     }
-                    if (manualFlowStart) { 
+                    else if (manualFlowStart) { 
                         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start process (manual trigger)");
                         taskAutoFlowState = FLOW_TASK_STATE_IMG_PROCESSING; // Start manual triggered single round of "FLOW PROCESSING"  
                         break;
@@ -1015,9 +1049,11 @@ void task_autodoFlow(void *pvParameter)
             if (flowctrl.doFlowImageEvaluation(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Image evaluation completed (" + 
                                     std::to_string(getUpTime() - roundStartTime) + "s)");
+                flowctrl.setActFlowError(false);
             }
             else {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image evaluation failed");
+                flowctrl.setActFlowError(true);
             }
 
             taskAutoFlowState = FLOW_TASK_STATE_PUBLISH_DATA;               // Continue with TASKS after FLOW FINISHED
@@ -1029,6 +1065,7 @@ void task_autodoFlow(void *pvParameter)
 
             if (!flowctrl.doFlowPublishData(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Publish data failed"); 
+                flowctrl.setActFlowError(true);
             }
             taskAutoFlowState = FLOW_TASK_STATE_ADDITIONAL_TASKS;           // Continue with TASKS after FLOW FINISHED
         }
@@ -1055,7 +1092,7 @@ void task_autodoFlow(void *pvParameter)
 
             // Check if time is synchronized (if NTP is configured)
             if (getUseNtp() && !getTimeIsSet()) {
-                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set. Check configuration");
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Time server is configured, but time is not yet set");
                 StatusLED(TIME_CHECK, 1, false);
             }
 
@@ -1081,7 +1118,8 @@ void task_autodoFlow(void *pvParameter)
             // ********************************************    
             if (reloadConfig) {
                 reloadConfig = false;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
+                manualFlowStart = false;    // Reload config has higher prio
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration...");
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;                   // Return to state "FLOW INIT"
             }
             else if (manualFlowStart) {
@@ -1102,12 +1140,13 @@ void task_autodoFlow(void *pvParameter)
             #ifdef ENABLE_MQTT
                 MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
             #endif //ENABLE_MQTT
+
             int64_t fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
             if (auto_interval > fr_delta_ms)
             {
                 const TickType_t xDelay = (auto_interval - fr_delta_ms)  / portTICK_PERIOD_MS;
                 ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
-                vTaskDelay( xDelay );   
+                vTaskDelay(xDelay);   
             }
 
             // Check if reload config is triggered by REST API
@@ -1189,23 +1228,28 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
 
     camuri.uri       = "/statusflow.html";
     camuri.handler   = handler_statusflow;
-    camuri.user_ctx  = (void*) "Light Off"; 
+    camuri.user_ctx  = (void*) "statusflow.html"; 
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/statusflow";
     camuri.handler   = handler_statusflow;
-    camuri.user_ctx  = (void*) "Light Off";
+    camuri.user_ctx  = (void*) "statusflow";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/flowerror";
+    camuri.handler   = handler_flowerror;
+    camuri.user_ctx  = (void*) "flowerror";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/cpu_temperature"
     camuri.uri       = "/cputemp.html";
     camuri.handler   = handler_cputemp;
-    camuri.user_ctx  = (void*) "Light Off";
+    camuri.user_ctx  = (void*) "cputemp";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/cpu_temperature";
     camuri.handler   = handler_cputemp;
-    camuri.user_ctx  = (void*) "Light Off"; 
+    camuri.user_ctx  = (void*) "cpu_temperature"; 
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/rssi"

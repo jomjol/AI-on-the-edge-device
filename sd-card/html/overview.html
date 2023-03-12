@@ -6,12 +6,13 @@
 <meta charset="utf-8">
 
 <style>
-.tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:585px;}
+.tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:660px;}
 .tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{height: 50px;font-size:24px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
-.tg .tg-1{width:700px;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
-.tg .tg-2{font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
-.tg .tg-3{height: 15px;font-size:14px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}		
+.tg th{height:25px;font-size:18px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
+.tg .tg-1{width:660px;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
+.tg .tg-2{height:40px;font-size:15px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
+.tg .tg-3{height:40px;vertical-align:text-top;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
+.tg .tg-4{height:80px;vertical-align:text-top;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}	
 </style>
 
 </head>
@@ -20,8 +21,10 @@
 
 <table class="tg">
   <tr>
-    <td class="tg-1" rowspan="9" style="vertical-align: top"><div id="img"></div></td>
-    <th class="th">Value:</th>
+    <td class="tg-1" rowspan="13" style="vertical-align: top;">
+		<div id="img"></div>
+	</td>
+    <th class="th">Value</th>
   </tr>	
   <tr>	
     <td class="tg-2">
@@ -29,7 +32,7 @@
 	</td>	
   </tr>
   <tr>
-    <th class="th">Previous Value:</th>
+    <th class="th">Previous value</th>
   </tr>	
   <tr>	
     <td class="tg-2">
@@ -38,7 +41,7 @@
   </tr>
 
   <tr>
-    <th class="th">Raw Value:</th>
+    <th class="th">Raw value</th>
   </tr>	
   <tr>	
     <td class="tg-2">
@@ -46,16 +49,26 @@
 	</td>	
   </tr>
   <tr>
-    <th class="th">Status:</th>
+    <th class="th">Value status</th>
   </tr>	
   <tr>	
     <td class="tg-2">
 	<div id="error"></div>
 	</td>	
-  </tr> 
+  </tr>
+  <tr>
+    <th class="th">Process status</th>
+  </tr>	
   <tr>	
     <td class="tg-3">
-	<div id="statusflow" ></div>	
+	<div id="statusflow" ></div>
+	<b><div id="flowerror" style="color: rgb(255, 0, 0)"></div></b>
+  </tr>  
+  <tr>
+    <th class="th">System info</th>
+  </tr>	
+  <tr>	
+    <td class="tg-4">
 	<div id="timestamp" ></div>	
 	<div id="cputemp" ></div>	
 	<div id="rssi" ></div>
@@ -63,8 +76,7 @@
 		<span id="uptime" ></span>
 		<span id="round" ></span>
 	</div>	
-	</td>	
-  </tr>    
+  </tr>  
 </table>
 
 
@@ -93,6 +105,7 @@
 		loadValue("prevalue", "prevalue");
 		loadValue("error", "error", "font-size:8px");
 		loadStatus();
+		loadFlowError();
 		loadCPUTemp();
 		loadRSSI();
 		loadUptime();
@@ -126,7 +139,25 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#statusflow').html("State: " + _rsp);
+				$('#statusflow').html(_rsp);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+
+	function loadFlowError() {
+		url = domainname + '/flowerror';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				if (xhttp.responseText == "TRUE") {
+					$('#flowerror').html("Error: Previous round aborted. Check log");
+				}
+				else {
+					$('#flowerror').html("");
+				}
 			}
 		}
 		xhttp.open("GET", url, true);

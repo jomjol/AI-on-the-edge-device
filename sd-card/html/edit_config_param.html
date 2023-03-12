@@ -1347,7 +1347,7 @@ textarea {
 	</table>
 
 	<p>
-		<button class="button" onclick="saveTextAsFile()">Save</button>
+		<button class="button" onclick="saveTextAsFile()">Save and apply</button>
 	</p>
 	<p>
 		
@@ -1356,7 +1356,7 @@ textarea {
 		<p>
 			<button class="button" id="Edit_Config_Direct" onclick="editConfigDirect()" style="display:none">Edit Config file directly</button>
 			
-			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot device</button>
 		</p>
 	</div>
 
@@ -2034,11 +2034,15 @@ function saveTextAsFile()
 		return;
 	}
 
-	if (confirm("Are you sure you want to update \"config.ini\"?")) {
+	if (confirm("Are you sure you want to update the configuration?")) {
 		ReadParameterAll();
 		WriteConfigININew();
 	    SaveConfigToServer(domainname);
-		firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
+		
+		firework.launch('Apply configuration...', 'success', 5000);
+		setTimeout(function() {
+			reload_config();
+        }, 1000);    
 	}
 }
 
@@ -2060,6 +2064,26 @@ function editConfigDirect() {
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}	
+}
+
+function reload_config() {
+		var url = getDomainname() + '/reload_config';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				if (xhttp.responseText.substring(0,3) == "001" || xhttp.responseText.substring(0,3) == "002" || xhttp.responseText.substring(0,3) == "003") {
+					firework.launch('Configuration updated and applied', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "004") {
+					firework.launch('Configuration updated and get applied after round is completed', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "099") {
+					firework.launch('Configuration updated, but cannot get applied (no flow task running)', 'danger', 5000);
+				}
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
 }
 
 function numberChanged()

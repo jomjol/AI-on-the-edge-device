@@ -32,14 +32,14 @@ textarea {
     <tr><td><h2>Config.ini:</h2></td></tr>
     <tr>
         <td colspan="3">
-            <textarea id="inputTextToSave" cols="100" rows="33"></textarea>
+            <textarea id="inputTextToSave" cols="100" rows="31"></textarea>
         </td>
     </tr>
     <tr>
-		<td><button class="button" onclick="saveTextAsFile()">Save</button></td>
+		<td><button class="button" onclick="saveTextAsFile()">Save and apply</button></td>
 	</tr>
 	<tr>
-		<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button></td>
+		<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot device</button></td>
 	</tr>
 </table>
 
@@ -59,22 +59,46 @@ function LoadConfigNeu() {
 
 function saveTextAsFile()
 {
-	if (confirm("Are you sure you want to update \"config.ini\"?")) {
+	if (confirm("Are you sure you want to update the configuration?")) {
 		FileDeleteOnServer("/config/config.ini", domainname);
 		var textToSave = document.getElementById("inputTextToSave").value;
 		FileSendContent(textToSave, "/config/config.ini", domainname);
-		firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
+
+		firework.launch('Apply configuration...', 'success', 5000);
+		setTimeout(function() {
+			reload_config();
+        }, 1000);    
 	}
 }
 
 function doReboot() {
 	if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = "/reboot";
+		var stringota = domainname + "/reboot";
 		window.location = stringota;
 		window.location.href = stringota;
 		window.location.assign(stringota);
 		window.location.replace(stringota);
 	}
+}
+
+function reload_config() {
+		var url = getDomainname() + '/reload_config';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {	
+			if (this.readyState == 4 && this.status == 200) {
+				if (xhttp.responseText.substring(0,3) == "001" || xhttp.responseText.substring(0,3) == "002" || xhttp.responseText.substring(0,3) == "003") {
+					firework.launch('Configuration updated and applied', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "004") {
+					firework.launch('Configuration updated and get applied after round is completed', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "099") {
+					firework.launch('Configuration updated, but cannot get applied. No flow task running', 'danger', 5000);
+				}
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
 }
 
  

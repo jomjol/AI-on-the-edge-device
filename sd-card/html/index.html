@@ -104,6 +104,12 @@
             <li><a href="#" onclick="loadPage('info.html?v=$COMMIT_HASH');">Info</a></li>
         </ul>
     </li>
+    <li><a>Manual Control <i class="arrow down"></i></a>
+      <ul class="submenu">
+          <li><a href="#" onclick="flow_start()">Start Round</a></li>
+
+      </ul>
+  </li>
   </ul>
 </div>
 
@@ -121,6 +127,27 @@
   }
   console.log("Loading page: " + getCookie("page"));
   document.getElementById('maincontent').src = getCookie("page");
+
+
+  function flow_start() {
+    var url = getDomainname() + '/flow_start'; 
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				if (xhttp.responseText.substring(0,3) == "001") {
+					firework.launch('Flow start triggered', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "002") {
+					firework.launch('Flow start triggered. Start after round is completed', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "099") {
+					firework.launch('Flow start triggered, but start not possible (no flow task available)', 'danger', 5000);
+				}
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+    }
 </script>
 
 </div>

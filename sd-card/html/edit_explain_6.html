@@ -49,7 +49,7 @@ p {font-size: 1em;}
             aktstatu = 0;
     
     function reboot() {
-        if (confirm("Do you want to leave the configuration mode and restart the ESP32?")) {
+        if (confirm("Do you want to leave the setup mode and apply the new configuration?")) {
             domainname = getDomainname(); 
             if (!loadConfig(domainname)) {
                 firework.launch('Setup Modus could not be deactivated! Please try again!', 'danger', 30000);
@@ -61,16 +61,35 @@ p {font-size: 1em;}
             param["System"]["SetupMode"]["value1"] = "false";
 
             WriteConfigININew();
-            SaveConfigToServer(domainname);    
+            SaveConfigToServer(domainname);
+            
+            firework.launch('Apply configuration...', 'success', 5000);
+            setTimeout(function() {
+                reload_config();
+            }, 500);  
 
-
-            var stringota = "/reboot";
-            window.location = stringota;
-            window.location.href = stringota;
-            window.location.assign(stringota);
-            window.location.replace(stringota);
+            firework.launch('Start page gets loaded in a few seconds...', 'success', 5000);
+            setTimeout(function() {
+                var stringota = getDomainname();
+                parent.location = stringota;
+		        parent.location.href = stringota;
+		        parent.location.assign(stringota);
+                parent.location.replace(stringota);
+            }, 5000);    
         }
     }
+
+    function reload_config() {
+		var url = getDomainname() + '/reload_config';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				firework.launch('Configuration updated and applied.', 'success', 5000);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+}
 
     </script>
 

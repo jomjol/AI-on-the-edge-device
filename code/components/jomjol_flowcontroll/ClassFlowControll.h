@@ -44,6 +44,7 @@ protected:
 	float AutoInterval;
 	std::string aktstatus;
 	std::string aktstatusWithTime;
+	bool aktflowerror;
 
 public:
 	ClassFlowControll();
@@ -84,6 +85,8 @@ public:
 	std::string getActStatusWithTime();
 	std::string getActStatus();
 	void setActStatus(std::string _aktstatus);
+	void setActFlowError(bool _aktflowerror);
+	bool getActFlowError();
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	
