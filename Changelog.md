@@ -8,6 +8,10 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 
 :bangbang: Afterwards you should check your configuration for errors!
 
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0)
+
 #### Added
 - The Configuration page has now tooltips with enhanced documentation
 - MQTT:
