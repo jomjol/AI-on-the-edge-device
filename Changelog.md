@@ -13,6 +13,7 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 - MQTT:
     - Added `GJ` (`gigajoule`) as an energy meter unit
     - Removed State Class and unit from `raw` topic
+    - Various Improvements (Only send Homeassistant Discovery the first time we connect, ...) (https://github.com/jomjol/AI-on-the-edge-device/pull/2091
 - Added Expert Parameter to change CPU Clock from `160` to `240 Mhz`
 - SD card basic read/write check and a folder/file presence check at boot to indicate SD card issues or missing folders / files ([#2085](https://github.com/jomjol/AI-on-the-edge-device/pull/2085))
 - Simplified "WIFI roaming" by client triggered channel scan (AP switching at low RSSI) -> using expert parameter "RSSIThreshold" ([#2120](https://github.com/jomjol/AI-on-the-edge-device/pull/2120))
@@ -22,7 +23,6 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 #### Changed
 - Updated models (tflite files), removed old versions (https://github.com/jomjol/AI-on-the-edge-device/pull/2089, https://github.com/jomjol/AI-on-the-edge-device/pull/2133)
   :bangbang: **Attention:** Update your configuration!
-            
 -   Various Web interface Improvements/Enhancements:
     - Restructured Menu (Needs cache clearing to be applied)
     - Enhanced `Previous Value` page
