@@ -25,6 +25,7 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
     - Enhanced `Previous Value` page
     - Improved/faster Graph page
     - Various minor improvements
+    - ROI config pages improvements
 - Added log file logs for Firmware Update
 - Improved memory management (moved various stuff to external PSRAM, https://github.com/jomjol/AI-on-the-edge-device/pull/2117)
 - Camera driver update: Support of contrast and saturation ([#2048](https://github.com/jomjol/AI-on-the-edge-device/pull/2048))   
@@ -39,6 +40,7 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 - Various minor fixes
 - Added State Class "measurement" to rate_per_time_unit
 - GPIO: Avoid MQTT publishing to empty topic when "MQTT enable" flag is not set
+- Fix timezone config parser
 
 #### Removed
 -   n.a.
