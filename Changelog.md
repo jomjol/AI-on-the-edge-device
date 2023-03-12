@@ -20,7 +20,10 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 - Support of InfluxDB v2 ([#2004](https://github.com/jomjol/AI-on-the-edge-device/pull/2004))
 
 #### Changed
--   Various Web interface Imrpovements/Enhancements:
+- Updated models (tflite files), removed old versions (https://github.com/jomjol/AI-on-the-edge-device/pull/2089, https://github.com/jomjol/AI-on-the-edge-device/pull/2133)
+  :bangbang: **Attention:** Update your configuration!
+            
+-   Various Web interface Improvements/Enhancements:
     - Restructured Menu (Needs cache clearing to be applied)
     - Enhanced `Previous Value` page
     - Improved/faster Graph page
