@@ -175,7 +175,7 @@ bool setupTime() {
 
     while (configFile.getNextLine(&line, disabledLine, eof) && 
             !configFile.isNewParagraph(line)) {
-        splitted = ZerlegeZeile(line);
+        splitted = ZerlegeZeile(line, "=");
 
         if (toUpper(splitted[0]) == "TIMEZONE") {
             timeZone = splitted[1];
