@@ -5,6 +5,7 @@
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
 :bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it)!
+
 :bangbang: Afterwards you should check your configuration for errors!
 
 #### Added
