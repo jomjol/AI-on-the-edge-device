@@ -26,6 +26,7 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
     - Improved/faster Graph page
     - Various minor improvements
     - ROI config pages improvements
+    - Improved Backup Functionality
 - Added log file logs for Firmware Update
 - Improved memory management (moved various stuff to external PSRAM, https://github.com/jomjol/AI-on-the-edge-device/pull/2117)
 - Camera driver update: Support of contrast and saturation ([#2048](https://github.com/jomjol/AI-on-the-edge-device/pull/2048))   
