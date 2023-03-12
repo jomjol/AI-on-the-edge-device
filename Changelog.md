@@ -45,11 +45,10 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 - Added State Class "measurement" to rate_per_time_unit
 - GPIO: Avoid MQTT publishing to empty topic when "MQTT enable" flag is not set
 - Fix timezone config parser
+- Remote Setup truncated long passwords (https://github.com/jomjol/AI-on-the-edge-device/issues/2167)
 
 #### Removed
 -   n.a.
-
-
 
 
 ## [15.0.3] - 2023-02-28
