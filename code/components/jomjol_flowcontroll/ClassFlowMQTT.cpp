@@ -27,6 +27,7 @@ extern const char* libfive_git_branch(void);
 
 void ClassFlowMQTT::SetInitialParameter(void)
 {
+    PresetFlowStateHandler(true);
     uri = "";
     topic = "";
     topicError = "";

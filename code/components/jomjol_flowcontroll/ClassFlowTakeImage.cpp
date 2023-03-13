@@ -18,6 +18,7 @@ static const char* TAG = "TAKEIMAGE";
 
 void ClassFlowTakeImage::SetInitialParameter(void)
 {
+    PresetFlowStateHandler(true);
     waitbeforepicture = 5.0; // Flash duration in s
     flash_duration = (int)(waitbeforepicture * 1000);   // Flash duration in ms
     isImageSize = false;

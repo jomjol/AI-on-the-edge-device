@@ -54,12 +54,16 @@ ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev)
 }
 
 
-void ClassFlow::PresetFlowStateHandler()
+void ClassFlow::PresetFlowStateHandler(bool _init)
 {
     FlowState.ClassName = name();
-    FlowState.getCalled = true;
     FlowState.isSuccessful = true;
     FlowState.ErrorCode = 0;
+
+	if (_init)
+	    FlowState.getCalled = false;
+	else
+    	FlowState.getCalled = true;
 }
 
 

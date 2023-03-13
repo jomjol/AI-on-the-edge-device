@@ -20,6 +20,7 @@ bool ImageBasisToDelete = false;
 
 void ClassFlowAlignment::SetInitialParameter(void)
 {
+    PresetFlowStateHandler(true);
     initalrotate = 0;
     anz_ref = 0;
     initialmirror = false;

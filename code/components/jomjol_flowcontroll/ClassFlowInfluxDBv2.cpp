@@ -19,6 +19,7 @@ static const char* TAG = "INFLUXDBV2";
 
 void ClassFlowInfluxDBv2::SetInitialParameter(void)
 {
+    PresetFlowStateHandler(true);
     uri = "";
     database = "";
     measurement = "";

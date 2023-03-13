@@ -279,6 +279,7 @@ void ClassFlowPostProcessing::SavePreValue()
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit)
 {
+    PresetFlowStateHandler(true);
     PreValueUse = false;
     PreValueAgeStartup = 30;
     ErrorMessage = false;

@@ -22,6 +22,7 @@ static const char* TAG = "CNN";
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
+    PresetFlowStateHandler(true);
     string cnnmodelfile = "";
     modelxsize = 32;
     modelysize = 32;

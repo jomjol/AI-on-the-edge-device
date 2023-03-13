@@ -53,7 +53,7 @@ public:
 	ClassFlow(std::vector<ClassFlow*> * lfc);
 	ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev);
 	
-	void PresetFlowStateHandler();
+    void PresetFlowStateHandler(bool _init = false);
 	void FlowStateHandlerSetError(int8_t _error);
 	struct strFlowState* getFlowState();
 	virtual void doAutoErrorHandling();
