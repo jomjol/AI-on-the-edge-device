@@ -36,6 +36,9 @@ def generateHtmlTooltip(section, parameter, markdownFile):
     # Make all links to be opened in a new page
     htmlTooltip = htmlTooltip.replace("a href", "a target=_blank href")
 
+    # Replace relative documentation links with absolute ones pointing to the external documentation
+    htmlTooltip = htmlTooltip.replace("href=\"../", "href=\"https://jomjol.github.io/AI-on-the-edge-device-docs/")
+
     # Add custom styles
     htmlTooltip = htmlTooltip.replace("<h3>", "<h3 style=\"margin: 0\">")
 
