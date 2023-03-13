@@ -20,11 +20,14 @@
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowWriteList.h"
 
+
 class ClassFlowControll : public ClassFlow
 {
 protected:
 	std::vector<ClassFlow*> FlowControll;
 	std::vector<ClassFlow*> FlowControlPublish;
+	std::vector<strFlowState*> FlowStateErrorsEvaluation;
+	std::vector<strFlowState*> FlowStateErrorsPublish;
 
 	ClassFlowTakeImage* flowtakeimage;
 	ClassFlowAlignment* flowalignment;	
@@ -53,7 +56,7 @@ public:
 	void DeinitFlow(void);
 	bool doFlowImageEvaluation(string time);
 	bool doFlowPublishData(string time);
-	void doFlowTakeImageOnly(string time);
+	bool doFlowTakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};
 	string getReadout(bool _rawvalue, bool _noerror);
 	string getReadoutAll(int _type);	
@@ -80,6 +83,7 @@ public:
 
 	std::string doSingleStep(std::string _stepname, std::string _host);
 
+	bool isAutoStart();
 	bool isAutoStart(long &_interval);
 
 	std::string getActStatusWithTime();
@@ -87,6 +91,8 @@ public:
 	void setActStatus(std::string _aktstatus);
 	void setActFlowError(bool _aktflowerror);
 	bool getActFlowError();
+	bool FlowStateErrorsOccured();
+	void AutomaticFlowErrorHandler();
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	

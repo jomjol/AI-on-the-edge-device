@@ -539,15 +539,20 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
-            {
                 PreValueUse = true;
-            }
+            else
+                PreValueUse = false;
         }
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE") {
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
+            }
+            else {
+                for (_n = 0; _n < NUMBERS.size(); ++_n)
+                    NUMBERS[_n]->checkDigitIncreaseConsistency = false; 
+            }
         }        
         if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1))
         {
@@ -562,11 +567,15 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(splitted[1]) == "TRUE")
                 ErrorMessage = true;
+            else
+                ErrorMessage = false;
         }
         if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
                 IgnoreLeadingNaN = true;
+            else
+                IgnoreLeadingNaN = false;
         }
 
         
@@ -705,6 +714,7 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
 
 bool ClassFlowPostProcessing::doFlow(string zwtime)
 {
+    PresetFlowStateHandler();
     string result = "";
     string digit = "";
     string analog = "";

@@ -329,12 +329,19 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             this->imagesLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
         }
+        else 
+        {
+            this->isLogImage = false;
+        }
         if ((toUpper(splitted[0]) == "LOGIMAGESELECT") && (splitted.size() > 1))
         {
             LogImageSelect = splitted[1];
             isLogImageSelect = true;            
         }
-
+        else
+        {
+            isLogImageSelect = false; 
+        }
         if ((toUpper(splitted[0]) == "ROIIMAGESRETENTION") && (splitted.size() > 1))
         {
             this->imagesRetention = std::stoi(splitted[1]);
@@ -372,6 +379,8 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
+            else
+                SaveAllFiles = false;
         }
     }
 
@@ -473,6 +482,8 @@ bool ClassFlowCNNGeneral::doFlow(string time)
         // start tracing
         ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
     #endif
+
+    PresetFlowStateHandler();
 
     if (disabled)
         return true;

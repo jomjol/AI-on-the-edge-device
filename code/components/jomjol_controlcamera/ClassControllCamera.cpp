@@ -247,7 +247,7 @@ void CCamera::SetLEDIntensity(int _intensity)
     _intensity = min(_intensity, 100);
     _intensity = max(_intensity, 0);
     led_intensity = ((_intensity * LEDC_RESOLUTION) / 100);
-    ESP_LOGI(TAG, "Set led_intensity to %d of %d", led_intensity, LEDC_RESOLUTION); // TODO: LOGD
+    ESP_LOGD(TAG, "Set led_intensity to %d of %d", led_intensity, LEDC_RESOLUTION); // TODO: LOGD
 }
 
 

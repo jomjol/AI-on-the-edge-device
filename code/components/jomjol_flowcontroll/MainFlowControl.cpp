@@ -134,24 +134,6 @@ bool doInit(void)
     return bRetVal;
 }
 
-/*
-bool doflow(void)
-{   
-    std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-
-    #ifdef DEBUG_DETAIL_ON    
-        ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
-    #endif
-
-    flowctrl.doFlow(zw_time);
-
-    #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "doflow - end %s", zw_time.c_str());
-    #endif
-
-    return true;
-}
-*/
 
 esp_err_t handler_get_heap(httpd_req_t *req)
 {
@@ -263,6 +245,12 @@ esp_err_t handler_flow_start(httpd_req_t *req)
         httpd_resp_send(req, zw.c_str(), zw.length());
 
         manualFlowStart = true;
+    }
+    else if (taskAutoFlowState == FLOW_TASK_STATE_INIT_DELAYED) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API (abort Initialization (delayed)");
+        const std::string zw = "003: Flow start triggered by REST API abort initialization delay (" + getCurrentTimeString("%H:%M:%S") + ")";
+        httpd_resp_send(req, zw.c_str(), zw.length());
+        xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state
     }
     else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API. Flow not initialized. Request rejected");
@@ -933,8 +921,8 @@ void task_autodoFlow(void *pvParameter)
         // Note: Init and logging of the event is handled already in "main.cpp"
         // ********************************************
         if (taskAutoFlowState == FLOW_TASK_STATE_INIT_DELAYED) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + (std::string)FLOW_INIT_DELAYED);
-            flowctrl.setActStatus(FLOW_INIT_DELAYED);
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + std::string(FLOW_INIT_DELAYED));
+            flowctrl.setActStatus(std::string(FLOW_INIT_DELAYED));
             flowctrl.setActFlowError(true);
             // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
 
@@ -946,13 +934,13 @@ void task_autodoFlow(void *pvParameter)
         // FLOW INITIALIZATION
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_INIT) {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_INIT);
-            flowctrl.setActStatus(FLOW_INIT);
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_INIT));
+            flowctrl.setActStatus(std::string(FLOW_INIT));
             // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
 
             if (!doInit()) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + (std::string)FLOW_INIT_FAILED);
-                flowctrl.setActStatus(FLOW_INIT_FAILED);
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + std::string(FLOW_INIT_FAILED));
+                flowctrl.setActStatus(std::string(FLOW_INIT_FAILED));
                 flowctrl.setActFlowError(true);
                 #ifdef ENABLE_MQTT
                 if (getMQTTisConnected())
@@ -981,8 +969,8 @@ void task_autodoFlow(void *pvParameter)
 
             if (isSetupModusActive())
             {
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_SETUP_MODE);
-                flowctrl.setActStatus(FLOW_SETUP_MODE);
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_SETUP_MODE));
+                flowctrl.setActStatus(std::string(FLOW_SETUP_MODE));
                 #ifdef ENABLE_MQTT
                     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
                 #endif //ENABLE_MQTT
@@ -1010,8 +998,8 @@ void task_autodoFlow(void *pvParameter)
         else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART) {
     
             if (!flowctrl.isAutoStart(auto_interval)) {
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_IDLE_NO_AUTOSTART);
-                flowctrl.setActStatus(FLOW_IDLE_NO_AUTOSTART);
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_IDLE_NO_AUTOSTART));
+                flowctrl.setActStatus(std::string(FLOW_IDLE_NO_AUTOSTART));
                 #ifdef ENABLE_MQTT
                     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
                 #endif //ENABLE_MQTT
@@ -1075,8 +1063,8 @@ void task_autodoFlow(void *pvParameter)
         // Process further tasks after image is fully processed and results are published
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + (std::string)FLOW_ADDITIONAL_TASKS);
-            flowctrl.setActStatus(FLOW_ADDITIONAL_TASKS);
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_ADDITIONAL_TASKS));
+            flowctrl.setActStatus(std::string(FLOW_ADDITIONAL_TASKS));
             #ifdef ENABLE_MQTT
                 MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
             #endif //ENABLE_MQTT
@@ -1097,18 +1085,18 @@ void task_autodoFlow(void *pvParameter)
                 StatusLED(TIME_CHECK, 1, false);
             }
 
-
-            /* Automatic error handling (if neccessary)
+            // Automatic error handling (if neccessary)
             // ********************************************
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "State: " + (std::string)FLOW_AUTO_ERROR_HANDLING);
-            flowctrl.setActStatus(FLOW_AUTO_ERROR_HANDLING);
-            #ifdef ENABLE_MQTT
-                MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
-            #endif //ENABLE_MQTT
-            
-            // nothing to do
-            */
+            if (flowctrl.FlowStateErrorsOccured()) {
 
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_AUTO_ERROR_HANDLING));
+                flowctrl.setActStatus(std::string(FLOW_AUTO_ERROR_HANDLING));
+                #ifdef ENABLE_MQTT
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
+                #endif //ENABLE_MQTT
+            
+                flowctrl.AutomaticFlowErrorHandler();
+            }
 
             // Round finished -> Logfile
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
@@ -1119,11 +1107,11 @@ void task_autodoFlow(void *pvParameter)
             // ********************************************    
             if (reloadConfig) {
                 reloadConfig = false;
-                manualFlowStart = false;    // Reload config has higher prio
+                manualFlowStart = false; // Reload config has higher prio
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration...");
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;                   // Return to state "FLOW INIT"
             }
-            else if (manualFlowStart) {
+            else if (manualFlowStart || !flowctrl.isAutoStart()) {
                 manualFlowStart = false;
                 taskAutoFlowState = FLOW_TASK_STATE_IDLE_NO_AUTOSTART;      // Return to state "Idle (NO AUTOSTART)"
             }
@@ -1136,8 +1124,8 @@ void task_autodoFlow(void *pvParameter)
         // "Wait state" until autotimer is elapsed to restart next round
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Flow state: " + (std::string)FLOW_IDLE_AUTOSTART);
-            flowctrl.setActStatus(FLOW_IDLE_AUTOSTART);
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_IDLE_AUTOSTART));
+            flowctrl.setActStatus(std::string(FLOW_IDLE_AUTOSTART));
             #ifdef ENABLE_MQTT
                 MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), false);
             #endif //ENABLE_MQTT
@@ -1166,7 +1154,7 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************
         else {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "taskAutoFlowState: Invalid state called. Programming error!");
-            flowctrl.setActStatus(FLOW_INVALID_STATE);
+            flowctrl.setActStatus(std::string(FLOW_INVALID_STATE));
         }
     }
 
@@ -1183,14 +1171,14 @@ void StartMainFlowTask()
             LogFile.WriteHeapInfo("CreateFlowTask: start");
     #endif
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " FLOW_START_FLOW_TASK);
-    flowctrl.setActStatus(FLOW_START_FLOW_TASK);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_START_FLOW_TASK));
+    flowctrl.setActStatus(std::string(FLOW_START_FLOW_TASK));
 
     BaseType_t xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 16 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
     if( xReturned != pdPASS ) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create task_autodoFlow");
         LogFile.WriteHeapInfo("CreateFlowTask: Failed to create task");
-        flowctrl.setActStatus(FLOW_FLOW_TASK_FAILED);
+        flowctrl.setActStatus(std::string(FLOW_FLOW_TASK_FAILED));
         flowctrl.setActFlowError(true);
     }
 

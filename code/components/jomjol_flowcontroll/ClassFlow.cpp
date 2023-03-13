@@ -51,7 +51,34 @@ ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev)
 	SetInitialParameter();	
 	ListFlowControll = lfc;
 	previousElement = _prev;
-}	
+}
+
+
+void ClassFlow::PresetFlowStateHandler()
+{
+    FlowState.ClassName = name();
+    FlowState.getCalled = true;
+    FlowState.isSuccessful = true;
+    FlowState.ErrorCode = 0;
+}
+
+
+void ClassFlow::FlowStateHandlerSetError(int8_t _errorCode)
+{	
+	FlowState.isSuccessful = false;
+	FlowState.ErrorCode = _errorCode;
+}
+
+struct strFlowState* ClassFlow::getFlowState()
+{
+	return &FlowState;
+}
+
+void ClassFlow::doAutoErrorHandling()
+{
+	// Handled in derived classes
+}
+
 
 bool ClassFlow::ReadParameter(FILE* pfile, string &aktparamgraph)
 {

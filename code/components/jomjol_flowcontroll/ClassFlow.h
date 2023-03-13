@@ -21,6 +21,14 @@ struct HTMLInfo
 	std::string filename_org;	
 };
 
+struct strFlowState
+{
+	std::string ClassName = "";
+	bool getCalled = false;
+	bool isSuccessful = true;
+	int8_t ErrorCode = 0;
+};
+
 
 class ClassFlow
 {
@@ -38,15 +46,23 @@ protected:
 
 	bool disabled;
 
+	strFlowState FlowState;
+
 public:
 	ClassFlow(void);
 	ClassFlow(std::vector<ClassFlow*> * lfc);
-	ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev);	
+	ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev);
+	
+	void PresetFlowStateHandler();
+	void FlowStateHandlerSetError(int8_t _error);
+	struct strFlowState* getFlowState();
+	virtual void doAutoErrorHandling();
 	
 	virtual bool ReadParameter(FILE* pfile, string &aktparamgraph);
 	virtual bool doFlow(string time);
 	virtual string getHTMLSingleStep(string host);
 	virtual string getReadout();
+
 	virtual string name(){return "ClassFlow";};
 
 };

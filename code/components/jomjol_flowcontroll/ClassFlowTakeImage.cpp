@@ -76,6 +76,8 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(splitted[1]) == "TRUE")
                 SaveAllFiles = true;
+            else
+                SaveAllFiles = false;
         }
         
         if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
@@ -107,7 +109,9 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(splitted[0]) == "FIXEDEXPOSURE") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
-                FixedExposure = true;  
+                FixedExposure = true;
+            else
+                FixedExposure = false;
         }
 
         if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
@@ -156,14 +160,18 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 bool ClassFlowTakeImage::doFlow(string zwtime)
 {
+
+    PresetFlowStateHandler();
     std::string logPath = CreateLogFolder(zwtime);
  
     #ifdef DEBUG_DETAIL_ON  
         LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Start");
     #endif
 
-    if (takePictureWithFlash(flash_duration))
+    if (takePictureWithFlash(flash_duration)) {
+        FlowStateHandlerSetError(-1);       // Error cluster: -1
         return false;
+    }
 
     #ifdef DEBUG_DETAIL_ON  
         LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After takePictureWithFlash");
@@ -178,6 +186,13 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
     #endif
 
     return true;
+}
+
+
+void ClassFlowTakeImage::doAutoErrorHandling()
+{
+    // Error handling can be included here. Function is called after round is completed.
+    //ESP_LOGI(TAG, "ClassFlowTakeImage::doAutoErrorHandling() - TEST");
 }
 
 

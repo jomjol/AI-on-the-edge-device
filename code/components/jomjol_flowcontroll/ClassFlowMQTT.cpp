@@ -116,15 +116,19 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(splitted[0]) == "RETAINMESSAGES") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE") {
+            if (toUpper(splitted[1]) == "TRUE")
                 SetRetainFlag = true;  
-                setMqtt_Server_Retain(SetRetainFlag);
-            }
+            else
+                SetRetainFlag = false;
+
+            setMqtt_Server_Retain(SetRetainFlag);
         }
         if ((toUpper(splitted[0]) == "HOMEASSISTANTDISCOVERY") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
-                SetHomeassistantDiscoveryEnabled(true);  
+                SetHomeassistantDiscoveryEnabled(true);
+            else
+                SetHomeassistantDiscoveryEnabled(false);
         }
         if ((toUpper(splitted[0]) == "METERTYPE") && (splitted.size() > 1)) {
         /* Use meter type for the device class 
@@ -211,6 +215,7 @@ bool ClassFlowMQTT::Start(float AutoInterval)
 
 bool ClassFlowMQTT::doFlow(string zwtime)
 {
+    PresetFlowStateHandler();
     bool success;
     std::string result;
     std::string resulterror = "";

@@ -135,6 +135,7 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
     if (!InfluxDBenable)
         return true;
 
+    PresetFlowStateHandler();
     std::string result;
     std::string resulterror = "";
     std::string resultraw = "";
