@@ -261,10 +261,9 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     }
     fclose(pFile);
 
-    ESP_LOGD(TAG, "ChangeHostName done");
-
     return true;
 }
+
 
 #ifdef WLAN_USE_MESH_ROAMING
 bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
@@ -274,7 +273,7 @@ bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
 
     std::string line = "";
     std::vector<string> splitted;
-    std::vector<string> neuesfile;
+    std::vector<string> updatedFile;
     bool found = false;
 
     FILE* pFile = NULL;
@@ -323,7 +322,7 @@ bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
             found = true;
         }
     
-        neuesfile.push_back(line);
+        updatedFile.push_back(line);
         
         if (fgets(zw, sizeof(zw), pFile) == NULL) {
             line = "";
@@ -345,7 +344,7 @@ bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
         line += "; Note: This parameter can be configured via WebUI configuration\n";
         line += "; Default: 0 = Disable client requested roaming query\n\n";
         line += "RSSIThreshold = " + to_string(_newrssithreshold) + "\n";
-        neuesfile.push_back(line);        
+        updatedFile.push_back(line);        
     }
 
     fclose(pFile);
@@ -356,16 +355,15 @@ bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
         return false;
     }
 
-    for (int i = 0; i < neuesfile.size(); ++i)
+    for (int i = 0; i < updatedFile.size(); ++i)
     {
-        //ESP_LOGD(TAG, "%s", neuesfile[i].c_str());
-        fputs(neuesfile[i].c_str(), pFile);
+        //ESP_LOGD(TAG, "%s", updatedFile[i].c_str());
+        fputs(updatedFile[i].c_str(), pFile);
     }
 
     fclose(pFile);
 
-    ESP_LOGD(TAG, "ChangeRSSIThreshold done");
-
+    wlan_config.rssi_threshold = _newrssithreshold;     // Can be set directly, no reboot necessary (TODO: Think about removing this parameter from WLAN.INI!?)
     return true;
 }
 #endif

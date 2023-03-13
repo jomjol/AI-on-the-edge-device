@@ -152,14 +152,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             int RSSIThresholdTMP = atoi(splitted[1].c_str());
             RSSIThresholdTMP = min(0, max(-100, RSSIThresholdTMP)); // Verify input limits (-100 - 0)
-            
-            if (ChangeRSSIThreshold(WLAN_CONFIG_FILE, RSSIThresholdTMP))
-            {
-                // reboot necessary so that the new wlan.ini is also used !!!
-                //fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new RSSITHRESHOLD ...");
-                //doReboot();
-            }
+            ChangeRSSIThreshold(WLAN_CONFIG_FILE, RSSIThresholdTMP);
         }
         #endif
 
@@ -168,9 +161,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (ChangeHostName(WLAN_CONFIG_FILE, splitted[1]))
             {
                 // reboot necessary so that the new wlan.ini is also used !!!
-                //fclose(pfile);
-                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new HOSTNAME...");             
-                //doReboot();
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Please reboot to activate new hostname");
             }
         }
 
@@ -889,11 +880,66 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
                 delete fileBuffer;
             }
-            else if (getActStatus().compare((std::string)FLOW_INIT) == 0) {
+            else if (getActStatus().compare((std::string)FLOW_INIT) == 0 ||
+                     getActStatus().compare((std::string)FLOW_INIT_FAILED) == 0) {
                 FILE* file = fopen("/sdcard/html/Flowstate_initialization.jpg", "rb"); 
 
                 if (!file) {
                     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_initialization.jpg not found");
+                    return ESP_FAIL;
+                }
+
+                fseek(file, 0, SEEK_END);
+                long fileSize = ftell(file); /* how long is the file ? */
+                fseek(file, 0, SEEK_SET); /* reset */
+
+                unsigned char* fileBuffer = (unsigned char*) malloc(fileSize);
+
+                if (!fileBuffer) {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControll::GetJPGStream: Not enough memory to create fileBuffer: " + std::to_string(fileSize));
+                    fclose(file);  
+                    return ESP_FAIL;
+                }
+
+                fread(fileBuffer, fileSize, 1, file);
+                fclose(file);
+
+                httpd_resp_set_type(req, "image/jpeg");
+                result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
+                delete fileBuffer;
+            }
+            else if (getCountFlowRounds() == 0 && getActStatus().compare((std::string)FLOW_IDLE_NO_AUTOSTART) == 0) {   // Show only before first round started, otherwise result will be shown till next start
+                FILE* file = fopen("/sdcard/html/Flowstate_idle_no_autostart.jpg", "rb"); 
+
+                if (!file) {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_idle_no_autostart.jpg not found");
+                    return ESP_FAIL;
+                }
+
+                fseek(file, 0, SEEK_END);
+                long fileSize = ftell(file); /* how long is the file ? */
+                fseek(file, 0, SEEK_SET); /* reset */
+
+                unsigned char* fileBuffer = (unsigned char*) malloc(fileSize);
+
+                if (!fileBuffer) {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControll::GetJPGStream: Not enough memory to create fileBuffer: " + std::to_string(fileSize));
+                    fclose(file);  
+                    return ESP_FAIL;
+                }
+
+                fread(fileBuffer, fileSize, 1, file);
+                fclose(file);
+
+                httpd_resp_set_type(req, "image/jpeg");
+                result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
+                delete fileBuffer;
+            }
+            else if (getActStatus().compare((std::string)FLOW_SETUP_MODE) == 0) {
+                FILE* file = fopen("/sdcard/html/Flowstate_setup_mode.jpg", "rb"); 
+
+                if (!file) {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_setup_mode.jpg not found");
                     return ESP_FAIL;
                 }
 

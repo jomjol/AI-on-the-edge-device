@@ -935,6 +935,7 @@ void task_autodoFlow(void *pvParameter)
         if (taskAutoFlowState == FLOW_TASK_STATE_INIT_DELAYED) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Process state: " + (std::string)FLOW_INIT_DELAYED);
             flowctrl.setActStatus(FLOW_INIT_DELAYED);
+            flowctrl.setActFlowError(true);
             // Right now, it's not possible to provide state via MQTT because mqtt service is not yet started
 
             vTaskDelay(60*5000 / portTICK_PERIOD_MS); // Wait 5 minutes to give time to do an OTA update or fetch the log 
@@ -1190,6 +1191,7 @@ void StartMainFlowTask()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create task_autodoFlow");
         LogFile.WriteHeapInfo("CreateFlowTask: Failed to create task");
         flowctrl.setActStatus(FLOW_FLOW_TASK_FAILED);
+        flowctrl.setActFlowError(true);
     }
 
     #ifdef DEBUG_DETAIL_ON      

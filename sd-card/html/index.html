@@ -136,6 +136,7 @@
 			if (this.readyState == 4 && this.status == 200) {
 				if (xhttp.responseText.substring(0,3) == "001") {
 					firework.launch('Flow start triggered', 'success', 5000);
+          window.location.reload();
 				}
 				else if (xhttp.responseText.substring(0,3) == "002") {
 					firework.launch('Flow start triggered. Start after round is completed', 'success', 5000);
