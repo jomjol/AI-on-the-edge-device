@@ -175,10 +175,15 @@ bool setupTime() {
 
     while (configFile.getNextLine(&line, disabledLine, eof) && 
             !configFile.isNewParagraph(line)) {
-        splitted = ZerlegeZeile(line);
+        splitted = ZerlegeZeile(line, "=");
 
         if (toUpper(splitted[0]) == "TIMEZONE") {
-            timeZone = splitted[1];
+            if (splitted.size() <= 1) { // parameter part is empty
+                timeZone = "";
+            }
+            else {
+                timeZone = splitted[1];
+            }
         }
 
         if (toUpper(splitted[0]) == "TIMESERVER") {
