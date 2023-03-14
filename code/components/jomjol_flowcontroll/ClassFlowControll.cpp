@@ -49,7 +49,7 @@ void ClassFlowControll::SetInitialParameter(void)
 	flowInfluxDBv2 = NULL;
     AutoStart = false;
     AutoInterval = 5; // in Minutes
-    SetupModeActive = true;
+    SetupModeActive = false;
     disabled = false;
     readParameterDone = false;
     setActStatus(std::string(FLOW_NO_TASK));
