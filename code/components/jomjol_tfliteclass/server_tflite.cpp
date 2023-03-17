@@ -157,7 +157,7 @@ esp_err_t handler_get_heap(httpd_req_t *req)
             vTaskList(pcTaskList);
             zw = zw + "<br><br>Task info:<br><pre>Name | State | Prio | Lowest stacksize | Creation order | CPU (-1=NoAffinity)<br>"
                     + std::string(pcTaskList) + "</pre>";
-            free_psram_heap(TAG, pcTaskList);
+            free_psram_heap(std::string(TAG) + "->pcTaskList", pcTaskList);
         }
         else {
             zw = zw + "<br><br>Task info:<br>ERROR - Allocation of TaskList buffer in PSRAM failed";
