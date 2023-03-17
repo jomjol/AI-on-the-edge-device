@@ -312,11 +312,11 @@ CTfLiteClass::CTfLiteClass()
 
 CTfLiteClass::~CTfLiteClass()
 {
-  free(modelfile);
-
-  free(this->tensor_arena);
   delete this->interpreter;
   delete this->error_reporter;
+
+  free_psram_heap(std::string(TAG) + "->modelfile", modelfile);
+  free_psram_heap(std::string(TAG) + "->tensor_arena", this->tensor_arena);
 }        
 
 
