@@ -108,7 +108,7 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
     dy = y2 - y1;
 
     int memsize = dx * dy * channels;
-    uint8_t* odata = (unsigned char*) malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
+    uint8_t* odata = (unsigned char*) malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
 
     stbi_uc* p_target;
     stbi_uc* p_source;
@@ -187,7 +187,7 @@ CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
     dy = y2 - y1;
 
     int memsize = dx * dy * channels;
-    uint8_t* odata = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
+    uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
 
     stbi_uc* p_target;
     stbi_uc* p_source;

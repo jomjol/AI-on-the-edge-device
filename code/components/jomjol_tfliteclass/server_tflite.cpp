@@ -152,7 +152,7 @@ esp_err_t handler_get_heap(httpd_req_t *req)
     std::string zw = "Heap info:<br>" + getESPHeapInfo();
 
     #ifdef TASK_ANALYSIS_ON
-        char* pcTaskList = (char*) calloc_psram_heap(TAG, 1, sizeof(char) * 768, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+        char* pcTaskList = (char*) calloc_psram_heap(std::string(TAG) + "->pcTaskList", 1, sizeof(char) * 768, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
         if (pcTaskList) {
             vTaskList(pcTaskList);
             zw = zw + "<br><br>Task info:<br><pre>Name | State | Prio | Lowest stacksize | Creation order | CPU (-1=NoAffinity)<br>"
