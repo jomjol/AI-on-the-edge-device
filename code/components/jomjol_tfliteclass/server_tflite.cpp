@@ -25,6 +25,7 @@
 
 #include "read_wlanini.h"
 #include "connect_wlan.h"
+#include "psram.h"
 
 
 ClassFlowControll tfliteflow;
@@ -151,12 +152,12 @@ esp_err_t handler_get_heap(httpd_req_t *req)
     std::string zw = "Heap info:<br>" + getESPHeapInfo();
 
     #ifdef TASK_ANALYSIS_ON
-        char* pcTaskList = (char*) heap_caps_calloc(1, sizeof(char) * 768, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+        char* pcTaskList = (char*) calloc_psram_heap(TAG, 1, sizeof(char) * 768, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
         if (pcTaskList) {
             vTaskList(pcTaskList);
             zw = zw + "<br><br>Task info:<br><pre>Name | State | Prio | Lowest stacksize | Creation order | CPU (-1=NoAffinity)<br>"
                     + std::string(pcTaskList) + "</pre>";
-            heap_caps_free(pcTaskList);
+            free_psram_heap(TAG, pcTaskList);
         }
         else {
             zw = zw + "<br><br>Task info:<br>ERROR - Allocation of TaskList buffer in PSRAM failed";

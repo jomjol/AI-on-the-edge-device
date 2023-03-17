@@ -1,6 +1,7 @@
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
 #include "Helper.h"
+#include "psram.h"
 #include "esp_log.h"
 #include "../../include/defines.h"
 
@@ -250,7 +251,7 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
         LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
 #endif
 
-    modelfile = (unsigned char*)GET_MEMORY(size);
+    modelfile = (unsigned char*)malloc_psram_heap(TAG, size, MALLOC_CAP_SPIRAM);
   
 	  if(modelfile != NULL) 
     {
@@ -305,7 +306,7 @@ CTfLiteClass::CTfLiteClass()
     this->input = nullptr;
     this->output = nullptr;  
     this->kTensorArenaSize = 800 * 1024;   /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
-    this->tensor_arena = (uint8_t*)GET_MEMORY(kTensorArenaSize);
+    this->tensor_arena = (uint8_t*)malloc_psram_heap(TAG, kTensorArenaSize, MALLOC_CAP_SPIRAM);
 }
 
 

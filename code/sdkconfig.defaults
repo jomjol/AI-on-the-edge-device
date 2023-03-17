@@ -1,7 +1,7 @@
 ################################################## 
 # Application specific configuration
 # Edit this file instead of sdkconfig.esp32cam!
-# After editting, make sure to explicitly delete 
+# After editing make sure to explicitly delete 
 # sdkconfig.esp32cam to apply your changes!
 ##################################################
 

@@ -1,5 +1,7 @@
 #include "CRotateImage.h"
+#include "psram.h"
 
+static const char *TAG = "C ROTATE IMG";
 
 CRotateImage::CRotateImage(CImageBasis *_org, CImageBasis *_temp, bool _flip)
 {
@@ -24,7 +26,7 @@ void CRotateImage::Mirror(){
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
     }
 
 
@@ -109,7 +111,7 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
     }
     
 
@@ -209,7 +211,7 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
     }
     
 
@@ -300,7 +302,7 @@ void CRotateImage::Translate(int _dx, int _dy)
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
     }
 
 

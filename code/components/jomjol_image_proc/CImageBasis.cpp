@@ -1,5 +1,6 @@
 #include "CImageBasis.h"
 #include "Helper.h"
+#include "psram.h"
 #include "ClassLogFile.h"
 #include "server_ota.h"
 
@@ -385,7 +386,7 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
     #endif
 
     int memsize = width * height * channels;
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    rgb_image = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -470,7 +471,7 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom)
     #endif
 
     int memsize = width * height * channels;
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    rgb_image = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -505,7 +506,7 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
     #endif
 
     int memsize = width * height * channels;
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    rgb_image = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -638,14 +639,14 @@ void CImageBasis::SaveToFile(std::string _imageout)
 void CImageBasis::Resize(int _new_dx, int _new_dy)
 {
     int memsize = _new_dx * _new_dy * channels;
-    uint8_t* odata = (unsigned char*)GET_MEMORY(memsize);
+    uint8_t* odata = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
 
     RGBImageLock();
 
     stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
     stbi_image_free(rgb_image);
 
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    rgb_image = (unsigned char*)malloc_psram_heap(TAG, memsize, MALLOC_CAP_SPIRAM);
     memCopy(odata, rgb_image, memsize);
     width = _new_dx;
     height = _new_dy;
