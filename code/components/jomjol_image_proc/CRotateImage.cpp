@@ -53,7 +53,7 @@ void CRotateImage::Mirror(){
     //    memcpy(rgb_image, odata, memsize);
     memCopy(odata, rgb_image, memsize);
     if (!ImageTMP)
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
 
     if (ImageTMP)
         ImageTMP->RGBImageRelease();
@@ -151,7 +151,7 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
 
     if (!ImageTMP)
     {
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
     }
     if (ImageTMP)
         ImageTMP->RGBImageRelease();
@@ -272,7 +272,7 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
 
     if (!ImageTMP)
     {
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
     }
     if (ImageTMP)
         ImageTMP->RGBImageRelease();
@@ -339,7 +339,7 @@ void CRotateImage::Translate(int _dx, int _dy)
     memCopy(odata, rgb_image, memsize);
     if (!ImageTMP)
     {
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
     }
 
     if (ImageTMP)
