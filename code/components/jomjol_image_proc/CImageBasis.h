@@ -37,7 +37,7 @@ class CImageBasis
         bool islocked;
 
     public:
-        uint8_t* rgb_image;
+        uint8_t* rgb_image = NULL;
         int channels;
         int width, height, bpp; 
 
