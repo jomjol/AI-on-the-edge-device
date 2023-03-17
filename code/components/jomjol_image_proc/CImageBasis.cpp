@@ -386,7 +386,12 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
     #endif
 
     int memsize = width * height * channels;
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->rgb_image", memsize, MALLOC_CAP_SPIRAM);
+
+    if (rgb_image != NULL) {
+        free_psram_heap(std::string(TAG) + "->rgb_image (CreateEmptyImage)", rgb_image);
+    }
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->rgb_image (CreateEmptyImage)", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -471,7 +476,12 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom)
     #endif
 
     int memsize = width * height * channels;
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->rgb_image", memsize, MALLOC_CAP_SPIRAM);
+
+    if (rgb_image != NULL) {
+        free_psram_heap(std::string(TAG) + "->rgb_image (CImageBasis1)", rgb_image);
+    }
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->rgb_image (CImageBasis1)", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -506,7 +516,12 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
     #endif
 
     int memsize = width * height * channels;
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->rgb_image", memsize, MALLOC_CAP_SPIRAM);
+
+    if (rgb_image != NULL) {
+        free_psram_heap(std::string(TAG) + "->rgb_image (CImageBasis2)", rgb_image);
+    }
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->rgb_image (CImageBasis2)", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -542,6 +557,10 @@ CImageBasis::CImageBasis(std::string _image)
         LogFile.WriteHeapInfo("CImageBasis_image - Start");
     #endif
 
+    if (rgb_image != NULL) {
+        free_psram_heap(std::string(TAG) + "->rgb_image (CImageBasis3)", rgb_image);
+    }
+
     rgb_image = stbi_load(_image.c_str(), &width, &height, &bpp, channels);
 
     if (rgb_image == NULL) {
@@ -573,6 +592,11 @@ bool CImageBasis::ImageOkay(){
 CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
 {
     islocked = false;
+
+    if (rgb_image != NULL) {
+        free_psram_heap(std::string(TAG) + "->rgb_image (CImageBasis4)", rgb_image);
+    }
+
     rgb_image = _rgb_image;
     channels = _channels;
     width = _width;
