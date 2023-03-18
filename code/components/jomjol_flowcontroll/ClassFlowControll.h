@@ -44,6 +44,7 @@ protected:
 	bool AutoStart;
 	bool SetupModeActive;
 	bool readParameterDone;
+	
 	bool aktflowerror;
 	std::string aktstatus;
 	std::string aktstatusWithTime;
