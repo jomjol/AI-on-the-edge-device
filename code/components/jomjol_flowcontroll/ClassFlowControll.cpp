@@ -249,6 +249,11 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     else if (_input.compare("ClassFlowPostProcessing") == 0)
         return std::string(FLOW_POSTPROCESSING);
 
+    #ifdef ENABLE_MQTT
+    else if (_input.compare("ClassFlowMQTT") == 0)
+        return std::string(FLOW_PUBLISH_MQTT);
+    #endif //ENABLE_MQTT
+
     #ifdef ENABLE_INFLUXDB
     else if (_input.compare("ClassFlowInfluxDB") == 0)
         return std::string(FLOW_PUBLISH_INFLUXDB);
@@ -256,11 +261,6 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     else if (_input.compare("ClassFlowInfluxDBv2") == 0)
         return std::string(FLOW_PUBLISH_INFLUXDB2);
     #endif //ENABLE_INFLUXDB
-
-    #ifdef ENABLE_MQTT
-    else if (_input.compare("ClassFlowMQTT") == 0)
-        return std::string(FLOW_PUBLISH_MQTT);
-    #endif //ENABLE_MQTT
 
     return "Unkown State";
 }
@@ -313,6 +313,17 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         }
     }
 
+    #ifdef ENABLE_MQTT
+    else if (toUpper(_type).compare("[MQTT]") == 0) 
+    {
+        cfc = new ClassFlowMQTT(&FlowControll);
+        if(cfc) {
+            flowMQTT = (ClassFlowMQTT*) cfc;
+            FlowControlPublish.push_back(cfc);
+        }
+    }
+    #endif //ENABLE_MQTT
+
     #ifdef ENABLE_INFLUXDB
     else if (toUpper(_type).compare("[INFLUXDB]") == 0) 
     {
@@ -331,17 +342,6 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         }
     }
     #endif //ENABLE_INFLUXDB
-
-    #ifdef ENABLE_MQTT
-    else if (toUpper(_type).compare("[MQTT]") == 0) 
-    {
-        cfc = new ClassFlowMQTT(&FlowControll);
-        if(cfc) {
-            flowMQTT = (ClassFlowMQTT*) cfc;
-            FlowControlPublish.push_back(cfc);
-        }
-    }
-    #endif //ENABLE_MQTT
 
     else if (toUpper(_type).compare("[AUTOTIMER]") == 0) {
         cfc = this;

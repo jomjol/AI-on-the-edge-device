@@ -6,13 +6,13 @@
 <meta charset="utf-8">
 
 <style>
-.tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:660px;}
+.tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:585px;}
 .tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg th{height:25px;font-size:18px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
 .tg .tg-1{width:660px;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
-.tg .tg-2{height:40px;font-size:15px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
+.tg .tg-2{height:30px;font-size:15px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
 .tg .tg-3{height:40px;vertical-align:text-top;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
-.tg .tg-4{height:80px;vertical-align:text-top;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}	
+.tg .tg-4{height:70px;vertical-align:text-top;font-size:15px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}	
 </style>
 
 </head>
@@ -100,10 +100,10 @@
 
 
 	function LoadData(){
-		loadValue("value", "value");
-		loadValue("raw", "raw");
-		loadValue("prevalue", "prevalue");
-		loadValue("error", "error", "font-size:8px");
+		loadValue("value", "value", "border-collapse: collapse; width: 100%");
+		loadValue("raw", "raw", "border-collapse: collapse; width: 100%");
+		loadValue("prevalue", "prevalue", "border-collapse: collapse; width: 100%");
+		loadValue("error", "error", "border-collapse: collapse; width: 100%");
 		loadStatus();
 		loadFlowError();
 		loadCPUTemp();
@@ -262,9 +262,11 @@
 				{
 					var _zer = ZerlegeZeile(_split[j], "\t")
 					if (_zer.length == 1)
-						out = out + "<tr><td>" + _zer[0] + "</td><td> </td></tr>"; 
+						out = out + "<tr><td style=\"width: 20%; padding: 3px 7px; text-align: left; border: 1px solid lightgrey\">" + 
+							_zer[0] + "</td><td style=\"padding: 3px 7px; text-align: left; border: 1px solid lightgrey\"> </td></tr>"; 
 					else
-						out = out + "<tr><td>" + _zer[0] + "</td><td>" + _zer[1] + "</td></tr>"; 
+						out = out + "<tr><td style=\"width: 20%; padding: 3px 7px; text-align: left; border: 1px solid lightgrey\">" + 
+							_zer[0] + "</td><td style=\"padding: 3px 7px; text-align: left; border: 1px solid lightgrey\" >" + _zer[1] + "</td></tr>"; 
 				}
 				out = out + "</table>"
 
