@@ -18,7 +18,6 @@
 	#include "ClassFlowInfluxDBv2.h"
 #endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
-#include "ClassFlowWriteList.h"
 
 
 class ClassFlowControll : public ClassFlow
@@ -41,13 +40,13 @@ protected:
 	ClassFlow* CreateClassFlow(std::string _type);
 	void SetInitialParameter(void);	
 
+	float AutoInterval;
 	bool AutoStart;
 	bool SetupModeActive;
 	bool readParameterDone;
-	float AutoInterval;
+	bool aktflowerror;
 	std::string aktstatus;
 	std::string aktstatusWithTime;
-	bool aktflowerror;
 
 public:
 	ClassFlowControll();

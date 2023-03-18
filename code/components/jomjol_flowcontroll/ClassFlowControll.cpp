@@ -201,12 +201,6 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
         _classname = "ClassFlowCNNGeneral";
     }
-    #ifdef ENABLE_MQTT
-    if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
-        _classname = "ClassFlowMQTT";
-    }
-    #endif //ENABLE_MQTT
-
     #ifdef ENABLE_INFLUXDB
     if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)){
         _classname = "ClassFlowInfluxDB";
@@ -215,6 +209,12 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
         _classname = "ClassFlowInfluxDBv2";
     }
     #endif //ENABLE_INFLUXDB
+
+    #ifdef ENABLE_MQTT
+    if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
+        _classname = "ClassFlowMQTT";
+    }
+    #endif //ENABLE_MQTT
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
@@ -249,11 +249,6 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     else if (_input.compare("ClassFlowPostProcessing") == 0)
         return std::string(FLOW_POSTPROCESSING);
 
-    #ifdef ENABLE_MQTT
-    else if (_input.compare("ClassFlowMQTT") == 0)
-        return std::string(FLOW_PUBLISH_MQTT);
-    #endif //ENABLE_MQTT
-
     #ifdef ENABLE_INFLUXDB
     else if (_input.compare("ClassFlowInfluxDB") == 0)
         return std::string(FLOW_PUBLISH_INFLUXDB);
@@ -262,8 +257,10 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         return std::string(FLOW_PUBLISH_INFLUXDB2);
     #endif //ENABLE_INFLUXDB
 
-    /*else if (_input.compare("ClassFlowWriteList") == 0)
-        return ("Writing List");*/
+    #ifdef ENABLE_MQTT
+    else if (_input.compare("ClassFlowMQTT") == 0)
+        return std::string(FLOW_PUBLISH_MQTT);
+    #endif //ENABLE_MQTT
 
     return "Unkown State";
 }
@@ -316,21 +313,10 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         }
     }
 
-    #ifdef ENABLE_MQTT
-    else if (toUpper(_type).compare("[MQTT]") == 0) 
-    {
-        cfc = new ClassFlowMQTT(&FlowControlPublish);
-        if(cfc) {
-            flowMQTT = (ClassFlowMQTT*) cfc;
-            FlowControlPublish.push_back(cfc);
-        }
-    }
-    #endif //ENABLE_MQTT
-
     #ifdef ENABLE_INFLUXDB
     else if (toUpper(_type).compare("[INFLUXDB]") == 0) 
     {
-        cfc = new ClassFlowInfluxDB(&FlowControlPublish);
+        cfc = new ClassFlowInfluxDB(&FlowControll);
         if(cfc) {
             flowInfluxDB = (ClassFlowInfluxDB*) cfc;
             FlowControlPublish.push_back(cfc);
@@ -338,18 +324,25 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     else if (toUpper(_type).compare("[INFLUXDBV2]") == 0) 
     {
-        cfc = new ClassFlowInfluxDBv2(&FlowControlPublish);
+        cfc = new ClassFlowInfluxDBv2(&FlowControll);
         if (cfc) {
             flowInfluxDBv2 = (ClassFlowInfluxDBv2*) cfc;
             FlowControlPublish.push_back(cfc);
         }
     }
-    #endif //ENABLE_INFLUXDB  
-    /*else if (toUpper(_type).compare("[WRITELIST]") == 0) 
+    #endif //ENABLE_INFLUXDB
+
+    #ifdef ENABLE_MQTT
+    else if (toUpper(_type).compare("[MQTT]") == 0) 
     {
-        cfc = new ClassFlowWriteList(&FlowControll);
+        cfc = new ClassFlowMQTT(&FlowControll);
+        if(cfc) {
+            flowMQTT = (ClassFlowMQTT*) cfc;
+            FlowControlPublish.push_back(cfc);
+        }
     }
-    */
+    #endif //ENABLE_MQTT
+
     else if (toUpper(_type).compare("[AUTOTIMER]") == 0) {
         cfc = this;
     }
@@ -702,17 +695,6 @@ void ClassFlowControll::AnalogDrawROI(CImageBasis *_zw)
 
 
 #ifdef ENABLE_MQTT
-/*
-string ClassFlowControll::GetMQTTMainTopic()
-{
-    for (int i = 0; i < FlowControlPublish.size(); ++i)
-        if (FlowControlPublish[i]->name().compare("ClassFlowMQTT") == 0)
-            return ((ClassFlowMQTT*) (FlowControlPublish[i]))->GetMQTTMainTopic();
-
-    return "";
-}
-*/
-
 bool ClassFlowControll::StartMQTTService() {
     /* Start the MQTT service */
         for (int i = 0; i < FlowControlPublish.size(); ++i) {
