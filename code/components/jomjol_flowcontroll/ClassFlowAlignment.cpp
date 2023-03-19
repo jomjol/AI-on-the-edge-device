@@ -56,7 +56,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
     if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
         ESP_LOGD(TAG, "CImageBasis had to be created");
-        ImageBasis = new CImageBasis("ClassFlowAlignment", namerawimage);
+        ImageBasis = new CImageBasis("ImageBasis", namerawimage);
     }
 }
 
@@ -200,7 +200,7 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 
     delete AlignAndCutImage;
-    AlignAndCutImage = new CAlignAndCutImage("ClassFlowAlignment", ImageBasis, ImageTMP);
+    AlignAndCutImage = new CAlignAndCutImage("AlignAndCutImage", ImageBasis, ImageTMP);
     if (!AlignAndCutImage) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");
@@ -208,7 +208,7 @@ bool ClassFlowAlignment::doFlow(string time)
         return false;
     }
 
-    CRotateImage rt("ClassFlowAlignment", AlignAndCutImage, ImageTMP, initialflip);
+    CRotateImage rt("rawImage", AlignAndCutImage, ImageTMP, initialflip);
     if (initialflip)
     {
         int _zw = ImageBasis->height;

@@ -31,6 +31,7 @@ class CImageBasis
         bool externalImage;
         std::string filename;
         std::string name; // Just used for diagnostics
+        int memsize = 0;
 
         void memCopy(uint8_t* _source, uint8_t* _target, int _size);
         bool isInImage(int x, int y);

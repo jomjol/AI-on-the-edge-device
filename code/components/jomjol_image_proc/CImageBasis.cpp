@@ -386,7 +386,7 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
         LogFile.WriteHeapInfo("CreateEmptyImage");
     #endif
 
-    int memsize = width * height * channels;
+    memsize = width * height * channels;
 
     rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
@@ -474,7 +474,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
         LogFile.WriteHeapInfo("CImageBasis_copyfrom - Start");
     #endif
 
-    int memsize = width * height * channels;
+    memsize = width * height * channels;
 
     rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
@@ -511,7 +511,7 @@ CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
         LogFile.WriteHeapInfo("CImageBasis_width,height,ch - Start");
     #endif
 
-    int memsize = width * height * channels;
+    memsize = width * height * channels;
 
     rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
@@ -618,7 +618,7 @@ CImageBasis::~CImageBasis()
     RGBImageLock();
 
     if (!externalImage)
-        free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", rgb_image);
+        free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
 
     RGBImageRelease();
 }
@@ -647,7 +647,7 @@ void CImageBasis::SaveToFile(std::string _imageout)
 
 void CImageBasis::Resize(int _new_dx, int _new_dy)
 {
-    int memsize = _new_dx * _new_dy * channels;
+    memsize = _new_dx * _new_dy * channels;
     uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
 
     RGBImageLock();

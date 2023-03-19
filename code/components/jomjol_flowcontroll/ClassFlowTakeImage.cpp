@@ -154,7 +154,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     image_width = Camera.image_width;
     image_height = Camera.image_height;
-    rawImage = new CImageBasis("ClassFlowTakeImage");
+    rawImage = new CImageBasis("rawImage");
     rawImage->CreateEmptyImage(image_width, image_height, 3);
 
     waitbeforepicture_store = waitbeforepicture;
