@@ -64,14 +64,14 @@ string getESPHeapInfo(){
 
 	sprintf(aMsgBuf," | SPI Free: %ld", (long) aFreeSPIHeapSize);
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," | SPI LargeBlock:  %ld", (long) aHeapLargestFreeBlockSize);
+	sprintf(aMsgBuf," | SPI Large Block:  %ld", (long) aHeapLargestFreeBlockSize);
 	espInfoResultStr += string(aMsgBuf);
 	sprintf(aMsgBuf," | SPI Min Free: %ld", (long) aMinFreeHeapSize);
 	espInfoResultStr += string(aMsgBuf);
 
 	sprintf(aMsgBuf," | Int Free: %ld", (long) (aFreeInternalHeapSize));
 	espInfoResultStr += string(aMsgBuf);
-	sprintf(aMsgBuf," | Int LargeBlock:  %ld", (long) aHeapIntLargestFreeBlockSize);
+	sprintf(aMsgBuf," | Int Large Block:  %ld", (long) aHeapIntLargestFreeBlockSize);
 	espInfoResultStr += string(aMsgBuf);
 	sprintf(aMsgBuf," | Int Min Free: %ld", (long) (aMinFreeInternalHeapSize));
 	espInfoResultStr += string(aMsgBuf);
