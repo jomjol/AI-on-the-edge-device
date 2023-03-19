@@ -1,3 +1,34 @@
+## [unreleased]
+
+### Update Procedure
+
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+
+:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it)!
+
+:bangbang: Afterwards you should check your configuration for errors!
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0)
+
+#### Added
+
+- n.a.
+
+
+#### Changed
+
+- n.a.
+
+#### Fixed
+
+-  [#2203](https://github.com/jomjol/AI-on-the-edge-device/issues/2203) Correct API for pure InfluxDB v1
+
+#### Removed
+
+-   n.a.
+
 ## [15.1.0] - 2023-03-12
 
 ### Update Procedure
