@@ -56,7 +56,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
     if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
         ESP_LOGD(TAG, "CImageBasis had to be created");
-        ImageBasis = new CImageBasis(namerawimage);
+        ImageBasis = new CImageBasis("ClassFlowAlignment", namerawimage);
     }
 }
 
@@ -190,7 +190,7 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (!ImageTMP) 
     {
-        ImageTMP = new CImageBasis(ImageBasis);
+        ImageTMP = new CImageBasis("ClassFlowAlignment", ImageBasis);
         if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
@@ -200,7 +200,7 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 
     delete AlignAndCutImage;
-    AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);
+    AlignAndCutImage = new CAlignAndCutImage("ClassFlowAlignment", ImageBasis, ImageTMP);
     if (!AlignAndCutImage) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");

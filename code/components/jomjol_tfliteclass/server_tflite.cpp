@@ -618,11 +618,11 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        CAlignAndCutImage *caic = new CAlignAndCutImage(in);
+        CAlignAndCutImage *caic = new CAlignAndCutImage("cutref", in);
         caic->CutAndSave(out2, x, y, dx, dy);
         delete caic;    
 
-        CImageBasis *cim = new CImageBasis(out2);
+        CImageBasis *cim = new CImageBasis("cutref", out2);
         if (enhance)
         {
             cim->Contrast(90);

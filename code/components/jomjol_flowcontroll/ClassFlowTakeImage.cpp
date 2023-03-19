@@ -154,7 +154,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     image_width = Camera.image_width;
     image_height = Camera.image_height;
-    rawImage = new CImageBasis();
+    rawImage = new CImageBasis("ClassFlowTakeImage");
     rawImage->CreateEmptyImage(image_width, image_height, 3);
 
     waitbeforepicture_store = waitbeforepicture;
@@ -231,7 +231,7 @@ esp_err_t ClassFlowTakeImage::SendRawJPG(httpd_req_t *req)
 
 ImageData* ClassFlowTakeImage::SendRawImage()
 {
-    CImageBasis *zw = new CImageBasis(rawImage);
+    CImageBasis *zw = new CImageBasis("SendRawImage", rawImage);
     ImageData *id;
     int flash_duration = (int) (waitbeforepicture * 1000);
     Camera.CaptureToBasisImage(zw, flash_duration);

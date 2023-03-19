@@ -311,7 +311,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         loadNextDemoImage(fb);
     }
 
-    CImageBasis* _zwImage = new CImageBasis();
+    CImageBasis* _zwImage = new CImageBasis("CaptureToBasisImage");
     if (_zwImage) {
         _zwImage->LoadFromMemory(fb->buf, fb->len);
     }

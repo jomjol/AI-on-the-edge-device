@@ -10,8 +10,9 @@
 
 static const char* TAG = "c_align_and_cut_image";
 
-CAlignAndCutImage::CAlignAndCutImage(CImageBasis *_org, CImageBasis *_temp)
+CAlignAndCutImage::CAlignAndCutImage(std::string _name, CImageBasis *_org, CImageBasis *_temp)
 {
+    name = _name;
     rgb_image = _org->rgb_image;
     channels = _org->channels;
     width = _org->width;
@@ -38,7 +39,7 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
     int r0_x, r0_y, r1_x, r1_y;
     bool isSimilar1, isSimilar2;
 
-    CFindTemplate* ft = new CFindTemplate(rgb_image, channels, width, height, bpp);
+    CFindTemplate* ft = new CFindTemplate("align", rgb_image, channels, width, height, bpp);
 
     r0_x = _temp1->target_x;
     r0_y = _temp1->target_y;
@@ -203,7 +204,7 @@ CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
                 p_target[_channels] = p_source[_channels];
         }
 
-    CImageBasis* rs = new CImageBasis(odata, channels, dx, dy, bpp);
+    CImageBasis* rs = new CImageBasis("CutAndSave", odata, channels, dx, dy, bpp);
     RGBImageRelease();
     rs->SetIndepended();
     return rs;
