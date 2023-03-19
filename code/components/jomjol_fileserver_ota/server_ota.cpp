@@ -623,7 +623,7 @@ void doReboot()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void*) false);
     }
-    vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
+    vTaskDelay(20000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
 
