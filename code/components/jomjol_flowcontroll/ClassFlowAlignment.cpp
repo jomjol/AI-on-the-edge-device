@@ -190,7 +190,7 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (!ImageTMP) 
     {
-        ImageTMP = new CImageBasis("ClassFlowAlignment", ImageBasis);
+        ImageTMP = new CImageBasis("ImageTMP", ImageBasis);
         if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
