@@ -577,7 +577,6 @@ bool CImageBasis::ImageOkay(){
 CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
 {
     islocked = false;
-
     rgb_image = _rgb_image;
     channels = _channels;
     width = _width;
