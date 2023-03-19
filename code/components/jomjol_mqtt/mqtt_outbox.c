@@ -8,6 +8,10 @@
 #include "esp_log.h"
 #include "esp_heap_caps.h"
 
+/* Enable this to use the PSRAM for MQTT Publishing.
+ * This saves 10 kBytes of RAM, see https://github.com/jomjol/AI-on-the-edge-device/pull/2113
+ * However we can run into PSRAM fragmentation issues, leading to insufficient large blocks to load the model.
+ * See https://github.com/jomjol/AI-on-the-edge-device/issues/2200 */
 #define USE_PSRAM
 
 #ifdef CONFIG_MQTT_CUSTOM_OUTBOX

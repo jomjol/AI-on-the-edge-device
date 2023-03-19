@@ -8,6 +8,7 @@
 
 
 #include "ClassLogFile.h"
+#include "psram.h"
 #include "../../include/defines.h"
 
 
@@ -31,7 +32,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     ImageBasis = NULL;
     ImageTMP = NULL;
     #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
-    AlgROI = (ImageData*)heap_caps_malloc(sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+    AlgROI = (ImageData*)malloc_psram_heap(std::string(TAG) + "->AlgROI", sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
     #endif
     previousElement = NULL;
     disabled = false;
@@ -55,7 +56,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
     if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
         ESP_LOGD(TAG, "CImageBasis had to be created");
-        ImageBasis = new CImageBasis(namerawimage);
+        ImageBasis = new CImageBasis("ImageBasis", namerawimage);
     }
 }
 
@@ -189,7 +190,7 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (!ImageTMP) 
     {
-        ImageTMP = new CImageBasis(ImageBasis);
+        ImageTMP = new CImageBasis("ImageTMP", ImageBasis);
         if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
@@ -199,7 +200,7 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 
     delete AlignAndCutImage;
-    AlignAndCutImage = new CAlignAndCutImage(ImageBasis, ImageTMP);
+    AlignAndCutImage = new CAlignAndCutImage("AlignAndCutImage", ImageBasis, ImageTMP);
     if (!AlignAndCutImage) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");
@@ -207,7 +208,7 @@ bool ClassFlowAlignment::doFlow(string time)
         return false;
     }
 
-    CRotateImage rt(AlignAndCutImage, ImageTMP, initialflip);
+    CRotateImage rt("rawImage", AlignAndCutImage, ImageTMP, initialflip);
     if (initialflip)
     {
         int _zw = ImageBasis->height;

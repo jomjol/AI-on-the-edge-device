@@ -381,8 +381,10 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana)
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i)
         {
-            GENERAL[_ana]->ROI[i]->image = new CImageBasis(modelxsize, modelysize, modelchannel);
-            GENERAL[_ana]->ROI[i]->image_org = new CImageBasis(GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, 3);
+            GENERAL[_ana]->ROI[i]->image = new CImageBasis("ROI " + GENERAL[_ana]->ROI[i]->name, 
+                    modelxsize, modelysize, modelchannel);
+            GENERAL[_ana]->ROI[i]->image_org = new CImageBasis("ROI " + GENERAL[_ana]->ROI[i]->name + " original",
+                    GENERAL[_ana]->ROI[i]->deltax, GENERAL[_ana]->ROI[i]->deltay, 3);
         }
 
     return true;

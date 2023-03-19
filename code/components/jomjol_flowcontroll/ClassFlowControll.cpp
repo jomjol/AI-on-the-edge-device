@@ -826,7 +826,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 return ESP_FAIL;
             }
 
-            _send = new CImageBasis(flowalignment->ImageBasis);
+            _send = new CImageBasis("alg_roi", flowalignment->ImageBasis);
 			
             if (_send->ImageOkay()) {
                 if (flowalignment) flowalignment->DrawRef(_send);
