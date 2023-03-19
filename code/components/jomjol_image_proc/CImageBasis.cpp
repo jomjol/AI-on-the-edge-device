@@ -439,7 +439,8 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     RGBImageLock();
 
     if (rgb_image != NULL) {
-        free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
+        stbi_image_free(rgb_image);
+        //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
     }
 
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
@@ -617,8 +618,10 @@ CImageBasis::~CImageBasis()
 {
     RGBImageLock();
 
-    if (!externalImage)
-        free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+    if (!externalImage) {
+        stbi_image_free(rgb_image);
+        //free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+    }
 
     RGBImageRelease();
 }
@@ -658,7 +661,9 @@ void CImageBasis::Resize(int _new_dx, int _new_dy)
     memCopy(odata, rgb_image, memsize);
     width = _new_dx;
     height = _new_dy;
-    free_psram_heap(std::string(TAG) + "->odata", odata);
+
+    stbi_image_free(odata);
+    //free_psram_heap(std::string(TAG) + "->odata", odata);
 
     RGBImageRelease();
 }
