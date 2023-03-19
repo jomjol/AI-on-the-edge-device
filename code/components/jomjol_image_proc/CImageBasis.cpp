@@ -361,12 +361,6 @@ void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int t
 }
 
 
-CImageBasis::CImageBasis()
-{
-    CImageBasis("??");
-}
-
-
 CImageBasis::CImageBasis(string _name)
 {
     name = _name;

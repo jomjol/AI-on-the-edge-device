@@ -208,7 +208,7 @@ bool ClassFlowAlignment::doFlow(string time)
         return false;
     }
 
-    CRotateImage rt(AlignAndCutImage, ImageTMP, initialflip);
+    CRotateImage rt("ClassFlowAlignment", AlignAndCutImage, ImageTMP, initialflip);
     if (initialflip)
     {
         int _zw = ImageBasis->height;

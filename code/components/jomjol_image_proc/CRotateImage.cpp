@@ -4,7 +4,7 @@
 
 static const char *TAG = "C ROTATE IMG";
 
-CRotateImage::CRotateImage(CImageBasis *_org, CImageBasis *_temp, bool _flip)
+CRotateImage::CRotateImage(std::string _name, CImageBasis *_org, CImageBasis *_temp, bool _flip) : CImageBasis(_name)
 {
     rgb_image = _org->rgb_image;
     channels = _org->channels;
@@ -17,6 +17,7 @@ CRotateImage::CRotateImage(CImageBasis *_org, CImageBasis *_temp, bool _flip)
     islocked = false;
     doflip = _flip;
 }
+
 
 void CRotateImage::Mirror(){
     int memsize = width * height * channels;

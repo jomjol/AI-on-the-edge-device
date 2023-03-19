@@ -10,7 +10,7 @@
 
 static const char* TAG = "c_align_and_cut_image";
 
-CAlignAndCutImage::CAlignAndCutImage(std::string _name, CImageBasis *_org, CImageBasis *_temp)
+CAlignAndCutImage::CAlignAndCutImage(std::string _name, CImageBasis *_org, CImageBasis *_temp) : CImageBasis(_name)
 {
     name = _name;
     rgb_image = _org->rgb_image;
@@ -83,7 +83,7 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
     LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", zw);
 #endif*/
 
-    CRotateImage rt(this, ImageTMP);
+    CRotateImage rt("Align", this, ImageTMP);
     rt.Translate(dx, dy);
     rt.Rotate(d_winkel, _temp1->target_x, _temp1->target_y);
     ESP_LOGD(TAG, "Alignment: dx %d - dy %d - rot %f", dx, dy, d_winkel);

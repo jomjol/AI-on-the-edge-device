@@ -65,7 +65,6 @@ class CImageBasis
         void EmptyImage();
 
 
-        CImageBasis();
         CImageBasis(std::string name);
         CImageBasis(std::string name, std::string _image);
         CImageBasis(std::string name, uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp);
