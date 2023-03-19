@@ -1111,8 +1111,12 @@ void task_autodoFlow(void *pvParameter)
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration...");
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;                   // Return to state "FLOW INIT"
             }
-            else if (manualFlowStart || !flowctrl.isAutoStart()) {
+            else if (manualFlowStart) {
                 manualFlowStart = false;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start process (manual trigger)");
+                taskAutoFlowState = FLOW_TASK_STATE_IMG_PROCESSING;         // Continue with next "FLOW PROCESSING" round"
+            }
+            else if (!flowctrl.isAutoStart()) {
                 taskAutoFlowState = FLOW_TASK_STATE_IDLE_NO_AUTOSTART;      // Return to state "Idle (NO AUTOSTART)"
             }
             else {
@@ -1142,8 +1146,14 @@ void task_autodoFlow(void *pvParameter)
             // ********************************************    
             if (reloadConfig) {                     
                 reloadConfig = false;
+                manualFlowStart = false; // Reload config has higher prio
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;               // Return to state "FLOW INIT"
+            }
+            else if (manualFlowStart) {
+                manualFlowStart = false;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start process (manual trigger)");
+                taskAutoFlowState = FLOW_TASK_STATE_IMG_PROCESSING;     // Continue with next "FLOW PROCESSING" round"
             }
             else {
                 taskAutoFlowState = FLOW_TASK_STATE_IMG_PROCESSING;     // Continue with next "FLOW PROCESSING" round
