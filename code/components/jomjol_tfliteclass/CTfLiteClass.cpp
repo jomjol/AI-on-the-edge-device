@@ -12,6 +12,11 @@
 
 static const char *TAG = "TFLITE";
 
+
+#define TENSOR_ARENA_SIZE (800 * 1024)  /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
+uint8_t * shared_tensor_arena = NULL;
+
+
 float CTfLiteClass::GetOutputValue(int nr)
 {
     TfLiteTensor* output2 = this->interpreter->output(0);
@@ -305,8 +310,13 @@ CTfLiteClass::CTfLiteClass()
     this->interpreter = nullptr;
     this->input = nullptr;
     this->output = nullptr;  
-    this->kTensorArenaSize = 800 * 1024;   /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
-    this->tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
+    this->kTensorArenaSize = TENSOR_ARENA_SIZE;
+
+    if (shared_tensor_arena == NULL) {
+        shared_tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
+    }
+
+    this->tensor_arena = shared_tensor_arena;
 }
 
 
@@ -316,7 +326,6 @@ CTfLiteClass::~CTfLiteClass()
   delete this->error_reporter;
 
   free_psram_heap(std::string(TAG) + "->modelfile", modelfile);
-  free_psram_heap(std::string(TAG) + "->tensor_arena", this->tensor_arena);
 }        
 
 
