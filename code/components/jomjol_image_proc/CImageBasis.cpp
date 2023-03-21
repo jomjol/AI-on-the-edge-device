@@ -525,8 +525,8 @@ CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t* _co
         return;
     }*/
 
-    memCopy(_copyfrom->rgb_image, _memory, width * height * channels);
-    rgb_image = _memory;
+    memCopy(_copyfrom->rgb_image, _copytomemory, width * height * channels);
+    rgb_image = _copytomemory;
     RGBImageRelease();
 
     #ifdef DEBUG_DETAIL_ON 
