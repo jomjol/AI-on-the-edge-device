@@ -71,6 +71,7 @@ class CImageBasis
         CImageBasis(std::string name, uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp);
         CImageBasis(std::string name, int _width, int _height, int _channels);
         CImageBasis(std::string name, CImageBasis *_copyfrom);
+        CImageBasis(string _name, CImageBasis *_copyfrom, uint8_t * _memory);
 
         void Resize(int _new_dx, int _new_dy);        
         void Resize(int _new_dx, int _new_dy, CImageBasis *_target);        

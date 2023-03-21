@@ -190,13 +190,13 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (!ImageTMP) 
     {
-        ImageTMP = new CImageBasis("ImageTMP", ImageBasis);
-        if (!ImageTMP) 
+        ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.getTFLiteTensorArena());
+        /*if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
             LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
             return false;
-        }
+        }*/
     }
 
     delete AlignAndCutImage;
@@ -269,8 +269,8 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 
     // must be deleted to have memory space for loading tflite
-    delete ImageTMP;
-    ImageTMP = NULL;
+    //delete ImageTMP;
+    //ImageTMP = NULL;
 
     //no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
     if(References[0].alignment_algo != 3){

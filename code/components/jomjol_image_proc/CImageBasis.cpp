@@ -496,6 +496,43 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
 }
 
 
+CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, uint8_t * _memory) 
+{
+    name = _name;
+    islocked = false;
+    externalImage = false;
+    channels = _copyfrom->channels;
+    width = _copyfrom->width;
+    height = _copyfrom->height;
+    bpp = _copyfrom->bpp;
+
+    RGBImageLock();
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CImageBasis_copyfrom - Start");
+    #endif
+
+    /*memsize = width * height * channels;
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+
+    if (rgb_image == NULL)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-Copyfrom: Can't allocate enough memory: " + std::to_string(memsize));
+        LogFile.WriteHeapInfo("CImageBasis-Copyfrom");
+        RGBImageRelease();
+        return;
+    }*/
+
+    memCopy(_copyfrom->rgb_image, _memory, width * height * channels);
+    RGBImageRelease();
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CImageBasis_copyfrom - done");
+    #endif
+}
+
+
 CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
 {
     name = _name;

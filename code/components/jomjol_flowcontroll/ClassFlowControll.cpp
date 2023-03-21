@@ -284,7 +284,7 @@ void ClassFlowControll::InitFlow(std::string config)
     string line;
     flowpostprocessing = NULL;
 
-    TFLite_tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", 800 * 1024, MALLOC_CAP_SPIRAM);
+    TFLite_tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", 900 * 1024, MALLOC_CAP_SPIRAM);
 
     ClassFlow* cfc;
     FILE* pFile;
