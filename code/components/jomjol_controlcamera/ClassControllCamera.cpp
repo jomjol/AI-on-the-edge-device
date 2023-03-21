@@ -278,7 +278,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 	    LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 	#endif
 
-    _Image->EmptyImage(); //Delete previous stored raw image -> black image
+    //_Image->EmptyImage(); //Delete previous stored raw image -> black image
     
     LEDOnOff(true);
 
@@ -311,9 +311,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         loadNextDemoImage(fb);
     }
 
-    CImageBasis* _zwImage = new CImageBasis("zwImage");
-    if (_zwImage) {
-        _zwImage->LoadFromMemory(fb->buf, fb->len);
+    //CImageBasis* _zwImage = new CImageBasis("zwImage");
+    if (_Image) {
+        _Image->LoadFromMemory(fb->buf, fb->len);
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
@@ -336,7 +336,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
     #endif
 
-    stbi_uc* p_target;
+    /*stbi_uc* p_target;
     stbi_uc* p_source;    
     int channels = 3;
     int width = image_width;
@@ -356,9 +356,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
             p_target[0] = p_source[0];
             p_target[1] = p_source[1];
             p_target[2] = p_source[2];
-        }
+        }*/
 
-    delete _zwImage;
+    //delete _zwImage;
 
     #ifdef DEBUG_DETAIL_ON
         LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
