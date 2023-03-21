@@ -496,7 +496,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
 }
 
 
-CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, uint8_t * _memory) 
+CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t* _copytomemory) 
 {
     name = _name;
     islocked = false;
@@ -505,6 +505,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, uint8_t * _memory
     width = _copyfrom->width;
     height = _copyfrom->height;
     bpp = _copyfrom->bpp;
+    externalImage = true;
 
     RGBImageLock();
 
@@ -525,6 +526,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, uint8_t * _memory
     }*/
 
     memCopy(_copyfrom->rgb_image, _memory, width * height * channels);
+    rgb_image = _memory;
     RGBImageRelease();
 
     #ifdef DEBUG_DETAIL_ON 
