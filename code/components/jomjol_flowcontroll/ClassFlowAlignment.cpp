@@ -190,7 +190,28 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (!ImageTMP) 
     {
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+        extern unsigned char *shared_model_and_imageTMP_memory;
+        extern int size_of_shared_model_and_imageTMP_memory;
+
+        int memsize = ImageBasis->width * ImageBasis->height * ImageBasis->channels;
+
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Currently allocated shared model/imageTMP memory: " + to_string(size_of_shared_model_and_imageTMP_memory));
+        if (memsize > size_of_shared_model_and_imageTMP_memory) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extending shared model/imageTMP memory so we can fit the imageTMP...");
+            free_psram_heap("shared model/imageTMP memory", shared_model_and_imageTMP_memory);
+            shared_model_and_imageTMP_memory = (unsigned char*)malloc_psram_heap("shared model/imageTMP memory", memsize, MALLOC_CAP_SPIRAM);
+            size_of_shared_model_and_imageTMP_memory = memsize;
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Shared model/imageTMP memory is large enough for imageTMP");
+        }
+
+        ImageTMP = new CImageBasis("ImageTMP", ImageBasis, shared_model_and_imageTMP_memory, &size_of_shared_model_and_imageTMP_memory); // Use shared memory
+#else
         ImageTMP = new CImageBasis("ImageTMP", ImageBasis);
+#endif
+
         if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
