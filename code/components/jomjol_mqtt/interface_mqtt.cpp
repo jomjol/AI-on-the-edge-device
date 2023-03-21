@@ -139,6 +139,31 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         
         case MQTT_EVENT_ERROR:
+            // http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718033 --> chapter 3.2.2.3 
+
+            // The server does not support the level of the MQTT protocol requested by the client
+            // NOTE: Only protocol 3.1.1 is supported (refer to setting in sdkconfig)
+            if (event->error_handle->connect_return_code == MQTT_CONNECTION_REFUSE_PROTOCOL) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, unacceptable protocol version (0x01)");  
+            }
+            // The client identifier is correct UTF-8 but not allowed by the server
+            // e.g. clientID empty (cannot be the case -> default set in firmware)
+            else if (event->error_handle->connect_return_code == MQTT_CONNECTION_REFUSE_ID_REJECTED) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, identifier rejected (0x02)");
+            }
+            // The network connection has been made but the MQTT service is unavailable
+            else if (event->error_handle->connect_return_code == MQTT_CONNECTION_REFUSE_SERVER_UNAVAILABLE) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, Server unavailable (0x03)");
+            }
+            // The data in the user name or password is malformed
+            else if (event->error_handle->connect_return_code == MQTT_CONNECTION_REFUSE_BAD_USERNAME) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, malformed data in username or password (0x04)");
+            }
+            // The client is not authorized to connect
+            else if (event->error_handle->connect_return_code == MQTT_CONNECTION_REFUSE_NOT_AUTHORIZED) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, not authorized. Check username/password (0x05)");
+            }
+
             #ifdef DEBUG_DETAIL_ON 
                 ESP_LOGD(TAG, "MQTT_EVENT_ERROR - esp_mqtt_error_codes:");
                 ESP_LOGD(TAG, "error_type:%d", event->error_handle->error_type);
@@ -148,7 +173,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
                 ESP_LOGD(TAG, "esp_tls_stack_err:%d", event->error_handle->esp_tls_stack_err);
                 ESP_LOGD(TAG, "esp_tls_cert_verify_flags:%d", event->error_handle->esp_tls_cert_verify_flags);
             #endif
-            //mqtt_connected = false;
+
             break;
         
         default:
@@ -235,7 +260,6 @@ int MQTT_Init() {
         .reconnect_timeout_ms = 15000,          // Try to reconnect to broker (Default: 10000ms)
         .network_timeout_ms = 20000,            // Network Timeout (Default: 10000ms)
         .message_retransmit_timeout = 3000      // Time after message resent when broker not acknowledged (QoS1, QoS2)
-
     };
 
     if (user.length() && password.length()){
