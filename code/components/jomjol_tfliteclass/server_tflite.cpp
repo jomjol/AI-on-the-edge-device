@@ -157,6 +157,8 @@ esp_err_t handler_get_heap(httpd_req_t *req)
 
     std::string zw = "Heap info:<br>" + getESPHeapInfo();
 
+    heap_caps_dump(MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+
     #ifdef TASK_ANALYSIS_ON
         char* pcTaskList = (char*) calloc_psram_heap(std::string(TAG) + "->pcTaskList", 1, sizeof(char) * 768, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
         if (pcTaskList) {
