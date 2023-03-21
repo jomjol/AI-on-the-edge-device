@@ -13,8 +13,11 @@
 static const char *TAG = "TFLITE";
 
 
+/* The memory required  for the tensor arena gets allocated at startup time.
+ * It requires currently 819200 bytes.
+ * To avoid issues with memory fragmentation, we never free it again. */
 #define TENSOR_ARENA_SIZE (800 * 1024)  /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
-uint8_t * shared_tensor_arena = NULL;
+uint8_t *shared_tensor_arena_memory = NULL;
 
 
 float CTfLiteClass::GetOutputValue(int nr)
@@ -312,11 +315,11 @@ CTfLiteClass::CTfLiteClass()
     this->output = nullptr;  
     this->kTensorArenaSize = TENSOR_ARENA_SIZE;
 
-    if (shared_tensor_arena == NULL) {
-        shared_tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
+    if (shared_tensor_arena_memory == NULL) {
+        shared_tensor_arena_memory = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
     }
 
-    this->tensor_arena = shared_tensor_arena;
+    this->tensor_arena = shared_tensor_arena_memory;
 }
 
 
