@@ -439,8 +439,18 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     RGBImageLock();
 
     if (rgb_image != NULL) {
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+        if (use_shared_model_and_imagetmp_memory) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Not freeing shared model/imageTMP memory (" + name + ")");
+        }
+        else {
+            stbi_image_free(rgb_image);
+            //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
+        }
+#else
         stbi_image_free(rgb_image);
         //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
+#endif
     }
 
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
@@ -494,6 +504,45 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
         LogFile.WriteHeapInfo("CImageBasis_copyfrom - done");
     #endif
 }
+
+
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, unsigned char *shared_memory, int *size_of_shared_memory) 
+{
+    name = _name;
+    islocked = false;
+    externalImage = false;
+    channels = _copyfrom->channels;
+    width = _copyfrom->width;
+    height = _copyfrom->height;
+    bpp = _copyfrom->bpp;
+
+    RGBImageLock();
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CImageBasis_copyfrom - Start");
+    #endif
+
+    memsize = *size_of_shared_memory;
+    rgb_image = shared_memory;
+    use_shared_model_and_imagetmp_memory = true; // This is needed to prevent unwanted freeing it in the destructor
+
+    if (rgb_image == NULL)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-Copyfrom: Can't allocate enough memory: " + std::to_string(memsize));
+        LogFile.WriteHeapInfo("CImageBasis-Copyfrom");
+        RGBImageRelease();
+        return;
+    }
+
+    memCopy(_copyfrom->rgb_image, rgb_image, memsize);
+    RGBImageRelease();
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CImageBasis_copyfrom - done");
+    #endif
+}
+#endif
 
 
 CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
@@ -619,8 +668,18 @@ CImageBasis::~CImageBasis()
     RGBImageLock();
 
     if (!externalImage) {
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+        if (use_shared_model_and_imagetmp_memory) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Not freeing shared model/imageTMP memory (" + name + ")");
+        }
+        else {
+            //stbi_image_free(rgb_image);
+            free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+        }
+#else
         //stbi_image_free(rgb_image);
         free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+#endif
     }
 
     RGBImageRelease();

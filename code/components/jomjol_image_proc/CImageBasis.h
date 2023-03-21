@@ -33,6 +33,10 @@ class CImageBasis
         std::string name; // Just used for diagnostics
         int memsize = 0;
 
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+        bool use_shared_model_and_imagetmp_memory = false;
+#endif
+
         void memCopy(uint8_t* _source, uint8_t* _target, int _size);
         bool isInImage(int x, int y);
 
@@ -71,6 +75,9 @@ class CImageBasis
         CImageBasis(std::string name, uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp);
         CImageBasis(std::string name, int _width, int _height, int _channels);
         CImageBasis(std::string name, CImageBasis *_copyfrom);
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+        CImageBasis(std::string name, CImageBasis *_copyfrom, unsigned char *shared_memory, int *size_of_shared_memory);
+#endif
 
         void Resize(int _new_dx, int _new_dy);        
         void Resize(int _new_dx, int _new_dy, CImageBasis *_target);        

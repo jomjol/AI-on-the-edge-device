@@ -20,6 +20,18 @@ static const char *TAG = "TFLITE";
 uint8_t *shared_tensor_arena_memory = NULL;
 
 
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+/* The memory used for the models gets allocated at startup time. 
+ * To avoid issues with memory fragmentation, we never free it again.
+ * Always one model is loaded at a time, therefore the memory must be able to fit the largest of
+ * the used models.
+ * Additionally, this memory will be used for the imageTMP. Since that one is only used at start of a round
+ * and before the first model gets loaded, we can use the same memory.
+ * Again the memory must be large enough to fit the imageTmp which has the same size as the already allocated rawImage */
+unsigned char *shared_model_and_imageTMP_memory = NULL;
+int size_of_shared_model_and_imageTMP_memory = 0;
+#endif
+
 float CTfLiteClass::GetOutputValue(int nr)
 {
     TfLiteTensor* output2 = this->interpreter->output(0);
@@ -259,8 +271,31 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
         LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
 #endif
 
+#ifdef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+    if (size_of_shared_model_and_imageTMP_memory == 0) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "First model to be loaded: " + _fn + ", Size: " + to_string(size));
+        shared_model_and_imageTMP_memory = (unsigned char*)malloc_psram_heap("shared model/imageTMP memory", size, MALLOC_CAP_SPIRAM);
+        size_of_shared_model_and_imageTMP_memory = size;
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "2nd model to be loaded: " + _fn + ", Size: " + to_string(size));
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Currently allocated shared model/imageTMP memory: " + to_string(size_of_shared_model_and_imageTMP_memory));
+        if (size > size_of_shared_model_and_imageTMP_memory) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extending shared model/imageTMP memory...");
+            free_psram_heap("shared model/imageTMP memory", shared_model_and_imageTMP_memory);
+            shared_model_and_imageTMP_memory = (unsigned char*)malloc_psram_heap("shared model/imageTMP memory", size, MALLOC_CAP_SPIRAM);
+            size_of_shared_model_and_imageTMP_memory = size;
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Shared model/imageTMP memory is large enough for 2nd model");
+        }
+    }
+
+    modelfile = shared_model_and_imageTMP_memory;
+#else
     modelfile = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->modelfile", size, MALLOC_CAP_SPIRAM);
   
+#endif
 	  if(modelfile != NULL) 
     {
         FILE* f = fopen(_fn.c_str(), "rb");     // previously only "r
@@ -328,7 +363,9 @@ CTfLiteClass::~CTfLiteClass()
   delete this->interpreter;
   delete this->error_reporter;
 
+#ifndef USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
   free_psram_heap(std::string(TAG) + "->modelfile", modelfile);
+#endif
 }        
 
 
