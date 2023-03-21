@@ -22,7 +22,7 @@ static const char *TAG = "C IMG BASIS";
 bool jpgFileTooLarge = false;   // JPG creation verfication
 
 
-//#define DEBUG_DETAIL_ON
+#define DEBUG_DETAIL_ON
 
 
 uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
@@ -500,21 +500,20 @@ CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t* _co
 {
     name = _name;
     islocked = false;
-    externalImage = false;
+    externalImage = true;
     channels = _copyfrom->channels;
     width = _copyfrom->width;
     height = _copyfrom->height;
     bpp = _copyfrom->bpp;
-    externalImage = true;
 
     RGBImageLock();
 
     #ifdef DEBUG_DETAIL_ON 
-        LogFile.WriteHeapInfo("CImageBasis_copyfrom - Start");
+        LogFile.WriteHeapInfo("CImageBasis_copyfromcopyto - Start");
     #endif
 
-    /*memsize = width * height * channels;
-
+    memsize = width * height * channels;
+    /*
     rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
@@ -525,12 +524,12 @@ CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t* _co
         return;
     }*/
 
-    memCopy(_copyfrom->rgb_image, _copytomemory, width * height * channels);
+    memCopy(_copyfrom->rgb_image, _copytomemory, memsize);
     rgb_image = _copytomemory;
     RGBImageRelease();
 
     #ifdef DEBUG_DETAIL_ON 
-        LogFile.WriteHeapInfo("CImageBasis_copyfrom - done");
+        LogFile.WriteHeapInfo("CImageBasis_copyfromcopyto - done");
     #endif
 }
 

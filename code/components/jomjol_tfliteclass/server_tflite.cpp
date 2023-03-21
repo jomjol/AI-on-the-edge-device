@@ -91,10 +91,10 @@ bool isSetupModusActive() {
 }
 
 
-uint8_t* getTFLiteTensorArena()
+/*uint8_t* getTFLiteTensorArena()
 {
     return tfliteflow.getTFLiteTensorArena();
-}
+}*/
 
 
 void KillTFliteTasks()

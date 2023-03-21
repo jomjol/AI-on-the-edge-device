@@ -33,7 +33,6 @@ void ClassFlowAlignment::SetInitialParameter(void)
     ImageTMP = NULL;
     #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
     AlgROI = (ImageData*)malloc_psram_heap(std::string(TAG) + "->AlgROI", sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
-    ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.getTFLiteTensorArena());
     #endif
     previousElement = NULL;
     disabled = false;
@@ -54,11 +53,11 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
         }
     }
 
-    if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
+    /*if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
         ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis("ImageBasis", namerawimage);
-    }
+    }*/
 }
 
 
