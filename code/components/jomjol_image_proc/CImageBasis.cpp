@@ -453,7 +453,7 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
                 "Check that your camera module is working and connected properly.");
         LogFile.WriteHeapInfo("LoadFromMemory");
 
-        doReboot();
+        //doReboot();
     }
     RGBImageRelease();
 }

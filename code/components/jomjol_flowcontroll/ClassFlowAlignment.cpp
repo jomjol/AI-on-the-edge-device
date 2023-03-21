@@ -33,6 +33,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     ImageTMP = NULL;
     #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
     AlgROI = (ImageData*)malloc_psram_heap(std::string(TAG) + "->AlgROI", sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+    ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.getTFLiteTensorArena());
     #endif
     previousElement = NULL;
     disabled = false;
@@ -193,7 +194,7 @@ bool ClassFlowAlignment::doFlow(string time)
         ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.getTFLiteTensorArena());
         /*if (!ImageTMP) 
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP");
             LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
             return false;
         }*/
@@ -203,7 +204,7 @@ bool ClassFlowAlignment::doFlow(string time)
     AlignAndCutImage = new CAlignAndCutImage("AlignAndCutImage", ImageBasis, ImageTMP);
     if (!AlignAndCutImage) 
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage");
         LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
         return false;
     }
@@ -269,8 +270,8 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 
     // must be deleted to have memory space for loading tflite
-    //delete ImageTMP;
-    //ImageTMP = NULL;
+    delete ImageTMP;
+    ImageTMP = NULL;
 
     //no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
     if(References[0].alignment_algo != 3){
