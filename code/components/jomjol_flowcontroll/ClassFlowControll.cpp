@@ -18,6 +18,7 @@ extern "C" {
 #include "ClassLogFile.h"
 #include "time_sntp.h"
 #include "Helper.h"
+#include "psram.h"
 #include "server_ota.h"
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
