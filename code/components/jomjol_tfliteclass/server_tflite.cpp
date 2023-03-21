@@ -91,6 +91,12 @@ bool isSetupModusActive() {
 }
 
 
+uint8_t* getTFLiteTensorArena()
+{
+    return tfliteflow.getTFLiteTensorArena();
+}
+
+
 void KillTFliteTasks()
 {
     #ifdef DEBUG_DETAIL_ON      

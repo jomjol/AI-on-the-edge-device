@@ -5,6 +5,7 @@
 
 #include"ClassFlowDefineTypes.h"
 #include "ClassFlowAlignment.h"
+#include "CTfLiteClass.h"
 
 
 enum t_CNNType {
@@ -35,6 +36,7 @@ protected:
     //float Digital_Transition_Area_Predecessor = 0.7; // 9.3 - 0.7
     //float Digital_Transition_Area_Forward = 9.7; // Pre-run zero crossing only happens from approx. 9.7 onwards
 
+    CTfLiteClass *tflite;
     string cnnmodelfile;
     int modelxsize, modelysize, modelchannel;
     bool isLogImageSelect;

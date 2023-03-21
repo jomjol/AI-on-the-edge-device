@@ -33,6 +33,8 @@ protected:
 	ClassFlowTakeImage* flowtakeimage;
 	ClassFlow* CreateClassFlow(std::string _type);
 
+	uint8_t *TFLite_tensor_arena;
+
 	bool AutoStart;
 	float AutoInterval;
 	bool SetupModeActive;
@@ -53,6 +55,7 @@ public:
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
 	string getNumbersName();
+	uint8_t* getTFLiteTensorArena();
 
 	string TranslateAktstatus(std::string _input);
 

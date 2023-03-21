@@ -1,11 +1,11 @@
 #include "ClassFlowCNNGeneral.h"
+#include "server_tflite.h"
 
 #include <math.h>
 #include <iomanip> 
 #include <sys/types.h>
 #include <sstream>      // std::stringstream
 
-#include "CTfLiteClass.h"
 #include "ClassLogFile.h"
 #include "esp_log.h"
 #include "../../include/defines.h"
@@ -22,6 +22,7 @@ static const char* TAG = "CNN";
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
+    tflite = new CTfLiteClass;
     string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
@@ -568,21 +569,20 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     if (disabled)
         return true;
 
-    CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Init aborted!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile);
         LogFile.WriteHeapInfo("getNetworkParameter-LoadModel");
-        delete tflite;
+        //delete tflite;
         return false;
-    } 
+    }
 
-    if (!tflite->MakeAllocate()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tflite model -> Init aborted!");
+    if (!tflite->MakeAllocate(tfliteflow.getTFLiteTensorArena())) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tflite model");
         LogFile.WriteHeapInfo("getNetworkParameter-MakeAllocate");
-        delete tflite;
+        //delete tflite;
         return false;
     }
 
@@ -631,7 +631,8 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
         }
     }
 
-    delete tflite;
+    //delete tflite;
+    tflite->CTfLiteClassDeleteInterpreter();
     return true;
 }
 
@@ -643,22 +644,22 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
     string logPath = CreateLogFolder(time);
 
-    CTfLiteClass *tflite = new CTfLiteClass;  
+    /*CTfLiteClass *tflite = new CTfLiteClass;  
     string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
 
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile + " -> Exec aborted this round!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile");
         LogFile.WriteHeapInfo("doNeuralNetwork-LoadModel");
-        delete tflite;
+        //delete tflite;
         return false;
-    }
+    }*/
 
-    if (!tflite->MakeAllocate()) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tfilte model -> Exec aborted this round!");
+    if (!tflite->MakeAllocate(tfliteflow.getTFLiteTensorArena())) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tfilte model");
         LogFile.WriteHeapInfo("doNeuralNetwork-MakeAllocate");
-        delete tflite;
+        //delete tflite;
         return false;
     }
 
@@ -842,7 +843,8 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
         }
     }
 
-    delete tflite;
+    //delete tflite;
+    tflite->CTfLiteClassDeleteInterpreter();
 
     return true;
 }
