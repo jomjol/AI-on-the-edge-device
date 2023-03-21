@@ -480,6 +480,7 @@ extern "C" void app_main(void)
 
     // Check main init + start TFlite task
     // ********************************************
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "System Status: " + to_string(getSystemStatus()));
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow task ...");
         TFliteDoAutoStart();

@@ -445,7 +445,7 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
-    ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
+    ESP_LOGI(TAG, "Image (%s) loaded from memory: %d, %d, %d", name.c_str(), width, height, channels);
     
     if ((width * height * channels) == 0)
     {
