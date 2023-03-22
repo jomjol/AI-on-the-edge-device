@@ -21,7 +21,6 @@ static const char *TAG = "C IMG BASIS";
 
 bool jpgFileTooLarge = false;   // JPG creation verfication
 
-
 #define DEBUG_DETAIL_ON
 
 
@@ -436,21 +435,22 @@ void CImageBasis::EmptyImage()
 
 void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 {
+    ESP_LOGI(TAG, "LoadFromMemory");
     RGBImageLock();
 
-    if (rgb_image != NULL) {
+    //if (rgb_image != NULL) {
         stbi_image_free(rgb_image);
         //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
-    }
+    //}
 
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
-    ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
-    
-    if ((width * height * channels) == 0)
+    ESP_LOGI(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
+   
+    //if ((width * height * channels) == 0)
+    if (rgb_image == NULL)
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image with size 0 loaded --> reboot to be done! "
-                "Check that your camera module is working and connected properly.");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed loading image from memory into CBasisImage");
         LogFile.WriteHeapInfo("LoadFromMemory");
 
         //doReboot();
@@ -496,7 +496,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
 }
 
 
-CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t* _copytomemory) 
+CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t *_copytomemory) 
 {
     name = _name;
     islocked = false;
@@ -513,6 +513,7 @@ CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, uint8_t* _co
     #endif
 
     memsize = width * height * channels;
+    ESP_LOGI(TAG, "_copytomemory memsize: %d, width: %d, height: %d, channels: %d", memsize, width, height, channels);
     /*
     rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 

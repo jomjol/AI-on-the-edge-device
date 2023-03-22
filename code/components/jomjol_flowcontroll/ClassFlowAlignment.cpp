@@ -53,11 +53,11 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow*>* lfc)
         }
     }
 
-    /*if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
+    if (!ImageBasis)            // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
     {
         ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis("ImageBasis", namerawimage);
-    }*/
+    }
 }
 
 
@@ -188,9 +188,9 @@ bool ClassFlowAlignment::doFlow(string time)
         }
     #endif
 
-    if (!ImageTMP) 
+    if (ImageTMP == NULL) 
     {
-        ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.getTFLiteTensorArena());
+        ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.SharedMemoryAlignmentTfLite());   // Copy to shared memory and hand-over the pointer
         /*if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP");

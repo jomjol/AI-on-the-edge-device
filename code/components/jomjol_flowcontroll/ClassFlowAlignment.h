@@ -16,6 +16,7 @@ class ClassFlowAlignment :
     public ClassFlow
 {
 protected:
+    uint8_t* SharedMemory_Alignment;
     float initalrotate;
     bool initialmirror;
     bool initialflip;

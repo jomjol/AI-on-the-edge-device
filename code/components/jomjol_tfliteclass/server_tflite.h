@@ -22,7 +22,7 @@ int getCountFlowRounds();
 
 void CheckIsPlannedReboot();
 bool getIsPlannedReboot();
-//uint8_t* getTFLiteTensorArena();
+uint8_t* SharedMemoryAlignmentTfLite();
 
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req);
 esp_err_t GetRawJPG(httpd_req_t *req);

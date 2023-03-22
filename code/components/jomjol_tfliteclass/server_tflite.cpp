@@ -91,10 +91,10 @@ bool isSetupModusActive() {
 }
 
 
-/*uint8_t* getTFLiteTensorArena()
+uint8_t* SharedMemoryAlignmentTfLite()
 {
-    return tfliteflow.getTFLiteTensorArena();
-}*/
+    return tfliteflow.SharedMemoryAlignmentTfLite();
+}
 
 
 void KillTFliteTasks()

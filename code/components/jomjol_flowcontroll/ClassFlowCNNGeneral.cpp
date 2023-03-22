@@ -579,7 +579,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
         return false;
     }
 
-    if (!tflite->MakeAllocate(tfliteflow.getTFLiteTensorArena())) {
+    if (!tflite->MakeAllocate(tfliteflow.SharedMemoryAlignmentTfLite())) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tflite model");
         LogFile.WriteHeapInfo("getNetworkParameter-MakeAllocate");
         //delete tflite;
@@ -650,13 +650,13 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
 
     if (!tflite->LoadModel(zwcnn)) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't load tflite model " + cnnmodelfile);
         LogFile.WriteHeapInfo("doNeuralNetwork-LoadModel");
         //delete tflite;
         return false;
     }*/
 
-    if (!tflite->MakeAllocate(tfliteflow.getTFLiteTensorArena())) {
+    if (!tflite->MakeAllocate(tfliteflow.SharedMemoryAlignmentTfLite())) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tfilte model");
         LogFile.WriteHeapInfo("doNeuralNetwork-MakeAllocate");
         //delete tflite;
