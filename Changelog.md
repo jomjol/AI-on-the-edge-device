@@ -13,7 +13,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 - [#2206](https://github.com/jomjol/AI-on-the-edge-device/pull/2206) Log PSRAM usage
 - [#2216](https://github.com/jomjol/AI-on-the-edge-device/pull/2216) Log MQTT connection refused reasons
 
-
 #### Changed
 
 - n.a.
