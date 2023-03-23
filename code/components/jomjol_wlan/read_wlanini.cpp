@@ -157,8 +157,22 @@ int LoadWlanFromFile(std::string fn)
             #endif
         }
 
-        /* read next line */
-        if (fgets(zw, sizeof(zw), pFile) == NULL) {
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_USERNAME")){
+            http_username = splitted[1];
+            if ((http_username[0] == '"') && (http_username[http_username.length()-1] == '"')){
+                http_username = http_username.substr(1, http_username.length()-2);
+            }
+        }
+
+        if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_PASSWORD")){
+            http_password = splitted[1];
+            if ((http_password[0] == '"') && (http_password[http_password.length()-1] == '"')){
+                http_password = http_password.substr(1, http_password.length()-2);
+            }
+        }
+
+        if (fgets(zw, 1024, pFile) == NULL)
+        {
             line = "";
         }
         else {
