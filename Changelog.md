@@ -1,20 +1,17 @@
-## [unreleased]
+## [15.1.1] - 2023-03-23
 
 ### Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
-:bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it)!
-
-:bangbang: Afterwards you should check your configuration for errors!
-
 ### Changes
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1)
 
 #### Added
 
-- n.a.
+- [#2206](https://github.com/jomjol/AI-on-the-edge-device/pull/2206) Log PSRAM usage
+- [#2216](https://github.com/jomjol/AI-on-the-edge-device/pull/2216) Log MQTT connection refused reasons
 
 
 #### Changed
@@ -23,7 +20,10 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 #### Fixed
 
+-  [#2224](https://github.com/jomjol/AI-on-the-edge-device/pull/2224), [#2213](https://github.com/jomjol/AI-on-the-edge-device/pull/2213) Reverted some of the PSRAM usage changes due to negative sideffects 
 -  [#2203](https://github.com/jomjol/AI-on-the-edge-device/issues/2203) Correct API for pure InfluxDB v1
+-  [#2180](https://github.com/jomjol/AI-on-the-edge-device/pull/2180) Fixed links in Parameter Documentation
+-  Various minor fixes
 
 #### Removed
 
@@ -934,6 +934,7 @@ External Illumination
 -   Initial Version
 
 
+[15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1
 [15.1.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0
 [15.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.3
 [14.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.3
