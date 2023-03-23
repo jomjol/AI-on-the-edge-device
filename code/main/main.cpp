@@ -424,6 +424,8 @@ extern "C" void app_main(void)
             StatusLED(WLAN_INIT, 3, true);
             return;
         }
+
+        init_basic_auth();
     }
     else if (iWLANStatus == -1) {  // wlan.ini not available, potentially empty or content not readable
         StatusLED(WLAN_INIT, 1, true);

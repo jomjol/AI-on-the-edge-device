@@ -1,21 +1,25 @@
 #include "basic_auth.h"
+#include "read_wlanini.h"
 #include <esp_tls_crypto.h>
 #include <esp_log.h>
+
 
 #define HTTPD_401      "401 UNAUTHORIZED"
 
 static const char *TAG = "HTTPAUTH";
 
 typedef struct {
-    char *username;
-    char *password;
+    const char *username;
+    const char *password;
 } basic_auth_info_t;
 
 basic_auth_info_t basic_auth_info = { NULL, NULL };
 
-void init_basic_auth(char *username, char *password) {
-    basic_auth_info.username = username;
-    basic_auth_info.password = password;
+void init_basic_auth() {
+    if (!wlan_config.http_username.empty() && !wlan_config.http_password.empty()) {
+        basic_auth_info.username = wlan_config.http_username.c_str();
+        basic_auth_info.password = wlan_config.http_password.c_str();
+    }
 }
 
 static char *http_auth_basic(const char *username, const char *password)
