@@ -32,7 +32,7 @@ class CFindTemplate : public CImageBasis
 {
     public:
         int tpl_width, tpl_height, tpl_bpp;    
-        CFindTemplate(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp) : CImageBasis(_rgb_image, _channels, _width, _height, _bpp) {};
+        CFindTemplate(std::string name, uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp) : CImageBasis(name, _rgb_image, _channels, _width, _height, _bpp) {};
 
         bool FindTemplate(RefInfo *_ref);
 

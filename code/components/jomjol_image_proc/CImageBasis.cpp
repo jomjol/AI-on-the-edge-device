@@ -1,5 +1,6 @@
 #include "CImageBasis.h"
 #include "Helper.h"
+#include "psram.h"
 #include "ClassLogFile.h"
 #include "server_ota.h"
 
@@ -360,8 +361,9 @@ void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int t
 }
 
 
-CImageBasis::CImageBasis()
+CImageBasis::CImageBasis(string _name)
 {
+    name = _name;
     externalImage = false;
     rgb_image = NULL;
     width = 0;
@@ -384,8 +386,9 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
         LogFile.WriteHeapInfo("CreateEmptyImage");
     #endif
 
-    int memsize = width * height * channels;
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    memsize = width * height * channels;
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -435,8 +438,10 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 {
     RGBImageLock();
 
-    if (rgb_image)
+    if (rgb_image != NULL) {
         stbi_image_free(rgb_image);
+        //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
+    }
 
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
@@ -454,8 +459,9 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 }
 
 
-CImageBasis::CImageBasis(CImageBasis *_copyfrom) 
+CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom) 
 {
+    name = _name;
     islocked = false;
     externalImage = false;
     channels = _copyfrom->channels;
@@ -469,8 +475,9 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom)
         LogFile.WriteHeapInfo("CImageBasis_copyfrom - Start");
     #endif
 
-    int memsize = width * height * channels;
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    memsize = width * height * channels;
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -489,8 +496,9 @@ CImageBasis::CImageBasis(CImageBasis *_copyfrom)
 }
 
 
-CImageBasis::CImageBasis(int _width, int _height, int _channels)
+CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
 {
+    name = _name;
     islocked = false;
     externalImage = false;
     channels = _channels;
@@ -504,8 +512,9 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
         LogFile.WriteHeapInfo("CImageBasis_width,height,ch - Start");
     #endif
 
-    int memsize = width * height * channels;
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    memsize = width * height * channels;
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -523,8 +532,9 @@ CImageBasis::CImageBasis(int _width, int _height, int _channels)
 }
 
 
-CImageBasis::CImageBasis(std::string _image)
+CImageBasis::CImageBasis(string _name, std::string _image)
 {
+    name = _name;
     islocked = false;
     channels = 3;
     externalImage = false;
@@ -569,8 +579,9 @@ bool CImageBasis::ImageOkay(){
 }
 
 
-CImageBasis::CImageBasis(uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
+CImageBasis::CImageBasis(string _name, uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
 {
+    name = _name;
     islocked = false;
     rgb_image = _rgb_image;
     channels = _channels;
@@ -607,8 +618,10 @@ CImageBasis::~CImageBasis()
 {
     RGBImageLock();
 
-    if (!externalImage)
-        stbi_image_free(rgb_image);
+    if (!externalImage) {
+        //stbi_image_free(rgb_image);
+        free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+    }
 
     RGBImageRelease();
 }
@@ -637,19 +650,19 @@ void CImageBasis::SaveToFile(std::string _imageout)
 
 void CImageBasis::Resize(int _new_dx, int _new_dy)
 {
-    int memsize = _new_dx * _new_dy * channels;
-    uint8_t* odata = (unsigned char*)GET_MEMORY(memsize);
+    memsize = _new_dx * _new_dy * channels;
+    uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
 
     RGBImageLock();
 
     stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
-    stbi_image_free(rgb_image);
 
-    rgb_image = (unsigned char*)GET_MEMORY(memsize);
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis Resize (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
     memCopy(odata, rgb_image, memsize);
     width = _new_dx;
     height = _new_dy;
-    stbi_image_free(odata);
+
+    free_psram_heap(std::string(TAG) + "->odata", odata);
 
     RGBImageRelease();
 }

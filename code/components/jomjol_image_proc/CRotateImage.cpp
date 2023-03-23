@@ -1,7 +1,10 @@
+#include <string>
 #include "CRotateImage.h"
+#include "psram.h"
 
+static const char *TAG = "C ROTATE IMG";
 
-CRotateImage::CRotateImage(CImageBasis *_org, CImageBasis *_temp, bool _flip)
+CRotateImage::CRotateImage(std::string _name, CImageBasis *_org, CImageBasis *_temp, bool _flip) : CImageBasis(_name)
 {
     rgb_image = _org->rgb_image;
     channels = _org->channels;
@@ -15,6 +18,7 @@ CRotateImage::CRotateImage(CImageBasis *_org, CImageBasis *_temp, bool _flip)
     doflip = _flip;
 }
 
+
 void CRotateImage::Mirror(){
     int memsize = width * height * channels;
     uint8_t* odata;
@@ -24,7 +28,7 @@ void CRotateImage::Mirror(){
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
     }
 
 
@@ -50,7 +54,7 @@ void CRotateImage::Mirror(){
     //    memcpy(rgb_image, odata, memsize);
     memCopy(odata, rgb_image, memsize);
     if (!ImageTMP)
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
 
     if (ImageTMP)
         ImageTMP->RGBImageRelease();
@@ -109,7 +113,7 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
     }
     
 
@@ -148,7 +152,7 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
 
     if (!ImageTMP)
     {
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
     }
     if (ImageTMP)
         ImageTMP->RGBImageRelease();
@@ -209,7 +213,7 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
     }
     
 
@@ -269,7 +273,7 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
 
     if (!ImageTMP)
     {
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
     }
     if (ImageTMP)
         ImageTMP->RGBImageRelease();
@@ -300,7 +304,7 @@ void CRotateImage::Translate(int _dx, int _dy)
     }
     else
     {
-        odata = (unsigned char*)GET_MEMORY(memsize);
+        odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
     }
 
 
@@ -336,7 +340,7 @@ void CRotateImage::Translate(int _dx, int _dy)
     memCopy(odata, rgb_image, memsize);
     if (!ImageTMP)
     {
-        stbi_image_free(odata);
+        free_psram_heap(std::string(TAG) + "->odata", odata);
     }
 
     if (ImageTMP)
