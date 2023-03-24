@@ -189,7 +189,7 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
 
     // use the default retention policy of the database
-    std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase + "/";
+    std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
 
