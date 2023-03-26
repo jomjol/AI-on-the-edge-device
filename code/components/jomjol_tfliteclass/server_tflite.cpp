@@ -399,7 +399,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
 
 
-        zw = tfliteflow.getReadout(_rawValue, _noerror);
+        zw = tfliteflow.getReadout(_rawValue, _noerror, 0);
         if (zw.length() > 0)
             httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
@@ -706,7 +706,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 esp_err_t handler_statusflow(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - Start");       
+        LogFile.WriteHeapInfo("handler_statusflow - Start");       
     #endif
 
     const char* resp_str;
@@ -715,7 +715,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     if (bTaskAutoFlowCreated) 
     {
         #ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
+            ESP_LOGD(TAG, "handler_statusflow: %s", req->uri);
         #endif
 
         string* zw = tfliteflow.getActStatusWithTime();
@@ -730,7 +730,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
     }
 
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - Done");       
+        LogFile.WriteHeapInfo("handler_statusflow - Done");       
     #endif
 
     return ESP_OK;
@@ -802,50 +802,81 @@ esp_err_t handler_uptime(httpd_req_t *req)
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - Start");       
-    #endif
-
-    const char* resp_str;
-    string zw;
-
-    #ifdef DEBUG_DETAIL_ON       
+        LogFile.WriteHeapInfo("handler_prevalue - Start");          
         ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
     #endif
 
-    char _query[100];
-    char _size[10] = "";
-    char _numbers[50] = "default";
+    // Default usage message when handler gets called without any parameter
+    const std::string RESTUsageInfo = 
+        "00: Handler usage:<br>"
+        "- To retrieve actual PreValue, please provide only a numbersname, e.g. /setPreValue?numbers=main<br>"
+        "- To set PreValue to a new value, please provide a numbersname and a value, e.g. /setPreValue?numbers=main&value=1234.5678<br>"
+        "NOTE:<br>"
+        "value >= 0.0: Set PreValue to provided value<br>"
+        "value <  0.0: Set PreValue to actual RAW value (as long RAW value is a valid number, without N)";
 
-    if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
-    {
+    // Default return error message when no return is programmed
+    std::string sReturnMessage = "E90: Uninitialized";
+
+    char _query[100];
+    char _numbersname[50] = "default";
+    char _value[20] = "";
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK) {
         #ifdef DEBUG_DETAIL_ON       
             ESP_LOGD(TAG, "Query: %s", _query);
         #endif
 
-        if (httpd_query_key_value(_query, "value", _size, 10) == ESP_OK)
-        {
+        if (httpd_query_key_value(_query, "numbers", _numbersname, 50) != ESP_OK) { // If request is incomplete
+            sReturnMessage = "E91: Query parameter incomplete or not valid!<br> "
+                             "Call /setPreValue to show REST API usage info and/or check documentation";
+            httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());
+            return ESP_FAIL; 
+        }
+
+        if (httpd_query_key_value(_query, "value", _value, 20) == ESP_OK) {
             #ifdef DEBUG_DETAIL_ON       
                 ESP_LOGD(TAG, "Value: %s", _size);
             #endif
         }
-
-        httpd_query_key_value(_query, "numbers", _numbers, 50);
-    }      
-
-    if (strlen(_size) == 0)
-    {
-        zw = tfliteflow.GetPrevalue(std::string(_numbers));
     }
-    else
-    {
-        zw = "SetPrevalue to " + tfliteflow.UpdatePrevalue(_size, _numbers, true);
-    }
-    
-    resp_str = zw.c_str();
+    else {  // if no parameter is provided, print handler usage
+        httpd_resp_send(req, RESTUsageInfo.c_str(), RESTUsageInfo.length());
+        return ESP_OK; 
+    }   
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    
-    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);  
+    if (strlen(_value) == 0) { // If no value is povided --> return actual PreValue
+        sReturnMessage = tfliteflow.GetPrevalue(std::string(_numbersname));
+
+        if (sReturnMessage.empty()) {
+            sReturnMessage = "E92: Numbers name not found";
+            httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());
+            return ESP_FAIL;
+        }
+    }
+    else {
+        // New value is positive: Set PreValue to provided value and return value
+        // New value is negative and actual RAW value is a valid number: Set PreValue to RAW value and return value
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "REST API handler_prevalue called: numbersname: " + std::string(_numbersname) + 
+                                                                                      ", value: " + std::string(_value));
+        if (!tfliteflow.UpdatePrevalue(_value, _numbersname, true)) {
+            sReturnMessage = "E93: Update request rejected. Please check device logs for more details";
+            httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());  
+            return ESP_FAIL;
+        }
+
+        sReturnMessage = tfliteflow.GetPrevalue(std::string(_numbersname));
+
+        if (sReturnMessage.empty()) {
+            sReturnMessage = "E94: Numbers name not found";
+            httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());
+            return ESP_FAIL;
+        }
+    }
+
+    httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());  
 
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_prevalue - End");       
