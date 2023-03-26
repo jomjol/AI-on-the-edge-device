@@ -159,7 +159,7 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
             else
                 namenumber = namenumber + "/value";
 
-            if (result.length() > 0 && resulttimestamp.length() > 0)   
+            if (result.length() > 0)   
                 InfluxDBPublish(namenumber, result, resulttimestamp);
         }
     }
