@@ -96,27 +96,49 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     return result;
 }
 
-void ClassFlowPostProcessing::SetPreValue(double zw, string _numbers, bool _extern)
+
+bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, bool _extern)
 {
-    ESP_LOGD(TAG, "SetPrevalue: %f, %s", zw, _numbers.c_str());
-    for (int j = 0; j < NUMBERS.size(); ++j)
-    {
-//        ESP_LOGD(TAG, "Number %d, %s", j, NUMBERS[j]->name.c_str());
-        if (NUMBERS[j]->name == _numbers)
-        {
-            NUMBERS[j]->PreValue = zw;
-            NUMBERS[j]->ReturnPreValue = std::to_string(zw);
+    //ESP_LOGD(TAG, "SetPrevalue: %f, %s", zw, _numbers.c_str());
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        //ESP_LOGD(TAG, "Number %d, %s", j, NUMBERS[j]->name.c_str());
+        if (NUMBERS[j]->name == _numbers) {
+            if (_newvalue >= 0) {  // if new value posivive, use provided value to preset PreValue
+                NUMBERS[j]->PreValue = _newvalue;
+            }
+            else {          // if new value negative, use last raw value to preset PreValue
+                char* p;
+                double ReturnRawValueAsDouble = strtod(NUMBERS[j]->ReturnRawValue.c_str(), &p);
+                if (ReturnRawValueAsDouble == 0) {
+                    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "SetPreValue: RawValue not a valid value for further processing: "
+                                                            + NUMBERS[j]->ReturnRawValue);
+                    return false;
+                }
+                NUMBERS[j]->PreValue = ReturnRawValueAsDouble;
+            }
+
+            NUMBERS[j]->ReturnPreValue = std::to_string(NUMBERS[j]->PreValue);
             NUMBERS[j]->PreValueOkay = true;
+
             if (_extern)
             {
                 time(&(NUMBERS[j]->lastvalue));
                 localtime(&(NUMBERS[j]->lastvalue));
             }
-//            ESP_LOGD(TAG, "Found %d! - set to %f", j,  NUMBERS[j]->PreValue);
+            //ESP_LOGD(TAG, "Found %d! - set to %.8f", j,  NUMBERS[j]->PreValue);
+            
+            UpdatePreValueINI = true;   // Only update prevalue file if a new value is set
+            SavePreValue();
+
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "SetPreValue: PreValue for " + NUMBERS[j]->name + " set to " + 
+                                                     std::to_string(NUMBERS[j]->PreValue));
+            return true;
         }
     }
-    UpdatePreValueINI = true;
-    SavePreValue();
+    
+    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "SetPreValue: Numbersname not found or not valid");
+    return false;   // No new value was set (e.g. wrong numbersname, no numbers at all)
 }
 
 
