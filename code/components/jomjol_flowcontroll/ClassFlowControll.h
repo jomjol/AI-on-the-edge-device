@@ -46,9 +46,9 @@ public:
 	bool doFlow(string time);
 	void doFlowTakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};
-	string getReadout(bool _rawvalue, bool _noerror);
+	string getReadout(bool _rawvalue, bool _noerror, int _number);
 	string getReadoutAll(int _type);	
-	string UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
+	bool UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();

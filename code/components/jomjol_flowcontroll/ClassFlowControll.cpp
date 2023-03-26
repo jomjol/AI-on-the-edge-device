@@ -470,10 +470,10 @@ string ClassFlowControll::getReadoutAll(int _type)
 }	
 
 
-string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false)
+string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false, int _number = 0)
 {
     if (flowpostprocessing)
-        return flowpostprocessing->getReadoutParam(_rawvalue, _noerror);
+        return flowpostprocessing->getReadoutParam(_rawvalue, _noerror, _number);
 
     string zw = "";
     string result = "";
@@ -501,37 +501,40 @@ string ClassFlowControll::GetPrevalue(std::string _number)
         return flowpostprocessing->GetPreValue(_number);   
     }
 
+
     return std::string("");    
 }
 
 
-std::string ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)
+bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)
 {
-    float zw;
+    double newvalueAsDouble;
     char* p;
 
     _newvalue = trim(_newvalue);
-//    ESP_LOGD(TAG, "Input UpdatePreValue: %s", _newvalue.c_str());
+    //ESP_LOGD(TAG, "Input UpdatePreValue: %s", _newvalue.c_str());
 
-    if (_newvalue.compare("0.0") == 0)
-    {
-        zw = 0;
+    if (_newvalue.substr(0,8).compare("0.000000") == 0 || _newvalue.compare("0.0") == 0 || _newvalue.compare("0") == 0) {
+        newvalueAsDouble = 0;   // preset to value = 0
     }
-    else
-    {
-        zw = strtof(_newvalue.c_str(), &p);
-        if (zw == 0)
-            return "- Error in String to Value Conversion!!! Must be of format value=123.456";
+    else {
+        newvalueAsDouble = strtod(_newvalue.c_str(), &p);
+        if (newvalueAsDouble == 0) {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "UpdatePrevalue: No valid value for processing: " + _newvalue);
+            return false;
+        }
     }
     
-
-    if (flowpostprocessing)
-    {
-        flowpostprocessing->SetPreValue(zw, _numbers, _extern);
-        return _newvalue;    
+    if (flowpostprocessing) {
+        if (flowpostprocessing->SetPreValue(newvalueAsDouble, _numbers, _extern))
+            return true;
+        else
+            return false;
     }
-
-    return std::string();
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "UpdatePrevalue: ERROR - Class Post-Processing not initialized");
+        return false;
+    }
 }
 
 
