@@ -30,6 +30,7 @@
 #include "read_wlanini.h"
 
 #include "server_main.h"
+#include "websocket.h"
 #include "server_tflite.h"
 #include "server_file.h"
 #include "server_ota.h"
@@ -461,6 +462,7 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "starting servers");
 
     server = start_webserver();   
+    start_websocket_server(server);
     register_server_camera_uri(server); 
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");

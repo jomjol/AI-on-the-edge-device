@@ -19,6 +19,7 @@
 #include "configFile.h"
 #include "Helper.h"
 
+extern esp_err_t schedule_websocket_message(std::string);
 
 static const char *TAG = "SNTP";
 
@@ -69,6 +70,8 @@ void time_sync_notification_cb(struct timeval *tv)
     }
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " +
             getServerName() + ": " + getCurrentTimeString("%Y-%m-%d %H:%M:%S"));
+
+    schedule_websocket_message("{\"ntp\": \"synchronized\"}");
 }
 
 
