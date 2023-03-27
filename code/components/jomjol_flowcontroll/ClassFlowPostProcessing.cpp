@@ -13,6 +13,8 @@
 #include "esp_log.h"
 #include "../../include/defines.h"
 
+extern esp_err_t schedule_websocket_message(std::string);
+
 static const char* TAG = "POSTPROC";
 
 std::string ClassFlowPostProcessing::getNumbersName()
@@ -860,6 +862,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ReturnValue = "";
                     NUMBERS[j]->lastvalue = imagetime;
 
+                    schedule_websocket_message("{\"status\": \"" + NUMBERS[j]->ErrorMessageText + "\", \"number\": \"" + NUMBERS[j]->name + "\"}");
+
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                     WriteDataLog(j);
@@ -893,6 +897,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->ReturnRateValue = "";
                 NUMBERS[j]->lastvalue = imagetime;
 
+                schedule_websocket_message("{\"status\": \"" + NUMBERS[j]->ErrorMessageText + "\", \"number\": \"" + NUMBERS[j]->name + "\"}");
+
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                 WriteDataLog(j);
@@ -918,6 +924,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
         WriteDataLog(j);
+
+        schedule_websocket_message("{\"status\": \"" + NUMBERS[j]->ErrorMessageText + "\", \"number\": \"" + NUMBERS[j]->name + "\"}");
     }
 
     SavePreValue();

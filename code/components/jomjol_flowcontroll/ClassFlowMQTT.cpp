@@ -24,6 +24,7 @@ extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
 
+extern esp_err_t schedule_websocket_message(std::string);
 
 void ClassFlowMQTT::SetInitialParameter(void)
 {
@@ -255,11 +256,15 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 namenumber = maintopic + "/" + namenumber + "/";
 
 
-            if (result.length() > 0)   
+            if (result.length() > 0) {
                 success |= MQTTPublish(namenumber + "value", result, qos, SetRetainFlag);
+                schedule_websocket_message("{\"value\": \"" + result + "\", \"number\": \"" + namenumber + "\"}");
+            }
 
-            if (resulterror.length() > 0)  
+            if (resulterror.length() > 0) {
                 success |= MQTTPublish(namenumber + "error", resulterror, qos, SetRetainFlag);
+                schedule_websocket_message("{\"error\": \"" + resulterror + "\", \"number\": \"" + namenumber + "\"}");
+            }
 
             if (resultrate.length() > 0) {
                 success |= MQTTPublish(namenumber + "rate", resultrate, qos, SetRetainFlag);
@@ -279,8 +284,10 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 success |= MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, qos, SetRetainFlag);
             }
 
-            if (resultraw.length() > 0)   
+            if (resultraw.length() > 0) {
                 success |= MQTTPublish(namenumber + "raw", resultraw, qos, SetRetainFlag);
+                schedule_websocket_message("{\"raw\": \"" + resulterror + "\", \"resultraw\": \"" + namenumber + "\"}");
+            }
 
             if (resulttimestamp.length() > 0)
                 success |= MQTTPublish(namenumber + "timestamp", resulttimestamp, qos, SetRetainFlag);

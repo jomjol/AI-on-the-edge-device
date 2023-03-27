@@ -200,7 +200,7 @@ void ClassFlowControll::SetInitialParameter(void)
     aktstatus = "Flow task not yet created";
     aktstatusWithTime = aktstatus;
 
-    schedule_websocket_message("{\"status\": \"" + aktstatus + "\"}");
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 }
 
 
@@ -280,7 +280,7 @@ void ClassFlowControll::InitFlow(std::string config)
     aktstatus = "Initialization";
     aktstatusWithTime = aktstatus;
 
-    schedule_websocket_message("{\"status\": \"" + aktstatus + "\"}");
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 
     //#ifdef ENABLE_MQTT
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", 1, false); // Right now, not possible -> MQTT Service is going to be started later
@@ -345,7 +345,7 @@ void ClassFlowControll::setActStatus(std::string _aktstatus)
     aktstatus = _aktstatus;
     aktstatusWithTime = aktstatus;
 
-    schedule_websocket_message("{\"status\": \"" + aktstatus + "\"}");
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 }
 
 
@@ -360,7 +360,7 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
             aktstatus = TranslateAktstatus(FlowControll[i]->name());
             aktstatusWithTime = aktstatus + " (" + zw_time + ")";
 
-            schedule_websocket_message("{\"status\": \"" + aktstatus + "\"}");
+            schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 
             #ifdef ENABLE_MQTT
                 MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, 1, false);
@@ -396,7 +396,7 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = getCurrentTimeString("%H:%M:%S");
         aktstatus = TranslateAktstatus(FlowControll[i]->name());
 
-       schedule_websocket_message("{\"status\": \"" + aktstatus + "\"}");
+       schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 
         aktstatusWithTime = aktstatus + " (" + zw_time + ")";
         //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
@@ -428,16 +428,13 @@ bool ClassFlowControll::doFlow(string time)
         #ifdef DEBUG_DETAIL_ON  
             LogFile.WriteHeapInfo("ClassFlowControll::doFlow");
         #endif
-
-
-       //schedule_websocket_message(aktstatus + " end");
     }
 
     zw_time = getCurrentTimeString("%H:%M:%S");
     aktstatus = "Flow finished";
     aktstatusWithTime = aktstatus + " (" + zw_time + ")";
 
-    schedule_websocket_message("{\"status\": \"" + aktstatus + "\"}");
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 
     //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT

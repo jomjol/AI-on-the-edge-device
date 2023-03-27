@@ -27,6 +27,7 @@
 #include "connect_wlan.h"
 #include "psram.h"
 
+extern esp_err_t schedule_websocket_message(std::string);
 
 ClassFlowControll tfliteflow;
 
@@ -919,6 +920,7 @@ void task_autodoFlow(void *pvParameter)
         
         // WIFI Signal Strength (RSSI) -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
+        schedule_websocket_message("{\"wifi rssi\": \"" + std::to_string(get_WIFI_RSSI()) + "\"}");
 
         // Check if time is synchronized (if NTP is configured)
         if (getUseNtp() && !getTimeIsSet()) {
