@@ -87,7 +87,7 @@ esp_err_t schedule_websocket_message(std::string message) {
 
     ret = httpd_queue_work(my_hd, websocket_send_pending_message, resp_arg);
     if (ret != ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Websocket Scheduling failed: " std::to_string(ret) + "!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Websocket Scheduling failed: " + std::to_string(ret) + "!");
         free_psram_heap("websocket msg", resp_arg);
     }
 
@@ -98,7 +98,7 @@ esp_err_t schedule_websocket_message(std::string message) {
 static esp_err_t ws_handler(httpd_req_t *req) {
     if (req->method == HTTP_GET) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Handshake done, the new websocket connection was opened");
-         my_hd = req->handle;
+        my_hd = req->handle;
         return ESP_OK;
     }
 
