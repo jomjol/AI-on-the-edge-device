@@ -14,7 +14,7 @@
 
 
 <script>
-  var gateway = "ws://" + getDomainname() + "/ws";
+  var gateway = getDomainname().replace("http://", "ws://") + "/ws";
   var websocket;
   
   window.addEventListener('load', onLoad);

@@ -103,7 +103,7 @@ static esp_err_t ws_handler(httpd_req_t *req) {
     }
 
     httpd_ws_frame_t ws_pkt;
-    uint8_t *websocket = NULL;
+    uint8_t *buf = NULL;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
     esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
@@ -115,20 +115,21 @@ static esp_err_t ws_handler(httpd_req_t *req) {
 
     if (ws_pkt.len)
     {
-        websocket = (uint8_t *)calloc_psram_heap("websocket", 1, ws_pkt.len + 1, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-        if (websocket == NULL) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to calloc memory for websocket!");
+        buf = (uint8_t *)calloc_psram_heap("websocket buf", 1, ws_pkt.len + 1, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        if (buf == NULL) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to calloc memory for websocket buffer!");
             return ESP_ERR_NO_MEM;
         }
 
-        ws_pkt.payload = websocket;
+        ws_pkt.payload = buf;
         ret = httpd_ws_recv_frame(req, &ws_pkt, ws_pkt.len);
         if (ret != ESP_OK) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "httpd_ws_recv_frame failed with: " + std::to_string(ret) + "!");
-            free_psram_heap("websocket", websocket);
+            free_psram_heap("websocket buf", buf);
             return ret;
         }
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Got packet with message: '" + ws_pkt.payload + "'");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Got packet");
+        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Got packet with message: '" + std::string(ws_pkt.payload) + "'");
     }
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "frame len is " + std::to_string(ws_pkt.len));
