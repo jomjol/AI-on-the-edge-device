@@ -49,8 +49,9 @@ static void websocket_send_pending_message(void *arg) {
     int client_fds[max_clients];
 
     ret = httpd_get_client_list(server, &fds, client_fds);
-
     if (ret != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to get Websocket client ist: " + std::to_string(ret) + "!");
+        free_psram_heap("websocket msg", resp_arg);
         return;
     }
 
