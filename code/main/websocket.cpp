@@ -10,7 +10,7 @@
 #include "websocket.h"
 
 
-#define MAX_MESSAGE_LENGTH  60
+#define MAX_MESSAGE_LENGTH  100
 
 static const char *TAG = "WEBSOCKET";
 
