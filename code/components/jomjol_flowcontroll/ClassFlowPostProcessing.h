@@ -68,7 +68,7 @@ public:
     void SavePreValue();
     string getJsonFromNumber(int i, std::string _lineend);
     string GetPreValue(std::string _number = "");
-    void SetPreValue(double zw, string _numbers, bool _extern = false);
+    bool SetPreValue(double zw, string _numbers, bool _extern = false);
 
     std::string GetJSON(std::string _lineend = "\n");
     std::string getNumbersName();
