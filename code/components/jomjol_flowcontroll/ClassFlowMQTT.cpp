@@ -258,12 +258,12 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             if (result.length() > 0) {
                 success |= MQTTPublish(namenumber + "value", result, qos, SetRetainFlag);
-                schedule_websocket_message("{\"value\": \"" + result + "\", \"number\": \"" + namenumber + "\"}");
+                schedule_websocket_message("{\"value\": \"" + result + "\", \"number\": \"" + (*NUMBERS)[i]->name + "\"}");
             }
 
             if (resulterror.length() > 0) {
                 success |= MQTTPublish(namenumber + "error", resulterror, qos, SetRetainFlag);
-                schedule_websocket_message("{\"error\": \"" + resulterror + "\", \"number\": \"" + namenumber + "\"}");
+                schedule_websocket_message("{\"error\": \"" + resulterror + "\", \"number\": \"" + (*NUMBERS)[i]->name + "\"}");
             }
 
             if (resultrate.length() > 0) {
@@ -286,7 +286,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             if (resultraw.length() > 0) {
                 success |= MQTTPublish(namenumber + "raw", resultraw, qos, SetRetainFlag);
-                schedule_websocket_message("{\"raw\": \"" + resultraw + "\", \"number\": \"" + namenumber + "\"}");
+                schedule_websocket_message("{\"raw\": \"" + resultraw + "\", \"number\": \"" + (*NUMBERS)[i]->name + "\"}");
             }
 
             if (resulttimestamp.length() > 0)
