@@ -286,7 +286,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             if (resultraw.length() > 0) {
                 success |= MQTTPublish(namenumber + "raw", resultraw, qos, SetRetainFlag);
-                schedule_websocket_message("{\"raw\": \"" + resulterror + "\", \"resultraw\": \"" + namenumber + "\"}");
+                schedule_websocket_message("{\"raw\": \"" + resultraw + "\", \"number\": \"" + namenumber + "\"}");
             }
 
             if (resulttimestamp.length() > 0)
