@@ -14,7 +14,6 @@
 #include "esp_log.h"
 #include "../../include/defines.h"
 
-
 static const char* TAG = "POSTPROC";
 
 std::string ClassFlowPostProcessing::getNumbersName()

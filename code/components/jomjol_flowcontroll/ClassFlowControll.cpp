@@ -441,7 +441,6 @@ bool ClassFlowControll::doFlow(string time)
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
     #endif //ENABLE_MQTT
 
-
     return result;
 }
 
