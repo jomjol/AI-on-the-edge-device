@@ -5,7 +5,7 @@
 #include "connect_wlan.h"
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "cJSON.h"
 #include "../../include/defines.h"
 
@@ -366,7 +366,7 @@ bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len)
             if (cJSON_IsNumber(value)) {   // Check if value is a number
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_set_prevalue called: numbersname: " + std::string(numbersname->valuestring) + 
                                                                                          ", value: " + std::to_string(value->valuedouble));
-                if (tfliteflow.UpdatePrevalue(std::to_string(value->valuedouble), std::string(numbersname->valuestring), true))
+                if (flowctrl.UpdatePrevalue(std::to_string(value->valuedouble), std::string(numbersname->valuestring), true))
                     return ESP_OK;
             }
             else {

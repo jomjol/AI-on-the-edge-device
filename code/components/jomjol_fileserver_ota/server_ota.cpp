@@ -26,7 +26,7 @@
 
 #include <sys/stat.h>
 
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "server_file.h"
 #include "server_GPIO.h"
 #ifdef ENABLE_MQTT
@@ -467,7 +467,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         {
             const char* resp_str; 
 
-            KillTFliteTasks();
+            DeleteMainFlowTask();
             gpio_handler_deinit();
             if (ota_update_task(fn))
             {
@@ -546,7 +546,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 /*  
     const char* resp_str;    
 
-    KillTFliteTasks();
+    DeleteMainFlowTask();
     gpio_handler_deinit();
     if (ota_update_task(fn))
     {
@@ -576,7 +576,7 @@ void hard_restart()
 }
 
 
-void task_reboot(void *KillAutoFlow)
+void task_reboot(void *DeleteMainFlow)
 {
     // write a reboot, to identify a reboot by purpouse
     FILE* pfile = fopen("/sdcard/reboot.txt", "w");
@@ -586,8 +586,8 @@ void task_reboot(void *KillAutoFlow)
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
 
-    if ((bool)KillAutoFlow) {
-        KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
+    if ((bool)DeleteMainFlow) {
+        DeleteMainFlowTask();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
     Camera.LightOnOff(false);
