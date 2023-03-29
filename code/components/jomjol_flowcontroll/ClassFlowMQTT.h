@@ -31,7 +31,6 @@ public:
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc);
     ClassFlowMQTT(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
-    string GetMQTTMainTopic();
     bool Start(float AutoInterval);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);

@@ -164,16 +164,8 @@ void ClassFlowControll::AnalogDrawROI(CImageBasis *_zw)
 
 
 #ifdef ENABLE_MQTT
-string ClassFlowControll::GetMQTTMainTopic()
+bool ClassFlowControll::StartMQTTService() 
 {
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0)
-            return ((ClassFlowMQTT*) (FlowControll[i]))->GetMQTTMainTopic();
-
-    return "";
-}
-
-bool ClassFlowControll::StartMQTTService() {
     /* Start the MQTT service */
         for (int i = 0; i < FlowControll.size(); ++i) {
             if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {

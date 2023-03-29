@@ -56,10 +56,6 @@ public:
 
 	string TranslateAktstatus(std::string _input);
 
-	#ifdef ENABLE_MQTT
-	string GetMQTTMainTopic();
-	#endif //ENABLE_MQTT
-
 	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
 	void DigitalDrawROI(CImageBasis *_zw);
 	void AnalogDrawROI(CImageBasis *_zw);
