@@ -887,7 +887,7 @@ void task_autodoFlow(void *pvParameter)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
-        schedule_websocket_message("{\"round\": \"" + std::to_string(countRounds()) + "\"}");
+        schedule_websocket_message("{\"round\": \"" + std::to_string(countRounds) + "\"}");
 
         schedule_websocket_message("{\"uptime\": \"" + std::to_string(getUpTime()) + "\"}");
         time_t roundStartTime = getUpTime();
