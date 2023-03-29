@@ -14,12 +14,12 @@
 #include "esp_sntp.h"
 #include "../../include/defines.h"
 
+#include "websocket.h"
 #include "ClassLogFile.h"
 
 #include "configFile.h"
 #include "Helper.h"
 
-extern esp_err_t schedule_websocket_message(std::string);
 
 static const char *TAG = "SNTP";
 

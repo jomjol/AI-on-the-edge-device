@@ -24,6 +24,7 @@ extern "C" {
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
 
+#include "websocket.h"
 #include "server_help.h"
 #include "server_tflite.h"
 #include "../../include/defines.h"
@@ -32,7 +33,6 @@ static const char* TAG = "CTRL";
 
 //#define DEBUG_DETAIL_ON
 
-extern esp_err_t schedule_websocket_message(std::string);
 
 
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){

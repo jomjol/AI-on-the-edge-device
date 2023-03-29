@@ -22,12 +22,12 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+#include "websocket.h"
 
 #include "read_wlanini.h"
 #include "connect_wlan.h"
 #include "psram.h"
 
-extern esp_err_t schedule_websocket_message(std::string);
 
 ClassFlowControll tfliteflow;
 

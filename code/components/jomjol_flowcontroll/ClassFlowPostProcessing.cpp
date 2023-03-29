@@ -10,10 +10,10 @@
 
 #include "time_sntp.h"
 
+#include "websocket.h"
 #include "esp_log.h"
 #include "../../include/defines.h"
 
-extern esp_err_t schedule_websocket_message(std::string);
 
 static const char* TAG = "POSTPROC";
 

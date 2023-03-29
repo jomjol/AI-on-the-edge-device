@@ -14,6 +14,7 @@
 #include "ClassFlowControll.h"
 
 #include "server_mqtt.h"
+#include "websocket.h"
 
 #include <time.h>
 #include "../../include/defines.h"
@@ -24,7 +25,6 @@ extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
 
-extern esp_err_t schedule_websocket_message(std::string);
 
 void ClassFlowMQTT::SetInitialParameter(void)
 {

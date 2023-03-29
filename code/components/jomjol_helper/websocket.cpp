@@ -65,6 +65,7 @@ static void websocket_send_pending_message(void *arg) {
 
 
 esp_err_t schedule_websocket_message(std::string message) {
+   // return 0;
     esp_err_t ret;
 
     if (websocket_handle == NULL) { // No websocket connecten open
