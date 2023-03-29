@@ -18,7 +18,6 @@
 	#include "ClassFlowInfluxDBv2.h"
 #endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
-#include "ClassFlowWriteList.h"
 
 class ClassFlowControll :
     public ClassFlow
