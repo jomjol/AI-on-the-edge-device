@@ -28,7 +28,7 @@ extern "C" {
 #include "server_tflite.h"
 #include "../../include/defines.h"
 
-static const char* TAG = "CTRL";
+static const char* TAG = "FLOWCTRL";
 
 //#define DEBUG_DETAIL_ON
 

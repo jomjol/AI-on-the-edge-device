@@ -15,7 +15,7 @@
 
 // #define WIFITURNOFF
 
-static const char* TAG = "flow_make_image";
+static const char* TAG = "TAKEIMAGE";
 
 esp_err_t ClassFlowTakeImage::camera_capture(){
     string nm =  namerawimage;
