@@ -847,7 +847,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
         return ESP_OK; 
     }   
 
-    if (strlen(_value)) {  // if no value is povided --> return actual PreValue
+    if (strlen(_value) == 0) { // If no value is povided --> return actual PreValue
         sReturnMessage = flowctrl.GetPrevalue(std::string(_numbersname));
 
         if (sReturnMessage.empty()) {
