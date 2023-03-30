@@ -1,4 +1,4 @@
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 
 #include <string>
 #include <vector>
@@ -28,7 +28,7 @@
 #include "psram.h"
 
 
-ClassFlowControll tfliteflow;
+ClassFlowControll flowctrl;
 
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
@@ -41,7 +41,8 @@ bool auto_isrunning = false;
 int countRounds = 0;
 bool isPlannedReboot = false;
 
-static const char *TAG = "TFLITE SERVER";
+static const char *TAG = "MAINCTRL";
+
 
 //#define DEBUG_DETAIL_ON
 
@@ -75,26 +76,26 @@ int getCountFlowRounds()
 
 esp_err_t GetJPG(std::string _filename, httpd_req_t *req)
 {
-    return tfliteflow.GetJPGStream(_filename, req);
+    return flowctrl.GetJPGStream(_filename, req);
 }
 
 
 esp_err_t GetRawJPG(httpd_req_t *req)
 {
-    return tfliteflow.SendRawJPG(req);
+    return flowctrl.SendRawJPG(req);
 }
 
 
-bool isSetupModusActive() {
-    return tfliteflow.getStatusSetupModus();
-    return false;
+bool isSetupModusActive() 
+{
+    return flowctrl.getStatusSetupModus();
 }
 
 
-void KillTFliteTasks()
+void DeleteMainFlowTask()
 {
     #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "KillTFliteTasks: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
+        ESP_LOGD(TAG, "DeleteMainFlowTask: xHandletask_autodoFlow: %ld", (long) xHandletask_autodoFlow);
     #endif
     if( xHandletask_autodoFlow != NULL )
     {
@@ -109,19 +110,19 @@ void KillTFliteTasks()
 
 void doInit(void)
 {
-    #ifdef DEBUG_DETAIL_ON             
-        ESP_LOGD(TAG, "Start tfliteflow.InitFlow(config);");
+    #ifdef DEBUG_DETAIL_ON
+        ESP_LOGD(TAG, "Start flowctrl.InitFlow(config);");
     #endif
-    tfliteflow.InitFlow(CONFIG_FILE);
-    #ifdef DEBUG_DETAIL_ON      
-        ESP_LOGD(TAG, "Finished tfliteflow.InitFlow(config);");
+    flowctrl.InitFlow(CONFIG_FILE);
+    #ifdef DEBUG_DETAIL_ON
+        ESP_LOGD(TAG, "Finished flowctrl.InitFlow(config);");
     #endif
     
     /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
     gpio_handler_init();
 
     #ifdef ENABLE_MQTT
-        tfliteflow.StartMQTTService();
+        flowctrl.StartMQTTService();
     #endif //ENABLE_MQTT
 }
 
@@ -131,7 +132,7 @@ bool doflow(void)
     std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
     ESP_LOGD(TAG, "doflow - start %s", zw_time.c_str());
     flowisrunning = true;
-    tfliteflow.doFlow(zw_time);
+    flowctrl.doFlow(zw_time);
     flowisrunning = false;
 
     #ifdef DEBUG_DETAIL_ON      
@@ -278,7 +279,7 @@ esp_err_t handler_json(httpd_req_t *req)
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "application/json");
 
-        std::string zw = tfliteflow.getJSON();
+        std::string zw = flowctrl.getJSON();
         if (zw.length() > 0) 
         {
             httpd_resp_send(req, zw.c_str(), zw.length());
@@ -371,7 +372,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 _intype = READOUT_TYPE_ERROR;
 
 
-            zw = tfliteflow.getReadoutAll(_intype);
+            zw = flowctrl.getReadoutAll(_intype);
             ESP_LOGD(TAG, "ZW: %s", zw.c_str());
             if (zw.length() > 0)
                 httpd_resp_send(req, zw.c_str(), zw.length()); 
@@ -380,7 +381,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
 
 
-        std::string *status = tfliteflow.getActStatus();
+        std::string *status = flowctrl.getActStatus();
         string query = std::string(_query);
     //    ESP_LOGD(TAG, "Query: %s, query.c_str());
         if (query.find("full") != std::string::npos)
@@ -398,8 +399,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             httpd_resp_sendstr_chunk(req, txt.c_str());
         }
 
-
-        zw = tfliteflow.getReadout(_rawValue, _noerror, 0);
+        zw = flowctrl.getReadout(_rawValue, _noerror, 0);
         if (zw.length() > 0)
             httpd_resp_sendstr_chunk(req, zw.c_str()); 
 
@@ -418,11 +418,11 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
 
                 std::vector<HTMLInfo*> htmlinfodig;
-                htmlinfodig = tfliteflow.GetAllDigital(); 
+                htmlinfodig = flowctrl.GetAllDigital(); 
 
                 for (int i = 0; i < htmlinfodig.size(); ++i)
                 {
-                    if (tfliteflow.GetTypeDigital() == Digital)
+                    if (flowctrl.GetTypeDigital() == Digital)
                     {
                         if (htmlinfodig[i]->val == 10)
                             zw = "NaN";
@@ -453,7 +453,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
                 
                 std::vector<HTMLInfo*> htmlinfoana;
-                htmlinfoana = tfliteflow.GetAllAnalog();
+                htmlinfoana = flowctrl.GetAllAnalog();
                 for (int i = 0; i < htmlinfoana.size(); ++i)
                 {
                     std::stringstream stream;
@@ -675,7 +675,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         Camera.SetBrightnessContrastSaturation(bri, con, sat);
         Camera.SetLEDIntensity(intens);
         ESP_LOGD(TAG, "test_take - vor TakeImage");
-        std::string zw = tfliteflow.doSingleStep("[TakeImage]", _host);
+        std::string zw = flowctrl.doSingleStep("[TakeImage]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     } 
@@ -690,7 +690,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        ESP_LOGD(TAG, "Parameter host: %s", _host.c_str());
 
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
+        std::string zw = flowctrl.doSingleStep("[Alignment]", _host);
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     }
@@ -718,7 +718,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
             ESP_LOGD(TAG, "handler_statusflow: %s", req->uri);
         #endif
 
-        string* zw = tfliteflow.getActStatusWithTime();
+        string* zw = flowctrl.getActStatusWithTime();
         resp_str = zw->c_str();
 
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);   
@@ -848,7 +848,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     }   
 
     if (strlen(_value) == 0) { // If no value is povided --> return actual PreValue
-        sReturnMessage = tfliteflow.GetPrevalue(std::string(_numbersname));
+        sReturnMessage = flowctrl.GetPrevalue(std::string(_numbersname));
 
         if (sReturnMessage.empty()) {
             sReturnMessage = "E92: Numbers name not found";
@@ -860,14 +860,14 @@ esp_err_t handler_prevalue(httpd_req_t *req)
         // New value is positive: Set PreValue to provided value and return value
         // New value is negative and actual RAW value is a valid number: Set PreValue to RAW value and return value
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "REST API handler_prevalue called: numbersname: " + std::string(_numbersname) + 
-                                                                                      ", value: " + std::string(_value));
-        if (!tfliteflow.UpdatePrevalue(_value, _numbersname, true)) {
+                                                ", value: " + std::string(_value));
+        if (!flowctrl.UpdatePrevalue(_value, _numbersname, true)) {
             sReturnMessage = "E93: Update request rejected. Please check device logs for more details";
             httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());  
             return ESP_FAIL;
         }
 
-        sReturnMessage = tfliteflow.GetPrevalue(std::string(_numbersname));
+        sReturnMessage = flowctrl.GetPrevalue(std::string(_numbersname));
 
         if (sReturnMessage.empty()) {
             sReturnMessage = "E94: Numbers name not found";
@@ -894,7 +894,7 @@ void task_autodoFlow(void *pvParameter)
 
     if (!isPlannedReboot && (esp_reset_reason() == ESP_RST_PANIC))
     {
-        tfliteflow.setActStatus("Initialization (delayed)");
+        flowctrl.setActStatus("Initialization (delayed)");
         //#ifdef ENABLE_MQTT
             //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization (delayed)", false); // Right now, not possible -> MQTT Service is going to be started later
         //#endif //ENABLE_MQTT
@@ -904,13 +904,13 @@ void task_autodoFlow(void *pvParameter)
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
 
-    auto_isrunning = tfliteflow.isAutoStart(auto_interval);
+    auto_isrunning = flowctrl.isAutoStart(auto_interval);
 
     if (isSetupModusActive()) 
     {
         auto_isrunning = false;
         std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
-        tfliteflow.doFlowTakeImageOnly(zw_time);
+        flowctrl.doFlowTakeImageOnly(zw_time);
     }
     
     while (auto_isrunning)
@@ -981,7 +981,7 @@ void task_autodoFlow(void *pvParameter)
 }
 
 
-void TFliteDoAutoStart()
+void StartMainFlowTask()
 {
     BaseType_t xReturned;
 
@@ -998,17 +998,9 @@ void TFliteDoAutoStart()
 }
 
 
-#ifdef ENABLE_MQTT
-std::string GetMQTTMainTopic()
+void register_server_main_flow_task_uri(httpd_handle_t server)
 {
-    return tfliteflow.GetMQTTMainTopic();
-}
-#endif//ENABLE_MQTT
-
-
-void register_server_tflite_uri(httpd_handle_t server)
-{
-    ESP_LOGI(TAG, "server_part_camera - Registering URI handlers");
+    ESP_LOGI(TAG, "server_main_flow_task - Registering URI handlers");
     
     httpd_uri_t camuri = { };
     camuri.method    = HTTP_GET;

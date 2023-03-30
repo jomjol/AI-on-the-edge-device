@@ -15,7 +15,7 @@
 
 #include <time.h>
 
-static const char* TAG = "class_flow_influxDbv2";
+static const char* TAG = "INFLUXDBV2";
 
 void ClassFlowInfluxDBv2::SetInitialParameter(void)
 {
