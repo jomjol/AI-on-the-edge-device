@@ -99,8 +99,6 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     #endif //ENABLE_INFLUXDB
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
-    if (_input.compare("ClassFlowWriteList") == 0)
-        return ("Writing List");
 
     return "Unkown Status";
 }
@@ -243,8 +241,6 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     if (toUpper(_type).compare("[INFLUXDBV2]") == 0)
         cfc = new ClassFlowInfluxDBv2(&FlowControll);
     #endif //ENABLE_INFLUXDB  
-    if (toUpper(_type).compare("[WRITELIST]") == 0)
-        cfc = new ClassFlowWriteList(&FlowControll);
 
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
