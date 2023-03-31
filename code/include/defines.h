@@ -6,6 +6,9 @@
 ////          Global definitions         ////
 /////////////////////////////////////////////
 
+#define USE_SHARED_MODEL_AND_IMAGETMP_MEMORY
+
+
     //********* debug options :  *************
 
     //can be set in platformio with -D OPTION_TO_ACTIVATE
