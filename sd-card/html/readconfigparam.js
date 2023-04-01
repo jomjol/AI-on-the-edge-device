@@ -93,7 +93,6 @@ function getTFLITEList() {
 
      tflitelist = tflitelist.split("\t");
      tflitelist.sort();
-     tflitelist.pop();
 
      return tflitelist;
 }
