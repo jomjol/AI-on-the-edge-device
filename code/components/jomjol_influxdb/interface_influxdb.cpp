@@ -46,12 +46,45 @@ void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _ti
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB_V2_Publish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
+    std::string payload;
+    char nowTimestamp[21];
+
+    if (_timestamp.length() > 0)
+    {
+        struct tm tm;
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
+        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
+
+        struct tm * ptm;
+        ptm = gmtime ( &t );
+        time_t utc = mktime(ptm);
+
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc before: " + std::to_string(utc) + " t: " + std::to_string(t));
+
+        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
+
+
+        sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774 " + nowTimestamp;
+    }
+    else
+    {
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774";
+    }
+
+/*
     time_t now = time(NULL);
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
     sprintf(nowTimestamp,"%jd000000000", (intmax_t)now);
- 
-    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+*/
+
+    payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
@@ -136,14 +169,47 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
        http_config.auth_type = HTTP_AUTH_TYPE_BASIC;
     }
 
+    std::string payload;
+    char nowTimestamp[21];
+
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
 
+    if (_timestamp.length() > 0)
+    {
+        struct tm tm;
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
+        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
+
+        struct tm * ptm;
+        ptm = gmtime ( &t );
+        time_t utc = mktime(ptm);
+
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc before: " + std::to_string(utc) + " t: " + std::to_string(t));
+
+        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
+
+
+        sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+
+        payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+    }
+    else
+    {
+        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+//        payload = _influxDB_V2_Measurement + " " + _key + "=774";
+    }
+
+
+/*
     time_t now = time(NULL);
     char nowTimestamp[21];
     // pad with zeroes to get nanoseconds
     sprintf(nowTimestamp,"%jd000000000", (intmax_t)now);
- 
     std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+*/
+
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
