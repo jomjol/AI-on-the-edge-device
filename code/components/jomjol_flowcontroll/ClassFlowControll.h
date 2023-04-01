@@ -33,7 +33,7 @@ protected:
 	ClassFlowTakeImage* flowtakeimage;
 	ClassFlow* CreateClassFlow(std::string _type);
 
-	uint8_t* SharedMemory_Alignment_TfLite;
+	//uint8_t* SharedMemory_Alignment_TfLite;
 
 	bool AutoStart;
 	float AutoInterval;

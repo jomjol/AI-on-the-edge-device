@@ -37,7 +37,7 @@ class CTfLiteClass
         static tflite::AllOpsResolver resolver;
 
         int kTensorArenaSize;
-        //uint8_t *tensor_arena;
+        uint8_t *tensor_arena;
 
         unsigned char *modelfile = NULL;
 
@@ -54,7 +54,7 @@ class CTfLiteClass
         ~CTfLiteClass();
         void CTfLiteClassDeleteInterpreter();   
         bool LoadModel(std::string _fn);
-        bool MakeAllocate(uint8_t* TensorArena);
+        bool MakeAllocate();
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();

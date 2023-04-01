@@ -190,13 +190,13 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (ImageTMP == NULL) 
     {
-        ImageTMP = new CImageBasis("ImageTMP", ImageBasis, tfliteflow.SharedMemoryAlignmentTfLite());   // Copy to shared memory and hand-over the pointer
-        /*if (!ImageTMP) 
+        ImageTMP = new CImageBasis("ImageTMP", ImageBasis);
+        if (!ImageTMP) 
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP");
             LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
             return false;
-        }*/
+        }
     }
 
     delete AlignAndCutImage;

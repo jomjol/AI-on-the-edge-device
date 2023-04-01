@@ -188,7 +188,7 @@ bool ClassFlowControll::StartMQTTService() {
 
 void ClassFlowControll::SetInitialParameter(void)
 {
-    SharedMemory_Alignment_TfLite = NULL;
+    //SharedMemory_Alignment_TfLite = NULL;
     AutoStart = false;
     SetupModeActive = false;
     AutoInterval = 10; // Minutes
@@ -285,7 +285,7 @@ void ClassFlowControll::InitFlow(std::string config)
     string line;
     flowpostprocessing = NULL;
 
-    SharedMemory_Alignment_TfLite = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->SharedMemory_Alignment_TfLite", 920 * 1024, MALLOC_CAP_SPIRAM);
+    //SharedMemory_Alignment_TfLite = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->SharedMemory_Alignment_TfLite", 920 * 1024, MALLOC_CAP_SPIRAM);
 
     ClassFlow* cfc;
     FILE* pFile;
@@ -325,12 +325,12 @@ void ClassFlowControll::InitFlow(std::string config)
     fclose(pFile);
 }
 
-
+/*
 uint8_t* ClassFlowControll::SharedMemoryAlignmentTfLite()
 {
     return SharedMemory_Alignment_TfLite;
 }
-
+*/
 
 std::string* ClassFlowControll::getActStatusWithTime()
 {
