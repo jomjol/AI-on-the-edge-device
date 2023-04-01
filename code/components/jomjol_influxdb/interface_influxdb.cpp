@@ -61,30 +61,18 @@ void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _ti
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc before: " + std::to_string(utc) + " t: " + std::to_string(t));
 
-        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+//        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
-
-
-        sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+        sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
 
         payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
-//        payload = _influxDB_V2_Measurement + " " + _key + "=774 " + nowTimestamp;
     }
     else
     {
         payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
-//        payload = _influxDB_V2_Measurement + " " + _key + "=774";
     }
 
-/*
-    time_t now = time(NULL);
-    char nowTimestamp[21];
-    // pad with zeroes to get nanoseconds
-    sprintf(nowTimestamp,"%jd000000000", (intmax_t)now);
-*/
-
-    payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     payload.shrink_to_fit();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
@@ -186,29 +174,17 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc before: " + std::to_string(utc) + " t: " + std::to_string(t));
 
-        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+//        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
-
-
-        sprintf(nowTimestamp,"%ld000000000", (long) utc);           // UTC
+        sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
 
         payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
         payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
-//        payload = _influxDB_V2_Measurement + " " + _key + "=774";
     }
-
-
-/*
-    time_t now = time(NULL);
-    char nowTimestamp[21];
-    // pad with zeroes to get nanoseconds
-    sprintf(nowTimestamp,"%jd000000000", (intmax_t)now);
-    std::string payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
-*/
 
     payload.shrink_to_fit();
 
