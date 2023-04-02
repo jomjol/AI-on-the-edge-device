@@ -27,4 +27,7 @@ bool getTimeWasNotSetAtBoot(void);
 bool getUseNtp(void);
 bool setupTime();
 
+bool time_manual_reset_sync(void);
+
+
 #endif //TIMESNTP_H
