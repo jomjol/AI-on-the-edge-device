@@ -418,7 +418,6 @@ typedef struct
 // 8-bits-per-channel interface
 //
 
-stbi_uc* resultbuffer;
 STBIDEF void setResultBuffer(stbi_uc *buffer);
 STBIDEF stbi_uc* getResultBuffer();
 
@@ -655,6 +654,8 @@ typedef int32_t  stbi__int32;
 
 // should produce compiler error if size is wrong
 typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];
+
+stbi_uc* resultbuffer = NULL;
 
 #ifdef _MSC_VER
 #define STBI_NOTUSED(v)  (void)(v)
