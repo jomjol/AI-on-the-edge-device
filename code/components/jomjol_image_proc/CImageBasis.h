@@ -63,6 +63,7 @@ class CImageBasis
         void SetIndepended(){externalImage = false;};
 
         void CreateEmptyImage(int _width, int _height, int _channels);
+        void CreateEmptyImage(int _width, int _height, int _channels, int add);
         void EmptyImage();
 
 

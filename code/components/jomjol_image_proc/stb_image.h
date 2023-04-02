@@ -418,6 +418,10 @@ typedef struct
 // 8-bits-per-channel interface
 //
 
+stbi_uc* resultbuffer;
+STBIDEF void setResultBuffer(stbi_uc *buffer);
+STBIDEF stbi_uc* getResultBuffer();
+
 STBIDEF stbi_uc *stbi_load_from_memory   (stbi_uc           const *buffer, int len   , int *x, int *y, int *channels_in_file, int desired_channels);
 STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk  , void *user, int *x, int *y, int *channels_in_file, int desired_channels);
 
@@ -1430,6 +1434,17 @@ STBIDEF stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, i
    stbi__start_mem(&s,buffer,len);
    return stbi__load_and_postprocess_8bit(&s,x,y,comp,req_comp);
 }
+
+STBIDEF void setResultBuffer(stbi_uc *buffer)
+{
+   resultbuffer = buffer;
+}
+
+STBIDEF stbi_uc* getResultBuffer()
+{
+   return resultbuffer;
+}
+
 
 STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
 {
@@ -3869,7 +3884,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
    if (req_comp < 0 || req_comp > 4) return stbi__errpuc("bad req_comp", "Internal error");
 
    // load a jpeg image from whichever source, but leave in YCbCr format
-   if (!stbi__decode_jpeg_image(z)) { stbi__cleanup_jpeg(z); return NULL; }
+   if (!stbi__decode_jpeg_image(z)) { stbi__cleanup_jpeg(z); setResultBuffer(NULL); return NULL; }
 
    // determine actual number of components to generate
    n = req_comp ? req_comp : z->s->img_n >= 3 ? 3 : 1;
@@ -3883,7 +3898,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
 
    // nothing to do if no components requested; check this now to avoid
    // accessing uninitialized coutput[0] later
-   if (decode_n <= 0) { stbi__cleanup_jpeg(z); return NULL; }
+   if (decode_n <= 0) { stbi__cleanup_jpeg(z); setResultBuffer(NULL); return NULL; }
 
    // resample and color-convert
    {
@@ -3900,7 +3915,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
          // allocate line buffer big enough for upsampling off the edges
          // with upsample factor of 4
          z->img_comp[k].linebuf = (stbi_uc *) stbi__malloc(z->s->img_x + 3);
-         if (!z->img_comp[k].linebuf) { stbi__cleanup_jpeg(z); return stbi__errpuc("outofmem", "Out of memory"); }
+         if (!z->img_comp[k].linebuf) { stbi__cleanup_jpeg(z); setResultBuffer(NULL); return stbi__errpuc("outofmem", "Out of memory"); }
 
          r->hs      = z->img_h_max / z->img_comp[k].h;
          r->vs      = z->img_v_max / z->img_comp[k].v;
@@ -3917,10 +3932,15 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
       }
 
       // can't error after this so, this is safe
-      output = (stbi_uc *) stbi__malloc_mad3(n, z->s->img_x, z->s->img_y, 1);
-      if (!output) { stbi__cleanup_jpeg(z); return stbi__errpuc("outofmem", "Out of memory"); }
+      if (getResultBuffer() != NULL) {
+         output = getResultBuffer();
+      }
+      else
+         output = (stbi_uc *) stbi__malloc_mad3(n, z->s->img_x, z->s->img_y, 1);
+      
+      if (!output) { stbi__cleanup_jpeg(z); setResultBuffer(NULL); return stbi__errpuc("outofmem", "Out of memory"); }
 
-      // now go ahead and resample
+      // now go ahead and resamplea
       for (j=0; j < z->s->img_y; ++j) {
          stbi_uc *out = output + n * z->s->img_x * j;
          for (k=0; k < decode_n; ++k) {
@@ -4016,6 +4036,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
          }
       }
       stbi__cleanup_jpeg(z);
+      setResultBuffer(NULL);
       *out_x = z->s->img_x;
       *out_y = z->s->img_y;
       if (comp) *comp = z->s->img_n >= 3 ? 3 : 1; // report original components, not output

@@ -411,6 +411,45 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
 }
 
 
+void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels, int add)
+{
+    bpp = _channels;
+    width = _width;
+    height = _height;
+    channels = _channels;
+
+    RGBImageLock();
+
+    #ifdef DEBUG_DETAIL_ON 
+        LogFile.WriteHeapInfo("CreateEmptyImage");
+    #endif
+
+    memsize = (width * height * channels) + add;
+
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+
+    if (rgb_image == NULL)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CreateEmptyImage: Can't allocate enough memory: " + std::to_string(memsize));
+        LogFile.WriteHeapInfo("CreateEmptyImage");
+        RGBImageRelease();
+        return;
+    }
+
+    stbi_uc* p_source;    
+
+    for (int x = 0; x < width; ++x)
+        for (int y = 0; y < height; ++y)
+        {
+            p_source = rgb_image + (channels * (y * width + x));
+            for (int _channels = 0; _channels < channels; ++_channels)
+                p_source[_channels] = (uint8_t) 0;
+        }
+
+    RGBImageRelease();
+}
+
+
 void CImageBasis::EmptyImage()
 {
     #ifdef DEBUG_DETAIL_ON 
@@ -439,10 +478,11 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
     RGBImageLock();
 
     //if (rgb_image != NULL) {
-        stbi_image_free(rgb_image);
+        //stbi_image_free(rgb_image);
         //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
-    //}
+    //
 
+    setResultBuffer(rgb_image);
     rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
     bpp = channels;
     ESP_LOGI(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);

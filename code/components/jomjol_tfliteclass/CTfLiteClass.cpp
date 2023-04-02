@@ -187,6 +187,8 @@ bool CTfLiteClass::MakeAllocate()
         LogFile.WriteHeapInfo("CTLiteClass::Alloc start");
     #endif
 
+    this->tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
+
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::MakeAllocate");
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 
@@ -307,13 +309,15 @@ CTfLiteClass::CTfLiteClass()
     this->input = nullptr;
     this->output = nullptr;  
     this->kTensorArenaSize = 800 * 1024;   /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
-    this->tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
+    //this->tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
 }
 
 
 void CTfLiteClass::CTfLiteClassDeleteInterpreter()
 {
     delete this->interpreter;
+    free_psram_heap(std::string(TAG) + "->tensor_arena", this->tensor_arena);
+
 }
 
 
@@ -322,8 +326,8 @@ CTfLiteClass::~CTfLiteClass()
   CTfLiteClassDeleteInterpreter();
   delete this->error_reporter;
 
-  free_psram_heap(std::string(TAG) + "->modelfile", modelfile);
-  free_psram_heap(std::string(TAG) + "->tensor_arena", this->tensor_arena);
+  //free_psram_heap(std::string(TAG) + "->modelfile", modelfile);
+  //free_psram_heap(std::string(TAG) + "->tensor_arena", this->tensor_arena);
 }        
 
 
