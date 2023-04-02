@@ -75,6 +75,7 @@ void time_sync_notification_cb(struct timeval *tv)
 bool wait_for_timesync(void)
 {
     sntp_restart();
+    sntp_init();
     int retry = 0;
     const int retry_count = 10;
     while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
@@ -237,11 +238,10 @@ bool setupTime() {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Configuring NTP Client...");        
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, timeServer.c_str());
-        sntp_init();
-
         sntp_set_time_sync_notification_cb(time_sync_notification_cb);
-
         setTimeZone(timeZone);
+
+        sntp_init();
         if (!wait_for_timesync())
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Timesync at startup failed.");        
