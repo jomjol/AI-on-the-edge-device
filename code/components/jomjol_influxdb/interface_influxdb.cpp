@@ -55,11 +55,11 @@ void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _ti
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
 
-        struct tm * ptm;
-        ptm = gmtime ( &t );
-        time_t utc = mktime(ptm);
+//        struct tm * ptm;
+//        ptm = gmtime ( &t );
+//        time_t utc = mktime(ptm);
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc before: " + std::to_string(utc) + " t: " + std::to_string(t));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use handover timestamp: " + _timestamp + " converted GMT timestamp: " + std::to_string(t));
 
 //        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
 //        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
@@ -168,11 +168,11 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
 
-        struct tm * ptm;
-        ptm = gmtime ( &t );
-        time_t utc = mktime(ptm);
+//        struct tm * ptm;
+//        ptm = gmtime ( &t );
+//        time_t utc = mktime(ptm);
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc before: " + std::to_string(utc) + " t: " + std::to_string(t));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use handover timestamp: " + _timestamp + " converted GMT timestamp: " + std::to_string(t));
 
 //        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
 //        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
