@@ -72,6 +72,20 @@ void time_sync_notification_cb(struct timeval *tv)
 }
 
 
+bool wait_for_timesync(void)
+{
+    int retry = 0;
+    const int retry_count = 10;
+    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting for system time to be set... " + std::to_string(retry) + "/" + std::to_string(retry_count));
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+    if (retry >= retry_count)
+        return false;
+    return true;
+}
+
+
 void setTimeZone(std::string _tzstring)
 {
     setenv("TZ", _tzstring.c_str(), 1);
@@ -225,6 +239,10 @@ bool setupTime() {
         sntp_set_time_sync_notification_cb(time_sync_notification_cb);
 
         setTimeZone(timeZone);
+        if (!wait_for_timesync())
+        {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Timesync at startup failed.");        
+        }
     }
 
 
@@ -250,3 +268,5 @@ bool setupTime() {
 
     return true;
 }
+
+
