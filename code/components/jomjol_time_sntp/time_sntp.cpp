@@ -74,6 +74,7 @@ void time_sync_notification_cb(struct timeval *tv)
 
 bool wait_for_timesync(void)
 {
+    sntp_restart();
     int retry = 0;
     const int retry_count = 10;
     while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
@@ -82,6 +83,8 @@ bool wait_for_timesync(void)
     }
     if (retry >= retry_count)
         return false;
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting for system time successfull with " + std::to_string(retry) + "/" + std::to_string(retry_count));
     return true;
 }
 
