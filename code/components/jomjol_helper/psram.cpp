@@ -59,14 +59,14 @@ void psram_free_shared_stbi_memory(void *p) {
  * Memory used in Aligning Step 
  ***********************************************/
 void *psram_reserve_shared_tmp_image_memory(void) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating TMP Image (PSRAM, part of shared memory, " + std::to_string(IMAGE_SIZE) + " bytes)...");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating tmpImage (PSRAM, part of shared memory, " + std::to_string(IMAGE_SIZE) + " bytes)...");
     allocatedBytes += IMAGE_SIZE;
-    return shared_region; // Use 1th part of the shared memory for the TMP Image (only user)
+    return shared_region; // Use 1th part of the shared memory for the tmpImage (only user)
 }
 
 
 void psram_free_shared_temp_image_memory(void) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Shared memory used for TMP Image (PSRAM, part of shared memory) is free again");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Shared memory used for tmpImage (PSRAM, part of shared memory) is free again");
     allocatedBytes = 0;
 }
 
