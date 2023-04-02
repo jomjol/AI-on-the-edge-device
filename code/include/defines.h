@@ -189,6 +189,12 @@
 
 
 /////////////////////////////////////////////
+////      PSRAM Allocations              ////
+/////////////////////////////////////////////
+#define MAX_MODEL_SIZE            (unsigned int)(1.3 * 1024 * 1024) // Space for the largest model (1.3 MB)
+#define TENSOR_ARENA_SIZE         800 * 1024 // Space for the Tensor Arena, (819200 Bytes)
+#define IMAGE_SIZE                640 * 480 * 3 // Space fo a decompressed image (921600 Bytes)
+/////////////////////////////////////////////
 ////      Conditionnal definitions       ////
 /////////////////////////////////////////////
 

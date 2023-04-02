@@ -13,6 +13,7 @@
 //#include "spiram.h"
 #include "esp32/spiram.h"
 #include "esp_pm.h"
+#include "psram.h"
 
 
 // SD-Card ////////////////////
@@ -438,6 +439,9 @@ extern "C" void app_main(void)
             }
         }
     }
+
+    /* Allocate static PSRAM memory regions */
+    reserve_psram_shared_region(); // catch error
 
     // Print Device info
     // ********************************************
