@@ -5,9 +5,9 @@
 #include "../../include/defines.h"
 
 
-#define STBI_MALLOC(sz)           malloc_psram_heap("STBI", sz, MALLOC_CAP_SPIRAM)
-#define STBI_REALLOC(p,newsz)     realloc_psram_heap("STBI", p, newsz, MALLOC_CAP_SPIRAM)
-#define STBI_FREE(p)              free_psram_heap("STBI", p)
+#define STBI_MALLOC(sz)           psram_reserve_shared_stbi_memory(sz)
+#define STBI_REALLOC(p,newsz)     psram_reallocate_shared_stbi_memory(p, newsz)
+#define STBI_FREE(p)              psram_free_shared_stbi_memory(p)
 
 
 #define STB_IMAGE_IMPLEMENTATION
