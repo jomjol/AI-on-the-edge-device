@@ -55,32 +55,40 @@
 
     //compiler optimization for tflite-micro-esp-examples
     #define XTENSA
-    //#define CONFIG_IDF_TARGET_ARCH_XTENSA //not needed with platformio/espressif32 @ 5.2.0
+    //#define CONFIG_IDF_TARGET_ARCH_XTENSA     //not needed with platformio/espressif32 @ 5.2.0
 
 
-    //ClassControllCamera + ClassFlowTakeImage + connect_wlan + main
-    #define FLASH_GPIO GPIO_NUM_4
-    #define BLINK_GPIO GPIO_NUM_33
+    //Statusled + ClassControllCamera
+    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
 
-    //interface_mqtt + read_wlanini
-    #define __HIDE_PASSWORD
 
     //ClassControllCamera
-    #define USE_PWM_LEDFLASH // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
-    
-    //server_GPIO
-    #define __LEDGLOBAL
+    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
+    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
+    #define CAM_LIVESTREAM_REFRESHRATE 500      // Camera livestream feature: Waiting time in milliseconds to refresh image
+
 
     //ClassControllCamera + ClassFlowTakeImage
     #define CAMERA_MODEL_AI_THINKER
     #define BOARD_ESP32CAM_AITHINKER
 
+
+    //server_GPIO
+    #define __LEDGLOBAL
+
+
     //server_GPIO + server_file + SoftAP
     #define CONFIG_FILE "/sdcard/config/config.ini"
     #define CONFIG_FILE_BACKUP "/sdcard/config/config.bak"
 
+
+    //interface_mqtt + read_wlanini
+    #define __HIDE_PASSWORD
+
+
     //ClassFlowControll + Main + SoftAP
     #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
+
 
     //main
     #define __SD_USE_ONE_LINE_MODE__
@@ -88,6 +96,7 @@
     // server_file + Helper
      #define FILE_PATH_MAX (255) //Max length a file path can have on storage
     
+
     //server_file +(ota_page.html + upload_script.html)
     #define MAX_FILE_SIZE   (8000*1024) // 8 MB Max size of an individual file. Make sure this value is same as that set in upload_script.html and ota_page.html!
     #define MAX_FILE_SIZE_STR "8MB"
@@ -98,18 +107,22 @@
     #define SERVER_HELPER_SCRATCH_BUFSIZE  8192
     #define SERVER_OTA_SCRATCH_BUFSIZE  1024 
 
+
     //server_file + server_help
     #define IS_FILE_EXT(filename, ext) \
     (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
+
 
     //server_ota
     #define HASH_LEN 32 // SHA-256 digest length
     #define OTA_URL_SIZE 256
 
+
     //ClassFlow + ClassFlowImage + server_tflite
     #define LOGFILE_TIME_FORMAT "%Y%m%d-%H%M%S"
     #define LOGFILE_TIME_FORMAT_DATE_EXTR substr(0, 8)
     #define LOGFILE_TIME_FORMAT_HOUR_EXTR substr(9, 2)
+
 
     //ClassFlowControll
     #define READOUT_TYPE_VALUE 0
@@ -117,17 +130,21 @@
     #define READOUT_TYPE_RAWVALUE 2
     #define READOUT_TYPE_ERROR 3
 
+
     //ClassFlowControll: Serve alg_roi.jpg from memory as JPG
     #define ALGROI_LOAD_FROM_MEM_AS_JPG // Load ALG_ROI.JPG as rendered JPG from RAM
+
 
     //ClassFlowMQTT
     #define LWT_TOPIC        "connection"
     #define LWT_CONNECTED    "connected"
     #define LWT_DISCONNECTED "connection lost"
 
+
     //ClassFlowPostProcessing
     #define PREVALUE_TIME_FORMAT_OUTPUT "%Y-%m-%dT%H:%M:%S%z"
     #define PREVALUE_TIME_FORMAT_INPUT "%d-%d-%dT%d:%d:%d"
+
 
     //CImageBasis
     #define HTTP_BUFFER_SENT 1024
@@ -139,13 +156,16 @@
     //#define STB_IMAGE_RESIZE_IMPLEMENTATION
     #define STBI_ONLY_JPEG // (save 2% of Flash, but breaks the alignment mark generation, see https://github.com/jomjol/AI-on-the-edge-device/issues/1721)
 
+
     //interface_influxdb
     #define MAX_HTTP_OUTPUT_BUFFER 2048
+
 
     //server_mqtt
     #define LWT_TOPIC        "connection"
     #define LWT_CONNECTED    "connected"
     #define LWT_DISCONNECTED "connection lost"
+
 
     //CTfLiteClass
     #define TFLITE_MINIMAL_CHECK(x)                              \
