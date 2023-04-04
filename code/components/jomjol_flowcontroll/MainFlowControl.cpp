@@ -208,6 +208,40 @@ esp_err_t handler_init(httpd_req_t *req)
 }
 
 
+esp_err_t handler_stream(httpd_req_t *req)
+{
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("handler_stream - Start");       
+        ESP_LOGD(TAG, "handler_stream uri: %s", req->uri);
+    #endif
+
+    char _query[50];
+    char _value[10];
+    bool flashlightOn = false;
+
+    if (httpd_req_get_url_query_str(req, _query, 50) == ESP_OK)
+    {
+//        ESP_LOGD(TAG, "Query: %s", _query);
+        if (httpd_query_key_value(_query, "flashlight", _value, 10) == ESP_OK)
+        {
+            #ifdef DEBUG_DETAIL_ON       
+                ESP_LOGD(TAG, "flashlight is found%s", _size);
+            #endif
+            if (strlen(_value) > 0)
+                flashlightOn = true;
+        }
+    }
+
+    Camera.CaptureToStream(req, flashlightOn);
+
+    #ifdef DEBUG_DETAIL_ON      
+        LogFile.WriteHeapInfo("handler_stream - Done");       
+    #endif
+
+    return ESP_OK;
+}
+
+
 esp_err_t handler_flow_start(httpd_req_t *req) {
 
     #ifdef DEBUG_DETAIL_ON          
@@ -1094,4 +1128,10 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.handler   = handler_get_heap;
     camuri.user_ctx  = (void*) "Heap"; 
     httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri       = "/stream";
+    camuri.handler   = handler_stream;
+    camuri.user_ctx  = (void*) "stream"; 
+    httpd_register_uri_handler(server, &camuri);
+
 }

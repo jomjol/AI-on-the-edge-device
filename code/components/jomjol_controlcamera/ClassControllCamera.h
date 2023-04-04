@@ -40,6 +40,7 @@ class CCamera {
         void LightOnOff(bool status);
         void LEDOnOff(bool status);
         esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
+        esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
         void SetQualitySize(int qual, framesize_t resol);
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
