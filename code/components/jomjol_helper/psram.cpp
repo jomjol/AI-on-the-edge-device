@@ -167,6 +167,6 @@ void *calloc_psram_heap(std::string name, size_t n, size_t size, uint32_t caps) 
 
 
 void free_psram_heap(std::string name, void *ptr) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Freeing memory in PSRAM used for '" + name + "'...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Freeing memory in PSRAM used for '" + name + "'...");
     heap_caps_free(ptr);
 }
