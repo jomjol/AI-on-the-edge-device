@@ -109,7 +109,7 @@ void *psram_get_shared_tensor_arena_memory(void) {
 
 
 void *psram_get_shared_model_memory(void) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating Model memory (" + std::to_string(MAX_MODEL_SIZE) + " bytes, use shared memory in PSRAM)...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Allocating Model memory (" + std::to_string(MAX_MODEL_SIZE) + " bytes, use shared memory in PSRAM)...");
     return (uint8_t *)shared_region + TENSOR_ARENA_SIZE; // Use 2nd part of the shared memory (after Tensor Arena) for the model
 }
 
