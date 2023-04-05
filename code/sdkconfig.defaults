@@ -100,8 +100,9 @@ CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=16384
 CONFIG_SPIRAM_MALLOC_RESERVE_INTERNAL=40960
 CONFIG_SPIRAM_CACHE_WORKAROUND=y
 CONFIG_SPIRAM_IGNORE_NOTFOUND=y
-#CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y => Leads to memory fragmentation, see https://github.com/jomjol/AI-on-the-edge-device/issues/2200
-#CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y => Leads to memory fragmentation, see https://github.com/jomjol/AI-on-the-edge-device/issues/2200
+
+CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
+CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
 
 CONFIG_ESP_INT_WDT_TIMEOUT_MS=300
 
@@ -123,7 +124,7 @@ CONFIG_MQTT_TASK_CORE_SELECTION_ENABLED=y
 CONFIG_MQTT_USE_CORE_0=y
 CONFIG_MQTT_USE_CUSTOM_CONFIG=y
 #CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS=5000
-#CONFIG_MQTT_CUSTOM_OUTBOX=y # -> Use custom outbox in components/jomjol_mqtt/mqtt_outbox.h/cpp. If USE_PSRAM is enabled in there, it will save 10 kBytes of internal RAM. How ever it also leads to memory fragmentation, see https://github.com/jomjol/AI-on-the-edge-device/issues/2200
+CONFIG_MQTT_CUSTOM_OUTBOX=y
 
 CONFIG_FREERTOS_TASK_FUNCTION_WRAPPER=n
 
