@@ -49,7 +49,7 @@ void *psram_reserve_shared_stbi_memory(size_t size) {
             return NULL;
         }
         
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating memory (" + std::to_string(size) + " bytes) for STBI (use shared memory in PSRAM)...");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Allocating memory (" + std::to_string(size) + " bytes) for STBI (use shared memory in PSRAM)...");
         allocatedBytesForSTBI += size;
         return (uint8_t *)shared_region + allocatedBytesForSTBI - size;
     }
