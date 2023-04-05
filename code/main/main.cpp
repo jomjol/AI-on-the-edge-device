@@ -188,6 +188,27 @@ extern "C" void app_main(void)
     ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
  
 
+    // Init SD card
+    // ********************************************
+    if (!Init_NVS_SDCard())
+    {
+        ESP_LOGE(TAG, "Device init aborted!");
+        return; // No way to continue without working SD card!
+    }
+
+    // SD card: Create log directories (if not already existing)
+    // ********************************************
+    LogFile.CreateLogDirectories(); // mandatory for logging + image saving
+
+    // ********************************************
+    // Highlight start of logfile logging
+    // Default Log Level: INFO -> Everything which needs to be logged during boot should be have level INFO, WARN OR ERROR
+    // ********************************************
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+
+
     // Init external PSRAM
     // ********************************************
     esp_err_t PSRAMStatus = esp_spiram_init();
@@ -285,26 +306,6 @@ extern "C" void app_main(void)
         }
     }
 
-
-    // Init SD card
-    // ********************************************
-    if (!Init_NVS_SDCard())
-    {
-        ESP_LOGE(TAG, "Device init aborted!");
-        return; // No way to continue without working SD card!
-    }
-
-    // SD card: Create log directories (if not already existing)
-    // ********************************************
-    LogFile.CreateLogDirectories(); // mandatory for logging + image saving
-
-    // ********************************************
-    // Highlight start of logfile logging
-    // Default Log Level: INFO -> Everything which needs to be logged during boot should be have level INFO, WARN OR ERROR
-    // ********************************************
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
     // SD card: basic R/W check
     // ********************************************
