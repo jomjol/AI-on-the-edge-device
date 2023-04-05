@@ -34,7 +34,7 @@ bool reserve_psram_shared_region(void) {
  * Memory used in Take Image (STBI)
  *******************************************************************/
 void psram_init_shared_memory_for_take_image_step(void) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init shared memory for step 'Take Image' (STBI buffers)");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init shared memory for step 'Take Image' (STBI buffers)");
     allocatedBytesForSTBI = 0;
 }
 
