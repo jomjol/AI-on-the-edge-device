@@ -84,7 +84,7 @@ void psram_free_shared_stbi_memory(void *p) {
  * for the tmpImage. 
  *******************************************************************/
 void *psram_reserve_shared_tmp_image_memory(void) {  
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating tmpImage (" + std::to_string(IMAGE_SIZE) + " bytes, use shared memory in PSRAM)...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Allocating tmpImage (" + std::to_string(IMAGE_SIZE) + " bytes, use shared memory in PSRAM)...");
     return shared_region; // Use 1th part of the shared memory for the tmpImage (only user)
 }
 
