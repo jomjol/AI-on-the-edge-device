@@ -128,7 +128,7 @@ void *malloc_psram_heap(std::string name, size_t size, uint32_t caps) {
 
 	ptr = heap_caps_malloc(size, caps);
     if (ptr != NULL) {
-	    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocated " + to_string(size) + " bytes in PSRAM for '" + name + "'");
+	    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Allocated " + to_string(size) + " bytes in PSRAM for '" + name + "'");
 	}
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to allocate " + to_string(size) + " bytes in PSRAM for '" + name + "'!");
