@@ -251,7 +251,7 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
         return false;
     }
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Loading Model " + _fn + " /size: " + std::to_string(size) + " bytes...");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Loading Model " + _fn + " /size: " + std::to_string(size) + " bytes...");
 
 
 #ifdef DEBUG_DETAIL_ON      
