@@ -243,9 +243,16 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
 
     if (size == -1)
     {
-        ESP_LOGE(TAG, "CTfLiteClass::ReadFileToModel: Model file doesn't exist: %s", _fn.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Model file doesn't exist: " + _fn + "!");
         return false;
     }
+    else if(size > MAX_MODEL_SIZE) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to load model '" + _fn + "'! It does not fit in the reserved shared memory in PSRAM!");
+        return false;
+    }
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Loading Model " + _fn + " /size: " + std::to_string(size) + " bytes...");
+
 
 #ifdef DEBUG_DETAIL_ON      
         LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
