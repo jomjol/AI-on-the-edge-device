@@ -251,7 +251,7 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
         LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
 #endif
 
-    modelfile = (unsigned char*)psram_reserve_shared_model_memory();
+    modelfile = (unsigned char*)psram_get_shared_model_memory();
   
 	  if(modelfile != NULL) 
     {
@@ -306,7 +306,7 @@ CTfLiteClass::CTfLiteClass()
     this->input = nullptr;
     this->output = nullptr;
     this->kTensorArenaSize = TENSOR_ARENA_SIZE;
-    this->tensor_arena = (uint8_t*)psram_reserve_shared_tensor_arena_memory();
+    this->tensor_arena = (uint8_t*)psram_get_shared_tensor_arena_memory();
 }
 
 

@@ -8,6 +8,7 @@
 #include "esp_wifi.h"
 #include "esp_log.h"
 #include "../../include/defines.h"
+#include "psram.h"
 
 #include <time.h>
 
@@ -183,6 +184,8 @@ string ClassFlowTakeImage::getHTMLSingleStep(string host)
 
 bool ClassFlowTakeImage::doFlow(string zwtime)
 {
+    psram_init_shared_memory_for_take_image_step();
+
     string logPath = CreateLogFolder(zwtime);
 
     int flash_duration = (int) (waitbeforepicture * 1000);
