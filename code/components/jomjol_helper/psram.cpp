@@ -141,7 +141,7 @@ void *malloc_psram_heap(std::string name, size_t size, uint32_t caps) {
 void *realloc_psram_heap(std::string name, void *ptr, size_t size, uint32_t caps) {
 	ptr = heap_caps_realloc(ptr, size, caps);
     if (ptr != NULL) {
-	    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reallocated " + to_string(size) + " bytes in PSRAM for '" + name + "'");
+	    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Reallocated " + to_string(size) + " bytes in PSRAM for '" + name + "'");
 	}
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to reallocate " + to_string(size) + " bytes in PSRAM for '" + name + "'!");
