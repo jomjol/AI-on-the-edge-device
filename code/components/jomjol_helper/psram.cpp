@@ -14,7 +14,7 @@ uint32_t allocatedBytesForSTBI = 0;
 /** Reserve a large block in the PSRAM which will be shared between the different steps.
  * Each step uses it differently but only wiuthin itself. */
 bool reserve_psram_shared_region(void) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating shared PSRAM region (" + 
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Allocating shared PSRAM region (" + 
             std::to_string(TENSOR_ARENA_SIZE + MAX_MODEL_SIZE) + " bytes)...");
     shared_region = malloc_psram_heap("Shared PSRAM region", TENSOR_ARENA_SIZE + MAX_MODEL_SIZE, 
             MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
