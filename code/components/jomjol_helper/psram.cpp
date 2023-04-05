@@ -69,7 +69,7 @@ void *psram_reallocate_shared_stbi_memory(void *ptr, size_t newsize) {
 
 void psram_free_shared_stbi_memory(void *p) {
     if ((p >= shared_region) && (p <= ((uint8_t *)shared_region + allocatedBytesForSTBI))) { // was allocated inside the shared memory
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Part of shared memory used for STBI (PSRAM, part of shared memory) is free again");
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Part of shared memory used for STBI (PSRAM, part of shared memory) is free again");
     }
     else { // Normal PSRAM
         free_psram_heap("STBI", p);
