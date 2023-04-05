@@ -632,7 +632,7 @@ CImageBasis::~CImageBasis()
         else {
             //stbi_image_free(rgb_image);
             if (memsize == 0) {
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Not freeing (" + name + " as there was never PSRAM allocated for it)");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not freeing (" + name + " as there was never PSRAM allocated for it)");
             }
             else {
                 free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
