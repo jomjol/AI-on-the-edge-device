@@ -115,7 +115,7 @@ void *psram_get_shared_model_memory(void) {
 
 
 void psram_free_shared_tensor_arena_and_model_memory(void) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Shared memory used for Tensor Arena and model (PSRAM, part of shared memory) is free again");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Shared memory used for Tensor Arena and model (PSRAM, part of shared memory) is free again");
 }
 
 
