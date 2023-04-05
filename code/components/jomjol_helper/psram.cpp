@@ -35,7 +35,7 @@ void *psram_reserve_shared_stbi_memory(size_t size) {
     // only do it this way for the defined 4 buffers!
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating memory for STBI (PSRAM, part of shared memory, " + std::to_string(size) + " bytes)...");
     allocatedBytes += size;
-    return shared_region + allocatedBytes - size;
+    return (uint8_t *)shared_region + allocatedBytes - size;
 }
 
 
@@ -85,7 +85,7 @@ void *psram_reserve_shared_tensor_arena_memory(void) {
 void *psram_reserve_shared_model_memory(void) {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocating Model memory (PSRAM, part of shared memory, " + std::to_string(MAX_MODEL_SIZE) + " bytes)...");
     allocatedBytes += MAX_MODEL_SIZE;
-    return shared_region + allocatedBytes - MAX_MODEL_SIZE; // Use 2nd part of the shared memory (after Tensor Arena) for the model
+    return (uint8_t *)shared_region + allocatedBytes - MAX_MODEL_SIZE; // Use 2nd part of the shared memory (after Tensor Arena) for the model
 }
 
 
