@@ -90,7 +90,7 @@ void *psram_reserve_shared_tmp_image_memory(void) {
 
 
 void psram_free_shared_temp_image_memory(void) {
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Shared memory used for tmpImage (PSRAM, part of shared memory) is free again");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Shared memory used for tmpImage (PSRAM, part of shared memory) is free again");
 }
 
 
