@@ -626,10 +626,10 @@ CImageBasis::~CImageBasis()
 
 
     if (!externalImage) {
-        if (name == "tmpImage") {
+        if (name == "tmpImage") { // This image should be placed in the shared part of PSRAM
             psram_free_shared_temp_image_memory();
         }
-        else {
+        else { // All other images are much smaller and can go into the normal PSRAM region
             //stbi_image_free(rgb_image);
             if (memsize == 0) {
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not freeing (" + name + " as there was never PSRAM allocated for it)");
