@@ -452,25 +452,6 @@ extern "C" void app_main(void)
     #endif
    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Print Device info
     // ********************************************
     esp_chip_info_t chipInfo;
