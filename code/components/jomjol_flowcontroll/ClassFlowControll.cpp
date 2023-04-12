@@ -728,7 +728,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
                 httpd_resp_set_type(req, "image/jpeg");
                 result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
-                delete fileBuffer;
+                free(fileBuffer);
             }
             else if (aktstatus.find("Initialization") != -1) {
                 FILE* file = fopen("/sdcard/html/Flowstate_initialization.jpg", "rb"); 
@@ -755,7 +755,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
                 httpd_resp_set_type(req, "image/jpeg");
                 result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
-                delete fileBuffer;
+                free(fileBuffer);
             }
             else if (aktstatus.find("Take Image") != -1) {
                 if (flowalignment && flowalignment->AlgROI) {

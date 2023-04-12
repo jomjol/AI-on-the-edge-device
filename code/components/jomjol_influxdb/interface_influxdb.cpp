@@ -137,6 +137,9 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
          case HTTP_EVENT_DISCONNECTED:
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP Client Disconnected");
             break;
+        case HTTP_EVENT_REDIRECT:
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP Redirect");
+            break;
     }
     return ESP_OK;
 }
