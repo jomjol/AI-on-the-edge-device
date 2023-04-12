@@ -29,6 +29,7 @@ extern "C" {
 #include "esp_err.h"
 #include "esp_log.h"
 
+#include "esp_vfs.h"
 #include <esp_spiffs.h>
 #include "esp_http_server.h"
 
@@ -45,8 +46,6 @@ extern "C" {
 
 #include "Helper.h"
 #include "miniz.h"
-
-#define ESP_VFS_PATH_MAX 15 // See https://github.com/espressif/esp-idf/blob/master/components/vfs/include/esp_vfs.h
 
 static const char *TAG = "OTA FILE";
 
