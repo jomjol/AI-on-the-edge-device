@@ -33,7 +33,8 @@ void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
 
     if ( !len ) {
         for ( int i = 0; i < detail::MAX_PULSES; i++) {
-            RMTMEM.chan[ _channel].data32[i + offset ].val = 0;
+            /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
+            //RMTMEM.chan[ _channel].data32[i + offset ].val = 0;
         }
     }
 
@@ -43,11 +44,13 @@ void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
         for ( int j = 0; j != 8; j++, val <<= 1 ) {
             int bit = val >> 7;
             int idx = i * 8 + offset + j;
-            RMTMEM.chan[ _channel ].data32[ idx ].val = _bitToRmt[ bit & 0x01 ].value;
+            /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
+        //    RMTMEM.chan[ _channel ].data32[ idx ].val = _bitToRmt[ bit & 0x01 ].value;
         }
         if ( _pixelPosition == _count - 1 && _componentPosition == 2 ) {
-            RMTMEM.chan[ _channel ].data32[ i * 8 + offset + 7 ].duration1 =
-                _timing.TRS / ( detail::RMT_DURATION_NS * detail::DIVIDER );
+            /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
+        //    RMTMEM.chan[ _channel ].data32[ i * 8 + offset + 7 ].duration1 =
+        //        _timing.TRS / ( detail::RMT_DURATION_NS * detail::DIVIDER );
         }
 
         _componentPosition++;
@@ -58,6 +61,7 @@ void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
     }
 
     for ( i *= 8; i != detail::MAX_PULSES; i++ ) {
-        RMTMEM.chan[ _channel ].data32[ i + offset ].val = 0;
+        /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
+        //    RMTMEM.chan[ _channel ].data32[ i + offset ].val = 0;
     }
 }
