@@ -19,7 +19,7 @@
 #include "esp_mbo.h"
 #include "esp_mac.h"
 #include "esp_netif.h"
-#include "esp_event.h"
+#include <netdb.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
 
@@ -36,6 +36,20 @@
 
 #include "../../include/defines.h"
 
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#include "soc/periph_defs.h"
+#include "esp_private/periph_ctrl.h"
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
+#endif
+
+esp_netif_t *sta_netif = NULL;
 
 static const char *TAG = "WIFI";
 
@@ -173,7 +187,7 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 			pos += s_len;
 		}
 				
-		ESP_LOGI(TAG, "Roaming: RMM neigbor report bssid=" MACSTR
+		ESP_LOGI(TAG, "Roaming: RMM neighbor report bssid=" MACSTR
 				" info=0x%x op_class=%u chan=%u phy_type=%u%s%s%s%s",
 				MAC2STR(nr), WPA_GET_LE32(nr + ETH_ALEN),
 				nr[ETH_ALEN + 4], nr[ETH_ALEN + 5],
@@ -182,7 +196,7 @@ static char * get_btm_neighbor_list(uint8_t *report, size_t report_len)
 				civic[0] ? " civic=" : "", civic);
 
 		
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: RMM neigbor report BSSID: " + BssidToString((char*)nr) + 
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: RMM neighbor report BSSID: " + BssidToString((char*)nr) + 
 		                                        ", Channel: " + std::to_string(nr[ETH_ALEN + 5]));
 
 		/* neighbor start */
@@ -365,7 +379,7 @@ void wifi_scan(void)
 	else {
     	if (esp_wifi_scan_get_ap_records(&max_number_of_ap_found, wifi_ap_records) != ESP_OK) { // Retrieve results (and free internal heap)
 			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "wifi_scan: esp_wifi_scan_get_ap_records: Error retrieving datasets");
-			free(wifi_ap_records);
+			delete wifi_ap_records;
 			return;
 		}
 	}
@@ -388,7 +402,7 @@ void wifi_scan(void)
 			APWithBetterRSSI = true;
         }
 	}
-    free(wifi_ap_records);
+	delete wifi_ap_records;
 }
 
 
@@ -636,7 +650,7 @@ esp_err_t wifi_init_sta(void)
 
     if (!wlan_config.hostname.empty())
     {
-        retval = tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA , wlan_config.hostname.c_str());
+        retval = esp_netif_set_hostname(my_sta, wlan_config.hostname.c_str());
         if(retval != ESP_OK ) {
 			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set hostname! Error: " + std::to_string(retval));
         }
