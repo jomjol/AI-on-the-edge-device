@@ -160,7 +160,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
 
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
-    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
+    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, (int)event_id);
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
@@ -222,25 +222,24 @@ int MQTT_Init() {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init");
     MQTTdestroy_client(false);
 
-    esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = uri.c_str(),
-        .client_id = client_id.c_str(),
-        .lwt_topic = lwt_topic.c_str(),
-        .lwt_msg = lwt_disconnected.c_str(),
-        .lwt_retain = 1,
-        .lwt_msg_len = (int)(lwt_disconnected.length()),
-        .keepalive = keepalive,
-        .disable_auto_reconnect = false,        // Reconnection routine active (Default: false)
-        .buffer_size = 1536,                    // size of MQTT send/receive buffer (Default: 1024)
-        .reconnect_timeout_ms = 15000,          // Try to reconnect to broker (Default: 10000ms)
-        .network_timeout_ms = 20000,            // Network Timeout (Default: 10000ms)
-        .message_retransmit_timeout = 3000      // Time after message resent when broker not acknowledged (QoS1, QoS2)
+    esp_mqtt_client_config_t mqtt_cfg = { };
 
-    };
+    mqtt_cfg.broker.address.uri = uri.c_str();
+    mqtt_cfg.credentials.client_id = client_id.c_str();
+    mqtt_cfg.network.disable_auto_reconnect = false;     // Reconnection routine active (Default: false)
+    mqtt_cfg.network.reconnect_timeout_ms = 15000;       // Try to reconnect to broker (Default: 10000ms)
+    mqtt_cfg.network.timeout_ms = 20000;                 // Network Timeout (Default: 10000ms)
+    mqtt_cfg.session.message_retransmit_timeout = 3000;  // Time after message resent when broker not acknowledged (QoS1, QoS2)
+    mqtt_cfg.session.last_will.topic = lwt_topic.c_str();
+    mqtt_cfg.session.last_will.retain = 1;
+    mqtt_cfg.session.last_will.msg = lwt_disconnected.c_str();
+    mqtt_cfg.session.last_will.msg_len = (int)(lwt_disconnected.length());
+    mqtt_cfg.session.keepalive = keepalive;
+    mqtt_cfg.buffer.size = 1536;                         // size of MQTT send/receive buffer (Default: 1024)
 
     if (user.length() && password.length()){
-        mqtt_cfg.username = user.c_str();
-        mqtt_cfg.password = password.c_str();
+        mqtt_cfg.credentials.username = user.c_str();
+        mqtt_cfg.credentials.authentication.password = password.c_str();
     }
 
     #ifdef DEBUG_DETAIL_ON  

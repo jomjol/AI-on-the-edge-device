@@ -13,6 +13,7 @@
 #include "version.h"
 
 #include "esp_wifi.h"
+#include <netdb.h>
 
 #include "server_tflite.h"
 #include "esp_log.h"
@@ -23,6 +24,8 @@
 
 httpd_handle_t server = NULL;   
 std::string starttime = "";
+
+extern esp_netif_t *sta_netif;
 
 static const char *TAG = "MAIN SERVER";
 
@@ -350,11 +353,15 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     char freeheapmem[11];
     sprintf(freeheapmem, "%lu", (long) getESPHeapSize());
     
-    tcpip_adapter_ip_info_t ip_info;
-    ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+    esp_netif_ip_info_t ip_info;
+    ESP_ERROR_CHECK(esp_netif_get_ip_info(sta_netif, &ip_info));
     const char *hostname;
-    ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
+    ESP_ERROR_CHECK(esp_netif_get_hostname(sta_netif, &hostname));
     
+    char ipFormated[4*3+3+1];
+
+    sprintf(ipFormated, IPSTR, IP2STR(&ip_info.ip));
+
     zw = string("[{") + 
         "\"firmware\": \"" + gitversion + "\"," +
         "\"buildtime\": \"" + buildtime + "\"," +
@@ -364,7 +371,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"html\": \"" + htmlversion + "\"," +
         "\"cputemp\": \"" + cputemp + "\"," +
         "\"hostname\": \"" + hostname + "\"," +
-        "\"IPv4\": \"" + ip4addr_ntoa(&ip_info.ip) + "\"," +
+        "\"IPv4\": \"" + string(ipFormated) + "\"," +
         "\"freeHeapMem\": \"" + freeheapmem + "\"" +
         "}]";
 

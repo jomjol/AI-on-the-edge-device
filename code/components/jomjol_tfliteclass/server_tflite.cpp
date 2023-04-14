@@ -4,6 +4,7 @@
 #include <vector>
 #include "string.h"
 #include "esp_log.h"
+#include <esp_timer.h>
 
 #include <iomanip>
 #include <sstream>
@@ -26,6 +27,10 @@
 #include "read_wlanini.h"
 #include "connect_wlan.h"
 
+// support IDF 5.x
+#ifndef portTICK_RATE_MS
+#define portTICK_RATE_MS portTICK_PERIOD_MS
+#endif
 
 ClassFlowControll tfliteflow;
 

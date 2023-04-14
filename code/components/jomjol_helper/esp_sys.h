@@ -16,9 +16,9 @@
 #include <esp_spi_flash.h>
 #include <esp_heap_caps.h>
 
-// for esp_spiram_get_size
+// for esp_psram_get_size
 extern "C" {
-    #include <esp32/spiram.h>
+    #include "esp_psram.h"
     #ifdef USE_HIMEM_IF_AVAILABLE
         #include <esp32/himem.h>
     #endif
