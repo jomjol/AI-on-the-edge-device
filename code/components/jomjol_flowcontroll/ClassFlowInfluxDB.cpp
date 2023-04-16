@@ -159,9 +159,9 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
-            if ((*NUMBERS)[i]->Fieldname.length() > 0)
+            if ((*NUMBERS)[i]->FieldnameV1.length() > 0)
             {
-                namenumber = (*NUMBERS)[i]->Fieldname;
+                namenumber = (*NUMBERS)[i]->FieldnameV1;
             }
             else
             {
@@ -196,11 +196,11 @@ void ClassFlowInfluxDB::handleFieldname(string _decsep, string _value)
     {
         if (_digit == "default")                        //  Set to default first (if nothing else is set)
         {
-            flowpostprocessing->NUMBERS[j]->Fieldname = _value;
+            flowpostprocessing->NUMBERS[j]->FieldnameV1 = _value;
         }
         if (flowpostprocessing->NUMBERS[j]->name == _digit)
         {
-            flowpostprocessing->NUMBERS[j]->Fieldname = _value;
+            flowpostprocessing->NUMBERS[j]->FieldnameV1 = _value;
         }
     }
 }
