@@ -186,7 +186,7 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
     }
     else
     {
-        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+        payload = _influxDBMeasurement + " " + _key + "=" + _content;
     }
 
     payload.shrink_to_fit();
@@ -195,8 +195,8 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
 
     // use the default retention policy of the database
-//    std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
-    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
+    std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
+//    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
 
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
