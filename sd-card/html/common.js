@@ -1,7 +1,7 @@
  
 /* The UI can also be run locally, but you have to set the IP of your devide accordingly.
  * And you also might have to disable CORS in your webbrowser! */
-var domainname_for_testing = "192.168.1.153";
+var domainname_for_testing = "192.168.178.23";
 
 
 

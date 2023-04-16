@@ -86,25 +86,31 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
     {
         ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(splitted[0]) == "USER") && (splitted.size() > 1))
+        std::string _param = GetParameterName(splitted[0]);
+
+        if ((toUpper(_param) == "USER") && (splitted.size() > 1))
         {
             this->user = splitted[1];
         }  
-        if ((toUpper(splitted[0]) == "PASSWORD") && (splitted.size() > 1))
+        if ((toUpper(_param) == "PASSWORD") && (splitted.size() > 1))
         {
             this->password = splitted[1];
         }               
-        if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
+        if ((toUpper(_param) == "URI") && (splitted.size() > 1))
         {
             this->uri = splitted[1];
         }
-        if (((toUpper(splitted[0]) == "MEASUREMENT")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "MEASUREMENT")) && (splitted.size() > 1))
         {
             this->measurement = splitted[1];
         }
-        if (((toUpper(splitted[0]) == "DATABASE")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "DATABASE")) && (splitted.size() > 1))
         {
             this->database = splitted[1];
+        }
+        if (((toUpper(_param) == "FIELDNAME")) && (splitted.size() > 1))
+        {
+            handleFieldname(splitted[0], splitted[1]);
         }
     }
 
@@ -153,11 +159,18 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
-            namenumber = (*NUMBERS)[i]->name;
-            if (namenumber == "default")
-                namenumber = "value";
+            if ((*NUMBERS)[i]->Fieldname.length() > 0)
+            {
+                namenumber = (*NUMBERS)[i]->Fieldname;
+            }
             else
-                namenumber = namenumber + "/value";
+            {
+                namenumber = (*NUMBERS)[i]->name;
+                if (namenumber == "default")
+                    namenumber = "value";
+                else
+                    namenumber = namenumber + "/value";
+            }
 
             if (result.length() > 0)   
                 InfluxDBPublish(namenumber, result, resulttimestamp);
@@ -168,5 +181,29 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
     
     return true;
 }
+
+
+void ClassFlowInfluxDB::handleFieldname(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+    for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
+        {
+            flowpostprocessing->NUMBERS[j]->Fieldname = _value;
+        }
+        if (flowpostprocessing->NUMBERS[j]->name == _digit)
+        {
+            flowpostprocessing->NUMBERS[j]->Fieldname = _value;
+        }
+    }
+}
+
 
 #endif //ENABLE_INFLUXDB
