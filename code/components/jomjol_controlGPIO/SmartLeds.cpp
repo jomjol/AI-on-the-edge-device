@@ -1,5 +1,32 @@
 #include "SmartLeds.h"
 
+
+/* PlatformIO 6 (ESP IDF 5) does no longer allow access to RMTMEM,
+   see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 
+   As a dirty workaround, we copy the needed structures from rmt_struct.h
+   In the long run, this should be replaced! */
+typedef struct rmt_item32_s {
+    union {
+        struct {
+            uint32_t duration0 :15;
+            uint32_t level0 :1;
+            uint32_t duration1 :15;
+            uint32_t level1 :1;
+        };
+        uint32_t val;
+    };
+} rmt_item32_t;
+
+//Allow access to RMT memory using RMTMEM.chan[0].data32[8]
+typedef volatile struct rmt_mem_s {
+    struct {
+        rmt_item32_t data32[64];
+    } chan[8];
+} rmt_mem_t;
+extern rmt_mem_t RMTMEM;
+
+
+
 IsrCore SmartLed::_interruptCore = CoreCurrent;
 intr_handle_t SmartLed::_interruptHandle = NULL;
 
@@ -33,8 +60,7 @@ void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
 
     if ( !len ) {
         for ( int i = 0; i < detail::MAX_PULSES; i++) {
-            /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
-            //RMTMEM.chan[ _channel].data32[i + offset ].val = 0;
+            RMTMEM.chan[ _channel].data32[i + offset ].val = 0;
         }
     }
 
@@ -44,13 +70,11 @@ void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
         for ( int j = 0; j != 8; j++, val <<= 1 ) {
             int bit = val >> 7;
             int idx = i * 8 + offset + j;
-            /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
-        //    RMTMEM.chan[ _channel ].data32[ idx ].val = _bitToRmt[ bit & 0x01 ].value;
+            RMTMEM.chan[ _channel ].data32[ idx ].val = _bitToRmt[ bit & 0x01 ].value;
         }
         if ( _pixelPosition == _count - 1 && _componentPosition == 2 ) {
-            /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
-        //    RMTMEM.chan[ _channel ].data32[ i * 8 + offset + 7 ].duration1 =
-        //        _timing.TRS / ( detail::RMT_DURATION_NS * detail::DIVIDER );
+            RMTMEM.chan[ _channel ].data32[ i * 8 + offset + 7 ].duration1 =
+                _timing.TRS / ( detail::RMT_DURATION_NS * detail::DIVIDER );
         }
 
         _componentPosition++;
@@ -61,7 +85,6 @@ void IRAM_ATTR SmartLed::copyRmtHalfBlock() {
     }
 
     for ( i *= 8; i != detail::MAX_PULSES; i++ ) {
-        /* TODO PlatformIO 6 (ESP IDF 5): no longer available, see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 */
-        //    RMTMEM.chan[ _channel ].data32[ i + offset ].val = 0;
+        RMTMEM.chan[ _channel ].data32[ i + offset ].val = 0;
     }
 }
