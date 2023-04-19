@@ -1014,6 +1014,12 @@ void task_autodoFlow(void *pvParameter)
             vTaskDelay( xDelay );        
         }
     }
+
+    while(1) // Keep flow task running to handle necessary sub tasks like reboot handler, etc..
+    {
+        vTaskDelay(2000 / portTICK_PERIOD_MS); 
+    }
+
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
     xHandletask_autodoFlow = NULL;
     ESP_LOGD(TAG, "task_autodoFlow: end");
