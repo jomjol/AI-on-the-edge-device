@@ -47,7 +47,6 @@ extern "C" {
 #include "Helper.h"
 #include "miniz.h"
 
-
 static const char *TAG = "OTA FILE";
 
 struct file_server_data {

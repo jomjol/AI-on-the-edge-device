@@ -3,6 +3,7 @@
 #ifdef DEBUG_ENABLE_SYSINFO
 
 #include "esp_sys.h"
+#include "esp_chip_info.h"
 
 #include <string>
 
@@ -121,7 +122,7 @@ std::string get_device_info()
     }
 
     #ifdef USE_HIMEM_IF_AVAILABLE
-        sprintf(aMsgBuf,"spiram size %u\n", esp_spiram_get_size());
+        sprintf(aMsgBuf,"spiram size %u\n", esp_psram_get_size());
         espInfoResultStr += std::string(aMsgBuf);
         sprintf(aMsgBuf,"himem free %u\n", esp_himem_get_free_size());
         espInfoResultStr += std::string(aMsgBuf);
