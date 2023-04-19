@@ -7,6 +7,11 @@
 #include "ClassLogFile.h"
 #include "../../include/defines.h"
 
+// define `gpio_pad_select_gpip` for newer versions of IDF
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 3, 0))
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#endif
 
 static const char* TAG = "STATUSLED";
 

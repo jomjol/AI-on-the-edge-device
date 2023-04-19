@@ -7,7 +7,6 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "esp_system.h"
-#include "esp_event.h"
 #include "esp_log.h"
 #include "esp_attr.h"
 #include "esp_sleep.h"
@@ -69,6 +68,24 @@ void time_sync_notification_cb(struct timeval *tv)
     }
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " +
             getServerName() + ": " + getCurrentTimeString("%Y-%m-%d %H:%M:%S"));
+}
+
+
+bool time_manual_reset_sync(void)
+{
+    sntp_restart();
+//    sntp_init();
+    int retry = 0;
+    const int retry_count = 10;
+    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting for system time to be set... " + std::to_string(retry) + "/" + std::to_string(retry_count));
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+    if (retry >= retry_count)
+        return false;
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Waiting for system time successfull with " + std::to_string(retry) + "/" + std::to_string(retry_count));
+    return true;
 }
 
 
@@ -220,11 +237,16 @@ bool setupTime() {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Configuring NTP Client...");        
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, timeServer.c_str());
-        sntp_init();
-
         sntp_set_time_sync_notification_cb(time_sync_notification_cb);
-
         setTimeZone(timeZone);
+
+        sntp_init();
+/*        
+        if (!wait_for_timesync())
+        {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Timesync at startup failed.");        
+        }
+*/
     }
 
 
@@ -250,3 +272,5 @@ bool setupTime() {
 
     return true;
 }
+
+

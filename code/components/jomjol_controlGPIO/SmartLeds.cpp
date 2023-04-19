@@ -1,5 +1,32 @@
 #include "SmartLeds.h"
 
+
+/* PlatformIO 6 (ESP IDF 5) does no longer allow access to RMTMEM,
+   see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/peripherals.html?highlight=rmtmem#id5 
+   As a dirty workaround, we copy the needed structures from rmt_struct.h
+   In the long run, this should be replaced! */
+typedef struct rmt_item32_s {
+    union {
+        struct {
+            uint32_t duration0 :15;
+            uint32_t level0 :1;
+            uint32_t duration1 :15;
+            uint32_t level1 :1;
+        };
+        uint32_t val;
+    };
+} rmt_item32_t;
+
+//Allow access to RMT memory using RMTMEM.chan[0].data32[8]
+typedef volatile struct rmt_mem_s {
+    struct {
+        rmt_item32_t data32[64];
+    } chan[8];
+} rmt_mem_t;
+extern rmt_mem_t RMTMEM;
+
+
+
 IsrCore SmartLed::_interruptCore = CoreCurrent;
 intr_handle_t SmartLed::_interruptHandle = NULL;
 
