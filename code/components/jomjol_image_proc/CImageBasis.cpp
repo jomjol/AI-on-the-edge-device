@@ -477,7 +477,13 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
 
     memsize = width * height * channels;
 
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+
+    if (name == "tmpImage") {
+        rgb_image = (unsigned char*)psram_reserve_shared_tmp_image_memory();
+    }
+    else {
+        rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+    }
 
     if (rgb_image == NULL)
     {
@@ -618,9 +624,20 @@ CImageBasis::~CImageBasis()
 {
     RGBImageLock();
 
+
     if (!externalImage) {
-        //stbi_image_free(rgb_image);
-        free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+        if (name == "tmpImage") { // This image should be placed in the shared part of PSRAM
+            psram_free_shared_temp_image_memory();
+        }
+        else { // All other images are much smaller and can go into the normal PSRAM region
+            //stbi_image_free(rgb_image);
+            if (memsize == 0) {
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not freeing (" + name + " as there was never PSRAM allocated for it)");
+            }
+            else {
+                free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+            }
+        }
     }
 
     RGBImageRelease();

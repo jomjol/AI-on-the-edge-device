@@ -373,7 +373,7 @@ bool ClassFlowControll::doFlow(string time)
         zw_time = getCurrentTimeString("%H:%M:%S");
         aktstatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatusWithTime = aktstatus + " (" + zw_time + ")";
-        //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Status: " + aktstatusWithTime);
         #ifdef ENABLE_MQTT
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
         #endif //ENABLE_MQTT

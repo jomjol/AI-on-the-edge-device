@@ -243,15 +243,22 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
 
     if (size == -1)
     {
-        ESP_LOGE(TAG, "CTfLiteClass::ReadFileToModel: Model file doesn't exist: %s", _fn.c_str());
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Model file doesn't exist: " + _fn + "!");
         return false;
     }
+    else if(size > MAX_MODEL_SIZE) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to load model '" + _fn + "'! It does not fit in the reserved shared memory in PSRAM!");
+        return false;
+    }
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Loading Model " + _fn + " /size: " + std::to_string(size) + " bytes...");
+
 
 #ifdef DEBUG_DETAIL_ON      
         LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
 #endif
 
-    modelfile = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->modelfile", size, MALLOC_CAP_SPIRAM);
+    modelfile = (unsigned char*)psram_get_shared_model_memory();
   
 	  if(modelfile != NULL) 
     {
@@ -304,9 +311,9 @@ CTfLiteClass::CTfLiteClass()
     this->modelfile = NULL;
     this->interpreter = nullptr;
     this->input = nullptr;
-    this->output = nullptr;  
-    this->kTensorArenaSize = 800 * 1024;   /// according to testfile: 108000 - so far 600;; 2021-09-11: 200 * 1024
-    this->tensor_arena = (uint8_t*)malloc_psram_heap(std::string(TAG) + "->tensor_arena", kTensorArenaSize, MALLOC_CAP_SPIRAM);
+    this->output = nullptr;
+    this->kTensorArenaSize = TENSOR_ARENA_SIZE;
+    this->tensor_arena = (uint8_t*)psram_get_shared_tensor_arena_memory();
 }
 
 
@@ -315,8 +322,7 @@ CTfLiteClass::~CTfLiteClass()
   delete this->interpreter;
   delete this->error_reporter;
 
-  free_psram_heap(std::string(TAG) + "->modelfile", modelfile);
-  free_psram_heap(std::string(TAG) + "->tensor_arena", this->tensor_arena);
+  psram_free_shared_tensor_arena_and_model_memory();
 }        
 
 
