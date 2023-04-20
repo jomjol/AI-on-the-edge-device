@@ -12,28 +12,25 @@ static const char *TAG = "INFLUXDB";
 
 std::string _influxDBURI;
 std::string _influxDBDatabase;
-std::string _influxDBMeasurement;
 std::string _influxDBUser;
 std::string _influxDBPassword;
 
 std::string _influxDB_V2_URI;
 std::string _influxDB_V2_Database;
-std::string _influxDB_V2_Measurement;
 std::string _influxDB_V2_Token;
 std::string _influxDB_V2_Org;
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt);
 
-void InfluxDB_V2_Init(std::string _uri, std::string _database, std::string _measurement, std::string _org, std::string _token)
+void InfluxDB_V2_Init(std::string _uri, std::string _database, std::string _org, std::string _token)
 {
     _influxDB_V2_URI = _uri;
     _influxDB_V2_Database = _database;
-    _influxDB_V2_Measurement = _measurement;
     _influxDB_V2_Org = _org;
     _influxDB_V2_Token = _token;
 }
 
-void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _timestamp) 
+void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string _content, std::string _timestamp) 
 {
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
     esp_http_client_config_t http_config = {
@@ -66,11 +63,11 @@ void InfluxDB_V2_Publish(std::string _key, std::string _content, std::string _ti
 
         sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
 
-        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+        payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
-        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+        payload = _measurement + " " + _key + "=" + _content;
     }
 
     payload.shrink_to_fit();
@@ -144,7 +141,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-void InfluxDBPublish(std::string _key, std::string _content, std::string _timestamp) {
+void InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, std::string _timestamp) {
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
     esp_http_client_config_t http_config = {
        .user_agent = "ESP32 Meter reader",
@@ -182,11 +179,11 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
         sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
 
-        payload = _influxDBMeasurement + " " + _key + "=" + _content + " " + nowTimestamp;
+        payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
-        payload = _influxDB_V2_Measurement + " " + _key + "=" + _content;
+        payload = _measurement + " " + _key + "=" + _content;
     }
 
     payload.shrink_to_fit();
@@ -196,6 +193,8 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 
     // use the default retention policy of the database
     std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
+//    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
+
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
 
@@ -223,10 +222,9 @@ void InfluxDBPublish(std::string _key, std::string _content, std::string _timest
 }
 
 
-void InfluxDBInit(std::string _uri, std::string _database, std::string _measurement, std::string _user, std::string _password){
+void InfluxDBInit(std::string _uri, std::string _database, std::string _user, std::string _password){
     _influxDBURI = _uri;
     _influxDBDatabase = _database;
-    _influxDBMeasurement = _measurement;
     _influxDBUser = _user;
     _influxDBPassword = _password;
  

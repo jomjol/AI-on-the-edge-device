@@ -639,7 +639,19 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[InfluxDB]") {
+            /* Fieldname has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "Fieldname")) { // It is the parameter "Fieldname"
+                migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
+        }
 
+        if (section == "[InfluxDBv2]") {
+            /* Fieldname has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "Fieldname")) { // It is the parameter "Fieldname"
+                migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
         }
 
         if (section == "[GPIO]") {
