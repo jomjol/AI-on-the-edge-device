@@ -199,6 +199,7 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
     string zw = "";
     string namenumber = "";
 
+
     if (flowpostprocessing)
     {
         std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
