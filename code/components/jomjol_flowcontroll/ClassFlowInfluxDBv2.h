@@ -15,7 +15,7 @@ class ClassFlowInfluxDBv2 :
     public ClassFlow
 {
 protected:
-    std::string uri, database, measurement;
+    std::string uri, database;
     std::string dborg, dbtoken, dbfield;
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
@@ -24,13 +24,15 @@ protected:
     void SetInitialParameter(void);     
 
     void handleFieldname(string _decsep, string _value);   
+    void handleMeasurement(string _decsep, string _value);
+
 
 public:
     ClassFlowInfluxDBv2();
     ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc);
     ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
-    string GetInfluxDBMeasurement();
+//    string GetInfluxDBMeasurement();
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
