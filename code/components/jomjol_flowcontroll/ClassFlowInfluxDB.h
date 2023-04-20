@@ -24,6 +24,8 @@ protected:
     void SetInitialParameter(void);    
     
     void handleFieldname(string _decsep, string _value);   
+    void handleMeasurement(string _decsep, string _value);
+
     
 
 public:
@@ -31,7 +33,7 @@ public:
     ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc);
     ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
 
-    string GetInfluxDBMeasurement();
+//    string GetInfluxDBMeasurement();
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);

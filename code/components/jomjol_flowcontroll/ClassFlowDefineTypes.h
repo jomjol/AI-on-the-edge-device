@@ -50,8 +50,12 @@ struct NumberPost {
     int DecimalShiftInitial;
     float AnalogDigitalTransitionStart; // When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;
-    string FieldnameV1; // Fieldname in InfluxDBv1  
-    string FieldnameV2; // Fieldname in InfluxDBv2  
+
+    string FieldV1; // Fieldname in InfluxDBv1  
+    string MeasurementV1;   // Measurement in InfluxDBv1
+
+    string FieldV2;         // Fieldname in InfluxDBv2  
+    string MeasurementV2;   // Measurement in InfluxDBv2
 
     bool isExtendedResolution;
 
