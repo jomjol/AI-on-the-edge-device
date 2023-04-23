@@ -12,11 +12,15 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 -  [#2286](https://github.com/jomjol/AI-on-the-edge-device/pull/2286) Implement a camera livestream handler
 -  [#2252](https://github.com/jomjol/AI-on-the-edge-device/pull/2252) Set prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
+-  [#2319](https://github.com/jomjol/AI-on-the-edge-device/pull/2319) Extend InfluxDBv1 with individual topic names
+-  [#](https://github.com/jomjol/AI-on-the-edge-device/pull/) 
+-  [#](https://github.com/jomjol/AI-on-the-edge-device/pull/) 
 
 #### Changed
 
 -  [#2285](https://github.com/jomjol/AI-on-the-edge-device/pull/2285) Re-implemented PSRAM usage
 -  [#2325](https://github.com/jomjol/AI-on-the-edge-device/pull/2325) Keep MainFlowTask alive to handle reboot
+-  [#2233](https://github.com/jomjol/AI-on-the-edge-device/pull/2233) Remove trailing slash in influxDBv1
 -  [#2305](https://github.com/jomjol/AI-on-the-edge-device/pull/2305) Migration of PlatformIO `5.2.0` to `6.1.0` (resp. ESP IDF from `4.4.2` to `5.0.1`)
 -  Various cleanup and refactoring
 
