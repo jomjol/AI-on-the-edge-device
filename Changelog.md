@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ## [15.2.0] - 2023-04-23
+=======
+## [15.1.1] - 2023-03-23
+>>>>>>> master
 
 ### Update Procedure
 
@@ -6,6 +10,7 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 
 ### Changes
 
+<<<<<<< HEAD
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0)
 
 #### Added
@@ -43,6 +48,12 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 #### Added
 
+=======
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1)
+
+#### Added
+
+>>>>>>> master
 - [#2206](https://github.com/jomjol/AI-on-the-edge-device/pull/2206) Log PSRAM usage
 - [#2216](https://github.com/jomjol/AI-on-the-edge-device/pull/2216) Log MQTT connection refused reasons
 
@@ -966,7 +977,10 @@ External Illumination
 -   Initial Version
 
 
+<<<<<<< HEAD
 [15.2.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.1.2
+=======
+>>>>>>> master
 [15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1
 [15.1.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0
 [15.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.3

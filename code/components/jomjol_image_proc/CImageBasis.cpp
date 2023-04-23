@@ -477,6 +477,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
 
     memsize = width * height * channels;
 
+<<<<<<< HEAD
 
     if (name == "tmpImage") {
         rgb_image = (unsigned char*)psram_reserve_shared_tmp_image_memory();
@@ -484,6 +485,9 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
     else {
         rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
     }
+=======
+    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+>>>>>>> master
 
     if (rgb_image == NULL)
     {
@@ -624,6 +628,7 @@ CImageBasis::~CImageBasis()
 {
     RGBImageLock();
 
+<<<<<<< HEAD
 
     if (!externalImage) {
         if (name == "tmpImage") { // This image should be placed in the shared part of PSRAM
@@ -638,6 +643,11 @@ CImageBasis::~CImageBasis()
                 free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
             }
         }
+=======
+    if (!externalImage) {
+        //stbi_image_free(rgb_image);
+        free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+>>>>>>> master
     }
 
     RGBImageRelease();

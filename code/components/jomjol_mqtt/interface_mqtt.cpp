@@ -248,6 +248,7 @@ int MQTT_Init() {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init");
     MQTTdestroy_client(false);
 
+<<<<<<< HEAD
     esp_mqtt_client_config_t mqtt_cfg = { };
 
     mqtt_cfg.broker.address.uri = uri.c_str();
@@ -262,6 +263,22 @@ int MQTT_Init() {
     mqtt_cfg.session.last_will.msg_len = (int)(lwt_disconnected.length());
     mqtt_cfg.session.keepalive = keepalive;
     mqtt_cfg.buffer.size = 1536;                         // size of MQTT send/receive buffer (Default: 1024)
+=======
+    esp_mqtt_client_config_t mqtt_cfg = {
+        .uri = uri.c_str(),
+        .client_id = client_id.c_str(),
+        .lwt_topic = lwt_topic.c_str(),
+        .lwt_msg = lwt_disconnected.c_str(),
+        .lwt_retain = 1,
+        .lwt_msg_len = (int)(lwt_disconnected.length()),
+        .keepalive = keepalive,
+        .disable_auto_reconnect = false,        // Reconnection routine active (Default: false)
+        .buffer_size = 1536,                    // size of MQTT send/receive buffer (Default: 1024)
+        .reconnect_timeout_ms = 15000,          // Try to reconnect to broker (Default: 10000ms)
+        .network_timeout_ms = 20000,            // Network Timeout (Default: 10000ms)
+        .message_retransmit_timeout = 3000      // Time after message resent when broker not acknowledged (QoS1, QoS2)
+    };
+>>>>>>> master
 
     if (user.length() && password.length()){
         mqtt_cfg.credentials.username = user.c_str();
