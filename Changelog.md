@@ -13,8 +13,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -  [#2286](https://github.com/jomjol/AI-on-the-edge-device/pull/2286) Implement a camera livestream handler
 -  [#2252](https://github.com/jomjol/AI-on-the-edge-device/pull/2252) Set prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
 -  [#2319](https://github.com/jomjol/AI-on-the-edge-device/pull/2319) Extend InfluxDBv1 with individual topic names
--  [#](https://github.com/jomjol/AI-on-the-edge-device/pull/) 
--  [#](https://github.com/jomjol/AI-on-the-edge-device/pull/) 
 
 #### Changed
 
