@@ -183,12 +183,6 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
 }
 
 
-string ClassFlowMQTT::GetMQTTMainTopic()
-{
-    return maintopic;
-}
-
-
 bool ClassFlowMQTT::Start(float AutoInterval) 
 {
     roundInterval = AutoInterval; // Minutes

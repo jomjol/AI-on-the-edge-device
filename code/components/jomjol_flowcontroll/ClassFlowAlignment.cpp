@@ -1,7 +1,7 @@
 #include "ClassFlowAlignment.h"
 #include "ClassFlowTakeImage.h"
 #include "ClassFlow.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 
 #include "CRotateImage.h"
 #include "esp_log.h"
@@ -190,10 +190,10 @@ bool ClassFlowAlignment::doFlow(string time)
 
     if (!ImageTMP) 
     {
-        ImageTMP = new CImageBasis("ImageTMP", ImageBasis);
+        ImageTMP = new CImageBasis("tmpImage", ImageBasis); // Make sure the name does not get change, it is relevant for the PSRAM allocation!
         if (!ImageTMP) 
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate ImageTMP -> Exec this round aborted!");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tmpImage -> Exec this round aborted!");
             LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
             return false;
         }
@@ -256,8 +256,8 @@ bool ClassFlowAlignment::doFlow(string time)
             if(References[0].alignment_algo != 3){
                 DrawRef(ImageTMP);
             }
-            tfliteflow.DigitalDrawROI(ImageTMP);
-            tfliteflow.AnalogDrawROI(ImageTMP);
+            flowctrl.DigitalDrawROI(ImageTMP);
+            flowctrl.AnalogDrawROI(ImageTMP);
             ImageTMP->writeToMemoryAsJPG((ImageData*)AlgROI, 90);
         }
     #endif

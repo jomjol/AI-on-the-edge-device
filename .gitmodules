@@ -7,3 +7,6 @@
 [submodule "code/components/tflite-micro-esp-examples"]
 	path = code/components/tflite-micro-esp-examples
 	url = https://github.com/espressif/tflite-micro-esp-examples.git
+[submodule "code/components/stb"]
+	path = code/components/stb
+	url = https://github.com/nothings/stb.git

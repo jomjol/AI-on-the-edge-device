@@ -690,16 +690,6 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Measurement")' unchecked >
-				<label for=InfluxDB_Measurement_enabled><class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class></label>
-			</td>
-			<td>
-				<input type="text" id="InfluxDB_Measurement_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_Measurement</td>
-		</tr>
-		<tr>
-			<td class="indent1">
 				<input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")' unchecked >
 				<label for=InfluxDB_user_enabled><class id="InfluxDB_user_text" style="color:black;">Username</class></label>
 			</td>
@@ -717,6 +707,34 @@ textarea {
 				<input type="text" id="InfluxDB_password_value1">
 			</td>
 			<td>$TOOLTIP_InfluxDB_password</td>
+		</tr>
+		<tr>
+			<td class="indent1" colspan="3">
+				<br>
+				<b>InfluxDB Individual Parameters: 
+                <select id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()">
+                </select></b>
+			</td>
+		</tr>
+		<tr>
+			<td class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="InfluxDB_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Measurement")' unchecked >
+				<label for=InfluxDB_Measurement_enabled><class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_Measurement_value1">
+			</td>
+			<td>$TOOLTIP_InfluxDB_NUMBER.Measurement</td>
+		</tr>
+		<tr>
+			<td class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="InfluxDB_Field_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Field")' unchecked >
+				<label for=InfluxDB_Field_enabled><class id="InfluxDB_Field_text" style="color:black;">Field</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDB_Field_value1">
+			</td>
+			<td>$TOOLTIP_InfluxDB_NUMBER.Field</td>
 		</tr>
 
 
@@ -751,16 +769,6 @@ textarea {
 		</tr>
 		<tr>
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Measurement")' unchecked >
-				<label for=InfluxDBv2_Measurement_enabled><class id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</class></label>
-			</td>
-			<td>
-				<input type="text" id="InfluxDBv2_Measurement_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_Measurement</td>
-		</tr>
-		<tr>
-			<td class="indent1">
 				<input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")' unchecked >
 				<label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Organization (Org)</class></label>
 			</td>
@@ -782,20 +790,30 @@ textarea {
 		<tr>
 			<td class="indent1" colspan="3">
 				<br>
-				<b>Postprocessing Individual Parameters: 
-                <select id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()">
+				<b>InfluxDB v2 Individual Parameters: 
+                <select id="NumbersInfluxDBv2_value1" onchange="numberInfluxDBv2Changed()">
                 </select></b>
 			</td>
 		</tr>
 		<tr>
 			<td class="indent1" style="padding-left: 75px;">
-				<input type="checkbox" id="InfluxDBv2_Fieldname_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Fieldname")' unchecked >
-				<label for=InfluxDBv2_Fieldname_enabled><class id="InfluxDBv2_Fieldname_text" style="color:black;">Fieldname</class></label>
+				<input type="checkbox" id="InfluxDBv2_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Measurement")' unchecked >
+				<label for=InfluxDBv2_Measurement_enabled><class id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</class></label>
 			</td>
 			<td>
-				<input type="text" id="InfluxDBv2_Fieldname_value1">
+				<input type="text" id="InfluxDBv2_Measurement_value1">
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_NUMBER.Fieldname</td>
+			<td>$TOOLTIP_InfluxDBv2_NUMBER.Measurement</td>
+		</tr>
+		<tr>
+			<td class="indent1" style="padding-left: 75px;">
+				<input type="checkbox" id="InfluxDBv2_Field_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Field")' unchecked >
+				<label for=InfluxDBv2_Field_enabled><class id="InfluxDBv2_Field_text" style="color:black;">Field</class></label>
+			</td>
+			<td>
+				<input type="text" id="InfluxDBv2_Field_value1">
+			</td>
+			<td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
 		</tr>
 
 		<tr>
@@ -1423,11 +1441,16 @@ function InitIndivParameter()
     var _index = document.getElementById("Numbers_value1");
     while (_index.length)
         _index.remove(0);
-	var _indexInflux = document.getElementById("NumbersInfluxDB_value1");
+
+	var _indexInflux = document.getElementById("NumbersInfluxDBv2_value1");
     while (_indexInflux.length)
 		_indexInflux.remove(0);
 
-    for (var i = 0; i < NUMBERS.length; ++i){
+	var _indexInfluxv1 = document.getElementById("NumbersInfluxDB_value1");
+    while (_indexInflux.length)
+	_indexInfluxv1.remove(0);
+
+	for (var i = 0; i < NUMBERS.length; ++i){
 		var option = document.createElement("option");
         option.text = NUMBERS[i]["name"];
         option.value = i;
@@ -1437,9 +1460,16 @@ function InitIndivParameter()
         optionInflux.text = NUMBERS[i]["name"];
         optionInflux.value = i;
 		_indexInflux.add(optionInflux);
-        }
+
+		var optionInfluxv1 = document.createElement("option");
+        optionInfluxv1.text = NUMBERS[i]["name"];
+        optionInfluxv1.value = i;
+		_indexInfluxv1.add(optionInfluxv1);
+
+	}
     _index.selectedIndex = 0; 
 	_indexInflux.selectedIndex = 0; 
+	_indexInfluxv1.selectedIndex = 0;
 }
 
 
@@ -1741,7 +1771,10 @@ function UpdateInputIndividual(sel)
 		ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt)		
 		ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt)		
-		ReadParameter(param, "InfluxDBv2", "Fieldname", true, NUNBERSAkt)
+		ReadParameter(param, "InfluxDB", "Field", true, NUNBERSAkt)
+		ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt)
+		ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt)
+		ReadParameter(param, "InfluxDBv2", "Measurement", true, NUNBERSAkt)
 	}
 
 //	var sel = document.getElementById("Numbers_value1");
@@ -1753,7 +1786,10 @@ function UpdateInputIndividual(sel)
 	WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
 	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
-	WriteParameter(param, category, "InfluxDBv2", "Fieldname", true, NUNBERSAkt);
+	WriteParameter(param, category, "InfluxDB", "Field", true, NUNBERSAkt);
+	WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
+	WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
+	WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -1805,16 +1841,17 @@ function UpdateInput() {
 	
 	WriteParameter(param, category, "InfluxDB", "Uri", true);	
 	WriteParameter(param, category, "InfluxDB", "Database", true);	
-	WriteParameter(param, category, "InfluxDB", "Measurement", true);	
+//	WriteParameter(param, category, "InfluxDB", "Measurement", true);	
 	WriteParameter(param, category, "InfluxDB", "user", true);	
 	WriteParameter(param, category, "InfluxDB", "password", true);	
+//	WriteParameter(param, category, "InfluxDB", "Field", true);
 
 	WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
 	WriteParameter(param, category, "InfluxDBv2", "Database", true);	
-	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
+//	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
 	WriteParameter(param, category, "InfluxDBv2", "Org", true);	
 	WriteParameter(param, category, "InfluxDBv2", "Token", true);	
-	WriteParameter(param, category, "InfluxDBv2", "Fieldname", true);
+//	WriteParameter(param, category, "InfluxDBv2", "Field", true);
 
 	WriteParameter(param, category, "GPIO", "IO0", true);
 	WriteParameter(param, category, "GPIO", "IO1", true);
@@ -1945,7 +1982,7 @@ function ReadParameterAll()
 	ReadParameter(param, "InfluxDBv2", "Measurement", true);	
 	ReadParameter(param, "InfluxDBv2", "Org", true);	
 	ReadParameter(param, "InfluxDBv2", "Token", true);	
-//	ReadParameter(param, "InfluxDB", "Fieldname", true);	
+//	ReadParameter(param, "InfluxDB", "Field", true);	
 
 	ReadParameter(param, "GPIO", "IO0", true);
 	ReadParameter(param, "GPIO", "IO1", true);
@@ -2086,11 +2123,26 @@ function numberChanged()
 	_neu = sel.selectedIndex;
 	UpdateInputIndividual(sel);
 
-	var _selInflux = document.getElementById("NumbersInfluxDB_value1");
+	var _selInflux = document.getElementById("NumbersInfluxDBv2_value1");
 	if (_selInflux.selectedIndex != _neu)
 		_selInflux.selectedIndex = _neu
 }
  
+function numberInfluxDBv2Changed()
+{
+	var sel = document.getElementById("NumbersInfluxDBv2_value1");
+	_neu = sel.selectedIndex;
+	UpdateInputIndividual(sel);
+
+	var _sel2 = document.getElementById("Numbers_value1");
+	if (_sel2.selectedIndex != _neu)
+		_sel2.selectedIndex = _neu
+
+	var _sel3 = document.getElementById("NumbersInfluxDB_value1");
+	if (_sel3.selectedIndex != _neu)
+		_sel3.selectedIndex = _neu
+}
+
 function numberInfluxDBChanged()
 {
 	var sel = document.getElementById("NumbersInfluxDB_value1");
@@ -2099,7 +2151,11 @@ function numberInfluxDBChanged()
 
 	var _sel2 = document.getElementById("Numbers_value1");
 	if (_sel2.selectedIndex != _neu)
-	_sel2.selectedIndex = _neu
+		_sel2.selectedIndex = _neu
+
+	var _sel3 = document.getElementById("NumbersInfluxDBv2_value1");
+	if (_sel3.selectedIndex != _neu)
+		_sel3.selectedIndex = _neu
 }
 
 LoadConfigNeu();

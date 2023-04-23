@@ -3,7 +3,10 @@
 #include <string>
 #include "string.h"
 
-#include <esp_int_wdt.h>
+/* TODO Rethink the usage of the int watchdog. It is no longer to be used, see
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/release-5.x/5.0/system.html?highlight=esp_int_wdt */
+#include "esp_private/esp_int_wdt.h"
+
 #include <esp_task_wdt.h>
 
 
@@ -11,14 +14,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
-#include "esp_event.h"
-#include "esp_event.h"
 #include "esp_log.h"
 #include <esp_ota_ops.h>
 #include "esp_http_client.h"
 #include "esp_flash_partitions.h"
 #include "esp_partition.h"
 #include <nvs.h>
+#include "esp_app_format.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 // #include "protocol_examples_common.h"
@@ -26,7 +28,7 @@
 
 #include <sys/stat.h>
 
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "server_file.h"
 #include "server_GPIO.h"
 #ifdef ENABLE_MQTT
@@ -157,12 +159,12 @@ static bool ota_update_task(std::string fn)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
     }
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-             running->type, running->subtype, running->address);
+             running->type, running->subtype, (unsigned int)running->address);
 
 
     update_partition = esp_ota_get_next_update_partition(NULL);
     ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
-             update_partition->subtype, update_partition->address);
+             update_partition->subtype, (unsigned int)update_partition->address);
 //    assert(update_partition != NULL);
 
     int binary_file_length = 0;
@@ -467,7 +469,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         {
             const char* resp_str; 
 
-            KillTFliteTasks();
+            DeleteMainFlowTask();
             gpio_handler_deinit();
             if (ota_update_task(fn))
             {
@@ -546,7 +548,7 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 /*  
     const char* resp_str;    
 
-    KillTFliteTasks();
+    DeleteMainFlowTask();
     gpio_handler_deinit();
     if (ota_update_task(fn))
     {
@@ -570,13 +572,19 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
 void hard_restart() 
 {
-  esp_task_wdt_init(1,true);
+  esp_task_wdt_config_t twdt_config = {
+    .timeout_ms = 1,
+    .idle_core_mask = (1 << portNUM_PROCESSORS) - 1,    // Bitmask of all cores
+    .trigger_panic = true,
+  };
+  ESP_ERROR_CHECK(esp_task_wdt_init(&twdt_config));
+
   esp_task_wdt_add(NULL);
   while(true);
 }
 
 
-void task_reboot(void *KillAutoFlow)
+void task_reboot(void *DeleteMainFlow)
 {
     // write a reboot, to identify a reboot by purpouse
     FILE* pfile = fopen("/sdcard/reboot.txt", "w");
@@ -586,8 +594,8 @@ void task_reboot(void *KillAutoFlow)
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
 
-    if ((bool)KillAutoFlow) {
-        KillTFliteTasks();  // Kill autoflow task if executed in extra task, if not don't kill parent task
+    if ((bool)DeleteMainFlow) {
+        DeleteMainFlowTask();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
     Camera.LightOnOff(false);

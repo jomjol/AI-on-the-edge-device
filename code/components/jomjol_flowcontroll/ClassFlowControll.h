@@ -18,7 +18,6 @@
 	#include "ClassFlowInfluxDBv2.h"
 #endif //ENABLE_INFLUXDB
 #include "ClassFlowCNNGeneral.h"
-#include "ClassFlowWriteList.h"
 
 class ClassFlowControll :
     public ClassFlow
@@ -46,19 +45,15 @@ public:
 	bool doFlow(string time);
 	void doFlowTakeImageOnly(string time);
 	bool getStatusSetupModus(){return SetupModeActive;};
-	string getReadout(bool _rawvalue, bool _noerror);
+	string getReadout(bool _rawvalue, bool _noerror, int _number);
 	string getReadoutAll(int _type);	
-	string UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
+	bool UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);
-
-	#ifdef ENABLE_MQTT
-	string GetMQTTMainTopic();
-	#endif //ENABLE_MQTT
 
 	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
 	void DigitalDrawROI(CImageBasis *_zw);

@@ -17,7 +17,8 @@ extern "C" {
 #include "esp_log.h"
 #include "../../include/defines.h"
 
-static const char* TAG = "IMG";
+static const char* TAG = "FLOWIMAGE";
+
 
 ClassFlowImage::ClassFlowImage(const char* logTag)
 {

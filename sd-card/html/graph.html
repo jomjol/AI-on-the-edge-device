@@ -72,7 +72,27 @@
                         }
                     }
                 }
-                //console.log(trace);
+
+                /* If the value trace starts with NaN, replace all those Nans with the first valid value */
+                var firstNonNaNIndex = 0;
+                for(var i = 0; i < traceValue.y.length; i++) {
+                    firstNonNaNIndex = i;
+                    if (! isNaN(traceValue.y[i])) {
+                        break;
+                    }
+                }
+
+                if (firstNonNaNIndex == (traceValue.y.length - 1)) {
+                    console.log("No data available for 'value'!");
+                }
+                else if (firstNonNaNIndex > 0) { // Replace all leading NaN with the first valid value 
+                    console.log("The first leading values have all just NaN, replacing them with the value of",
+                            traceValue.y[firstNonNaNIndex], "at", traceValue.x[firstNonNaNIndex], "(Index:", firstNonNaNIndex, ")");
+                    for(var i = 0; i < firstNonNaNIndex; i++) {
+                        traceValue.y[i] = traceValue.y[firstNonNaNIndex];
+                    }
+                }
+
 
                 // Copy time to all traces
                 tracePreValue.x = traceValue.x;

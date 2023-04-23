@@ -1,3 +1,40 @@
+## [15.2.0] - 2023-04-23
+
+### Update Procedure
+
+Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0)
+
+#### Added
+
+-  [#2286](https://github.com/jomjol/AI-on-the-edge-device/pull/2286) Implement a camera livestream handler
+-  [#2252](https://github.com/jomjol/AI-on-the-edge-device/pull/2252) Set prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
+-  [#2319](https://github.com/jomjol/AI-on-the-edge-device/pull/2319) Extend InfluxDBv1 with individual topic names
+-  [#](https://github.com/jomjol/AI-on-the-edge-device/pull/) 
+-  [#](https://github.com/jomjol/AI-on-the-edge-device/pull/) 
+
+#### Changed
+
+-  [#2285](https://github.com/jomjol/AI-on-the-edge-device/pull/2285) Re-implemented PSRAM usage
+-  [#2325](https://github.com/jomjol/AI-on-the-edge-device/pull/2325) Keep MainFlowTask alive to handle reboot
+-  [#2233](https://github.com/jomjol/AI-on-the-edge-device/pull/2233) Remove trailing slash in influxDBv1
+-  [#2305](https://github.com/jomjol/AI-on-the-edge-device/pull/2305) Migration of PlatformIO `5.2.0` to `6.1.0` (resp. ESP IDF from `4.4.2` to `5.0.1`)
+-  Various cleanup and refactoring
+
+#### Fixed
+
+-  [#2326](https://github.com/jomjol/AI-on-the-edge-device/pull/2326) Activate save button after Analogue ROI creationSet prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
+-  [#2283](https://github.com/jomjol/AI-on-the-edge-device/pull/2283) Fix Timezone issues on InfluxDB
+-  Various minor fixes
+
+#### Removed
+
+-   n.a.
+
+
 ## [15.1.1] - 2023-03-23
 
 ### Update Procedure
@@ -933,6 +970,7 @@ External Illumination
 -   Initial Version
 
 
+[15.2.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.1.2
 [15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1
 [15.1.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0
 [15.0.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v14.0.3...v15.0.3

@@ -35,6 +35,20 @@
 #include <cassert>
 #include <cstring>
 
+#include "esp_idf_version.h"
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#include "soc/periph_defs.h"
+#include "esp_private/periph_ctrl.h"
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
+#endif
+
 #if defined ( ARDUINO )
     extern "C" { // ...someone forgot to put in the includes...
         #include "esp32-hal.h"
@@ -63,6 +77,27 @@
         #include <driver/spi_master.h>
     }
     #include <stdio.h>
+#endif
+
+#if (ESP_IDF_VERSION_MAJOR >= 4) && (ESP_IDF_VERSION_MINOR > 1)
+#include "hal/gpio_ll.h"
+#else
+#include "soc/gpio_periph.h"
+#define esp_rom_delay_us ets_delay_us
+static inline int gpio_ll_get_level(gpio_dev_t *hw, int gpio_num)
+{
+    if (gpio_num < 32) {
+        return (hw->in >> gpio_num) & 0x1;
+    } else {
+        return (hw->in1.data >> (gpio_num - 32)) & 0x1;
+    }
+}
+#endif
+
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+#if !(configENABLE_BACKWARD_COMPATIBILITY == 1)
+#define xSemaphoreHandle SemaphoreHandle_t
+#endif
 #endif
 
 #include "Color.h"

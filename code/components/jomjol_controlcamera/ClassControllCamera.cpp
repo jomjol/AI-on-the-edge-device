@@ -21,6 +21,7 @@
 #include <nvs_flash.h>
 #include <sys/param.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -28,9 +29,30 @@
 #include "esp_camera.h"
 
 #include "driver/ledc.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
+
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#include "soc/periph_defs.h"
+#include "esp_private/periph_ctrl.h"
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
+#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
+#endif
 
 static const char *TAG = "CAM"; 
+
+
+/* Camera live stream */
+#define PART_BOUNDARY "123456789000000000000987654321"
+static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
+static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
+static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
+
 
 static camera_config_t camera_config = {
     .pin_pwdn = CAM_PIN_PWDN,
@@ -512,10 +534,78 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     esp_camera_fb_return(fb);
     int64_t fr_end = esp_timer_get_time();
     
-    ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t)(fb_len/1024), (uint32_t)((fr_end - fr_start)/1000));
+    ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len/1024), (int)((fr_end - fr_start)/1000));
 
     if (delay > 0) 
         LightOnOff(false);
+
+    return res;
+}
+
+
+esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
+{
+    esp_err_t res = ESP_OK;
+    size_t fb_len = 0;
+    int64_t fr_start;
+    char * part_buf[64];
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream started");
+
+    if (FlashlightOn) {
+        LEDOnOff(true);
+        LightOnOff(true);
+    }
+
+    //httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //stream is blocking web interface, only serving to local
+
+    httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
+    httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
+
+    while(1)
+    {
+        fr_start = esp_timer_get_time();
+        camera_fb_t *fb = esp_camera_fb_get();
+        esp_camera_fb_return(fb);
+        fb = esp_camera_fb_get();
+        if (!fb) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToStream: Camera framebuffer not available");
+            break;
+        }
+        fb_len = fb->len;
+   
+        if (res == ESP_OK){
+            size_t hlen = snprintf((char *)part_buf, sizeof(part_buf), _STREAM_PART, fb_len);
+            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
+        }
+        if (res == ESP_OK){
+            res = httpd_resp_send_chunk(req, (const char *)fb->buf, fb_len);
+        }
+        if (res == ESP_OK){
+            res = httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
+        }
+        
+        esp_camera_fb_return(fb);
+
+        int64_t fr_end = esp_timer_get_time();
+        ESP_LOGD(TAG, "JPG: %dKB %dms", (int)(fb_len/1024), (int)((fr_end - fr_start)/1000));
+
+        if (res != ESP_OK){ // Exit loop, e.g. also when closing the webpage
+            break;
+        }
+
+        int64_t fr_delta_ms = (fr_end - fr_start) / 1000;
+        if (CAM_LIVESTREAM_REFRESHRATE > fr_delta_ms) {
+            const TickType_t xDelay = (CAM_LIVESTREAM_REFRESHRATE - fr_delta_ms)  / portTICK_PERIOD_MS;
+            ESP_LOGD(TAG, "Stream: sleep for: %ldms", (long) xDelay*10);
+            vTaskDelay(xDelay);        
+        }
+    }
+
+    LEDOnOff(false);
+    LightOnOff(false);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream stopped");
 
     return res;
 }

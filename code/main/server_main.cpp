@@ -13,8 +13,9 @@
 #include "version.h"
 
 #include "esp_wifi.h"
+#include <netdb.h>
 
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "esp_log.h"
 
 #include <stdio.h>
@@ -23,6 +24,8 @@
 
 httpd_handle_t server = NULL;   
 std::string starttime = "";
+
+extern esp_netif_t *sta_netif;
 
 static const char *TAG = "MAIN SERVER";
 
@@ -350,11 +353,15 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     char freeheapmem[11];
     sprintf(freeheapmem, "%lu", (long) getESPHeapSize());
     
-    tcpip_adapter_ip_info_t ip_info;
-    ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+    esp_netif_ip_info_t ip_info;
+    ESP_ERROR_CHECK(esp_netif_get_ip_info(sta_netif, &ip_info));
     const char *hostname;
-    ESP_ERROR_CHECK(tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, &hostname));
+    ESP_ERROR_CHECK(esp_netif_get_hostname(sta_netif, &hostname));
     
+    char ipFormated[4*3+3+1];
+
+    sprintf(ipFormated, IPSTR, IP2STR(&ip_info.ip));
+
     zw = string("[{") + 
         "\"firmware\": \"" + gitversion + "\"," +
         "\"buildtime\": \"" + buildtime + "\"," +
@@ -364,7 +371,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"html\": \"" + htmlversion + "\"," +
         "\"cputemp\": \"" + cputemp + "\"," +
         "\"hostname\": \"" + hostname + "\"," +
-        "\"IPv4\": \"" + ip4addr_ntoa(&ip_info.ip) + "\"," +
+        "\"IPv4\": \"" + string(ipFormated) + "\"," +
         "\"freeHeapMem\": \"" + freeheapmem + "\"" +
         "}]";
 
@@ -431,7 +438,7 @@ httpd_handle_t start_webserver(void)
     config.server_port = 80;
     config.ctrl_port = 32768;
     config.max_open_sockets = 5; //20210921 --> previously 7   
-    config.max_uri_handlers = 38; // previously 24, 20220511: 35, 20221220: 37, 2023-01-02:38             
+    config.max_uri_handlers = 39; // previously 24, 20220511: 35, 20221220: 37, 2023-01-02:38             
     config.max_resp_headers = 8;                        
     config.backlog_conn = 5;                        
     config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               

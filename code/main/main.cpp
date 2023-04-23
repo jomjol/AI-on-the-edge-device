@@ -9,10 +9,13 @@
 
 //#include "driver/gpio.h"
 //#include "sdkconfig.h"
-//#include "esp_psram.h" // Comming in IDF 5.0, see https://docs.espressif.com/projects/esp-idf/en/v5.0-beta1/esp32/migration-guides/release-5.x/system.html?highlight=esp_psram_get_size
-//#include "spiram.h"
-#include "esp32/spiram.h"
+#include "esp_psram.h"
 #include "esp_pm.h"
+
+#include "psram.h"
+
+#include "esp_chip_info.h"
+
 
 
 // SD-Card ////////////////////
@@ -30,7 +33,7 @@
 #include "read_wlanini.h"
 
 #include "server_main.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
 #include "server_file.h"
 #include "server_ota.h"
 #include "time_sntp.h"
@@ -63,6 +66,11 @@
 #endif
 #endif //DEBUG_ENABLE_SYSINFO
 
+// define `gpio_pad_select_gpip` for newer versions of IDF
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 3, 0))
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#endif
 
 #ifdef USE_HIMEM_IF_AVAILABLE
     #include "esp32/himem.h"
@@ -186,15 +194,6 @@ extern "C" void app_main(void)
     // ********************************************
     ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
  
-    // Init camera
-    // ********************************************
-    PowerResetCamera();
-    esp_err_t camStatus = Camera.InitCam();
-    Camera.LightOnOff(false);
-
-    xDelay = 2000 / portTICK_PERIOD_MS;
-    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
-    vTaskDelay( xDelay );
 
     // Init SD card
     // ********************************************
@@ -215,6 +214,105 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+
+
+    // Init external PSRAM
+    // ********************************************
+    esp_err_t PSRAMStatus = esp_psram_init();
+    if (PSRAMStatus == ESP_FAIL) {  // ESP_FAIL -> Failed to init PSRAM
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM init failed (" + std::to_string(PSRAMStatus) + ")! PSRAM not found or defective");
+        setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+        StatusLED(PSRAM_INIT, 1, true);
+    }
+    else { // ESP_OK -> PSRAM init OK --> continue to check PSRAM size
+        size_t psram_size = esp_psram_get_size(); // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "PSRAM size: " + std::to_string(psram_size) + " byte (" + std::to_string(psram_size/1024/1024) + 
+                                               "MB / " + std::to_string(psram_size/1024/1024*8) + "MBit)");
+
+        // Check PSRAM size
+        // ********************************************
+        if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes (32Mbit)
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM size >= 4MB (32Mbit) is mandatory to run this application");
+            setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
+            StatusLED(PSRAM_INIT, 2, true);
+        }
+        else { // PSRAM size OK --> continue to check heap size
+            size_t _hsize = getESPHeapSize();
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Total heap: " + std::to_string(_hsize) + " byte");
+
+            // Check heap memory
+            // ********************************************
+            if (_hsize < 4000000) { // Check available Heap memory for a bit less than 4 MB (a test on a good device showed 4187558 bytes to be available)
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Total heap >= 4000000 byte is mandatory to run this application");
+                setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
+                StatusLED(PSRAM_INIT, 3, true);
+            }
+            else { // HEAP size OK --> continue to reserve shared memory block and check camera init
+                /* Allocate static PSRAM memory regions */
+                if (! reserve_psram_shared_region()) {
+                    setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
+                    StatusLED(PSRAM_INIT, 3, true);
+                }
+                else { // OK
+                    // Init camera
+                    // ********************************************
+                    PowerResetCamera();
+                    esp_err_t camStatus = Camera.InitCam();
+                    Camera.LightOnOff(false);
+
+                    xDelay = 2000 / portTICK_PERIOD_MS;
+                    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
+                    vTaskDelay( xDelay );
+
+
+                    // Check camera init
+                    // ********************************************
+                    if (camStatus != ESP_OK) { // Camera init failed, retry to init
+                        char camStatusHex[33];
+                        sprintf(camStatusHex,"0x%02x", camStatus);
+                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Camera init failed (" + std::string(camStatusHex) + "), retrying...");
+
+                        PowerResetCamera();
+                        camStatus = Camera.InitCam();
+                        Camera.LightOnOff(false);
+
+                        xDelay = 2000 / portTICK_PERIOD_MS;
+                        ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
+                        vTaskDelay( xDelay ); 
+
+                        if (camStatus != ESP_OK) { // Camera init failed again
+                            sprintf(camStatusHex,"0x%02x", camStatus);
+                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) +
+                                                                    ")! Check camera module and/or proper electrical connection");
+                            setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
+                            StatusLED(CAM_INIT, 1, true);
+                        }
+                    }
+                    else { // ESP_OK -> Camera init OK --> continue to perform camera framebuffer check
+                        // Camera framebuffer check
+                        // ********************************************
+                        if (!Camera.testCamera()) {
+                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera framebuffer check failed");
+                            // Easiest would be to simply restart here and try again,
+                            // how ever there seem to be systems where it fails at startup but still work correctly later.
+                            // Therefore we treat it still as successed! */
+                            setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
+                            StatusLED(CAM_INIT, 2, false);
+                        }
+                        Camera.LightOnOff(false);   // make sure flashlight is off before start of flow
+
+                        // Print camera infos
+                        // ********************************************
+                        char caminfo[50];
+                        sensor_t * s = esp_camera_sensor_get();
+                        sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL);
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera info: " + std::string(caminfo));
+                    }
+                }
+            }
+        }
+    }
+
 
     // SD card: basic R/W check
     // ********************************************
@@ -337,6 +435,16 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
     vTaskDelay( xDelay );
 
+
+    // manual reset the time
+    // ********************************************
+    if (!time_manual_reset_sync())
+    {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Manual Time Sync failed during startup" );
+    }
+
+
+
     // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
     // ********************************************
     esp_log_level_set("wifi", ESP_LOG_WARN);
@@ -360,84 +468,7 @@ extern "C" void app_main(void)
         #endif
     #endif
    
-    // Init external PSRAM
-    // ********************************************
-    esp_err_t PSRAMStatus = esp_spiram_init();
-    if (PSRAMStatus != ESP_OK) {  // ESP_FAIL -> Failed to init PSRAM
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM init failed (" + std::to_string(PSRAMStatus) + ")! PSRAM not found or defective");
-        setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
-        StatusLED(PSRAM_INIT, 1, true);
-    }
-    else { // ESP_OK -> PSRAM init OK --> continue to check PSRAM size
-        size_t psram_size = esp_spiram_get_size(); // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "PSRAM size: " + std::to_string(psram_size) + " byte (" + std::to_string(psram_size/1024/1024) + 
-                                               "MB / " + std::to_string(psram_size/1024/1024*8) + "MBit)");
 
-        // Check PSRAM size
-        // ********************************************
-        if (psram_size < (4*1024*1024)) { // PSRAM is below 4 MBytes (32Mbit)
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM size >= 4MB (32Mbit) is mandatory to run this application");
-            setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
-            StatusLED(PSRAM_INIT, 2, true);
-        }
-        else { // PSRAM size OK --> continue to check heap size
-            size_t _hsize = getESPHeapSize();
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Total heap: " + std::to_string(_hsize) + " byte");
-
-            // Check heap memory
-            // ********************************************
-            if (_hsize < 4000000) { // Check available Heap memory for a bit less than 4 MB (a test on a good device showed 4187558 bytes to be available)
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Total heap >= 4000000 byte is mandatory to run this application");
-                setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
-                StatusLED(PSRAM_INIT, 3, true);
-            }
-            else { // HEAP size OK --> continue to check camera init
-                // Check camera init
-                // ********************************************
-                if (camStatus != ESP_OK) { // Camera init failed, retry to init
-                    char camStatusHex[33];
-                    sprintf(camStatusHex,"0x%02x", camStatus);
-                    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Camera init failed (" + std::string(camStatusHex) + "), retrying...");
-
-                    PowerResetCamera();
-                    camStatus = Camera.InitCam();
-                    Camera.LightOnOff(false);
-
-                    xDelay = 2000 / portTICK_PERIOD_MS;
-                    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
-                    vTaskDelay( xDelay ); 
-
-                    if (camStatus != ESP_OK) { // Camera init failed again
-                        sprintf(camStatusHex,"0x%02x", camStatus);
-                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) +
-                                                                ")! Check camera module and/or proper electrical connection");
-                        setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
-                        StatusLED(CAM_INIT, 1, true);
-                    }
-                }
-                else { // ESP_OK -> Camera init OK --> continue to perform camera framebuffer check
-                    // Camera framebuffer check
-                    // ********************************************
-                    if (!Camera.testCamera()) {
-                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera framebuffer check failed");
-                        // Easiest would be to simply restart here and try again,
-                        // how ever there seem to be systems where it fails at startup but still work correctly later.
-                        // Therefore we treat it still as successed! */
-                        setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
-                        StatusLED(CAM_INIT, 2, false);
-                    }
-                    Camera.LightOnOff(false);   // make sure flashlight is off before start of flow
-
-                    // Print camera infos
-                    // ********************************************
-                    char caminfo[50];
-                    sensor_t * s = esp_camera_sensor_get();
-                    sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL);
-                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera info: " + std::string(caminfo));
-                }
-            }
-        }
-    }
 
     // Print Device info
     // ********************************************
@@ -462,7 +493,7 @@ extern "C" void app_main(void)
 
     server = start_webserver();   
     register_server_camera_uri(server); 
-    register_server_tflite_uri(server);
+    register_server_main_flow_task_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
     #ifdef ENABLE_MQTT
@@ -482,12 +513,12 @@ extern "C" void app_main(void)
     // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow task ...");
-        TFliteDoAutoStart();
+        StartMainFlowTask();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
              isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow task ...");
-        TFliteDoAutoStart();
+        StartMainFlowTask();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted. Loading reduced web interface...");
@@ -608,7 +639,19 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[InfluxDB]") {
+            /* Fieldname has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "Fieldname")) { // It is the parameter "Fieldname"
+                migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
+        }
 
+        if (section == "[InfluxDBv2]") {
+            /* Fieldname has a <NUMBER> as prefix! */
+            if (isInString(configLines[i], "Fieldname")) { // It is the parameter "Fieldname"
+                migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
         }
 
         if (section == "[GPIO]") {

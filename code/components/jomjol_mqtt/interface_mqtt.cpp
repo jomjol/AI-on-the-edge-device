@@ -5,7 +5,8 @@
 #include "connect_wlan.h"
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
-#include "server_tflite.h"
+#include "MainFlowControl.h"
+#include "cJSON.h"
 #include "../../include/defines.h"
 
 static const char *TAG = "MQTT IF";
@@ -185,7 +186,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
 
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
-    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
+    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, (int)event_id);
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
@@ -247,24 +248,24 @@ int MQTT_Init() {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init");
     MQTTdestroy_client(false);
 
-    esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = uri.c_str(),
-        .client_id = client_id.c_str(),
-        .lwt_topic = lwt_topic.c_str(),
-        .lwt_msg = lwt_disconnected.c_str(),
-        .lwt_retain = 1,
-        .lwt_msg_len = (int)(lwt_disconnected.length()),
-        .keepalive = keepalive,
-        .disable_auto_reconnect = false,        // Reconnection routine active (Default: false)
-        .buffer_size = 1536,                    // size of MQTT send/receive buffer (Default: 1024)
-        .reconnect_timeout_ms = 15000,          // Try to reconnect to broker (Default: 10000ms)
-        .network_timeout_ms = 20000,            // Network Timeout (Default: 10000ms)
-        .message_retransmit_timeout = 3000      // Time after message resent when broker not acknowledged (QoS1, QoS2)
-    };
+    esp_mqtt_client_config_t mqtt_cfg = { };
+
+    mqtt_cfg.broker.address.uri = uri.c_str();
+    mqtt_cfg.credentials.client_id = client_id.c_str();
+    mqtt_cfg.network.disable_auto_reconnect = false;     // Reconnection routine active (Default: false)
+    mqtt_cfg.network.reconnect_timeout_ms = 15000;       // Try to reconnect to broker (Default: 10000ms)
+    mqtt_cfg.network.timeout_ms = 20000;                 // Network Timeout (Default: 10000ms)
+    mqtt_cfg.session.message_retransmit_timeout = 3000;  // Time after message resent when broker not acknowledged (QoS1, QoS2)
+    mqtt_cfg.session.last_will.topic = lwt_topic.c_str();
+    mqtt_cfg.session.last_will.retain = 1;
+    mqtt_cfg.session.last_will.msg = lwt_disconnected.c_str();
+    mqtt_cfg.session.last_will.msg_len = (int)(lwt_disconnected.length());
+    mqtt_cfg.session.keepalive = keepalive;
+    mqtt_cfg.buffer.size = 1536;                         // size of MQTT send/receive buffer (Default: 1024)
 
     if (user.length() && password.length()){
-        mqtt_cfg.username = user.c_str();
-        mqtt_cfg.password = password.c_str();
+        mqtt_cfg.credentials.username = user.c_str();
+        mqtt_cfg.credentials.authentication.password = password.c_str();
     }
 
     #ifdef DEBUG_DETAIL_ON  
@@ -336,14 +337,51 @@ bool getMQTTisConnected() {
 }
 
 
-bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len) {
+bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len) 
+{
     ESP_LOGD(TAG, "Handler called: topic %s, data %.*s", _topic.c_str(), _data_len, _data);
 
     if (_data_len > 0) {
         MQTTCtrlFlowStart(_topic);
     }
+    else {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_flow_start: handler called, but no data");
+    }
 
     return ESP_OK;
+}
+
+
+bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len) 
+{
+    //ESP_LOGD(TAG, "Handler called: topic %s, data %.*s", _topic.c_str(), _data_len, _data);
+    //example: {"numbersname": "main", "value": 12345.1234567}
+
+    if (_data_len > 0) {    // Check if data length > 0
+        cJSON *jsonData = cJSON_Parse(_data);
+        cJSON *numbersname = cJSON_GetObjectItemCaseSensitive(jsonData, "numbersname");
+        cJSON *value = cJSON_GetObjectItemCaseSensitive(jsonData, "value");
+
+        if (cJSON_IsString(numbersname) && (numbersname->valuestring != NULL)) {    // Check if numbersname is valid
+            if (cJSON_IsNumber(value)) {   // Check if value is a number
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_set_prevalue called: numbersname: " + std::string(numbersname->valuestring) + 
+                                                                                         ", value: " + std::to_string(value->valuedouble));
+                if (flowctrl.UpdatePrevalue(std::to_string(value->valuedouble), std::string(numbersname->valuestring), true))
+                    return ESP_OK;
+            }
+            else {
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_set_prevalue: value not a valid number (\"value\": 12345.12345)");
+            }
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_set_prevalue: numbersname not a valid string (\"numbersname\": \"main\")");
+        }
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_set_prevalue: handler called, but no data received");
+    }
+
+    return ESP_FAIL;
 }
 
 
@@ -358,9 +396,14 @@ void MQTTconnected(){
             }
         }
 
-        /* Subcribe to topics */
-        std::function<bool(std::string topic, char* data, int data_len)> subHandler = mqtt_handler_flow_start;     
-        MQTTregisterSubscribeFunction(maintopic + "/ctrl/flow_start", subHandler);        // subcribe to maintopic/ctrl/flow_start
+        // Subcribe to topics
+        // Note: Further subsriptions are handled in GPIO class
+        //*****************************************
+        std::function<bool(std::string topic, char* data, int data_len)> subHandler1 = mqtt_handler_flow_start;     
+        MQTTregisterSubscribeFunction(maintopic + "/ctrl/flow_start", subHandler1);        // subcribe to maintopic/ctrl/flow_start
+
+        std::function<bool(std::string topic, char* data, int data_len)> subHandler2 = mqtt_handler_set_prevalue;     
+        MQTTregisterSubscribeFunction(maintopic + "/ctrl/set_prevalue", subHandler2);      // subcribe to maintopic/ctrl/set_prevalue
 
        if (subscribeFunktionMap != NULL) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
