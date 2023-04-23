@@ -23,6 +23,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 #### Fixed
 
 -  [#2326](https://github.com/jomjol/AI-on-the-edge-device/pull/2326) Activate save button after Analogue ROI creationSet prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
+-  [#2283](https://github.com/jomjol/AI-on-the-edge-device/pull/2283) Fix Timezone issues on InfluxDB
 -  Various minor fixes
 
 #### Removed
