@@ -679,7 +679,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
             zw = "CutImage Done";
         }
         else {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Taking image for Alignment Mark not possible, while device is busy with a round!");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Taking image for Alignment Mark not possible while device is busy with a round!");
             zw = "Device Busy";
         }
 
