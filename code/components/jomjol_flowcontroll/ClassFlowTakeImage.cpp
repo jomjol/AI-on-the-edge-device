@@ -218,6 +218,8 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
         LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After RemoveOldLogs");
     #endif
 
+    psram_deinit_shared_memory_for_take_image_step();
+
     return true;
 }
 
