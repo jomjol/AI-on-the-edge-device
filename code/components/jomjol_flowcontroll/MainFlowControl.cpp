@@ -657,20 +657,32 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        CAlignAndCutImage *caic = new CAlignAndCutImage("cutref", in);
-        caic->CutAndSave(out2, x, y, dx, dy);
-        delete caic;    
 
-        CImageBasis *cim = new CImageBasis("cutref", out2);
-        if (enhance)
-        {
-            cim->Contrast(90);
+
+        if (psram_init_shared_memory_for_take_image_step()) {
+
+            CAlignAndCutImage *caic = new CAlignAndCutImage("cutref", in);
+            caic->CutAndSave(out2, x, y, dx, dy);
+            delete caic;   
+
+            CImageBasis *cim = new CImageBasis("cutref", out2);
+            if (enhance)
+            {
+                cim->Contrast(90);
+            }
+
+            cim->SaveToFile(out);
+            delete cim;        
+
+            psram_deinit_shared_memory_for_take_image_step();
+
+
+            zw = "CutImage Done";
+        }
+        else {
+            zw = "Only possible while the round is inactive! Please try again when the round got completed.";
         }
 
-        cim->SaveToFile(out);
-        delete cim;        
-
-        zw = "CutImage Done";
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), zw.length()); 
         
