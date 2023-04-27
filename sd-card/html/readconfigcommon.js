@@ -252,10 +252,20 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
-          xhttp.send();     }
+          xhttp.send();
+     }
      catch (error)
      {
 //	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
+     }
+
+     if (xhttp.responseText == "CutImage Done") {
+          firework.launch('Reference Image Contrast got enhanced.', 'success', 5000);
+          return true;
+     }
+     else {
+          firework.launch("Device is busy, please try again when the round got completed!", 'warning', 10000);
+          return false;
      }
 }
 
@@ -268,13 +278,23 @@ function MakeRefZW(zw, _domainname){
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
-          xhttp.send();     }
+          xhttp.send();
+     }
      catch (error)
      {
 //	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
-     _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
-//     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
-     FileCopyOnServer(_filetarget, _filetarget2, _domainname);
+
+     if (xhttp.responseText == "CutImage Done") {
+          _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
+     //     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
+          FileCopyOnServer(_filetarget, _filetarget2, _domainname);
+          firework.launch('Reference Image got updated.', 'success', 5000);
+          return true;
+     }
+     else {
+          firework.launch("Device is busy, please try again when the round got completed!", 'warning', 10000);
+          return false;
+     }
 }
 
