@@ -73,7 +73,7 @@ select {
 	  <tr>
 		<td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
 		<td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
-		<td rowspan="2" style="padding-top: 10px"><input class="button" type="button" value="Update Reference" onclick="CutOutReference()"></td>	
+		<td rowspan="2" style="padding-top: 10px"><input class="button" type="button" value="Update Reference Image" onclick="CutOutReference()"></td>	
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>
@@ -133,7 +133,7 @@ function SaveToConfig(){
     WriteConfigININew();
     UpdateConfigReference(domainname)
     SaveConfigToServer(domainname);
-    firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
+    firework.launch('Reference Marks got updated. The change will get applied after the next reboot!', 'success', 5000);
 }
 
 function EnhanceContrast(){
@@ -144,8 +144,9 @@ function EnhanceContrast(){
     refInfo[aktindex]["dy"] = document.getElementById("refdy").value;       
 
     enhanceCon = true;
-    MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname);
-    UpdateReference();
+    if (MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname)) {
+        UpdateReference();
+    }
 }
 
 function UpdateReference(){
@@ -250,9 +251,10 @@ function dataURLtoBlob(dataurl) {
             refInfo[aktindex]["y"] = document.getElementById("refy").value; 
             refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
             refInfo[aktindex]["dy"] = document.getElementById("refdy").value;   
-            MakeRefZW(refInfo[aktindex], domainname); 
-            UpdateReference();
-            document.getElementById("enhancecontrast").disabled = false;
+            if (MakeRefZW(refInfo[aktindex], domainname)) {
+                UpdateReference();
+                document.getElementById("enhancecontrast").disabled = false;
+            }
         }
 
         function drawGrid(){
