@@ -657,9 +657,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-
-
-        if (psram_init_shared_memory_for_take_image_step()) {
+        if ((*flowctrl.getActStatus() == "Flow finished") && psram_init_shared_memory_for_take_image_step()) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Taking image for Alignment Mark Update...");
 
             CAlignAndCutImage *caic = new CAlignAndCutImage("cutref", in);
             caic->CutAndSave(out2, x, y, dx, dy);
@@ -680,7 +679,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
             zw = "CutImage Done";
         }
         else {
-            zw = "Only possible while the round is inactive! Please try again when the round got completed.";
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Taking image for Alignment Mark not possible, while device is busy with a round!");
+            zw = "Device Busy";
         }
 
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
