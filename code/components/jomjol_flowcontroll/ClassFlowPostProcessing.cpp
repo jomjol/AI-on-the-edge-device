@@ -8,6 +8,7 @@
 
 #include <time.h>
 
+#include "websocket.h"
 #include "time_sntp.h"
 
 #include "esp_log.h"
@@ -882,6 +883,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     NUMBERS[j]->ReturnValue = "";
                     NUMBERS[j]->lastvalue = imagetime;
 
+                    schedule_websocket_message("{\"status\": \"" + NUMBERS[j]->ErrorMessageText + "\", \"number\": \"" + NUMBERS[j]->name + "\"}");
+
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                     WriteDataLog(j);
@@ -915,6 +918,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 NUMBERS[j]->ReturnRateValue = "";
                 NUMBERS[j]->lastvalue = imagetime;
 
+                schedule_websocket_message("{\"status\": \"" + NUMBERS[j]->ErrorMessageText + "\", \"number\": \"" + NUMBERS[j]->name + "\"}");
+                
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
                 WriteDataLog(j);

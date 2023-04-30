@@ -13,6 +13,7 @@
 #include "Helper.h"
 #include "statusled.h"
 
+#include "websocket.h"
 #include "esp_camera.h"
 #include "time_sntp.h"
 #include "ClassControllCamera.h"
@@ -985,6 +986,10 @@ void task_autodoFlow(void *pvParameter)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
+
+        schedule_websocket_message("{\"round\": \"" + std::to_string(countRounds) + "\"}");
+        schedule_websocket_message("{\"uptime\": \"" + std::to_string(getUpTime()) + "\"}");
+
         time_t roundStartTime = getUpTime();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
         fr_start = esp_timer_get_time();
@@ -1012,12 +1017,15 @@ void task_autodoFlow(void *pvParameter)
         // Round finished -> Logfile
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
                 " completed (" + std::to_string(getUpTime() - roundStartTime) + " seconds)");
+        schedule_websocket_message("{\"round duration\": \"" + std::to_string(getUpTime() - roundStartTime) + "\"}");
         
         // CPU Temp -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CPU Temperature: " + std::to_string((int)temperatureRead()) + "°C");
+        schedule_websocket_message("{\"cpu temperature\": \"" + std::to_string(temperatureRead()) + "\"}");
         
         // WIFI Signal Strength (RSSI) -> Logfile
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
+        schedule_websocket_message("{\"wifi rssi\": \"" + std::to_string(get_WIFI_RSSI()) + "\"}");
 
         // Check if time is synchronized (if NTP is configured)
         if (getUseNtp() && !getTimeIsSet()) {

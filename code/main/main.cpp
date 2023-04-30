@@ -36,6 +36,7 @@
 #include "MainFlowControl.h"
 #include "server_file.h"
 #include "server_ota.h"
+#include "websocket.h"
 #include "time_sntp.h"
 #include "configFile.h"
 //#include "ClassControllCamera.h"
@@ -491,7 +492,8 @@ extern "C" void app_main(void)
     // ********************************************
     ESP_LOGD(TAG, "starting servers");
 
-    server = start_webserver();   
+    server = start_webserver();
+    start_websocket_server(server);
     register_server_camera_uri(server); 
     register_server_main_flow_task_uri(server);
     register_server_file_uri(server, "/sdcard");
