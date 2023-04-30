@@ -13,6 +13,7 @@
 #include "esp_sntp.h"
 #include "../../include/defines.h"
 
+#include "websocket.h"
 #include "ClassLogFile.h"
 
 #include "configFile.h"
@@ -68,6 +69,8 @@ void time_sync_notification_cb(struct timeval *tv)
     }
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is synced with NTP Server " +
             getServerName() + ": " + getCurrentTimeString("%Y-%m-%d %H:%M:%S"));
+            
+    schedule_websocket_message("{\"ntp\": \"synchronized\"}");
 }
 
 
