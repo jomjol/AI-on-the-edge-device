@@ -86,8 +86,10 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         return ("Take Image");
     if (_input.compare("ClassFlowAlignment") == 0)
         return ("Aligning");
-    if (_input.compare("ClassFlowCNNGeneral") == 0)
-        return ("Digitalization of ROIs");
+    if (_input.compare("ClassFlowCNNGeneral Digital") == 0)
+        return ("Digitalization of Digital ROIs");
+    if (_input.compare("ClassFlowCNNGeneral Analog") == 0)
+        return ("Digitalization of Analog ROIs");
     #ifdef ENABLE_MQTT
         if (_input.compare("ClassFlowMQTT") == 0)
             return ("Sending MQTT");
@@ -101,7 +103,7 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
 
-    return "Unkown Status";
+    return "Unkown Status: " + _input +"";
 }
 
 
@@ -223,12 +225,12 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[ANALOG]") == 0)
     {
-        cfc = new ClassFlowCNNGeneral(flowalignment);
+        cfc = new ClassFlowCNNGeneral(flowalignment, std::string("Analog"));
         flowanalog = (ClassFlowCNNGeneral*) cfc;
     }
     if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
     {
-        cfc = new ClassFlowCNNGeneral(flowalignment);
+        cfc = new ClassFlowCNNGeneral(flowalignment, std::string("Digital"));
         flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
     #ifdef ENABLE_MQTT

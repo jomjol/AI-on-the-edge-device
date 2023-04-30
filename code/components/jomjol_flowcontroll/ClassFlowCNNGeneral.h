@@ -25,6 +25,7 @@ protected:
     t_CNNType CNNType;
     std::vector<general*> GENERAL;
     float CNNGoodThreshold;
+    std::string cnn_name = "ClassFlowCNNGeneral";
 
 	//moved to define.h
     //float Analog_error = 3.0;
@@ -56,6 +57,7 @@ protected:
 
 public:
     ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype = AutoDetect);
+    ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, std::string _cnn_name);
 
     bool ReadParameter(FILE* pfile, string& aktparamgraph);
     bool doFlow(string time);
@@ -81,7 +83,7 @@ public:
 
     t_CNNType getCNNType(){return CNNType;};
 
-    string name(){return "ClassFlowCNNGeneral";}; 
+    string name(){return "ClassFlowCNNGeneral " + cnn_name;}; 
 };
 
 #endif

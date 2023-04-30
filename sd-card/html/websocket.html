@@ -10,7 +10,11 @@
 </head>
 <body>
 
-<div id="rx"></div>
+<div id="state">State: Please wait...</div>
+<hr>
+<div id="img">Image: Please wait...</div>
+<hr>
+<div id="rx">Events:<br></div>
 
 
 <script>
@@ -45,7 +49,14 @@
   
   function onMessage(event) {
       console.log(event);
-      addToLog(event.data);              
+      addToLog(event.data);   
+      
+      data = JSON.parse(event.data)
+
+      // State
+      if (data.hasOwnProperty("state")) {
+        processStateChange(data.state);
+      }
   }
   
   
@@ -56,8 +67,22 @@
   
   
   function addToLog(msg) {
-      document.getElementById('rx').innerHTML += "[" + new Date().toLocaleTimeString() + "] " +msg + "<br>\n";
+      document.getElementById('rx').innerHTML += "[" + new Date().toLocaleTimeString() + "] " + msg + "<br>\n";
       window.scrollBy(0,document.body.scrollHeight);
+  }
+
+  function processStateChange(state) {
+    document.getElementById('state').innerHTML = "State: <b>" + data.state + "</b>";
+
+    // TODO only reload image for those steps where it changed...
+    var d = new Date();
+    var timestamp = d.getTime();
+    document.getElementById('img').innerHTML = 'Image: <br><img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" height=200px;"></img>';
+  }
+
+
+  function updateImage() {
+
   }
   
 </script>
