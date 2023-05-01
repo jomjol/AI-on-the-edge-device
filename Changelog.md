@@ -1,4 +1,4 @@
-## [15.2.2] - 2023-05-01
+## [15.2.3] - 2023-05-01
 
 ### Changes
 
@@ -10,6 +10,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 #### Fixed
  - [#2373](https://github.com/jomjol/AI-on-the-edge-device/pull/2373) Allow the Alignment Mark step while status is "Initializing" or "Initialization (delayed)" or while in setup mode
+ - [#2381](https://github.com/jomjol/AI-on-the-edge-device/pull/2381) Fix broken sysinfo REST API
 
 
 ## [15.2.1] - 2023-04-27
@@ -984,7 +985,7 @@ External Illumination
 -   Initial Version
 
 
-[15.2.2]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.2
+[15.2.2]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.3
 [15.2.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.0...v15.2.1
 [15.2.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0
 [15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1
