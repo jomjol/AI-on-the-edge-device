@@ -62,6 +62,7 @@ void *psram_reserve_shared_stbi_memory(size_t size) {
         if ((allocatedBytesForSTBI + size) > TENSOR_ARENA_SIZE + MAX_MODEL_SIZE) { // Check if it still fits in the shared region
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Shared memory in PSRAM too small (STBI) to fit additional " + 
                     std::to_string(size) + " bytes! Available: " + std::to_string(TENSOR_ARENA_SIZE + MAX_MODEL_SIZE - allocatedBytesForSTBI) + " bytes!");
+
             return NULL;
         }
         
@@ -194,7 +195,7 @@ void *calloc_psram_heap(std::string name, size_t n, size_t size, uint32_t caps) 
 
 	ptr = heap_caps_calloc(n, size, caps);
     if (ptr != NULL) {
-	    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Allocated " + to_string(size) + " bytes in PSRAM for '" + name + "'");
+	    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocated " + to_string(size) + " bytes in PSRAM for '" + name + "'");
 	}
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to allocate " + to_string(size) + " bytes in PSRAM for '" + name + "'!");
