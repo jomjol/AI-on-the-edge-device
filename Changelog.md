@@ -1,4 +1,22 @@
+## [15.2.2] - 2023-05-01
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.2)
+
+#### Changed
+ - Updated PlatformIO to `6.2.0`
+ - [#2376](https://github.com/jomjol/AI-on-the-edge-device/pull/2376) Improve logging if Autostart is not enabled
+
+#### Fixed
+ - [#2373](https://github.com/jomjol/AI-on-the-edge-device/pull/2373) Allow the Alignment Mark step while status is "Initializing" or "Initialization (delayed)" or while in setup mode
+
+
 ## [15.2.1] - 2023-04-27
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.0...v15.2.1)
 
 #### Fixed
  - [#2357](https://github.com/jomjol/AI-on-the-edge-device/pull/2357) Fix Alignment Mark issue
@@ -966,6 +984,7 @@ External Illumination
 -   Initial Version
 
 
+[15.2.2]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.2
 [15.2.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.0...v15.2.1
 [15.2.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0
 [15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1
