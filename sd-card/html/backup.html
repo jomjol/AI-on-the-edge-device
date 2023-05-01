@@ -105,7 +105,7 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
 
 //    console.log(url + " started (" + index + "/" + urls.length + ")");
     if (retry == 0) {
-        setStatus("&nbsp;- " + getFilenameFromUrl(urls[index]) + " (" + index + "/" + urls.length + ")...");
+        setStatus("&nbsp;- " + getFilenameFromUrl(urls[index]) + " (" + (index+1) + "/" + urls.length + ")...");
     }
     else {
         setStatus("<span style=\"color: gray\">&nbsp;&nbsp;&nbsp;Retrying (" + retry + ")...</span>");

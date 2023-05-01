@@ -264,7 +264,7 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
           return true;
      }
      else {
-          firework.launch("Device is busy, please try again when the round got completed!", 'warning', 10000);
+          firework.launch("Device is busy, please try again when the Digitalization Round got completed!", 'warning', 10000);
           return false;
      }
 }
@@ -293,7 +293,7 @@ function MakeRefZW(zw, _domainname){
           return true;
      }
      else {
-          firework.launch("Device is busy, please try again when the round got completed!", 'warning', 10000);
+          firework.launch("Device is busy, please try again when the Digitalization Round got completed!", 'warning', 10000);
           return false;
      }
 }
