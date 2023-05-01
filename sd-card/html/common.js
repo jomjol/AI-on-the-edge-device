@@ -145,8 +145,8 @@ function compareVersions() {
     console.log("FW Hash: " + fWGitHash + ", Web UI Hash: " + webUiHash);
     
     if (fWGitHash != webUiHash) {
-        firework.launch("The Version of the Web Interface (" + webUiHash + 
-            ") does not match the Firmware Version (" + 
+        firework.launch("The version of the web interface (" + webUiHash + 
+            ") does not match the firmware version (" + 
             fWGitHash + ")! It is suggested to keep them on the same version!", 'warning', 30000);
     }
 }

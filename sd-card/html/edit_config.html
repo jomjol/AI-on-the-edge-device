@@ -1,25 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Edit Config</title>
-<meta charset="utf-8">
+<meta charset="UTF-8" />
 
 <style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+	h1 {font-size: 2em;}
+	h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+	h3 {font-size: 1.2em;}
+	p {font-size: 1em;}
 
-.button {
-	padding: 5px 20px;
-    width: 211px;
-	font-size: 16px;	
-}
+	.button {
+		padding: 5px 10px;
+		width: 220px;
+		font-size: 16px;	
+	}
 
-textarea {
-	font-size: 14px;
-}
+	textarea {
+		font-size: 15px;
+	}
 </style>
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -28,59 +27,60 @@ textarea {
 
 <body style="font-family: arial; padding: 0px 10px;">
  
-<table>
-    <tr><td><h2>Config.ini:</h2></td></tr>
-    <tr>
-        <td colspan="3">
-            <textarea id="inputTextToSave" cols="100" rows="33"></textarea>
-        </td>
-    </tr>
-    <tr>
-		<td><button class="button" onclick="saveTextAsFile()">Save</button></td>
-	</tr>
-	<tr>
-		<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button></td>
-	</tr>
-</table>
+	<table style="width:660px">
+		<h2>Configuration - "Config.ini" Editor</h2>
+		<td>
+			<textarea id="inputTextToSave" rows="30" style="width:100%"></textarea>
+		</td>
+	</table>
 
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
- 
-<script type="text/javascript">
-	var canvas = document.getElementById('canvas'),
-		domainname = getDomainname(); 
+	<table>
+		<td>
+			<button class="button" onclick="saveTextAsFile()">Save Config</button>
+		</td>
+	    <td>
+	        <button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
+		</td>
+	</table>
+
+	<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+	
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas'),
+			domainname = getDomainname(); 
 
 
-function LoadConfigNeu() {
-	domainname = getDomainname();  
-    loadConfig(domainname); 	
-	document.getElementById("inputTextToSave").value = getConfig();
+	function LoadConfigNeu() {
+		domainname = getDomainname();  
+		loadConfig(domainname); 	
+		document.getElementById("inputTextToSave").value = getConfig();
+		}
+
+	function saveTextAsFile()
+	{
+		if (confirm("Are you sure you want to save the configuration?")) {
+			FileDeleteOnServer("/config/config.ini", domainname);
+			var textToSave = document.getElementById("inputTextToSave").value;
+			FileSendContent(textToSave, "/config/config.ini", domainname);
+
+			firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
+		}
 	}
 
-function saveTextAsFile()
-{
-	if (confirm("Are you sure you want to update \"config.ini\"?")) {
-		FileDeleteOnServer("/config/config.ini", domainname);
-		var textToSave = document.getElementById("inputTextToSave").value;
-		FileSendContent(textToSave, "/config/config.ini", domainname);
-		firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
+	function doReboot() {
+		if (confirm("Are you sure you want to reboot?")) {
+			var stringota = "/reboot";
+			window.location = stringota;
+			window.location.href = stringota;
+			window.location.assign(stringota);
+			window.location.replace(stringota);
+		}
 	}
-}
-
-function doReboot() {
-	if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = "/reboot";
-		window.location = stringota;
-		window.location.href = stringota;
-		window.location.assign(stringota);
-		window.location.replace(stringota);
-	}
-}
-
- 
-LoadConfigNeu();
- 
-</script>
+	
+	LoadConfigNeu();
+	
+	</script>
  
 </body>
 </html>

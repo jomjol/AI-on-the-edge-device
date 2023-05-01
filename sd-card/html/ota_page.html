@@ -1,27 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en">
 <head>
-    <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
     <title>OTA Update</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8" />
 
     <style>
         h1 {font-size: 2em;}
-        h2 {font-size: 1.5em;}
-        h3 {font-size: 1.2em;} 
+        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+        h3 {font-size: 1.2em;}
         p {font-size: 1em;}
         
-        input[type=number] {
-            width: 138px;
-            padding: 10px 5px;
+        input[type=file] {
+            width: 660px;
+            padding: 5px 0px;
             display: inline-block;
-            border: 1px solid #ccc;
             font-size: 16px; 
-        }
+        }    
         
         .button {
-            padding: 10px 20px;
-            width: 211px;
+            padding: 5px 10px;
+            width: 205px;
             font-size: 16px;
         }
     </style>
@@ -51,11 +49,11 @@
     <form id="upload_form" enctype="multipart/form-data" method="post">
         <input type="file" accept=".bin,.zip,.tfl,.tflite" name="file_selector" id="file_selector" onchange="validate_file()"><br><br>
 
-        <button class="button" style="width:300px" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload and install</button>
+        <button class="button" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload And Install</button>
         <br><br>
         <progress id="progressBar" value="0" max="100" style="width:600px;"></progress>
+        <h3><span id="status">Status: Idle</span></h3>
         <p id="loaded_n_total"></p>
-        <h3><span id="status">Status: idle</span></h3>
     </form>
     
 
@@ -262,10 +260,10 @@
 
         function progressHandler(event) {
             _("loaded_n_total").innerHTML = "Uploaded " + (event.loaded / 1024 / 1024).toFixed(2) + 
-                    " MBytes of " + (event.total / 1024/ 1024).toFixed(2) + " MBytes.";
+                    " MB of " + (event.total / 1024/ 1024).toFixed(2) + " MB";
             var percent = (event.loaded / event.total) * 100;
             _("progressBar").value = Math.round(percent);
-            _("status").innerHTML = "Status: " + Math.round(percent) + "% uploaded... please wait";
+            _("status").innerHTML = "Status: " + Math.round(percent) + "% uploaded. Please wait...";
         }
 
 

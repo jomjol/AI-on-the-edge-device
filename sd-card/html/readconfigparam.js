@@ -710,9 +710,10 @@ function getNUMBERInfo(){
 }
 
 function RenameNUMBER(_alt, _neu){
-     if ((_neu.indexOf(".") >= 0) || (_neu.indexOf(",") >= 0) || (_neu.indexOf(" ") >= 0) || (_neu.indexOf("\"") >= 0))
+     if ((_neu.indexOf(".") >= 0) || (_neu.indexOf(",") >= 0) || 
+         (_neu.indexOf(" ") >= 0) || (_neu.indexOf("\"") >= 0))
      {
-          return "Name must not contain ',', '.', ' ' or '\"' - please change name";
+          return "Number sequence name must not contain , . \" or a space";
      }
 
      index = -1;
@@ -725,21 +726,21 @@ function RenameNUMBER(_alt, _neu){
      }
 
      if (found)
-          return "Name is already existing - please use another name";
+          return "Number sequence name is already existing, please choose another name";
 
      NUMBERS[index]["name"] = _neu;
      
      return "";
 }
 
-function DeleteNUMBER(_delte){
+function DeleteNUMBER(_delete){
      if (NUMBERS.length == 1)
-          return "The last number cannot be deleted."
+          return "One number sequence is mandatory. Therefore this cannot be deleted"
      
 
      index = -1;
      for (i = 0; i < NUMBERS.length; ++i) {
-          if (NUMBERS[i]["name"] == _delte)
+          if (NUMBERS[i]["name"] == _delete)
                index = i;
      }
 
@@ -758,7 +759,7 @@ function CreateNUMBER(_numbernew){
      }
 
      if (found)
-          return "Name does already exist, please choose another one!";
+          return "Number sequence name is already existing, please choose another name";
 
      _ret = new Object();
      _ret["name"] = _numbernew;
@@ -796,23 +797,25 @@ function CreateNUMBER(_numbernew){
 
 
 function getROIInfo(_typeROI, _number){
-     index = 0;
+     index = -1;
      for (var i = 0; i < NUMBERS.length; ++i)
           if (NUMBERS[i]["name"] == _number)
                index = i;
 
-     return NUMBERS[index][_typeROI];         
+     if (index != -1)
+          return NUMBERS[index][_typeROI];
+     else
+          return "";     
 }
 
 
 function RenameROI(_number, _type, _alt, _neu){
      if ((_neu.includes("=")) || (_neu.includes(".")) || (_neu.includes(":")) ||
          (_neu.includes(",")) || (_neu.includes(";")) || (_neu.includes(" ")) || 
-         (_neu.includes("\""))) {
-          return "Name must not contain any of the following characters: . : , ; = \" ' '";
+         (_neu.includes("\""))) 
+     {
+          return "ROI name must not contain . : , ; = \" or space";
      }
-
-
 
      index = -1;
      found = false;
@@ -820,6 +823,9 @@ function RenameROI(_number, _type, _alt, _neu){
      for (j = 0; j < NUMBERS.length; ++j)
           if (NUMBERS[j]["name"] == _number)
                _indexnumber = j;
+
+     if (_indexnumber == -1)
+          return "Number sequence not existing. ROI cannot be renamed"  
 
      for (i = 0; i < NUMBERS[_indexnumber][_type].length; ++i) {
           if (NUMBERS[_indexnumber][_type][i]["name"] == _alt)
@@ -829,18 +835,18 @@ function RenameROI(_number, _type, _alt, _neu){
      }
 
      if (found)
-          return "Name is already existing - please use another name";
+          return "ROI name is already existing, please choose another name";
 
      NUMBERS[_indexnumber][_type][index]["name"] = _neu;
      
      return "";
 }
 
+
 function DeleteNUMBER(_delte){
      if (NUMBERS.length == 1)
-          return "The last number cannot be deleted."
+          return "The last number cannot be deleted"
      
-
      index = -1;
      for (i = 0; i < NUMBERS.length; ++i) {
           if (NUMBERS[i]["name"] == _delte)
@@ -854,21 +860,24 @@ function DeleteNUMBER(_delte){
      return "";
 }
 
+
 function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
      _indexnumber = -1;
      for (j = 0; j < NUMBERS.length; ++j)
           if (NUMBERS[j]["name"] == _number)
                _indexnumber = j;
 
+     if (_indexnumber == -1)
+          return "Number sequence not existing. ROI cannot be created"
 
      found = false;
-     for (i = 0; i < NUMBERS.length; ++i) {
-          if (NUMBERS[_indexnumber][_type]["name"] == _roinew)
+     for (i = 0; i < NUMBERS[_indexnumber][_type].length; ++i) {
+          if (NUMBERS[_indexnumber][_type][i]["name"] == _roinew)
                found = true;
      }
 
      if (found)
-          return "ROI does already exist, please choose another name!";
+          return "ROI name is already existing, please choose another name";
 
      _ret = new Object();
      _ret["name"] = _roinew;

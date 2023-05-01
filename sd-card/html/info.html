@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Info</title>
-<meta charset="utf-8">
+<meta charset="UTF-8" />
 
 <style>
 h1 {font-size: 2em;}
@@ -11,190 +10,490 @@ h2 {font-size: 1.5em;}
 h3 {font-size: 1.2em;}
 p {font-size: 1em;}
 
-div {
-	width: 350px;
-    padding: 10px 5px;
-    border: 1px solid #ccc;
-	font-family: arial;
-    font-size: 16px;
-	max-height: 35px;
+th, td {
+  padding: 5px 5px 5px 5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(240, 240, 240);
 }
 
+output {
+	padding-left:5px;
+}
+
+table {
+    width: 660px;
+	padding: 5px;
+	border-collapse:collapse;
+}
 </style>
 
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<h3>Runtime Information</h3>
-<table style="font-family: arial">
-	<tr>
-		<td>
-			Last restart:
-		</td>
-		<td>
-			<div id="starttime">
-				<object data="/starttime"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			Uptime:
-		</td>
-		<td>
-			<div id="uptime">
-				<object data="/uptime"></object>
-			</div>
-		</td>
-	</tr>
-</table>
+	<table>
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>
+			<h3>Runtime Information</h3>
+		</tr>
+		<tr>
+			<td>Start time:</td>
+			<td><output id="starttime"></output></td>
+		</tr>
+		<tr>
+			<td>Uptime:</td>
+			<td><output id="uptime"></output></td>
+		</tr>
+	</table>
 
-<h3>Build Info</h3>
-<table style="font-family: arial">
-  <tr>
-	<td>
-		Firmware Version:
-	</td>
-	<td>
-		<div id="firmware" style="width: 700px">
-		    <object data="/info?type=FirmwareVersion" style="width: 700px"></object>
-		</div>
-	</td>
-  </tr>
-  <tr>
-	<td>
-		Firmware Build Time:
-	</td>
-	<td>
-		<div id="build-time">
-			<object data="/info?type=BuildTime"></object>
-		</div>
-	</td>
-  </tr>
+	<table>
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>
+			<h3>Build Info</h3>
+		</tr>
+		<tr>
+			<td>Firmware version:</td>
+			<td>
+				<output id="firmware"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Firmware build time:</td>
+			<td>
+				<output id="build-time"></output>
+			</td>
+		</tr>
 
-	<tr>
-	<td>
-		Web Interface Version:
-	</td>
-	<td>
-		    <div id="web-ui" style="width: 700px">
-			<object data="/info?type=HTMLVersion" style="width: 700px"></object>
-		</div>
-	</td>
-  </tr>
-</table>
+		<tr>
+			<td>Web interface version:</td>
+			<td>
+				<output id="web-ui"></output>
+			</td>
+		</tr>
+	</table>
 
 
-<h3>Host Info</h3>
-<table style="font-family: arial">
-	<tr>
-		<td>
-			Hostname:
-		</td>
-		<td>
-			<div id="Hostname">
-				<object data="/info?type=Hostname"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			IP-Address:
-		</td>	
-		<td>
-			<div id="IP">
-				<object data="/info?type=IP"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			WLan-SSID:
-		</td>	
-		<td>
-			<div id="SSID">
-				<object data="/info?type=SSID"></object>
-			</div>
-		</td>
-	</tr>
-</table>
+	<table>
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>			
+			<h3>Host Info</h3>
+		</tr>
+		<tr>
+			<td>Hostname:</td>
+			<td>
+				<output id="hostname"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>IP Address:</td>	
+			<td>
+				<output id="IP-address"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>WLAN SSID:</td>	
+			<td>
+				<output id="wlan-ssid"></output>
+			</td>
+		</tr>
+	</table>
 
-<h3>SD Card Info</h3>
-<table style="font-family: arial">
-	<tr>
-		<td>
-			SD Card Manufacturer:
-		</td>
-		<td>
-			<div id="SDCardManufacturer">
-				<object data="/info?type=SDCardManufacturer"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			SD Card Name:
-		</td>
-		<td>
-			<div id="SDCardName">
-				<object data="/info?type=SDCardName"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			SD Card Size [MB]:
-		</td>
-		<td>
-			<div id="SDCardCapacity">
-				<object data="/info?type=SDCardCapacity"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			SD Card Sector Size [byte]:
-		</td>
-		<td>
-			<div id="SDCardSectorSize">
-				<object data="/info?type=SDCardSectorSize"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			Partition Size [MB]:
-		</td>
-		<td>
-			<div id="SDPartitionSize">
-				<object data="/info?type=SDCardPartitionSize"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			Partition Free Space [MB]:
-		</td>	
-		<td>
-			<div id="SDFreePartitionSpace">
-				<object data="/info?type=SDCardFreePartitionSpace"></object>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			Partition Allocation Size [byte]:
-		</td>	
-		<td>
-			<div id="SDCardPartitionAllocationSize">
-				<object data="/info?type=SDCardPartitionAllocationSize"></object>
-			</div>
-		</td>
-	</tr>
-</table>
+	<table>
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>			
+			<h3>SD Card Info</h3>
+		</tr>
+		<tr>
+			<td>SD card manufacturer:</td>
+			<td>
+				<output id="SDCardManufacturer"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>SD card name:</td>
+			<td>
+				<output id="SDCardName"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>SD card size:</td>
+			<td>
+				<output id="SDCardCapacity"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>SD card sector size:</td>
+			<td>
+				<output id="SDCardSectorSize"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Partition size:</td>
+			<td>
+				<output id="SDCardPartitionSize"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Partition free space:</td>	
+			<td>
+				<output id="SDCardFreePartitionSpace"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Partition allocation size:</td>	
+			<td>
+				<output id="SDCardPartitionAllocationSize"></output>
+			</td>
+		</tr>
+	</table>
+
+	<table>
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>			
+			<h3>Memory Info</h3>
+		</tr>
+		<tr>
+			<td>Total Free (Int + Ext):</td>	
+			<td>
+				<output id="RAMTotalFree"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Ext. RAM - Free:</td>	
+			<td>
+				<output id="ExtRAMFree"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Ext. RAM - Largest Free Block:</td>	
+			<td>
+				<output id="ExtRAMLargestFree"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Ext. RAM - Min Free:</td>	
+			<td>
+				<output id="ExtRAMMinFree"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Int. RAM - Free:</td>	
+			<td>
+				<output id="IntRAMFree"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Int. RAM - Largest Free Block:</td>	
+			<td>
+				<output id="IntRAMLargestFree"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Int. RAM - Min Free:</td>	
+			<td>
+				<output id="IntRAMMinFree"></output>
+			</td>
+		</tr>
+	</table>
+
 
 <h3>Copyright</h3>
 Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
 
 </body>
 </html>
+
+<script type="text/javascript">
+
+	function loadLastRestart() 
+	{
+		url = getDomainname() + '/starttime';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				//Input format: 19700101-010019
+				var timestamp = xhttp.response.substr(6,2) + "." +
+						   xhttp.response.substr(4,2) + "." +
+						   xhttp.response.substr(0,4) + " " +
+						   xhttp.response.substr(9,2) + ":" +
+						   xhttp.response.substr(11,2) + ":" +
+						   xhttp.response.substr(13,2);
+ 				document.getElementById("starttime").value = timestamp;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadUptime() 
+	{
+		url = getDomainname() + '/uptime';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("uptime").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadFWVersion() 
+	{
+		url = getDomainname() + '/info?type=FirmwareVersion';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("firmware").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadFWBuildTime() 
+	{
+		url = getDomainname() + '/info?type=BuildTime';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				// Input format: 2023-04-02 10:56
+				var timestamp = xhttp.response.substr(8,2) + "." +
+								xhttp.response.substr(5,2) + "." +
+								xhttp.response.substr(0,4) + " " +
+								xhttp.response.substr(11,2) + ":" +
+								xhttp.response.substr(14,2);
+ 				document.getElementById("build-time").value = timestamp;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadHTMLVersion() 
+	{
+		url = getDomainname() + '/info?type=HTMLVersion';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("web-ui").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadHostname() 
+	{
+		url = getDomainname() + '/info?type=Hostname';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("hostname").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadIPAddress() 
+	{
+		url = getDomainname() + '/info?type=IP';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("IP-address").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadWLANSSID() 
+	{
+		url = getDomainname() + '/info?type=SSID';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("WLAN-SSID").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadWLANSSID() 
+	{
+		url = getDomainname() + '/info?type=SSID';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("wlan-ssid").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadWLANSSID() 
+	{
+		url = getDomainname() + '/info?type=SSID';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("wlan-ssid").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardManufacturer() 
+	{
+		url = getDomainname() + '/info?type=SDCardManufacturer';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardManufacturer").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardName() 
+	{
+		url = getDomainname() + '/info?type=SDCardName';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardName").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardCapacity() 
+	{
+		url = getDomainname() + '/info?type=SDCardCapacity';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardCapacity").value = xhttp.response + " MB";
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardSectorSize() 
+	{
+		url = getDomainname() + '/info?type=SDCardSectorSize';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardSectorSize").value = xhttp.response + " byte";
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardPartitionSize() 
+	{
+		url = getDomainname() + '/info?type=SDCardPartitionSize';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardPartitionSize").value = xhttp.response + " MB";
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardFreePartitionSpace() 
+	{
+		url = getDomainname() + '/info?type=SDCardFreePartitionSpace';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardFreePartitionSpace").value = xhttp.response + " MB";
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadSDCardPartitionAllocationSize() 
+	{
+		url = getDomainname() + '/info?type=SDCardPartitionAllocationSize';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+ 				document.getElementById("SDCardPartitionAllocationSize").value = xhttp.response + " byte";
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadMemoryInfo() 
+	{
+		url = getDomainname() + '/heap';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				data = xhttp.response.split("|");
+ 				document.getElementById("RAMTotalFree").value = data[0].split("l: ")[1] + " byte";
+				document.getElementById("IntRAMFree").value = data[4].split(":")[1] + " byte";
+				document.getElementById("IntRAMLargestFree").value = data[5].split(":")[1] + " byte";
+				document.getElementById("IntRAMMinFree").value = data[6].split(":")[1] + " byte";
+				document.getElementById("ExtRAMFree").value = data[1].split(":")[1] + " byte";
+				document.getElementById("ExtRAMLargestFree").value = data[2].split(":")[1] + " byte";
+				document.getElementById("ExtRAMMinFree").value = data[3].split(":")[1] + " byte";
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function init()
+	{
+		loadMemoryInfo();
+		loadLastRestart();
+		loadUptime();
+		loadFWVersion();
+		loadFWBuildTime();
+		loadHTMLVersion();
+		loadHostname();
+		loadIPAddress();
+		loadWLANSSID();
+		loadSDCardManufacturer();
+		loadSDCardName();
+		loadSDCardCapacity();
+		loadSDCardSectorSize();
+		loadSDCardPartitionSize();
+		loadSDCardFreePartitionSpace();
+		loadSDCardPartitionAllocationSize();
+	}
+
+	init();
+</script>

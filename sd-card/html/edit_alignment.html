@@ -1,101 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>Alignment Marks</title>
-<meta charset="utf-8"/>
-	
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+    <title>Alignment marker</title>
+    <meta charset="UTF-8" />
+        
+    <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
 
-input[type=number] {
-	width: 100px;
-	margin-right: 10px;
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+        input[type=number] {
+            width: 60px;
+            margin-right: 10px;
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
 
-input[type=text] {
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+        input[type=text] {
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
 
-select {
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-	margin-right: 10px;
-}
+        input:out-of-range {
+        background-color: rgba(255, 0, 0, 0.25);
+        border: 1px solid red;
+        }
 
-.button {
-	padding: 5px 10px;
-    width: 210px;
-	font-size: 16px;
-}
-</style>	
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
-<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+        select {
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+            margin-right: 10px;
+            min-width: 100px;
+            vertical-align: middle;
+        }
+
+        .button {
+            padding: 5px 10px;
+            width: 205px;
+            font-size: 16px;
+        }
+
+        th, td {
+            padding: 5px 5px 5px 0px;
+        }
+
+        table {
+            width: 660px;
+            padding: 5px;
+        }
+    </style>	
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
 	
-	<h2>Alignment Marks</h2>
-    <p>On this page you define two Reference Marks.
-        See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Alignment/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/Alignment/</a> for explanations.</p>
-    <p>After saving the Reference Marks, you can define the <a href=edit_digits.html>digit</a> resp. <a href=edit_analog.html>analog</a> ROI's.<br>
-    Only after those steps a reboot is required.</p>
+	<h2>Alignment Marker</h2>
+    <details id="desc_details" style="font-size:16px">
+        <summary><b>CLICK HERE</b> for usage description. More infos in documentation:   
+            <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Alignment/ target=_blank>Alignment</a>
+        </summary>
+        <p>
+            Two alignment marker with clear contour and proper contrast are needed to identify unique "fix points" on the image. 
+            The marker area should be not be part of the variable area of ROI evaluation. Please find more information in documenation:
+            <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Alignment/ target=_blank>Alignment</a>
+        </p>
+        <p>
+            Select an alignment marker area using drag and dop feature by mouse operation or by manually entering the coordinates and sizes in the fields below the image.
+            After you selected a suitable first alignment marker area, push the <b>"Update Marker"</b> button. Switch to second alignment marker with <b>"Marker"</b>
+            and repeat the procedure.
+        </p>
+        <p>
+            After definition of both alignment marker is completed don't forget to save with the <b>"Save New Marker"</b> button!<br>
+            <b>NOTE:</b> There is no need to perform a reboot after every saving or step. It's sufficient to reboot after all configuration steps 
+            (reference image, alignment, ROI configuration) are completed to activate new configuration.
+        </p>
+    </details>
+    <hr />
 
 	<table>
+    <colgroup>
+        <col span="1" style="width: 33.3%;">
+        <col span="1" style="width: 33.3%;">
+        <col span="1" style="width: 33.3%;">
+    </colgroup>
 	  <tr>
-		<td><canvas id="canvas" crossorigin></canvas></td>
-	  </tr>
-	</table>
-
-	<table>
-	  <tr>
-		<td>Select Reference: 
+		<td>Marker: 
 			<select id="index" name="reference" onchange="ChangeSelection()">
-			  <option value="0" selected>Reference 0</option>
-			  <option value="1" >Reference 1</option>
+			  <option value="0" selected>Marker 1</option>
+			  <option value="1" >Marker 2</option>
 			</select>
 		</td>
-		<td colspan="2">Storage Path/Name: <input type="text" name="name" id="name" onchange="namechanged()"></td>
+		<td colspan="2" style="padding-left: 22px; color: grey;">Filename: <output type="text" name="name" id="name" onchange="namechanged()"></td>
 	  </tr>
 	  <tr>
 		<td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
 		<td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
-		<td rowspan="2" style="padding-top: 10px"><input class="button" type="button" value="Update Reference Image" onclick="CutOutReference()"></td>	
+		<td rowspan="2" style="padding-top: 10px;"><input class="button" type="button" value="Update Marker" onclick="CutOutReference()"></td>	
 	  </tr>
 	  <tr>
 		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>
 		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
 	  </tr>
 	  <tr>
-		<td style="padding-top: 10px">Original Image:</td>
-		<td style="padding-top: 10px">Reference Image:</td>
-		<td rowspan="2"><input class="button" type="button" id="enhancecontrast" value="Enhance Contrast" onclick="EnhanceContrast()"></td>	
+		<td style="vertical-align: bottom;">Selected Image Area:</td>
+		<td style="vertical-align: bottom;">Resulting Marker:</td>
+        <td><input class="button" type="button" id="enhancecontrast" value="Enhance Image Contrast" onclick="EnhanceContrast()"></td>	
 	  </tr> 
 	  <tr>
-		<td><img id="img_ref_org" src = "/img_tmp/ref_zw_org.jpg"></td>
-		<td><img id="img_ref" src = "/img_tmp/ref_zw.jpg"></td>
-	  </tr>   
-	</table>
+		<td style="height:70px; vertical-align: top;"><img id="img_ref_org" src = ""></td>    <!--/img_tmp/ref_zw_org.jpg-->
+		<td style="height:70px; vertical-align: top;"><img id="img_ref" src = ""></td>        <!--/img_tmp/ref_zw.jpg-->
+	  </tr> 
+        <tr>
+            <td style="vertical-align:bottom;"><b>Reference Image:</b></td>
+            <td></td>
+            <td><input style="font-weight:bold;" class="button" type="submit" name="saveroi" id="savemarker" onclick="SaveToConfig()" value="Save New Marker">
+            </td>
+        </tr> 
+        <tr>
+            <td colspan="3"><canvas id="canvas" crossorigin></canvas></td>
+        </tr>
+    </table>
 
-	<table>
-	  <tr>
-		<td><input class="button" type="submit" name="saveroi" onclick="SaveToConfig()" value="Save">
-            <p>Proceed to update the <a href=edit_digits.html>digit</a> resp. <a href=edit_analog.html>analog</a> ROI's when you are done.</p></td>
-	  </tr> 
-	</table>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
@@ -130,10 +164,15 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-    WriteConfigININew();
-    UpdateConfigReference(domainname)
-    SaveConfigToServer(domainname);
-    firework.launch('Reference Marks got updated. The change will get applied after the next reboot!', 'success', 5000);
+    if (confirm("Are you sure you want to save the new alignment marker configuration?")) {
+        WriteConfigININew();
+        UpdateConfigReference(domainname)
+        SaveConfigToServer(domainname);
+        document.getElementById("savemarker").disabled = true;
+        document.getElementById("enhancecontrast").disabled = true;
+        
+        firework.launch('Alignment marker saved. They will get applied after next reboot', 'success', 5000);
+    }
 }
 
 function EnhanceContrast(){
@@ -146,6 +185,7 @@ function EnhanceContrast(){
     enhanceCon = true;
     if (MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname)) {
         UpdateReference();
+        document.getElementById("enhancecontrast").disabled = true;
     }
 }
 
@@ -174,7 +214,6 @@ function UpdateReference(){
     document.getElementById("refy").value = refInfo[aktindex]["y"];  
     rect.startX = document.getElementById("refx").value;
     rect.startY = document.getElementById("refy").value; 
-    document.getElementById("enhancecontrast").disabled = true;
     draw();      
 }
 			
@@ -215,13 +254,26 @@ function dataURLtoBlob(dataurl) {
             return { top: Math.round(top), left: Math.round(left) };
         }
    
+
+        /* hash #description open the details part of the page */
+        function openDescription() {
+        if(window.location.hash) {
+            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+            if(hash == 'description')
+                document.getElementById("desc_details").open = true;
+            }
+        }
+
     
-    
-        function init() { 
+        function init() {
+            openDescription();
             domainname = getDomainname();
             loadConfig(domainname); 
             ParseConfig();
             param = getConfigParameters();
+
+            document.getElementById("savemarker").disabled = true;
+            document.getElementById("enhancecontrast").disabled = true;
 
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
@@ -235,6 +287,8 @@ function dataURLtoBlob(dataurl) {
 
             drawImage();
         }
+
+
         function drawImage(){
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
@@ -254,6 +308,7 @@ function dataURLtoBlob(dataurl) {
             if (MakeRefZW(refInfo[aktindex], domainname)) {
                 UpdateReference();
                 document.getElementById("enhancecontrast").disabled = false;
+                document.getElementById("savemarker").disabled = false;
             }
         }
 

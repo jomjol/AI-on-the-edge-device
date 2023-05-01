@@ -1,65 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en">
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>AI on the edge</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css?v=$COMMIT_HASH" type="text/css" >
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
+    <title>AI on the edge</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css?v=$COMMIT_HASH" type="text/css" >
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
 
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 
-<script>
-    async function loadPage(page) {
-        console.log("loadPage(" + page + ")");
-        document.cookie = "page="+page + "; path=/";
-        document.getElementById('maincontent').src = page;
+    <script>
+        var streamPopup;
+        var streamFlashlight = false;
+        var streamWindowFeatures =
+                'channelmode=no,directories=no,fullscreen=no,' +
+                'location=no,dependent=yes,menubar=no,resizable=no,scrollbars=no,' +
+                'status=no,toolbar=no,titlebar=no,' +
+                'left=10,top=250,width=640px,height=480px';
 
-        [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
-            el.style.visibility = 'hidden';
-        });
-    }
+        async function loadPage(page) {
+            if (streamPopup)   // Ensure that stream popup is closed because it's blocking web interface
+                streamPopup.close();
 
-    function resetMenu() {
-        [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
-            el.style.visibility = 'visible';
-        });
-    }
-    
-    function getCookie(cname) {
-      let name = cname + "=";
-      let decodedCookie = decodeURIComponent(document.cookie);
-      let ca = decodedCookie.split(';');
-      for(let i = 0; i <ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-          c = c.substring(1);
+            console.log("loadPage(" + page + ")");
+            document.cookie = "page="+page + "; path=/";
+            document.getElementById('maincontent').src = page;
+
+            [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
+                el.style.visibility = 'hidden';
+            });
         }
-        if (c.indexOf(name) == 0) {
-          return c.substring(name.length, c.length);
-        }
-      }
-      return "";
-    }        
-</script>
 
+        function resetMenu() {
+            [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
+                el.style.visibility = 'visible';
+            });
+        }
+        
+        function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+        }        
+    </script>
 </head>
 
 <body>
 <div class="main">
 
-<table style="border: none">
-  <tr><td style="padding-right: 10px;"><img src="favicon.ico?v=$COMMIT_HASH"></td>
-    <td><h1 id="id_title"> Digitizer - AI on the edge</h1>
-        <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
-    </td></tr>
+<table style="border: none; width:100%">
+    <tr>
+        <td style="padding-right: 10px;"><img style="width:64px; height:64px" src="favicon.ico?v=$COMMIT_HASH"></td>
+        <td><h1 id="id_title"> Digitizer - AI on the edge</h1>
+            <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
+        </td>
+    </tr>
 </table>
 
 <div class="menu" onmouseover="resetMenu()">
@@ -67,24 +78,24 @@
     <li><a href="#" onclick="loadPage('overview.html?v=$COMMIT_HASH');">Overview</a></li>
     <li><a>Settings <i class="arrow down"></i></a>
       <ul class="submenu">
-        <li><a href="#" onclick="loadPage('prevalue_set.html?v=$COMMIT_HASH');">Set Previous Value</a></li>
+        <li><a href="#" onclick="loadPage('prevalue_set.html?v=$COMMIT_HASH');">Set "Previous Value"</a></li>
         <li><a href="#" onclick="loadPage('edit_config_param.html?v=$COMMIT_HASH');">Configuration</a></li>
         <li><a>Alignment <i class="arrow right"></i></a>
             <ul>
                 <li><a href="#" onclick="loadPage('edit_reference.html?v=$COMMIT_HASH');">Reference Image</a></li>
-                <li><a href="#" onclick="loadPage('edit_alignment.html?v=$COMMIT_HASH');">Alignment Marks</a></li>
+                <li><a href="#" onclick="loadPage('edit_alignment.html?v=$COMMIT_HASH');">Alignment Marker</a></li>
             </ul>
         </li>
         <li><a><strong>R</strong>egions <strong>O</strong>f <strong>I</strong>nterest <i class="arrow right"></i></a>
             <ul>
-                <li><a href="#" onclick="loadPage('edit_digits.html?v=$COMMIT_HASH');">Digital ROIs</a></li>
+                <li><a href="#" onclick="loadPage('edit_digits.html?v=$COMMIT_HASH');">Digit ROIs</a></li>
                 <li><a href="#" onclick="loadPage('edit_analog.html?v=$COMMIT_HASH');">Analog ROIs</a></li>
             </ul>
         </li>
       </ul>
 
 
-    <li><a>Data <i class="arrow down"></i></a>
+    <li><a>Data<i class="arrow down"></i></a>
         <ul class="submenu">
             <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
             <li><a href="#" onclick="loadPage('graph.html?v=$COMMIT_HASH');">Data Graph</a></li>
@@ -100,30 +111,98 @@
             <li><a href="#" onclick="loadPage('ota_page.html?v=$COMMIT_HASH');">OTA Update</a></li>
             <li><a href="#" onclick="loadPage('log.html?v=$COMMIT_HASH');">Log Viewer</a></li>
             <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/');">File Server</a></li>
+            <li><a>Livestream <i class="arrow right"></i></a>
+                <ul>
+                    <li><a href="#" onclick="start_livestream(false);">Live Stream (Light off)</a></li>
+                    <li><a href="#" onclick="start_livestream(true);">Live Stream (Light on)</a></li>
+                </ul>
             <li><a href="#" onclick="loadPage('reboot_page.html?v=$COMMIT_HASH');">Reboot</a></li>
             <li><a href="#" onclick="loadPage('info.html?v=$COMMIT_HASH');">Info</a></li>
+        </ul>
+    </li>
+    <li><a>Manual Control <i class="arrow down"></i></a>
+        <ul class="submenu">
+            <li><a href="#" onclick="flow_start()">Start Round</a></li>
+            <li id="HASendDiscovery" style="display:none;"><a href="#" onclick="HA_send_discovery()">Resend HA Discovery</a></li>
         </ul>
     </li>
   </ul>
 </div>
 
-<iframe name="maincontent" class="iframe" id="maincontent"></iframe>
+<iframe title="maincontent" name="maincontent" class="iframe" id="maincontent"></iframe>
 
-<span id="Version" style="font-size: 10px; margin-top: -5px">Loading version...</span>
+<span id="Version" style="font-size: 10px; margin-top: -5px;padding-left: 10px;">Loading version...</span>
 
 <script type="text/javascript">
-  LoadHostname();
-  LoadFwVersion();
-  LoadWebUiVersion();
+    LoadHostname();
+    LoadFwVersion();
+    LoadWebUiVersion();
+    HA_send_discovery_visiblilty();
 
-  if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
+    if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
     document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
-  }
-  console.log("Loading page: " + getCookie("page"));
-  document.getElementById('maincontent').src = getCookie("page");
-</script>
+    }
+    console.log("Loading page: " + getCookie("page"));
+    document.getElementById('maincontent').src = getCookie("page");
 
-</div>
+    
+    function flow_start() {
+    var url = getDomainname() + '/flow_start'; 
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				if (xhttp.responseText.substring(0,3) == "001") {
+					firework.launch('Flow start triggered', 'success', 5000);
+                    window.location.reload();
+				}
+				else if (xhttp.responseText.substring(0,3) == "002") {
+					firework.launch('Flow start scheduled. Start after round is completed', 'success', 5000);
+				}
+				else if (xhttp.responseText.substring(0,3) == "099") {
+					firework.launch('Flow start triggered, but start not possible (no flow task available)', 'danger', 5000);
+				}
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+    }
+
+
+    function HA_send_discovery_visiblilty()	{
+		loadConfig(domainname); 
+		ParseConfig();
+		category = getConfigCategory();
+        param = getConfigParameters();
+		if (category["MQTT"]["enabled"] && param["MQTT"]["HomeassistantDiscovery"]["value1"] == "true")
+            document.getElementById("HASendDiscovery").style.display="";
+	}
+
+
+    function HA_send_discovery() {
+    var url = getDomainname() + '/mqtt_publish_discovery'; 
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				firework.launch('Sending HA discovery topics scheduled. The sending will be processed in state "Publish to MQTT"', 'success', 5000);
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+    }
+
+
+    function start_livestream(streamFlashlight) {
+        if (streamPopup) 
+            streamPopup.close();
+
+        if (streamFlashlight)
+            streamPopup = window.open(getDomainname() + '/stream?flashlight=true','LivestreamWithlight',streamWindowFeatures);
+        else
+            streamPopup = window.open(getDomainname() + '/stream','Livestream',streamWindowFeatures);
+
+        streamPopup.focus();
+    }
+</script>
 
 </body>
 </html>

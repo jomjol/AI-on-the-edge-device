@@ -1,84 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en">
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>Set PreValue</title>
-<meta charset="utf-8">
-	
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+    <title>Set PreValue</title>
+    <meta charset="UTF-8" />
 
-div {
-	width: 200px;
-    padding: 10px 5px;
-    display: inline-block;
-    border: 1px solid #ccc;
-    font-size: 16px;
-	max-height: 35px;	
-}
+    <style>
+    h1 {font-size: 2em;}
+    h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+    h3 {font-size: 1.2em;}
+    p {font-size: 1em;}
 
-input[type=number] {
-	width: 125px;
-	padding: 10px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+    div {
+        padding: 3px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        height: 20px;
+        width: 120px;
+        vertical-align: middle;
+    }
 
-.button {
-	padding: 10px 20px;
-    width: 211px;
-	font-size: 16px;	
-}
-</style>	
-	
+    input[type=number] {
+        width: 120px;
+        margin-right: 10px;
+        padding: 3px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        font-size: 16px; 
+    }
+
+    .invalid-input {
+		background-color: #FFAA00;
+	}
+
+    th, td {
+    padding: 5px 5px 5px 0px;
+    }
+
+    select {
+        padding: 3px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        font-size: 16px; 
+        margin-right: 10px;
+        min-width: 100px;
+        vertical-align: middle;
+    }
+
+    .button {
+        padding: 5px 10px;
+        width: 205px;
+        font-size: 16px;	
+    }
+
+    table {
+        width: 660px;
+        padding: 5px;
+    }
+    </style>
+
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<h3>Set the previous value for consistency check and substitution for NaN</h3>
+    <h2>Set "Previous Value"</h2>
+    <details id="desc_details">
+        <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
+            <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/FAQs/#pre-value target=_blank>"Previous Value"</a>
+        </summary>
+        <p>
+            Set the "previous value" for consistency checks and substitution for NaN
+        </p>
+        <p>
+            Previous value is a bit missleading, because normally it is the last valid value but not always the value of the previous round. 
+            The result of the the new round, as long it's a vaild result, will be promoted to the new "previous value". If the result is not usable the 
+            "previous value" will not be updated.
+            If activated in configuration, the "previous value" will be used in the following round to check negtive rates, high rates
+            (MaxRateValue / MaxRateType) and for the option "Check Digit Increase Consistency" (configuration paramter, only for dig-class11 models). 
+        </p>
+        <p>
+            The field to enter new "previous value" is prefilled with actual "raw value" because it's the most likely use case. Nevertheless every other
+            positive value can be set as new "previous value".
+        </p>
+    </details>
+    <hr />
 
-<class id="Numbers_text" style="font-size: 120%; color:black;"><b>Choose Number: </b>
-<select id="Numbers_value1" onchange="numberChanged()">
-</select>
-</class>
+    <table>
+        <colgroup>
+            <col span="1" style="width: 35.0%;">
+            <col span="1" style="width: 65.0%;">
+        </colgroup>
+        <tr>
+            <td style="height: 40px;">
+                <class id="Numbers_text" style="color:black;">Number sequence:</class>
+            </td>
+            <td>
+                <select id="Numbers_value1" onchange="numberChanged()"></select>
+            </td>
+        </tr>
+    </table>
 
+    <hr />
 
-<table style="width:100%">
-  <tr>
-    <td>
-      <h3>Current "Previous Value":</h3>
-    </td>
-    <td>
-      <div id="prevalue"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h3>New "Previous Value":<br>(Format = 123.456)</h3><p>&nbsp;</p>
-    </td>
-    <td>
-      <input type="number" id="myInput" name="myInput"
-              pattern="[0-9]+([\.,][0-9]+)?" step="0.001"
-                title="This should be a number with up to 4 decimal places.">
-      <button class="button" type="button" onclick="setprevalue()">Set Previous Value</button>
-      <p>(The current "Raw Value" got entered as the suggested new "Previous Value")</p>
-    </td>
-  </tr>	
-  <tr>
-    <td>
-      <h3>Result:</h3>
-    </td>
-    <td>
-	    <div id="result" readonly></div>
-    </td>
-  </tr>	 
+    <table>
+        <colgroup>
+            <col span="1" style="width: 35%;">
+            <col span="1" style="width: 65%;">
+        </colgroup>
+        <tr>
+            <td>Current "previous value":</td>
+            <td>
+                <div style="padding-left:5px" id="prevalue"></div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: text-top; padding-top: 12px;">Enter new "previous value":</td>
+            <td>
+                <input required type="number" id="myInput" name="myInput" min="0" oninput="(!validity.rangeUnderflow||(value=0));">
+                <button class="button" type="button" onclick="setprevalue()">Update Value</button>
+                <p style="padding-left: 5px;">NOTE: The current "raw value" is prefilled as 
+                    <br>the suggested new "previous value"</p>
+            </td>
+        </tr>	
+        <tr>
+            <td id="result_text">"Previous value" updated to:</td>
+            <td>
+                <div id="result" style="padding-left:5px;"></div>
+            </td>
+        </tr>	 
+    </table>
 
-</table>
-
-</body></html>
+</body>
+</html>
 
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -104,6 +156,7 @@ function setprevalue() {
           xhttp.send();
           response = xhttp.responseText;
           document.getElementById("result").innerHTML=response;
+          firework.launch('New \"previous value\" set', 'success', 5000);
      }
     catch (error)
     {
@@ -145,11 +198,10 @@ function loadPrevalue(_domainname) {
     lines.forEach(function(line) {
       arr = line.split("\t");
       if (_number == arr[0]) {
-        document.getElementById("myInput").value=arr[1];
+        document.getElementById("myInput").value = Number(arr[1]);
         return;
       }
     });
-
   }
   catch (error)
   {
@@ -190,7 +242,7 @@ function UpdateNUMBERS(_sel){
 
 
 function init(){
-	domainname = getDomainname();
+  domainname = getDomainname();
   loadConfig(domainname); 
   ParseConfig();
   UpdateNUMBERS();

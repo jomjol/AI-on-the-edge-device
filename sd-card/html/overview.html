@@ -1,77 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Overview</title>
-<meta charset="utf-8">
+<meta charset="UTF-8" />
 
 <style>
-.tg  {border-collapse:collapse;border-spacing:0;width:100%;color: darkslategray;border: inset;height:585px;}
-.tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{height: 50px;font-size:24px;font-weight:bold;text-align:left;padding:0px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;background-color:#f0f0f0}
-.tg .tg-1{width:700px;font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
-.tg .tg-2{font-size:20px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}
-.tg .tg-3{height: 15px;font-size:14px;font-family:Arial, Helvetica, sans-serif !important;border: inset;}		
+.tg  {border-collapse:collapse;border-spacing:0;width:100%;min-width:600px;height:100%;color:darkslategray;}
+.tg th{min-width:325px;width:325px;height:20px;font-size:18px;text-align:left;font-weight:bold;padding:5px 10px 5px 10px;;overflow:hidden;word-break:normal;background-color:lightgrey;}
+.tg td{font-size:15px;padding:5px 10px 5px 10px;overflow:hidden;word-break:normal;}
+.tg .tg-1{font-size:15px;vertical-align: top; font-family:Arial, Helvetica, sans-serif !important;}
+.tg .tg-2{height:52px;font-size:15px;padding:3px 0px 3px 10px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;}
+.tg .tg-3{height:45px;font-size:15px;padding:3px 10px 3px 10px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;}
+.tg .tg-4{height:fit-content;font-size:15px;padding:5px 10px 5px 10px;vertical-align:text-top;font-family:Arial, Helvetica, sans-serif !important;}
 </style>
 
 </head>
 
 <body style="font-family: arial">
 
-<table class="tg">
-  <tr>
-    <td class="tg-1" rowspan="9" style="vertical-align: top"><div id="img"></div></td>
-    <th class="th">Value:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="value"></div>
-	</td>	
-  </tr>
-  <tr>
-    <th class="th">Previous Value:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="prevalue"></div>
-	</td>	
-  </tr>
+	<table class="tg">
+		<tr>
+			<th class="th">Value</th>
+			<td class="tg-1" rowspan="13">
+				<img style="padding-left: 5px; padding-top: 0px; max-width:100%; width:100%; height:auto;" id="img" src="">
+			</td>
+		</tr>	 
+		<tr>	
+			<td class="tg-2">
+				<div id="value"></div>
+			</td>	
+		</tr>
+		<tr>
+			<th class="th">Previous Value</th>
+		</tr>	
+		<tr>	
+			<td class="tg-2">
+				<div id="prevalue"></div>
+			</td>	
+		</tr>
+		<tr>
+			<th class="th">Raw Value</th>
+		</tr>	
+		<tr>	
+			<td class="tg-2">
+				<div id="raw"></div>
+			</td>	
+		</tr>
+		<tr>
+			<th class="th">Value Status</th>
+		</tr>	
+		<tr>	
+			<td class="tg-2">
+				<div id="error"></div>
+			</td>	
+		</tr>
+		<tr>
+			<th class="th">Process State</th>
+		</tr>	
+		<tr>	
+			<td class="tg-3">
+				<div id="statusflow" ></div>
+			</td>
+		</tr>  
+		<tr>
+			<th class="th">System Info</th>
+		</tr>	
+		<tr>	
+			<td class="tg-4">
+				<div id="timestamp" ></div>	
+				<div id="cputemp" ></div>	
+				<div id="rssi" ></div>
+				<div>
+					<span id="uptime" ></span>
+					<span id="round" ></span>
+				</div>
+			</td>
+		</tr>
+	</table>
 
-  <tr>
-    <th class="th">Raw Value:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="raw"></div>
-	</td>	
-  </tr>
-  <tr>
-    <th class="th">Status:</th>
-  </tr>	
-  <tr>	
-    <td class="tg-2">
-	<div id="error"></div>
-	</td>	
-  </tr> 
-  <tr>	
-    <td class="tg-3">
-	<div id="statusflow" ></div>	
-	<div id="timestamp" ></div>	
-	<div id="cputemp" ></div>	
-	<div id="rssi" ></div>
-	<div>
-		<span id="uptime" ></span>
-		<span id="round" ></span>
-	</div>	
-	</td>	
-  </tr>    
-</table>
 
-
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
-<script type="text/javascript">
+	<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+	<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+	<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+	<script type="text/javascript">
 
 	function addZero(i) {
 	  if (i < 10) {
@@ -88,10 +100,10 @@
 
 
 	function LoadData(){
-		loadValue("value", "value");
-		loadValue("raw", "raw");
-		loadValue("prevalue", "prevalue");
-		loadValue("error", "error", "font-size:8px");
+		loadValue("value", "value", "border-collapse: collapse; width: 100%");
+		loadValue("raw", "raw", "border-collapse: collapse; width: 100%");
+		loadValue("prevalue", "prevalue", "border-collapse: collapse; width: 100%");
+		loadValue("error", "error", "border-collapse: collapse; width: 100%");
 		loadStatus();
 		loadCPUTemp();
 		loadRSSI();
@@ -106,7 +118,7 @@
 		var h = addZero(d.getHours());
 		var m = addZero(d.getMinutes());
 		var s = addZero(d.getSeconds());
-		$('#img').html('<img src=' + getDomainname() + '/img_tmp/alg_roi.jpg?timestamp='+ timestamp +'" max-height:555px; display:block; margin-left:auto;  margin-right:auto;"></img>');
+		document.getElementById("img").src = getDomainname() + '/img_tmp/alg_roi.jpg?timestamp=' + timestamp;
 		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 	}
 
@@ -126,7 +138,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var _rsp = xhttp.responseText;
-				$('#statusflow').html("State: " + _rsp);
+				$('#statusflow').html(_rsp);
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -231,9 +243,11 @@
 				{
 					var _zer = ZerlegeZeile(_split[j], "\t")
 					if (_zer.length == 1)
-						out = out + "<tr><td>" + _zer[0] + "</td><td> </td></tr>"; 
+						out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
+							_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\"> </td></tr>"; 
 					else
-						out = out + "<tr><td>" + _zer[0] + "</td><td>" + _zer[1] + "</td></tr>"; 
+						out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
+							_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\" >" + _zer[1] + "</td></tr>"; 
 				}
 				out = out + "</table>"
 
@@ -246,8 +260,33 @@
 	}
 
 
+	function setImageMaxWidth()
+	{
+		loadConfig(domainname); 
+		ParseConfig();
+		param = getConfigParameters();
+		if(param["TakeImage"]["ImageSize"]["value1"] == "QVGA") {
+			if (param["Alignment"]["FlipImageSize"]["value1"] == "false") {
+				document.getElementById("img").style.maxWidth = "320px";
+			}
+			else {
+				document.getElementById("img").style.maxWidth = "240px";
+			}
+		}
+		else {
+			if (param["Alignment"]["FlipImageSize"]["value1"] == "false") { 
+				document.getElementById("img").style.maxWidth = "640px";
+			}
+			else {
+				document.getElementById("img").style.maxWidth = "480px";
+			}
+		}
+	}
+
+
 	function init(){
 		domainname = getDomainname();
+		setImageMaxWidth();
 		Refresh();
 	}
 
