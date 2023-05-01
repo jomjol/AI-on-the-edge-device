@@ -41,7 +41,7 @@ bool bTaskAutoFlowCreated = false;
 bool flowisrunning = false;
 
 long auto_interval = 0;
-bool auto_isrunning = false;
+bool autostartIsEnabled = false;
 
 int countRounds = 0;
 bool isPlannedReboot = false;
@@ -257,7 +257,7 @@ esp_err_t handler_flow_start(httpd_req_t *req) {
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    if (auto_isrunning) {
+    if (autostartIsEnabled) {
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API /flow_start");
         const char* resp_str = "The flow is going to be started immediately or is already running";
@@ -286,7 +286,7 @@ esp_err_t MQTTCtrlFlowStart(std::string _topic) {
 
     ESP_LOGD(TAG, "MQTTCtrlFlowStart: topic %s", _topic.c_str());
 
-    if (auto_isrunning) 
+    if (autostartIsEnabled) 
     {
         xTaskAbortDelay(xHandletask_autodoFlow); // Delay will be aborted if task is in blocked (waiting) state. If task is already running, no action
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by MQTT topic " + _topic);
@@ -963,16 +963,25 @@ void task_autodoFlow(void *pvParameter)
     ESP_LOGD(TAG, "task_autodoFlow: start");
     doInit();
 
-    auto_isrunning = flowctrl.isAutoStart(auto_interval);
+    flowctrl.setAutoStartInterval(auto_interval);
+    autostartIsEnabled = flowctrl.getIsAutoStart();
 
     if (isSetupModusActive()) 
     {
-        auto_isrunning = false;
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "We are in Setup Mode -> Not starting Auto Flow!");
+        autostartIsEnabled = false;
         std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
         flowctrl.doFlowTakeImageOnly(zw_time);
     }
+
+    if (autostartIsEnabled) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Starting Flow...");
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Autostart is not enabled -> Not starting Flow");
+    }
     
-    while (auto_isrunning)
+    while (autostartIsEnabled)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
@@ -1046,7 +1055,7 @@ void task_autodoFlow(void *pvParameter)
 }
 
 
-void StartMainFlowTask()
+void InitializeFlowTask()
 {
     BaseType_t xReturned;
 
