@@ -657,7 +657,14 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        if ((*flowctrl.getActStatus() == "Flow finished") && psram_init_shared_memory_for_take_image_step()) {
+        std::string state = *flowctrl.getActStatus();
+
+        /* To be able to provide the image, several conditions must be met due to the shared PSRAM usage:
+           - Ether the round most be completed or not started yet
+           - Or we must be in Setup Mode
+           - Additionally, the initialization of the shared PSRAM must be successful */
+        if (((state == "Flow finished") || (state == "Initialization") || (state == "Initialization (delayed)") || isSetupModusActive()) && 
+                psram_init_shared_memory_for_take_image_step()) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Taking image for Alignment Mark Update...");
 
             CAlignAndCutImage *caic = new CAlignAndCutImage("cutref", in);
@@ -679,7 +686,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
             zw = "CutImage Done";
         }
         else {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Taking image for Alignment Mark not possible while device is busy with a round!");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") +
+            " is busy with a round (Current State: '" + state + "')!");
             zw = "Device Busy";
         }
 
