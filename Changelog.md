@@ -985,7 +985,7 @@ External Illumination
 -   Initial Version
 
 
-[15.2.2]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.3
+[15.2.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.3
 [15.2.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.0...v15.2.1
 [15.2.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0
 [15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1
