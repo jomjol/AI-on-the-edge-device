@@ -49,14 +49,13 @@
 #define ets_delay_us(a) esp_rom_delay_us(a)
 #endif
 
-esp_netif_t *sta_netif = NULL;
-
 static const char *TAG = "WIFI";
 
 static bool APWithBetterRSSI = false;
 static bool WIFIConnected = false;
 static int WIFIReconnectCnt = 0;
 
+esp_netif_t *my_sta;
 
 
 void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
@@ -531,7 +530,7 @@ esp_err_t wifi_init_sta(void)
 		return retval;
 	}
 	
-    esp_netif_t *my_sta = esp_netif_create_default_wifi_sta();
+    my_sta = esp_netif_create_default_wifi_sta();
 
     if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
     {
@@ -671,6 +670,20 @@ int get_WIFI_RSSI()
 		return ap.rssi;
 	else
 		return -127;	// Return -127 if no info available e.g. not connected
+}
+
+
+/*std::string getIp() {
+	esp_netif_ip_info_t ip_info;
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(my_sta, ip_info));
+	char ipFormated[4*3+3+1];
+    sprintf(ipFormated, IPSTR, IP2STR(&ip_info.ip));
+	return std::string(ipFormated);
+}*/
+
+
+std::string* getHostname() {
+	return &wlan_config.hostname;
 }
 
 

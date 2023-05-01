@@ -25,8 +25,6 @@
 httpd_handle_t server = NULL;   
 std::string starttime = "";
 
-extern esp_netif_t *sta_netif;
-
 static const char *TAG = "MAIN SERVER";
 
 /* An HTTP GET handler */
@@ -353,15 +351,6 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     char freeheapmem[11];
     sprintf(freeheapmem, "%lu", (long) getESPHeapSize());
     
-    esp_netif_ip_info_t ip_info;
-    ESP_ERROR_CHECK(esp_netif_get_ip_info(sta_netif, &ip_info));
-    const char *hostname;
-    ESP_ERROR_CHECK(esp_netif_get_hostname(sta_netif, &hostname));
-    
-    char ipFormated[4*3+3+1];
-
-    sprintf(ipFormated, IPSTR, IP2STR(&ip_info.ip));
-
     zw = string("[{") + 
         "\"firmware\": \"" + gitversion + "\"," +
         "\"buildtime\": \"" + buildtime + "\"," +
@@ -370,8 +359,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"gitrevision\": \"" + gitrevision + "\"," +
         "\"html\": \"" + htmlversion + "\"," +
         "\"cputemp\": \"" + cputemp + "\"," +
-        "\"hostname\": \"" + hostname + "\"," +
-        "\"IPv4\": \"" + string(ipFormated) + "\"," +
+        "\"hostname\": \"" + *getHostname() + "\"," +
+        "\"IPv4\": \"" + *getIPAddress() + "\"," +
         "\"freeHeapMem\": \"" + freeheapmem + "\"" +
         "}]";
 
