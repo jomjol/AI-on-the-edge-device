@@ -59,7 +59,7 @@ p {font-size: 1em;}
             WriteConfigININew();
             SaveConfigToServer(domainname);    
 
-            var stringota = getDomainname();
+            var stringota = getDomainname() + "/reboot";
             parent.location = stringota;
             parent.location.href = stringota;
             parent.location.assign(stringota);
