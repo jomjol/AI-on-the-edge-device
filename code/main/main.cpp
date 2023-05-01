@@ -512,13 +512,13 @@ extern "C" void app_main(void)
     // Check main init + start TFlite task
     // ********************************************
     if (getSystemStatus() == 0) { // No error flag is set
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully! Starting flow task ...");
-        StartMainFlowTask();
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization completed successfully");
+        InitializeFlowTask();
     }
     else if (isSetSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD) || // Non critical errors occured, we try to continue...
              isSetSystemStatusFlag(SYSTEM_STATUS_NTP_BAD)) {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with errors! Starting flow task ...");
-        StartMainFlowTask();
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Initialization completed with non-critical errors!");
+        InitializeFlowTask();
     }
     else { // Any other error is critical and makes running the flow impossible. Init is going to abort.
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted. Loading reduced web interface...");

@@ -190,10 +190,15 @@ void ClassFlowControll::SetInitialParameter(void)
 }
 
 
-bool ClassFlowControll::isAutoStart(long &_interval)
+bool ClassFlowControll::getIsAutoStart(void)
+{
+    return AutoStart;
+}
+
+
+void ClassFlowControll::setAutoStartInterval(long &_interval)
 {
     _interval = AutoInterval * 60 * 1000; // AutoInterval: minutes -> ms
-    return AutoStart;
 }
 
 
