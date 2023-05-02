@@ -1,8 +1,8 @@
-## [15.2.3] - 2023-05-01
+## [15.2.4] - 2023-05-02
 
 ### Changes
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.2)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4)
 
 #### Changed
  - Updated PlatformIO to `6.2.0`
@@ -985,7 +985,7 @@ External Illumination
 -   Initial Version
 
 
-[15.2.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.3
+[15.2.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4
 [15.2.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.0...v15.2.1
 [15.2.0]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0
 [15.1.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1

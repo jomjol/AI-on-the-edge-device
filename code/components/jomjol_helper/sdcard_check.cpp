@@ -147,12 +147,6 @@ bool SDCardCheckFolderFilePresence()
         bRetval = false;
     }
 
-    /* check if file exists: gethost.js */
-    if (stat("/sdcard/html/gethost.js", &sb) != 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Folder/file check: File /html/gethost.js not found");
-        bRetval = false;
-    }
-
     /* check if file exists: version.txt */
     if (stat("/sdcard/html/version.txt", &sb) != 0) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Folder/file check: File /html/version.txt not found");
