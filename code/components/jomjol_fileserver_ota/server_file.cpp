@@ -837,18 +837,17 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             return ESP_FAIL;
         }
 
-        if (stat(filepath, &file_stat) == -1) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File does not exist: " + string(filename));
-            /* Respond with 400 Bad Request */
-            httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "File does not exist");
-            return ESP_FAIL;
+        if (stat(filepath, &file_stat) == -1) { // File does not exist
+            /* This is ok, we would delete it anyway */
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File does not exist: " + string(filename));
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + string(filename));
+            /* Delete file */
+            unlink(filepath);
         }
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + string(filename));
-        /* Delete file */
-        unlink(filepath);
-
-        directory = std::string(filepath);
+        /*directory = std::string(filepath);
         size_t zw = directory.find("/");
         size_t found = zw;
         while (zw != std::string::npos)
@@ -862,7 +861,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
         directory = directory.substr(start_fn, found - start_fn + 1);
         directory = "/fileserver" + directory;
-        ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());
+        ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());*/
     }
     
 
@@ -872,8 +871,10 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
 //////////////////////////////////////////////////////////////
 
     /* Redirect onto root to see the updated file list */
-    httpd_resp_set_status(req, "303 See Other");
-    httpd_resp_set_hdr(req, "Location", directory.c_str());
+    //httpd_resp_set_status(req, "303 See Other");
+    //httpd_resp_set_hdr(req, "Location", directory.c_str());
+
+    
     httpd_resp_sendstr(req, "File successfully deleted");
     return ESP_OK;
 }
