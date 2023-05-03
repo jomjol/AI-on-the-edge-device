@@ -846,6 +846,11 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             /* Delete file */
             unlink(filepath);
         }
+
+        char *pos = strrchr(filename, '/');
+        *pos = '\0'; // Cut off filename
+        directory = std::string(filename);
+        directory = "/fileserver" + directory + "/";
     }
     
 //////////////////////////////////////////////////////////////
