@@ -220,7 +220,7 @@
             xhttp.open("GET", url, false);
             xhttp.send();
 
-
+            firework.launch('Taking updated image...', 'success', 5000);
             loadRawImage(true);
         }
         
@@ -229,11 +229,10 @@
             if (new_image) {
                 url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
                 document.getElementById("updatereferenceimage").disabled = false;
-                isActReference = false;
             }
             else {
                 document.getElementById("updatereferenceimage").disabled = true;
-                isActReference = true;
+                doTake();
             }
 
             document.getElementById("finerotate").disabled = false;
@@ -273,7 +272,7 @@
 //            if (param["TakeImage"]["Contrast"].found)
 //                document.getElementById("TakeImage_Contrast_value1").disabled = false;
 
-
+            isActReference = false;
             loadCanvas(url, true);
         }
         
@@ -608,7 +607,11 @@
 
 
         function mouseMove(e) {
-            drawRotated();
+            if (isActReference)
+                drawRotated(false);
+            else
+                drawRotated(true);
+            
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
 
