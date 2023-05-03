@@ -850,6 +850,9 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     
 //////////////////////////////////////////////////////////////
 
+    /* Redirect onto root to see the updated file list */
+    httpd_resp_set_status(req, "303 See Other");
+    httpd_resp_set_hdr(req, "Location", directory.c_str());   
     httpd_resp_sendstr(req, "File successfully deleted");
     return ESP_OK;
 }
