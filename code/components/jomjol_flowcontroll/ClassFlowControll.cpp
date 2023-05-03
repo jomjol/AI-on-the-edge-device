@@ -230,7 +230,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
     {
-        cfc = new ClassFlowCNNGeneral(flowalignment, std::string("Digital"));
+        cfc = new ClassFlowCNNGeneral(flowalignment, std::string("Digit"));
         flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
     #ifdef ENABLE_MQTT
