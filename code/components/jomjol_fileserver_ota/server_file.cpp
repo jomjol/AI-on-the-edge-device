@@ -846,22 +846,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             /* Delete file */
             unlink(filepath);
         }
-
-        /*directory = std::string(filepath);
-        size_t zw = directory.find("/");
-        size_t found = zw;
-        while (zw != std::string::npos)
-        {
-            zw = directory.find("/", found+1);  
-            if (zw != std::string::npos)
-                found = zw;
-        }
-
-        int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-        ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
-        directory = directory.substr(start_fn, found - start_fn + 1);
-        directory = "/fileserver" + directory;
-        ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());*/
     }
     
 
