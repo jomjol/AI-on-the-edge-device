@@ -837,38 +837,22 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             return ESP_FAIL;
         }
 
-        if (stat(filepath, &file_stat) == -1) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File does not exist: " + string(filename));
-            /* Respond with 400 Bad Request */
-            httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "File does not exist");
-            return ESP_FAIL;
+        if (stat(filepath, &file_stat) == -1) { // File does not exist
+            /* This is ok, we would delete it anyway */
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File does not exist: " + string(filename));
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + string(filename));
+            /* Delete file */
+            unlink(filepath);
         }
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + string(filename));
-        /* Delete file */
-        unlink(filepath);
-
-        directory = std::string(filepath);
-        size_t zw = directory.find("/");
-        size_t found = zw;
-        while (zw != std::string::npos)
-        {
-            zw = directory.find("/", found+1);  
-            if (zw != std::string::npos)
-                found = zw;
-        }
-
-        int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-        ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
-        directory = directory.substr(start_fn, found - start_fn + 1);
-        directory = "/fileserver" + directory;
-        ESP_LOGD(TAG, "Directory danach 4: %s", directory.c_str());
+        char *pos = strrchr(filename, '/');
+        *pos = '\0'; // Cut off filename
+        directory = std::string(filename);
+        directory = "/fileserver" + directory + "/";
     }
     
-
-
-
-
 //////////////////////////////////////////////////////////////
 
     /* Redirect onto root to see the updated file list */
