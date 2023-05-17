@@ -116,7 +116,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP Client Error encountered");
             break;
         case HTTP_EVENT_ON_CONNECTED:
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP Client Error encountered");
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP Client connected");
             ESP_LOGI(TAG, "HTTP Client Connected");
             break;
         case HTTP_EVENT_HEADERS_SENT:
