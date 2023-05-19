@@ -680,7 +680,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
         else {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") +
-            " is busy with a round (Current State: '" + state + "')!");
+            " is busy with a round (Current State: '" + *flowctrl.getActStatus() + "')!");
             zw = "Device Busy";
         }
 
