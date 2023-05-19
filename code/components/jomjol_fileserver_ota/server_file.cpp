@@ -844,11 +844,9 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             return ESP_FAIL;
         }
 
-        if (stat(filepath, &file_stat) == -1) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File does not exist: " + string(filename));
-            /* Respond with 400 Bad Request */
-            httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "File does not exist");
-            return ESP_FAIL;
+        if (stat(filepath, &file_stat) == -1) { // File does not exist
+            /* This is ok, we would delete it anyway */
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File does not exist: " + string(filename));
         }
 
         /* Delete file */
@@ -893,6 +891,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             httpd_resp_set_status(req, "303 See Other"); // Reload folder content after upload
         }
     }
+
 
     httpd_resp_set_hdr(req, "Location", directory.c_str());
     httpd_resp_sendstr(req, "File successfully deleted");

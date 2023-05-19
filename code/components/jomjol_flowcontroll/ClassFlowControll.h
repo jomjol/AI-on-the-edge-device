@@ -66,7 +66,8 @@ public:
 
 	std::string doSingleStep(std::string _stepname, std::string _host);
 
-	bool isAutoStart(long &_interval);
+	bool getIsAutoStart();
+	void setAutoStartInterval(long &_interval);
 
 	std::string* getActStatusWithTime();
 	std::string* getActStatus();

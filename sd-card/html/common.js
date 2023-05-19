@@ -4,12 +4,6 @@
 var domainname_for_testing = "192.168.178.23";
 
 
-
-function gethost_Version(){
-    return "1.0.0 - 20200910";
-}
-
-
 /* Returns the domainname with prepended protocol.
 Eg. http://watermeter.fritz.box or http://192.168.1.5 */
 function getDomainname(){
