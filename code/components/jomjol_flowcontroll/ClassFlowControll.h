@@ -34,13 +34,14 @@ protected:
 
 	bool AutoStart;
 	float AutoInterval;
-	bool SetupModeActive;
 	void SetInitialParameter(void);	
 	std::string aktstatusWithTime;
 	std::string aktstatus;
 	int aktRunNr;
 
 public:
+	bool SetupModeActive;
+
 	void InitFlow(std::string config);
 	bool doFlow(string time);
 	void doFlowTakeImageOnly(string time);
