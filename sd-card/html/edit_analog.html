@@ -586,7 +586,8 @@ function drawTextBG(context, txt, x, y, padding) {
                     context.strokeRect(x0, y0, dx, dy); 
                     context.lineWidth = lw;
                     context.beginPath();
-                    context.arc(x0+dx/2, y0+dy/2, dx/2, 0, 2 * Math.PI);
+//                    context.arc (x0+dx/2, y0+dy/2, dx/2, 0, 2 * Math.PI);
+                    context.ellipse(x0+dx/2, y0+dy/2, dx/2, dy/2, 0, 0, 2 * Math.PI);
                     context.moveTo(x0+dx/2, y0);
                     context.lineTo(x0+dx/2, y0+dy);
                     context.moveTo(x0, y0+dy/2);
@@ -606,7 +607,8 @@ function drawTextBG(context, txt, x, y, padding) {
             drawTextBG(context, ROIInfo[aktindex]["name"], x0+dx/2, y0-11, 5);
             context.lineWidth = 1;
             context.beginPath();
-            context.arc(x0+dx/2, y0+dy/2, dx/2, 0, 2 * Math.PI);
+//            context.arc(x0+dx/2, y0+dy/2, dx/2, 0, 2 * Math.PI);
+            context.ellipse(x0+dx/2, y0+dy/2, dx/2, dy/2, 0, 0, 2 * Math.PI);
             context.moveTo(x0+dx/2, y0);
             context.lineTo(x0+dx/2, y0+dy);
             context.moveTo(x0, y0+dy/2);
