@@ -174,10 +174,12 @@ int LoadWlanFromFile(std::string fn)
     }
 
     /* Check if password is empty (mandatory parameter) */
+    /* Disabled see issue #2393
     if (wlan_config.password.empty()) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Password empty. Device init aborted!");
         return -2;
     }
+    */
 
     return 0;
 }
