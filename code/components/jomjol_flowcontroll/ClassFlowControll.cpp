@@ -24,6 +24,7 @@ extern "C" {
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
 
+#include "websocket.h"
 #include "server_help.h"
 #include "MainFlowControl.h"
 #include "../../include/defines.h"
@@ -85,8 +86,10 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         return ("Take Image");
     if (_input.compare("ClassFlowAlignment") == 0)
         return ("Aligning");
-    if (_input.compare("ClassFlowCNNGeneral") == 0)
-        return ("Digitalization of ROIs");
+    if (_input.compare("ClassFlowCNNGeneral Digital") == 0)
+        return ("Digitalization of Digital ROIs");
+    if (_input.compare("ClassFlowCNNGeneral Analog") == 0)
+        return ("Digitalization of Analog ROIs");
     #ifdef ENABLE_MQTT
         if (_input.compare("ClassFlowMQTT") == 0)
             return ("Sending MQTT");
@@ -100,7 +103,7 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
 
-    return "Unkown Status";
+    return "Unkown Status: " + _input +"";
 }
 
 
@@ -187,6 +190,8 @@ void ClassFlowControll::SetInitialParameter(void)
     aktRunNr = 0;
     aktstatus = "Flow task not yet created";
     aktstatusWithTime = aktstatus;
+
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 }
 
 
@@ -220,12 +225,12 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[ANALOG]") == 0)
     {
-        cfc = new ClassFlowCNNGeneral(flowalignment);
+        cfc = new ClassFlowCNNGeneral(flowalignment, std::string("Analog"));
         flowanalog = (ClassFlowCNNGeneral*) cfc;
     }
     if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
     {
-        cfc = new ClassFlowCNNGeneral(flowalignment);
+        cfc = new ClassFlowCNNGeneral(flowalignment, std::string("Digit"));
         flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
     #ifdef ENABLE_MQTT
@@ -268,6 +273,8 @@ void ClassFlowControll::InitFlow(std::string config)
 {
     aktstatus = "Initialization";
     aktstatusWithTime = aktstatus;
+
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 
     //#ifdef ENABLE_MQTT
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", 1, false); // Right now, not possible -> MQTT Service is going to be started later
@@ -331,6 +338,8 @@ void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
     aktstatus = _aktstatus;
     aktstatusWithTime = aktstatus;
+
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 }
 
 
@@ -347,6 +356,8 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
             #ifdef ENABLE_MQTT
                 MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, 1, false);
             #endif //ENABLE_MQTT
+            
+            schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
 
             FlowControll[i]->doFlow(time);
         }
@@ -379,6 +390,7 @@ bool ClassFlowControll::doFlow(string time)
         aktstatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatusWithTime = aktstatus + " (" + zw_time + ")";
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Status: " + aktstatusWithTime);
+        schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
         #ifdef ENABLE_MQTT
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
         #endif //ENABLE_MQTT
@@ -413,6 +425,7 @@ bool ClassFlowControll::doFlow(string time)
     aktstatus = "Flow finished";
     aktstatusWithTime = aktstatus + " (" + zw_time + ")";
     //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
+    schedule_websocket_message("{\"state\": \"" + aktstatus + "\"}");
     #ifdef ENABLE_MQTT
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
     #endif //ENABLE_MQTT

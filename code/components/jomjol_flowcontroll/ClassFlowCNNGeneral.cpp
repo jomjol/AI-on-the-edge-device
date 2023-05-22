@@ -37,6 +37,23 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
+ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, std::string _cnn_name) : ClassFlowImage(NULL, TAG)
+{
+    string cnnmodelfile = "";
+    modelxsize = 1;
+    modelysize = 1;
+    CNNGoodThreshold = 0.0;
+    ListFlowControll = NULL;
+    previousElement = NULL;   
+    SaveAllFiles = false; 
+    disabled = false;
+    isLogImageSelect = false;
+    CNNType = AutoDetect;
+    flowpostalignment = _flowalign;
+    imagesRetention = 5;
+    cnn_name = _cnn_name;
+}
+
 
 string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float analogDigitalTransitionStart)
 {
