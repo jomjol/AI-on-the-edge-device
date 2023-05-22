@@ -1,7 +1,7 @@
  
 /* The UI can also be run locally, but you have to set the IP of your devide accordingly.
  * And you also might have to disable CORS in your webbrowser! */
-var domainname_for_testing = "192.168.178.23";
+var domainname_for_testing = "192.168.1.151";
 
 
 /* Returns the domainname with prepended protocol.
@@ -13,7 +13,7 @@ function getDomainname(){
        )
     
     {
-        console.log("Using pre-defined domainname for testing: " + domainname_for_testing);
+        //console.log("Using pre-defined domainname for testing: " + domainname_for_testing);
         domainname = "http://" + domainname_for_testing
     }
     else

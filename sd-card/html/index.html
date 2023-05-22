@@ -24,11 +24,18 @@
                 'status=no,toolbar=no,titlebar=no,' +
                 'left=10,top=250,width=640px,height=480px';
 
-        async function loadPage(page) {
+         function loadPage(page) {
+            console.log("loadPage( " + page + " )");
+
             if (streamPopup)   // Ensure that stream popup is closed because it's blocking web interface
                 streamPopup.close();
 
-            console.log("loadPage(" + page + ")");
+            asyncPageLoad(page);
+        }
+
+
+        async function asyncPageLoad(page ) {
+            console.log("  loading " + page + " ...");
             document.cookie = "page="+page + "; path=/";
             document.getElementById('maincontent').src = page;
 
@@ -36,6 +43,7 @@
                 el.style.visibility = 'hidden';
             });
         }
+
 
         function resetMenu() {
             [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
@@ -73,6 +81,7 @@
     </tr>
 </table>
 
+
 <div class="menu" onmouseover="resetMenu()">
   <ul>
     <li><a href="#" onclick="loadPage('overview.html?v=$COMMIT_HASH');">Overview</a></li>
@@ -98,8 +107,13 @@
     <li><a>Data<i class="arrow down"></i></a>
         <ul class="submenu">
             <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
+            <li><a>Livestream <i class="arrow right"></i></a>
+                <ul>
+                    <li><a href="#" onclick="start_livestream(false);">Live Stream (Light off)</a></li>
+                    <li><a href="#" onclick="start_livestream(true);">Live Stream (Light on)</a></li>
+                </ul>
             <li><a href="#" onclick="loadPage('graph.html?v=$COMMIT_HASH');">Data Graph</a></li>
-            <li><a href="#" onclick="loadPage('data.html?v=$COMMIT_HASH');">Data Viewer</a></li>
+            <li><a href="#" onclick="loadPage('data.html?v=$COMMIT_HASH');">Data Table</a></li>
             <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/log/data/');">Data Files</a></li>
         </ul>
     </li>
@@ -111,13 +125,9 @@
             <li><a href="#" onclick="loadPage('ota_page.html?v=$COMMIT_HASH');">OTA Update</a></li>
             <li><a href="#" onclick="loadPage('log.html?v=$COMMIT_HASH');">Log Viewer</a></li>
             <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/');">File Server</a></li>
-            <li><a>Livestream <i class="arrow right"></i></a>
-                <ul>
-                    <li><a href="#" onclick="start_livestream(false);">Live Stream (Light off)</a></li>
-                    <li><a href="#" onclick="start_livestream(true);">Live Stream (Light on)</a></li>
-                </ul>
             <li><a href="#" onclick="loadPage('reboot_page.html?v=$COMMIT_HASH');">Reboot</a></li>
             <li><a href="#" onclick="loadPage('info.html?v=$COMMIT_HASH');">Info</a></li>
+            <li><a href="https://jomjol.github.io/AI-on-the-edge-device-docs/" target="_blank">Help</a></li>
         </ul>
     </li>
     <li id="ManualControl" style="display:none;"><a>Manual Control <i class="arrow down"></i></a> <!-- Workaround: Hide menu if no entry is available -->
@@ -137,7 +147,7 @@
     LoadHostname();
     LoadFwVersion();
     LoadWebUiVersion();
-    HA_send_discovery_visiblilty();
+    HA_send_discovery_visibility();
 
     if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
     document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
@@ -169,7 +179,7 @@
     */
 
 
-    function HA_send_discovery_visiblilty()	{
+    function HA_send_discovery_visibility()	{
 		loadConfig(domainname); 
 		ParseConfig();
 		category = getConfigCategory();
@@ -182,6 +192,7 @@
 
 
     function HA_send_discovery() {
+    console.log("HA Discovery scheduled");
     var url = getDomainname() + '/mqtt_publish_discovery'; 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {

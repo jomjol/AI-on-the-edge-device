@@ -453,7 +453,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             else {
                 /* Digital ROIs */
                 txt = "<body style=\"font-family: arial\">";
-                txt += "<h3>Recognized Digit ROIs (previous round)</h3>\n";
+                txt += "<hr><h3>Recognized Digit ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
 
                 std::vector<HTMLInfo*> htmlinfodig;
@@ -488,7 +488,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 
                 /* Analog ROIs */
-                txt = "<h3>Recognized Analog ROIs (previous round)</h3>\n";
+                txt = "<hr><h3>Recognized Analog ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
                 
                 std::vector<HTMLInfo*> htmlinfoana;
@@ -510,7 +510,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
                 /* Full Image 
                  * Only show it after the image got taken and aligned */
-                txt = "<h3>Aligned Image (current round)</h3>\n";
+                txt = "<hr><h3>Aligned Image (current round)</h3>\n";
                 if ((*status == std::string("Initialization")) || 
                     (*status == std::string("Initialization (delayed)")) || 
                     (*status == std::string("Take Image"))) {
