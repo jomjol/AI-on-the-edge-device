@@ -392,43 +392,38 @@ function SaveToConfig(){
 }
 
 
-function ShowMultiplier(){
+function ShowMultiplier()
+{
     var decimalShift = 0;
-    var negShift = false;
-    var multiplier = multiplier_decshift = ROIInfo.length-1-aktindex;
-    var fixedDecimals_decshift = ROIInfo.length-1-aktindex;
+    var multiplier;
+    var multiplier_decshift;
+    var fixedDecimals_decshift;
     var NumberInfo = getNUMBERInfo();
 
     var sel = document.getElementById("Numbers_value1");
     var _number= sel.options[sel.selectedIndex].text;
-    var NumbersIndex = 0;
-    for (var i = 0; i < NumberInfo.length; ++i)
-        if (NumberInfo[i]["name"] == _number)
-            NumbersIndex = i;
-
-    if (NumberInfo[NumbersIndex]["PostProcessing"]["DecimalShift"]["enabled"]) {
-        decimalShift = NumberInfo[NumbersIndex]["PostProcessing"]["DecimalShift"]["value1"];
-        document.getElementById("decimalShift").value=decimalShift;
-        multiplier_decshift = multiplier_decshift+Number(decimalShift);
-        fixedDecimals_decshift = fixedDecimals_decshift+Number(decimalShift); // set to fixed decimals to avoid rounding issues
-
-        if (fixedDecimals_decshift < 0) {
-            negShift = true
-            fixedDecimals_decshift = -1*fixedDecimals_decshift;
+    document.getElementById("decimalShift").value = 0;
+    for (var i = 0; i < NumberInfo.length; ++i) {
+        if (NumberInfo[i]["name"] == _number) {
+            if (NumberInfo[i]["PostProcessing"]["DecimalShift"]["enabled"]) {
+                decimalShift = NumberInfo[i]["PostProcessing"]["DecimalShift"]["value1"];
+                document.getElementById("decimalShift").value = decimalShift; 
+            }
         }
     }
-    else {
-        document.getElementById("decimalShift").value=0;
+
+    multiplier = ROIInfo.length - 1 - aktindex;
+    multiplier_decshift = fixedDecimals_decshift = multiplier + Number(decimalShift);
+
+    if (multiplier_decshift > 0)
+        fixedDecimals_decshift = 0;
+
+    if (fixedDecimals_decshift < 0) {
+        fixedDecimals_decshift = -1*fixedDecimals_decshift;
     }
     
-    if (!negShift) {
-        document.getElementById("multiplier").value="x" + Number(10 ** multiplier).toFixed(0);
-        document.getElementById("multiplier_decshift").value="x" + Number(10 ** multiplier_decshift).toFixed(0);
-    }
-    else {
-        document.getElementById("multiplier").value="x" + Number(10 ** multiplier).toFixed(0);
-        document.getElementById("multiplier_decshift").value="x" + Number(10 ** multiplier_decshift).toFixed(fixedDecimals_decshift);
-    }
+    document.getElementById("multiplier").value="x" + Number(10 ** multiplier).toFixed(0);
+    document.getElementById("multiplier_decshift").value="x" + Number(10 ** multiplier_decshift).toFixed(fixedDecimals_decshift);
 }
 
 
