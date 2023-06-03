@@ -866,12 +866,12 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
             if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue))
             {
-                #ifdef SERIAL_DEBUG
-                    ESP_LOGD(TAG, "Neg: value=%f, preValue=%f, preToll%f", NUMBERS[j]->Value, NUMBERS[j]->PreValue,
-                     NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
-                      ) ;
-                #endif
-            
+                // more debug if extended resolution is on, see #2447
+                if (NUMBERS[j]->isExtendedResolution) {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
+                                                    + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) 
+                                                    + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
+                }
                 // Include inaccuracy of 0.2 for isExtendedResolution.
                 if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
