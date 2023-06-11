@@ -55,7 +55,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 //        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(analog) number=" + std::to_string(number) + ", result_after_decimal_point=" + std::to_string(result_after_decimal_point) + ", prev=" + std::to_string(prev));
         result = std::to_string(prev);
 
-        if (_extendedResolution && (CNNType != Digital))
+        if (_extendedResolution)
             result = result + std::to_string(result_after_decimal_point);
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i)
@@ -142,11 +142,10 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
 
     if (eval_predecessors < 0)
-    {
-        if ((result_after_decimal_point <= Digital_Uncertainty * 10) || (result_after_decimal_point >= Digital_Uncertainty * 10))     // Band around the digit --> Rounding, as digit reaches inaccuracy in the frame
-            result = (int) (round(number) + 10) % 10;
-        else
-            result = (int) ((int) trunc(number) + 10) % 10;
+    {   
+        // on first digit is no spezial logic for transition needed
+        // we use the recognition as given. The result is the int value of the recognition
+        result = (int) ((int) trunc(number) + 10) % 10;
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
