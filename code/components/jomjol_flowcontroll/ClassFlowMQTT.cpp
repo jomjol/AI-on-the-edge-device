@@ -37,6 +37,9 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicUptime = "";
     topicFreeMem = "";
 
+    caCertFilename = "";
+    clientCertFilename = "";
+    clientKeyFilename = "";
     clientname = wlan_config.hostname;
 
     OldValue = "";
@@ -102,6 +105,18 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
+        if ((toUpper(splitted[0]) == "CACERT") && (splitted.size() > 1))
+        {
+            this->caCertFilename = splitted[1];
+        }  
+        if ((toUpper(splitted[0]) == "CLIENTCERT") && (splitted.size() > 1))
+        {
+            this->clientCertFilename = splitted[1];
+        }  
+        if ((toUpper(splitted[0]) == "CLIENTKEY") && (splitted.size() > 1))
+        {
+            this->clientKeyFilename = splitted[1];
+        }  
         if ((toUpper(splitted[0]) == "USER") && (splitted.size() > 1))
         {
             this->user = splitted[1];
@@ -196,7 +211,8 @@ bool ClassFlowMQTT::Start(float AutoInterval)
     mqttServer_setParameter(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
 
     bool MQTTConfigCheck = MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED,
-                                     LWT_DISCONNECTED, keepAlive, SetRetainFlag, (void *)&GotConnected);
+                                     LWT_DISCONNECTED, caCertFilename, clientCertFilename, clientKeyFilename,
+                                     keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTTConfigCheck) {
         return false;

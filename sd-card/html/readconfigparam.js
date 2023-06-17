@@ -183,6 +183,9 @@ function ParseConfig() {
      ParamAddValue(param, catname, "RetainMessages");
      ParamAddValue(param, catname, "HomeassistantDiscovery");
      ParamAddValue(param, catname, "MeterType");
+     ParamAddValue(param, catname, "CACert");
+     ParamAddValue(param, catname, "ClientCert");
+     ParamAddValue(param, catname, "ClientKey");
 
      var catname = "InfluxDB";
      category[catname] = new Object(); 

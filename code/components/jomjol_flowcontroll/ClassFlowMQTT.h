@@ -19,6 +19,7 @@ protected:
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
+    std::string caCertFilename, clientCertFilename, clientKeyFilename; 
     bool SetRetainFlag;
     int keepAlive; // Seconds
     float roundInterval; // Minutes
