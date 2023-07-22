@@ -230,7 +230,7 @@ esp_err_t handler_stream(httpd_req_t *req)
         if (httpd_query_key_value(_query, "flashlight", _value, 10) == ESP_OK)
         {
             #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "flashlight is found%s", _size);
+                ESP_LOGD(TAG, "flashlight is found%s", _value);
             #endif
             if (strlen(_value) > 0)
                 flashlightOn = true;
@@ -453,7 +453,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             else {
                 /* Digital ROIs */
                 txt = "<body style=\"font-family: arial\">";
-                txt += "<h3>Recognized Digit ROIs (previous round)</h3>\n";
+                txt += "<hr><h3>Recognized Digit ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
 
                 std::vector<HTMLInfo*> htmlinfodig;
@@ -488,7 +488,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 
                 /* Analog ROIs */
-                txt = "<h3>Recognized Analog ROIs (previous round)</h3>\n";
+                txt = "<hr><h3>Recognized Analog ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
                 
                 std::vector<HTMLInfo*> htmlinfoana;
@@ -510,7 +510,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
                 /* Full Image 
                  * Only show it after the image got taken and aligned */
-                txt = "<h3>Aligned Image (current round)</h3>\n";
+                txt = "<hr><h3>Aligned Image (current round)</h3>\n";
                 if ((*status == std::string("Initialization")) || 
                     (*status == std::string("Initialization (delayed)")) || 
                     (*status == std::string("Take Image"))) {
@@ -657,14 +657,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        std::string state = *flowctrl.getActStatus();
-
-        /* To be able to provide the image, several conditions must be met due to the shared PSRAM usage:
-           - Ether the round most be completed or not started yet
-           - Or we must be in Setup Mode
-           - Additionally, the initialization of the shared PSRAM must be successful */
-        if (((state == "Flow finished") || (state == "Initialization") || (state == "Initialization (delayed)") || isSetupModusActive()) && 
-                psram_init_shared_memory_for_take_image_step()) {
+        if ((flowctrl.SetupModeActive || (*flowctrl.getActStatus() == "Flow finished")) && psram_init_shared_memory_for_take_image_step()) {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Taking image for Alignment Mark Update...");
 
             CAlignAndCutImage *caic = new CAlignAndCutImage("cutref", in);
@@ -687,7 +680,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
         else {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") +
-            " is busy with a round (Current State: '" + state + "')!");
+            " is busy with a round (Current State: '" + *flowctrl.getActStatus() + "')!");
             zw = "Device Busy";
         }
 
@@ -897,7 +890,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
         if (httpd_query_key_value(_query, "value", _value, 20) == ESP_OK) {
             #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "Value: %s", _size);
+                ESP_LOGD(TAG, "Value: %s", _value);
             #endif
         }
     }

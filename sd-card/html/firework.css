@@ -4,13 +4,15 @@
   border-color: #888;
   border-radius: 6px;
   color: #fff;
-  left: 200px;
+  left: 10%;
   padding: 5px;
   position: fixed;
   opacity: 0;
   text-align: center;
   top: 0px;
-  width: 600px;
+  width: 80%;
+  min-width:30%;
+  max-width:580px;
   z-index: 99;
   font-size:120%;
 }

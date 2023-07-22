@@ -1,42 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>Backup/Restore Configuration</title>
-<meta charset="utf-8">
+    <title>Backup/Restore Configuration</title>
+    <meta charset="UTF-8" />
 
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em;}
-h3 {font-size: 1.2em;} 
-p {font-size: 1em;}
+    <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
 
-input[type=number] {
-	width: 138px;
-	padding: 10px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+        input[type=number] {
+            width: 138px;
+            padding: 10px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
 
-.button {
-	padding: 10px 20px;
-    width: 211px;
-	font-size: 16px;
-}
-</style>
+        .button {
+            padding: 5px 10px;
+            width: 205px;
+            font-size: 16px;
+        }
+    </style>
 
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-<h2>Backup Configuration</h2>
-<p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
+    <h2>Backup Configuration</h2>
+    <p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
 
-<button class="button" id="startBackup" type="button" onclick="startBackup()">Create Config backup</button>
-<p id=progress></p>
-<hr>
-<h2>Restore Configuration</h2>
-<p>Use the <a href="/fileserver/config/" target="_self">File Server</a> to upload individual files.</p>
+    <button class="button" id="startBackup" type="button" onclick="startBackup()">Create Backup</button>
+    <p id=progress></p>
+    <hr>
+    <h2>Restore Configuration</h2>
+    <p>Use the <a href="/fileserver/config/" target="_self">File Server</a> to upload individual files.</p>
 </body>
 
 

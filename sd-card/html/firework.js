@@ -29,7 +29,7 @@
         p += parseInt($(this).height()) + 30
       });
 
-      $('<div id="'+ fid +'" class="'+ c +'">'+ m +'<a onclick="firework.remove(\'#'+ fid +'\')"><img src=close.png></a></div>')
+      $('<div id="'+ fid +'" class="'+ c +'">'+ m +'<a onclick="firework.remove(\'#'+ fid +'\')"><img style="height:28px;" src=close.png></a></div>')
         .appendTo('body')
         .animate({
           opacity: 1,

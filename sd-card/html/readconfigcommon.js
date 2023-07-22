@@ -85,6 +85,7 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
      
      }    
 
+
 function findDelimiterPos(input, delimiter)
      {
           var pos = -1;
@@ -131,7 +132,8 @@ function getConfig()
 }
 
      
-function loadConfig(_domainname) {
+function loadConfig(_domainname)
+{
      var xhttp = new XMLHttpRequest();
      try {
           url = _domainname + '/fileserver/config/config.ini';     
@@ -148,17 +150,17 @@ function loadConfig(_domainname) {
 }
 
      
-
-
-function dataURLtoBlob(dataurl) {
+function dataURLtoBlob(dataurl)
+{
      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
           bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
      while(n--){
           u8arr[n] = bstr.charCodeAt(n);
      }
      return new Blob([u8arr], {type:mime});
-     }	
-     
+}	
+ 
+
 function FileCopyOnServer(_source, _target, _domainname = ""){
      url = _domainname + "/editflow?task=copy&in=" + _source + "&out=" + _target;
      var xhttp = new XMLHttpRequest();  
@@ -170,6 +172,7 @@ function FileCopyOnServer(_source, _target, _domainname = ""){
 //	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
+
 
 function FileDeleteOnServer(_filename, _domainname = ""){
      var xhttp = new XMLHttpRequest();
@@ -200,6 +203,7 @@ function FileDeleteOnServer(_filename, _domainname = ""){
 
      return okay;
 }
+
 
 function FileSendContent(_content, _filename, _domainname = ""){
      var xhttp = new XMLHttpRequest();  
@@ -242,6 +246,7 @@ function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = "")
      FileSendContent(rtn, _filename, _domainname);
 }
 
+
 function MakeContrastImageZW(zw, _enhance, _domainname){
      _filename = zw["name"].replace("/config/", "/img_tmp/");
      url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
@@ -260,7 +265,7 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
      }
 
      if (xhttp.responseText == "CutImage Done") {
-          firework.launch('Reference Image Contrast got enhanced.', 'success', 5000);
+          firework.launch('Image Contrast got enhanced', 'success', 5000);
           return true;
      }
      else {
@@ -268,7 +273,6 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
           return false;
      }
 }
-
 
 
 function MakeRefZW(zw, _domainname){
@@ -289,7 +293,7 @@ function MakeRefZW(zw, _domainname){
           _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
      //     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
           FileCopyOnServer(_filetarget, _filetarget2, _domainname);
-          firework.launch('Reference Image got updated.', 'success', 5000);
+          firework.launch('Marker got updated', 'success', 5000);
           return true;
      }
      else {

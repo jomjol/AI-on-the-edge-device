@@ -1,100 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<title>Reference Image</title>
-<meta charset="utf-8"/>
-	
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+    <title>Reference Image</title>
+    <meta charset="utf-8"/>
+        
+    <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
 
-input[type=number] {
-	width: 100px;
-	margin-right: 10px;
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+        input[type=number] {
+            width: 60px;
+            margin-right: 10px;
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            vertical-align: middle;
+        }
 
-.button {
-	padding: 5px 10px;
-    width: 210px;
-	font-size: 16px;
-}
+		input:out-of-range {
+			background-color: rgba(255, 0, 0, 0.25);
+			border: 1px solid red;
+        }
 
-table {
-	padding: 5px;
-}
-</style>
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
-<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+		input:invalid {
+			background-color: rgba(255, 0, 0, 0.25);
+			border: 1px solid red;
+        }
+
+        .button {
+            padding: 5px 10px;
+            width: 205px;
+            font-size: 16px;
+        }
+
+        th, td {
+            padding: 5px 5px 5px 0px;
+        }
+
+        table {
+            width: 660px;
+            padding: 5px;
+        }
+    </style>
+
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
     <h2>Reference Image</h2>
-    <p>On this page you define the Reference Image.
-        See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/</a> for explanations.</p>
-    <p>After saving a new Reference Image, make sure to update the <a href=edit_alignment.html>Alignment Marks</a> and then
-        the <a href=edit_digits.html>digit</a> resp. <a href=edit_analog.html>analog</a> ROI's.<br>
-    Only after those steps a reboot is required.</p>
+    <details id="desc_details" style="font-size:16px">
+        <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
+                <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/ target=_blank>Reference Image</a>
+        </summary>
+        <p>
+            The reference image is the base image on which the alignment markers, digit ROIs and anlog ROIs will be defined.
+        </p>        
+        <p>
+            Firstly the actual saved reference image is shown. If you start with the setup from scratch a default image is shown as placeholder.
+            Use the button <b>"Create New Reference"</b> to start creation of your own reference image. After selecting the button a new image will be taken
+            all configured parameter will be applied to the shown image. With the button <b>"Update Image"</b> you can update the image again (still all parameter
+            get applied to the new image).
+        </p>        
+        <p>
+            To have reliable evaluation processing a properly horizontal aligned evaluation area is mandatory. Using the parameters "Rotation angle" and
+            "Rotation angle (Fine-tune)" the image can be rotated in both directions. The resulting rotation anlge is used to prerotate the image before
+            the alignment algorithm is processed to compensate only small misalignments. Further information can be found in documenation:
+            <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/ target=_blank>Reference Image</a>
+        </p>
+        <p>
+            After setting up your reference image don't forget to save with the <b>"Save New Reference"</b> button!<br>
+            <b>NOTE:</b> There is no need to perform a reboot after every saving or step. It's sufficient to reboot after all configuration steps 
+            (reference image, alignment, ROI configuration) are completed to activate new configuration.
+        </p>
+    </details>
+    <hr />
 
 	<table>
-	  <tr>
-		<td><input class="button" type="button" value="Show Actual Reference" onclick="showReference(param)"></td>	  
-		<td><input class="button" type="button" value="Create New Reference" onclick="loadRawImage()"></td>
-		<td><input class="button" type="submit" id="take" onclick="doTake()" value="Take Image"></td>
-	  </tr> 
-	  <tr>
-		<td style="padding-top: 10px"><label for="mirror" id="labelmirror">Mirror Image:</label></td>
-        <td style="padding-top: 10px"><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
-        <td>
-            <class id="TakeImage_LEDIntensity_text" style="color:black;">LEDIntensity: </class>
-            <input type="number" id="TakeImage_LEDIntensity_value1" size="13" value=0  min="0" max="100" style="float: right; clear: both;">
-        </td>
-      </tr>
-      <tr>
-
-		<td><label for="flip" id="labelflip">Flip Image Size:</label></td>
-        <td><input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
-        <td>
-            <class id="TakeImage_Brightness_text" style="color:black;">Brightness: </class>
-            <input type="number" id="TakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
-        </td>
-        
-	  </tr>
-	  <tr>
-        <td><label for="mirror">Pre-rotate Angle:</label></td>	  
-		<td><input type="number" id="prerotateangle" name="prerotateangle" value="0" min="-360" max="360" onchange="drawRotated()">Degrees</td>
-        <td>
-            <class id="TakeImage_Contrast_text" style="color:black;">Contrast</class>
-            <input type="number" id="TakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" style="float: right; clear: both;">
-        </td>
-	  </tr>
-	  <tr>
-		<td><label for="mirror">Fine Alignment:</label></td>	
-		<td><input type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.2" onchange="drawRotated()">Degrees</td>
-        <td>
-            <class id="TakeImage_Saturation_text" style="color:black;">Saturation</class>
-            <input type="number" id="TakeImage_Saturation_value1" size="13" value=0   min="-2" max="2" style="float: right; clear: both;">
-        </td>
-
-    </tr>
-	</table>
-
-	<table>
-		<tr>			
-			<td><canvas id="canvas"></canvas></td>
-		</tr>			
-		<tr>		
-			<td><input class="button" type="button" id="updatereferenceimage" value="Save" onclick="SaveReference()">
-                <p>Proceed to update the <a href=edit_alignment.html>Alignment Marks</a> when you are done.</p></td>
-		</tr>
-	</table>
+        <colgroup>
+            <col span="1" style="width: 33.3%;">
+            <col span="1" style="width: 33.3%;">
+            <col span="1" style="width: 33.3%;">
+        </colgroup>
+        <tr>
+            <td><input class="button" type="button" value="Show Actual Reference" onclick="showReference(param)"></td>	  
+            <td><input class="button" type="button" id="startreference" value="Create New Reference" onclick="loadRawImage(false)"></td>
+            <td><input class="button" type="submit" id="take" onclick="doTake()" value="Update Image">
+        </tr>
+    </table>
+    <table>
+        <colgroup>
+            <col span="1" style="width: 32%;">
+            <col span="1" style="width: 28%;">
+            <col span="1" style="width: 18%;">
+            <col span="1" style="width: 22%;">
+        </colgroup>
+        <tr>
+            <td><label for="mirror" id="labelmirror">Mirror image:</label></td>
+            <td><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+            <td>
+                <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity:</class>
+            </td>
+            <td>
+                <input required style="clear: both" type="number" id="TakeImage_LEDIntensity_value1" size="13" value="0"  min="0" max="100" 
+                    oninput="(!validity.rangeOverflow||(value=100)) && (!validity.rangeUnderflow||(value=0)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="flip" id="labelflip">Flip image size:</label></td>
+            <td><input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
+            <td>
+                <class id="TakeImage_Brightness_text" style="color:black;">Brightness:</class>
+            </td>
+            <td>
+                <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
+                <output id="TakeImage_Brightness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="prerotateangle">Rotation angle:</label></td>	  
+            <td>
+                <input required type="number" id="prerotateangle" name="prerotateangle" value="0" min="-360" max="360" onchange="drawRotated()"
+                        oninput="(!validity.rangeOverflow||(value=360)) && (!validity.rangeUnderflow||(value=-360)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">degree
+                </td>
+            <td>
+                <class id="TakeImage_Contrast_text" style="color:black;">Contrast:</class>
+            </td>
+            <td>
+                <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
+                <output id="TakeImage_Contrast_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="finerotate">Rotation angle (Fine-tune):</label></td>	
+            <td>
+                <input required type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.1" onchange="drawRotated()"
+                        oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=-1)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">degree
+            </td>
+            <td>
+                <class id="TakeImage_Saturation_text" style="color:black;">Saturation:</class>
+            </td>
+            <td>
+                <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Saturation_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
+                <output id="TakeImage_Saturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <colgroup>
+            <col span="1" style="width: 33.3%;">
+            <col span="1" style="width: 33.3%;">
+            <col span="1" style="width: 33.3%;">
+        </colgroup>
+        <tr>
+            <td style="vertical-align: bottom;"><b>Reference Image:</b></td>
+            <td></td>
+            <td>
+                <input style="font-weight:bold;" class="button" type="button" id="updatereferenceimage" value="Save New Reference" onclick="SaveReference()">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3"><canvas id="canvas"></canvas></td>
+        </tr>	
+    </table>
 
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
@@ -102,7 +177,6 @@ table {
     <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
     
     
-
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
@@ -110,7 +184,8 @@ table {
             domainname = getDomainname();   
             isActReference = false;
             param;
-            
+
+       
         function doReboot() {
             if (confirm("Are you sure you want to reboot? Did you save the config?")) {
                     var stringota = getDomainname() + "/reboot";
@@ -120,6 +195,7 @@ table {
                     window.location.replace(stringota);
             }
         }
+
 
         function doTake(){ 
             var xhttp = new XMLHttpRequest();
@@ -144,15 +220,24 @@ table {
             xhttp.open("GET", url, false);
             xhttp.send();
 
-
-            loadRawImage();
+            firework.launch('Taking updated image...', 'success', 5000);
+            loadRawImage(true);
         }
-            
-        function loadRawImage(){
-            url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+        
+
+        function loadRawImage(new_image) {
+            if (new_image) {
+                url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+                document.getElementById("updatereferenceimage").disabled = false;
+            }
+            else {
+                document.getElementById("updatereferenceimage").disabled = true;
+                doTake();
+            }
+
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;  
-            document.getElementById("updatereferenceimage").disabled = false;
+            document.getElementById("startreference").disabled = true;
             document.getElementById("take").disabled = false;
             if (param["Alignment"]["InitialMirror"].found)
                 document.getElementById("mirror").disabled = false;
@@ -188,14 +273,22 @@ table {
 //                document.getElementById("TakeImage_Contrast_value1").disabled = false;
 
             isActReference = false;
-            loadCanvas(url);  
-            drawRotated();          
-        }    
+            loadCanvas(url, true);
+        }
+        
 
         function showReference(_param){
-            url = getDomainname() + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);;
-            document.getElementById("finerotate").value = 0;
-            document.getElementById("prerotateangle").value = _param["Alignment"]["InitialRotate"].value1;
+            url = getDomainname() + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+
+            if (_param["Alignment"]["InitialRotate"].value1 < 0) {
+                document.getElementById("prerotateangle").value = Math.ceil(_param["Alignment"]["InitialRotate"].value1);
+            }
+            else {
+                document.getElementById("prerotateangle").value = Math.floor(_param["Alignment"]["InitialRotate"].value1);
+            }
+
+            document.getElementById("finerotate").value = (Number(_param["Alignment"]["InitialRotate"].value1) - 
+                                                            Number(document.getElementById("prerotateangle").value)).toFixed(1);
 
             if (_param["Alignment"]["InitialMirror"].found && (_param["Alignment"]["InitialMirror"].value1 == "true"))
                 document.getElementById("mirror").checked = true;
@@ -206,6 +299,7 @@ table {
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("updatereferenceimage").disabled = true;
+            document.getElementById("startreference").disabled = false;
             document.getElementById("take").disabled = true;
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
             document.getElementById("TakeImage_Saturation_value1").disabled = true;
@@ -224,10 +318,10 @@ table {
             document.getElementById("flip").disabled = true;
 
             isActReference = true;                                  
-            loadCanvas(url);
-            drawRotated(false, true);
+            loadCanvas(url, false);
         }
-            
+        
+        
         function dataURLtoBlob(dataurl) {
             var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -236,10 +330,12 @@ table {
             }
             return new Blob([u8arr], {type:mime});
         }			
-                
+        
+        
         function SaveReference(){
-            if (confirm("Are you sure you want to update the Reference Image?")) {
-                param["Alignment"]["InitialRotate"].value1 = document.getElementById("prerotateangle").value;
+            if (confirm("Are you sure you want to save the new reference image configuration?")) {
+                param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
+                                                                Number(document.getElementById("finerotate").value)).toFixed(1);
 
                 if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
                 {
@@ -268,22 +364,28 @@ table {
 
                 WriteConfigININew();
                 SaveConfigToServer(getDomainname());    
+                document.getElementById("updatereferenceimage").disabled = true;
 
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
                 showReference(param);
-                UpdatePage();
-                firework.launch('Reference got saved. It will get applied after the next reboot!', 'success', 5000);
+                //UpdatePage();
+                
+                firework.launch('Reference image configuration saved. It will get applied after next reboot', 'success', 5000);
             }
         }
 
-        function loadCanvas(dataURL) {
+
+        function loadCanvas(dataURL, grid) {
                 var canvas = document.getElementById('canvas');
                 var context = canvas.getContext('2d');
 
                 imageObj.onload = function() {
                     canvas.width = this.width;
                     canvas.height = this.height;
-                    drawRotated();
+                    if (grid)
+                        drawRotated(true);
+                    else
+                        drawRotated(false);
                 };
 
                 imageObj.src = dataURL;
@@ -303,7 +405,19 @@ table {
             return { top: Math.round(top), left: Math.round(left) };
         }
 
+        
+        /* hash #description open the details part of the page */
+        function openDescription() {
+        if(window.location.hash) {
+            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+            if(hash == 'description')
+                document.getElementById("desc_details").open = true;
+            }
+        }
+    
+
         function init() {
+            openDescription();
             canvas.addEventListener('mousemove', mouseMove, false);    
             loadConfig(getDomainname()); 
             ParseConfig();
@@ -339,10 +453,11 @@ table {
             showReference(param); 
         }
 
+
         function UpdateInput() {
-            WriteParameter(param, category, "TakeImage", "Brightness", false);		
-            WriteParameter(param, category, "TakeImage", "Contrast", false);		
-            WriteParameter(param, category, "TakeImage", "Saturation", false);		
+            WriteParameter(param, category, "TakeImage", "Brightness", false, true);		
+            WriteParameter(param, category, "TakeImage", "Contrast", false, true);		
+            WriteParameter(param, category, "TakeImage", "Saturation", false, true);		
             WriteParameter(param, category, "TakeImage", "LEDIntensity", false);		
         }
 
@@ -365,7 +480,7 @@ table {
         }
         
 
-        function WriteParameter(_param, _category, _cat, _name, _optional, _select = false, _anzpara = 1){
+        function WriteParameter(_param, _category, _cat, _name, _optional, outval = false, _select = false, _anzpara = 1){
             if (_param[_cat][_name]["found"]){
                 if (_optional) {
                     document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
@@ -389,7 +504,8 @@ table {
                         document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
                     }
                 }
-
+                if (outval)
+                    document.getElementById(_cat+"_"+_name+"_value1_output").value = document.getElementById(_cat+"_"+_name+"_value1").value;
             }
             else {
                 if (_optional) {
@@ -403,7 +519,7 @@ table {
         }
 
 
-        function drawRotated(_grid = true, _isreference = false){
+        function drawRotated(_grid = true) {
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
             mirror = document.getElementById("mirror").checked;
@@ -455,11 +571,11 @@ table {
             
             
             context.restore();
-            if (_grid == true && !isActReference){
-                drawGrid();
-            }
 
+            if (_grid)
+                    drawGrid();
         }
+
 
         function drawGrid(){
             var canvas = document.getElementById('canvas');
@@ -489,8 +605,13 @@ table {
             ctx.restore();
         }
 
+
         function mouseMove(e) {
-            drawRotated();
+            if (isActReference)
+                drawRotated(false);
+            else
+                drawRotated(true);
+            
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
 
@@ -508,8 +629,8 @@ table {
             context.stroke();            
         }
 
-
         init();
+    
     </script>
 
 </body>

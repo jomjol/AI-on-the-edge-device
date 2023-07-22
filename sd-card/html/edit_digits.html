@@ -1,137 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<meta charset="utf-8"/>
-<title>Digit ROI's</title>
+    <meta charset="UTF-8" />
+    <title>Digit ROI</title>
 
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+    <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
 
-input[type=number] {
-	width: 100px;
-	margin-right: 10px;
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+        input[type=number] {
+            width: 60px;
+            margin-right: 10px;
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
 
-input[type=text] {
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-}
+        input[type=text] {
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+        }
 
-select {
-	padding: 3px 5px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	font-size: 16px; 
-	margin-right: 10px;
-}
+        input:out-of-range {
+        background-color: rgba(255, 0, 0, 0.25);
+        border: 1px solid red;
+        }
 
-.button {
-	padding: 5px 10px;
-    width: 210px;
-	font-size: 16px;
-}
+        select {
+            padding: 3px 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            font-size: 16px; 
+            margin-right: 10px;
+            min-width: 100px;
+            max-width: 100%;
+            vertical-align: middle;
+            overflow: hidden;
+        }
 
-.move {
-	padding: 4px 4px;
-    width: 100px;
-	font-size: 12px;
-}
+        .button {
+            padding: 5px 10px;
+            width: 160px;
+            font-size: 16px;
+        }
 
-th, td {
-  padding: 5px 5px 5px 0px;
-}
-</style>
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
-<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+        .multiplier {
+            padding: 0px 0px;
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 5px 5px 5px 0px;
+        }
+
+        table {
+            width: 660px;
+            padding: 5px;
+            table-layout: fixed;
+        }
+    </style>
+
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-    <h2>Digit ROI's</h2>
-        <p>On this page you define ROI's for the digits.
-            See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/</a> for explanations.</p>
-        
-        <p><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'EnDisableDigits()' checked><label for="Category_Digits_enabled">Enable Digit ROI's</label></p>
+    <h2>Digit ROI</h2>
+    <details id="desc_details" style="font-size:16px">
+        <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
+            <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>ROI Configuration</a>
+        </summary>
+        <p>
+            <b>R</b>egion <b>O</b>f <b>I</b>nterest (ROI) for digit numbers can be defined on this page. If no digit numbers need to be processed, 
+            disable digit processing by deselecting <b>"Digit ROI Processing"</b>.
+        </p>
+        <p>
+            By default one number sequence (a number seqence contains of 1-x digit ROIs + 1-x analog counter ROIs which are processed together) is 
+            predefined and already selected in the drop down <b>"Number sequence"</b>. If you need more than one number sequence additional
+            one's can be added with the buttons next to the drop down. Each number sequence will be processed separately.
+        </p>
+        <p>
+            Using drag and drop by mouse of by manually entering the parameters into the given fields the digit ROIs can be positined to the digit numbers
+            on the reference image. To have proper ROI definition please check the documentation: 
+            <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>ROI Configuration</a>. It's very important to be
+            really precise to have reliable processing. With the drop down <b>"ROI"</b> you can change between the different ROIs in the selected
+            number sequence. To create new ROIs use <b>"New ROI"</b>.
+        </p>
+        <p>
+            The order of the ROIs defines the position (and therefore the multiplication factor) within the reading sequence. The position
+            in the number sequence can be changed with the buttons <b>"Move ROI Lower"</b> and <b>"Move ROI Higher"</b>. The multiplication factor which is
+            shown below the ROI drop down is the multiplication factor of pure position/order in number sequence and the factor right-hand side to this is 
+            the additionally corrected by decimal shift setting (configuration, expert parameter, default: 0). 
+        </p>
+        <p>
+            After definition of digit ROIs is completed don't forget to save with the <b>"Save Config"</b> button!<br>
+            <b>NOTE:</b> There is no need to perform a reboot after every saving or step. It's sufficient to reboot after all configuration steps 
+            (reference image, alignment, ROI configuration) are completed to activate new configuration.
+        </p>
+    </details>
+    <hr />
 
-        <p>After saving the digit ROI's, you can define the <a href=edit_analog.html>analog</a> ROI's if your meter has analog counters.<br>
-            Only after those steps a reboot is required.</p>
-    
+    <p>
+        <input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'EnDisableDigits()' checked>
+            <label style="font-weight: bold; font-size: larger;" for="Category_Digits_enabled">Digit ROI Processing</label>
+    </p>   
+
 
 <div id="div1">
 
-	<table>
-	  <tr>
-		<canvas id="canvas" crossorigin></canvas>
-	  </tr>
-	</table>
-    
-    <p>
-        <table>
-            <tr>
-                <class id="Numbers_text" style="color:black;"><b>Number:</b> </class>
+    <table>
+        <colgroup>
+            <col span="1" style="width: 22%;">
+            <col span="1" style="width: 26%;">
+            <col span="1" style="width: 26%;">
+            <col span="1" style="width: 26%;">
+        </colgroup>
+        <tr>
+            <td colspan="4" style="padding: 0px"><class id="Numbers_text" style="color:black;">Number Sequence:</class></td>
+        </tr>
+        <tr>
+            <td>
                 <select id="Numbers_value1" onchange="numberChanged()">
                 </select>
-                <input class="move" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename">  
-                <input class="move" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New">  
-                <input class="move" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Remove">
-            </tr>
-        </table>
-    </p>
-    
+            </td>
+            <td><input class="button" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New Sequence"></td>
+            <td><input class="button" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename Sequence"></td> 
+            <td><input class="button" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Delete Sequence"></td>
+        </tr>
+    </table>
+
+    <hr />
+
+    <table>
+        <colgroup>
+            <col span="1" style="width: 22%;">
+            <col span="1" style="width: 26%;">
+            <col span="1" style="width: 26%;">
+            <col span="1" style="width: 26%;">
+        </colgroup>
+        <tr>
+            <td style="padding: 0px">ROI:</td>
+        </tr>
+        <tr>
+            <td><select id="index" name="index" onchange="ChangeSelection()" tabindex=1></select></td>
+            <td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI"></td>
+            <td><input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename ROI"></td>	  
+            <td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
+        </tr>
+        <tr>       
+            <td class="multiplier">Multiplier: <output type="text" id="multiplier" name="multiplier"></output><br>
+                (only based on order)
+            </td>
+            <td class="multiplier">Multiplier: <output type="text" id="multiplier_decshift" name="multiplier_decshift"></output><br>
+                (order + decimal shift: <output type="text" id="decimalShift" name="decimalShift"></output>)
+            </td>
+            <td><input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="Move ROI Higher"></td> 
+            <td><input class="button" type="submit" id="moveNext" onclick="moveNext()" value="Move ROI Lower"></td>
+        </tr>
+    </table>
+
 	<table>
-	  <tr>
-		<td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI (after current)"></td>	  
-		<td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
-		<td></td>
-	  </tr>
-	  <tr>
-		<td>
-			<select id="index" name="index" onchange="ChangeSelection()" tabindex=1>
-			</select>
-		</td>
-		<td>                
-            <input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename">  
-		<td>
-		<input class="move" type="submit" id="moveNext" onclick="moveNext()" value="move Next">
-		<input class="move" type="submit" id="movePrevious" onclick="movePrevious()" value="move Previous">  
-		</td>	
-	  </tr>
-	  <tr>
-        <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
-		<td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-		<td><input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label></td>
-	  </tr>
-	  <tr>
-		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
-		<td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-        <td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
-      <td ><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=9>
-        <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" step=1 onchange="valuemanualchangedspace()" tabindex=8> between all ROIs</label></td>
-    </tr>
+        <colgroup>
+            <col span="1" style="width: 18%;">
+            <col span="1" style="width: 18%;">
+            <col span="1" style="width: 64%;">
+        </colgroup>
+        <tr>
+            <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
+            <td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
+            <td><input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label></td>
+        </tr>
+        <tr>
+            <td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
+            <td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
+            <td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label></td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
+                <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" step=1 onchange="valuemanualchangedspace()" tabindex=9> between all ROIs</label>
+            </td>
+        </tr>
     </table>	
-    
 </div>
-			 
+
 	<table>
-	  <tr>
-		<td><input class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save" tabindex=10>
-            <p>Proceed to update the <a href=edit_analog.html>analog</a> ROI's when you are done or <a href=reboot_page.html>reboot</a> if there are no analogue counters.</p></td>
-	  </tr> 
-	</table>
+        <colgroup>
+            <col span="1" style="width: 22%;">
+            <col span="1" style="width: 26%;">
+            <col span="1" style="width: 26%;">
+            <col span="1" style="width: 26%;">
+        </colgroup>
+	    <tr>
+            <td colspan="3" style="vertical-align: bottom;"><b>Reference Image:</b></td>
+            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=10></td>
+	    </tr> 
+        <tr>
+            <td colspan="4"><canvas id="canvas" crossorigin></canvas></td>
+        </tr>
+    </table>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
@@ -183,6 +258,7 @@ function EnDisableDigits() {
         sah1(document.getElementById("div1"), !isEnabled);
 
         cofcat["Digits"]["enabled"] = isEnabled;
+        document.getElementById("saveroi").disabled = false;
                 
         if (isEnabled)
         {
@@ -208,6 +284,10 @@ function onNameChange(){
 }
 
 function deleteROI(){
+    if (!confirm("Delete the selected ROI?")) {
+        return; //break out of the function early because prompt was aborted
+    }
+
     ROIInfo.splice(aktindex, 1);
     if (aktindex > ROIInfo.length - 1){
         aktindex = ROIInfo.length - 1;
@@ -222,7 +302,10 @@ function newROI() {
     sel = document.getElementById("index");
     var _roialt= sel.options[sel.selectedIndex].text;
 
-    var _roinew = prompt("Please enter name of new ROI", "name");
+    var _roinew = prompt("Please enter a name for the new ROI", "name");
+    if (_roinew === null) {
+        return; //break out of the function early because prompt was aborted
+    }
 
     if (ROIInfo.length > 0) {
         if (ROIInfo.length > 1) {
@@ -232,7 +315,7 @@ function newROI() {
                 parseInt(ROIInfo[sel.selectedIndex].y), ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
     }
     else
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 1, 1, 30, 51, 0);
+        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 15, 30, 30, 51, 0);
 
     if (erg != "")
         firework.launch(erg, 'danger', 30000);
@@ -274,7 +357,7 @@ function changelockSizes(){
     valuemanualchangedspace();
 
     if (!lockSizes) {
-        firework.launch("For best results it is in most cases advised to keep the y, Δx and Δy identical!", 'warning', 10000);
+        firework.launch("In most cases it's advised to keep the y, Δx and Δy identical!", 'warning', 10000);
     }
 }
 
@@ -296,11 +379,51 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-//    _zwcat = getConfigCategory();
-    cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
-    WriteConfigININew();
-    SaveConfigToServer(domainname); 
-    firework.launch('Configuration got updated. It will get applied after the next reboot!', 'success', 5000);
+    if (confirm("Are you sure you want to save the new digit ROI configuration?")) {
+        // _zwcat = getConfigCategory();
+        cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
+        WriteConfigININew();
+        SaveConfigToServer(domainname);
+        UpdateROIs();
+        document.getElementById("saveroi").disabled = true;
+
+        firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
+    }
+}
+
+
+function ShowMultiplier()
+{
+    var decimalShift = 0;
+    var multiplier;
+    var multiplier_decshift;
+    var fixedDecimals_decshift;
+    var NumberInfo = getNUMBERInfo();
+
+    var sel = document.getElementById("Numbers_value1");
+    var _number= sel.options[sel.selectedIndex].text;
+    document.getElementById("decimalShift").value = 0;
+    for (var i = 0; i < NumberInfo.length; ++i) {
+        if (NumberInfo[i]["name"] == _number) {
+            if (NumberInfo[i]["PostProcessing"]["DecimalShift"]["enabled"]) {
+                decimalShift = NumberInfo[i]["PostProcessing"]["DecimalShift"]["value1"];
+                document.getElementById("decimalShift").value = decimalShift; 
+            }
+        }
+    }
+
+    multiplier = ROIInfo.length - 1 - aktindex;
+    multiplier_decshift = fixedDecimals_decshift = multiplier + Number(decimalShift);
+
+    if (multiplier_decshift > 0)
+        fixedDecimals_decshift = 0;
+
+    if (fixedDecimals_decshift < 0) {
+        fixedDecimals_decshift = -1*fixedDecimals_decshift;
+    }
+    
+    document.getElementById("multiplier").value="x" + Number(10 ** multiplier).toFixed(0);
+    document.getElementById("multiplier_decshift").value="x" + Number(10 ** multiplier_decshift).toFixed(fixedDecimals_decshift);
 }
 
 
@@ -316,19 +439,28 @@ function UpdateROIs(_sel){
     {
         document.getElementById("Category_Digits_enabled").checked = false;
         EnDisableDigits();
-        firework.launch('Digital ROIs are disabled - please enable first (Check box top left)', 'warning', 10000);
+        firework.launch('Digit ROI processing is disabled. Activate with checkbox if needed', 'warning', 10000);
         return;
     }
 
     if (ROIInfo.length == 0){
-        firework.launch('There are no ROIs defined. Please first create a new ROI ("New ROIs ...")', 'danger', 10000);
+        firework.launch('No digit ROIs defined in selected number sequence', 'warning', 10000);
         document.getElementById("newROI").disabled = false;
         document.getElementById("deleteROI").disabled = true;
-        document.getElementById("index").disabled = true;
-        document.getElementById("saveroi").disabled = true;
         document.getElementById("renameROI").disabled = true;
+        document.getElementById("index").disabled = true;
+        document.getElementById("multiplier").style.display = "none";
+        document.getElementById("multiplier_decshift").style.display = "none";
+        document.getElementById("refx").disabled = true;
+        document.getElementById("refdx").disabled = true;
+        document.getElementById("refy").disabled = true;
+        document.getElementById("refdy").disabled = true;
+        document.getElementById("lockSizes").disabled = true;
+        document.getElementById("lockAspectRatio").disabled = true;
+        document.getElementById("lockSpaceEquidistant").disabled = true;
         document.getElementById("moveNext").disabled = true;
         document.getElementById("movePrevious").disabled = true;
+        document.getElementById("saveroi").disabled = false;
         return;
     }
     else
@@ -337,6 +469,15 @@ function UpdateROIs(_sel){
         document.getElementById("deleteROI").disabled = false;
         document.getElementById("renameROI").disabled = false;
         document.getElementById("index").disabled = false;
+        document.getElementById("multiplier").style.display = "";
+        document.getElementById("multiplier_decshift").style.display = "";
+        document.getElementById("refx").disabled = false;
+        document.getElementById("refdx").disabled = false;
+        document.getElementById("refy").disabled = false;
+        document.getElementById("refdy").disabled = false;
+        document.getElementById("lockSizes").disabled = false;
+        document.getElementById("lockAspectRatio").disabled = false;
+        document.getElementById("lockSpaceEquidistant").disabled = false;
         document.getElementById("saveroi").disabled = false;
     }
 
@@ -346,7 +487,7 @@ function UpdateROIs(_sel){
     }
 
     if (aktindex > ROIInfo.length)
-        aktindex = ROIInfo.length;
+        aktindex = ROIInfo.length-1;
 
     for (var i = 0; i < ROIInfo.length; ++i){
         var option = document.createElement("option");
@@ -369,7 +510,9 @@ function UpdateROIs(_sel){
     document.getElementById("moveNext").disabled = false;
     if (aktindex == (ROIInfo.length-1)){
         document.getElementById("moveNext").disabled = true;
-    }  
+    }
+
+    ShowMultiplier();
     
     document.getElementById("lockAspectRatio").checked = lockAspectRatio;
     document.getElementById("lockSizes").checked = lockSizes;
@@ -390,7 +533,7 @@ function UpdateROIs(_sel){
     rect.startY = ROIInfo[aktindex]["y"];
     rect.w = ROIInfo[aktindex]["dx"];
     rect.h = ROIInfo[aktindex]["dy"];
-    draw();      
+    draw();
 }
     
         function loadCanvas(dataURL) {
@@ -420,8 +563,20 @@ function UpdateROIs(_sel){
             var left = box.left + scrollLeft - clientLeft;
             return { top: Math.round(top), left: Math.round(left) };
         }
+
+
+        /* hash #description open the details part of the page */
+        function openDescription() {
+        if(window.location.hash) {
+            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+            if(hash == 'description')
+                document.getElementById("desc_details").open = true;
+            }
+        }
     
+
         function init() {
+            openDescription();
             domainname = getDomainname();
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
@@ -481,6 +636,8 @@ function UpdateROIs(_sel){
                 document.getElementById("space").value = space;
             }
 
+            document.getElementById("saveroi").disabled = true;
+
             drawImage();
             draw();
         }
@@ -523,10 +680,13 @@ function UpdateNUMBERS(_sel){
 
 function renameNumber(){
     var sel = document.getElementById("Numbers_value1");
-    var _delte= sel.options[sel.selectedIndex].text;
-    var _numbernew = prompt("Please enter new name", _delte);
+    var _delete= sel.options[sel.selectedIndex].text;
+    var _numbernew = prompt("Please enter a new name for the selected number sequence", _delete);
+    if (_numbernew === null) {
+        return; //break out of the function early because prompt was aborted
+    }
 
-    erg = RenameNUMBER(_delte, _numbernew);
+    erg = RenameNUMBER(_delete, _numbernew);
     if (erg != "")
         firework.launch(erg, 'danger', 30000);
     else
@@ -534,21 +694,27 @@ function renameNumber(){
 }
 
 function newNumber(){
-    var _numbernew = prompt("Please enter name of new number", "name");
+    var _numbernew = prompt("Please enter a name for the new number sequence", "name");
+    if (_numbernew === null) {
+        return; //break out of the function early because prompt was aborted
+    }
 
     erg = CreateNUMBER(_numbernew);
     if (erg != "")
-            firework.launch(erg, 'danger', 30000);
+        firework.launch(erg, 'danger', 30000);
     else
         UpdateNUMBERS(_numbernew);
 }
 
 
 function removeNumber(){
-	if (confirm("This will remove the number complete (analog and digital).\nIf you only want to remove the digital ROIs, please use \"Delete ROIs\".\nDo you want to proceed?")) {
+	if (confirm("The entire number sequence will be removed (digit + analog parts). " +
+                "To remove single ROI of the number sequence, use \"Delete ROI\" instead.\n" +
+                "Do you really want to proceed?")) 
+    {
         var sel = document.getElementById("Numbers_value1");
-        var _delte= sel.options[sel.selectedIndex].text;
-        erg = DeleteNUMBER(_delte);
+        var _delete= sel.options[sel.selectedIndex].text;
+        erg = DeleteNUMBER(_delete);
         if (erg != "")
             firework.launch(erg, 'danger', 30000);
         UpdateNUMBERS();
@@ -755,6 +921,7 @@ function draw() {
             }   
             draw();      
         }
+        document.getElementById("saveroi").disabled = false;
     }
 
     function valuemanualchangeddx(){
@@ -780,6 +947,7 @@ function draw() {
 
             draw();            
         }
+        document.getElementById("saveroi").disabled = false;
     }
 
     function valuemanualchangedspace(){
@@ -821,8 +989,10 @@ function draw() {
         sel = document.getElementById("index");
         var _roialt= sel.options[sel.selectedIndex].text;
 
-
-        var _roinew = prompt("Please enter new name", _roialt);
+        var _roinew = prompt("Please enter a new name for the selected ROI", _roialt);
+        if (_roinew === null) {
+            return; //break out of the function early because prompt was aborted
+        }
 
         erg = RenameROI(_number, "digit", _roialt, _roinew);
         if (erg != "")
@@ -833,6 +1003,7 @@ function draw() {
 
     function numberChanged()
     {
+        aktindex = 0;
         UpdateROIs();
     }    
 

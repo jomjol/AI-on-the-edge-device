@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>Reboot</title>
-<meta charset="utf-8">
+<meta charset="UTF-8" />
 
 <style>
 h1 {font-size: 2em;}
@@ -12,8 +11,8 @@ h3 {font-size: 1.2em;}
 p {font-size: 1em;}
 
 .button {
-	padding: 10px 20px;
-    width: 211px;
+	padding: 5px 10px;
+    width: 205px;
 	font-size: 16px;	
 }
 </style>
@@ -22,13 +21,13 @@ p {font-size: 1em;}
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-
-<h3>Do you really want to reboot your ESP32 now?</h3>
+	
+<h3>Do you really want to reboot now?</h3>
 
 <table class="fixed" border="0">
 	<tr>
 		<td>
-			<button class="button" id="reboot" type="button" onclick="doReboot()">Yes, please reboot</button>
+			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot</button>
 		</td>
 	</tr>
 </table>
