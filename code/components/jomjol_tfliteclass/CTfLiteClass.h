@@ -3,11 +3,7 @@
 #ifndef CTFLITECLASS_H
 #define CTFLITECLASS_H
 
-// #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
-//#include "tensorflow/lite/micro/micro_error_reporter.h"
-//#include "tensorflow/lite/micro/tflite_bridge/error_reporter.h"
-
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
@@ -20,6 +16,8 @@
 #include "esp_log.h"
 
 #include "CImageBasis.h"
+
+
 
 #ifdef SUPRESS_TFLITE_ERRORS
 #include "tensorflow/lite/core/api/error_reporter.h"
@@ -35,14 +33,14 @@ namespace tflite {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif
 
+
 class CTfLiteClass
 {
     protected:
-        tflite::MicroErrorReporter *error_reporter;
+        tflite::ErrorReporter *error_reporter;
         const tflite::Model* model;
         tflite::MicroInterpreter* interpreter;
         TfLiteTensor* output = nullptr;     
-//        static tflite::MicroMutableOpResolver<1> resolver;
 
         int kTensorArenaSize;
         uint8_t *tensor_arena;

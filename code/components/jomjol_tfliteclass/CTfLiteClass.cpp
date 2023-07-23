@@ -12,6 +12,31 @@
 
 static const char *TAG = "TFLITE";
 
+/// Static Resolver muss mit allen Operatoren geladen Werden, die benöägit werden - ABER nur 1x --> gesonderte Funktion /////////////////////////////
+static bool MakeStaticResolverDone = false;
+static tflite::MicroMutableOpResolver<15> resolver;
+
+void MakeStaticResolver()
+{
+  if (MakeStaticResolverDone)
+    return;
+
+  MakeStaticResolverDone = true;
+
+  resolver.AddFullyConnected();
+  resolver.AddReshape();
+  resolver.AddSoftmax();
+  resolver.AddConv2D();
+  resolver.AddMaxPool2D();
+  resolver.AddQuantize();
+  resolver.AddMul();
+  resolver.AddAdd();
+  resolver.AddLeakyRelu();
+  resolver.AddDequantize();
+}
+////////////////////////////////////////////////////////////////////////////////////////
+
+
 float CTfLiteClass::GetOutputValue(int nr)
 {
     TfLiteTensor* output2 = this->interpreter->output(0);
@@ -178,48 +203,12 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
     return true;
 }
 
-static bool MakeStaticResolverDone = false;
-static tflite::MicroMutableOpResolver<15> resolver;
-
-void MakeStaticResolver()
-{
-  if (MakeStaticResolverDone)
-    return;
-
-  MakeStaticResolverDone = true;
-
-  resolver.AddFullyConnected();
-  resolver.AddReshape();
-  resolver.AddSoftmax();
-  resolver.AddConv2D();
-  resolver.AddMaxPool2D();
-  resolver.AddQuantize();
-  resolver.AddMul();
-  resolver.AddAdd();
-  resolver.AddLeakyRelu();
-  resolver.AddDequantize();
-}
 
 
 bool CTfLiteClass::MakeAllocate()
 {
 
   MakeStaticResolver();
-
-/*
-    static tflite::MicroMutableOpResolver<15> resolver;
-    resolver.AddFullyConnected();
-    resolver.AddReshape();
-    resolver.AddSoftmax();
-    resolver.AddConv2D();
-    resolver.AddMaxPool2D();
-//    resolver.AddQuantize();
-    resolver.AddMul();
-    resolver.AddAdd();
-    resolver.AddLeakyRelu();
-    resolver.AddDequantize();
-
-*/
 
 
     #ifdef DEBUG_DETAIL_ON 
@@ -325,6 +314,7 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
 bool CTfLiteClass::LoadModel(std::string _fn)
 {
 #ifdef SUPRESS_TFLITE_ERRORS
+//    this->error_reporter = new tflite::ErrorReporter;
     this->error_reporter = new tflite::OwnMicroErrorReporter;
 #else
     this->error_reporter = new tflite::MicroErrorReporter;
@@ -365,12 +355,16 @@ CTfLiteClass::~CTfLiteClass()
   psram_free_shared_tensor_arena_and_model_memory();
 }        
 
-/*
+#ifdef SUPRESS_TFLITE_ERRORS
 namespace tflite 
 {
+//tflite::ErrorReporter
+//  int OwnMicroErrorReporter::Report(const char* format, va_list args) 
+
   int OwnMicroErrorReporter::Report(const char* format, va_list args) 
   {
     return 0;
   }
 } 
-*/ 
+#endif
+ 
