@@ -178,17 +178,57 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
     return true;
 }
 
+static bool MakeStaticResolverDone = false;
+static tflite::MicroMutableOpResolver<15> resolver;
+
+void MakeStaticResolver()
+{
+  if (MakeStaticResolverDone)
+    return;
+
+  MakeStaticResolverDone = true;
+
+  resolver.AddFullyConnected();
+  resolver.AddReshape();
+  resolver.AddSoftmax();
+  resolver.AddConv2D();
+  resolver.AddMaxPool2D();
+  resolver.AddQuantize();
+  resolver.AddMul();
+  resolver.AddAdd();
+  resolver.AddLeakyRelu();
+  resolver.AddDequantize();
+}
+
 
 bool CTfLiteClass::MakeAllocate()
 {
-    static tflite::AllOpsResolver resolver;
+
+  MakeStaticResolver();
+
+/*
+    static tflite::MicroMutableOpResolver<15> resolver;
+    resolver.AddFullyConnected();
+    resolver.AddReshape();
+    resolver.AddSoftmax();
+    resolver.AddConv2D();
+    resolver.AddMaxPool2D();
+//    resolver.AddQuantize();
+    resolver.AddMul();
+    resolver.AddAdd();
+    resolver.AddLeakyRelu();
+    resolver.AddDequantize();
+
+*/
+
 
     #ifdef DEBUG_DETAIL_ON 
         LogFile.WriteHeapInfo("CTLiteClass::Alloc start");
     #endif
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::MakeAllocate");
-    this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
+    this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize);
+//    this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 
     if (this->interpreter) 
     {
@@ -320,16 +360,17 @@ CTfLiteClass::CTfLiteClass()
 CTfLiteClass::~CTfLiteClass()
 {
   delete this->interpreter;
-  delete this->error_reporter;
+//  delete this->error_reporter;
 
   psram_free_shared_tensor_arena_and_model_memory();
 }        
 
-
+/*
 namespace tflite 
 {
   int OwnMicroErrorReporter::Report(const char* format, va_list args) 
   {
     return 0;
   }
-}  
+} 
+*/ 
