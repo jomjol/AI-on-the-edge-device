@@ -9,6 +9,11 @@
 #include "cJSON.h"
 #include "../../include/defines.h"
 
+#if DEBUG_DETAIL_ON
+#include "esp_timer.h"
+#endif
+
+
 static const char *TAG = "MQTT IF";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  

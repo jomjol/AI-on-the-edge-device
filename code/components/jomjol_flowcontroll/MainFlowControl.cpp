@@ -230,7 +230,7 @@ esp_err_t handler_stream(httpd_req_t *req)
         if (httpd_query_key_value(_query, "flashlight", _value, 10) == ESP_OK)
         {
             #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "flashlight is found%s", _size);
+                ESP_LOGD(TAG, "flashlight is found%s", _value);
             #endif
             if (strlen(_value) > 0)
                 flashlightOn = true;
@@ -890,7 +890,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
         if (httpd_query_key_value(_query, "value", _value, 20) == ESP_OK) {
             #ifdef DEBUG_DETAIL_ON       
-                ESP_LOGD(TAG, "Value: %s", _size);
+                ESP_LOGD(TAG, "Value: %s", _value);
             #endif
         }
     }

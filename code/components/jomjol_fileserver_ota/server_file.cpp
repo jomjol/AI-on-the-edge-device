@@ -588,7 +588,9 @@ static esp_err_t download_get_handler(httpd_req_t *req)
         /* Read file in chunks into the scratch buffer */
         chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
 
-        /* Send the buffer contents as HTTP response chunk */
+        /* Send buffer contents as HTTP chunk. If empty this functions as a
+         * last-chunk message, signaling end-of-response, to the HTTP client.
+         * See RFC 2616, section 3.6.1 for details on Chunked Transfer Encoding. */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
             fclose(fd);
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File sending failed!");
@@ -606,8 +608,6 @@ static esp_err_t download_get_handler(httpd_req_t *req)
     fclose(fd);
     ESP_LOGD(TAG, "File successfully sent");
 
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
 

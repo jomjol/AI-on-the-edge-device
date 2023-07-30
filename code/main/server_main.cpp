@@ -39,16 +39,20 @@ esp_err_t info_get_handler(httpd_req_t *req)
     char _valuechar[30];    
     std::string _task;
 
-    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
+    if (httpd_req_get_url_query_str(req, _query, 200) != ESP_OK)
     {
-        ESP_LOGD(TAG, "Query: %s", _query);
-        
-        if (httpd_query_key_value(_query, "type", _valuechar, 30) == ESP_OK)
-        {
-            ESP_LOGD(TAG, "type is found: %s", _valuechar);
-            _task = std::string(_valuechar);
-        }
+        return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "invalid query string");
     }
+
+    ESP_LOGD(TAG, "Query: %s", _query);
+
+    if (httpd_query_key_value(_query, "type", _valuechar, 30) != ESP_OK)
+    {
+        return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "missing or invalid 'type' query parameter (too long value?)");
+    }
+
+    ESP_LOGD(TAG, "type is found: %s", _valuechar);
+    _task = std::string(_valuechar);
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
@@ -165,6 +169,12 @@ esp_err_t info_get_handler(httpd_req_t *req)
         zw = getSDCardSectorSize();
         httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
+    }
+    else
+    {
+        char formatted[256];
+        snprintf(formatted, sizeof(formatted), "Unknown value for parameter info 'type': '%s'\n", _task.c_str());
+        return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, formatted);
     }
 
     return ESP_OK;
