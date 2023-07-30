@@ -371,8 +371,10 @@ bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len)
             if (cJSON_IsNumber(value)) {   // Check if value is a number
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_set_prevalue called: numbersname: " + std::string(numbersname->valuestring) + 
                                                                                          ", value: " + std::to_string(value->valuedouble));
-                if (flowctrl.UpdatePrevalue(std::to_string(value->valuedouble), std::string(numbersname->valuestring), true))
+                if (flowctrl.UpdatePrevalue(std::to_string(value->valuedouble), std::string(numbersname->valuestring), true)) {
+                    cJSON_Delete(jsonData);
                     return ESP_OK;
+                }
             }
             else {
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_set_prevalue: value not a valid number (\"value\": 12345.12345)");
@@ -381,6 +383,7 @@ bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len)
         else {
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_set_prevalue: numbersname not a valid string (\"numbersname\": \"main\")");
         }
+        cJSON_Delete(jsonData);
     }
     else {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_set_prevalue: handler called, but no data received");
