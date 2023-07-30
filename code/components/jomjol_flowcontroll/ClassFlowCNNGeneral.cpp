@@ -145,7 +145,8 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     {   
         // on first digit is no spezial logic for transition needed
         // we use the recognition as given. The result is the int value of the recognition
-        result = (int) ((int) trunc(number) + 10) % 10;
+        // add precisition of 2 digits and round before trunc
+        result = (int) ((int) trunc(round((number+10 % 10)*100)) )  / 100;
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
@@ -484,7 +485,7 @@ bool ClassFlowCNNGeneral::doFlow(string time)
 
     if (!doAlignAndCut(time)){
         return false;
-    };
+    }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow after alignment");
 
@@ -852,10 +853,9 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 {
-    if (!(CNNType == Digital))
-        return true;
-
-    return false;
+    if (CNNType == Digital)
+        return false;
+    return true;
 }
 
 
