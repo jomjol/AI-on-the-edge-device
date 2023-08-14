@@ -2,10 +2,9 @@
 
 **There are a lot of ideas for further improvements, but only limited capacity on side of the developer.** Therefore I have created this page as a collection of ideas. 
 
-1. Who ever has a new idea can put it here, so it that it is not forgotten. 
+1. Whoever has a new idea can put it here, so that it is not forgotten. 
 
-2. Who ever has time, capacity and passion to support, can take any of the ideas and implement them. 
-   I will support and help where ever I can!
+2. Whoever has the time, capacity and passion to support the project can take any of the ideas and implement them. I will provide support and help wherever I can!
    
    
 
@@ -51,7 +50,7 @@ haveing this state in the mqtt broker can trigger functions like closing the ate
 
 #### ~~#29 Add favicon and use the hostname for the website~~- implemented v11.3.1
 
-~~* https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/927~~
 
 #### #28 Improved error handling for ROIs
 
@@ -89,7 +88,7 @@ haveing this state in the mqtt broker can trigger functions like closing the ate
 
 #### ~~#22 Direct hint to the different neural network files in the other repositories~~- implemented >v11.3.1
 
-~~* https://github.com/jomjol/AI-on-the-edge-device/issues/644~~
+* ~~https://github.com/jomjol/AI-on-the-edge-device/issues/644~~
 
   
 
