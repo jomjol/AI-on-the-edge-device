@@ -1,8 +1,22 @@
+## [unreleased] - 2023-08-20
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.3.0)
+
+#### Changed
+
+ - Updates submodules (esp-nn, tflite-micro-example, esp-camera)
+
+ - Explicitly included needed tflite network layers (instead of all) , resulting in much smaller firmware size
+
+   
+
 ## [15.3.0] - 2023-07-22
 
 ### Changes
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.2.4)
 
 #### Changed
 

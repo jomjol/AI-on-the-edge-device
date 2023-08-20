@@ -173,7 +173,7 @@
             fprintf(stderr, "Error at %s:%d\n", __FILE__, __LINE__); \
             exit(1);                                                 \
         }
-    #define SUPRESS_TFLITE_ERRORS // use, to avoid error messages from TFLITE
+    // #define SUPRESS_TFLITE_ERRORS // use, to avoid error messages from TFLITE
 
 
     // connect_wlan.cpp
