@@ -9,7 +9,34 @@
    
 
 ____
+
+
+#### #40 Trigger with cron like exact time slot
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/2470
+
+
+
+#### #39 upnp implementation to auto detect the device
+
+* https://github.com/jomjol/AI-on-the-edge-device/issues/2481
+
+  
+
+#### #38 Energy Saving
+
+* Deep sleep between recognition
+* https://github.com/jomjol/AI-on-the-edge-device/issues/2486
+
+
+
+#### #37 Auto init SD card
+
+* Fully implement the SD card handling (including formatting) into the firmware
+* https://github.com/jomjol/AI-on-the-edge-device/issues/2488Demo 
+
 #### #36 Run demo without camera
+
 Demo mode requires a working camera (if not, one receives a 'Cam bad' error). Would be nice to demo or play around on other ESP32 boards (or on ESP32-CAM boards when you broke the camera cable...).
 
 #### #35 Use the same model, but provide the image from a Smartphone Camera
