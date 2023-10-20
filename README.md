@@ -18,7 +18,7 @@ All you need is an [ESP32 board with a supported camera](https://jomjol.github.i
 - Web interface for administration and control
 - OTA interface for updating directly via the web interface
 - Full integration into Homeassistant
-- Support for Influx DB 1
+- Support for Influx DB 1 and 2
 - MQTT
 - REST API
 
