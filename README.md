@@ -98,5 +98,14 @@ See [Changelog](Changelog.md).
 ## Additional Ideas
 There are some ideas and feature requests which are not currently being pursued – mainly due to capacity reasons on the part of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md).
 
-------
+# Additional Tutorials
+A lot of people created useful Youtube videos which might help you getting started.
+Here a small selection:
 
+- [youtube.com/watch?v=HKBofb1cnNc](https://www.youtube.com/watch?v=HKBofb1cnNc)
+- [youtube.com/watch?v=yyf0ORNLCk4](https://www.youtube.com/watch?v=yyf0ORNLCk4)
+- [youtube.com/watch?v=XxmTubGek6M](https://www.youtube.com/watch?v=XxmTubGek6M)
+- [youtube.com/watch?v=mDIJEyElkAU](https://www.youtube.com/watch?v=mDIJEyElkAU)
+- [youtube.com/watch?v=SssiPkyKVVs](https://www.youtube.com/watch?v=SssiPkyKVVs)
+- [youtube.com/watch?v=MAHE_QyHZFQ](https://www.youtube.com/watch?v=MAHE_QyHZFQ)
+- [youtube.com/watch?v=Uap_6bwtILQ](https://www.youtube.com/watch?v=Uap_6bwtILQ)
