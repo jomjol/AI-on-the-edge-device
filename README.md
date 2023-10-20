@@ -77,13 +77,10 @@ See [Build Instructions](code/README.md).
 ## Donate
 If you would like to support the developer with a cup of coffee, you can do that via [PayPal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
 
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" />
-<input type="image" src="images/paypal.png" border="0" name="submit" title="Donate with PayPal" alt="Donate with PayPal button" />
-<img alt="" border="0" src="images/paypal.png" width="1" height="1" />
-</form>
+<a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL"><img border="0" src="images/paypal.png"/></a>
 
-If you have any technical problems, you can create an [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
+## Support
+If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case ou found a ug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
 
