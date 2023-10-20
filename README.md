@@ -79,8 +79,8 @@ If you would like to support the developer with a cup of coffee, you can do that
 
 <form action="https://www.paypal.com/donate" method="post" target="_top">
 <input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" />
-<input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+<input type="image" src="images/paypal.png" border="0" name="submit" title="Donate with PayPal" alt="Donate with PayPal button" />
+<img alt="" border="0" src="images/paypal.png" width="1" height="1" />
 </form>
 
 If you have any technical problems, you can create an [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
