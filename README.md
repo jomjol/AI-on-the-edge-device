@@ -76,7 +76,7 @@ If you would like to support the developer with a cup of coffee, you can do that
 <a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL"><img border="0" src="images/paypal.png" width="200px" target="_blank"></a>
 
 ## Support
-If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case ou found a ug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
+If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you found a ug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
 
