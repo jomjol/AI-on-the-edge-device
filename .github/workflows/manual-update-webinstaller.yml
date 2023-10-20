@@ -40,6 +40,7 @@ jobs:
       
     - name: Add binary to Web Installer and update manifest
       run: |
+        echo "Updating Web installer to use firmware from ${{ steps.last_release.outputs.tag_name }}..."
         rm -f docs/binary/firmware.bin
         wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
