@@ -45,11 +45,8 @@ jobs:
         wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         cp -f firmware.bin docs/binary/firmware.bin
-        cp -f docs/manifest_template.json docs/manifest.json
         echo "Updating manifest file..."
-        cat docs/manifest.json
         sed -i 's/VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
-        cat docs/manifest.json
 
     - name: Setup Pages
       uses: actions/configure-pages@v2
