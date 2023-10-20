@@ -64,34 +64,29 @@ See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Inst
 The SD card must be flashed separately, see the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for details.
 
 ## Casing
-
 A 3D-printable housing can be found here:
   - https://www.thingiverse.com/thing:4573481 (Water Meter)
   - https://www.thingiverse.com/thing:5028229 (Power Meter)
   - https://www.thingiverse.com/thing:5224101 (Gas Meter)
   - https://www.thingiverse.com/thing:4571627 (ESP32-cam housing only)
 
-## Build It Yourself
-See [Build Instructions](code/README.md).
-
 ## Donate
 If you would like to support the developer with a cup of coffee, you can do that via [PayPal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
 
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="8TRSVYNYKDSWL" />
-<input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
-</form>
+<a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL"><img border="0" src="images/paypal.png" width="200px" target="_blank"></a>
 
-If you have any technical problems, you can create an [Issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
+## Support
+If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you found a ug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
 
 ## Changes and History 
 See [Changelog](Changelog.md).
 
-## Tools
+## Build It Yourself
+See [Build Instructions](code/README.md).
 
+## Tools
 * Logfile downloader and combiner (Thx to [reserve85](https://github.com/reserve85))
   * Files see ['/tools/logfile-tool'](tbd), how-to see [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/outdated--Gasmeter-Log-Downloader/)
 
