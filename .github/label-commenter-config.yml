@@ -5,6 +5,18 @@
   
  labels:
   #######################################################################
+  # Bot Response: Documentation
+  #######################################################################
+  - name: bot-reply Documentation
+    labeled:
+      issue:
+          body: |
+            Please have a look on our documentation: https://jomjol.github.io/AI-on-the-edge-device-docs
+      discussion:
+          body: |
+            Please have a look on our documentation: https://jomjol.github.io/AI-on-the-edge-device-docs
+
+  #######################################################################
   # Bot Response: ROI setup
   #######################################################################
   - name: bot-reply ROI Setup
