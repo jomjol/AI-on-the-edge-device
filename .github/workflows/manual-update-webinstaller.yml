@@ -1,7 +1,7 @@
 # This updates the Web Installer with the files from the docs folder and the binary of the latest release
 # it only gets run on:
-#  - Changes to the docs folder in the `rolling` branch
-#  - On a release
+#  - Manually triggered
+# Make sure to also update the lower part of build.yml!
 
 name: Manual Web Installer Update
 
@@ -45,8 +45,9 @@ jobs:
         wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         cp -f firmware.bin docs/binary/firmware.bin
-        echo "Updating manifest file..."
-        sed -i 's/VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
+        echo "Updating index and manifest file..."
+        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/index.html
+        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
 
     - name: Setup Pages
       uses: actions/configure-pages@v2

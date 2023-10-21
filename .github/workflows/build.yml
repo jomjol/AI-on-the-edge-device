@@ -380,7 +380,7 @@ jobs:
 #########################################################################################
 ## Update the Web Installer on a release
 #########################################################################################
-# This is the same as in the update-webinstaller.yml
+# Make sure to also update update-webinstaller.yml!
   update-web-installer:    
     needs: [release]
     environment:
@@ -408,12 +408,14 @@ jobs:
       
     - name: Add binary to Web Installer and update manifest
       run: |
+        echo "Updating Web installer to use firmware from ${{ steps.last_release.outputs.tag_name }}..."
         rm -f docs/binary/firmware.bin
         wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         cp -f firmware.bin docs/binary/firmware.bin
-        cp -f docs/manifest_template.json docs/manifest.json
-        sed -i 's/VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
+        echo "Updating index and manifest file..."
+        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/index.html
+        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
     - name: Setup Pages
       uses: actions/configure-pages@v2
 
