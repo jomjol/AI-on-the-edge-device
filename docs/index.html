@@ -20,15 +20,17 @@
       
       <h2>Notes:</h2>
       <ul>
-         <li>The Webinstall will install the latest firmware (Version $VERSION).</li>
+         <li>The Webinstall will install the latest firmware (Version <b>$VERSION</b>).</li>
          <li>For the installation, make sure to switch the ESP32 to Bootloader mode by keeping the <b>FLASH</b> button pressed while the <b>RESET</b> button gets relesed. if there is no <b>FLASH</b> button, you need to pull <b>GPIO0</b> low!</li>
          <li>After the installation, a manual reset might be required!</li>
          <li>Please note that not all web browsers and operating systems support the necessary USB access needed for this Webinstaller!</li>
          <li>Check the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation target=_blank>documentation</a> for additional information.</li>
-         <li>The SD card can be setup automatically after the firmware got installed. See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#remote-setup-using-the-built-in-access-point>jomjol.github.io/AI-on-the-edge-device-docs/Installation</a> for details. For this to work, the SD card must be FAT formated (which is the default on a new SD card).
+         <li>The SD card can be setup automatically after the firmware got installed. See <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#remote-setup-using-the-built-in-access-point target=_blank>documentation</a> for details. For this to work, the SD card must be FAT formated (which is the default on a new SD card).
             Alternatively the SD card still can be setup manually, see the <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#3-sd-card target=_blank>documentation</a> for details!</li>
       </ul>
-            
+      
+      <hr>
+
       <p><esp-web-install-button manifest="manifest.json"></esp-web-install-button></p>
       <hr>
       <p style="font-size: small;">Installer and Console powered by <a href=https://esphome.github.io/esp-web-tools/ target=_blank>ESP Web Tools</a></p>
