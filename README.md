@@ -45,6 +45,17 @@ There is growing [documentation](https://jomjol.github.io/AI-on-the-edge-device-
 
 There are also articles in the German Heise magazine "make:" about the setup and technical background (behind a paywall): [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
 
+A lot of people created useful Youtube videos which might help you getting started.
+Here a small selection:
+
+- [youtube.com/watch?v=HKBofb1cnNc](https://www.youtube.com/watch?v=HKBofb1cnNc)
+- [youtube.com/watch?v=yyf0ORNLCk4](https://www.youtube.com/watch?v=yyf0ORNLCk4)
+- [youtube.com/watch?v=XxmTubGek6M](https://www.youtube.com/watch?v=XxmTubGek6M)
+- [youtube.com/watch?v=mDIJEyElkAU](https://www.youtube.com/watch?v=mDIJEyElkAU)
+- [youtube.com/watch?v=SssiPkyKVVs](https://www.youtube.com/watch?v=SssiPkyKVVs)
+- [youtube.com/watch?v=MAHE_QyHZFQ](https://www.youtube.com/watch?v=MAHE_QyHZFQ)
+- [youtube.com/watch?v=Uap_6bwtILQ](https://www.youtube.com/watch?v=Uap_6bwtILQ)
+
 For further background information, head to [Neural Networks](https://www.heise.de/select/make/2021/6/2126410443385102621), [Training Neural Networks](https://www.heise.de/select/make/2022/1/2134114065999161585) and [Programming on the ESP32](https://www.heise.de/select/make/2022/2/2204010051597422030).
 
 ### Download
@@ -54,7 +65,8 @@ The latest available version can be found on the [Releases page](https://github.
 Initially you will have to flash the ESP32 via a USB connection. Later updates are possible directly over the air (OTA).
 
 There are different ways to flash your ESP32:
-- [Web Installer and Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) (Browser-based tool to flash the ESP32 and extract the log over USB)
+- The prefered way is the [Web Installer and Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) which is a browser-based tool to flash the ESP32 and extract the log over USB:
+![]
 - Flash Tool from Espressif
 - ESPtool (command-line tool)
 
@@ -92,15 +104,3 @@ See [Build Instructions](code/README.md).
 
 ## Additional Ideas
 There are some ideas and feature requests which are not currently being pursued – mainly due to capacity reasons on the part of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md).
-
-# Additional Tutorials
-A lot of people created useful Youtube videos which might help you getting started.
-Here a small selection:
-
-- [youtube.com/watch?v=HKBofb1cnNc](https://www.youtube.com/watch?v=HKBofb1cnNc)
-- [youtube.com/watch?v=yyf0ORNLCk4](https://www.youtube.com/watch?v=yyf0ORNLCk4)
-- [youtube.com/watch?v=XxmTubGek6M](https://www.youtube.com/watch?v=XxmTubGek6M)
-- [youtube.com/watch?v=mDIJEyElkAU](https://www.youtube.com/watch?v=mDIJEyElkAU)
-- [youtube.com/watch?v=SssiPkyKVVs](https://www.youtube.com/watch?v=SssiPkyKVVs)
-- [youtube.com/watch?v=MAHE_QyHZFQ](https://www.youtube.com/watch?v=MAHE_QyHZFQ)
-- [youtube.com/watch?v=Uap_6bwtILQ](https://www.youtube.com/watch?v=Uap_6bwtILQ)
