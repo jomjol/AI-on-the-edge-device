@@ -73,10 +73,11 @@ There are different ways to flash your ESP32:
 See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for more information.
 
 ### Flashing the SD Card
-The SD card must be flashed separately, see the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/) for details.
+The SD card can be setup automatically after the firmware got installed. See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#remote-setup-using-the-built-in-access-point) for details. For this to work, the SD card must be FAT formated (which is the default on a new SD card).
+Alternatively the SD card still can be setup manually, see the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#3-sd-card) for details!
 
 ## Casing
-A 3D-printable housing can be found here:
+Various 3D-printable housing can be found here:
   - https://www.thingiverse.com/thing:4573481 (Water Meter)
   - https://www.thingiverse.com/thing:5028229 (Power Meter)
   - https://www.thingiverse.com/thing:5224101 (Gas Meter)
@@ -103,4 +104,5 @@ See [Build Instructions](code/README.md).
   * Files see ['/tools/logfile-tool'](tbd), how-to see [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/outdated--Gasmeter-Log-Downloader/)
 
 ## Additional Ideas
-There are some ideas and feature requests which are not currently being pursued – mainly due to capacity reasons on the part of the developer. They are collected here: [FeatureRequest.md](FeatureRequest.md).
+There are some ideas and feature requests which are not currently being pursued – mainly due to capacity reasons on the part of the developers.
+They features are collected in the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and in [FeatureRequest.md](FeatureRequest.md).
