@@ -49,20 +49,16 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
     if (_timestamp.length() > 0)
     {
         struct tm tm;
-        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
 
-//        struct tm * ptm;
-//        ptm = gmtime ( &t );
-//        time_t utc = mktime(ptm);
+        time_t t;
+        time(&t);
+        localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use handover timestamp: " + _timestamp + " converted GMT timestamp: " + std::to_string(t));
-
-//        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
+        strptime(_timestamp.c_str(), TIME_FORMAT_OUTPUT, &tm);
+        t = mktime(&tm);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
 
         sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
-
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
@@ -165,20 +161,16 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
     if (_timestamp.length() > 0)
     {
         struct tm tm;
-        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
 
-//        struct tm * ptm;
-//        ptm = gmtime ( &t );
-//        time_t utc = mktime(ptm);
+        time_t t;
+        time(&t);
+        localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use handover timestamp: " + _timestamp + " converted GMT timestamp: " + std::to_string(t));
-
-//        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
+        strptime(_timestamp.c_str(), TIME_FORMAT_OUTPUT, &tm);
+        t = mktime(&tm);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
 
         sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
-
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
