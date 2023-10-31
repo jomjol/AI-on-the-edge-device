@@ -54,7 +54,7 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
         time(&t);
         localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
-        strptime(_timestamp.c_str(), TIME_FORMAT_OUTPUT, &tm);
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
 
@@ -166,7 +166,7 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
         time(&t);
         localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
-        strptime(_timestamp.c_str(), TIME_FORMAT_OUTPUT, &tm);
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
 
