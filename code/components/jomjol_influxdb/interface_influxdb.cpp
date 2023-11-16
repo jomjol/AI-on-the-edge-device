@@ -16,16 +16,16 @@ std::string _influxDBUser;
 std::string _influxDBPassword;
 
 std::string _influxDB_V2_URI;
-std::string _influxDB_V2_Database;
+std::string _influxDB_V2_Basket;
 std::string _influxDB_V2_Token;
 std::string _influxDB_V2_Org;
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt);
 
-void InfluxDB_V2_Init(std::string _uri, std::string _database, std::string _org, std::string _token)
+void InfluxDB_V2_Init(std::string _uri, std::string _basket, std::string _org, std::string _token)
 {
     _influxDB_V2_URI = _uri;
-    _influxDB_V2_Database = _database;
+    _influxDB_V2_Basket = _basket;
     _influxDB_V2_Org = _org;
     _influxDB_V2_Token = _token;
 }
@@ -70,7 +70,7 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
-    std::string apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Database;
+    std::string apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Basket;
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
     ESP_LOGI(TAG, "http_config: %s", http_config.url); // Add mark on log to see when it restarted
@@ -183,7 +183,7 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
 
-    // use the default retention policy of the database
+    // use the default retention policy of the basket
     std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
 //    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
 

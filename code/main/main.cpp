@@ -652,6 +652,11 @@ void migrateConfiguration(void) {
                 migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
                 migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
             }
+            /* Database got renamed to Basket! */
+            if (isInString(configLines[i], "Database")) { // It is the parameter "Database"
+                migrated = migrated | replaceString(configLines[i], "Database", "Basket"); // Rename it to Basket
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
         }
 
         if (section == "[GPIO]") {
