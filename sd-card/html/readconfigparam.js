@@ -206,7 +206,7 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "Basket");
+     ParamAddValue(param, catname, "Bucket");
 //     ParamAddValue(param, catname, "Measurement");
      ParamAddValue(param, catname, "Org");
      ParamAddValue(param, catname, "Token");

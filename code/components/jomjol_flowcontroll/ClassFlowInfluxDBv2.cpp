@@ -20,7 +20,7 @@ static const char* TAG = "INFLUXDBV2";
 void ClassFlowInfluxDBv2::SetInitialParameter(void)
 {
     uri = "";
-    basket = "";
+    bucket = "";
     dborg = "";  
     dbtoken = "";  
 //    dbfield = "";
@@ -109,9 +109,9 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             handleMeasurement(splitted[0], splitted[1]);
         }
-        if (((toUpper(splitted[0]) == "BASKET")) && (splitted.size() > 1))
+        if (((toUpper(splitted[0]) == "BUCKET")) && (splitted.size() > 1))
         {
-            this->basket = splitted[1];
+            this->bucket = splitted[1];
         }
     }
 
@@ -119,11 +119,11 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
     printf("org:         %s\n", dborg.c_str());
     printf("token:       %s\n", dbtoken.c_str());
 
-    if ((uri.length() > 0) && (basket.length() > 0) && (dbtoken.length() > 0) && (dborg.length() > 0)) 
+    if ((uri.length() > 0) && (bucket.length() > 0) && (dbtoken.length() > 0) && (dborg.length() > 0)) 
     { 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", org: " + dborg + ", token: *****");
 //        printf("vor V2 Init\n");
-        InfluxDB_V2_Init(uri, basket, dborg, dbtoken); 
+        InfluxDB_V2_Init(uri, bucket, dborg, dbtoken); 
 //        printf("nach V2 Init\n");
         InfluxDBenable = true;
     } else {

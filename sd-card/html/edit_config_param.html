@@ -952,13 +952,13 @@
 
         <tr class="InfluxDBv2Item">
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Basket_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Basket")' unchecked >
-				<label for=InfluxDBv2_Basket_enabled><class id="InfluxDBv2_Basket_text" style="color:black;">Basket</class></label>
+				<input type="checkbox" id="InfluxDBv2_Bucket_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Bucket")' unchecked >
+				<label for=InfluxDBv2_Bucket_enabled><class id="InfluxDBv2_Bucket_text" style="color:black;">Bucket</class></label>
 			</td>
 			<td>
-				<input required type="text" id="InfluxDBv2_Basket_value1">
+				<input required type="text" id="InfluxDBv2_Bucket_value1">
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_Basket</td>
+			<td>$TOOLTIP_InfluxDBv2_Bucket</td>
 		</tr>
 
 		<tr class="InfluxDBv2Item">
@@ -2134,7 +2134,7 @@ function UpdateInput() {
 //	WriteParameter(param, category, "InfluxDB", "Field", true);
 
     WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
-    WriteParameter(param, category, "InfluxDBv2", "Basket", true);	
+    WriteParameter(param, category, "InfluxDBv2", "Bucket", true);	
 //	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
     WriteParameter(param, category, "InfluxDBv2", "Org", true);	
     WriteParameter(param, category, "InfluxDBv2", "Token", true);	
@@ -2272,7 +2272,7 @@ function ReadParameterAll()
     ReadParameter(param, "InfluxDB", "password", true);
 
     ReadParameter(param, "InfluxDBv2", "Uri", true);
-    ReadParameter(param, "InfluxDBv2", "Basket", true);
+    ReadParameter(param, "InfluxDBv2", "Bucket", true);
     ReadParameter(param, "InfluxDBv2", "Measurement", true);
     ReadParameter(param, "InfluxDBv2", "Org", true);
     ReadParameter(param, "InfluxDBv2", "Token", true);
