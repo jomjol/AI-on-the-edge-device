@@ -13,7 +13,7 @@ void InfluxDBInit(std::string _influxDBURI, std::string _database, std::string _
 void InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, std::string _timestamp);
 
 // Interface to InfluxDB v2.x
-void InfluxDB_V2_Init(std::string _uri, std::string _database, std::string _org, std::string _token);
+void InfluxDB_V2_Init(std::string _uri, std::string _bucket, std::string _org, std::string _token);
 void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string _content, std::string _timestamp);
 
 

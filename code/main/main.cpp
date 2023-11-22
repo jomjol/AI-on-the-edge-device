@@ -642,7 +642,6 @@ void migrateConfiguration(void) {
             /* Fieldname has a <NUMBER> as prefix! */
             if (isInString(configLines[i], "Fieldname")) { // It is the parameter "Fieldname"
                 migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
-                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
             }
         }
 
@@ -650,7 +649,10 @@ void migrateConfiguration(void) {
             /* Fieldname has a <NUMBER> as prefix! */
             if (isInString(configLines[i], "Fieldname")) { // It is the parameter "Fieldname"
                 migrated = migrated | replaceString(configLines[i], "Fieldname", "Field"); // Rename it to Field
-                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
+            /* Database got renamed to Bucket! */
+            if (isInString(configLines[i], "Database")) { // It is the parameter "Database"
+                migrated = migrated | replaceString(configLines[i], "Database", "Bucket"); // Rename it to Bucket
             }
         }
 
