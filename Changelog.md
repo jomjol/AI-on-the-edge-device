@@ -1,4 +1,4 @@
-## [unreleased] - 2023-08-20
+## [unreleased] - 2023-12-21
 
 ### Changes
 
@@ -9,6 +9,23 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Updates submodules (esp-nn, tflite-micro-example, esp-camera)
 
  - Explicitly included needed tflite network layers (instead of all) , resulting in much smaller firmware size
+
+ - Added shortcut icon
+
+ - Rename in InfluxDB 'Database' to 'Bucket'
+
+ - Updated analog tflite files
+   - dig-class100-0167_s2_q.tflite
+   - dig-class11_1700_s2.tflite
+
+
+#### Fixed
+
+* InfluxDB: consider DST setting for UTC time conversion
+
+* Minor html response bugfix 
+
+ - Memory leakage (MQTT)
 
    
 
