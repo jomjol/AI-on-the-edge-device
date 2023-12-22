@@ -1,10 +1,10 @@
-## [unreleased] - 2023-12-21
+## [15.4.0] - 2023-12-22
 
 ### Changes
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.3.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/15.4.0...v15.3.0)
 
-#### Changed 
+#### Changed
 
  - Updates submodules (esp-nn, tflite-micro-example, esp-camera)
 
