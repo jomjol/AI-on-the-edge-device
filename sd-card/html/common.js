@@ -1,19 +1,18 @@
  
 /* The UI can also be run locally, but you have to set the IP of your devide accordingly.
- * And you also might have to disable CORS in your webbrowser! */
-var domainname_for_testing = "192.168.1.151";
+ * And you also might have to disable CORS in your webbrowser!
+ * Keep empty to disable using it. Enabling it will break access through a forwared port, see 
+ * https://github.com/jomjol/AI-on-the-edge-device/issues/2681 */
+var domainname_for_testing = "";
+//var domainname_for_testing = "192.168.1.151";
 
 
 /* Returns the domainname with prepended protocol.
 Eg. http://watermeter.fritz.box or http://192.168.1.5 */
 function getDomainname(){
     var host = window.location.hostname;
-    if (((host == "127.0.0.1") || (host == "localhost") || (host == "")) 
-//       && ((window.location.port == "80") || (window.location.port == ""))
-       )
-    
-    {
-        //console.log("Using pre-defined domainname for testing: " + domainname_for_testing);
+    if (domainname_for_testing != "") {
+        console.log("Using pre-defined domainname for testing: " + domainname_for_testing);
         domainname = "http://" + domainname_for_testing
     }
     else

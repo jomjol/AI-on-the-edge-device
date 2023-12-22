@@ -2,6 +2,9 @@
 #include "interface_mqtt.h"
 
 #include "esp_log.h"
+#if DEBUG_DETAIL_ON
+    #include "esp_timer.h"
+#endif
 #include "connect_wlan.h"
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
@@ -32,6 +35,7 @@ bool mqtt_connected = false;
 
 esp_mqtt_client_handle_t client = NULL;
 std::string uri, client_id, lwt_topic, lwt_connected, lwt_disconnected, user, password, maintopic;
+std::string caCert, clientCert, clientKey;
 int keepalive;
 bool SetRetainFlag;
 void (*callbackOnConnected)(std::string, bool) = NULL;
@@ -169,6 +173,10 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             else if (event->error_handle->connect_return_code == MQTT_CONNECTION_REFUSE_NOT_AUTHORIZED) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, not authorized. Check username/password (0x05)");
             }
+            else {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Other event id:" + event->error_handle->connect_return_code);
+                ESP_LOGE(TAG, "Other event id:%d", event->error_handle->connect_return_code);
+            }
 
             #ifdef DEBUG_DETAIL_ON 
                 ESP_LOGD(TAG, "MQTT_EVENT_ERROR - esp_mqtt_error_codes:");
@@ -198,6 +206,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
         std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
+        std::string _cacertfilename, std::string _clientcertfilename, std::string _clientkeyfilename, 
                     int _keepalive, bool _SetRetainFlag, void *_callbackOnConnected) {
     if ((_mqttURI.length() == 0) || (_maintopic.length() == 0) || (_clientid.length() == 0)) 
     {
@@ -214,6 +223,25 @@ bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     SetRetainFlag = _SetRetainFlag;
     maintopic = _maintopic;
     callbackOnConnected = ( void (*)(std::string, bool) )(_callbackOnConnected);
+
+    if (_clientcertfilename.length() && _clientkeyfilename.length()){
+        std::ifstream cert_ifs(_clientcertfilename);
+        std::string cert_content((std::istreambuf_iterator<char>(cert_ifs)), (std::istreambuf_iterator<char>()));
+        clientCert = cert_content;
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using clientCert: " + _clientcertfilename);
+
+        std::ifstream key_ifs(_clientkeyfilename);
+        std::string key_content((std::istreambuf_iterator<char>(key_ifs)), (std::istreambuf_iterator<char>()));
+        clientKey = key_content;
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using clientKey: " + _clientkeyfilename);
+    }
+
+    if (_cacertfilename.length() ){
+        std::ifstream ifs(_cacertfilename);
+        std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+        caCert = content;
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using caCert: " + _cacertfilename);
+    }
 
     if (_user.length() && _password.length()){
         user = _user;
@@ -267,6 +295,20 @@ int MQTT_Init() {
     mqtt_cfg.session.last_will.msg_len = (int)(lwt_disconnected.length());
     mqtt_cfg.session.keepalive = keepalive;
     mqtt_cfg.buffer.size = 1536;                         // size of MQTT send/receive buffer (Default: 1024)
+
+    if (caCert.length()){
+        mqtt_cfg.broker.verification.certificate = caCert.c_str();
+        mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
+        mqtt_cfg.broker.verification.skip_cert_common_name_check = true;
+    }
+
+    if (clientCert.length() && clientKey.length()){
+        mqtt_cfg.credentials.authentication.certificate = clientCert.c_str();
+        mqtt_cfg.credentials.authentication.certificate_len = clientCert.length() + 1;
+        
+        mqtt_cfg.credentials.authentication.key = clientKey.c_str();
+        mqtt_cfg.credentials.authentication.key_len = clientKey.length() + 1;
+    }
 
     if (user.length() && password.length()){
         mqtt_cfg.credentials.username = user.c_str();

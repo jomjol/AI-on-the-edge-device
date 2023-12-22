@@ -1,8 +1,39 @@
+## [unreleased] - 2023-12-21
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.3.0)
+
+#### Changed
+
+ - Updates submodules (esp-nn, tflite-micro-example, esp-camera)
+
+ - Explicitly included needed tflite network layers (instead of all) , resulting in much smaller firmware size
+
+ - Added shortcut icon
+
+ - Rename in InfluxDB 'Database' to 'Bucket'
+
+ - Updated analog tflite files
+   - dig-class100-0167_s2_q.tflite
+   - dig-class11_1700_s2.tflite
+
+
+#### Fixed
+
+* InfluxDB: consider DST setting for UTC time conversion
+
+* Minor html response bugfix 
+
+ - Memory leakage (MQTT)
+
+   
+
 ## [15.3.0] - 2023-07-22
 
 ### Changes
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.2.4)
 
 #### Changed
 

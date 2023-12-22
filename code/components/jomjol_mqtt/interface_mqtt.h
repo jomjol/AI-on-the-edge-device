@@ -11,6 +11,7 @@
 
 bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
                     std::string _maintopic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
+                    std::string _cacertfilename, std::string _clientcertfilename, std::string _clientkeyfilename, 
                     int _keepalive, bool SetRetainFlag, void *callbackOnConnected);
 int MQTT_Init();
 void MQTTdestroy_client(bool _disable);

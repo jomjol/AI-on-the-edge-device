@@ -753,6 +753,39 @@
 			<td>$TOOLTIP_MQTT_password</td>
 		</tr>
 
+		<tr class="MQTTItem expert" id="exMqtt">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_CACert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "CACert")' unchecked >
+				<label for=MQTT_CACert_enabled><class id="MQTT_CACert_text" style="color:black;">Root CA Certificate file</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_CACert_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_CACert</td>
+		</tr>
+
+		<tr class="MQTTItem expert" id="exMqtt">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_ClientCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientCert")' unchecked >
+				<label for=MQTT_ClientCert_enabled><class id="MQTT_ClientCert_text" style="color:black;">Client Certificate file</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_ClientCert_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_ClientCert</td>
+		</tr>
+
+		<tr class="MQTTItem expert" id="exMqtt">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_ClientKey_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientKey")' unchecked >
+				<label for=MQTT_ClientKey_enabled><class id="MQTT_ClientKey_text" style="color:black;">Client Key file</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_ClientKey_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_ClientKey</td>
+		</tr>
+
 		<tr class="MQTTItem">
 			<td class="indent1">
 				<label><class id="MQTT_RetainMessages_text" style="color:black;">Retain Messages</class></label>
@@ -919,13 +952,13 @@
 
         <tr class="InfluxDBv2Item">
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Database")' unchecked >
-				<label for=InfluxDBv2_Database_enabled><class id="InfluxDBv2_Database_text" style="color:black;">Database</class></label>
+				<input type="checkbox" id="InfluxDBv2_Bucket_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Bucket")' unchecked >
+				<label for=InfluxDBv2_Bucket_enabled><class id="InfluxDBv2_Bucket_text" style="color:black;">Bucket</class></label>
 			</td>
 			<td>
-				<input required type="text" id="InfluxDBv2_Database_value1">
+				<input required type="text" id="InfluxDBv2_Bucket_value1">
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_Database</td>
+			<td>$TOOLTIP_InfluxDBv2_Bucket</td>
 		</tr>
 
 		<tr class="InfluxDBv2Item">
@@ -2089,6 +2122,9 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "RetainMessages", false);
     WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", false);
     WriteParameter(param, category, "MQTT", "MeterType", true);
+	WriteParameter(param, category, "MQTT", "CACert", true);
+	WriteParameter(param, category, "MQTT", "ClientCert", true);
+	WriteParameter(param, category, "MQTT", "ClientKey", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
     WriteParameter(param, category, "InfluxDB", "Database", true);	
@@ -2098,7 +2134,7 @@ function UpdateInput() {
 //	WriteParameter(param, category, "InfluxDB", "Field", true);
 
     WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
-    WriteParameter(param, category, "InfluxDBv2", "Database", true);	
+    WriteParameter(param, category, "InfluxDBv2", "Bucket", true);	
 //	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
     WriteParameter(param, category, "InfluxDBv2", "Org", true);	
     WriteParameter(param, category, "InfluxDBv2", "Token", true);	
@@ -2225,6 +2261,9 @@ function ReadParameterAll()
     ReadParameter(param, "MQTT", "RetainMessages", false);
     ReadParameter(param, "MQTT", "HomeassistantDiscovery", false);
     ReadParameter(param, "MQTT", "MeterType", true);
+	ReadParameter(param, "MQTT", "CACert", true);
+	ReadParameter(param, "MQTT", "ClientCert", true);
+	ReadParameter(param, "MQTT", "ClientKey", true);
 
     ReadParameter(param, "InfluxDB", "Uri", true);
     ReadParameter(param, "InfluxDB", "Database", true);
@@ -2233,7 +2272,7 @@ function ReadParameterAll()
     ReadParameter(param, "InfluxDB", "password", true);
 
     ReadParameter(param, "InfluxDBv2", "Uri", true);
-    ReadParameter(param, "InfluxDBv2", "Database", true);
+    ReadParameter(param, "InfluxDBv2", "Bucket", true);
     ReadParameter(param, "InfluxDBv2", "Measurement", true);
     ReadParameter(param, "InfluxDBv2", "Org", true);
     ReadParameter(param, "InfluxDBv2", "Token", true);

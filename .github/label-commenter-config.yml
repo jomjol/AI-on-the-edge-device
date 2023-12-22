@@ -3,7 +3,32 @@
 # Make sure to also add the response to .github/workflows/reply-bot.yml!
 # Due to the way it works, you have to add each response twice, once for the issue, once for the discussions!
   
- labels:     
+ labels:
+  #######################################################################
+  # Bot Response: Documentation
+  #######################################################################
+  - name: bot-reply Documentation
+    labeled:
+      issue:
+          body: |
+            Please have a look on our documentation: https://jomjol.github.io/AI-on-the-edge-device-docs
+      discussion:
+          body: |
+            Please have a look on our documentation: https://jomjol.github.io/AI-on-the-edge-device-docs
+
+  #######################################################################
+  # Bot Response: ROI setup
+  #######################################################################
+  - name: bot-reply ROI Setup
+    labeled:
+      issue:
+          body: |
+            Make sure to setup your ROIs properly. Have a look on our documentation: https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/#how-to-setup-the-digit-rois-perfectly
+      discussion:
+          body: |
+            Make sure to setup your ROIs properly. Have a look on our documentation: https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/#how-to-setup-the-digit-rois-perfectly
+
+
   #######################################################################
   # Bot Response: Logfile
   #######################################################################
