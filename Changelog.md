@@ -4,7 +4,7 @@
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.3.0)
 
-#### Changed
+#### Changed 
 
  - Updates submodules (esp-nn, tflite-micro-example, esp-camera)
 
