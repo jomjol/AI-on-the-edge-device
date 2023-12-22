@@ -17,6 +17,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Updated analog tflite files
    - dig-class100-0167_s2_q.tflite
    - dig-class11_1700_s2.tflite
+   - ana-cont_1208_s2_q.tflite
 
 
 #### Fixed
