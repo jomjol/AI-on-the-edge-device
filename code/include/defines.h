@@ -53,7 +53,7 @@
 
   //****************************************
 
-    //compiler optimization for tflite-micro-esp-examples
+    //compiler optimization for esp-tflite-micro
     #define XTENSA
     //#define CONFIG_IDF_TARGET_ARCH_XTENSA     //not needed with platformio/espressif32 @ 5.2.0
 
