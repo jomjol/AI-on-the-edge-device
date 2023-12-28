@@ -547,7 +547,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
                 /* Get value of expected key from query string */
                 if (httpd_query_key_value(buf, "readonly", param, sizeof(param)) == ESP_OK) {
                     ESP_LOGI(TAG, "Found URL query parameter => readonly=%s", param);
-                    readonly = param && strcmp(param,"true")==0;
+                    readonly = (strcmp(param,"true") == 0);
                 }
             }
         }
