@@ -880,10 +880,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                         NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                         NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
                 } 
-                else if  {
-                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                    NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
-                } else {
+                else {
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";

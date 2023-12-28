@@ -109,8 +109,8 @@ extern "C" void app_main()
 
   UNITY_BEGIN();
     RUN_TEST(testNegative_Issues);
-  /* RUN_TEST(testNegative);
-   
+   RUN_TEST(testNegative);
+   /*
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
     RUN_TEST(test_doFlowPP);
