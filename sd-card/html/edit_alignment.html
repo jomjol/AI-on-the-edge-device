@@ -67,7 +67,6 @@
             bottom: 0;
             background-color: rgba(0,0,0,0.8);
             z-index: 2;
-            cursor: pointer;
         }
 
         #overlaytext{
@@ -210,10 +209,42 @@ function EnhanceContrast(){
     refInfo[aktindex]["dy"] = document.getElementById("refdy").value;       
 
     enhanceCon = true;
-    if (MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname)) {
-        UpdateReference();
-        document.getElementById("enhancecontrast").disabled = true;
+
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("overlaytext").innerHTML = "Enhancing Image Contrast...";
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    async function task() {
+        while (true) {
+            var ret = MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname);
+            if (ret) {
+                UpdateReference();
+                //document.getElementById("enhancecontrast").disabled = true;
+                document.getElementById("overlay").style.display = "none";
+                return;
+            }
+            else {
+                // Get status
+                var xhttp = new XMLHttpRequest();
+                try {
+                    xhttp.open("GET", domainname + "/statusflow", false);
+                    xhttp.send();
+                }
+                catch (error){}
+
+                document.getElementById("overlaytext").innerHTML = "Device is busy, waiting until the Digitalization Round got completed (this can take several minutes)...<br><br>Current step: " + xhttp.responseText;
+                console.log("Device is busy, waiting 5s then checking again...");
+                await sleep(5000);
+            }
+        }
+    }
+
+    setTimeout(function() { // Delay so the overlay gets shown
+        task();
+    }, 1);
 }
 
 function UpdateReference(){
@@ -342,7 +373,7 @@ function dataURLtoBlob(dataurl) {
 
             async function task() {
                 while (true) {
-                    var ret = MakeRefZW(refInfo[aktindex], domainname)
+                    var ret = MakeRefZW(refInfo[aktindex], domainname);
                     if (ret) {
                         UpdateReference();
                         document.getElementById("enhancecontrast").disabled = false;
@@ -354,8 +385,8 @@ function dataURLtoBlob(dataurl) {
                         // Get status
                         var xhttp = new XMLHttpRequest();
                         try {
-                                xhttp.open("GET", domainname + "/statusflow", false);
-                                xhttp.send();
+                            xhttp.open("GET", domainname + "/statusflow", false);
+                            xhttp.send();
                         }
                         catch (error){}
 
