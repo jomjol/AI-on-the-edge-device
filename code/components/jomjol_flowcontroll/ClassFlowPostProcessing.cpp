@@ -875,7 +875,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
                     // Include inaccuracy of 0.2 for isExtendedResolution.
                 if ((NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution)
-                    // not extended resolution allows -1 on the lowest number 
+                    // not extended resolution allows -1 on the lowest digit  
                    || (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(1/pow(10, NUMBERS[j]->Nachkomma))) && !NUMBERS[j]->isExtendedResolution)) {
                         NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                         NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
