@@ -732,6 +732,18 @@ float wrapAround(float val)
     return fmod(val, 10.);
 }
 
+/**
+ * @brief Checks whether val is in the range [min, max]
+ *
+ * Note, this function also handles the wrap around case,
+ * in which min could be larger than max in case of
+ * a circular range
+ *
+ * @param val The value to be checked
+ * @param min Minimal bound of the range
+ * @param max Maximum bound of the range
+ * @return True, if val is in the range
+ */
 bool inRange(float val, float min, float max)
 {
     assert(min >= 0. && min < 10.0);
@@ -760,9 +772,8 @@ bool inRange(float val, float min, float max)
  *   - Pre transition: analog post comma < analogDigitalShift && not in transition
  *   - Transition: Digital Precision in range 1...9
  *   - Post transition: analog post comma > analogDigitalShift && not in transition
- * Definition of the transition phase:
  *
- * @return
+ * @return The synchronized values as a string
  */
 std::string syncDigitalAnalog(const std::string& value, const std::string& digitalPrecision,
                               double analogDigitalShift)
@@ -788,8 +799,6 @@ std::string syncDigitalAnalog(const std::string& value, const std::string& digit
     const float digitalPostComma = std::atof(digitalPrecision.c_str());
     int         digitalPreComma = std::atoi(preComma.c_str());
     const float analogPostComma = std::atof(("0." + postComma).c_str());
-
-    ESP_LOGD("syncDigitalAnalog", "analogDigitalShift = %f", analogDigitalShift);
 
     // Determine phase
     const bool inTransition = digitalPostComma > 0. && digitalPostComma < 10.;
@@ -884,7 +893,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         int previous_value = -1;
 
-        //  ------------------ start nachkommpart --------------------------//
+        // ------------------- start processing analog values --------------------------//
 
         if (NUMBERS[j]->analog_roi)
         {
@@ -900,8 +909,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             ESP_LOGD(TAG, "After analog->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
 
-        //  ------------------ start vorkommapart --------------------------//
+        // ----------------- start processing digital values --------------------------//
 
+        // we need the precision of the digital values to determine transition phase
         std::string digitalPrecision = {"0"};
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi) {
             // we have nachkommad and vorkomman part!
@@ -911,14 +921,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
             if (flowDigit->getCNNType() != Digital)
             {
-                // The digital type does not provide an extended resolution, so we cannot
-                // extract it
-
-                // we need the precision of the digital values to determine transition
+                // The digital type does not provide an extended resolution, so we cannot extract it
                 digitalPrecision = digitValues.substr(digitValues.size() - 1);
                 digitValues = digitValues.substr(0, digitValues.size() - 1);
             }
-
 
             NUMBERS[j]->ReturnRawValue = digitValues + "." + analogValues;
         }
@@ -931,7 +937,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After digital->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
-
 
         //  ------------------ start corrections --------------------------//
 
