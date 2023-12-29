@@ -30,7 +30,7 @@ extern "C" {
 
 #include "ClassLogFile.h"
 
-#include "esp_vfs_fat.h"
+#include "../esp_fatfs/vfs/esp_vfs_fat.h"
 
 static const char* TAG = "HELPER";
 

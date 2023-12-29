@@ -7,7 +7,7 @@
 #include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"
-#include "esp_vfs_fat.h"
+#include "../../components/esp_fatfs/vfs/esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 #include "driver/sdmmc_defs.h"

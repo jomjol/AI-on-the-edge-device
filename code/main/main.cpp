@@ -20,7 +20,8 @@
 
 // SD-Card ////////////////////
 //#include "nvs_flash.h"
-#include "esp_vfs_fat.h"
+#include "../../components/esp_fatfs/vfs/esp_vfs_fat.h"
+#include "../../components/esp_fatfs/src/ffconf.h"
 //#include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 //#include "driver/sdmmc_defs.h"
@@ -104,6 +105,12 @@ static const char *TAG = "MAIN";
 
 bool Init_NVS_SDCard()
 {
+    ESP_LOGI(TAG, "FF_USE_TRIM: %d", FF_USE_TRIM);
+    if (FF_USE_TRIM != 0) {
+        ESP_LOGW(TAG, "For improved SD-card handling, we need FF_USE_TRIM to be set to 0 but it is 1!");
+        ESP_LOGW(TAG, "See https://github.com/jomjol/AI-on-the-edge-device/discussions/2710 for details!");
+    }
+
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
         ESP_ERROR_CHECK(nvs_flash_erase());
