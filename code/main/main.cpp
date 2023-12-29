@@ -105,12 +105,6 @@ static const char *TAG = "MAIN";
 
 bool Init_NVS_SDCard()
 {
-    ESP_LOGI(TAG, "FF_USE_TRIM: %d", FF_USE_TRIM);
-    if (FF_USE_TRIM != 0) {
-        ESP_LOGW(TAG, "For improved SD-card handling, we need FF_USE_TRIM to be set to 0 but it is 1!");
-        ESP_LOGW(TAG, "See https://github.com/jomjol/AI-on-the-edge-device/discussions/2710 for details!");
-    }
-
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -222,6 +216,13 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
+    // Check ATA-TRIM to be disabled
+    // ********************************************
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "FF_USE_TRIM: " + to_string(FF_USE_TRIM) + " (0 = SD card ATA-TRIM disabled)");
+    if (FF_USE_TRIM != 0) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "For improved SD-card handling, we need FF_USE_TRIM to be set to 0 but it is 1!");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "See https://github.com/jomjol/AI-on-the-edge-device/discussions/2710 for details!");
+    }
 
     // Init external PSRAM
     // ********************************************
