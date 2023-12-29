@@ -216,7 +216,7 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
-    // Check ATA-TRIM to be disabled
+    // Make sure ATA-TRIM is disabled
     // ********************************************
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "FF_USE_TRIM: " + to_string(FF_USE_TRIM) + " (0 = SD card ATA-TRIM disabled)");
     if (FF_USE_TRIM != 0) {
