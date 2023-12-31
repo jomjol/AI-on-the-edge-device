@@ -79,7 +79,6 @@ changed to:
 					rt[1] = clst2sect(fs, ecl) + fs->csize - 1;	/* End of data area to be freed */
 					disk_ioctl(fs->pdrv, CTRL_TRIM, rt);		/* Inform storage device that the data in the block may be erased */
 				}
-		
 				scl = ecl = nxt;
 			}
 		}
