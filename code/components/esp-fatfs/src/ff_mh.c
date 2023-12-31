@@ -23,8 +23,7 @@
 #include "ff_mh.h"			/* Declarations of FatFs API */
 #include "diskio_mh.h"		/* Declarations of device I/O functions */
 
-//#include "../../esp-sdmmc/include/sdmmc_cmd_mh.h"
-#include "include/sdmmc_cmd_mh.h"
+#include "sdmmc_cmd_mh.h"
 
 /*--------------------------------------------------------------------------
 
