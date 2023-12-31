@@ -32,6 +32,7 @@ extern "C" {
 
 //#include "esp_vfs_fat.h"
 #include "esp_vfs_fat_mh.h"
+#include "sdmmc_common_mh.h"
 
 static const char* TAG = "HELPER";
 
@@ -675,7 +676,7 @@ struct SDCard_Manufacturer_database {
 
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
 /* SD Card Manufacturer Database */
-struct SDCard_Manufacturer_database database[] = {
+struct SDCard_Manufacturer_database sd_database[] = {
 	{
 		.type = "sd",
 		.id = 0x01,
@@ -780,25 +781,124 @@ struct SDCard_Manufacturer_database database[] = {
 		.type = "sd",
 		.id = 0x89,
 		.manufacturer = "Unknown",
-	}
+	},
 };
 
+struct SDCard_Manufacturer_database mmc_database[] = {
+	{
+		.type = "mmc",
+		.id = 0x00,
+		.manufacturer = "SanDisk",
+	},
+	{
+		.type = "mmc",
+		.id = 0x02,
+		.manufacturer = "Kingston/SanDisk",
+	},
+	{
+		.type = "mmc",
+		.id = 0x03,
+		.manufacturer = "Toshiba",
+	},
+	{
+		.type = "mmc",
+		.id = 0x05,
+		.manufacturer = "Unknown",
+	},
+	{
+		.type = "mmc",
+		.id = 0x06,
+		.manufacturer = "Unknown",
+	},
+	{
+		.type = "mmc",
+		.id = 0x11,
+		.manufacturer = "Toshiba",
+	},
+	{
+		.type = "mmc",
+		.id = 0x13,
+		.manufacturer = "Micron",
+	},
+	{
+		.type = "mmc",
+		.id = 0x15,
+		.manufacturer = "Samsung/SanDisk/LG",
+	},
+	{
+		.type = "mmc",
+		.id = 0x37,
+		.manufacturer = "KingMax",
+	},
+	{
+		.type = "mmc",
+		.id = 0x44,
+		.manufacturer = "ATP",
+	},
+	{
+		.type = "mmc",
+		.id = 0x45,
+		.manufacturer = "SanDisk Corporation",
+	},
+	{
+		.type = "mmc",
+		.id = 0x2c,
+		.manufacturer = "Kingston",
+	},
+	{
+		.type = "mmc",
+		.id = 0x70,
+		.manufacturer = "Kingston",
+	},
+	{
+		.type = "mmc",
+		.id = 0xfe,
+		.manufacturer = "Micron",
+	},
+};
 
 /* Parse SD Card Manufacturer Database */
 string SDCardParseManufacturerIDs(int id) 
 {
-	unsigned int id_cnt = sizeof(database) / sizeof(struct SDCard_Manufacturer_database);
+    if (card_is_mmc)
+    {
+        unsigned int id_cnt = sizeof(mmc_database) / sizeof(struct SDCard_Manufacturer_database);
+        string ret_val = "";
+
+        for (int i = 0; i < id_cnt; i++)
+	{
+	    if (mmc_database[i].id == id)
+	    {
+		return mmc_database[i].manufacturer;
+	    }
+	    else
+	    {
+		ret_val = "ID unknown (not in DB)";
+	    }
+	}
+
+	return ret_val;
+    }
+
+    else
+    {
+	unsigned int id_cnt = sizeof(sd_database) / sizeof(struct SDCard_Manufacturer_database);
 	string ret_val = "";
 
-	for (int i = 0; i < id_cnt; i++) {
-		if (database[i].id == id) {
-			return database[i].manufacturer;
-		}
-		else {
-			ret_val = "ID unknown (not in DB)";
-		}
+	for (int i = 0; i < id_cnt; i++)
+	{
+	    if (sd_database[i].id == id)
+	    {
+		return sd_database[i].manufacturer;
+	    }
+	    else
+	    {
+		ret_val = "ID unknown (not in DB)";
+	    }
 	}
+
 	return ret_val;
+    }
 }
 
 
