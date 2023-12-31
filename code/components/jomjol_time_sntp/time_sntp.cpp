@@ -101,23 +101,19 @@ int getUTCOffsetSeconds(std::string &zeitzone)
     time_t now;
     struct tm timeinfo;
 
-
     time (&now);
     localtime_r(&now, &timeinfo);
     char buffer[80];
     strftime(buffer, 80, "%z", &timeinfo);
-    std::string zw = std::string(buffer);
-    zeitzone = zw;
+    zeitzone = std::string(buffer);
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: Zeitzonne " + zw);
-
-    if (zw.length() == 5)
+    if (zeitzone.length() == 5)
     {
-        if (zw[0] == '-')
+        if (zeitzone[0] == '-')
             vorzeichen = -1; 
 
-        stunden = stoi(zw.substr(1, 2));
-        minuten = stoi(zw.substr(3, 2));
+        stunden = stoi(zeitzone.substr(1, 2));
+        minuten = stoi(zeitzone.substr(3, 2));
 
         offset = ((stunden * 60) + minuten) * 60;
     }
@@ -136,7 +132,7 @@ void setTimeZone(std::string _tzstring)
     std::string zeitzone;
     LocalTimeToUTCOffsetSeconds = getUTCOffsetSeconds(zeitzone);
 //    std::string zw = std::to_string(LocalTimeToUTCOffsetSeconds);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Zeitzone: " + zeitzone + " DeltaUTC: " + std::to_string(LocalTimeToUTCOffsetSeconds) + " seconds");
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "time zone: " + zeitzone + " Delta to UTC: " + std::to_string(LocalTimeToUTCOffsetSeconds) + " seconds");
 }
 
 
