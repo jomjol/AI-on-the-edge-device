@@ -27,6 +27,8 @@
 #include "sys/param.h"
 #include "soc/soc_memory_layout.h"
 
+extern bool card_is_mmc;
+
 #define SDMMC_GO_IDLE_DELAY_MS              20
 #define SDMMC_IO_SEND_OP_COND_DELAY_MS      10
 
