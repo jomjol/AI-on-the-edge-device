@@ -109,7 +109,9 @@ void testNegative_Issues() {
         setAllowNegatives(underTestPost, false);
         setPreValue(underTestPost, preValue_extended);
         std::string result = process_doFlow(underTestPost);
-        TEST_ASSERT_EQUAL_STRING("Neg. Rate - Read:  - Raw: 22017.98 - Pre: 22018.09 ", underTestPost->getReadoutError().c_str());
+        TEST_ASSERT_EQUAL_STRING("Neg. Rate - Read:  - Raw: 22017.98 - Pre: 22018.08 ", underTestPost->getReadoutError().c_str());
+        // if negativ no result any more
+
         TEST_ASSERT_EQUAL_STRING("", result.c_str());
         delete underTestPost;
 

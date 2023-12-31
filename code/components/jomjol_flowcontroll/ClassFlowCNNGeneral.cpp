@@ -134,7 +134,22 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
-
+/**
+ * @brief Determines the number of an ROI in connection with previous ROI results
+ * 
+ * @param number: is the current ROI as float value from recognition
+ * @param number_of_predecessors: is the last (lower) ROI as float from recognition
+ * @param eval_predecessors: is the evaluated number. Sometimes a much lower value can change higer values
+ *                          example: 9.8, 9.9, 0.1
+ *                          0.1 => 0 (eval_predecessors)
+ *                          The 0 makes a 9.9 to 0 (eval_predecessors)
+ *                          The 0 makes a 9.8 to 0 
+ * @param Analog_Predecessors false/true if the last ROI is an analog or digital ROI (default=false)
+ *                              runs in special handling because analog is much less precise
+ * @param digitalAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
+ *
+ * @return int the determined number of the current ROI
+ */
 int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
 {
     int result;
