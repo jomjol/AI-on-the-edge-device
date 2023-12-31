@@ -51,13 +51,17 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
     {
         struct tm tm;
         time_t t;
+        long int influxt;
 
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
-//        t = t + LocalTimeToUTCOffsetSeconds;
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "t zuerst: " + std::to_string(t));
+        influxt = t;
+        influxt = influxt + LocalTimeToUTCOffsetSeconds;
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "influx t: " + std::to_string(influxt));
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
-        sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(influxt));
+        sprintf(nowTimestamp,"%ld000000000", (long) influxt);           // UTC
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
@@ -166,9 +170,10 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
 
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "t zuerst: " + std::to_string(t));
         influxt = t;
-        influxt = influxt + LocalTimeToUTCOffsetSeconds;
-//        t = t + LocalTimeToUTCOffsetSeconds;
+//        influxt = influxt + LocalTimeToUTCOffsetSeconds;
+//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "influx t: " + std::to_string(influxt));
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(influxt));
         sprintf(nowTimestamp,"%ld000000000", (long) influxt);           // UTC
