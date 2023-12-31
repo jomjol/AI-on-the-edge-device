@@ -871,12 +871,16 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
                                                     + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) 
                                                     + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
-                }
-                // Include inaccuracy of 0.2 for isExtendedResolution.
-                if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
-                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                    NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
-                } else {
+                } 
+
+                    // Include inaccuracy of 0.2 for isExtendedResolution.
+                if ((NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution)
+                    // not extended resolution allows -1 on the lowest digit  
+                   || (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(1/pow(10, NUMBERS[j]->Nachkomma))) && !NUMBERS[j]->isExtendedResolution)) {
+                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                        NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
+                } 
+                else {
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
