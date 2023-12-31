@@ -125,7 +125,7 @@ bool Init_NVS_SDCard()
         .format_if_mount_failed = false,
         .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
         .allocation_unit_size = 0,		 // 0 = auto
-        .disk_status_check_enable = 1};
+        .disk_status_check_enable = 1
     };
 
     sdmmc_card_t* card;
