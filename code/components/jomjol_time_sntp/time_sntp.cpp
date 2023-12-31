@@ -92,7 +92,7 @@ bool time_manual_reset_sync(void)
 }
 
 
-int getUTCOffsetSeconds()
+int getUTCOffsetSeconds(std::string &zeitzone)
 {
     int offset = 0;
     int vorzeichen = 1;
@@ -107,8 +107,9 @@ int getUTCOffsetSeconds()
     char buffer[80];
     strftime(buffer, 80, "%z", &timeinfo);
     std::string zw = std::string(buffer);
+    zeitzone = zw;
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: Zeitzohne " + zw);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: Zeitzonne " + zw);
 
     if (zw.length() == 5)
     {
@@ -131,24 +132,11 @@ void setTimeZone(std::string _tzstring)
 
     _tzstring = "Time zone set to " + _tzstring;
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, _tzstring);
-//    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Dies ist ein Test!");
 
-    time_t now, t, rawtime;
-    struct tm timeinfo, *ptm;
-    time (&now);
-    localtime_r(&now, &timeinfo);
-    t = mktime(&timeinfo);
-    int zwLocalTimeToUTCOffset = t - now;
-
-    time(&rawtime);
-    ptm = gmtime(&rawtime);    
-
-    LocalTimeToUTCOffsetSeconds = getUTCOffsetSeconds();
-    std::string zw = std::to_string(LocalTimeToUTCOffsetSeconds);
-
-
-
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset in Seconds: " + zw);
+    std::string zeitzone;
+    LocalTimeToUTCOffsetSeconds = getUTCOffsetSeconds(zeitzone);
+//    std::string zw = std::to_string(LocalTimeToUTCOffsetSeconds);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Zeitzone: " + zeitzone + " DeltaUTC: " + std::to_string(LocalTimeToUTCOffsetSeconds) + " seconds");
 }
 
 
