@@ -94,19 +94,25 @@ void setTimeZone(std::string _tzstring)
     setenv("TZ", _tzstring.c_str(), 1);
     tzset();    
 
-    _tzstring = "Time zone set to v1 " + _tzstring;
+    _tzstring = "Time zone set to " + _tzstring;
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, _tzstring);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Dies ist ein Test!");
+//    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Dies ist ein Test!");
 
-    time_t now, t;
-    struct tm timeinfo;
+    time_t now, t, rawtime;
+    struct tm timeinfo, *ptm;
     time (&now);
     localtime_r(&now, &timeinfo);
     t = mktime(&timeinfo);
     int zwLocalTimeToUTCOffset = t - now;
 
+    time(&rawtime);
+    ptm = gmtime(&rawtime);    
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: " + std::to_string(zwLocalTimeToUTCOffset));
+    char buffer[80];
+    strftime(buffer, 80, "%z", &timeinfo);
+    std::string zw = std::string(buffer);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: " + zw);
 }
 
 
