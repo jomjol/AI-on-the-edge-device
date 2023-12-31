@@ -3,6 +3,174 @@ These files/folders were copied from `framework-espidf@3.50002.230601/components
 Since not every SD/MMC was recognized and this was due to the implementation of ATA trim support, this was revised.
 Furthermore, files that we don't need were deleted from it.
 
+the most relevant changes are:
+------------------------------
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+fatfs/diskio/diskio_sdmmc.h
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
+lines 106 to 110:
+-----------------
+
+#if FF_USE_TRIM
+        case CTRL_TRIM:
+            return ff_sdmmc_trim (pdrv, *((DWORD*)buff), //start_sector
+                    (*((DWORD*)buff + 1) - *((DWORD*)buff) + 1)); //sector_count
+#endif //FF_USE_TRIM
+
+changed to:
+-----------
+
+#if (FF_USE_TRIM)
+        case CTRL_TRIM:
+            if(FF_CAN_TRIM){
+                return ff_sdmmc_trim (pdrv, *((DWORD*)buff), //start_sector
+                    (*((DWORD*)buff + 1) - *((DWORD*)buff) + 1)); //sector_count
+            }
+            else{
+                return RES_ERROR;
+            }
+#endif //FF_USE_TRIM
+
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+fatfs/src/ff.h
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
+lines 1437 to 1454:
+-------------------
+#if FF_FS_EXFAT || FF_USE_TRIM
+		if (ecl + 1 == nxt) {	/* Is next cluster contiguous? */
+			ecl = nxt;
+		} else {				/* End of contiguous cluster block */
+#if FF_FS_EXFAT
+			if (fs->fs_type == FS_EXFAT) {
+				res = change_bitmap(fs, scl, ecl - scl + 1, 0);	/* Mark the cluster block 'free' on the bitmap */
+				if (res != FR_OK) return res;
+			}
+#endif
+#if FF_USE_TRIM
+			rt[0] = clst2sect(fs, scl);					/* Start of data area to be freed */
+			rt[1] = clst2sect(fs, ecl) + fs->csize - 1;	/* End of data area to be freed */
+			disk_ioctl(fs->pdrv, CTRL_TRIM, rt);		/* Inform storage device that the data in the block may be erased */
+#endif
+			scl = ecl = nxt;
+		}
+#endif
+
+changed to:
+-----------
+#if FF_FS_EXFAT || FF_USE_TRIM
+		if(FF_FS_EXFAT || FF_CAN_TRIM){
+			if (ecl + 1 == nxt) {	/* Is next cluster contiguous? */
+				ecl = nxt;
+			} 
+			else {				/* End of contiguous cluster block */
+#if FF_FS_EXFAT
+				if (fs->fs_type == FS_EXFAT) {
+					res = change_bitmap(fs, scl, ecl - scl + 1, 0);	/* Mark the cluster block 'free' on the bitmap */
+					if (res != FR_OK) return res;
+				}
+#endif
+				if(FF_CAN_TRIM){
+					rt[0] = clst2sect(fs, scl);					/* Start of data area to be freed */
+					rt[1] = clst2sect(fs, ecl) + fs->csize - 1;	/* End of data area to be freed */
+					disk_ioctl(fs->pdrv, CTRL_TRIM, rt);		/* Inform storage device that the data in the block may be erased */
+				}
+		
+				scl = ecl = nxt;
+			}
+		}
+#endif
+
+
+lines 5946 to 5949:
+-------------------
+#if FF_USE_TRIM
+		lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
+		disk_ioctl(pdrv, CTRL_TRIM, lba);
+#endif
+
+changed to:
+-----------
+#if FF_USE_TRIM
+		if(FF_CAN_TRIM){
+			lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
+			disk_ioctl(pdrv, CTRL_TRIM, lba);
+		}
+#endif
+
+
+lines 6175 to 6178:
+-------------------
+#if FF_USE_TRIM
+		lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
+		disk_ioctl(pdrv, CTRL_TRIM, lba);
+#endif
+
+changed to:
+-----------
+#if FF_USE_TRIM
+		if(FF_CAN_TRIM){
+			lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
+			disk_ioctl(pdrv, CTRL_TRIM, lba);
+		}
+#endif
+
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+sdmmc/sdmmc_cmd.c
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
+added:
+------
+int FF_CAN_TRIM = 0;
+
+lines 630 to 636:
+-----------------
+esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
+{
+    if ((card->is_mmc) && (card->ext_csd.sec_feature & EXT_CSD_SEC_GB_CL_EN)) {
+        return ESP_OK;
+    }
+    return ESP_FAIL;
+}
+
+changed to:
+-----------
+esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
+{
+    if ((card->is_mmc) && (card->ext_csd.sec_feature & EXT_CSD_SEC_GB_CL_EN)) {
+        FF_CAN_TRIM = 1;
+        return ESP_OK;
+    }
+    FF_CAN_TRIM = 0;
+    return ESP_FAIL;
+}
+
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+sdmmc/include/sdmmc_cmd.h
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
+added:
+------
+extern int FF_CAN_TRIM;
+
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
 # Espressif IoT Development Framework
 
 * [中文版](./README_CN.md)
