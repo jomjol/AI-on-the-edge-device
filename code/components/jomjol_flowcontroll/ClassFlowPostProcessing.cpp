@@ -5,6 +5,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <cassert>
 
 #include <time.h>
 
@@ -725,6 +726,130 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
     return zw;
 }
 
+
+float wrapAround(float val)
+{
+    return fmod(val, 10.);
+}
+
+/**
+ * @brief Checks whether val is in the range [min, max]
+ *
+ * Note, this function also handles the wrap around case,
+ * in which min could be larger than max in case of
+ * a circular range
+ *
+ * @param val The value to be checked
+ * @param min Minimal bound of the range
+ * @param max Maximum bound of the range
+ * @return True, if val is in the range
+ */
+bool inRange(float val, float min, float max)
+{
+    assert(min >= 0. && min < 10.0);
+    assert(max >= 0. && max <= 10.0);
+    assert(val >= 0. && val < 10.0);
+
+    if (min <= max)
+    {
+        return min <= val && val <= max;
+    }
+    else
+    {
+        // e.g. between 8 and 2 (of the next round)
+        return (min <= val && val < 10.) || (0. <= val && val <= max);
+    }
+}
+
+/**
+ * @brief Synchronizes a potential misalignment between analog and digital part
+ *
+ * @param The current value assembled from digits (pre comma) and analogs (post comma)
+ * @param digitalPrecision   The post-comma value of the last digit ([0...9])
+ * @param analogDigitalShift The value of the 0.1 analog, when the digital precision == 5 in [0, 9.9]
+ *
+ * We define 3 phases:
+ *   - Pre transition: analog post comma < analogDigitalShift && not in transition
+ *   - Transition: Digital Precision in range 1...9
+ *   - Post transition: analog post comma > analogDigitalShift && not in transition
+ *
+ * @return The synchronized values as a string
+ */
+std::string syncDigitalAnalog(const std::string& value, const std::string& digitalPrecision,
+                              double analogDigitalShift)
+{
+    if (digitalPrecision.empty())
+    {
+        return value;
+    }
+
+    const auto pos = value.find('.');
+    if (pos == std::string::npos)
+    {
+        return value;
+    }
+
+    // disassemble value into pre and post comma part
+    const auto preComma = value.substr(0, pos);
+
+    // memorize, to be able to assemble right numbers of leading zeros
+    const size_t nPreComma = preComma.size();
+    const auto postComma = value.substr(pos+1);
+
+    const float digitalPostComma = std::atof(digitalPrecision.c_str());
+    int         digitalPreComma = std::atoi(preComma.c_str());
+    const float analogPostComma = std::atof(("0." + postComma).c_str());
+
+    // Determine phase
+    const bool inTransition = digitalPostComma > 0. && digitalPostComma < 10.;
+    const bool postTransition = !inTransition && inRange(analogPostComma*10., analogDigitalShift, wrapAround(analogDigitalShift + 5.));
+    const bool preTransition = !inTransition && inRange(analogPostComma*10., 0, analogDigitalShift);
+
+
+    if (inRange(analogDigitalShift, 0.5, 5.))
+    {
+        // late transition, last digit starts transition, when analog is between [0.5, 5)
+        if (inTransition || preTransition)
+        {
+            ESP_LOGD("syncDigitalAnalog", "Late digital transition. Increase digital value by 1.");
+            digitalPreComma += 1;
+        }
+    }
+    else if (inRange(analogDigitalShift, 5., 9.5))
+    {
+        // early transition
+        if (postTransition && analogPostComma*10 > analogDigitalShift)
+        {
+            ESP_LOGD("syncDigitalAnalog", "Early digital transition. Decrease digital value by 1.");
+            digitalPreComma -= 1;
+        }
+
+        // transition has not finished, but we are already at the new cycle
+        // this also should handle hanging digits
+        if (inTransition && analogPostComma < 0.5) {
+            digitalPreComma += 1;
+        }
+    }
+    else
+    {
+        return value;
+    }
+
+    // assemble result into string again, pad with zeros
+    auto preCommaNew = std::to_string(digitalPreComma);
+    for (size_t i = preCommaNew.size(); i < nPreComma; ++i)
+        preCommaNew = "0" + preCommaNew;
+
+    const std::string result = preCommaNew + "." + postComma;
+
+#if debugSync
+    ESP_LOGD("syncDigitalAnalog", "result: %s", result.c_str());
+#endif
+
+    return result;
+
+}
+
 bool ClassFlowPostProcessing::doFlow(string zwtime)
 {
     string result = "";
@@ -768,6 +893,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
 
         int previous_value = -1;
 
+        // ------------------- start processing analog values --------------------------//
+
         if (NUMBERS[j]->analog_roi)
         {
             NUMBERS[j]->ReturnRawValue = flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution); 
@@ -781,19 +908,38 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After analog->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
-        if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
-            NUMBERS[j]->ReturnRawValue = "." + NUMBERS[j]->ReturnRawValue;
 
-        if (NUMBERS[j]->digit_roi)
+        // ----------------- start processing digital values --------------------------//
+
+        // we need the precision of the digital values to determine transition phase
+        std::string digitalPrecision = {"0"};
+        if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi) {
+            // we have nachkommad and vorkomman part!
+
+            std::string analogValues = NUMBERS[j]->ReturnRawValue;
+            std::string digitValues =  flowDigit->getReadout(j, true, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, 0.);
+
+            if (flowDigit->getCNNType() != Digital)
+            {
+                // The digital type does not provide an extended resolution, so we cannot extract it
+                digitalPrecision = digitValues.substr(digitValues.size() - 1);
+                digitValues = digitValues.substr(0, digitValues.size() - 1);
+            }
+
+            NUMBERS[j]->ReturnRawValue = digitValues + "." + analogValues;
+        }
+
+
+        if (NUMBERS[j]->digit_roi && !NUMBERS[j]->analog_roi)
         {
-            if (NUMBERS[j]->analog_roi) 
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogDigitalTransitionStart) + NUMBERS[j]->ReturnRawValue;
-            else
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits
+            NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits
         }
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After digital->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
+
+        //  ------------------ start corrections --------------------------//
+
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
 
         #ifdef SERIAL_DEBUG
@@ -813,7 +959,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         {
             if (PreValueUse && NUMBERS[j]->PreValueOkay)
             {
-                NUMBERS[j]->ReturnValue = ErsetzteN(NUMBERS[j]->ReturnValue, NUMBERS[j]->PreValue); 
+                NUMBERS[j]->ReturnValue = ErsetzteN(NUMBERS[j]->ReturnValue, NUMBERS[j]->PreValue);
             }
             else
             {
@@ -826,6 +972,13 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                 continue; // there is no number because there is still an N.
             }
         }
+
+        if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
+        {
+            // Synchronize potential misalignment between analog and digital part
+            NUMBERS[j]->ReturnValue = syncDigitalAnalog(NUMBERS[j]->ReturnValue, digitalPrecision, NUMBERS[j]->AnalogDigitalTransitionStart);
+        }
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After findDelimiterPos: ReturnValue %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif

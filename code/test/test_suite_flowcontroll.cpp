@@ -164,6 +164,8 @@ extern "C" void app_main()
     RUN_TEST(test_doFlowPP2);
     RUN_TEST(test_doFlowPP3);
     RUN_TEST(test_doFlowPP4);
+    RUN_TEST(test_doFlowLateTransition);
+    RUN_TEST(test_doFlowEarlyTransition);
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);

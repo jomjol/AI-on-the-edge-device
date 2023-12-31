@@ -1,7 +1,6 @@
 #include "test_flow_postrocess_helper.h"
 
-
-
+#include <memory>
 
 /**
  * ACHTUNG! Die Test laufen aktuell nur mit ausgeschaltetem Debug in ClassFlowCNNGeneral 
@@ -541,5 +540,65 @@ void test_doFlowPP4() {
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 }
+
+std::string postProcess(std::vector<float> digits,
+                        std::vector<float> analogs,
+                        float analog2DigitalTransition=0.0)
+{
+        std::unique_ptr<UnderTestPost> undertestPost(init_do_flow(std::move(analogs),
+                                                                  std::move(digits),
+                                                                  Digital100,
+                                                                  false, false));
+
+        setAnalogdigitTransistionStart(undertestPost.get(), analog2DigitalTransition);
+        return process_doFlow(undertestPost.get());
+}
+
+void test_doFlowLateTransition()
+{
+        // in these test cases, the last digit before comma turns 3.6 too late
+        float a2dt = 3.6;
+
+        // meter shows 011.0210 but it already needs to be 012.0210,  before transition
+        TEST_ASSERT_EQUAL_STRING("12.0210", postProcess({0.0, 1.0, 1.0}, {0.2, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+        // meter shows 011.3210 but it already needs to be 012.3210, just before transition
+        TEST_ASSERT_EQUAL_STRING("12.3210", postProcess({0.0, 1.0, 1.2}, {3.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+        // meter shows 012.4210 , this is after transition
+        TEST_ASSERT_EQUAL_STRING("12.4210", postProcess({0.0, 1.0, 2.0}, {4.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+        // meter shows 012.987
+        TEST_ASSERT_EQUAL_STRING("12.9870", postProcess({0.0, 1.0, 2.0}, {9.8, 8.7, 7.0, 0.0}, a2dt).c_str());
+
+        // meter shows 0012.003
+        TEST_ASSERT_EQUAL_STRING("13.003", postProcess({0.0, 0.0, 1.0, 2.0}, {0.1, 0.3, 3.1}, a2dt).c_str());
+
+        // meter shows 0012.351
+        TEST_ASSERT_EQUAL_STRING("13.351", postProcess({0.0, 0.0, 1.0, 2.8}, {3.5, 5.2, 1.1}, a2dt).c_str());
+
+        // meter shows 0013.421
+        TEST_ASSERT_EQUAL_STRING("13.421", postProcess({0.0, 0.0, 1.0, 3.0}, {4.1, 2.2, 1.1}, a2dt).c_str());
+}
+
+void test_doFlowEarlyTransition()
+{
+        // in these test cases, the last digit before comma turns at around 7.5
+        // start transition 7.0 end transition 8.0
+        float a2dt = 7.5;
+
+        // meter shows 011.0210 but it already needs to be 012.0210,  before transition
+        TEST_ASSERT_EQUAL_STRING("12.6789", postProcess({0.0, 1.0, 2.0}, {6.7, 7.8, 8.9, 9.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("12.7234", postProcess({0.0, 1.0, 2.4}, {7.2, 2.3, 3.4, 4.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("12.7789", postProcess({0.0, 1.0, 2.7}, {7.7, 7.8, 8.9, 9.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("12.8123", postProcess({0.0, 1.0, 3.0}, {8.1, 1.2, 2.3, 3.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("13.1234", postProcess({0.0, 1.0, 3.0}, {1.2, 2.3, 3.4, 4.0}, a2dt).c_str());
+
+}
+
 
 
