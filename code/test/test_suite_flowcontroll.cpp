@@ -149,11 +149,26 @@ void task_UnityTesting(void *pvParameter)
  */
 extern "C" void app_main()
 {
-    initGPIO();
-    Init_NVS_SDCard();
-    esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to DEBUG level
+  initGPIO();
+  Init_NVS_SDCard();
+  esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to ERROR level
 
-    // Create dedicated testing task (heap size can be configured - large enough to handle a lot of testing cases)
-    // ********************************************
-    xTaskCreate(&task_UnityTesting, "task_UnityTesting", 12 * 1024, NULL, tskIDLE_PRIORITY+2, NULL);
+  UNITY_BEGIN();
+    RUN_TEST(testNegative_Issues);
+   RUN_TEST(testNegative);
+   /*
+    RUN_TEST(test_analogToDigit_Standard);
+    RUN_TEST(test_analogToDigit_Transition);
+    RUN_TEST(test_doFlowPP);
+    RUN_TEST(test_doFlowPP1);
+    RUN_TEST(test_doFlowPP2);
+    RUN_TEST(test_doFlowPP3);
+    RUN_TEST(test_doFlowPP4);
+    RUN_TEST(test_doFlowLateTransition);
+    RUN_TEST(test_doFlowEarlyTransition);
+
+    // getReadoutRawString test
+    RUN_TEST(test_getReadoutRawString);
+  */
+  UNITY_END();
 }
