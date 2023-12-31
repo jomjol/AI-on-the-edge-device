@@ -31,6 +31,9 @@ std::string getNtpStatusText(sntp_sync_status_t status);
 static void setTimeZone(std::string _tzstring);
 static std::string getServerName(void);
 
+int LocalTimeToUTCOffsetSeconds;
+
+
 
 std::string ConvertTimeToString(time_t _time, const char * frm)
 {
@@ -89,6 +92,38 @@ bool time_manual_reset_sync(void)
 }
 
 
+int getUTCOffsetSeconds()
+{
+    int offset = 0;
+    int vorzeichen = 1;
+    int minuten = 0;
+    int stunden = 0;
+    time_t now;
+    struct tm timeinfo;
+
+
+    time (&now);
+    localtime_r(&now, &timeinfo);
+    char buffer[80];
+    strftime(buffer, 80, "%z", &timeinfo);
+    std::string zw = std::string(buffer);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: Zeitzohne " + zw);
+
+    if (zw.length() == 5)
+    {
+        if (zw[0] == '-')
+            vorzeichen = -1; 
+
+        stunden = stoi(zw.substr(1, 2));
+        minuten = stoi(zw.substr(3, 2));
+
+        offset = ((stunden * 60) + minuten) * 60;
+    }
+    return offset;
+}
+
+
 void setTimeZone(std::string _tzstring)
 {
     setenv("TZ", _tzstring.c_str(), 1);
@@ -108,12 +143,14 @@ void setTimeZone(std::string _tzstring)
     time(&rawtime);
     ptm = gmtime(&rawtime);    
 
-    char buffer[80];
-    strftime(buffer, 80, "%z", &timeinfo);
-    std::string zw = std::string(buffer);
+    LocalTimeToUTCOffsetSeconds = getUTCOffsetSeconds();
+    std::string zw = std::to_string(LocalTimeToUTCOffsetSeconds);
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset: " + zw);
+
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LocalTimeToUTCOffset in Seconds: " + zw);
 }
+
 
 
 std::string getNtpStatusText(sntp_sync_status_t status) {

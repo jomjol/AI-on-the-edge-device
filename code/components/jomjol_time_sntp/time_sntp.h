@@ -28,7 +28,7 @@ bool setupTime();
 
 bool time_manual_reset_sync(void);
 
-// int LocalTimeToUTCOffset;
+extern int LocalTimeToUTCOffsetSeconds;
 
 
 #endif //TIMESNTP_H
