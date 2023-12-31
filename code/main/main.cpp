@@ -3,12 +3,6 @@
 #include <vector>
 #include <regex>
 
-//#include "freertos/FreeRTOS.h"
-//#include "freertos/task.h"
-//#include "freertos/event_groups.h"
-
-//#include "driver/gpio.h"
-//#include "sdkconfig.h"
 #include "esp_psram.h"
 #include "esp_pm.h"
 
@@ -16,16 +10,11 @@
 
 #include "esp_chip_info.h"
 
-
-
 // SD-Card ////////////////////
-//#include "nvs_flash.h"
-#include "esp_vfs_fat.h"
-//#include "sdmmc_cmd.h"
+#include "esp_vfs_fat_mh.h"
+#include "ffconf_mh.h"
 #include "driver/sdmmc_host.h"
-//#include "driver/sdmmc_defs.h"
 ///////////////////////////////
-
 
 #include "ClassLogFile.h"
 
@@ -38,7 +27,6 @@
 #include "server_ota.h"
 #include "time_sntp.h"
 #include "configFile.h"
-//#include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
 #ifdef ENABLE_MQTT
@@ -49,7 +37,6 @@
 #include "sdcard_check.h"
 
 #include "../../include/defines.h"
-//#include "server_GPIO.h"
 
 #ifdef ENABLE_SOFTAP
     #include "softAP.h"
