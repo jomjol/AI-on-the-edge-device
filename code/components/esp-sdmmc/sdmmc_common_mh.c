@@ -17,6 +17,8 @@
 
 #include "sdmmc_common_mh.h"
 
+bool card_is_mmc = 0;
+
 static const char* TAG = "sdmmc_common";
 
 esp_err_t sdmmc_init_ocr(sdmmc_card_t* card)
@@ -38,6 +40,7 @@ esp_err_t sdmmc_init_ocr(sdmmc_card_t* card)
     if (err == ESP_ERR_TIMEOUT && !host_is_spi(card)) {
         ESP_LOGD(TAG, "send_op_cond timeout, trying MMC");
         card->is_mmc = 1;
+        card_is_mmc = 1;
         err = sdmmc_send_cmd_send_op_cond(card, host_ocr, &card->ocr);
     }
 
