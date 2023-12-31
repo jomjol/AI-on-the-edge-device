@@ -166,7 +166,7 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
 
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
-        t = t + LocalTimeToUTCOffsetSeconds;
+//        t = t + LocalTimeToUTCOffsetSeconds;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp vorher: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
 /*
         time(&t);
