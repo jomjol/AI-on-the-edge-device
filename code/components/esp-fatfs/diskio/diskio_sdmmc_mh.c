@@ -7,8 +7,7 @@
 #include "diskio_impl_mh.h"
 #include "ffconf_mh.h"
 #include "ff_mh.h"
-//#include "../../esp-sdmmc/include/sdmmc_cmd_mh.h"
-#include "include/sdmmc_cmd_mh.h"
+#include "sdmmc_cmd_mh.h"
 #include "esp_log.h"
 #include "esp_compiler.h"
 
