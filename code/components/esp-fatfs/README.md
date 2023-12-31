@@ -13,7 +13,6 @@ fatfs/diskio/diskio_sdmmc.h
 
 lines 106 to 110:
 -----------------
-
 #if FF_USE_TRIM
         case CTRL_TRIM:
             return ff_sdmmc_trim (pdrv, *((DWORD*)buff), //start_sector
@@ -22,7 +21,6 @@ lines 106 to 110:
 
 changed to:
 -----------
-
 #if (FF_USE_TRIM)
         case CTRL_TRIM:
             if(FF_CAN_TRIM){
