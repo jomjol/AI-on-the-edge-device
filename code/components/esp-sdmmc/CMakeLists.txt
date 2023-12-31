@@ -4,7 +4,7 @@ idf_component_register(SRCS "sdmmc_cmd_mh.c"
                             "sdmmc_io_mh.c"
                             "sdmmc_mmc_mh.c"
                             "sdmmc_sd_mh.c"
-                    INCLUDE_DIRS "." include
+                    INCLUDE_DIRS "." "include"
                     REQUIRES driver esp-fatfs
                     PRIV_REQUIRES soc)
 
