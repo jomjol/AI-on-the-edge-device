@@ -50,20 +50,19 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
     if (_timestamp.length() > 0)
     {
         struct tm tm;
-
         time_t t;
-        time(&t);
-        localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
+//        t = t + LocalTimeToUTCOffsetSeconds;
 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
         sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "no timestamp given");
         payload = _measurement + " " + _key + "=" + _content;
     }
 
@@ -163,24 +162,21 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
     {
         struct tm tm;
         time_t t;
+        long int influxt;
 
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
+        influxt = t;
+        influxt = influxt + LocalTimeToUTCOffsetSeconds;
 //        t = t + LocalTimeToUTCOffsetSeconds;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp vorher: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
-/*
-        time(&t);
-        localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
-        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-        t = mktime(&tm);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp nachher: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
-*/
-        sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(influxt));
+        sprintf(nowTimestamp,"%ld000000000", (long) influxt);           // UTC
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "no timestamp given");
         payload = _measurement + " " + _key + "=" + _content;
     }
 
