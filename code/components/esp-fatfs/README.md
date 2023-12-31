@@ -1,8 +1,7 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!! These files/folders were copied from "framework-espidf@3.50002.230601/components/" and adapted to our own needs.    !!!
-!!! Since not every SD/MMC was recognized and this was due to the implementation of ATA trim support, this was revised. !!!
-!!! Furthermore, files that I don't need were deleted from it.															!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# AIOTED related changes, see https://github.com/jomjol/AI-on-the-edge-device/pull/2781
+These files/folders were copied from `framework-espidf@3.50002.230601/components/` and adapted to our own needs.
+Since not every SD/MMC was recognized and this was due to the implementation of ATA trim support, this was revised.
+Furthermore, files that we don't need were deleted from it.
 
 # Espressif IoT Development Framework
 
