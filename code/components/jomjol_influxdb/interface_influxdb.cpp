@@ -161,14 +161,20 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
     if (_timestamp.length() > 0)
     {
         struct tm tm;
-
         time_t t;
+
+        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
+        t = mktime(&tm);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp vorher: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
+
+
+
         time(&t);
         localtime_r(&t, &tm); // Extract DST setting from actual time to consider it for timestamp evaluation
 
         strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
         t = mktime(&tm);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp nachher: " + _timestamp + ", Timestamp (UTC): " + std::to_string(t));
 
         sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
