@@ -3,24 +3,18 @@ These files/folders were copied from `framework-espidf@3.50002.230601/components
 Since not every SD/MMC was recognized and this was due to the implementation of ATA trim support, this was revised.
 Furthermore, files that we don't need were deleted from it.
 
-the most relevant changes are:
-------------------------------
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-fatfs/diskio/diskio_sdmmc.c
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-
-lines 106 to 110:
------------------
+## The most relevant changes are:
+### fatfs/diskio/diskio_sdmmc.c
+lines 106 to 110 changed from:
+```c
 #if FF_USE_TRIM
         case CTRL_TRIM:
             return ff_sdmmc_trim (pdrv, *((DWORD*)buff), //start_sector
                     (*((DWORD*)buff + 1) - *((DWORD*)buff) + 1)); //sector_count
 #endif //FF_USE_TRIM
-
-changed to:
------------
+```
+to:
+```c
 #if (FF_USE_TRIM)
         case CTRL_TRIM:
             if(FF_CAN_TRIM){
@@ -31,21 +25,16 @@ changed to:
                 return RES_ERROR;
             }
 #endif //FF_USE_TRIM
+```
 
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-fatfs/src/ff.c
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-
+### fatfs/src/ff.c
 added:
-------
+```c
 #include "sdmmc_cmd.h"
+```
 
-
-lines 1437 to 1454:
--------------------
+lines 1437 to 1454 changed from:
+```c
 #if FF_FS_EXFAT || FF_USE_TRIM
 		if (ecl + 1 == nxt) {	/* Is next cluster contiguous? */
 			ecl = nxt;
@@ -64,9 +53,10 @@ lines 1437 to 1454:
 			scl = ecl = nxt;
 		}
 #endif
+```
 
-changed to:
------------
+to:
+```c
 #if FF_FS_EXFAT || FF_USE_TRIM
 		if(FF_FS_EXFAT || FF_CAN_TRIM){
 			if (ecl + 1 == nxt) {	/* Is next cluster contiguous? */
@@ -88,54 +78,50 @@ changed to:
 			}
 		}
 #endif
+```
 
-
-lines 5946 to 5949:
--------------------
+lines 5946 to 5949 changed from:
+```c
 #if FF_USE_TRIM
 		lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
 		disk_ioctl(pdrv, CTRL_TRIM, lba);
 #endif
-
-changed to:
------------
+```
+to:
+```c
 #if FF_USE_TRIM
 		if(FF_CAN_TRIM){
 			lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
 			disk_ioctl(pdrv, CTRL_TRIM, lba);
 		}
 #endif
+```
 
-
-lines 6175 to 6178:
--------------------
+lines 6175 to 6178 changed from:
+```c
 #if FF_USE_TRIM
 		lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
 		disk_ioctl(pdrv, CTRL_TRIM, lba);
 #endif
-
-changed to:
------------
+```
+to:
+```c
 #if FF_USE_TRIM
 		if(FF_CAN_TRIM){
 			lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
 			disk_ioctl(pdrv, CTRL_TRIM, lba);
 		}
 #endif
+```
 
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-sdmmc/sdmmc_cmd.c
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-
+### sdmmc/sdmmc_cmd.c
 added:
-------
+```c
 int FF_CAN_TRIM = 0;
+```
 
-lines 630 to 636:
------------------
+lines 630 to 636 changed from:
+```c
 esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
 {
     if ((card->is_mmc) && (card->ext_csd.sec_feature & EXT_CSD_SEC_GB_CL_EN)) {
@@ -143,9 +129,9 @@ esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
     }
     return ESP_FAIL;
 }
-
-changed to:
------------
+```
+to:
+```c
 esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
 {
     if ((card->is_mmc) && (card->ext_csd.sec_feature & EXT_CSD_SEC_GB_CL_EN)) {
@@ -155,23 +141,14 @@ esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
     FF_CAN_TRIM = 0;
     return ESP_FAIL;
 }
+```
 
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-sdmmc/include/sdmmc_cmd.h
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
+### sdmmc/include/sdmmc_cmd.h
 
 added:
-------
+```c
 extern int FF_CAN_TRIM;
-
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
+```
 
 # Espressif IoT Development Framework
 
