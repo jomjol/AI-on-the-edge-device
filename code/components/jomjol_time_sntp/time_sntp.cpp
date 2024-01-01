@@ -10,7 +10,8 @@
 #include "esp_log.h"
 #include "esp_attr.h"
 #include "esp_sleep.h"
-#include "esp_sntp.h"
+#include "esp_netif_sntp.h"
+
 #include "../../include/defines.h"
 
 #include "ClassLogFile.h"
@@ -235,20 +236,12 @@ bool setupTime() {
 
     if (useNtp) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Configuring NTP Client...");        
-        sntp_setoperatingmode(SNTP_OPMODE_POLL);
-        sntp_setservername(0, timeServer.c_str());
-        sntp_set_time_sync_notification_cb(time_sync_notification_cb);
+        esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG(timeServer.c_str());
+        config.sync_cb = time_sync_notification_cb;
+        esp_netif_sntp_init(&config);
+
         setTimeZone(timeZone);
-
-        sntp_init();
-/*        
-        if (!wait_for_timesync())
-        {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Timesync at startup failed.");        
-        }
-*/
     }
-
 
     /* The RTC keeps the time after a restart (Except on Power On or Pin Reset) 
      * There should only be a minor correction through NTP */
@@ -257,6 +250,7 @@ bool setupTime() {
     time(&now);
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d %H:%M:%S", &timeinfo);
+
 
     if (getTimeIsSet()) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Time is already set: " + std::string(strftime_buf));
