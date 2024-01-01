@@ -137,6 +137,7 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
     std::string resultraw = "";
     std::string resultrate = "";
     std::string resulttimestamp = "";
+    long int timeutc;
     string zw = "";
     string namenumber = "";
 
@@ -152,6 +153,7 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
+            timeutc = (*NUMBERS)[i]->timeStampTimeUTC;
 
             if ((*NUMBERS)[i]->FieldV1.length() > 0)
             {
@@ -167,7 +169,7 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
             }
 
             if (result.length() > 0)   
-                InfluxDBPublish(measurement, namenumber, result, resulttimestamp);
+                InfluxDBPublish(measurement, namenumber, result, timeutc);
         }
     }
    

@@ -1,10 +1,5 @@
 #include <unity.h>
 
-#include "components/jomjol-flowcontroll/test_flow_postrocess_helper.cpp"
-#include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
-#include "components/jomjol-flowcontroll/test_flow_pp_negative.cpp"
-#include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
-#include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 // SD-Card ////////////////////
 #include "nvs_flash.h"
 #include "esp_vfs_fat.h"
@@ -14,6 +9,18 @@
 //static const char *TAG = "MAIN TEST";
 #define __SD_USE_ONE_LINE_MODE__
 #include "server_GPIO.h"
+
+
+//*****************************************************************************
+// Include files with functions to test
+//*****************************************************************************
+#include "components/jomjol-flowcontroll/test_flow_postrocess_helper.cpp"
+#include "components/jomjol-flowcontroll/test_flowpostprocessing.cpp"
+#include "components/jomjol-flowcontroll/test_flow_pp_negative.cpp"
+#include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
+#include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
+#include "components/jomjol-flowcontroll/test_cnnflowcontroll.cpp"
+
 
 bool Init_NVS_SDCard()
 {
@@ -81,7 +88,6 @@ bool Init_NVS_SDCard()
 }
 
 
-
 void initGPIO()
 {
     gpio_config_t io_conf;
@@ -96,10 +102,50 @@ void initGPIO()
 }
 
 
-
 /**
  * @brief startup the test. Like a test-suite 
  * all test methods must be called here
+ */
+void task_UnityTesting(void *pvParameter)
+{
+    vTaskDelay( 5000 / portTICK_PERIOD_MS ); // 5s delay to ensure established serial connection
+    
+    UNITY_BEGIN();
+        RUN_TEST(test_getReadoutRawString);
+        printf("---------------------------------------------------------------------------\n");
+        
+        RUN_TEST(test_ZeigerEval);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_ZeigerEvalHybrid);
+        printf("---------------------------------------------------------------------------\n");
+        
+        RUN_TEST(testNegative_Issues);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(testNegative);
+        printf("---------------------------------------------------------------------------\n");
+
+        RUN_TEST(test_analogToDigit_Standard);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_analogToDigit_Transition);
+        printf("---------------------------------------------------------------------------\n");
+
+        RUN_TEST(test_doFlowPP);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP1);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP2);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP3);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP4);
+    UNITY_END();
+
+    while(1);
+}
+
+
+/**
+ * @brief main task
  */
 extern "C" void app_main()
 {
@@ -109,8 +155,8 @@ extern "C" void app_main()
 
   UNITY_BEGIN();
     RUN_TEST(testNegative_Issues);
-  /* RUN_TEST(testNegative);
-   
+   RUN_TEST(testNegative);
+   /*
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
     RUN_TEST(test_doFlowPP);
@@ -118,6 +164,8 @@ extern "C" void app_main()
     RUN_TEST(test_doFlowPP2);
     RUN_TEST(test_doFlowPP3);
     RUN_TEST(test_doFlowPP4);
+    RUN_TEST(test_doFlowLateTransition);
+    RUN_TEST(test_doFlowEarlyTransition);
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
