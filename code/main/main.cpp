@@ -29,6 +29,8 @@
 #include "configFile.h"
 #include "server_main.h"
 #include "server_camera.h"
+#include "basic_auth.h"
+
 #ifdef ENABLE_MQTT
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
@@ -72,6 +74,7 @@
     #define NUM_RECORDS 300
     static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
 #endif
+
 
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
@@ -409,6 +412,8 @@ extern "C" void app_main(void)
             StatusLED(WLAN_INIT, 3, true);
             return;
         }
+
+        init_basic_auth();
     }
     else if (iWLANStatus == -1) {  // wlan.ini not available, potentially empty or content not readable
         StatusLED(WLAN_INIT, 1, true);
