@@ -1443,12 +1443,13 @@ static FRESULT remove_chain (	/* FR_OK(0):succeeded, !=0:error */
 					if (res != FR_OK) return res;
 				}
 #endif
+#if FF_USE_TRIM				
 				if(FF_CAN_TRIM){
 					rt[0] = clst2sect(fs, scl);					/* Start of data area to be freed */
 					rt[1] = clst2sect(fs, ecl) + fs->csize - 1;	/* End of data area to be freed */
 					disk_ioctl(fs->pdrv, CTRL_TRIM, rt);		/* Inform storage device that the data in the block may be erased */
 				}
-		
+#endif		
 				scl = ecl = nxt;
 			}
 		}
