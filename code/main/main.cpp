@@ -3,12 +3,6 @@
 #include <vector>
 #include <regex>
 
-//#include "freertos/FreeRTOS.h"
-//#include "freertos/task.h"
-//#include "freertos/event_groups.h"
-
-//#include "driver/gpio.h"
-//#include "sdkconfig.h"
 #include "esp_psram.h"
 #include "esp_pm.h"
 
@@ -16,16 +10,11 @@
 
 #include "esp_chip_info.h"
 
-
-
 // SD-Card ////////////////////
-//#include "nvs_flash.h"
-#include "esp_vfs_fat.h"
-//#include "sdmmc_cmd.h"
+#include "esp_vfs_fat_mh.h"
+#include "ffconf_mh.h"
 #include "driver/sdmmc_host.h"
-//#include "driver/sdmmc_defs.h"
 ///////////////////////////////
-
 
 #include "ClassLogFile.h"
 
@@ -38,7 +27,6 @@
 #include "server_ota.h"
 #include "time_sntp.h"
 #include "configFile.h"
-//#include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
 #ifdef ENABLE_MQTT
@@ -49,7 +37,6 @@
 #include "sdcard_check.h"
 
 #include "../../include/defines.h"
-//#include "server_GPIO.h"
 
 #ifdef ENABLE_SOFTAP
     #include "softAP.h"
@@ -101,6 +88,8 @@ bool setCpuFrequency(void);
 
 static const char *TAG = "MAIN";
 
+#define MOUNT_POINT "/sdcard"
+
 
 bool Init_NVS_SDCard()
 {
@@ -117,21 +106,17 @@ bool Init_NVS_SDCard()
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 
-    // To use 1-line SD mode, uncomment the following line:
-    #ifdef __SD_USE_ONE_LINE_MODE__
-        slot_config.width = 1;
-    #endif
+   // Set bus width to use:
+   #ifdef __SD_USE_ONE_LINE_MODE__
+      slot_config.width = 1;
+   #else
+      slot_config.width = 4;
+   #endif
 
-    // GPIOs 15, 2, 4, 12, 13 should have external 10k pull-ups.
-    // Internal pull-ups are not sufficient. However, enabling internal pull-ups
-    // does make a difference some boards, so we do that here.
-    gpio_set_pull_mode(GPIO_NUM_15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
-    gpio_set_pull_mode(GPIO_NUM_2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
-    #ifndef __SD_USE_ONE_LINE_MODE__
-        gpio_set_pull_mode(GPIO_NUM_4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
-        gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
-    #endif
-    gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
+    // Enable internal pullups on enabled pins. The internal pullups
+    // are insufficient however, please make sure 10k external pullups are
+    // connected on the bus. This is for debug / example purpose only.
+    slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
 
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
@@ -139,15 +124,18 @@ bool Init_NVS_SDCard()
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
-        .allocation_unit_size = 16 * 1024
+        .allocation_unit_size = 0,		 // 0 = auto
+        .disk_status_check_enable = 1
     };
 
     sdmmc_card_t* card;
+    const char mount_point[] = MOUNT_POINT;
+
     // Use settings defined above to initialize SD card and mount FAT filesystem.
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
     // production applications.
-    ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
+    ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
