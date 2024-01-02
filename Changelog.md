@@ -1,8 +1,24 @@
-## [unreleased] - 2023-12-21
+## [unreleased] - 2024-01-02
 
 ### Changes
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.3.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.4.0)
+
+#### Changed
+
+ - Update PlattformIO to v6.5.0, which means esp-idf to v5.1
+
+
+#### Fixed
+
+* ATA-TRIM: workaround for old SD-cards with no trim function to work with esp-idf v5.x
+* InfluxDB: Modified the time conversions to be more stable (UTC vs. local time shifts)
+
+## [15.4.0] - 2023-12-22
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.4.0)
 
 #### Changed
 
