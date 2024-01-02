@@ -5,7 +5,7 @@ Furthermore, files that we don't need were deleted from it.
 
 ## The most relevant changes are:
 ### fatfs/diskio/diskio_sdmmc.c
-lines 106 to 110 changed from:
+DRESULT ff_sdmmc_ioctl (BYTE pdrv, BYTE cmd, void* buff), at lines 106 to 110 changed from:
 ```c
 #if FF_USE_TRIM
         case CTRL_TRIM:
@@ -33,7 +33,7 @@ added:
 #include "sdmmc_cmd.h"
 ```
 
-lines 1437 to 1454 changed from:
+static FRESULT remove_chain(FFOBJID* obj, DWORD clst, DWORD pclst), at lines 1437 to 1454 changed from:
 ```c
 #if FF_FS_EXFAT || FF_USE_TRIM
 		if (ecl + 1 == nxt) {	/* Is next cluster contiguous? */
@@ -69,18 +69,20 @@ to:
 					if (res != FR_OK) return res;
 				}
 #endif
+#if FF_USE_TRIM
 				if(FF_CAN_TRIM){
 					rt[0] = clst2sect(fs, scl);					/* Start of data area to be freed */
 					rt[1] = clst2sect(fs, ecl) + fs->csize - 1;	/* End of data area to be freed */
 					disk_ioctl(fs->pdrv, CTRL_TRIM, rt);		/* Inform storage device that the data in the block may be erased */
 				}
+#endif
 				scl = ecl = nxt;
 			}
 		}
 #endif
 ```
 
-lines 5946 to 5949 changed from:
+FRESULT f_mkfs(const TCHAR* path, const MKFS_PARM* opt, void* work, UINT len), at lines 5946 to 5949 changed from:
 ```c
 #if FF_USE_TRIM
 		lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
@@ -97,7 +99,7 @@ to:
 #endif
 ```
 
-lines 6175 to 6178 changed from:
+FRESULT f_mkfs(const TCHAR* path, const MKFS_PARM* opt, void* work, UINT len), at lines 6175 to 6178 changed from:
 ```c
 #if FF_USE_TRIM
 		lba[0] = b_vol; lba[1] = b_vol + sz_vol - 1;	/* Inform storage device that the volume area may be erased */
@@ -120,7 +122,7 @@ added:
 int FF_CAN_TRIM = 0;
 ```
 
-lines 630 to 636 changed from:
+esp_err_t sdmmc_can_trim(sdmmc_card_t* card), at lines 630 to 636 changed from:
 ```c
 esp_err_t sdmmc_can_trim(sdmmc_card_t* card)
 {
