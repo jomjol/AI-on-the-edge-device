@@ -66,6 +66,7 @@
     #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
     #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
     #define CAM_LIVESTREAM_REFRESHRATE 500      // Camera livestream feature: Waiting time in milliseconds to refresh image
+    // #define GRAYSCALE_AS_DEFAULT
 
 
     //ClassControllCamera + ClassFlowTakeImage

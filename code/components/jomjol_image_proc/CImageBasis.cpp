@@ -443,7 +443,7 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
         //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
     }
 
-    rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, 3);
+    rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, STBI_rgb);
     bpp = channels;
     ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
     
@@ -456,6 +456,44 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
         doReboot();
     }
     RGBImageRelease();
+}
+
+
+void CImageBasis::crop_image(unsigned short cropLeft, unsigned short cropRight, unsigned short cropTop, unsigned short cropBottom)
+{
+    unsigned int maxTopIndex = cropTop * width * channels;
+    unsigned int minBottomIndex = ((width*height) - (cropBottom * width)) * channels;
+    unsigned short maxX = width - cropRight; // In pixels
+    unsigned short newWidth = width - cropLeft - cropRight;
+    unsigned short newHeight = height - cropTop - cropBottom;
+
+    unsigned int writeIndex = 0;
+    // Loop over all bytes
+    for (int i = 0; i < width * height * channels; i += channels) {
+        // Calculate current X, Y pixel position
+        int x = (i/channels) % width;
+
+        // Crop from the top
+        if (i < maxTopIndex) { continue; }
+
+        // Crop from the bottom
+        if (i > minBottomIndex) { continue; }
+
+        // Crop from the left
+        if (x <= cropLeft) { continue; }
+
+        // Crop from the right
+        if (x > maxX) { continue; }
+
+        // If we get here, keep the pixels
+        for (int c = 0; c < channels; c++) {
+            rgb_image[writeIndex++] = rgb_image[i+c];
+        }
+    }
+
+    // Set the new dimensions of the framebuffer for further use.
+    width = newWidth;
+    height = newHeight;
 }
 
 
