@@ -17,6 +17,7 @@
 
 #include "MainFlowControl.h"
 #include "esp_log.h"
+#include "esp_chip_info.h"
 
 #include <stdio.h>
 
@@ -172,17 +173,23 @@ esp_err_t info_get_handler(httpd_req_t *req)
     }
     else if (_task.compare("ChipCores") == 0)
     {
-        httpd_resp_sendstr(req, GetChipCoreCount().c_str());
+        esp_chip_info_t chipInfo;
+        esp_chip_info(&chipInfo);
+        httpd_resp_sendstr(req, to_string(chipInfo.cores).c_str());
         return ESP_OK;        
     }
     else if (_task.compare("ChipRevision") == 0)
     {
-        httpd_resp_sendstr(req, GetChipRevision().c_str());
+        esp_chip_info_t chipInfo;
+        esp_chip_info(&chipInfo);
+        httpd_resp_sendstr(req, to_string(chipInfo.revision).c_str());
         return ESP_OK;        
     }
     else if (_task.compare("ChipFeatures") == 0)
     {
-        httpd_resp_sendstr(req, GetChipfeatures().c_str());
+        esp_chip_info_t chipInfo;
+        esp_chip_info(&chipInfo);
+        httpd_resp_sendstr(req, to_string(chipInfo.features).c_str());
         return ESP_OK;      
     }
     else
