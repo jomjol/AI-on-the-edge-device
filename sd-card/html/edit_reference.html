@@ -100,6 +100,30 @@
             <col span="1" style="width: 22%;">
         </colgroup>
         <tr>
+            <td><label for="zoom" id="labelzoom">Enable zoom:</label></td>
+            <td><input type="checkbox" id="zoom" name="zoom" value="0"></td>
+            <td><label for="zoomoffsetx">Zoom offset X:</label></td>
+            <td>
+                <input required type="number" id="zoomoffsetx" name="zoomoffsetx" value="0" min="0" max="1280" step="1"
+                        oninput="(!validity.rangeOverflow||(value=1280)) && (!validity.rangeUnderflow||(value=0)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="zoommode" id="labelzoommode">Zoom mode:</label></td>
+            <td>
+                <input required type="number" id="zoommode" name="zoommode" value="0" min="0" max="1" step="1"
+                        oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=0)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td><label for="zoomoffsety">Zoom offset Y:</label></td>
+            <td>
+                <input required type="number" id="zoomoffsety" name="zoomoffsety" value="0" min="0" max="960" step="1"
+                        oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=0)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+        </tr>
+        <tr>
             <td><label for="mirror" id="labelmirror">Mirror image:</label></td>
             <td><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
             <td>
@@ -123,7 +147,7 @@
             </td>
         </tr>
         <tr>
-            <td><label for="prerotateangle">Rotation angle:</label></td>	  
+            <td><label for="prerotateangle">Rotation angle:</label></td>
             <td>
                 <input required type="number" id="prerotateangle" name="prerotateangle" value="0" min="-360" max="360" onchange="drawRotated()"
                         oninput="(!validity.rangeOverflow||(value=360)) && (!validity.rangeUnderflow||(value=-360)) && 
@@ -138,7 +162,7 @@
             </td>
         </tr>
         <tr>
-            <td><label for="finerotate">Rotation angle (Fine-tune):</label></td>	
+            <td><label for="finerotate">Rotation angle (Fine-tune):</label></td>
             <td>
                 <input required type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.1" onchange="drawRotated()"
                         oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=-1)) && 
@@ -150,6 +174,17 @@
             <td>
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Saturation_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Saturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="grayscale" id="labelgrayscale">Grayscale:</label></td>
+            <td><input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
+            <td>
+                <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto exposure:</class>
+            </td>
+            <td>
+                <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_AutoExposureLevel_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
+                <output id="TakeImage_AutoExposureLevel_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
         </tr>
     </table>
@@ -201,13 +236,24 @@
             var xhttp = new XMLHttpRequest();
             if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
             {
+                _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
+                _zoom = document.getElementById("zoom").checked ? "1" : "0";
+                _zm = document.getElementById("zoommode").value;
+                if (_zm == "") _zm = "0";
+                _x = document.getElementById("zoomoffsetx").value;
+                if (_x == "") _x = "0";
+                _y = document.getElementById("zoomoffsety").value;
+                if (_y == "") _y = "0";
                 _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
                 if (_intensity == "") _intensity = "50";
                 _brightness = document.getElementById("TakeImage_Brightness_value1").value;
                 _contrast = document.getElementById("TakeImage_Contrast_value1").value;
                 _saturation = document.getElementById("TakeImage_Saturation_value1").value;
+                _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
                 url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
-                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
+                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity + "&ae=" + _ae + "&gs=" + _grayscale;
+                if (_zoom != '0')
+                    url = url + "&z=" + _zoom + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
             }
             else
             {
@@ -235,8 +281,14 @@
                 doTake();
             }
 
+            document.getElementById("grayscale").disabled = false;
+            document.getElementById("zoom").disabled = false;
+            document.getElementById("zoommode").disabled = false;
+            document.getElementById("zoomoffsetx").disabled = false;
+            document.getElementById("zoomoffsety").disabled = false;
+            document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = false;
             document.getElementById("finerotate").disabled = false;
-            document.getElementById("prerotateangle").disabled = false;  
+            document.getElementById("prerotateangle").disabled = false;
             document.getElementById("startreference").disabled = true;
             document.getElementById("take").disabled = false;
             if (param["Alignment"]["InitialMirror"].found)
@@ -296,6 +348,12 @@
             if (_param["Alignment"]["FlipImageSize"].found && (_param["Alignment"]["FlipImageSize"].value1 == "true"))
                 document.getElementById("flip").checked = true;
 
+            document.getElementById("grayscale").disabled = true;
+            document.getElementById("zoom").disabled = true;
+            document.getElementById("zoommode").disabled = true;
+            document.getElementById("zoomoffsetx").disabled = true;
+            document.getElementById("zoomoffsety").disabled = true;
+            document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = true;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("updatereferenceimage").disabled = true;
@@ -351,12 +409,27 @@
                 else
                     param["Alignment"]["FlipImageSize"].value1 = "false";
 
+                if ((param["TakeImage"]["Grayscale"].found == true) && (document.getElementById("grayscale").checked))
+                    param["TakeImage"]["Grayscale"].value1 = "true";
+                else
+                    param["TakeImage"]["Grayscale"].value1 = "false";
+
+                if ((param["TakeImage"]["Zoom"].found == true) && (document.getElementById("zoom").checked))
+                    param["TakeImage"]["Zoom"].value1 = "true";
+                else
+                    param["TakeImage"]["Zoom"].value1 = "false";
+
+                param["TakeImage"]["ZoomMode"].value1 = document.getElementById("zoommode").value;
+                param["TakeImage"]["ZoomOffsetX"].value1 = document.getElementById("zoomoffsetx").value;
+                param["TakeImage"]["ZoomOffsetY"].value1 = document.getElementById("zoomoffsety").value;
+
                 if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
                 {
-                    ReadParameter(param, "TakeImage", "Brightness", false);		
-                	ReadParameter(param, "TakeImage", "Contrast", false);
+                    ReadParameter(param, "TakeImage", "Brightness", false);
+                    ReadParameter(param, "TakeImage", "Contrast", false);
                     ReadParameter(param, "TakeImage", "Saturation", false);
                     ReadParameter(param, "TakeImage", "LEDIntensity", false);
+                    ReadParameter(param, "TakeImage", "AutoExposureLevel", false);
                 }
 
                 var canvas = document.getElementById("canvas");
@@ -423,11 +496,49 @@
             ParseConfig();
             param = getConfigParameters();
 
+            param["TakeImage"]["AutoExposureLevel"]["enabled"] = true;
             param["TakeImage"]["LEDIntensity"]["enabled"] = true;
             param["TakeImage"]["Brightness"]["enabled"] = true;
             param["TakeImage"]["Contrast"]["enabled"] = true;
             param["TakeImage"]["Saturation"]["enabled"] = true;
+            
+            param["TakeImage"]["Grayscale"]["enabled"] = true;
+            param["TakeImage"]["Zoom"]["enabled"] = true;
+            param["TakeImage"]["ZoomMode"]["enabled"] = true;
+            param["TakeImage"]["ZoomOffsetX"]["enabled"] = true;
+            param["TakeImage"]["ZoomOffsetY"]["enabled"] = true;
 
+            if (!param["TakeImage"]["Grayscale"]["found"])
+            {
+                param["TakeImage"]["Grayscale"]["found"] = true;
+                param["TakeImage"]["Grayscale"].value1 = "false";
+            }
+            if (!param["TakeImage"]["Zoom"]["found"])
+            {
+                param["TakeImage"]["Zoom"]["found"] = true;
+                param["TakeImage"]["Zoom"].value1 = "false";
+            }
+            if (!param["TakeImage"]["ZoomMode"]["found"])
+            {
+                param["TakeImage"]["ZoomMode"]["found"] = true;
+                param["TakeImage"]["ZoomMode"].value1 = "0";
+            }
+            if (!param["TakeImage"]["ZoomOffsetX"]["found"])
+            {
+                param["TakeImage"]["ZoomOffsetX"]["found"] = true;
+                param["TakeImage"]["ZoomOffsetX"].value1 = "0";
+            }
+            if (!param["TakeImage"]["ZoomOffsetY"]["found"])
+            {
+                param["TakeImage"]["ZoomOffsetY"]["found"] = true;
+                param["TakeImage"]["ZoomOffsetY"].value1 = "0";
+            }
+
+            if (!param["TakeImage"]["AutoExposureLevel"]["found"])
+            {
+                param["TakeImage"]["AutoExposureLevel"]["found"] = true;
+                param["TakeImage"]["AutoExposureLevel"]["value1"] = "0";
+            }
             if (!param["TakeImage"]["LEDIntensity"]["found"])
             {
                 param["TakeImage"]["LEDIntensity"]["found"] = true;
@@ -455,10 +566,24 @@
 
 
         function UpdateInput() {
-            WriteParameter(param, category, "TakeImage", "Brightness", false, true);		
-            WriteParameter(param, category, "TakeImage", "Contrast", false, true);		
-            WriteParameter(param, category, "TakeImage", "Saturation", false, true);		
-            WriteParameter(param, category, "TakeImage", "LEDIntensity", false);		
+            WriteParameter(param, category, "TakeImage", "AutoExposureLevel", false, true);
+            WriteParameter(param, category, "TakeImage", "Brightness", false, true);
+            WriteParameter(param, category, "TakeImage", "Contrast", false, true);
+            WriteParameter(param, category, "TakeImage", "Saturation", false, true);
+            WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
+            if (param["TakeImage"]["Grayscale"].value1 == "true") {
+                document.getElementById("grayscale").checked = true;
+            } else {
+                document.getElementById("grayscale").checked = false;
+            }
+            if (param["TakeImage"]["Zoom"].value1 == "true") {
+                document.getElementById("zoom").checked = true;
+            } else {
+                document.getElementById("zoom").checked = false;
+            }
+            document.getElementById("zoommode").value = param["TakeImage"]["ZoomMode"].value1;
+            document.getElementById("zoomoffsetx").value = param["TakeImage"]["ZoomOffsetX"].value1;
+            document.getElementById("zoomoffsety").value = param["TakeImage"]["ZoomOffsetY"].value1;
         }
 
 

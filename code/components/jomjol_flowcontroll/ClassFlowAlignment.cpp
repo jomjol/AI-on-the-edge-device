@@ -31,7 +31,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     AlignAndCutImage = NULL;
     ImageBasis = NULL;
     ImageTMP = NULL;
-    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
+    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
     AlgROI = (ImageData*)malloc_psram_heap(std::string(TAG) + "->AlgROI", sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
     #endif
     previousElement = NULL;

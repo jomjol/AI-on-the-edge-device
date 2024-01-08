@@ -692,39 +692,75 @@ esp_err_t handler_editflow(httpd_req_t *req)
     if (_task.compare("test_take") == 0)
     {
         std::string _host = "";
-        std::string _bri = "";
-        std::string _con = "";
-        std::string _sat = "";
-        std::string _int = "";
         int bri = -100;
         int sat = -100;
         int con = -100;
         int intens = -100;
+        int aelevel = 0;
+        int zoommode = 0;
+        int zoomoffsetx = 0;
+        int zoomoffsety = 0;
+        bool zoom = false;
+    #ifdef GRAYSCALE_AS_DEFAULT
+        bool grayscale = true;
+    #else
+        bool grayscale = false;
+    #endif
 
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
         }
         if (httpd_query_key_value(_query, "int", _valuechar, 30) == ESP_OK) {
-            _int = std::string(_valuechar);
+            std::string _int = std::string(_valuechar);
             intens = stoi(_int);
         }
         if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK) {
-            _bri = std::string(_valuechar);
+            std::string _bri = std::string(_valuechar);
             bri = stoi(_bri);
         }
         if (httpd_query_key_value(_query, "con", _valuechar, 30) == ESP_OK) {
-            _con = std::string(_valuechar);
+            std::string _con = std::string(_valuechar);
             con = stoi(_con);
         }
         if (httpd_query_key_value(_query, "sat", _valuechar, 30) == ESP_OK) {
-            _sat = std::string(_valuechar);
+            std::string _sat = std::string(_valuechar);
             sat = stoi(_sat);
         }
-
+        if (httpd_query_key_value(_query, "ae", _valuechar, 30) == ESP_OK) {
+            std::string _ae = std::string(_valuechar);
+            aelevel = stoi(_ae);
+        }
+        if (httpd_query_key_value(_query, "gs", _valuechar, 30) == ESP_OK) {
+            std::string _gr = std::string(_valuechar);
+            if (stoi(_gr) != 0)
+                grayscale = true;
+            else
+                grayscale = false;
+        }
+        if (httpd_query_key_value(_query, "z", _valuechar, 30) == ESP_OK) {
+            std::string _zoom = std::string(_valuechar);
+            if (stoi(_zoom) != 0)
+                zoom = true;
+            else
+                zoom = false;
+        }
+        if (httpd_query_key_value(_query, "zm", _valuechar, 30) == ESP_OK) {
+            std::string _zm = std::string(_valuechar);
+            zoommode = stoi(_zm);
+        }
+        if (httpd_query_key_value(_query, "x", _valuechar, 30) == ESP_OK) {
+            std::string _x = std::string(_valuechar);
+            zoomoffsetx = stoi(_x);
+        }
+        if (httpd_query_key_value(_query, "y", _valuechar, 30) == ESP_OK) {
+            std::string _y = std::string(_valuechar);
+            zoomoffsety = stoi(_y);
+        }
 
 //        ESP_LOGD(TAG, "Parameter host: %s", _host.c_str());
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
-        Camera.SetBrightnessContrastSaturation(bri, con, sat);
+        Camera.SetZoom(zoom, zoommode, zoomoffsetx, zoomoffsety);
+        Camera.SetBrightnessContrastSaturation(bri, con, sat, aelevel, grayscale);
         Camera.SetLEDIntensity(intens);
         ESP_LOGD(TAG, "test_take - vor TakeImage");
         std::string zw = flowctrl.doSingleStep("[TakeImage]", _host);
