@@ -119,8 +119,14 @@ function ParseConfig() {
      ParamAddValue(param, catname, "Saturation");
      ParamAddValue(param, catname, "LEDIntensity");
      ParamAddValue(param, catname, "ImageQuality");
-     ParamAddValue(param, catname, "ImageSize");     
-     ParamAddValue(param, catname, "FixedExposure");     
+     ParamAddValue(param, catname, "ImageSize");
+     ParamAddValue(param, catname, "Zoom");
+     ParamAddValue(param, catname, "ZoomMode");
+     ParamAddValue(param, catname, "ZoomOffsetX");
+     ParamAddValue(param, catname, "ZoomOffsetY");
+     ParamAddValue(param, catname, "Grayscale");
+     ParamAddValue(param, catname, "AutoExposureLevel");
+     ParamAddValue(param, catname, "FixedExposure");
 
      var catname = "Alignment";
      category[catname] = new Object(); 

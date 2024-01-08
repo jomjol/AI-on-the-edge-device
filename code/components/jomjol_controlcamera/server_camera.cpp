@@ -97,14 +97,18 @@ esp_err_t handler_capture(httpd_req_t *req)
     {
         int quality;
         framesize_t res;
+        bool zoomEnabled;
+        int zoomMode;
+        int zoomOffsetX;
+        int zoomOffsetY;
 
-        Camera.GetCameraParameter(req, quality, res);
+        Camera.GetCameraParameter(req, quality, res, zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
 
-        #ifdef DEBUG_DETAIL_ON   
+        #ifdef DEBUG_DETAIL_ON
             ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
         #endif
 
-        Camera.SetQualitySize(quality, res);
+        Camera.SetQualitySize(quality, res, zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
 
         esp_err_t result;
         result = Camera.CaptureToHTTP(req);
@@ -136,6 +140,10 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
 
         int quality;
         framesize_t res;    
+        bool zoomEnabled;
+        int zoomMode;
+        int zoomOffsetX;
+        int zoomOffsetY;
         int delay = 2500;
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
@@ -153,13 +161,13 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
             }
         }
 
-        Camera.GetCameraParameter(req, quality, res);
+        Camera.GetCameraParameter(req, quality, res, zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
 
-        #ifdef DEBUG_DETAIL_ON   
+        #ifdef DEBUG_DETAIL_ON
             ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
         #endif
 
-        Camera.SetQualitySize(quality, res);
+        Camera.SetQualitySize(quality, res, zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
         Camera.LightOnOff(true);
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay( xDelay );
@@ -200,6 +208,10 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
         int quality;
         framesize_t res;    
+        bool zoomEnabled;
+        int zoomMode;
+        int zoomOffsetX;
+        int zoomOffsetY;
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
@@ -228,11 +240,11 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
         else
             fn.append("noname.jpg");
 
-        Camera.GetCameraParameter(req, quality, res);
+        Camera.GetCameraParameter(req, quality, res, zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
         #ifdef DEBUG_DETAIL_ON   
             ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
         #endif
-        Camera.SetQualitySize(quality, res);
+        Camera.SetQualitySize(quality, res, zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
 
         esp_err_t result;
         result = Camera.CaptureToFile(fn, delay);  
