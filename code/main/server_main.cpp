@@ -170,6 +170,21 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
+    else if (_task.compare("ChipCores") == 0)
+    {
+        httpd_resp_sendstr(req, GetChipCoreCount().c_str());
+        return ESP_OK;        
+    }
+    else if (_task.compare("ChipRevision") == 0)
+    {
+        httpd_resp_sendstr(req, GetChipRevision().c_str());
+        return ESP_OK;        
+    }
+    else if (_task.compare("ChipFeatures") == 0)
+    {
+        httpd_resp_sendstr(req, GetChipfeatures().c_str());
+        return ESP_OK;      
+    }
     else
     {
         char formatted[256];
