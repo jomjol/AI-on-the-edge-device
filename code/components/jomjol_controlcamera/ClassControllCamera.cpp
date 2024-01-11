@@ -175,6 +175,7 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     _brightness = min(2, max(-2, _brightness));
     _contrast = min(2, max(-2, _contrast));
     _saturation = min(2, max(-2, _saturation));
+    _autoExposureLevel = min(2, max(-2, _autoExposureLevel));
 
     sensor_t * s = esp_camera_sensor_get();
     if (s) {
