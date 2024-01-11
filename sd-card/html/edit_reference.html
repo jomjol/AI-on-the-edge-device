@@ -179,6 +179,12 @@
         <tr>
             <td><label for="grayscale" id="labelgrayscale">Grayscale:</label></td>
             <td><input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
+            <td><label for="aec2" id="labelaec2">Auto Exposure Control 2:</label></td>
+            <td><input type="checkbox" id="aec2" name="aec2" value="0"></td>
+        </tr>
+        <tr>
+            <td><label for="negative" id="labelnegative">Negative:</label></td>
+            <td><input type="checkbox" id="negative" name="negative" value="0"></td>
             <td>
                 <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto exposure:</class>
             </td>
@@ -237,6 +243,8 @@
             if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
             {
                 _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
+                _negative = document.getElementById("negative").checked ? "1" : "0";
+                _aec2 = document.getElementById("aec2").checked ? "1" : "0";
                 _zoom = document.getElementById("zoom").checked ? "1" : "0";
                 _zm = document.getElementById("zoommode").value;
                 if (_zm == "") _zm = "0";
@@ -251,7 +259,7 @@
                 _saturation = document.getElementById("TakeImage_Saturation_value1").value;
                 _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
                 url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
-                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity + "&ae=" + _ae + "&gs=" + _grayscale;
+                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity + "&ae=" + _ae + "&gs=" + _grayscale + "&ne=" + _negative + "&a2=" + _aec2;
                 if (_zoom != '0')
                     url = url + "&z=" + _zoom + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
             }
@@ -282,6 +290,8 @@
             }
 
             document.getElementById("grayscale").disabled = false;
+            document.getElementById("negative").disabled = false;
+            document.getElementById("aec2").disabled = false;
             document.getElementById("zoom").disabled = false;
             document.getElementById("zoommode").disabled = false;
             document.getElementById("zoomoffsetx").disabled = false;
@@ -349,6 +359,8 @@
                 document.getElementById("flip").checked = true;
 
             document.getElementById("grayscale").disabled = true;
+            document.getElementById("negative").disabled = true;
+            document.getElementById("aec2").disabled = true;
             document.getElementById("zoom").disabled = true;
             document.getElementById("zoommode").disabled = true;
             document.getElementById("zoomoffsetx").disabled = true;
@@ -413,6 +425,16 @@
                     param["TakeImage"]["Grayscale"].value1 = "true";
                 else
                     param["TakeImage"]["Grayscale"].value1 = "false";
+
+                if ((param["TakeImage"]["Negative"].found == true) && (document.getElementById("negative").checked))
+                    param["TakeImage"]["Negative"].value1 = "true";
+                else
+                    param["TakeImage"]["Negative"].value1 = "false";
+
+                if ((param["TakeImage"]["Aec2"].found == true) && (document.getElementById("aec2").checked))
+                    param["TakeImage"]["Aec2"].value1 = "true";
+                else
+                    param["TakeImage"]["Aec2"].value1 = "false";
 
                 if ((param["TakeImage"]["Zoom"].found == true) && (document.getElementById("zoom").checked))
                     param["TakeImage"]["Zoom"].value1 = "true";
@@ -503,6 +525,8 @@
             param["TakeImage"]["Saturation"]["enabled"] = true;
             
             param["TakeImage"]["Grayscale"]["enabled"] = true;
+            param["TakeImage"]["Negative"]["enabled"] = true;
+            param["TakeImage"]["Aec2"]["enabled"] = true;
             param["TakeImage"]["Zoom"]["enabled"] = true;
             param["TakeImage"]["ZoomMode"]["enabled"] = true;
             param["TakeImage"]["ZoomOffsetX"]["enabled"] = true;
@@ -512,6 +536,16 @@
             {
                 param["TakeImage"]["Grayscale"]["found"] = true;
                 param["TakeImage"]["Grayscale"].value1 = "false";
+            }
+            if (!param["TakeImage"]["Negative"]["found"])
+            {
+                param["TakeImage"]["Negative"]["found"] = true;
+                param["TakeImage"]["Negative"].value1 = "false";
+            }
+            if (!param["TakeImage"]["Aec2"]["found"])
+            {
+                param["TakeImage"]["Aec2"]["found"] = true;
+                param["TakeImage"]["Aec2"].value1 = "false";
             }
             if (!param["TakeImage"]["Zoom"]["found"])
             {
@@ -575,6 +609,16 @@
                 document.getElementById("grayscale").checked = true;
             } else {
                 document.getElementById("grayscale").checked = false;
+            }
+            if (param["TakeImage"]["Negative"].value1 == "true") {
+                document.getElementById("negative").checked = true;
+            } else {
+                document.getElementById("negative").checked = false;
+            }
+            if (param["TakeImage"]["Aec2"].value1 == "true") {
+                document.getElementById("aec2").checked = true;
+            } else {
+                document.getElementById("aec2").checked = false;
             }
             if (param["TakeImage"]["Zoom"].value1 == "true") {
                 document.getElementById("zoom").checked = true;

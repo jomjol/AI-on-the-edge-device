@@ -54,6 +54,8 @@ void ClassFlowTakeImage::SetInitialParameter(void)
     ZoomMode = 0;
     zoomOffsetX = 0;
     zoomOffsetY = 0;
+    ImageNegative = false;
+    ImageAec2 = false;
 #ifdef GRAYSCALE_AS_DEFAULT
     ImageGrayscale = true;
 #else
@@ -122,6 +124,20 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             else if (toUpper(splitted[1]) == "FALSE")
                 ImageGrayscale = false;
         }
+        if ((toUpper(splitted[0]) == "NEGATIVE") && (splitted.size() > 1))
+        {
+            if (toUpper(splitted[1]) == "TRUE")
+                ImageNegative = true;
+            else if (toUpper(splitted[1]) == "FALSE")
+                ImageNegative = false;
+        }
+        if ((toUpper(splitted[0]) == "AEC2") && (splitted.size() > 1))
+        {
+            if (toUpper(splitted[1]) == "TRUE")
+                ImageAec2 = true;
+            else if (toUpper(splitted[1]) == "FALSE")
+                ImageAec2 = false;
+        }
         if ((toUpper(splitted[0]) == "AUTOEXPOSURELEVEL") && (splitted.size() > 1))
             _autoExposureLevel = std::stod(splitted[1]);
 
@@ -183,7 +199,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation, _autoExposureLevel, ImageGrayscale);
+    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation, _autoExposureLevel, ImageGrayscale, ImageNegative, ImageAec2);
     Camera.SetQualitySize(ImageQuality, ImageSize, ZoomEnabled, ZoomMode, zoomOffsetX, zoomOffsetY);
 
     image_width = Camera.image_width;

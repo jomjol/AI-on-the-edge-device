@@ -170,7 +170,7 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
 }
 
 
-bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation, int _autoExposureLevel, bool _grayscale)
+bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation, int _autoExposureLevel, bool _grayscale, bool _negative, bool _aec2)
 {
     _brightness = min(2, max(-2, _brightness));
     _contrast = min(2, max(-2, _contrast));
@@ -180,6 +180,7 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     sensor_t * s = esp_camera_sensor_get();
     if (s) {
         // auto exposure controls
+        s->set_aec2(s, _aec2 ? 1 : 0);
         s->set_ae_level(s, _autoExposureLevel); // -2 to 2
         s->set_gainceiling(s, GAINCEILING_2X); // GAINCEILING_2X 4X 8X 16X 32X 64X 128X
 
@@ -215,23 +216,20 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
 
         //s->set_reg(s, 0x7C, 0xFF, 2); // Optional feature - hue setting: Select byte 2 in register 0x7C to set hue value
         //s->set_reg(s, 0x7D, 0xFF, 0); // Optional feature - hue setting: Hue value 0 - 255
+        int indirectReg0 = 0x07; // Set bit 0, 1, 2 to enable saturation, contrast, brightness and hue control
         if (_grayscale) {
-            // Indirect register access
-            s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
-            s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x00); // Address 0x00
-            s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x1F); // Set bit 0, 1, 2 to enable saturation, contrast, brightness and hue control
-            s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x05); // Address 0x05
-            s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
-            s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
-        } else {
-            // Indirect register access
-            s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
-            s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x00); // Address 0x00
-            s->set_reg(s, OV_IRA_BPDATA, 0xFF, 7); // Set bit 0, 1, 2 to enable saturation, contrast, brightness and hue control
-            s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x05); // Address 0x05
-            s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
-            s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
+            indirectReg0 |= 0x18;
         }
+        if (_negative) {
+            indirectReg0 |= 0x40;
+        }
+        // Indirect register access
+        s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
+        s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x00); // Address 0x00
+        s->set_reg(s, OV_IRA_BPDATA, 0xFF, indirectReg0);
+        s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x05); // Address 0x05
+        s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
+        s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetBrightnessContrastSaturation: Failed to get control structure");
@@ -245,6 +243,8 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     saturation = _saturation;
     autoExposureLevel = _autoExposureLevel;
     imageGrayscale = _grayscale;
+    imageNegative = _negative;
+    imageAec2 = _aec2;
 
     ESP_LOGD(TAG, "brightness %d, contrast: %d, saturation %d, autoExposureLevel %d, grayscale %d", brightness, contrast, saturation, autoExposureLevel, (int)imageGrayscale);
 
