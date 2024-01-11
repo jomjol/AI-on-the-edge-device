@@ -85,8 +85,8 @@ static camera_config_t camera_config = {
 
     .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
     .frame_size = FRAMESIZE_VGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    // .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    .jpeg_quality = 4, //0-63 lower number means higher quality
+//    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .jpeg_quality = 12, //0-63 lower number means higher quality
     .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
     .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
     .grab_mode = CAMERA_GRAB_LATEST,      // only from new esp32cam version
@@ -469,22 +469,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     if (_zwImage == NULL) {
         return ESP_OK;
-    }
-
-    if (_zwImage->getWidth() > image_width || _zwImage->getHeight() > image_height) {
-        int cropLeft = (_zwImage->getWidth() - image_width) / 2;
-        if (cropLeft < 0)
-            cropLeft = 0;
-        int cropRight = _zwImage->getWidth() - cropLeft - image_width;
-        if (cropRight < 0)
-            cropRight = 0;
-        int cropTop = (_zwImage->getHeight() - image_height) / 2;
-        if (cropTop < 0)
-            cropTop = 0;
-        int cropBottom = _zwImage->getHeight() - cropTop - image_height;
-        if (cropBottom < 0)
-            cropBottom = 0;
-        _zwImage->crop_image(cropLeft, cropRight, cropTop, cropBottom);
     }
 
     stbi_uc* p_target;
