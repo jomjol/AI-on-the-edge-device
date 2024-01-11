@@ -125,6 +125,8 @@ function ParseConfig() {
      ParamAddValue(param, catname, "ZoomOffsetX");
      ParamAddValue(param, catname, "ZoomOffsetY");
      ParamAddValue(param, catname, "Grayscale");
+     ParamAddValue(param, catname, "Negative");
+     ParamAddValue(param, catname, "Aec2");
      ParamAddValue(param, catname, "AutoExposureLevel");
      ParamAddValue(param, catname, "FixedExposure");
 
