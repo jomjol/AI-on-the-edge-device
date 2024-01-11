@@ -701,6 +701,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
         int zoomoffsetx = 0;
         int zoomoffsety = 0;
         bool zoom = false;
+        bool negative = false;
+        bool aec2 = false;
     #ifdef GRAYSCALE_AS_DEFAULT
         bool grayscale = true;
     #else
@@ -737,6 +739,20 @@ esp_err_t handler_editflow(httpd_req_t *req)
             else
                 grayscale = false;
         }
+        if (httpd_query_key_value(_query, "ne", _valuechar, 30) == ESP_OK) {
+            std::string _ne = std::string(_valuechar);
+            if (stoi(_ne) != 0)
+                negative = true;
+            else
+                negative = false;
+        }
+        if (httpd_query_key_value(_query, "a2", _valuechar, 30) == ESP_OK) {
+            std::string _a2 = std::string(_valuechar);
+            if (stoi(_a2) != 0)
+                aec2 = true;
+            else
+                aec2 = false;
+        }
         if (httpd_query_key_value(_query, "z", _valuechar, 30) == ESP_OK) {
             std::string _zoom = std::string(_valuechar);
             if (stoi(_zoom) != 0)
@@ -760,7 +776,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        ESP_LOGD(TAG, "Parameter host: %s", _host.c_str());
 //        string zwzw = "Do " + _task + " start\n"; ESP_LOGD(TAG, zwzw.c_str());
         Camera.SetZoom(zoom, zoommode, zoomoffsetx, zoomoffsety);
-        Camera.SetBrightnessContrastSaturation(bri, con, sat, aelevel, grayscale);
+        Camera.SetBrightnessContrastSaturation(bri, con, sat, aelevel, grayscale, negative, aec2);
         Camera.SetLEDIntensity(intens);
         ESP_LOGD(TAG, "test_take - vor TakeImage");
         std::string zw = flowctrl.doSingleStep("[TakeImage]", _host);
