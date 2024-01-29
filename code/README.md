@@ -8,6 +8,15 @@ git checkout rolling
 git submodule update --init
 ```
 
+## Update Submodules
+```
+cd /components/submodule-name (e.g. tflite-micro-example)
+git checkout VERSION (e.g. HASH of latest tflite-micro-example build)
+cd ../../ (auf Ebene von code)
+git submodule update --init
+```
+Evt. muss man vorher noch einige Verzeichnisse in compenents von Hand löschen, da sie beim checkout nicht gelöscht wurden (vor update -- init)
+
 ## Build and Flash within terminal
 See further down to build it within an IDE.
 ### Compile

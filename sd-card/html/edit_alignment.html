@@ -55,6 +55,29 @@
             width: 660px;
             padding: 5px;
         }
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2;
+        }
+
+        #overlaytext{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 150%;
+            color: white;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
     </style>	
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -62,6 +85,9 @@
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext">Device is busy with digitalization round. Waiting until it completes...</div>
+    </div>
 	
 	<h2>Alignment Marker</h2>
     <details id="desc_details" style="font-size:16px">
@@ -183,10 +209,42 @@ function EnhanceContrast(){
     refInfo[aktindex]["dy"] = document.getElementById("refdy").value;       
 
     enhanceCon = true;
-    if (MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname)) {
-        UpdateReference();
-        document.getElementById("enhancecontrast").disabled = true;
+
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("overlaytext").innerHTML = "Enhancing Image Contrast...";
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    async function task() {
+        while (true) {
+            var ret = MakeContrastImageZW(refInfo[aktindex], enhanceCon, domainname);
+            if (ret) {
+                UpdateReference();
+                //document.getElementById("enhancecontrast").disabled = true;
+                document.getElementById("overlay").style.display = "none";
+                return;
+            }
+            else {
+                // Get status
+                var xhttp = new XMLHttpRequest();
+                try {
+                    xhttp.open("GET", domainname + "/statusflow", false);
+                    xhttp.send();
+                }
+                catch (error){}
+
+                document.getElementById("overlaytext").innerHTML = "Device is busy, waiting until the Digitalization Round got completed (this can take several minutes)...<br><br>Current step: " + xhttp.responseText;
+                console.log("Device is busy, waiting 5s then checking again...");
+                await sleep(5000);
+            }
+        }
+    }
+
+    setTimeout(function() { // Delay so the overlay gets shown
+        task();
+    }, 1);
 }
 
 function UpdateReference(){
@@ -304,12 +362,44 @@ function dataURLtoBlob(dataurl) {
             refInfo[aktindex]["x"] = document.getElementById("refx").value;
             refInfo[aktindex]["y"] = document.getElementById("refy").value; 
             refInfo[aktindex]["dx"] = document.getElementById("refdx").value;
-            refInfo[aktindex]["dy"] = document.getElementById("refdy").value;   
-            if (MakeRefZW(refInfo[aktindex], domainname)) {
-                UpdateReference();
-                document.getElementById("enhancecontrast").disabled = false;
-                document.getElementById("savemarker").disabled = false;
+            refInfo[aktindex]["dy"] = document.getElementById("refdy").value;
+
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("overlaytext").innerHTML = "Updating marker...";
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
+
+            async function task() {
+                while (true) {
+                    var ret = MakeRefZW(refInfo[aktindex], domainname);
+                    if (ret) {
+                        UpdateReference();
+                        document.getElementById("enhancecontrast").disabled = false;
+                        document.getElementById("savemarker").disabled = false;
+                        document.getElementById("overlay").style.display = "none";
+                        return;
+                    }
+                    else {
+                        // Get status
+                        var xhttp = new XMLHttpRequest();
+                        try {
+                            xhttp.open("GET", domainname + "/statusflow", false);
+                            xhttp.send();
+                        }
+                        catch (error){}
+
+                        document.getElementById("overlaytext").innerHTML = "Device is busy, waiting until the Digitalization Round got completed (this can take several minutes)...<br><br>Current step: " + xhttp.responseText;
+                        console.log("Device is busy, waiting 5s then checking again...");
+                        await sleep(5000);
+                    }
+                }
+            }
+
+            setTimeout(function() { // Delay so the overlay gets shown
+                task();
+            }, 1);
         }
 
         function drawGrid(){

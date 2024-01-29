@@ -259,17 +259,13 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
           xhttp.open("GET", url, false);
           xhttp.send();
      }
-     catch (error)
-     {
-//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
-     }
+     catch (error){}
 
      if (xhttp.responseText == "CutImage Done") {
           firework.launch('Image Contrast got enhanced', 'success', 5000);
           return true;
      }
      else {
-          firework.launch("Device is busy, please try again when the Digitalization Round got completed!", 'warning', 10000);
           return false;
      }
 }
@@ -284,10 +280,7 @@ function MakeRefZW(zw, _domainname){
           xhttp.open("GET", url, false);
           xhttp.send();
      }
-     catch (error)
-     {
-//	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
-     }
+     catch (error){}
 
      if (xhttp.responseText == "CutImage Done") {
           _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
@@ -297,7 +290,6 @@ function MakeRefZW(zw, _domainname){
           return true;
      }
      else {
-          firework.launch("Device is busy, please try again when the Digitalization Round got completed!", 'warning', 10000);
           return false;
      }
 }

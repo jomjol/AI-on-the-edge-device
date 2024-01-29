@@ -183,6 +183,9 @@ function ParseConfig() {
      ParamAddValue(param, catname, "RetainMessages");
      ParamAddValue(param, catname, "HomeassistantDiscovery");
      ParamAddValue(param, catname, "MeterType");
+     ParamAddValue(param, catname, "CACert");
+     ParamAddValue(param, catname, "ClientCert");
+     ParamAddValue(param, catname, "ClientKey");
 
      var catname = "InfluxDB";
      category[catname] = new Object(); 
@@ -203,7 +206,7 @@ function ParseConfig() {
      category[catname]["found"] = false;
      param[catname] = new Object();
      ParamAddValue(param, catname, "Uri");
-     ParamAddValue(param, catname, "Database");
+     ParamAddValue(param, catname, "Bucket");
 //     ParamAddValue(param, catname, "Measurement");
      ParamAddValue(param, catname, "Org");
      ParamAddValue(param, catname, "Token");
