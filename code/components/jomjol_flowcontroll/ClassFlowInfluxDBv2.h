@@ -15,7 +15,7 @@ class ClassFlowInfluxDBv2 :
     public ClassFlow
 {
 protected:
-    std::string uri, database;
+    std::string uri, bucket;
     std::string dborg, dbtoken, dbfield;
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  

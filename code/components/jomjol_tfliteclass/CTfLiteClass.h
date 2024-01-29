@@ -3,8 +3,12 @@
 #ifndef CTFLITECLASS_H
 #define CTFLITECLASS_H
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/micro/kernels/micro_ops.h"
+
+#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
@@ -12,6 +16,8 @@
 #include "esp_log.h"
 
 #include "CImageBasis.h"
+
+
 
 #ifdef SUPRESS_TFLITE_ERRORS
 #include "tensorflow/lite/core/api/error_reporter.h"
@@ -27,6 +33,7 @@ namespace tflite {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif
 
+
 class CTfLiteClass
 {
     protected:
@@ -34,7 +41,6 @@ class CTfLiteClass
         const tflite::Model* model;
         tflite::MicroInterpreter* interpreter;
         TfLiteTensor* output = nullptr;     
-        static tflite::AllOpsResolver resolver;
 
         int kTensorArenaSize;
         uint8_t *tensor_arena;
@@ -67,5 +73,7 @@ class CTfLiteClass
         void GetInputDimension(bool silent);
         int ReadInputDimenstion(int _dim);
 };
+
+void MakeStaticResolver();
 
 #endif //CTFLITECLASS_H

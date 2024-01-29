@@ -134,7 +134,22 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     return result;
 }
 
-
+/**
+ * @brief Determines the number of an ROI in connection with previous ROI results
+ * 
+ * @param number: is the current ROI as float value from recognition
+ * @param number_of_predecessors: is the last (lower) ROI as float from recognition
+ * @param eval_predecessors: is the evaluated number. Sometimes a much lower value can change higer values
+ *                          example: 9.8, 9.9, 0.1
+ *                          0.1 => 0 (eval_predecessors)
+ *                          The 0 makes a 9.9 to 0 (eval_predecessors)
+ *                          The 0 makes a 9.8 to 0 
+ * @param Analog_Predecessors false/true if the last ROI is an analog or digital ROI (default=false)
+ *                              runs in special handling because analog is much less precise
+ * @param digitalAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
+ *
+ * @return int the determined number of the current ROI
+ */
 int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
 {
     int result;
@@ -145,7 +160,8 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     {   
         // on first digit is no spezial logic for transition needed
         // we use the recognition as given. The result is the int value of the recognition
-        result = (int) ((int) trunc(number) + 10) % 10;
+        // add precisition of 2 digits and round before trunc
+        result = (int) ((int) trunc(round((number+10 % 10)*100)) )  / 100;
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
@@ -484,7 +500,7 @@ bool ClassFlowCNNGeneral::doFlow(string time)
 
     if (!doAlignAndCut(time)){
         return false;
-    };
+    }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "doFlow after alignment");
 
@@ -852,10 +868,9 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number)
 {
-    if (!(CNNType == Digital))
-        return true;
-
-    return false;
+    if (CNNType == Digital)
+        return false;
+    return true;
 }
 
 

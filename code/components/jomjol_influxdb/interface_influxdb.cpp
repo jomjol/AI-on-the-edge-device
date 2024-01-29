@@ -5,6 +5,7 @@
 #include <time.h>
 #include "ClassLogFile.h"
 #include "esp_http_client.h"
+#include "time_sntp.h"
 #include "../../include/defines.h"
 
 
@@ -16,21 +17,21 @@ std::string _influxDBUser;
 std::string _influxDBPassword;
 
 std::string _influxDB_V2_URI;
-std::string _influxDB_V2_Database;
+std::string _influxDB_V2_Bucket;
 std::string _influxDB_V2_Token;
 std::string _influxDB_V2_Org;
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt);
 
-void InfluxDB_V2_Init(std::string _uri, std::string _database, std::string _org, std::string _token)
+void InfluxDB_V2_Init(std::string _uri, std::string _bucket, std::string _org, std::string _token)
 {
     _influxDB_V2_URI = _uri;
-    _influxDB_V2_Database = _database;
+    _influxDB_V2_Bucket = _bucket;
     _influxDB_V2_Org = _org;
     _influxDB_V2_Token = _token;
 }
 
-void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string _content, std::string _timestamp) 
+void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) 
 {
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
     esp_http_client_config_t http_config = {
@@ -41,32 +42,20 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
        .user_data = response_buffer
     };
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB_V2_Publish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB_V2_Publish - Key: " + _key + ", Content: " + _content + ", timeUTC: " + std::to_string(_timeUTC));
 
     std::string payload;
     char nowTimestamp[21];
 
-    if (_timestamp.length() > 0)
+    if (_timeUTC > 0)
     {
-        struct tm tm;
-        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
-
-//        struct tm * ptm;
-//        ptm = gmtime ( &t );
-//        time_t utc = mktime(ptm);
-
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use handover timestamp: " + _timestamp + " converted GMT timestamp: " + std::to_string(t));
-
-//        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
-
-        sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
-
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp (UTC): " + std::to_string(_timeUTC));
+        sprintf(nowTimestamp,"%ld000000000", _timeUTC);           // UTC
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "no timestamp given");
         payload = _measurement + " " + _key + "=" + _content;
     }
 
@@ -74,7 +63,7 @@ void InfluxDB_V2_Publish(std::string _measurement, std::string _key, std::string
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
-    std::string apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Database;
+    std::string apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + _influxDB_V2_Org + "&bucket=" + _influxDB_V2_Bucket;
     apiURI.shrink_to_fit();
     http_config.url = apiURI.c_str();
     ESP_LOGI(TAG, "http_config: %s", http_config.url); // Add mark on log to see when it restarted
@@ -141,7 +130,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-void InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, std::string _timestamp) {
+void InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) {
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
     esp_http_client_config_t http_config = {
        .user_agent = "ESP32 Meter reader",
@@ -160,29 +149,17 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
     std::string payload;
     char nowTimestamp[21];
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", Timestamp: " + _timestamp);
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", timeUTC: " + std::to_string(_timeUTC));
 
-    if (_timestamp.length() > 0)
+    if (_timeUTC > 0)
     {
-        struct tm tm;
-        strptime(_timestamp.c_str(), PREVALUE_TIME_FORMAT_OUTPUT, &tm);
-        time_t t = mktime(&tm); // Time in Localtime (looks like timezone is not used by strptime)
-
-//        struct tm * ptm;
-//        ptm = gmtime ( &t );
-//        time_t utc = mktime(ptm);
-
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Use handover timestamp: " + _timestamp + " converted GMT timestamp: " + std::to_string(t));
-
-//        utc = 2*t - utc;        // Take care of timezone (looks difficult, but is easy: t = t + (t - utc), weil t-utc = timezone)
-//        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "time conversion utc after: " + std::to_string(utc));
-
-        sprintf(nowTimestamp,"%ld000000000", (long) t);           // UTC
-
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp (UTC): " + std::to_string(_timeUTC));
+        sprintf(nowTimestamp,"%ld000000000", _timeUTC);           // UTC
         payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "no timestamp given");
         payload = _measurement + " " + _key + "=" + _content;
     }
 
@@ -191,7 +168,7 @@ void InfluxDBPublish(std::string _measurement, std::string _key, std::string _co
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
 
-    // use the default retention policy of the database
+    // use the default retention policy of the bucket
     std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
 //    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
 
