@@ -880,6 +880,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->ReturnRawValue = "";
         NUMBERS[j]->ReturnRateValue = "";
         NUMBERS[j]->ReturnValue = "";
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(0.0, NUMBERS[j]->Nachkomma); // always reset change absolute
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
 
