@@ -56,6 +56,7 @@ class CImageBasis
         void drawEllipse(int x1, int y1, int radx, int rady, int r, int g, int b, int thickness = 1);
 
         void setPixelColor(int x, int y, int r, int g, int b);
+        void Negative(void);
         void Contrast(float _contrast);
         bool ImageOkay();
         bool CopyFromMemory(uint8_t* _source, int _size);
