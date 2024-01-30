@@ -748,9 +748,6 @@
             context.save();
 
             negative = document.getElementById("negative").checked;
-            if (negative) {
-                context.filter = 'invert(1)';
-            }
 
             if (isActReference)
             {
@@ -758,6 +755,9 @@
             }
             else
             {
+                if (negative) {
+                    context.filter = 'invert(1)';
+                }
                 context.translate(canvas.width/2,canvas.height/2);
                 context.rotate(degrees*Math.PI/180);
                 if (mirror) {
