@@ -31,6 +31,8 @@
 #include "driver/ledc.h"
 #include "MainFlowControl.h"
 
+#include "ov2640_sharpness.h"
+
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #include "soc/periph_defs.h"
 #include "esp_private/periph_ctrl.h"
@@ -53,9 +55,9 @@ static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" 
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
-// OV Camera SDE Indirect Register Access
-#define OV_IRA_BPADDR               0x7C
-#define OV_IRA_BPDATA               0x7D
+// OV2640 Camera SDE Indirect Register Access
+#define OV2640_IRA_BPADDR               0x7C
+#define OV2640_IRA_BPDATA               0x7D
 
 
 static camera_config_t camera_config = {
@@ -170,66 +172,93 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
 }
 
 
-bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation, int _autoExposureLevel, bool _grayscale, bool _negative, bool _aec2)
+bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation, int _autoExposureLevel, bool _grayscale, bool _negative, bool _aec2, int _sharpnessLevel)
 {
     _brightness = min(2, max(-2, _brightness));
     _contrast = min(2, max(-2, _contrast));
     _saturation = min(2, max(-2, _saturation));
     _autoExposureLevel = min(2, max(-2, _autoExposureLevel));
+    bool _autoSharpness = false;
+    if (_sharpnessLevel <= -4)
+        _autoSharpness = true;
+    _sharpnessLevel = min(3, max(-3, _sharpnessLevel));
 
     sensor_t * s = esp_camera_sensor_get();
     if (s) {
+        // camera gives precedence to negative over grayscale, so it's easier to do negative ourselves.
+        // if (_negative) {
+        //     s->set_special_effect(s, 1); // 0 - no effect, 1 - negative, 2 - grayscale, 3 - reddish, 4 - greenish, 5 - blue, 6 - retro
+        // }
+        if (_grayscale) {
+            s->set_special_effect(s, 2); // 0 - no effect, 1 - negative, 2 - grayscale, 3 - reddish, 4 - greenish, 5 - blue, 6 - retro
+        }
+
         // auto exposure controls
         s->set_aec2(s, _aec2 ? 1 : 0);
         s->set_ae_level(s, _autoExposureLevel); // -2 to 2
         s->set_gainceiling(s, GAINCEILING_2X); // GAINCEILING_2X 4X 8X 16X 32X 64X 128X
 
         // post processing
+        if (_autoSharpness) {
+            s->set_sharpness(s, 0); // auto-sharpness is not officially supported, default to 0
+        }
         s->set_saturation(s, _saturation);
         s->set_contrast(s, _contrast);
         s->set_brightness(s, _brightness);
 
-        /* Workaround - bug in cam library - enable bits are set without using bitwise OR logic -> only latest enable setting is used */
-        /* Library version: https://github.com/espressif/esp32-camera/commit/5c8349f4cf169c8a61283e0da9b8cff10994d3f3 */
-        /* Reference: https://esp32.com/viewtopic.php?f=19&t=14376#p93178 */
-        /* The memory structure is as follows for 
-        byte_0 = enable_bits
-            byte_0->bit0 = enable saturation and hue --> OK
-            byte_0->bit1 = enable saturation --> OK
-            byte_0->bit2 = enable brightness and contrast --> OK
-            byte_0->bit3 = enable green -> blue spitial effect (Antique and blunish and greenish and readdish and b&w) enable
-            byte_0->bit4 = anable gray -> read spitial effect (Antique and blunish and greenish and readdish and b&w) enable
-            byte_0->bit5 = remove (UV) in YUV color system
-            byte_0->bit6 = enable negative
-            byte_0->bit7 = remove (Y) in YUV color system
-        byte_1 = saturation1 0-255 --> ?
-        byte_2 = hue 0-255 --> OK
-        byte_3 = saturation2 0-255 --> OK
-        byte_4 = reenter saturation2 in documents --> ?
-        byte_5 = spital effect green -> blue 0-255 --> ?
-        byte_6 = spital effect gray -> read 0-255 --> ?
-        byte_7 = contrast lower byte 0-255 --> OK
-        byte_8 = contrast higher byte 0-255 --> OK
-        byte_9 = brightness 0-255 --> OK
-        byte_10= if byte_10==4 contrast effective --> ?
-        */
+        camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
+        if (sensor_info != NULL) {
+            if (sensor_info->model == CAMERA_OV2640) {
+                if (_autoSharpness) {
+                    ov2640_enable_auto_sharpness(s);
+                } else {
+                    ov2640_set_sharpness(s, _sharpnessLevel);
+                }
 
-        //s->set_reg(s, 0x7C, 0xFF, 2); // Optional feature - hue setting: Select byte 2 in register 0x7C to set hue value
-        //s->set_reg(s, 0x7D, 0xFF, 0); // Optional feature - hue setting: Hue value 0 - 255
-        int indirectReg0 = 0x07; // Set bit 0, 1, 2 to enable saturation, contrast, brightness and hue control
-        if (_grayscale) {
-            indirectReg0 |= 0x18;
+                /* Workaround - bug in cam library - enable bits are set without using bitwise OR logic -> only latest enable setting is used */
+                /* Library version: https://github.com/espressif/esp32-camera/commit/5c8349f4cf169c8a61283e0da9b8cff10994d3f3 */
+                /* Reference: https://esp32.com/viewtopic.php?f=19&t=14376#p93178 */
+                /* The memory structure is as follows for 
+                byte_0 = enable_bits
+                    byte_0->bit0 = enable saturation and hue --> OK
+                    byte_0->bit1 = enable saturation --> OK
+                    byte_0->bit2 = enable brightness and contrast --> OK
+                    byte_0->bit3 = enable green -> blue spitial effect (Antique and blunish and greenish and readdish and b&w) enable
+                    byte_0->bit4 = anable gray -> read spitial effect (Antique and blunish and greenish and readdish and b&w) enable
+                    byte_0->bit5 = remove (UV) in YUV color system
+                    byte_0->bit6 = enable negative
+                    byte_0->bit7 = remove (Y) in YUV color system
+                byte_1 = saturation1 0-255 --> ?
+                byte_2 = hue 0-255 --> OK
+                byte_3 = saturation2 0-255 --> OK
+                byte_4 = reenter saturation2 in documents --> ?
+                byte_5 = spital effect green -> blue 0-255 --> ?
+                byte_6 = spital effect gray -> read 0-255 --> ?
+                byte_7 = contrast lower byte 0-255 --> OK
+                byte_8 = contrast higher byte 0-255 --> OK
+                byte_9 = brightness 0-255 --> OK
+                byte_10= if byte_10==4 contrast effective --> ?
+                */
+
+                //s->set_reg(s, 0x7C, 0xFF, 2); // Optional feature - hue setting: Select byte 2 in register 0x7C to set hue value
+                //s->set_reg(s, 0x7D, 0xFF, 0); // Optional feature - hue setting: Hue value 0 - 255
+                int indirectReg0 = 0x07; // Set bit 0, 1, 2 to enable saturation, contrast, brightness and hue control
+                if (_grayscale) {
+                    indirectReg0 |= 0x18;
+                }
+                // camera gives precedence to negative over grayscale, so it's easier to do negative ourselves.
+                // if (_negative) {
+                //     indirectReg0 |= 0x40;
+                // }
+                // Indirect register access
+                s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
+                s->set_reg(s, OV2640_IRA_BPADDR, 0xFF, 0x00); // Address 0x00
+                s->set_reg(s, OV2640_IRA_BPDATA, 0xFF, indirectReg0);
+                s->set_reg(s, OV2640_IRA_BPADDR, 0xFF, 0x05); // Address 0x05
+                s->set_reg(s, OV2640_IRA_BPDATA, 0xFF, 0x80);
+                s->set_reg(s, OV2640_IRA_BPDATA, 0xFF, 0x80);
+            }
         }
-        if (_negative) {
-            indirectReg0 |= 0x40;
-        }
-        // Indirect register access
-        s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
-        s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x00); // Address 0x00
-        s->set_reg(s, OV_IRA_BPDATA, 0xFF, indirectReg0);
-        s->set_reg(s, OV_IRA_BPADDR, 0xFF, 0x05); // Address 0x05
-        s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
-        s->set_reg(s, OV_IRA_BPDATA, 0xFF, 0x80);
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetBrightnessContrastSaturation: Failed to get control structure");
@@ -245,6 +274,8 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     imageGrayscale = _grayscale;
     imageNegative = _negative;
     imageAec2 = _aec2;
+    imageAutoSharpness = _autoSharpness;
+    imageSharpnessLevel = _sharpnessLevel;
 
     ESP_LOGD(TAG, "brightness %d, contrast: %d, saturation %d, autoExposureLevel %d, grayscale %d", brightness, contrast, saturation, autoExposureLevel, (int)imageGrayscale);
 
@@ -469,6 +500,10 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     if (_zwImage == NULL) {
         return ESP_OK;
+    }
+
+    if (imageNegative) {
+        _zwImage->Negative();
     }
 
     stbi_uc* p_target;

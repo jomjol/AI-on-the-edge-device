@@ -84,6 +84,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     int _brightness = -100;
     int _contrast = -100;
     int _saturation = -100;
+    int _sharpness = 0;
     int _autoExposureLevel = 0;
 
     if (aktparamgraph.size() == 0)
@@ -178,6 +179,11 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
             _saturation = stoi(splitted[1]);
         }
 
+        if ((toUpper(splitted[0]) == "SHARPNESS") && (splitted.size() > 1))
+        {
+            _sharpness = stoi(splitted[1]);
+        }
+
         if ((toUpper(splitted[0]) == "FIXEDEXPOSURE") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
@@ -199,7 +205,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
     }
 
-    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation, _autoExposureLevel, ImageGrayscale, ImageNegative, ImageAec2);
+    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation, _autoExposureLevel, ImageGrayscale, ImageNegative, ImageAec2, _sharpness);
     Camera.SetQualitySize(ImageQuality, ImageSize, ZoomEnabled, ZoomMode, zoomOffsetX, zoomOffsetY);
 
     image_width = Camera.image_width;
