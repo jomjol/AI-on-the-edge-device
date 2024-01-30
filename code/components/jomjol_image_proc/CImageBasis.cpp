@@ -636,6 +636,20 @@ CImageBasis::CImageBasis(string _name, uint8_t* _rgb_image, int _channels, int _
 }
 
 
+void CImageBasis::Negative(void)
+{
+    RGBImageLock();
+
+    for (int i = 0; i < width * height * channels; i += channels) {
+        for (int c = 0; c < channels; c++) {
+            rgb_image[i+c] = 255 - rgb_image[i+c];
+        }
+    }
+
+    RGBImageRelease();
+}
+
+
 void CImageBasis::Contrast(float _contrast)  //input range [-100..100]
 {
     stbi_uc* p_source;
