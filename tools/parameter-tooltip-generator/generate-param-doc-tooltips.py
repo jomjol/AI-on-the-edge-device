@@ -8,6 +8,7 @@ import markdown
 
 parameterDocsFolder = "../../param-docs/parameter-pages"
 docsMainFolder = "../../sd-card/html"
+configPageTemplate = "edit_config_param_template.html"
 configPage = "edit_config_param.html"
 
 htmlTooltipPrefix = """
@@ -19,6 +20,8 @@ htmlTooltipSuffix = """
     </span></div></div>
 """
 
+
+os.system("cp " + docsMainFolder + "/" + configPageTemplate + " " + docsMainFolder + "/" + configPage)
 
 folders = sorted( filter( os.path.isdir, glob.glob(parameterDocsFolder + '/*') ) )
 
