@@ -15,7 +15,7 @@ jobs:
       with:
         concurrent_skipping: same_content_newer
     
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -101,7 +101,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
       uses: actions/cache@v3.2.3
@@ -164,7 +164,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
       uses: actions/cache@v3.2.3
@@ -220,7 +220,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
       uses: actions/cache@v3.2.3
@@ -284,7 +284,7 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Update update cache on every commit
       uses: actions/cache@v3.2.3
@@ -396,7 +396,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Get version of last release
       id: last_release
