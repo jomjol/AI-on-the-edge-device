@@ -144,7 +144,7 @@ jobs:
         cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
 
     - name: Upload update as update.zip artifact (Firmware + Web UI + CNN)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./update/*
@@ -205,7 +205,7 @@ jobs:
         cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
 
     - name: Upload remote_setup as remote_setup.zip artifact (Firmware + Web UI + Config)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./remote_setup/*
@@ -263,7 +263,7 @@ jobs:
         cd ./manual_setup
   
     - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./manual_setup
