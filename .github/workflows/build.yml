@@ -25,28 +25,28 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Update PIP cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: pip-${{ github.run_id }}
         restore-keys: pip # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Update PlatformIO cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: ~/.platformio
         key: platformio-${{ github.run_id }}
         restore-keys: platformio # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
           
     - name: Update Build cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: ./code/.pio/
         key: build-${{ github.run_id }}
         restore-keys: build # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
           
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -57,7 +57,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache          
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -104,7 +104,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -115,7 +115,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Update update cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: update
         key: update-${{ github.run_id }}
@@ -167,7 +167,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -178,7 +178,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
           
     - name: Update remote_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: remote_setup
         key: remote_setup-${{ github.run_id }}
@@ -223,7 +223,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -234,7 +234,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Update manual_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: manual_setup
         key: manual_setup-${{ github.run_id }}
@@ -287,21 +287,21 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Update update cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: update
         key: update-${{ github.run_id }}
         restore-keys: update # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
     
     - name: Update remote_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: remote_setup
         key: remote_setup-${{ github.run_id }}
         restore-keys: remote_setup # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
     
     - name: Update manual_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: manual_setup
         key: manual_setup-${{ github.run_id }}
