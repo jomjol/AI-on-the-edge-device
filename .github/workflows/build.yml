@@ -417,7 +417,7 @@ jobs:
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/index.html
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
     - name: Setup Pages
-      uses: actions/configure-pages@v2
+      uses: actions/configure-pages@v4
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
