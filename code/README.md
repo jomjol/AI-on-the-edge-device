@@ -71,4 +71,4 @@ pio device monitor -p /dev/ttyUSB0
 - `pio device monitor` to observe the logs via uart
 
 # Update Parameters
-If you create or rename a parameter, make sure to update its documentation in `../param-docs/parameter-pages`! Check the `../param-docs/README.md` there for more information.
+If you create or rename a parameter, make sure to update its documentation in `../param-docs/parameter-pages`! Check the `../param-docs/README.md` for more information.

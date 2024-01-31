@@ -4,6 +4,8 @@ Those pages can be edited as needed.
 
 During a Github action build, those parameter pages will be used to generate the tooltips in the web interface. And they also are used to build the [Online Documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters).
 
+If you create or rename a parameter, make sure to also update its description page!
+
 ## Template Generator
 The script `generate-template-param-doc-pages.py` should be run whenever a new parameter gets added to the config file.
 It then checks if there is already a page for each of the parameters.
