@@ -6,7 +6,7 @@ import glob
 import markdown
 
 
-parameterDocsFolder = "AI-on-the-edge-device-docs/param-docs/parameter-pages"
+parameterDocsFolder = "../../param-docs/parameter-pages"
 docsMainFolder = "../../sd-card/html"
 configPage = "edit_config_param.html"
 
