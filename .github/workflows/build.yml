@@ -70,7 +70,7 @@ jobs:
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
-    - name: Prepare Web UI (copy data from repo, generate tooltip pages and update hashes in all files)
+    - name: Prepare Web UI (generate tooltip pages and update hashes in all files)
       run: |
         rm -rf ./html
         mkdir html
@@ -79,7 +79,7 @@ jobs:
         python -m pip install markdown
         mkdir html/param-tooltips
         cd tools/parameter-tooltip-generator
-        bash generate-param-doc-tooltips.sh
+        python generate-param-doc-tooltips.py
         cd ../..
 
         cp -r ./sd-card/html/* ./html/

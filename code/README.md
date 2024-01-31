@@ -69,3 +69,6 @@ pio device monitor -p /dev/ttyUSB0
 - `pio run --target erase` to erase the flash
 - `pio run --target upload` this will upload the `bootloader.bin, partitions.bin,firmware.bin` from the `code/.pio/build/esp32cam/` folder. 
 - `pio device monitor` to observe the logs via uart
+
+# Update Parameters
+If you create or rename a parameter, make sure to update its documentation in `../param-docs/parameter-pages`! Check the `../param-docs/README.md` for more information.
