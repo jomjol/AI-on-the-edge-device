@@ -135,8 +135,8 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
         
         case MQTT_EVENT_DATA:
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "MQTT_EVENT_DATA");
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "TOPIC=" + std::str(event->topic));
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DATA=" + std::str(event->data));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "TOPIC=" + std:.string(event->topic));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DATA=" + std:.string(event->data));
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
@@ -198,7 +198,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
 
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Event dispatched from event loop base=" + std::str(base) + ", event_id=" + std::to_string(event_id));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Event dispatched from event loop base=" + std:.string(base) + ", event_id=" + std::to_string(event_id));
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
 
