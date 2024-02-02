@@ -135,8 +135,8 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
         
         case MQTT_EVENT_DATA:
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "MQTT_EVENT_DATA");
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "TOPIC=" + event->topic);
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DATA=" + event->data);
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "TOPIC=" + str(event->topic));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DATA=" + str(event->data));
             topic.assign(event->topic, event->topic_len);
             if (subscribeFunktionMap != NULL) {
                 if (subscribeFunktionMap->find(topic) != subscribeFunktionMap->end()) {
@@ -175,7 +175,6 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             }
             else {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Other event id: " + std::to_string(event->error_handle->connect_return_code));
-                LogFile.WriteToFile(ESP_LOG_ERR, TAG, "Other event id: " + std::to_string(event->error_handle->connect_return_code));
             }
 
             #ifdef DEBUG_DETAIL_ON 
