@@ -15,7 +15,7 @@ jobs:
       with:
         concurrent_skipping: same_content_newer
     
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -25,28 +25,28 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Update PIP cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: pip-${{ github.run_id }}
         restore-keys: pip # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Update PlatformIO cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: ~/.platformio
         key: platformio-${{ github.run_id }}
         restore-keys: platformio # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
           
     - name: Update Build cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: ./code/.pio/
         key: build-${{ github.run_id }}
         restore-keys: build # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
           
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -57,7 +57,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache          
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -70,7 +70,7 @@ jobs:
       #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
-    - name: Prepare Web UI (copy data from repo, generate tooltip pages and update hashes in all files)
+    - name: Prepare Web UI (generate tooltip pages and update hashes in all files)
       run: |
         rm -rf ./html
         mkdir html
@@ -79,7 +79,7 @@ jobs:
         python -m pip install markdown
         mkdir html/param-tooltips
         cd tools/parameter-tooltip-generator
-        bash generate-param-doc-tooltips.sh
+        python generate-param-doc-tooltips.py
         cd ../..
 
         cp -r ./sd-card/html/* ./html/
@@ -101,10 +101,10 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -115,7 +115,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Update update cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: update
         key: update-${{ github.run_id }}
@@ -144,7 +144,7 @@ jobs:
         cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
 
     - name: Upload update as update.zip artifact (Firmware + Web UI + CNN)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./update/*
@@ -164,10 +164,10 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -178,7 +178,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
           
     - name: Update remote_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: remote_setup
         key: remote_setup-${{ github.run_id }}
@@ -205,7 +205,7 @@ jobs:
         cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
 
     - name: Upload remote_setup as remote_setup.zip artifact (Firmware + Web UI + Config)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./remote_setup/*
@@ -220,10 +220,10 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Update generated-files cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: |
           ./code/.pio/build/esp32cam/firmware.bin
@@ -234,7 +234,7 @@ jobs:
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
     - name: Update manual_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: manual_setup
         key: manual_setup-${{ github.run_id }}
@@ -263,7 +263,7 @@ jobs:
         cd ./manual_setup
   
     - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./manual_setup
@@ -284,24 +284,24 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Update update cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: update
         key: update-${{ github.run_id }}
         restore-keys: update # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
     
     - name: Update remote_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: remote_setup
         key: remote_setup-${{ github.run_id }}
         restore-keys: remote_setup # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
     
     - name: Update manual_setup cache on every commit
-      uses: actions/cache@v3.2.3
+      uses: actions/cache@v4
       with:
         path: manual_setup
         key: manual_setup-${{ github.run_id }}
@@ -396,7 +396,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Get version of last release
       id: last_release
@@ -417,13 +417,13 @@ jobs:
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/index.html
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
     - name: Setup Pages
-      uses: actions/configure-pages@v2
+      uses: actions/configure-pages@v4
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
+      uses: actions/upload-pages-artifact@v2
       with:
         path: 'docs'
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v1   
+      uses: actions/deploy-pages@v4

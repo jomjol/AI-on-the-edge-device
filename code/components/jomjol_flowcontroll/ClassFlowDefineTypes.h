@@ -34,6 +34,7 @@ struct NumberPost {
     bool AllowNegativeRates;
     bool checkDigitIncreaseConsistency;
     time_t lastvalue;
+    time_t timeStampTimeUTC;
     string timeStamp;
     double FlowRateAct; // m3 / min
     double PreValue; // last value that was read out well

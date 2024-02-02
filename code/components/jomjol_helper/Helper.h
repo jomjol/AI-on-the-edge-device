@@ -6,7 +6,8 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include "sdmmc_cmd.h"
+//#include "sdmmc_cmd.h"
+#include "sdmmc_cmd_mh.h"
 
 using namespace std;
 

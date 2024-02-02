@@ -53,7 +53,7 @@
 
   //****************************************
 
-    //compiler optimization for tflite-micro-esp-examples
+    //compiler optimization for esp-tflite-micro
     #define XTENSA
     //#define CONFIG_IDF_TARGET_ARCH_XTENSA     //not needed with platformio/espressif32 @ 5.2.0
 
@@ -165,15 +165,6 @@
     #define LWT_TOPIC        "connection"
     #define LWT_CONNECTED    "connected"
     #define LWT_DISCONNECTED "connection lost"
-
-
-    //CTfLiteClass
-    #define TFLITE_MINIMAL_CHECK(x)                              \
-        if (!(x)) {                                                \
-            fprintf(stderr, "Error at %s:%d\n", __FILE__, __LINE__); \
-            exit(1);                                                 \
-        }
-    // #define SUPRESS_TFLITE_ERRORS // use, to avoid error messages from TFLITE
 
 
     // connect_wlan.cpp

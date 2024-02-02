@@ -153,7 +153,7 @@
 /*#define MINIZ_NO_MALLOC */
 
 #ifdef MINIZ_NO_INFLATE_APIS
-#define MINIZ_NO_ARCHIVE_APIS
+//#define MINIZ_NO_ARCHIVE_APIS
 #endif
 
 #ifdef MINIZ_NO_DEFLATE_APIS
