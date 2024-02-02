@@ -126,11 +126,11 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         
         case MQTT_EVENT_UNSUBSCRIBED:
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=std::to_string(event->msg_id));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=" + std::to_string(event->msg_id));
             break;
         
         case MQTT_EVENT_PUBLISHED:
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "MQTT_EVENT_PUBLISHED, msg_id=std::to_string(event->msg_id));
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "MQTT_EVENT_PUBLISHED, msg_id=" + std::to_string(event->msg_id));
             break;
         
         case MQTT_EVENT_DATA:
