@@ -517,7 +517,7 @@ void MQTTdestroySubscribeFunction(){
         if (mqtt_connected) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {
                 int msg_id = esp_mqtt_client_unsubscribe(client, it->first.c_str());
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "topic "' + it->first + "' unsubscribe successful, msg_id=" + str::to_string(msg_id));
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "topic '" + it->first + "' unsubscribe successful, msg_id=" + str::to_string(msg_id));
             }
         }
 
