@@ -441,7 +441,7 @@ void MQTTconnected(){
         if (connectFunktionMap != NULL) {
             for(std::map<std::string, std::function<void()>>::iterator it = connectFunktionMap->begin(); it != connectFunktionMap->end(); ++it) {
                 it->second();
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "call connect function '", it->first + "'");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "call connect function '" + it->first + "'");
             }
         }
 
