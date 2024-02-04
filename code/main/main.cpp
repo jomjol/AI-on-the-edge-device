@@ -11,8 +11,9 @@
 #include "esp_chip_info.h"
 
 // SD-Card ////////////////////
-#include "esp_vfs_fat_mh.h"
-#include "ffconf_mh.h"
+#include "sdcard_init.h"
+#include "esp_vfs_fat.h"
+#include "ffconf.h"
 #include "driver/sdmmc_host.h"
 ///////////////////////////////
 
@@ -125,7 +126,7 @@ bool Init_NVS_SDCard()
         .format_if_mount_failed = false,
         .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
         .allocation_unit_size = 0,		 // 0 = auto
-        .disk_status_check_enable = 1
+        .disk_status_check_enable = 0
     };
 
     sdmmc_card_t* card;
@@ -135,7 +136,7 @@ bool Init_NVS_SDCard()
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
     // production applications.
-    ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
+    ret = esp_vfs_fat_sdmmc_mount_mh(mount_point, &host, &slot_config, &mount_config, &card);
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
