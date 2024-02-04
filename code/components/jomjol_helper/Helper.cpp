@@ -27,12 +27,10 @@ extern "C" {
 #include <esp_timer.h>
 #include "../../include/defines.h"
 
-
 #include "ClassLogFile.h"
 
-//#include "esp_vfs_fat.h"
-#include "esp_vfs_fat_mh.h"
-#include "sdmmc_common_mh.h"
+#include "esp_vfs_fat.h"
+#include "../sdmmc_common.h"
 
 static const char* TAG = "HELPER";
 
@@ -42,7 +40,7 @@ unsigned int systemStatus = 0;
 
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
-
+bool SDCardIsMMC;
 
 // #define DEBUG_DETAIL_ON 
 
@@ -141,6 +139,7 @@ string getSDCardPartitionAllocationSize(){
 void SaveSDCardInfo(sdmmc_card_t* card) {
 	SDCardCid = card->cid;
     SDCardCsd = card->csd;
+	SDCardIsMMC = card->is_mmc;
 }
 
 
@@ -860,7 +859,7 @@ struct SDCard_Manufacturer_database mmc_database[] = {
 /* Parse SD Card Manufacturer Database */
 string SDCardParseManufacturerIDs(int id) 
 {
-    if (card_is_mmc)
+    if (SDCardIsMMC)
     {
         unsigned int id_cnt = sizeof(mmc_database) / sizeof(struct SDCard_Manufacturer_database);
         string ret_val = "";
