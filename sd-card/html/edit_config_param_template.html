@@ -1672,50 +1672,52 @@
 <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
  
 <script type="text/javascript">
-	var canvas = document.getElementById('canvas'),
-		domainname = getDomainname(); 
-		param;
-		category;
-		NUNBERSAkt = -1;
-		NUMBERS;
+var canvas = document.getElementById('canvas'),
+    domainname = getDomainname(),
+    param,
+    category,
+    NUNBERSAkt = -1,
+    NUMBERS;
 
 
 function LoadConfigNeu() {
-	domainname = getDomainname(); 
-	if (!loadConfig(domainname)) {
-		firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
-		return;
-	} 
-	ParseConfig();	
-	param = getConfigParameters();
-	category = getConfigCategory();
-	InitIndivParameter();
+    domainname = getDomainname(); 
+    if (!loadConfig(domainname)) {
+        firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+        return;
+    } 
+    ParseConfig();	
+    param = getConfigParameters();
+    category = getConfigCategory();
+    InitIndivParameter();
 
-	UpdateInput();
-	var sel = document.getElementById("Numbers_value1");
-	UpdateInputIndividual(sel);
-	UpdateExpertModus();
-	document.getElementById("divall").style.display = ''; 
+    UpdateInput();
+    var sel = document.getElementById("Numbers_value1");
+    UpdateInputIndividual(sel);
+    UpdateExpertModus();
+    document.getElementById("divall").style.display = ''; 
 }
 
 
-function InitIndivParameter()
-{
+function InitIndivParameter() {
     NUMBERS = getNUMBERInfo();
 
     var _index = document.getElementById("Numbers_value1");
-    while (_index.length)
+    while (_index.length) {
         _index.remove(0);
+    }
 
     var _indexInflux = document.getElementById("NumbersInfluxDBv2_value1");
-    while (_indexInflux.length)
+    while (_indexInflux.length) {
         _indexInflux.remove(0);
+    }
 
     var _indexInfluxv1 = document.getElementById("NumbersInfluxDB_value1");
-    while (_indexInflux.length)
-    _indexInfluxv1.remove(0);
+    while (_indexInfluxv1.length) {
+        _indexInfluxv1.remove(0);
+    }
 
-    for (var i = 0; i < NUMBERS.length; ++i){
+    for (var i = 0; i < NUMBERS.length; ++i) {
         var option = document.createElement("option");
         option.text = NUMBERS[i]["name"];
         option.value = i;
@@ -1730,8 +1732,8 @@ function InitIndivParameter()
         optionInfluxv1.text = NUMBERS[i]["name"];
         optionInfluxv1.value = i;
         _indexInfluxv1.add(optionInfluxv1);
-
     }
+	
     _index.selectedIndex = 0; 
     _indexInflux.selectedIndex = 0;
     _indexInfluxv1.selectedIndex = 0;
@@ -1741,15 +1743,16 @@ function InitIndivParameter()
 function getParameterByName(name, url = window.location.href) {
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
+    results = regex.exec(url);
 
-    if (!results) return null;
-    if (!results[2]) return '';
+    if (!results) {return null;}
+    if (!results[2]) {return '';}
+	
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }	
 
 
-function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1){
+function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1) {
     let anzpara;
     try {
         anzpara = _param[_cat][_name].anzParam;	
@@ -1760,8 +1763,9 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
     }
 
     if (_number > -1) {
-        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined))
+        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined)) {
             return;
+        }
 
         if (_optional) {
             document.getElementById(_cat+"_"+_name+"_enabled").checked = NUMBERS[_number][_cat][_name]["enabled"];
@@ -1769,6 +1773,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
                 document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !NUMBERS[_number][_cat][_name]["enabled"];	
             }		
         }
+	    
         document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
         setEnabled(_cat+"_"+_name, true);
 
@@ -1776,8 +1781,9 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             let element = document.getElementById(_cat+"_"+_name+"_value"+j);
             if (element.tagName.toLowerCase() == "select") {
                 var textToFind = NUMBERS[_number][_cat][_name]["value"+j];
-                if (textToFind == undefined)
+                if (textToFind == undefined) {
                     continue;
+                }
 
                 _isFound = false;
                 element.selectedIndex = -1;
@@ -1788,8 +1794,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
                         break;
                     }
                 }
-                if (!_isFound)
-                {
+                if (!_isFound) {
                     _zw_txt = "In the selected field the value '" + textToFind + "' in the parameter '";
                     _zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
                     firework.launch(_zw_txt, 'warning', 10000);
@@ -1817,8 +1822,9 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             let element = document.getElementById(_cat+"_"+_name+"_value"+j);
             if (element.tagName.toLowerCase() == "select") {
                 var textToFind = _param[_cat][_name]["value"+j];
-                if (textToFind == undefined)
+                if (textToFind == undefined) {
                     continue;
+                }
                 
                 _isFound = false;
                 element.selectedIndex = -1;
@@ -1829,8 +1835,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
                         break;
                     }
                 }
-                if (!_isFound)
-                {
+                if (!_isFound) {
                     _zw_txt = "In the selected field the value '" + textToFind + "' in the section '";
                     _zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
                     firework.launch(_zw_txt, 'warning', 10000);
@@ -1847,8 +1852,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
     }
 
     ///////////////// am Ende, falls Kategorie als gesamtes nicht ausgewählt --> deaktivieren
-    if (_category[_cat]["enabled"] == false) 
-    {
+    if (_category[_cat]["enabled"] == false) {
         if (_optional) {
             document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;
             for (var j = 1; j <= anzpara; ++j) {
@@ -1863,12 +1867,12 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 }
 
 
-function InvertEnableItem(_cat, _param)
-{
+function InvertEnableItem(_cat, _param) {
     _zw = _cat + "_" + _param + "_enabled";
     _isOn = document.getElementById(_zw).checked;
 
     _color = "rgb(122, 122, 122)";
+	
     if (_isOn) {
         _color = "black";
     }
@@ -1880,8 +1884,8 @@ function InvertEnableItem(_cat, _param)
     setEnabled(_cat + "_" + _param, _isOn);
 
     for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
-            document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
-            document.getElementById(_cat+"_"+_param+"_value"+j).style.color = _color;
+        document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
+        document.getElementById(_cat+"_"+_param+"_value"+j).style.color = _color;
     }
 }
 
@@ -1896,19 +1900,22 @@ function setEnabled(className, enabled) {
     for (i = 0; i < elements.length; i++) {
         if (enabled) {
             elements[i].classList.remove("disabled");
-        } else {
+        } 
+        else {
             elements[i].classList.add("disabled");
         }
 
         let inputs = elements[i].getElementsByTagName("input");
         for (j = 0; j < inputs.length; j++) {
-            if (inputs[j].id.endsWith("_enabled"))
+            if (inputs[j].id.endsWith("_enabled")) {
                 continue;
+            }
 
             inputs[j].style.color = _color;
             if (enabled) {
                 inputs[j].removeAttribute("disabled");
-            } else {
+            } 
+            else {
                 inputs[j].setAttribute("disabled", "disabled");
             }
         }
@@ -1921,15 +1928,15 @@ function setVisible(className, visible) {
     for (i = 0; i < elements.length; i++) {
         if (visible) {
             elements[i].classList.remove("hidden");
-        } else {
+        } 
+        else {
             elements[i].classList.add("hidden");
         }
     }
 }
 
 
-function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
-{
+function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1) {
     _status = _category[_cat]["enabled"];
 
     _color = "rgb(122, 122, 122)";
@@ -1942,18 +1949,18 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
         document.getElementById(_cat+"_"+_name+"_enabled").style.color = _color;	
     }
 
-    if (_number == -1){
+    if (_number == -1) {
         if (!_param[_cat][_name]["enabled"]) {
             _status = false;
             _color = "rgb(122, 122, 122)";
         }
     }
-    else
+    else {
         if (!NUMBERS[_number][_cat][_name]["enabled"]) {
-                _status = false;
-                _color = "rgb(122, 122, 122)";
-            }
-
+            _status = false;
+            _color = "rgb(122, 122, 122)";
+        }
+    }
 
     document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
     document.getElementById(_cat+"_"+_name+"_text").style.color = _color;
@@ -1961,22 +1968,25 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
     setEnabled(_cat+"_"+_name, _status);
 
     for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-            document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
-            document.getElementById(_cat+"_"+_name+"_value"+j).style.color = _color;	
+        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
+        document.getElementById(_cat+"_"+_name+"_value"+j).style.color = _color;	
     }
 }
 
 
-function ReadParameter(_param, _cat, _name, _optional, _number = -1){
+function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
     if (_number > -1) {
-        if (_cat == "Digits")
+        if (_cat == "Digits") {
             _cat = "digit";
-        if (_cat == "Analog")
+        }
+	    
+        if (_cat == "Analog") {
             _cat = "analog";
+        }
 
-        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined))
+        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined)) {
             return;
-
+        }
 
         if (_optional) {
             NUMBERS[_number][_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
@@ -1994,7 +2004,8 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1){
                 if ((NUMBERS[_number][_cat][_name].checkRegExList != null) && (NUMBERS[_number][_cat][_name].checkRegExList[j-1] != null)) {
                     if (!element.value.match(NUMBERS[_cat][_name].checkRegExList[j-1])) {
                         element.classList.add("invalid-input");
-                    } else {
+                    } 
+                    else {
                         element.classList.remove("invalid-input");
                     }
                 }
@@ -2020,7 +2031,8 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1){
                 if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j-1] != null)) {
                     if (!element.value.match(_param[_cat][_name].checkRegExList[j-1])) {
                         element.classList.add("invalid-input");
-                    } else {
+                    } 
+                    else {
                         element.classList.remove("invalid-input");
                     }
                 }
@@ -2031,10 +2043,8 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1){
 }
 
 
-function UpdateInputIndividual(sel)
-{
-    if (NUNBERSAkt != -1)
-    {
+function UpdateInputIndividual(sel) {
+    if (NUNBERSAkt != -1) {
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
@@ -2048,7 +2058,7 @@ function UpdateInputIndividual(sel)
         ReadParameter(param, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
     }
 
-//	var sel = document.getElementById("Numbers_value1");
+    // var sel = document.getElementById("Numbers_value1");
     NUNBERSAkt = sel.selectedIndex;
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
@@ -2110,7 +2120,7 @@ function UpdateInput() {
     
     WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
     WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
-//	WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
+    // WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
     WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
     WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
@@ -2122,23 +2132,23 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "RetainMessages", false);
     WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", false);
     WriteParameter(param, category, "MQTT", "MeterType", true);
-	WriteParameter(param, category, "MQTT", "CACert", true);
-	WriteParameter(param, category, "MQTT", "ClientCert", true);
-	WriteParameter(param, category, "MQTT", "ClientKey", true);
+    WriteParameter(param, category, "MQTT", "CACert", true);
+    WriteParameter(param, category, "MQTT", "ClientCert", true);
+    WriteParameter(param, category, "MQTT", "ClientKey", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
     WriteParameter(param, category, "InfluxDB", "Database", true);	
-//	WriteParameter(param, category, "InfluxDB", "Measurement", true);	
+    // WriteParameter(param, category, "InfluxDB", "Measurement", true);	
     WriteParameter(param, category, "InfluxDB", "user", true);	
     WriteParameter(param, category, "InfluxDB", "password", true);	
-//	WriteParameter(param, category, "InfluxDB", "Field", true);
+    // WriteParameter(param, category, "InfluxDB", "Field", true);
 
     WriteParameter(param, category, "InfluxDBv2", "Uri", true);	
     WriteParameter(param, category, "InfluxDBv2", "Bucket", true);	
-//	WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
+    // WriteParameter(param, category, "InfluxDBv2", "Measurement", true);	
     WriteParameter(param, category, "InfluxDBv2", "Org", true);	
     WriteParameter(param, category, "InfluxDBv2", "Token", true);	
-//	WriteParameter(param, category, "InfluxDBv2", "Field", true);
+    // WriteParameter(param, category, "InfluxDBv2", "Field", true);
 
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
@@ -2169,41 +2179,44 @@ function UpdateInput() {
 }
 
 
-function WriteModelFiles()
-{
+function WriteModelFiles() {
     list_tflite = getTFLITEList();
 
     var _indexDig = document.getElementById("Digits_Model_value1");
     var _indexAna = document.getElementById("Analog_Model_value1");
-    while (_indexDig.length)
+	
+    while (_indexDig.length) {
         _indexDig.remove(0);
-    while (_indexAna.length)
+    }
+	
+    while (_indexAna.length) {
         _indexAna.remove(0);
+    }
 
-    for (var i = 0; i < list_tflite.length; ++i){
+    for (var i = 0; i < list_tflite.length; ++i) {
         var optionDig = document.createElement("option");
         var optionAna = document.createElement("option");
         
         var text = list_tflite[i].replace("/config/", "");
         
         if (list_tflite[i].includes("/dig")) { // Its a digital file, only show in the digital list box
-        optionDig.text = text;
-        optionDig.value = list_tflite[i];
-        _indexDig.add(optionDig);
+            optionDig.text = text;
+            optionDig.value = list_tflite[i];
+            _indexDig.add(optionDig);
         }
         else if (list_tflite[i].includes("/ana")) { // Its a digital file, only show in the analog list box
-        optionAna.text = text;
-        optionAna.value = list_tflite[i];
-        _indexAna.add(optionAna);
+            optionAna.text = text;
+            optionAna.value = list_tflite[i];
+            _indexAna.add(optionAna);
         }
         else { // all other files, show in both list boxes
-        optionDig.text = text;
-        optionDig.value = list_tflite[i];
-        _indexDig.add(optionDig);
+            optionDig.text = text;
+            optionDig.value = list_tflite[i];
+            _indexDig.add(optionDig);
         
-        optionAna.text = text;
-        optionAna.value = list_tflite[i];
-        _indexAna.add(optionAna);
+            optionAna.text = text;
+            optionAna.value = list_tflite[i];
+            _indexAna.add(optionAna);
         }
     }
 
@@ -2212,8 +2225,7 @@ function WriteModelFiles()
 }
 
 
-function ReadParameterAll()
-{
+function ReadParameterAll() {
     category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
     category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
@@ -2261,9 +2273,9 @@ function ReadParameterAll()
     ReadParameter(param, "MQTT", "RetainMessages", false);
     ReadParameter(param, "MQTT", "HomeassistantDiscovery", false);
     ReadParameter(param, "MQTT", "MeterType", true);
-	ReadParameter(param, "MQTT", "CACert", true);
-	ReadParameter(param, "MQTT", "ClientCert", true);
-	ReadParameter(param, "MQTT", "ClientKey", true);
+    ReadParameter(param, "MQTT", "CACert", true);
+    ReadParameter(param, "MQTT", "ClientCert", true);
+    ReadParameter(param, "MQTT", "ClientKey", true);
 
     ReadParameter(param, "InfluxDB", "Uri", true);
     ReadParameter(param, "InfluxDB", "Database", true);
@@ -2276,7 +2288,7 @@ function ReadParameterAll()
     ReadParameter(param, "InfluxDBv2", "Measurement", true);
     ReadParameter(param, "InfluxDBv2", "Org", true);
     ReadParameter(param, "InfluxDBv2", "Token", true);
-//	ReadParameter(param, "InfluxDB", "Field", true);	
+    // ReadParameter(param, "InfluxDB", "Field", true);	
 
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);
@@ -2313,7 +2325,7 @@ function ReadParameterAll()
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
     
-//	FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
+    // FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
 
 
@@ -2341,44 +2353,43 @@ function UpdateAfterCategoryCheck() {
 }
 
 
-function UpdateExpertModus()
-{
-//	var _style = 'display:none;';
+function UpdateExpertModus() {
+    // var _style = 'display:none;';
     var _style_pur = 'none';
     var _hidden = true;
     if (document.getElementById("ExpertModus_enabled").checked) {
-//		_style = '';
+        // _style = '';
         _style_pur = '';
         _hidden = false;
         document.getElementById("Edit_Config_Direct").style.display = "";
         firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
     }
-    else
-    {
+    else {
         document.getElementById("Edit_Config_Direct").style.display = "none"; 
     }
 
     const expert = document.querySelectorAll(".expert");
     for (var i = 0; i < expert.length; i++) {
         expert[i].style.display = _style_pur;
-//		document.getElementById(expert[i].id).style = _style;
+        // document.getElementById(expert[i].id).style = _style;
     }
 
     // Enable / Disable die Optionen in den Menues für die Auswahl. Falls kein Expertenmodus soll nur ein Wert (built-in-led oder externan-flash-ws281x) möglich sein
     Array.from(document.querySelector("#GPIO_IO4_value1").options).forEach(function(option_element) {
-        if (option_element.value != "built-in-led")
+        if (option_element.value != "built-in-led") {
             option_element.hidden = _hidden;
+        }
     });	
 
     Array.from(document.querySelector("#GPIO_IO12_value1").options).forEach(function(option_element) {
-        if (option_element.value != "external-flash-ws281x")
+        if (option_element.value != "external-flash-ws281x") {
             option_element.hidden = _hidden;
+        }
     });
 }
 
 
-function saveTextAsFile()
-{
+function saveTextAsFile() {
     ReadParameterAll();
     if (document.getElementsByClassName("invalid-input").length > 0) {
         firework.launch("Settings cannot be saved. Please check your entries!", 'danger', 30000);
@@ -2417,58 +2428,61 @@ function editConfigDirect() {
 }
 
 
-function numberChanged()
-{
+function numberChanged() {
     var sel = document.getElementById("Numbers_value1");
     _neu = sel.selectedIndex;
     UpdateInputIndividual(sel);
 
     var _selInflux = document.getElementById("NumbersInfluxDBv2_value1");
-    if (_selInflux.selectedIndex != _neu)
+    if (_selInflux.selectedIndex != _neu) {
         _selInflux.selectedIndex = _neu
+    }
 }
 
     
-function numberInfluxDBv2Changed()
-{
+function numberInfluxDBv2Changed() {
     var sel = document.getElementById("NumbersInfluxDBv2_value1");
     _neu = sel.selectedIndex;
     UpdateInputIndividual(sel);
 
     var _sel2 = document.getElementById("Numbers_value1");
-    if (_sel2.selectedIndex != _neu)
+    if (_sel2.selectedIndex != _neu) {
         _sel2.selectedIndex = _neu
+    }
 
     var _sel3 = document.getElementById("NumbersInfluxDB_value1");
-    if (_sel3.selectedIndex != _neu)
+    if (_sel3.selectedIndex != _neu) {
         _sel3.selectedIndex = _neu
+    }
 }
 
 
-function numberInfluxDBChanged()
-{
+function numberInfluxDBChanged() {
     var sel = document.getElementById("NumbersInfluxDB_value1");
     _neu = sel.selectedIndex;
     UpdateInputIndividual(sel);
     
     var _sel2 = document.getElementById("Numbers_value1");
-    if (_sel2.selectedIndex != _neu)
+    if (_sel2.selectedIndex != _neu) {
         _sel2.selectedIndex = _neu
+    }
 
     var _sel3 = document.getElementById("NumbersInfluxDBv2_value1");
-    if (_sel3.selectedIndex != _neu)
+    if (_sel3.selectedIndex != _neu) {
         _sel3.selectedIndex = _neu
+    }
 }
 
-    /* hash #description open the details part of the page */
-function openDescription() 
-{
+	
+/* hash #description open the details part of the page */
+function openDescription() {
     if(window.location.hash) {
         var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
-        if(hash == 'description')
+        if(hash == 'description') {
             document.getElementById("desc_details").open = true;
-			document.getElementById("reboot").style.display = "none";
-			document.getElementById("reboot_text").style.display = "none";
+            document.getElementById("reboot").style.display = "none";
+            document.getElementById("reboot_text").style.display = "none";
+        }
     }
 }
 
