@@ -223,11 +223,12 @@
             ROIInfo,
             cofcat,
             param,
-            enhanceCon = false;
-            lockAspectRatio = true;
-            lockSizes = false;
-            lockSpaceEquidistant = true;
-            space = 3;
+			_roialt = "dig",
+            enhanceCon = false,
+            lockAspectRatio = true,
+            lockSizes = false,
+            lockSpaceEquidistant = true,
+            space = 3,
             domainname = getDomainname();
 
     function doReboot() {
@@ -300,9 +301,16 @@ function newROI() {
     var sel = document.getElementById("Numbers_value1");
     var _number= sel.options[sel.selectedIndex].text;
     sel = document.getElementById("index");
-    var _roialt= sel.options[sel.selectedIndex].text;
+	
+    if (ROIInfo.length > 0) {
+	_roialt = sel.options[sel.selectedIndex].text;
+    }
+    else {
+	_roialt = "dig";
+    }
 
-    var _roinew = prompt("Please enter a name for the new ROI", "name");
+    var _roinew = prompt("Please enter a name for the new ROI", _roialt);
+	
     if (_roinew === null) {
         return; //break out of the function early because prompt was aborted
     }
@@ -821,19 +829,6 @@ function draw() {
         }
     }
 
-    function getCoords(elem) { // crossbrowser version
-        var box = elem.getBoundingClientRect();
-        var body = document.body;
-        var docEl = document.documentElement;
-        var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-        var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
-        var clientTop = docEl.clientTop || body.clientTop || 0;
-        var clientLeft = docEl.clientLeft || body.clientLeft || 0;
-        var top  = box.top +  scrollTop - clientTop;
-        var left = box.left + scrollLeft - clientLeft;
-    return { top: Math.round(top), left: Math.round(left) };
-}
-
     function mouseDown(e) {
         zw = getCoords(this)
         rect.startX = e.pageX - zw.left;
@@ -987,7 +982,7 @@ function draw() {
         var sel = document.getElementById("Numbers_value1");
         var _number= sel.options[sel.selectedIndex].text;
         sel = document.getElementById("index");
-        var _roialt= sel.options[sel.selectedIndex].text;
+        _roialt= sel.options[sel.selectedIndex].text;
 
         var _roinew = prompt("Please enter a new name for the selected ROI", _roialt);
         if (_roinew === null) {
@@ -1006,7 +1001,6 @@ function draw() {
         aktindex = 0;
         UpdateROIs();
     }    
-
 
 
     init();
