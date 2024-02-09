@@ -416,6 +416,7 @@ jobs:
         echo "Updating index and manifest file..."
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/index.html
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
+
     - name: Setup Pages
       uses: actions/configure-pages@v4
 
@@ -426,4 +427,4 @@ jobs:
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v4
+      uses: actions/deploy-pages@v3  # Note: v4 does not work!
