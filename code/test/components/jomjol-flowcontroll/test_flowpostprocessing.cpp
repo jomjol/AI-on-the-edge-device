@@ -543,12 +543,13 @@ void test_doFlowPP4() {
 
 std::string postProcess(std::vector<float> digits,
                         std::vector<float> analogs,
-                        float analog2DigitalTransition=0.0)
+                        float analog2DigitalTransition=0.0,
+                        int decimalShift=0)
 {
         std::unique_ptr<UnderTestPost> undertestPost(init_do_flow(std::move(analogs),
                                                                   std::move(digits),
                                                                   Digital100,
-                                                                  false, false));
+                                                                  false, false, decimalShift));
 
         setAnalogdigitTransistionStart(undertestPost.get(), analog2DigitalTransition);
         return process_doFlow(undertestPost.get());
@@ -600,5 +601,62 @@ void test_doFlowEarlyTransition()
 
 }
 
+void test_doFlowIssue2857()
+{
+    // reported by gec75
+    float a2dt = 9.2;
+    int decimalShift = 3;
+    TEST_ASSERT_EQUAL_STRING("252090.0", postProcess({ 2.0, 5.0, 1.9}, { 0.8, 8.8, 9.9, 0.1},
+                                                     a2dt, decimalShift).c_str());
+
+    // reported by Kornelius777
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("1017.8099", postProcess({ 0.0, 1.0, 0.0, 1.0, 7.0}, { 8.2, 0.9, 9.9, 9.8},
+                                                     a2dt, decimalShift).c_str());
+
+    // with hanging digit
+    TEST_ASSERT_EQUAL_STRING("1017.8099", postProcess({ 0.0, 1.0, 0.0, 1.0, 6.9}, { 8.2, 0.9, 9.9, 9.8},
+                                                      a2dt, decimalShift).c_str());
+
+    // and deccimal shift
+    decimalShift = -2;
+    TEST_ASSERT_EQUAL_STRING("10.178099", postProcess({ 0.0, 1.0, 0.0, 1.0, 6.9}, { 8.2, 0.9, 9.9, 9.8},
+                                                      a2dt, decimalShift).c_str());
 
 
+
+    // reported by marcniedersachsen
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("778.1480", postProcess({ 0.0, 7.0, 7.0, 7.9}, { 1.4, 4.7, 8.0, 0.5},
+                                                      a2dt, decimalShift).c_str());
+
+    decimalShift = 3;
+    TEST_ASSERT_EQUAL_STRING("778148.0", postProcess({ 0.0, 7.0, 7.0, 7.9}, { 1.4, 4.7, 8.0, 0.5},
+                                                     a2dt, decimalShift).c_str());
+
+     // reported by ohkaja
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("1052.6669", postProcess({ 0.0, 1.0, 10.0, 4.9, 2.0}, { 6.7, 6.7, 6.9, 9.1},
+                                                     a2dt, decimalShift).c_str());
+
+
+}
+
+
+void test_doFlowLateTransitionHanging()
+{
+    float a2dt = 3.6;
+
+    // meter shows 012.4210 , this is after transition
+    TEST_ASSERT_EQUAL_STRING("12.4210", postProcess({0.0, 1.0, 1.9}, {4.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("12.6210", postProcess({0.0, 1.0, 1.9}, {6.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.1210", postProcess({0.0, 1.0, 1.9}, {1.2, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.3610", postProcess({0.0, 1.0, 2.5}, {3.5, 6.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.4510", postProcess({0.0, 1.0, 3.0}, {4.5, 5.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.4510", postProcess({0.0, 1.0, 2.9}, {4.5, 5.2, 1.0, 0.0}, a2dt).c_str());
+}
