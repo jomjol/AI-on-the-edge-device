@@ -120,6 +120,7 @@
                 <label for="zoom" id="labelzoom">Enable zoom:</label></td>
             <td>
                 <input type="checkbox" id="zoom" name="zoom" value="0"></td>
+                <td>$TOOLTIP_TakeImage_Zoom</td>
             <td>
                 <label for="zoomoffsetx">Zoom offset X:</label></td>
             <td>
@@ -127,6 +128,7 @@
                         oninput="(!validity.rangeOverflow||(value=1280)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
+            <td>$TOOLTIP_TakeImage_ZoomOffsetX</td>
         </tr>
         <tr class="expert">
             <td>
@@ -136,6 +138,7 @@
                         oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
+            <td>$TOOLTIP_TakeImage_ZoomMode</td>
             <td>
                 <label for="zoomoffsety">Zoom offset Y:</label></td>
             <td>
@@ -143,12 +146,14 @@
                         oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
+            <td>$TOOLTIP_TakeImage_ZoomOffsetY</td>
         </tr>
         <tr>
             <td>
                 <label for="mirror" id="labelmirror">Mirror image:</label></td>
             <td>
                 <input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+                <td>$TOOLTIP_Alignment_InitialMirror</td>
             <td>
                 <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity:</class>
             </td>
@@ -157,12 +162,14 @@
                     oninput="(!validity.rangeOverflow||(value=100)) && (!validity.rangeUnderflow||(value=0)) && 
                         (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
+            <td>$TOOLTIP_TakeImage_LEDIntensity</td>
         </tr>
         <tr>
             <td>
                 <label for="flip" id="labelflip">Flip image size:</label></td>
             <td>
                 <input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
+                <td>$TOOLTIP_Alignment_FlipImageSize</td>
             <td>
                 <class id="TakeImage_Brightness_text" style="color:black;">Brightness:</class>
             </td>
@@ -170,6 +177,7 @@
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Brightness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Brightness</td>
         </tr>
         <tr>
             <td><label for="prerotateangle">Rotation angle:</label></td>
@@ -178,6 +186,7 @@
                         oninput="(!validity.rangeOverflow||(value=360)) && (!validity.rangeUnderflow||(value=-360)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">degree
                 </td>
+                <td>$TOOLTIP_Alignment_InitialRotate</td>
             <td>
                 <class id="TakeImage_Contrast_text" style="color:black;">Contrast:</class>
             </td>
@@ -185,14 +194,16 @@
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Contrast_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Contrast</td>
         </tr>
         <tr>
-            <td><label for="finerotate">Rotation angle (Fine-tune):</label></td>
+            <td><label for="finerotate">(Fine-tune):</label></td>
             <td>
                 <input required type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.1" onchange="drawRotated()"
                         oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=-1)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">degree
             </td>
+            <td></td>
             <td>
                 <class id="TakeImage_Saturation_text" style="color:black;">Saturation:</class>
             </td>
@@ -200,22 +211,26 @@
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Saturation_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Saturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Saturation</td>
         </tr>
         <tr class="expert">
             <td>
                 <label for="grayscale" id="labelgrayscale">Grayscale:</label></td>
             <td>
                 <input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
+                <td>$TOOLTIP_TakeImage_Grayscale</td>
             <td>
                 <label for="aec2" id="labelaec2">Auto Exposure Control 2:</label></td>
             <td>
                 <input type="checkbox" id="aec2" name="aec2" value="0"></td>
+                <td>$TOOLTIP_TakeImage_Aec2</td>
         </tr>
         <tr class="expert">
             <td>
                 <label for="negative" id="labelnegative">Negative:</label></td>
             <td>
                 <input type="checkbox" id="negative" name="negative" value="0" onchange="drawRotated()"></td>
+            <td>$TOOLTIP_TakeImage_Negative</td>
             <td>
                 <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level:</class>
             </td>
@@ -223,12 +238,14 @@
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_AutoExposureLevel_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_AutoExposureLevel_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_AutoExposureLevel</td>
         </tr>
         <tr class="expert">
             <td>
                 <label for="FixedExposure" id="labelFixedExposure">FixedExposure:</label></td>
             <td>
                 <input type="checkbox" id="FixedExposure" name="FixedExposure" value="0"></td>
+            <td>$TOOLTIP_TakeImage_FixedExposure</td>
             <td>
                 <class id="TakeImage_Sharpness_text" style="color:black;">Sharpness:</class>
             </td>
@@ -236,6 +253,7 @@
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Sharpness_value1" size="13" value=0  min="-4" max="3" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Sharpness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Sharpness</td>
         </tr>
     </table>
     <table>
