@@ -217,8 +217,8 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     bool roundedUp = false;
 
     // Within the digital inequalities 
-    if ( (result_after_decimal_point >= (10-Digital_Uncertainty * 10) && ((int)numeral_preceder == eval_predecessors))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
-        || (eval_predecessors <= 4 && result_after_decimal_point>=6) ) {   // or digit runs after (analogue =0..4, digit >=6)
+    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10) && ((int)numeral_preceder == eval_predecessors))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+        || (eval_predecessors <= 4 && result_after_decimal_point>=6)) {   // or digit runs after (analogue =0..4, digit >=6)
         result = (int) (round(number) + 10) % 10;
         roundedUp = true;
         // before/ after decimal point, because we adjust the number based on the uncertainty.
@@ -228,7 +228,8 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
                                                     " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
                                                     " erg before comma: " + std::to_string(result_before_decimal_point) + 
                                                     " erg after comma: " + std::to_string(result_after_decimal_point));
-    } else {
+    } 
+    else {
         result = (int) ((int) trunc(number) + 10) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digital Uncertainty - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder));
