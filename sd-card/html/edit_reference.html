@@ -46,9 +46,9 @@
         }
     </style>
 
-    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
-    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+    <link href="firework.css?v=019069c" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=019069c"></script>  
+    <script type="text/javascript" src="firework.js?v=019069c"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -87,9 +87,9 @@
             <col span="1" style="width: 33.3%;">
         </colgroup>
         <tr>
-            <td><input class="button" type="button" value="Show Actual Reference" onclick="showReference(param)"></td>	  
-            <td><input class="button" type="button" id="startreference" value="Create New Reference" onclick="loadRawImage(false)"></td>
-            <td><input class="button" type="submit" id="take" onclick="doTake()" value="Update Image">
+            <td><input class="button" type="button" id="orignReference" value="Show Actual Reference" onclick="showReference(param)"></td>	  
+            <td><input class="button" type="button" id="newReference" value="Create New Reference" onclick="doTakeReference()"></td>
+            <td><input class="button" type="button" id="updateReference" value="Update Image" onclick="doTakeReference()">
         </tr>
     </table>
     <table>
@@ -163,7 +163,7 @@
             <td style="vertical-align: bottom;"><b>Reference Image:</b></td>
             <td></td>
             <td>
-                <input style="font-weight:bold;" class="button" type="button" id="updatereferenceimage" value="Save New Reference" onclick="SaveReference()">
+                <input class="button" type="button" id="saveReference" value="Save New Reference" onclick="SaveReference()">
             </td>
         </tr>
         <tr>
@@ -172,17 +172,17 @@
     </table>
 
 
-    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="common.js?v=019069c"></script> 
+    <script type="text/javascript" src="readconfigcommon.js?v=019069c"></script>  
+    <script type="text/javascript" src="readconfigparam.js?v=019069c"></script>  
     
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
-            imageObj = new Image()
-            domainname = getDomainname();   
-            isActReference = false;
+            imageObj = new Image(),
+            isActReference = false,
+			param_temp,
             param;
 
        
@@ -197,22 +197,34 @@
         }
 
 
-        function doTake(){ 
+		// Create New Reference, Update Image
+        function doTakeReference(){ 
             var xhttp = new XMLHttpRequest();
-            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-            {
-                _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
-                if (_intensity == "") _intensity = "50";
-                _brightness = document.getElementById("TakeImage_Brightness_value1").value;
-                _contrast = document.getElementById("TakeImage_Contrast_value1").value;
-                _saturation = document.getElementById("TakeImage_Saturation_value1").value;
-                url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
-                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
-            }
-            else
-            {
-                url = domainname + "/editflow?task=test_take";
-            }
+			var domainname = getDomainname();
+			
+			var _intensity = "";
+			var _brightness = "";
+			var _contrast = "";
+			var _saturation = "";			
+			
+            _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
+				
+            if (_intensity == "") {
+				_intensity = "50";
+			}
+				
+            _brightness = document.getElementById("TakeImage_Brightness_value1").value;
+            _contrast = document.getElementById("TakeImage_Contrast_value1").value;
+            _saturation = document.getElementById("TakeImage_Saturation_value1").value;
+			
+			param["TakeImage"]["LEDIntensity"].value1 = _intensity;
+			param["TakeImage"]["Brightness"].value1 = _brightness;
+			param["TakeImage"]["Contrast"].value1 = _contrast;
+			param["TakeImage"]["Saturation"].value1 = _saturation;		
+				
+            url = domainname + "/editflow?task=test_take";
+            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
+			
             if (domainname.length > 0){
                 url = url + "&host=" + domainname;
             }
@@ -221,64 +233,63 @@
             xhttp.send();
 
             firework.launch('Taking updated image...', 'success', 5000);
-            loadRawImage(true);
-        }
-        
-
-        function loadRawImage(new_image) {
-            if (new_image) {
-                url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
-                document.getElementById("updatereferenceimage").disabled = false;
-            }
-            else {
-                document.getElementById("updatereferenceimage").disabled = true;
-                doTake();
-            }
+			
+            url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+			
+            document.getElementById("saveReference").disabled = false;
 
             document.getElementById("finerotate").disabled = false;
-            document.getElementById("prerotateangle").disabled = false;  
-            document.getElementById("startreference").disabled = true;
-            document.getElementById("take").disabled = false;
-            if (param["Alignment"]["InitialMirror"].found)
+            document.getElementById("prerotateangle").disabled = false;
+			document.getElementById("orignReference").disabled = false;
+            document.getElementById("newReference").disabled = true;
+            document.getElementById("updateReference").disabled = false;
+			
+            if (param["Alignment"]["InitialMirror"].found) {
                 document.getElementById("mirror").disabled = false;
-            else
-            {
+			}
+            else {
                 document.getElementById("labelmirror").style = "color:lightgrey;";
             }
 
-            if (param["Alignment"]["FlipImageSize"].found)
+            if (param["Alignment"]["FlipImageSize"].found) {
                 document.getElementById("flip").disabled = false;
-            else
-            {
+			}
+            else {
                 document.getElementById("labelflip").style = "color:lightgrey;";
             }
 
-            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-            {
-                document.getElementById("TakeImage_Brightness_value1").disabled = false;
-                document.getElementById("TakeImage_Contrast_value1").disabled = false;
-                document.getElementById("TakeImage_Saturation_value1").disabled = false;
-                document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
-            }
-            else
-            {
-                document.getElementById("TakeImage_Brightness_value1").type = "hidden";
-                document.getElementById("TakeImage_Brightness_text").style.visibility = "hidden";
-                
-            }
-
-//            if (param["TakeImage"]["Saturation"].found)
-//                document.getElementById("TakeImage_Saturation_value1").disabled = false;
-//            if (param["TakeImage"]["Contrast"].found)
-//                document.getElementById("TakeImage_Contrast_value1").disabled = false;
+            document.getElementById("TakeImage_Brightness_value1").disabled = false;
+            document.getElementById("TakeImage_Contrast_value1").disabled = false;
+            document.getElementById("TakeImage_Saturation_value1").disabled = false;
+            document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
 
             isActReference = false;
             loadCanvas(url, true);
+			camSettingsSet(param_temp);
         }
-        
+		
+		
+		function camSettingsSet(_param){
+			var xhttp = new XMLHttpRequest();
+			
+			var _brightness = _param["TakeImage"]["Brightness"].value1;
+			var _contrast = _param["TakeImage"]["Contrast"].value1;
+			var _saturation = _param["TakeImage"]["Saturation"].value1;
+			var _intensity = _param["TakeImage"]["LEDIntensity"].value1;
 
+			var url = getDomainname() + "/editflow?task=cam_settings";
+			url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
+
+			xhttp.open("GET", url, false);
+			xhttp.send();
+		}		
+		
+
+		// wird von init() und SaveReference() benutzt
         function showReference(_param){
-            url = getDomainname() + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+			var domainname = getDomainname();
+		
+            url = domainname + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
 
             if (_param["Alignment"]["InitialRotate"].value1 < 0) {
                 document.getElementById("prerotateangle").value = Math.ceil(_param["Alignment"]["InitialRotate"].value1);
@@ -290,30 +301,41 @@
             document.getElementById("finerotate").value = (Number(_param["Alignment"]["InitialRotate"].value1) - 
                                                             Number(document.getElementById("prerotateangle").value)).toFixed(1);
 
-            if (_param["Alignment"]["InitialMirror"].found && (_param["Alignment"]["InitialMirror"].value1 == "true"))
+            if (_param["Alignment"]["InitialMirror"].value1 == "true") {
                 document.getElementById("mirror").checked = true;
+			}
+			else {
+				document.getElementById("mirror").checked = false;
+			}
 
-            if (_param["Alignment"]["FlipImageSize"].found && (_param["Alignment"]["FlipImageSize"].value1 == "true"))
+            if (_param["Alignment"]["FlipImageSize"].value1 == "true") {
                 document.getElementById("flip").checked = true;
+			}
+			else {
+				document.getElementById("flip").checked = false;
+			}			
+
+			document.getElementById("TakeImage_LEDIntensity_value1").value = _param["TakeImage"]["LEDIntensity"].value1;
+			
+			document.getElementById("TakeImage_Brightness_value1").value = _param["TakeImage"]["Brightness"].value1;
+			document.getElementById("TakeImage_Brightness_value1_output").value = _param["TakeImage"]["Brightness"].value1;
+			
+			document.getElementById("TakeImage_Contrast_value1").value = _param["TakeImage"]["Contrast"].value1;
+			document.getElementById("TakeImage_Contrast_value1_output").value = _param["TakeImage"]["Contrast"].value1;
+			
+			document.getElementById("TakeImage_Saturation_value1").value = _param["TakeImage"]["Saturation"].value1;
+			document.getElementById("TakeImage_Saturation_value1_output").value = _param["TakeImage"]["Saturation"].value1;
 
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
-            document.getElementById("updatereferenceimage").disabled = true;
-            document.getElementById("startreference").disabled = false;
-            document.getElementById("take").disabled = true;
+            document.getElementById("saveReference").disabled = true;
+			document.getElementById("orignReference").disabled = true;
+            document.getElementById("newReference").disabled = false;
+            document.getElementById("updateReference").disabled = true;
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
             document.getElementById("TakeImage_Saturation_value1").disabled = true;
             document.getElementById("TakeImage_Contrast_value1").disabled = true;
             document.getElementById("TakeImage_LEDIntensity_value1").disabled = true;
-            document.getElementById("mirror").disabled = false;
-            document.getElementById("flip").disabled = false;
-            if (!(param["TakeImage"]["Brightness"].found))
-            {
-                document.getElementById("TakeImage_Brightness_value1").type = "hidden";
-                document.getElementById("TakeImage_Brightness_text").style.visibility = "hidden";
-            }
-
-
             document.getElementById("mirror").disabled = true;
             document.getElementById("flip").disabled = true;
 
@@ -323,76 +345,80 @@
         
         
         function dataURLtoBlob(dataurl) {
-            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            var arr = dataurl.split(',');
+			var mime = arr[0].match(/:(.*?);/)[1];
+            var bstr = atob(arr[1]);
+			var n = bstr.length;
+			var u8arr = new Uint8Array(n);
+				
             while(n--){
                 u8arr[n] = bstr.charCodeAt(n);
             }
+			
             return new Blob([u8arr], {type:mime});
         }			
         
         
         function SaveReference(){
             if (confirm("Are you sure you want to save the new reference image configuration?")) {
+				var domainname = getDomainname();
+			
                 param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
                                                                 Number(document.getElementById("finerotate").value)).toFixed(1);
 
-                if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
-                {
+                if (document.getElementById("mirror").checked) {
                     param["Alignment"]["InitialMirror"].value1 = "true";
-                    param["Alignment"]["InitialMirror"]["found"] = true;
-                    param["Alignment"]["InitialMirror"]["enabled"] = true;
                 }
-                else
+                else {
                     param["Alignment"]["InitialMirror"].value1 = "false";
+				}
 
-                if ((param["Alignment"]["FlipImageSize"].found == true) && (document.getElementById("flip").checked))
+                if (document.getElementById("flip").checked) {
                     param["Alignment"]["FlipImageSize"].value1 = "true";
-                else
+				}
+                else {
                     param["Alignment"]["FlipImageSize"].value1 = "false";
-
-                if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-                {
-                    ReadParameter(param, "TakeImage", "Brightness", false);		
-                	ReadParameter(param, "TakeImage", "Contrast", false);
-                    ReadParameter(param, "TakeImage", "Saturation", false);
-                    ReadParameter(param, "TakeImage", "LEDIntensity", false);
-                }
+				}
 
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
 
                 WriteConfigININew();
-                SaveConfigToServer(getDomainname());    
-                document.getElementById("updatereferenceimage").disabled = true;
+                SaveConfigToServer(domainname);    
+                document.getElementById("saveReference").disabled = true;
 
-                SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
+                SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
                 showReference(param);
-                //UpdatePage();
                 
-                firework.launch('Reference image configuration saved. It will get applied after next reboot', 'success', 5000);
+				param_temp = param;
+				camSettingsSet(param);
+                firework.launch('Reference image configuration saved', 'success', 5000);
             }
         }
 
 
         function loadCanvas(dataURL, grid) {
-                var canvas = document.getElementById('canvas');
-                var context = canvas.getContext('2d');
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
 
-                imageObj.onload = function() {
-                    canvas.width = this.width;
-                    canvas.height = this.height;
-                    if (grid)
-                        drawRotated(true);
-                    else
-                        drawRotated(false);
-                };
+            imageObj.onload = function() {
+                canvas.width = this.width;
+                canvas.height = this.height;
+                
+				if (grid) {
+                    drawRotated(true);
+				}
+                else {
+                    drawRotated(false);
+				}
+            };
 
-                imageObj.src = dataURL;
-            }
+            imageObj.src = dataURL;
+        }
 
 
-        function getCoords(elem) { // crossbrowser version
+        function getCoords(elem) { 
+			// crossbrowser version
             var box = elem.getBoundingClientRect();
             var body = document.body;
             var docEl = document.documentElement;
@@ -402,122 +428,54 @@
             var clientLeft = docEl.clientLeft || body.clientLeft || 0;
             var top  = box.top +  scrollTop - clientTop;
             var left = box.left + scrollLeft - clientLeft;
+			
             return { top: Math.round(top), left: Math.round(left) };
         }
 
         
-        /* hash #description open the details part of the page */
         function openDescription() {
-        if(window.location.hash) {
-            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
-            if(hash == 'description')
-                document.getElementById("desc_details").open = true;
-            }
+			if(window.location.hash) {
+				var hash = window.location.hash.substring(1);
+				
+				if(hash == 'description') {
+					document.getElementById("desc_details").open = true;
+				}
+			}
         }
     
 
         function init() {
             openDescription();
-            canvas.addEventListener('mousemove', mouseMove, false);    
+            canvas.addEventListener('mousemove', mouseMove, false);
+			
             loadConfig(getDomainname()); 
             ParseConfig();
             param = getConfigParameters();
+			param_temp = param;
 
-            param["TakeImage"]["LEDIntensity"]["enabled"] = true;
-            param["TakeImage"]["Brightness"]["enabled"] = true;
-            param["TakeImage"]["Contrast"]["enabled"] = true;
-            param["TakeImage"]["Saturation"]["enabled"] = true;
-
-            if (!param["TakeImage"]["LEDIntensity"]["found"])
-            {
+            if (!param["TakeImage"]["LEDIntensity"]["found"]) {
                 param["TakeImage"]["LEDIntensity"]["found"] = true;
                 param["TakeImage"]["LEDIntensity"]["value1"] = "50";
             }
-            if (!param["TakeImage"]["Brightness"]["found"])
-            {
+			
+            if (!param["TakeImage"]["Brightness"]["found"]) {
                 param["TakeImage"]["Brightness"]["found"] = true;
                 param["TakeImage"]["Brightness"]["value1"] = "0";
-            }
-            if (!param["TakeImage"]["Contrast"]["found"])
-            {
+            }		
+			
+            if (!param["TakeImage"]["Contrast"]["found"]) {
                 param["TakeImage"]["Contrast"]["found"] = true;
                 param["TakeImage"]["Contrast"]["value1"] = "0";
-            }
-            if (!param["TakeImage"]["Saturation"]["found"])
-            {
+            }		
+			
+            if (!param["TakeImage"]["Saturation"]["found"]) {
                 param["TakeImage"]["Saturation"]["found"] = true;
                 param["TakeImage"]["Saturation"]["value1"] = "0";
-            }
+            }			
 
-            UpdateInput();
             showReference(param); 
         }
-
-
-        function UpdateInput() {
-            WriteParameter(param, category, "TakeImage", "Brightness", false, true);		
-            WriteParameter(param, category, "TakeImage", "Contrast", false, true);		
-            WriteParameter(param, category, "TakeImage", "Saturation", false, true);		
-            WriteParameter(param, category, "TakeImage", "LEDIntensity", false);		
-        }
-
-
-        function ReadParameter(_param, _cat, _name, _optional, _select = false){
-            if (_param[_cat][_name]["found"]){
-                if (_optional) {
-                    _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-                }
-                if (_select) {
-                    var sel = document.getElementById(_cat+"_"+_name+"_value1");
-                    _param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
-                }
-                else {
-                    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-                        _param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
-                    }
-                }
-            }
-        }
         
-
-        function WriteParameter(_param, _category, _cat, _name, _optional, outval = false, _select = false, _anzpara = 1){
-            if (_param[_cat][_name]["found"]){
-                if (_optional) {
-                    document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
-                    for (var j = 1; j <= _anzpara; ++j) {
-                        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
-                    }		
-                }
-                document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
-                if (_select) {
-                    var textToFind = _param[_cat][_name]["value1"];
-                    var dd = document.getElementById(_cat+"_"+_name+"_value1");
-                    for (var i = 0; i < dd.options.length; i++) {
-                        if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
-                            dd.selectedIndex = i;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    for (var j = 1; j <= _anzpara; ++j) {
-                        document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
-                    }
-                }
-                if (outval)
-                    document.getElementById(_cat+"_"+_name+"_value1_output").value = document.getElementById(_cat+"_"+_name+"_value1").value;
-            }
-            else {
-                if (_optional) {
-                    document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
-                    for (var j = 1; j <= _anzpara; ++j) {
-                        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
-                    }	
-                }
-                document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
-            }
-        }
-
 
         function drawRotated(_grid = true) {
             finerot= parseFloat(document.getElementById("finerotate").value);
@@ -529,22 +487,23 @@
                 prerot+=1
                 finerot = 0
             }
+			
             if (finerot == -1) {
                 prerot-=1
                 finerot = 0
             }
+			
             degrees = finerot + prerot;
             document.getElementById("finerotate").value =  finerot;
             document.getElementById("prerotateangle").value =  prerot;
 
             var canvas = document.getElementById('canvas');
-            if (flip == 1)
-            {
+			
+            if (flip == 1) {
                 canvas.width = imageObj.height;
                 canvas.height = imageObj.width;
             }
-            else
-            {
+            else {
                 canvas.width = imageObj.width;
                 canvas.height = imageObj.height;
             }
@@ -555,25 +514,25 @@
             context.clearRect(0,0,canvas.width,canvas.height);
             context.save();
 
-            if (isActReference)
-            {
+            if (isActReference) {
                 context.drawImage(imageObj,0,0);
             }
-            else
-            {
+            else {
                 context.translate(canvas.width/2,canvas.height/2);
                 context.rotate(degrees*Math.PI/180);
+				
                 if (mirror) {
                     context.scale(-1, 1);
                 }
+				
                 context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
             }
             
-            
             context.restore();
 
-            if (_grid)
-                    drawGrid();
+            if (_grid) {
+                drawGrid();
+			}
         }
 
 
@@ -585,32 +544,35 @@
             ctx.save();
             ctx.strokeStyle = '#00FF00';
 
-            for (i = h/2; i < h; i += 100) 
-                {
+            for (i = h/2; i < h; i += 100) {
                 ctx.moveTo(0, i);
                 ctx.lineTo(w, i);
                 ctx.stroke();
                 ctx.moveTo(0, h-i);
                 ctx.lineTo(w, h-i);
                 ctx.stroke();
-                }
-            for (i = w/2; i < w; i += 100) 
-                {
+            }
+			
+            for (i = w/2; i < w; i += 100) {
                 ctx.moveTo(i, 0);
                 ctx.lineTo(i, h);
                 ctx.stroke();
                 ctx.moveTo(w-i, 0);
                 ctx.lineTo(w-i, h);
-                ctx.stroke();                }
+                ctx.stroke();                
+			}
+			
             ctx.restore();
         }
 
 
         function mouseMove(e) {
-            if (isActReference)
+            if (isActReference) {
                 drawRotated(false);
-            else
+			}
+            else {
                 drawRotated(true);
+			}
             
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
