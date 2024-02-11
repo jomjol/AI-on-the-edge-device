@@ -11,8 +11,9 @@
 #include "esp_chip_info.h"
 
 // SD-Card ////////////////////
-#include "esp_vfs_fat_mh.h"
-#include "ffconf_mh.h"
+#include "sdcard_init.h"
+#include "esp_vfs_fat.h"
+#include "ffconf.h"
 #include "driver/sdmmc_host.h"
 ///////////////////////////////
 
@@ -101,6 +102,7 @@ bool Init_NVS_SDCard()
 
     ESP_LOGD(TAG, "Using SDMMC peripheral");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+    host.max_freq_khz = SDMMC_FREQ_HIGHSPEED;
 
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
@@ -118,14 +120,21 @@ bool Init_NVS_SDCard()
     // connected on the bus. This is for debug / example purpose only.
     slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
 
+    // Der PullUp des GPIO13 wird durch slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
+    // nicht gesetzt, da er eigentlich nicht benötigt wird, 
+    // dies führt jedoch bei schlechten Kopien des AI_THINKER Boards
+    // zu Problemen mit der SD Initialisierung und eventuell sogar zur reboot-loops.
+    // Um diese Probleme zu kompensieren, wird der PullUp manuel gesetzt.
+    gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY); // HS2_D3	
+
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
     // formatted in case when mounting fails.
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
-        .allocation_unit_size = 0,		 // 0 = auto
-        .disk_status_check_enable = 1
+        .allocation_unit_size = 0,               // 0 = auto
+        .disk_status_check_enable = 0
     };
 
     sdmmc_card_t* card;
@@ -135,7 +144,7 @@ bool Init_NVS_SDCard()
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
     // production applications.
-    ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
+    ret = esp_vfs_fat_sdmmc_mount_mh(mount_point, &host, &slot_config, &mount_config, &card);
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
