@@ -277,7 +277,7 @@
 			<td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
 		</tr>
 
-		<tr class="" unused_id="Brightness_ex3">
+		<tr unused_id="Brightness_ex3">
 			<td class="indent1">
 				<class id="TakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
@@ -289,7 +289,7 @@
 			<td>$TOOLTIP_TakeImage_Brightness</td>
 		</tr>
 
-		<tr class="" unused_id="Contrast_ex3">
+		<tr unused_id="Contrast_ex3">
 			<td class="indent1">
 				<class id="TakeImage_Contrast_text" style="color:black;">Contrast</class>
 			</td>
@@ -301,7 +301,7 @@
 			<td>$TOOLTIP_TakeImage_Contrast</td>
 		</tr>
 
-		<tr class="" unused_id="Saturation_ex3">
+		<tr unused_id="Saturation_ex3">
 			<td class="indent1">
 				<class id="TakeImage_Saturation_text" style="color:black;">Saturation</class>
 			</td>
@@ -325,7 +325,7 @@
 			<td>$TOOLTIP_TakeImage_Sharpness</td>
 		</tr>
 
-		<tr class="" unused_id="LEDIntensity_ex3">
+		<tr unused_id="LEDIntensity_ex3">
 			<td class="indent1">
 				<class id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</class>
 			</td>
@@ -477,7 +477,7 @@
 		</tr>
 
 		<!------------- Alignment ------------------>
-		<tr class=""  style="border-bottom: 2px solid lightgray;" id="ex4">
+		<tr  style="border-bottom: 2px solid lightgray;" id="ex4">
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Alignment</h4></td>
 		</tr>
 
@@ -519,7 +519,7 @@
 			<td>$TOOLTIP_Alignment_AlignmentAlgo</td>
 		</tr>
 
-		<tr class="" unused_id="ex13">
+		<tr unused_id="ex13">
 			<td class="indent1">
 			    <class id="Alignment_FlipImageSize_text" style="color:black;">Flip Image Size</class>
 			</td>
@@ -532,7 +532,7 @@
 			<td>$TOOLTIP_Alignment_FlipImageSize</td>
 		</tr>
 
-		<tr class="" unused_id="ex13">
+		<tr unused_id="ex13">
 			<td class="indent1">
 			    <class id="Alignment_InitialMirror_text" style="color:black;">Initial Mirror</class>
 			</td>
@@ -545,6 +545,16 @@
 			<td>$TOOLTIP_Alignment_InitialMirror</td>
 		</tr>
 
+		<tr>
+			<td class="indent1">
+				<class id="Alignment_InitialRotate_text" style="color:black;">Rotation angle</class>
+			</td>
+			<td>
+				<input required type="number" name="name" id="Alignment_InitialRotate_value1" size="13" min="-360" max="+360" step="0.1"
+					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
+			</td>
+			<td>$TOOLTIP_Alignment_InitialRotate</td>
+		</tr>
 
 		<!------------- Digit ROIs ------------------>
 		<tr style="border-bottom: 2px solid lightgray;" id="Category_Digits_ex4">
@@ -2221,6 +2231,7 @@ function UpdateInput() {
     WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);
     WriteParameter(param, category, "Alignment", "FlipImageSize", false);
     WriteParameter(param, category, "Alignment", "InitialMirror", false);			
+    WriteParameter(param, category, "Alignment", "InitialRotate", false);
 
     WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
     WriteParameter(param, category, "Digits", "ROIImagesLocation", true);		
@@ -2368,6 +2379,7 @@ function ReadParameterAll()
     ReadParameter(param, "Alignment", "AlignmentAlgo", true);
     ReadParameter(param, "Alignment", "FlipImageSize", false);
     ReadParameter(param, "Alignment", "InitialMirror", false);
+    ReadParameter(param, "Alignment", "InitialRotate", false);
 
     ReadParameter(param, "Digits", "Model", false);
     ReadParameter(param, "Digits", "CNNGoodThreshold", true);
