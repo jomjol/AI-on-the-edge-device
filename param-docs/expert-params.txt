@@ -2,16 +2,10 @@ demo
 WaitBeforeTakingPicture
 ImageQuality
 ImageSize
-LEDIntensity
-Brightness
-Contrast
-Saturation
 FixedExposure
 SearchFieldX
 SearchFieldY
 AlignmentAlgo
-InitialMirror
-FlipImageSize
 CNNGoodThreshold
 PreValueAgeStartup
 ErrorMessage
