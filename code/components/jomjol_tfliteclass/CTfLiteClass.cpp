@@ -12,17 +12,9 @@
 
 static const char *TAG = "TFLITE";
 
-/// Static Resolver muss mit allen Operatoren geladen Werden, die benöägit werden - ABER nur 1x --> gesonderte Funktion /////////////////////////////
-static bool MakeStaticResolverDone = false;
-static tflite::MicroMutableOpResolver<15> resolver;
 
-void MakeStaticResolver()
+void CTfLiteClass::MakeStaticResolver()
 {
-  if (MakeStaticResolverDone)
-    return;
-
-  MakeStaticResolverDone = true;
-
   resolver.AddFullyConnected();
   resolver.AddReshape();
   resolver.AddSoftmax();
@@ -34,7 +26,6 @@ void MakeStaticResolver()
   resolver.AddLeakyRelu();
   resolver.AddDequantize();
 }
-////////////////////////////////////////////////////////////////////////////////////////
 
 
 float CTfLiteClass::GetOutputValue(int nr)
@@ -207,9 +198,7 @@ bool CTfLiteClass::LoadInputImageBasis(CImageBasis *rs)
 
 bool CTfLiteClass::MakeAllocate()
 {
-
-  MakeStaticResolver();
-
+    MakeStaticResolver();
 
     #ifdef DEBUG_DETAIL_ON 
         LogFile.WriteHeapInfo("CTLiteClass::Alloc start");
@@ -217,13 +206,11 @@ bool CTfLiteClass::MakeAllocate()
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::MakeAllocate");
     this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize);
-//    this->interpreter = new tflite::MicroInterpreter(this->model, resolver, this->tensor_arena, this->kTensorArenaSize, this->error_reporter);
 
     if (this->interpreter) 
     {
         TfLiteStatus allocate_status = this->interpreter->AllocateTensors();
         if (allocate_status != kTfLiteOk) {
-            TF_LITE_REPORT_ERROR(error_reporter, "AllocateTensors() failed");
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "AllocateTensors() failed");
 
             this->GetInputDimension();   
@@ -313,13 +300,6 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
 
 bool CTfLiteClass::LoadModel(std::string _fn)
 {
-#ifdef SUPRESS_TFLITE_ERRORS
-//    this->error_reporter = new tflite::ErrorReporter;
-    this->error_reporter = new tflite::OwnMicroErrorReporter;
-#else
-    this->error_reporter = new tflite::MicroErrorReporter;
-#endif
-
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CTfLiteClass::LoadModel");
 
     if (!ReadFileToModel(_fn.c_str())) {
@@ -350,21 +330,6 @@ CTfLiteClass::CTfLiteClass()
 CTfLiteClass::~CTfLiteClass()
 {
   delete this->interpreter;
-//  delete this->error_reporter;
 
   psram_free_shared_tensor_arena_and_model_memory();
 }        
-
-#ifdef SUPRESS_TFLITE_ERRORS
-namespace tflite 
-{
-//tflite::ErrorReporter
-//  int OwnMicroErrorReporter::Report(const char* format, va_list args) 
-
-  int OwnMicroErrorReporter::Report(const char* format, va_list args) 
-  {
-    return 0;
-  }
-} 
-#endif
- 
