@@ -1,7 +1,6 @@
 #include "test_flow_postrocess_helper.h"
 
-
-
+#include <memory>
 
 /**
  * ACHTUNG! Die Test laufen aktuell nur mit ausgeschaltetem Debug in ClassFlowCNNGeneral 
@@ -114,28 +113,28 @@ void test_doFlowPP1() {
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
         std::vector<float> digits = { 0.0, 2.9, 3.0, 2.9, 3.5, 9.5};
         std::vector<float>  analogs = {        };
-        const char* expected = "33330";
+        const char* expected = "33339";
         std::string result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1226966346
         digits = { 9.9, 2.8, 2.9, 2.9, 3.7, 9.7};
         analogs = {        };
-        expected = "33340";
+        expected = "33339";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942
         digits = { 0.0, 9.9, 6.8, 9.9, 3.7, 0.8, 6.9, 8.7};
         analogs = {        };
-        expected = "704179";
+        expected = "704178";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/942#issuecomment-1228343319
         digits = { 9.9, 6.8, 1.1, 4.7, 2.7, 6.0, 9.0, 2.8};  // changed 3.7 --> 2.7 (see picture in issue)
         analogs = {        };
-        expected = "7153693";
+        expected = "7153692";
         result = process_doFlow(analogs, digits);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
@@ -185,7 +184,7 @@ void test_doFlowPP2() {
         // https://github.com/jomjol/AI-on-the-edge-device/issues/921#issuecomment-1242730397
         digits = { 3.0, 2.0, 2.0, 8.0, 9.0, 4.0, 1.7, 9.8};  // falscher Wert 32290.420
         analogs = { };
-        expected = "32289.420";
+        expected = "32289.419";
         const char* expected_extended= "32289.4198";
         // FALSCH! wegen ungenügender Präzision von NUMBERS->Value
         // expected_extended= "32289.4198";
@@ -230,7 +229,7 @@ void test_doFlowPP2() {
         // https://github.com/jomjol/AI-on-the-edge-device/issues/994#issue-1368570945
         digits = { 0.0, 0.0, 1.0, 2.0, 2.8, 1.9, 2.8, 5.6};  // 123245.6 als falsches Ergebnis
         analogs = { };
-        expected = "123236";
+        expected = "123235";
         expected_extended= "123235.6";
         
         // checkConsistency=true
@@ -543,3 +542,26 @@ void test_doFlowPP4() {
 }
 
 
+void test_doFlowPP_rainman110() {
+    // https://github.com/jomjol/AI-on-the-edge-device/issues/2743
+    // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
+    std::vector<float> digits = {4.0, 1.0, 1.8};  // wrong result: 412.3983
+    std::vector<float> analogs = {3.6, 9.9, 8.1, 3.5};
+
+    UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    std::string result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("411.3983", result.c_str());
+    delete undertestPost;
+    
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
+    digits = {4.0, 1.0, 7.9};  // wrong result: 417.2579
+    analogs = {2.5, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.2579", result.c_str());
+    delete undertestPost;
+}
