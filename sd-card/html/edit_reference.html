@@ -30,6 +30,11 @@
 			border: 1px solid red;
         }
 
+        .expert {
+            background-color: #ffefef;
+            font-size: 16px;
+        }
+
         .button {
             padding: 5px 10px;
             width: 205px;
@@ -87,6 +92,17 @@
             <col span="1" style="width: 33.3%;">
         </colgroup>
         <tr>
+			<td class="indent1">
+				<input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
+					<label for="ExpertModus_enabled">Expert View</label> 
+			</td>
+			<td>
+				<button style="display:none;" class="button" id="Edit_Config_Direct" onclick="editConfigDirect()">Edit "Config.ini" File</button>
+			</td>
+			<td>
+            </td>
+		</tr>
+        <tr>
             <td><input class="button" type="button" value="Show Actual Reference" onclick="showReference(param)"></td>	  
             <td><input class="button" type="button" id="startreference" value="Create New Reference" onclick="loadRawImage(false)"></td>
             <td><input class="button" type="submit" id="take" onclick="doTake()" value="Update Image">
@@ -99,24 +115,29 @@
             <col span="1" style="width: 18%;">
             <col span="1" style="width: 22%;">
         </colgroup>
-        <tr>
-            <td><label for="zoom" id="labelzoom">Enable zoom:</label></td>
-            <td><input type="checkbox" id="zoom" name="zoom" value="0"></td>
-            <td><label for="zoomoffsetx">Zoom offset X:</label></td>
+        <tr class="expert">
+            <td>
+                <label for="zoom" id="labelzoom">Enable zoom:</label></td>
+            <td>
+                <input type="checkbox" id="zoom" name="zoom" value="0"></td>
+            <td>
+                <label for="zoomoffsetx">Zoom offset X:</label></td>
             <td>
                 <input required type="number" id="zoomoffsetx" name="zoomoffsetx" value="0" min="0" max="1280" step="1"
                         oninput="(!validity.rangeOverflow||(value=1280)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
         </tr>
-        <tr>
-            <td><label for="zoommode" id="labelzoommode">Zoom mode:</label></td>
+        <tr class="expert">
+            <td>
+                <label for="zoommode" id="labelzoommode">Zoom mode:</label></td>
             <td>
                 <input required type="number" id="zoommode" name="zoommode" value="0" min="0" max="1" step="1"
                         oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-            <td><label for="zoomoffsety">Zoom offset Y:</label></td>
+            <td>
+                <label for="zoomoffsety">Zoom offset Y:</label></td>
             <td>
                 <input required type="number" id="zoomoffsety" name="zoomoffsety" value="0" min="0" max="960" step="1"
                         oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=0)) && 
@@ -124,8 +145,10 @@
             </td>
         </tr>
         <tr>
-            <td><label for="mirror" id="labelmirror">Mirror image:</label></td>
-            <td><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+            <td>
+                <label for="mirror" id="labelmirror">Mirror image:</label></td>
+            <td>
+                <input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
             <td>
                 <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity:</class>
             </td>
@@ -136,8 +159,10 @@
             </td>
         </tr>
         <tr>
-            <td><label for="flip" id="labelflip">Flip image size:</label></td>
-            <td><input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
+            <td>
+                <label for="flip" id="labelflip">Flip image size:</label></td>
+            <td>
+                <input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
             <td>
                 <class id="TakeImage_Brightness_text" style="color:black;">Brightness:</class>
             </td>
@@ -176,24 +201,30 @@
                 <output id="TakeImage_Saturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
         </tr>
-        <tr>
-            <td><label for="grayscale" id="labelgrayscale">Grayscale:</label></td>
-            <td><input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
-            <td><label for="aec2" id="labelaec2">Auto Exposure Control 2:</label></td>
-            <td><input type="checkbox" id="aec2" name="aec2" value="0"></td>
-        </tr>
-        <tr>
-            <td><label for="negative" id="labelnegative">Negative:</label></td>
-            <td><input type="checkbox" id="negative" name="negative" value="0" onchange="drawRotated()"></td>
+        <tr class="expert">
             <td>
-                <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto exposure:</class>
+                <label for="grayscale" id="labelgrayscale">Grayscale:</label></td>
+            <td>
+                <input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
+            <td>
+                <label for="aec2" id="labelaec2">Auto Exposure Control 2:</label></td>
+            <td>
+                <input type="checkbox" id="aec2" name="aec2" value="0"></td>
+        </tr>
+        <tr class="expert">
+            <td>
+                <label for="negative" id="labelnegative">Negative:</label></td>
+            <td>
+                <input type="checkbox" id="negative" name="negative" value="0" onchange="drawRotated()"></td>
+            <td>
+                <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level:</class>
             </td>
             <td>
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_AutoExposureLevel_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_AutoExposureLevel_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
         </tr>
-        <tr>
+        <tr class="expert">
             <td></td>
             <td></td>
             <td>
@@ -827,7 +858,30 @@
         }
 
         init();
+        UpdateExpertModus();
     
+
+
+        function UpdateExpertModus()
+        {
+        //	var _style = 'display:none;';
+            var _style_pur = 'none';
+            var _hidden = true;
+            if (document.getElementById("ExpertModus_enabled").checked) {
+        //		_style = '';
+                _style_pur = '';
+                _hidden = false;
+                firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
+            }
+
+            const expert = document.querySelectorAll(".expert");
+            for (var i = 0; i < expert.length; i++) {
+                expert[i].style.display = _style_pur;
+        //		document.getElementById(expert[i].id).style = _style;
+            }
+        }
+
+
     </script>
 
 </body>
