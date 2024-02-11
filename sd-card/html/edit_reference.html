@@ -49,6 +49,39 @@
             width: 660px;
             padding: 5px;
         }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 600px;
+            background-color: #fcfcfc;
+
+            padding: 5px;
+            padding-bottom: 0;
+
+            border: solid black 2px; 
+
+            /* Position the tooltip */
+            position: absolute;
+            z-index: 1;
+            top: 100%;
+            left: 100%;
+            margin-left: -600px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
+        .tooltip-content {
+            width: calc(100% - 2px);
+            height: calc(100% - 2px);
+            padding: 1px;
+        }
     </style>
 
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
