@@ -149,43 +149,43 @@
         <colgroup>
             <col span="1" style="width: 12%;">
             <col span="1" style="width: 15%;">
-            <col span="1" style="width: 8%;">
+            <col span="1" style="width: 3%;">
             <col span="1" style="width: 18%;">
             <col span="1" style="width: 10%;">
-            <col span="1" style="width: 8%;">
+            <col span="1" style="width: 3%;">
         </colgroup>
         <tr class="expert">
             <td>
-                <label for="zoom" id="labelzoom">Enable zoom:</label></td>
+                <label for="zoom" id="labelzoom">Enable zoom: <b>*)</b></label></td>
             <td>
                 <input type="checkbox" id="zoom" name="zoom" value="0"></td>
                 <td>$TOOLTIP_TakeImage_Zoom</td>
             <td>
-                <label for="zoomoffsetx">Zoom offset X:</label></td>
+                <label for="zoomoffsetx">Zoom offset X: <b>*)</b></label></td>
             <td>
                 <input required type="number" id="zoomoffsetx" name="zoomoffsetx" value="0" min="0" max="1280" step="1"
                         oninput="(!validity.rangeOverflow||(value=1280)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-            <td>$TOOLTIP_TakeImage_ZoomOffsetX <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_ZoomOffsetX</td>
         </tr>
         <tr class="expert">
             <td>
-                <label for="zoommode" id="labelzoommode">Zoom mode:</label></td>
+                <label for="zoommode" id="labelzoommode">Zoom mode: <b>*)</b></label></td>
             <td>
                 <input required type="number" id="zoommode" name="zoommode" value="0" min="0" max="1" step="1"
                         oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-            <td>$TOOLTIP_TakeImage_ZoomMode <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_ZoomMode</td>
             <td>
-                <label for="zoomoffsety">Zoom offset Y:</label></td>
+                <label for="zoomoffsety">Zoom offset Y: <b>*)</b></label></td>
             <td>
                 <input required type="number" id="zoomoffsety" name="zoomoffsety" value="0" min="0" max="960" step="1"
                         oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=0)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-            <td>$TOOLTIP_TakeImage_ZoomOffsetY <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_ZoomOffsetY</td>
         </tr>
         <tr>
             <td>
@@ -201,7 +201,7 @@
                     oninput="(!validity.rangeOverflow||(value=100)) && (!validity.rangeUnderflow||(value=0)) && 
                         (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-            <td>$TOOLTIP_TakeImage_LEDIntensity <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_LEDIntensity</td>
         </tr>
         <tr>
             <td>
@@ -216,7 +216,7 @@
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Brightness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-            <td>$TOOLTIP_TakeImage_Brightness <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_Brightness</td>
         </tr>
         <tr>
             <td><label for="prerotateangle">Rotation angle:</label></td>
@@ -233,7 +233,7 @@
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Contrast_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-            <td>$TOOLTIP_TakeImage_Contrast <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_Contrast</td>
         </tr>
         <tr>
             <td><label for="finerotate">(Fine-tune):</label></td>
@@ -250,26 +250,26 @@
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Saturation_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Saturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-            <td>$TOOLTIP_TakeImage_Saturation <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_Saturation</td>
         </tr>
         <tr class="expert">
             <td>
-                <label for="grayscale" id="labelgrayscale">Grayscale:</label></td>
+                <label for="grayscale" id="labelgrayscale">Grayscale: <b>*)</b></label></td>
             <td>
                 <input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
-                <td>$TOOLTIP_TakeImage_Grayscale <b>*)</b></td>
+                <td>$TOOLTIP_TakeImage_Grayscale</td>
             <td>
-                <label for="aec2" id="labelaec2">Auto Exposure Control 2:</label></td>
+                <label for="aec2" id="labelaec2">Auto Exposure Control 2: <b>*)</b></label></td>
             <td>
                 <input type="checkbox" id="aec2" name="aec2" value="0"></td>
-                <td>$TOOLTIP_TakeImage_Aec2 <b>*)</b></td>
+                <td>$TOOLTIP_TakeImage_Aec2</td>
         </tr>
         <tr class="expert">
             <td>
-                <label for="negative" id="labelnegative">Negative:</label></td>
+                <label for="negative" id="labelnegative">Negative: <b>*)</b></label></td>
             <td>
                 <input type="checkbox" id="negative" name="negative" value="0" onchange="drawRotated()"></td>
-            <td>$TOOLTIP_TakeImage_Negative <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_Negative</td>
             <td>
                 <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level:</class>
             </td>
@@ -277,14 +277,14 @@
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_AutoExposureLevel_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_AutoExposureLevel_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-            <td>$TOOLTIP_TakeImage_AutoExposureLevel <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_AutoExposureLevel</td>
         </tr>
         <tr class="expert">
             <td>
-                <label for="FixedExposure" id="labelFixedExposure">FixedExposure:</label></td>
+                <label for="FixedExposure" id="labelFixedExposure">FixedExposure: <b>*)</b></label></td>
             <td>
                 <input type="checkbox" id="FixedExposure" name="FixedExposure" value="0"></td>
-            <td>$TOOLTIP_TakeImage_FixedExposure <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_FixedExposure</td>
             <td>
                 <class id="TakeImage_Sharpness_text" style="color:black;">Sharpness:</class>
             </td>
@@ -292,7 +292,7 @@
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Sharpness_value1" size="13" value=0  min="-4" max="3" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Sharpness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-            <td>$TOOLTIP_TakeImage_Sharpness <b>*)</b></td>
+            <td>$TOOLTIP_TakeImage_Sharpness</td>
         </tr>
     </table>
     <table>
