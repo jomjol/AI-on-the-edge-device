@@ -225,8 +225,10 @@
             </td>
         </tr>
         <tr class="expert">
-            <td></td>
-            <td></td>
+            <td>
+                <label for="FixedExposure" id="labelFixedExposure">FixedExposure:</label></td>
+            <td>
+                <input type="checkbox" id="FixedExposure" name="FixedExposure" value="0"></td>
             <td>
                 <class id="TakeImage_Sharpness_text" style="color:black;">Sharpness:</class>
             </td>
@@ -287,6 +289,7 @@
                 _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
                 _negative = document.getElementById("negative").checked ? "1" : "0";
                 _aec2 = document.getElementById("aec2").checked ? "1" : "0";
+                _FixedExposure = document.getElementById("FixedExposure").checked ? "1" : "0";
                 _zoom = document.getElementById("zoom").checked ? "1" : "0";
                 _zm = document.getElementById("zoommode").value;
                 if (_zm == "") _zm = "0";
@@ -336,6 +339,7 @@
             document.getElementById("grayscale").disabled = false;
             document.getElementById("negative").disabled = false;
             document.getElementById("aec2").disabled = false;
+            document.getElementById("FixedExposure").disabled = false;
             document.getElementById("zoom").disabled = false;
             document.getElementById("zoommode").disabled = false;
             document.getElementById("zoomoffsetx").disabled = false;
@@ -406,6 +410,7 @@
             document.getElementById("grayscale").disabled = true;
             document.getElementById("negative").disabled = true;
             document.getElementById("aec2").disabled = true;
+            document.getElementById("FixedExposure").disabled = true;
             document.getElementById("zoom").disabled = true;
             document.getElementById("zoommode").disabled = true;
             document.getElementById("zoomoffsetx").disabled = true;
@@ -481,6 +486,11 @@
                     param["TakeImage"]["Aec2"].value1 = "true";
                 else
                     param["TakeImage"]["Aec2"].value1 = "false";
+
+                if ((param["TakeImage"]["FixedExposure"].found == true) && (document.getElementById("FixedExposure").checked))
+                    param["TakeImage"]["FixedExposure"].value1 = "true";
+                else
+                    param["TakeImage"]["FixedExposure"].value1 = "false";
 
                 if ((param["TakeImage"]["Zoom"].found == true) && (document.getElementById("zoom").checked))
                     param["TakeImage"]["Zoom"].value1 = "true";
@@ -575,6 +585,7 @@
             param["TakeImage"]["Grayscale"]["enabled"] = true;
             param["TakeImage"]["Negative"]["enabled"] = true;
             param["TakeImage"]["Aec2"]["enabled"] = true;
+            param["TakeImage"]["FixedExposure"]["enabled"] = true;
             param["TakeImage"]["Zoom"]["enabled"] = true;
             param["TakeImage"]["ZoomMode"]["enabled"] = true;
             param["TakeImage"]["ZoomOffsetX"]["enabled"] = true;
@@ -594,6 +605,11 @@
             {
                 param["TakeImage"]["Aec2"]["found"] = true;
                 param["TakeImage"]["Aec2"].value1 = "false";
+            }
+            if (!param["TakeImage"]["FixedExposure"]["found"])
+            {
+                param["TakeImage"]["FixedExposure"]["found"] = true;
+                param["TakeImage"]["FixedExposure"].value1 = "false";
             }
             if (!param["TakeImage"]["Zoom"]["found"])
             {
@@ -673,6 +689,11 @@
                 document.getElementById("aec2").checked = true;
             } else {
                 document.getElementById("aec2").checked = false;
+            }
+            if (param["TakeImage"]["FixedExposure"].value1 == "true") {
+                document.getElementById("FixedExposure").checked = true;
+            } else {
+                document.getElementById("FixedExposure").checked = false;
             }
             if (param["TakeImage"]["Zoom"].value1 == "true") {
                 document.getElementById("zoom").checked = true;
