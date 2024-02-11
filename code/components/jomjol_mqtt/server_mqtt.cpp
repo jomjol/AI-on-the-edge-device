@@ -21,6 +21,7 @@ static const char *TAG = "MQTT SERVER";
 extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
 extern const char* libfive_git_branch(void);
+extern std::string getFwVersion(void);
 
 std::vector<NumberPost*>* NUMBERS;
 bool HomeassistantDiscovery = false;
