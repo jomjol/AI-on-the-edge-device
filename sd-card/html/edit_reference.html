@@ -46,9 +46,9 @@
         }
     </style>
 
-    <link href="firework.css?v=019069c" rel="stylesheet">
-    <script type="text/javascript" src="jquery-3.6.0.min.js?v=019069c"></script>  
-    <script type="text/javascript" src="firework.js?v=019069c"></script>
+    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -163,7 +163,7 @@
             <td style="vertical-align: bottom;"><b>Reference Image:</b></td>
             <td></td>
             <td>
-                <input class="button" type="button" id="saveReference" value="Save New Reference" onclick="SaveReference()">
+                <input style="font-weight:bold;" class="button" type="button" id="saveReference" value="Save New Reference" onclick="SaveReference()">
             </td>
         </tr>
         <tr>
@@ -171,9 +171,9 @@
         </tr>	
     </table>
 
-    <script type="text/javascript" src="common.js?v=019069c"></script> 
-    <script type="text/javascript" src="readconfigcommon.js?v=019069c"></script>  
-    <script type="text/javascript" src="readconfigparam.js?v=019069c"></script>  
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script> 
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
