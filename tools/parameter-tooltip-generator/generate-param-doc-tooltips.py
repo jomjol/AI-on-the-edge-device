@@ -10,6 +10,7 @@ parameterDocsFolder = "../../param-docs/parameter-pages"
 docsMainFolder = "../../sd-card/html"
 configPageTemplate = "edit_config_param_template.html"
 configPage = "edit_config_param.html"
+refImagePage = "edit_reference.html"
 
 htmlTooltipPrefix = """
     <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
@@ -54,13 +55,16 @@ def generateHtmlTooltip(section, parameter, markdownFile):
     # Add the tooltip to the config page
     with open(docsMainFolder + "/" + configPage, 'r') as configPageHandle:
         configPageContent = configPageHandle.read()
-
-    # print("replacing $TOOLTIP_" + section + "_" + parameter + " with the tooltip content...")
     configPageContent = configPageContent.replace("<td>$TOOLTIP_" + section + "_" + parameter + "</td>", "<td>" + htmlTooltip + "</td>")
-
     with open(docsMainFolder + "/" + configPage, 'w') as configPageHandle:
         configPageHandle.write(configPageContent)
 
+    # Add the tooltip to the reference image page
+    with open(docsMainFolder + "/" + refImagePage, 'r') as refImagePageHandle:
+        refImagePageContent = refImagePageHandle.read()
+    refImagePageContent = refImagePageContent.replace("<td>$TOOLTIP_" + section + "_" + parameter + "</td>", "<td>" + htmlTooltip + "</td>")
+    with open(docsMainFolder + "/" + refImagePage, 'w') as refImagePageHandle:
+        refImagePageHandle.write(refImagePageContent)
 
 print("Generating Tooltips...")
 
