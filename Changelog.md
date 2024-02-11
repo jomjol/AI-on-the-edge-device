@@ -1,22 +1,30 @@
-## [unreleased] - 2024-01-02
+## [15.6.0] - 2024-02-09
 
-### Changes
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.5.0...v15.6.0)
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.4.0)
+#### Fixed
+
+* Fixed issues with the SD-Card initialization
+
+## [15.5.0] - 2024-02-02
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.4.0...v15.5.0)
 
 #### Changed
 
  - Update PlattformIO to v6.5.0, which means esp-idf to v5.1
-
+ - Enhance busy notification
+ - Implemented late analog / digital transition
 
 #### Fixed
 
 * ATA-TRIM: workaround for old SD-cards with no trim function to work with esp-idf v5.x
 * InfluxDB: Modified the time conversions to be more stable (UTC vs. local time shifts)
+* Fix negatives on extended resolution false
+* Show chip infos on info page
+* Fix memory leaks in tflite integration
 
 ## [15.4.0] - 2023-12-22
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.4.0)
 
@@ -43,12 +51,9 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 * Minor html response bugfix 
 
  - Memory leakage (MQTT)
-
    
 
 ## [15.3.0] - 2023-07-22
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.2.4)
 
@@ -59,12 +64,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
    - ana-cont_1207_s2_q.tflite
    - dig-cont_0620_s3_q.tflite
 
-
-
-
 ## [15.2.4] - 2023-05-02
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4)
 
@@ -88,8 +88,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 
 ## [15.2.0] - 2023-04-23
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0)
 
@@ -119,8 +117,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 
 ## [15.1.1] - 2023-03-23
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1)
 
