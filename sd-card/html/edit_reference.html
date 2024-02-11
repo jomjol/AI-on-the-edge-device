@@ -20,14 +20,14 @@
             vertical-align: middle;
         }
 
-		input:out-of-range {
-			background-color: rgba(255, 0, 0, 0.25);
-			border: 1px solid red;
+        input:out-of-range {
+            background-color: rgba(255, 0, 0, 0.25);
+            border: 1px solid red;
         }
 
-		input:invalid {
-			background-color: rgba(255, 0, 0, 0.25);
-			border: 1px solid red;
+        input:invalid {
+            background-color: rgba(255, 0, 0, 0.25);
+            border: 1px solid red;
         }
 
         .button {
@@ -171,56 +171,52 @@
         </tr>	
     </table>
 
-
     <script type="text/javascript" src="common.js?v=019069c"></script> 
     <script type="text/javascript" src="readconfigcommon.js?v=019069c"></script>  
     <script type="text/javascript" src="readconfigparam.js?v=019069c"></script>  
-    
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
             imageObj = new Image(),
             isActReference = false,
-			param_temp,
+            param_temp,
             param;
 
-       
         function doReboot() {
             if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-                    var stringota = getDomainname() + "/reboot";
-                    window.location = stringota;
-                    window.location.href = stringota;
-                    window.location.assign(stringota);
-                    window.location.replace(stringota);
+               var stringota = getDomainname() + "/reboot";
+               window.location = stringota;
+               window.location.href = stringota;
+               window.location.assign(stringota);
+               window.location.replace(stringota);
             }
         }
 
-
-		// Create New Reference, Update Image
+        // Create New Reference, Update Image
         function doTakeReference(){ 
             var xhttp = new XMLHttpRequest();
-			var domainname = getDomainname();
+            var domainname = getDomainname();
 			
-			var _intensity = "";
-			var _brightness = "";
-			var _contrast = "";
-			var _saturation = "";			
+            var _intensity = "";
+            var _brightness = "";
+            var _contrast = "";
+            var _saturation = "";			
 			
             _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
 				
             if (_intensity == "") {
-				_intensity = "50";
-			}
+               _intensity = "50";
+            }
 				
             _brightness = document.getElementById("TakeImage_Brightness_value1").value;
             _contrast = document.getElementById("TakeImage_Contrast_value1").value;
             _saturation = document.getElementById("TakeImage_Saturation_value1").value;
 			
-			param["TakeImage"]["LEDIntensity"].value1 = _intensity;
-			param["TakeImage"]["Brightness"].value1 = _brightness;
-			param["TakeImage"]["Contrast"].value1 = _contrast;
-			param["TakeImage"]["Saturation"].value1 = _saturation;		
+            param["TakeImage"]["LEDIntensity"].value1 = _intensity;
+            param["TakeImage"]["Brightness"].value1 = _brightness;
+            param["TakeImage"]["Contrast"].value1 = _contrast;
+            param["TakeImage"]["Saturation"].value1 = _saturation;		
 				
             url = domainname + "/editflow?task=test_take";
             url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
@@ -240,20 +236,20 @@
 
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;
-			document.getElementById("orignReference").disabled = false;
+            document.getElementById("orignReference").disabled = false;
             document.getElementById("newReference").disabled = true;
             document.getElementById("updateReference").disabled = false;
 			
             if (param["Alignment"]["InitialMirror"].found) {
                 document.getElementById("mirror").disabled = false;
-			}
+            }
             else {
                 document.getElementById("labelmirror").style = "color:lightgrey;";
             }
 
             if (param["Alignment"]["FlipImageSize"].found) {
                 document.getElementById("flip").disabled = false;
-			}
+            }
             else {
                 document.getElementById("labelflip").style = "color:lightgrey;";
             }
@@ -265,29 +261,27 @@
 
             isActReference = false;
             loadCanvas(url, true);
-			camSettingsSet(param_temp);
+            camSettingsSet(param_temp);
         }
 		
-		
-		function camSettingsSet(_param){
-			var xhttp = new XMLHttpRequest();
+        function camSettingsSet(_param){
+            var xhttp = new XMLHttpRequest();
 			
-			var _brightness = _param["TakeImage"]["Brightness"].value1;
-			var _contrast = _param["TakeImage"]["Contrast"].value1;
-			var _saturation = _param["TakeImage"]["Saturation"].value1;
-			var _intensity = _param["TakeImage"]["LEDIntensity"].value1;
+            var _brightness = _param["TakeImage"]["Brightness"].value1;
+            var _contrast = _param["TakeImage"]["Contrast"].value1;
+            var _saturation = _param["TakeImage"]["Saturation"].value1;
+            var _intensity = _param["TakeImage"]["LEDIntensity"].value1;
 
-			var url = getDomainname() + "/editflow?task=cam_settings";
-			url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
+            var url = getDomainname() + "/editflow?task=cam_settings";
+            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
 
-			xhttp.open("GET", url, false);
-			xhttp.send();
-		}		
+            xhttp.open("GET", url, false);
+            xhttp.send();
+        }		
 		
-
-		// wird von init() und SaveReference() benutzt
+        // wird von init() und SaveReference() benutzt
         function showReference(_param){
-			var domainname = getDomainname();
+            var domainname = getDomainname();
 		
             url = domainname + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
 
@@ -303,33 +297,33 @@
 
             if (_param["Alignment"]["InitialMirror"].value1 == "true") {
                 document.getElementById("mirror").checked = true;
-			}
-			else {
-				document.getElementById("mirror").checked = false;
-			}
+            }
+            else {
+                document.getElementById("mirror").checked = false;
+            }
 
             if (_param["Alignment"]["FlipImageSize"].value1 == "true") {
                 document.getElementById("flip").checked = true;
-			}
-			else {
-				document.getElementById("flip").checked = false;
-			}			
+            }
+            else {
+                document.getElementById("flip").checked = false;
+            }			
 
-			document.getElementById("TakeImage_LEDIntensity_value1").value = _param["TakeImage"]["LEDIntensity"].value1;
+            document.getElementById("TakeImage_LEDIntensity_value1").value = _param["TakeImage"]["LEDIntensity"].value1;
 			
-			document.getElementById("TakeImage_Brightness_value1").value = _param["TakeImage"]["Brightness"].value1;
-			document.getElementById("TakeImage_Brightness_value1_output").value = _param["TakeImage"]["Brightness"].value1;
+            document.getElementById("TakeImage_Brightness_value1").value = _param["TakeImage"]["Brightness"].value1;
+            document.getElementById("TakeImage_Brightness_value1_output").value = _param["TakeImage"]["Brightness"].value1;
 			
-			document.getElementById("TakeImage_Contrast_value1").value = _param["TakeImage"]["Contrast"].value1;
-			document.getElementById("TakeImage_Contrast_value1_output").value = _param["TakeImage"]["Contrast"].value1;
+            document.getElementById("TakeImage_Contrast_value1").value = _param["TakeImage"]["Contrast"].value1;
+            document.getElementById("TakeImage_Contrast_value1_output").value = _param["TakeImage"]["Contrast"].value1;
 			
-			document.getElementById("TakeImage_Saturation_value1").value = _param["TakeImage"]["Saturation"].value1;
-			document.getElementById("TakeImage_Saturation_value1_output").value = _param["TakeImage"]["Saturation"].value1;
+            document.getElementById("TakeImage_Saturation_value1").value = _param["TakeImage"]["Saturation"].value1;
+            document.getElementById("TakeImage_Saturation_value1_output").value = _param["TakeImage"]["Saturation"].value1;
 
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("saveReference").disabled = true;
-			document.getElementById("orignReference").disabled = true;
+            document.getElementById("orignReference").disabled = true;
             document.getElementById("newReference").disabled = false;
             document.getElementById("updateReference").disabled = true;
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
@@ -343,13 +337,12 @@
             loadCanvas(url, false);
         }
         
-        
         function dataURLtoBlob(dataurl) {
             var arr = dataurl.split(',');
-			var mime = arr[0].match(/:(.*?);/)[1];
+            var mime = arr[0].match(/:(.*?);/)[1];
             var bstr = atob(arr[1]);
-			var n = bstr.length;
-			var u8arr = new Uint8Array(n);
+            var n = bstr.length;
+            var u8arr = new Uint8Array(n);
 				
             while(n--){
                 u8arr[n] = bstr.charCodeAt(n);
@@ -358,10 +351,9 @@
             return new Blob([u8arr], {type:mime});
         }			
         
-        
         function SaveReference(){
             if (confirm("Are you sure you want to save the new reference image configuration?")) {
-				var domainname = getDomainname();
+                var domainname = getDomainname();
 			
                 param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
                                                                 Number(document.getElementById("finerotate").value)).toFixed(1);
@@ -371,14 +363,14 @@
                 }
                 else {
                     param["Alignment"]["InitialMirror"].value1 = "false";
-				}
+                }
 
                 if (document.getElementById("flip").checked) {
                     param["Alignment"]["FlipImageSize"].value1 = "true";
-				}
+                }
                 else {
                     param["Alignment"]["FlipImageSize"].value1 = "false";
-				}
+                }
 
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
@@ -390,12 +382,11 @@
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
                 showReference(param);
                 
-				param_temp = param;
-				camSettingsSet(param);
+                param_temp = param;
+                camSettingsSet(param);
                 firework.launch('Reference image configuration saved', 'success', 5000);
             }
         }
-
 
         function loadCanvas(dataURL, grid) {
             var canvas = document.getElementById('canvas');
@@ -405,20 +396,19 @@
                 canvas.width = this.width;
                 canvas.height = this.height;
                 
-				if (grid) {
+                if (grid) {
                     drawRotated(true);
-				}
+                }
                 else {
                     drawRotated(false);
-				}
+                }
             };
 
             imageObj.src = dataURL;
         }
 
-
         function getCoords(elem) { 
-			// crossbrowser version
+            // crossbrowser version
             var box = elem.getBoundingClientRect();
             var body = document.body;
             var docEl = document.documentElement;
@@ -432,18 +422,16 @@
             return { top: Math.round(top), left: Math.round(left) };
         }
 
-        
         function openDescription() {
-			if(window.location.hash) {
-				var hash = window.location.hash.substring(1);
+            if(window.location.hash) {
+                var hash = window.location.hash.substring(1);
 				
-				if(hash == 'description') {
-					document.getElementById("desc_details").open = true;
-				}
-			}
+                if(hash == 'description') {
+                    document.getElementById("desc_details").open = true;
+                }
+            }
         }
     
-
         function init() {
             openDescription();
             canvas.addEventListener('mousemove', mouseMove, false);
@@ -451,7 +439,7 @@
             loadConfig(getDomainname()); 
             ParseConfig();
             param = getConfigParameters();
-			param_temp = param;
+            param_temp = param;
 
             if (!param["TakeImage"]["LEDIntensity"]["found"]) {
                 param["TakeImage"]["LEDIntensity"]["found"] = true;
@@ -476,7 +464,6 @@
             showReference(param); 
         }
         
-
         function drawRotated(_grid = true) {
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
@@ -532,9 +519,8 @@
 
             if (_grid) {
                 drawGrid();
-			}
+            }
         }
-
 
         function drawGrid(){
             var canvas = document.getElementById('canvas');
@@ -560,19 +546,18 @@
                 ctx.moveTo(w-i, 0);
                 ctx.lineTo(w-i, h);
                 ctx.stroke();                
-			}
+            }
 			
             ctx.restore();
         }
 
-
         function mouseMove(e) {
             if (isActReference) {
                 drawRotated(false);
-			}
+            }
             else {
                 drawRotated(true);
-			}
+            }
             
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
