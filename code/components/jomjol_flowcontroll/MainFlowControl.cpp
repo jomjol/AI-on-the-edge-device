@@ -658,7 +658,8 @@ esp_err_t handler_editflow(httpd_req_t *req) {
         httpd_resp_send(req, zw.c_str(), zw.length()); 
     }
 
-    if (_task.compare("test_take") == 0) {
+    if ((_task.compare("test_take") == 0) || (_task.compare("cam_settings") == 0)) {
+        std::string _zw = "";
         std::string _host = "";
         int bri = -100;
         int sat = -100;
@@ -681,27 +682,22 @@ esp_err_t handler_editflow(httpd_req_t *req) {
         if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
             _host = std::string(_valuechar);
         }
-	    
         if (httpd_query_key_value(_query, "int", _valuechar, 30) == ESP_OK) {
             std::string _int = std::string(_valuechar);
             intens = stoi(_int);
         }
-	    
         if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK) {
             std::string _bri = std::string(_valuechar);
             bri = stoi(_bri);
         }
-	    
         if (httpd_query_key_value(_query, "con", _valuechar, 30) == ESP_OK) {
             std::string _con = std::string(_valuechar);
             con = stoi(_con);
         }
-	    
         if (httpd_query_key_value(_query, "sat", _valuechar, 30) == ESP_OK) {
             std::string _sat = std::string(_valuechar);
             sat = stoi(_sat);
         }
-      
         if (httpd_query_key_value(_query, "ae", _valuechar, 30) == ESP_OK) {
             std::string _ae = std::string(_valuechar);
             aelevel = stoi(_ae);
@@ -712,31 +708,39 @@ esp_err_t handler_editflow(httpd_req_t *req) {
         }
         if (httpd_query_key_value(_query, "gs", _valuechar, 30) == ESP_OK) {
             std::string _gr = std::string(_valuechar);
-            if (stoi(_gr) != 0)
+            if (stoi(_gr) != 0) {
                 grayscale = true;
-            else
+            }
+            else {
                 grayscale = false;
+            }
         }
         if (httpd_query_key_value(_query, "ne", _valuechar, 30) == ESP_OK) {
             std::string _ne = std::string(_valuechar);
-            if (stoi(_ne) != 0)
+            if (stoi(_ne) != 0) {
                 negative = true;
-            else
+            }
+            else {
                 negative = false;
+            }				
         }
         if (httpd_query_key_value(_query, "a2", _valuechar, 30) == ESP_OK) {
             std::string _a2 = std::string(_valuechar);
-            if (stoi(_a2) != 0)
+            if (stoi(_a2) != 0) {
                 aec2 = true;
-            else
+            }				
+            else {
                 aec2 = false;
+            }				
         }
         if (httpd_query_key_value(_query, "z", _valuechar, 30) == ESP_OK) {
             std::string _zoom = std::string(_valuechar);
-            if (stoi(_zoom) != 0)
+            if (stoi(_zoom) != 0) {
                 zoom = true;
-            else
+            }				
+            else {
                 zoom = false;
+            }		
         }
         if (httpd_query_key_value(_query, "zm", _valuechar, 30) == ESP_OK) {
             std::string _zm = std::string(_valuechar);
@@ -756,49 +760,22 @@ esp_err_t handler_editflow(httpd_req_t *req) {
         Camera.SetZoom(zoom, zoommode, zoomoffsetx, zoomoffsety);
         Camera.SetBrightnessContrastSaturation(bri, con, sat, aelevel, grayscale, negative, aec2, sharpnessLevel);
         Camera.SetLEDIntensity(intens);
-        ESP_LOGD(TAG, "test_take - vor TakeImage");
-        std::string zw = flowctrl.doSingleStep("[TakeImage]", _host);
+
+        if (_task.compare("cam_settings") == 0)
+        {
+            ESP_LOGD(TAG, "Cam Settings set");
+            _zw = "Cam Settings set";
+        }
+
+        else
+        {
+            ESP_LOGD(TAG, "test_take - vor TakeImage");
+            _zw = flowctrl.doSingleStep("[TakeImage]", _host);
+        }
+		
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_send(req, zw.c_str(), zw.length()); 
+        httpd_resp_send(req, _zw.c_str(), _zw.length()); 
     } 
-
-    if (_task.compare("cam_settings") == 0) {
-        std::string _bri = "";
-        std::string _con = "";
-        std::string _sat = "";
-        std::string _int = "";
-        int bri = -100;
-        int sat = -100;
-        int con = -100;
-        int intens = -100;
-
-        if (httpd_query_key_value(_query, "int", _valuechar, 30) == ESP_OK) {
-            _int = std::string(_valuechar);
-            intens = stoi(_int);
-        }
-
-        if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK) {
-            _bri = std::string(_valuechar);
-            bri = stoi(_bri);
-        }
-
-        if (httpd_query_key_value(_query, "con", _valuechar, 30) == ESP_OK) {
-            _con = std::string(_valuechar);
-            con = stoi(_con);
-        }
-
-        if (httpd_query_key_value(_query, "sat", _valuechar, 30) == ESP_OK) {
-            _sat = std::string(_valuechar);
-            sat = stoi(_sat);
-        }
-
-        Camera.SetBrightnessContrastSaturation(bri, con, sat);
-        Camera.SetLEDIntensity(intens);
-        ESP_LOGD(TAG, "Cam Settings set");
-        string zw = "Cam Settings set";
-        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_send(req, zw.c_str(), zw.length());		
-    }
 	
     if (_task.compare("test_align") == 0) {
         std::string _host = "";
