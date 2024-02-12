@@ -476,12 +476,18 @@ void test_doFlowPP3() {
         expected_extended= "126.9231";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+        setAnalogdigitTransistionStart(undertestPost, 9.4); // Extreme late transition
+        result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+        delete undertestPost;
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        undertestPost = init_do_flow(analogs, digits, Digital100, false, true, 0);
+        setAnalogdigitTransistionStart(undertestPost, 9.4); // Extreme late transition
+        result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+        delete undertestPost;
 
        // Fehler  V12.0.1 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1282168030
@@ -563,5 +569,18 @@ void test_doFlowPP_rainman110() {
     setAnalogdigitTransistionStart(undertestPost, 3.5);
     result = process_doFlow(undertestPost);
     TEST_ASSERT_EQUAL_STRING("418.2579", result.c_str());
+    delete undertestPost;
+
+    // Edge cases
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 8.0);
+    TEST_ASSERT_EQUAL_STRING("99.50", process_doFlow({5.0, 0.0}, {9.9, 9.4}, 
+                                        Digital100, false, false, 0).c_str());
+    delete undertestPost;
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 8.0);
+    TEST_ASSERT_EQUAL_STRING("99.95", process_doFlow({9.5, 5.0}, {1.0, 0.0, 0.0}, 
+                                        Digital100, false, false, 0).c_str());
     delete undertestPost;
 }

@@ -195,7 +195,8 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
     // number can still be x.6 - x.7. 
     // Preceding (else - branch) does not already happen from 9.
-    if (Digital_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4)
+    if (((Digital_Transition_Area_Forward>=number_of_predecessors) && (eval_predecessors == (int)number_of_predecessors)) 
+        || result_after_decimal_point >= 4)
         // The current digit, like the previous digit, does not yet have a zero crossing. 
         result =  result_before_decimal_point % 10;
     else
@@ -228,7 +229,14 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
                                                     " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
                                                     " erg before comma: " + std::to_string(result_before_decimal_point) + 
                                                     " erg after comma: " + std::to_string(result_after_decimal_point));
-    } 
+    }
+    else if (result_after_decimal_point < Digital_Uncertainty && numeral_preceder > analogDigitalTransitionStart) {
+        result = ((result_before_decimal_point+10) - 1) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Digital Uncertainty - Too early zero crossing - Result = " + std::to_string(result) +
+                                            " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
+                                            " erg before comma: " + std::to_string(result_before_decimal_point) + 
+                                            " erg after comma: " + std::to_string(result_after_decimal_point)); 
+    }
     else {
         result = (int) ((int) trunc(number) + 10) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digital Uncertainty - Result = " + std::to_string(result) +
@@ -238,9 +246,9 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     // No zero crossing has taken place.
     // Only eval_predecessors used because numeral_preceder could be wrong here.
     // numeral_preceder<=0.1 & eval_predecessors=9 corresponds to analogue was reset because of previous analogue that are not yet at 0.
-    if ((eval_predecessors >= 3 && (numeral_preceder >= analogDigitalTransitionStart) && roundedUp))
+    if ((eval_predecessors >= 3 && (numeral_preceder > analogDigitalTransitionStart) && roundedUp))
     {
-        result =  ((result_before_decimal_point+10) - 1) % 10;
+        result = ((result_before_decimal_point+10) - 1) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - No correction = " + std::to_string(result) +
                                     " number: " + std::to_string(number) + 
                                     " numeral_preceder = " + std::to_string(numeral_preceder) + 
