@@ -194,7 +194,7 @@
                 <input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
                 <td>$TOOLTIP_Alignment_InitialMirror</td>
             <td>
-                <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity:</class>
+                <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity: <b>*)</b></class>
             </td>
             <td>
                 <input required style="clear: both" type="number" id="TakeImage_LEDIntensity_value1" size="13" value="0"  min="0" max="100" 
@@ -205,7 +205,7 @@
         </tr>
         <tr>
             <td>
-                <label for="flip" id="labelflip">Flip image size: <b>*)</b></label></td>
+                <label for="flip" id="labelflip">Flip image size:</label></td>
             <td>
                 <input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
                 <td>$TOOLTIP_Alignment_FlipImageSize</td>
@@ -271,7 +271,7 @@
                 <input type="checkbox" id="negative" name="negative" value="0" onchange="drawRotated()"></td>
             <td>$TOOLTIP_TakeImage_Negative</td>
             <td>
-                <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level:</class>
+                <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level: <b>*)</b></class>
             </td>
             <td>
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_AutoExposureLevel_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
@@ -286,7 +286,7 @@
                 <input type="checkbox" id="FixedExposure" name="FixedExposure" value="0"></td>
             <td>$TOOLTIP_TakeImage_FixedExposure</td>
             <td>
-                <class id="TakeImage_Sharpness_text" style="color:black;">Sharpness:</class>
+                <class id="TakeImage_Sharpness_text" style="color:black;">Sharpness: <b>*)</b></class>
             </td>
             <td>
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Sharpness_value1" size="13" value=0  min="-4" max="3" oninput="this.nextElementSibling.value = this.value">
