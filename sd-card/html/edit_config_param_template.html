@@ -750,8 +750,8 @@
 				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">Analog/Digital Transition Start</class></label>
 			</td>
 			<td>
-				<input required type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="0.1" max="9.9" value="9.2"
-					oninput="(!validity.rangeUnderflow||(value=0.1)) && (!validity.rangeOverflow||(value=9.9)) && 
+				<input required type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2"
+					oninput="(!validity.rangeUnderflow||(value=6.0)) && (!validity.rangeOverflow||(value=9.9)) && 
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogDigitalTransitionStart</td>
