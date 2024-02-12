@@ -7,4 +7,6 @@ Default Value: `0`
 !!! Note
     This parameter can also be set on the Reference Image configuration.
 
-Changes the sharpness of the image. Set to -4 for auto-sharpness. Range (`-4` .. `3`)
+Changes the sharpness of the image. Set to `-4` for auto-sharpness. 
+
+Range (`-4` .. `3`)

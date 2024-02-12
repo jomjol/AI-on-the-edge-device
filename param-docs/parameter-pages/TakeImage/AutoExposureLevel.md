@@ -7,4 +7,5 @@ Default Value: `0`
 !!! Note
     This parameter can also be set on the Reference Image configuration.
 
-Exposure compensation. Lower values produce darker image. Range (`-2` .. `2`)
+Exposure compensation. Lower values produce darker image.
+Range (`-2` .. `2`)
