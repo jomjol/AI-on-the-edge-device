@@ -31,7 +31,6 @@ protected:
     ClassFlowTakeImage *flowTakeImage;
 
     bool LoadPreValue(void);
-    string ShiftDecimal(string in, int _decShift);
 
     string ErsetzteN(string, double _prevalue);
     float checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
@@ -78,6 +77,8 @@ public:
     std::vector<NumberPost*>* GetNumbers(){return &NUMBERS;};
 
     string name(){return "ClassFlowPostProcessing";};
+
+    static string ShiftDecimal(string in, int _decShift);
 };
 
 

@@ -776,18 +776,21 @@ bool inRange(float val, float min, float max)
  *
  * @return The synchronized values as a string
  */
-std::string syncDigitalAnalog(const std::string& value, const std::string& digitalPrecision,
-                              double analogDigitalShift)
+std::string syncDigitalAnalog(const std::string& invalue, const std::string& digitalPrecision,
+                              double analogDigitalShift, int decimalShift)
 {
     if (digitalPrecision.empty())
     {
-        return value;
+        return invalue;
     }
+
+    // temporarily revert decimal shift
+    std::string value = ClassFlowPostProcessing::ShiftDecimal(invalue, -decimalShift);
 
     const auto pos = value.find('.');
     if (pos == std::string::npos)
     {
-        return value;
+        return invalue;
     }
 
     // disassemble value into pre and post comma part
@@ -804,13 +807,19 @@ std::string syncDigitalAnalog(const std::string& value, const std::string& digit
     // Determine phase
     const bool inTransition = digitalPostComma > 0. && digitalPostComma < 10.;
     const bool postTransition = !inTransition && inRange(analogPostComma*10., analogDigitalShift, wrapAround(analogDigitalShift + 5.));
-    const bool preTransition = !inTransition && inRange(analogPostComma*10., 0, analogDigitalShift);
+    const bool preTransition = inRange(analogPostComma*10., 0, analogDigitalShift);
 
 
     if (inRange(analogDigitalShift, 0.5, 5.))
     {
+        // prevent hanging digit
+        if (digitalPostComma >= 9.0)
+        {
+            digitalPreComma += 1;
+        }
+
         // late transition, last digit starts transition, when analog is between [0.5, 5)
-        if (inTransition || preTransition)
+        if ((digitalPostComma > 0. && digitalPostComma < 9.) || preTransition)
         {
             ESP_LOGD("syncDigitalAnalog", "Late digital transition. Increase digital value by 1.");
             digitalPreComma += 1;
@@ -830,10 +839,15 @@ std::string syncDigitalAnalog(const std::string& value, const std::string& digit
         if (inTransition && analogPostComma < 0.5) {
             digitalPreComma += 1;
         }
+        else if (analogPostComma*10 < analogDigitalShift && digitalPostComma >= 9.)
+        {
+            // hanging digit
+            digitalPreComma += 1;
+        }
     }
     else
     {
-        return value;
+        return invalue;
     }
 
     // assemble result into string again, pad with zeros
@@ -841,7 +855,9 @@ std::string syncDigitalAnalog(const std::string& value, const std::string& digit
     for (size_t i = preCommaNew.size(); i < nPreComma; ++i)
         preCommaNew = "0" + preCommaNew;
 
-    const std::string result = preCommaNew + "." + postComma;
+    // apply again decimal shift
+    const std::string result = ClassFlowPostProcessing::ShiftDecimal(preCommaNew + "." + postComma,
+                                                                     decimalShift);
 
 #if debugSync
     ESP_LOGD("syncDigitalAnalog", "result: %s", result.c_str());
@@ -977,7 +993,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
         {
             // Synchronize potential misalignment between analog and digital part
-            NUMBERS[j]->ReturnValue = syncDigitalAnalog(NUMBERS[j]->ReturnValue, digitalPrecision, NUMBERS[j]->AnalogDigitalTransitionStart);
+            NUMBERS[j]->ReturnValue = syncDigitalAnalog(NUMBERS[j]->ReturnValue, digitalPrecision, NUMBERS[j]->AnalogDigitalTransitionStart,
+                                                        NUMBERS[j]->DecimalShift);
         }
 
         #ifdef SERIAL_DEBUG
