@@ -598,7 +598,17 @@ void test_doFlowEarlyTransition()
         TEST_ASSERT_EQUAL_STRING("12.8123", postProcess({0.0, 1.0, 3.0}, {8.1, 1.2, 2.3, 3.0}, a2dt).c_str());
 
         TEST_ASSERT_EQUAL_STRING("13.1234", postProcess({0.0, 1.0, 3.0}, {1.2, 2.3, 3.4, 4.0}, a2dt).c_str());
+}
 
+
+void test_doFlowEarlyTransitionEdgeCase()
+{
+    float a2dt = 8.;
+
+    // THIS TEST FAILS and reports 9.50. Not sure yet why. Predecessor value seems to play in here.
+    TEST_ASSERT_EQUAL_STRING("99.50", postProcess({0.0, 0.0, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("99.95", postProcess({0.0, 1.0, 0.0, 0.0}, {9.5, 5.0}, a2dt).c_str());
 }
 
 void test_doFlowIssue2857()
@@ -624,7 +634,6 @@ void test_doFlowIssue2857()
                                                       a2dt, decimalShift).c_str());
 
 
-
     // reported by marcniedersachsen
     decimalShift = 0;
     TEST_ASSERT_EQUAL_STRING("778.1480", postProcess({ 0.0, 7.0, 7.0, 7.9}, { 1.4, 4.7, 8.0, 0.5},
@@ -639,7 +648,37 @@ void test_doFlowIssue2857()
     TEST_ASSERT_EQUAL_STRING("1052.6669", postProcess({ 0.0, 1.0, 10.0, 4.9, 2.0}, { 6.7, 6.7, 6.9, 9.1},
                                                      a2dt, decimalShift).c_str());
 
+    // FrankCGN01
+    decimalShift = -3;
+    TEST_ASSERT_EQUAL_STRING("159.3659", postProcess({ 0.9, 4.8, 9.0, 3.0, 6.0, 5.0}, { 9.6},
+                                                    a2dt, decimalShift).c_str());
 
+    // THIS TEST FAILS
+    // THIS TEST CASE COULD BE INVALID
+    //
+    // Second test in https://github.com/jomjol/AI-on-the-edge-device/issues/2857#issuecomment-1937452352
+    // The last digit seems to be falsely recongnized. It looks like a regular "2" (no transition)
+    // but it is recognized by the inference as "2.5".
+    //
+    // @TODO: Feedback required by @FrankCGN01
+    decimalShift = -3;
+    TEST_ASSERT_EQUAL_STRING("159.5022", postProcess({ 0.9, 4.9, 9.0, 5.0, 0.0, 2.5}, { 2.2},
+                                                      a2dt, decimalShift).c_str());
+
+    // THIS TEST FAILS
+    //
+    // reported by penapena
+    // Note: this is a strange example, as the last digit (4.4) seems to have very early transition
+    //
+    // @TODO: The analog to digital value needs to be determined. Feed required by @penapena
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("124.4981", postProcess({ 0.0, 1.0, 2.0, 4.4}, { 5.1, 9.8, 8.3, 1.6},
+                                                      a2dt, decimalShift).c_str());
+
+    // reported by warnmat
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("51.653", postProcess({ 0.1, 0.1, 5.0, 1.0}, { 6.7, 5.4, 3.1},
+                                                     a2dt, decimalShift).c_str());
 }
 
 
