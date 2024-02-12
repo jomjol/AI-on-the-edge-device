@@ -19,7 +19,7 @@ static const char *TAG = "ALIGN";
 
 void ClassFlowAlignment::SetInitialParameter(void)
 {
-    initalrotate = 0;
+    initialrotate = 0;
     anz_ref = 0;
     initialmirror = false;
     use_antialiasing = false;
@@ -31,7 +31,7 @@ void ClassFlowAlignment::SetInitialParameter(void)
     AlignAndCutImage = NULL;
     ImageBasis = NULL;
     ImageTMP = NULL;
-    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG 
+    #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
     AlgROI = (ImageData*)malloc_psram_heap(std::string(TAG) + "->AlgROI", sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
     #endif
     previousElement = NULL;
@@ -91,9 +91,9 @@ bool ClassFlowAlignment::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(splitted[1]) == "TRUE")
                 initialmirror = true;
         }
-        if (((toUpper(splitted[0]) == "INITALROTATE") || (toUpper(splitted[0]) == "INITIALROTATE")) && (splitted.size() > 1))
+        if (((toUpper(splitted[0]) == "initialrotate") || (toUpper(splitted[0]) == "INITIALROTATE")) && (splitted.size() > 1))
         {
-            this->initalrotate = std::stod(splitted[1]);
+            this->initialrotate = std::stod(splitted[1]);
         }
         if ((toUpper(splitted[0]) == "SEARCHFIELDX") && (splitted.size() > 1))
         {
@@ -229,12 +229,12 @@ bool ClassFlowAlignment::doFlow(string time)
             AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/mirror.jpg"));
     }
  
-    if ((initalrotate != 0) || initialflip)
+    if ((initialrotate != 0) || initialflip)
     {
         if (use_antialiasing)
-            rt.RotateAntiAliasing(initalrotate);
+            rt.RotateAntiAliasing(initialrotate);
         else
-            rt.Rotate(initalrotate);
+            rt.Rotate(initialrotate);
         
         if (SaveAllFiles)
             AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));

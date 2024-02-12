@@ -16,7 +16,7 @@ class ClassFlowAlignment :
     public ClassFlow
 {
 protected:
-    float initalrotate;
+    float initialrotate;
     bool initialmirror;
     bool initialflip;
     bool use_antialiasing;

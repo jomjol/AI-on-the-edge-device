@@ -30,6 +30,11 @@
             border: 1px solid red;
         }
 
+        .expert {
+            background-color: #ffefef;
+            font-size: 16px;
+        }
+
         .button {
             padding: 5px 10px;
             width: 205px;
@@ -37,14 +42,51 @@
         }
 
         th, td {
-            padding: 5px 5px 5px 0px;
+            padding: 5px 5px 5px 5px;
         }
 
         table {
             width: 660px;
             padding: 5px;
         }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 460px;
+            background-color: #fcfcfc;
+
+            padding: 5px;
+            padding-bottom: 0;
+
+            border: solid black 2px; 
+
+            /* Position the tooltip */
+            position: absolute;
+            z-index: 1;
+            top: 100%;
+            left: 520%;
+            margin-left: -600px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
+        .tooltip-content {
+            width: calc(100% - 2px);
+            height: calc(100% - 2px);
+            padding: 1px;
+        }
     </style>
+
+    <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
+    <link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" />
+    <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
 
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
@@ -80,77 +122,178 @@
     </details>
     <hr />
 
-	<table>
+	<table style="width: 100%">
         <colgroup>
-            <col span="1" style="width: 33.3%;">
-            <col span="1" style="width: 33.3%;">
-            <col span="1" style="width: 33.3%;">
+            <col span="1" style="width: 25%;">
+            <col span="1" style="width: 25%;">
+            <col span="1" style="width: 25%;">
+            <col span="1" style="width: 25%;">
         </colgroup>
+        <tr>
+			<td class="indent1">
+				<input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
+					<label for="ExpertModus_enabled">Show Expert Parameters</label> 
+			</td>
+			<td>
+			</td>
+			<td colspan="2">
+				<b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
+            </td>
+		</tr>
         <tr>
             <td><input class="button" type="button" id="orignReference" value="Show Actual Reference" onclick="showReference(param)"></td>	  
             <td><input class="button" type="button" id="newReference" value="Create New Reference" onclick="doTakeReference()"></td>
             <td><input class="button" type="button" id="updateReference" value="Update Image" onclick="doTakeReference()">
         </tr>
     </table>
-    <table>
+    <table style="width: 100%">
         <colgroup>
-            <col span="1" style="width: 32%;">
-            <col span="1" style="width: 28%;">
+            <col span="1" style="width: 12%;">
+            <col span="1" style="width: 15%;">
+            <col span="1" style="width: 3%;">
             <col span="1" style="width: 18%;">
-            <col span="1" style="width: 22%;">
+            <col span="1" style="width: 10%;">
+            <col span="1" style="width: 3%;">
         </colgroup>
-        <tr>
-            <td><label for="mirror" id="labelmirror">Mirror image:</label></td>
-            <td><input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+        <tr class="expert">
             <td>
-                <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity:</class>
+                <label for="zoom" id="labelzoom">Enable zoom: <b>*)</b></label></td>
+            <td>
+                <input type="checkbox" id="zoom" name="zoom" value="0"></td>
+                <td>$TOOLTIP_TakeImage_Zoom</td>
+            <td>
+                <label for="zoomoffsetx">Zoom offset X: <b>*)</b></label></td>
+            <td>
+                <input required type="number" id="zoomoffsetx" name="zoomoffsetx" value="0" min="0" max="1280" step="1"
+                        oninput="(!validity.rangeOverflow||(value=1280)) && (!validity.rangeUnderflow||(value=0)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_ZoomOffsetX</td>
+        </tr>
+        <tr class="expert">
+            <td>
+                <label for="zoommode" id="labelzoommode">Zoom mode: <b>*)</b></label></td>
+            <td>
+                <input required type="number" id="zoommode" name="zoommode" value="0" min="0" max="1" step="1"
+                        oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=0)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_ZoomMode</td>
+            <td>
+                <label for="zoomoffsety">Zoom offset Y: <b>*)</b></label></td>
+            <td>
+                <input required type="number" id="zoomoffsety" name="zoomoffsety" value="0" min="0" max="960" step="1"
+                        oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=0)) && 
+                            (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_ZoomOffsetY</td>
+        </tr>
+        <tr>
+            <td>
+                <label for="mirror" id="labelmirror">Mirror image:</label></td>
+            <td>
+                <input type="checkbox" id="mirror" name="mirror" value="1" onchange="drawRotated()"></td>
+                <td>$TOOLTIP_Alignment_InitialMirror</td>
+            <td>
+                <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity: <b>*)</b></class>
             </td>
             <td>
                 <input required style="clear: both" type="number" id="TakeImage_LEDIntensity_value1" size="13" value="0"  min="0" max="100" 
                     oninput="(!validity.rangeOverflow||(value=100)) && (!validity.rangeUnderflow||(value=0)) && 
                         (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
+            <td>$TOOLTIP_TakeImage_LEDIntensity</td>
         </tr>
         <tr>
-            <td><label for="flip" id="labelflip">Flip image size:</label></td>
-            <td><input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
             <td>
-                <class id="TakeImage_Brightness_text" style="color:black;">Brightness:</class>
+                <label for="flip" id="labelflip">Flip image size:</label></td>
+            <td>
+                <input type="checkbox" id="flip" name="flip" value="1" onchange="drawRotated()"></td>
+                <td>$TOOLTIP_Alignment_FlipImageSize</td>
+            <td>
+                <class id="TakeImage_Brightness_text" style="color:black;">Brightness: <b>*)</b></class>
             </td>
             <td>
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Brightness_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Brightness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Brightness</td>
         </tr>
         <tr>
-            <td><label for="prerotateangle">Rotation angle:</label></td>	  
+            <td><label for="prerotateangle">Rotation angle:</label></td>
             <td>
                 <input required type="number" id="prerotateangle" name="prerotateangle" value="0" min="-360" max="360" onchange="drawRotated()"
                         oninput="(!validity.rangeOverflow||(value=360)) && (!validity.rangeUnderflow||(value=-360)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">degree
                 </td>
+                <td>$TOOLTIP_Alignment_InitialRotate</td>
             <td>
-                <class id="TakeImage_Contrast_text" style="color:black;">Contrast:</class>
+                <class id="TakeImage_Contrast_text" style="color:black;">Contrast: <b>*)</b></class>
             </td>
             <td>
                 <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Contrast_value1" size="13" value=0  min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Contrast_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Contrast</td>
         </tr>
         <tr>
-            <td><label for="finerotate">Rotation angle (Fine-tune):</label></td>	
+            <td><label for="finerotate">(Fine-tune):</label></td>
             <td>
                 <input required type="number" id="finerotate" name="finerotate" value=0.0 min="-1" max="1" step="0.1" onchange="drawRotated()"
                         oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=-1)) && 
                             (!validity.stepMismatch||(value=parseInt(this.value)));">degree
             </td>
+            <td></td>
             <td>
-                <class id="TakeImage_Saturation_text" style="color:black;">Saturation:</class>
+                <class id="TakeImage_Saturation_text" style="color:black;">Saturation: <b>*)</b></class>
             </td>
             <td>
                 <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Saturation_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_Saturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
+            <td>$TOOLTIP_TakeImage_Saturation</td>
+        </tr>
+        <tr class="expert">
+            <td>
+                <label for="grayscale" id="labelgrayscale">Grayscale: <b>*)</b></label></td>
+            <td>
+                <input type="checkbox" id="grayscale" name="grayscale" value="0"></td>
+                <td>$TOOLTIP_TakeImage_Grayscale</td>
+            <td>
+                <label for="aec2" id="labelaec2">Auto Exposure Control 2: <b>*)</b></label></td>
+            <td>
+                <input type="checkbox" id="aec2" name="aec2" value="0"></td>
+                <td>$TOOLTIP_TakeImage_Aec2</td>
+        </tr>
+        <tr class="expert">
+            <td>
+                <label for="negative" id="labelnegative">Negative: <b>*)</b></label></td>
+            <td>
+                <input type="checkbox" id="negative" name="negative" value="0" onchange="drawRotated()"></td>
+            <td>$TOOLTIP_TakeImage_Negative</td>
+            <td>
+                <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level: <b>*)</b></class>
+            </td>
+            <td>
+                <input  style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_AutoExposureLevel_value1" size="13" value=0 min="-2" max="2" oninput="this.nextElementSibling.value = this.value">
+                <output id="TakeImage_AutoExposureLevel_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
+            </td>
+            <td>$TOOLTIP_TakeImage_AutoExposureLevel</td>
+        </tr>
+        <tr class="expert">
+            <td>
+                <label for="FixedExposure" id="labelFixedExposure">FixedExposure: <b>*)</b></label></td>
+            <td>
+                <input type="checkbox" id="FixedExposure" name="FixedExposure" value="0"></td>
+            <td>$TOOLTIP_TakeImage_FixedExposure</td>
+            <td>
+                <class id="TakeImage_Sharpness_text" style="color:black;">Sharpness: <b>*)</b></class>
+            </td>
+            <td>
+                <input style="clear: both; width: 80%;vertical-align:middle" type="range" id="TakeImage_Sharpness_value1" size="13" value=0  min="-4" max="3" oninput="this.nextElementSibling.value = this.value">
+                <output id="TakeImage_Sharpness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
+            </td>
+            <td>$TOOLTIP_TakeImage_Sharpness</td>
         </tr>
     </table>
     <table>
@@ -196,6 +339,7 @@
         // Create New Reference, Update Image
         function doTakeReference(){ 
             var xhttp = new XMLHttpRequest();
+
             var domainname = getDomainname();
 			
             var _intensity = "";
@@ -208,10 +352,32 @@
             if (_intensity == "") {
                _intensity = "50";
             }
-				
+
+            _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
+            _negative = document.getElementById("negative").checked ? "1" : "0";
+            _aec2 = document.getElementById("aec2").checked ? "1" : "0";
+            _FixedExposure = document.getElementById("FixedExposure").checked ? "1" : "0";
+            _zoom = document.getElementById("zoom").checked ? "1" : "0";
+            _zm = document.getElementById("zoommode").value;
+            if (_zm == "") _zm = "0";
+            _x = document.getElementById("zoomoffsetx").value;
+            if (_x == "") _x = "0";
+            _y = document.getElementById("zoomoffsety").value;
+            if (_y == "") _y = "0";
+            _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
+            if (_intensity == "") _intensity = "50";
             _brightness = document.getElementById("TakeImage_Brightness_value1").value;
             _contrast = document.getElementById("TakeImage_Contrast_value1").value;
             _saturation = document.getElementById("TakeImage_Saturation_value1").value;
+            _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
+            _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
+            url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
+            url = url + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+            if (_zoom != '0')
+                url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
+            url = url + "&ae=" + _ae + "&a2=" + _aec2;
+        
+            url = domainname + "/editflow?task=test_take"
 			
             param["TakeImage"]["LEDIntensity"].value1 = _intensity;
             param["TakeImage"]["Brightness"].value1 = _brightness;
@@ -234,13 +400,24 @@
 			
             document.getElementById("saveReference").disabled = false;
 
+            document.getElementById("grayscale").disabled = false;
+            document.getElementById("negative").disabled = false;
+            document.getElementById("aec2").disabled = false;
+            document.getElementById("FixedExposure").disabled = false;
+            document.getElementById("zoom").disabled = false;
+            document.getElementById("zoommode").disabled = false;
+            document.getElementById("zoomoffsetx").disabled = false;
+            document.getElementById("zoomoffsety").disabled = false;
+            document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = false;
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;
+
             document.getElementById("orignReference").disabled = false;
             document.getElementById("newReference").disabled = true;
             document.getElementById("updateReference").disabled = false;
 			
             if (param["Alignment"]["InitialMirror"].found) {
+
                 document.getElementById("mirror").disabled = false;
             }
             else {
@@ -249,6 +426,19 @@
 
             if (param["Alignment"]["FlipImageSize"].found) {
                 document.getElementById("flip").disabled = false;
+            }
+            else
+            {
+                document.getElementById("labelflip").style = "color:lightgrey;";
+            }
+
+            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
+            {
+                document.getElementById("TakeImage_Brightness_value1").disabled = false;
+                document.getElementById("TakeImage_Contrast_value1").disabled = false;
+                document.getElementById("TakeImage_Saturation_value1").disabled = false;
+                document.getElementById("TakeImage_Sharpness_value1").disabled = false;
+                document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
             }
             else {
                 document.getElementById("labelflip").style = "color:lightgrey;";
@@ -320,6 +510,15 @@
             document.getElementById("TakeImage_Saturation_value1").value = _param["TakeImage"]["Saturation"].value1;
             document.getElementById("TakeImage_Saturation_value1_output").value = _param["TakeImage"]["Saturation"].value1;
 
+            document.getElementById("grayscale").disabled = true;
+            document.getElementById("negative").disabled = true;
+            document.getElementById("aec2").disabled = true;
+            document.getElementById("FixedExposure").disabled = true;
+            document.getElementById("zoom").disabled = true;
+            document.getElementById("zoommode").disabled = true;
+            document.getElementById("zoomoffsetx").disabled = true;
+            document.getElementById("zoomoffsety").disabled = true;
+            document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = true;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
             document.getElementById("saveReference").disabled = true;
@@ -329,6 +528,7 @@
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
             document.getElementById("TakeImage_Saturation_value1").disabled = true;
             document.getElementById("TakeImage_Contrast_value1").disabled = true;
+            document.getElementById("TakeImage_Sharpness_value1").disabled = true;
             document.getElementById("TakeImage_LEDIntensity_value1").disabled = true;
             document.getElementById("mirror").disabled = true;
             document.getElementById("flip").disabled = true;
@@ -370,6 +570,44 @@
                 }
                 else {
                     param["Alignment"]["FlipImageSize"].value1 = "false";
+
+                if ((param["TakeImage"]["Grayscale"].found == true) && (document.getElementById("grayscale").checked))
+                    param["TakeImage"]["Grayscale"].value1 = "true";
+                else
+                    param["TakeImage"]["Grayscale"].value1 = "false";
+
+                if ((param["TakeImage"]["Negative"].found == true) && (document.getElementById("negative").checked))
+                    param["TakeImage"]["Negative"].value1 = "true";
+                else
+                    param["TakeImage"]["Negative"].value1 = "false";
+
+                if ((param["TakeImage"]["Aec2"].found == true) && (document.getElementById("aec2").checked))
+                    param["TakeImage"]["Aec2"].value1 = "true";
+                else
+                    param["TakeImage"]["Aec2"].value1 = "false";
+
+                if ((param["TakeImage"]["FixedExposure"].found == true) && (document.getElementById("FixedExposure").checked))
+                    param["TakeImage"]["FixedExposure"].value1 = "true";
+                else
+                    param["TakeImage"]["FixedExposure"].value1 = "false";
+
+                if ((param["TakeImage"]["Zoom"].found == true) && (document.getElementById("zoom").checked))
+                    param["TakeImage"]["Zoom"].value1 = "true";
+                else
+                    param["TakeImage"]["Zoom"].value1 = "false";
+
+                param["TakeImage"]["ZoomMode"].value1 = document.getElementById("zoommode").value;
+                param["TakeImage"]["ZoomOffsetX"].value1 = document.getElementById("zoomoffsetx").value;
+                param["TakeImage"]["ZoomOffsetY"].value1 = document.getElementById("zoomoffsety").value;
+
+                if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
+                {
+                    ReadParameter(param, "TakeImage", "Brightness", false);
+                    ReadParameter(param, "TakeImage", "Contrast", false);
+                    ReadParameter(param, "TakeImage", "Saturation", false);
+                    ReadParameter(param, "TakeImage", "Sharpness", false);
+                    ReadParameter(param, "TakeImage", "LEDIntensity", false);
+                    ReadParameter(param, "TakeImage", "AutoExposureLevel", false);
                 }
 
                 var canvas = document.getElementById("canvas");
@@ -441,7 +679,70 @@
             param = getConfigParameters();
             param_temp = param;
 
-            if (!param["TakeImage"]["LEDIntensity"]["found"]) {
+            param["TakeImage"]["AutoExposureLevel"]["enabled"] = true;
+            param["TakeImage"]["LEDIntensity"]["enabled"] = true;
+            param["TakeImage"]["Brightness"]["enabled"] = true;
+            param["TakeImage"]["Contrast"]["enabled"] = true;
+            param["TakeImage"]["Saturation"]["enabled"] = true;
+            param["TakeImage"]["Sharpness"]["enabled"] = true;
+            
+            param["TakeImage"]["Grayscale"]["enabled"] = true;
+            param["TakeImage"]["Negative"]["enabled"] = true;
+            param["TakeImage"]["Aec2"]["enabled"] = true;
+            param["TakeImage"]["FixedExposure"]["enabled"] = true;
+            param["TakeImage"]["Zoom"]["enabled"] = true;
+            param["TakeImage"]["ZoomMode"]["enabled"] = true;
+            param["TakeImage"]["ZoomOffsetX"]["enabled"] = true;
+            param["TakeImage"]["ZoomOffsetY"]["enabled"] = true;
+
+            if (!param["TakeImage"]["Grayscale"]["found"])
+            {
+                param["TakeImage"]["Grayscale"]["found"] = true;
+                param["TakeImage"]["Grayscale"].value1 = "false";
+            }
+            if (!param["TakeImage"]["Negative"]["found"])
+            {
+                param["TakeImage"]["Negative"]["found"] = true;
+                param["TakeImage"]["Negative"].value1 = "false";
+            }
+            if (!param["TakeImage"]["Aec2"]["found"])
+            {
+                param["TakeImage"]["Aec2"]["found"] = true;
+                param["TakeImage"]["Aec2"].value1 = "false";
+            }
+            if (!param["TakeImage"]["FixedExposure"]["found"])
+            {
+                param["TakeImage"]["FixedExposure"]["found"] = true;
+                param["TakeImage"]["FixedExposure"].value1 = "false";
+            }
+            if (!param["TakeImage"]["Zoom"]["found"])
+            {
+                param["TakeImage"]["Zoom"]["found"] = true;
+                param["TakeImage"]["Zoom"].value1 = "false";
+            }
+            if (!param["TakeImage"]["ZoomMode"]["found"])
+            {
+                param["TakeImage"]["ZoomMode"]["found"] = true;
+                param["TakeImage"]["ZoomMode"].value1 = "0";
+            }
+            if (!param["TakeImage"]["ZoomOffsetX"]["found"])
+            {
+                param["TakeImage"]["ZoomOffsetX"]["found"] = true;
+                param["TakeImage"]["ZoomOffsetX"].value1 = "0";
+            }
+            if (!param["TakeImage"]["ZoomOffsetY"]["found"])
+            {
+                param["TakeImage"]["ZoomOffsetY"]["found"] = true;
+                param["TakeImage"]["ZoomOffsetY"].value1 = "0";
+            }
+
+            if (!param["TakeImage"]["AutoExposureLevel"]["found"])
+            {
+                param["TakeImage"]["AutoExposureLevel"]["found"] = true;
+                param["TakeImage"]["AutoExposureLevel"]["value1"] = "0";
+            }
+            if (!param["TakeImage"]["LEDIntensity"]["found"])
+            {
                 param["TakeImage"]["LEDIntensity"]["found"] = true;
                 param["TakeImage"]["LEDIntensity"]["value1"] = "50";
             }
@@ -460,8 +761,70 @@
                 param["TakeImage"]["Saturation"]["found"] = true;
                 param["TakeImage"]["Saturation"]["value1"] = "0";
             }			
+          
+            if (!param["TakeImage"]["Sharpness"]["found"])
+            {
+                param["TakeImage"]["Sharpness"]["found"] = true;
+                param["TakeImage"]["Sharpness"]["value1"] = "0";
+            }
 
             showReference(param); 
+        }
+
+
+        function UpdateInput() {
+            WriteParameter(param, category, "TakeImage", "AutoExposureLevel", false, true);
+            WriteParameter(param, category, "TakeImage", "Brightness", false, true);
+            WriteParameter(param, category, "TakeImage", "Contrast", false, true);
+            WriteParameter(param, category, "TakeImage", "Saturation", false, true);
+            WriteParameter(param, category, "TakeImage", "Sharpness", false, true);
+            WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
+            if (param["TakeImage"]["Grayscale"].value1 == "true") {
+                document.getElementById("grayscale").checked = true;
+            } else {
+                document.getElementById("grayscale").checked = false;
+            }
+            if (param["TakeImage"]["Negative"].value1 == "true") {
+                document.getElementById("negative").checked = true;
+            } else {
+                document.getElementById("negative").checked = false;
+            }
+            if (param["TakeImage"]["Aec2"].value1 == "true") {
+                document.getElementById("aec2").checked = true;
+            } else {
+                document.getElementById("aec2").checked = false;
+            }
+            if (param["TakeImage"]["FixedExposure"].value1 == "true") {
+                document.getElementById("FixedExposure").checked = true;
+            } else {
+                document.getElementById("FixedExposure").checked = false;
+            }
+            if (param["TakeImage"]["Zoom"].value1 == "true") {
+                document.getElementById("zoom").checked = true;
+            } else {
+                document.getElementById("zoom").checked = false;
+            }
+            document.getElementById("zoommode").value = param["TakeImage"]["ZoomMode"].value1;
+            document.getElementById("zoomoffsetx").value = param["TakeImage"]["ZoomOffsetX"].value1;
+            document.getElementById("zoomoffsety").value = param["TakeImage"]["ZoomOffsetY"].value1;
+        }
+
+
+        function ReadParameter(_param, _cat, _name, _optional, _select = false){
+            if (_param[_cat][_name]["found"]){
+                if (_optional) {
+                    _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+                }
+                if (_select) {
+                    var sel = document.getElementById(_cat+"_"+_name+"_value1");
+                    _param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
+                }
+                else {
+                    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+                        _param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
+                    }
+                }
+            }
         }
         
         function drawRotated(_grid = true) {
@@ -501,10 +864,18 @@
             context.clearRect(0,0,canvas.width,canvas.height);
             context.save();
 
-            if (isActReference) {
+            negative = document.getElementById("negative").checked;
+
+            if (isActReference)
+            {
                 context.drawImage(imageObj,0,0);
             }
-            else {
+            else
+            {
+                if (negative) {
+                    context.filter = 'invert(1)';
+                }
+              
                 context.translate(canvas.width/2,canvas.height/2);
                 context.rotate(degrees*Math.PI/180);
 				
@@ -577,7 +948,30 @@
         }
 
         init();
+        UpdateExpertModus();
     
+
+
+        function UpdateExpertModus()
+        {
+        //	var _style = 'display:none;';
+            var _style_pur = 'none';
+            var _hidden = true;
+            if (document.getElementById("ExpertModus_enabled").checked) {
+        //		_style = '';
+                _style_pur = '';
+                _hidden = false;
+                firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
+            }
+
+            const expert = document.querySelectorAll(".expert");
+            for (var i = 0; i < expert.length; i++) {
+                expert[i].style.display = _style_pur;
+        //		document.getElementById(expert[i].id).style = _style;
+            }
+        }
+
+
     </script>
 
 </body>

@@ -31,6 +31,8 @@
 #include "driver/ledc.h"
 #include "MainFlowControl.h"
 
+#include "ov2640_sharpness.h"
+
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #include "soc/periph_defs.h"
 #include "esp_private/periph_ctrl.h"
@@ -52,6 +54,10 @@ static const char *TAG = "CAM";
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
+
+// OV2640 Camera SDE Indirect Register Access
+#define OV2640_IRA_BPADDR               0x7C
+#define OV2640_IRA_BPDATA               0x7D
 
 
 static camera_config_t camera_config = {
@@ -166,48 +172,93 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
 }
 
 
-bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation)
+bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation, int _autoExposureLevel, bool _grayscale, bool _negative, bool _aec2, int _sharpnessLevel)
 {
     _brightness = min(2, max(-2, _brightness));
     _contrast = min(2, max(-2, _contrast));
     _saturation = min(2, max(-2, _saturation));
+    _autoExposureLevel = min(2, max(-2, _autoExposureLevel));
+    bool _autoSharpness = false;
+    if (_sharpnessLevel <= -4)
+        _autoSharpness = true;
+    _sharpnessLevel = min(3, max(-3, _sharpnessLevel));
 
     sensor_t * s = esp_camera_sensor_get();
     if (s) {
+        // camera gives precedence to negative over grayscale, so it's easier to do negative ourselves.
+        // if (_negative) {
+        //     s->set_special_effect(s, 1); // 0 - no effect, 1 - negative, 2 - grayscale, 3 - reddish, 4 - greenish, 5 - blue, 6 - retro
+        // }
+        if (_grayscale) {
+            s->set_special_effect(s, 2); // 0 - no effect, 1 - negative, 2 - grayscale, 3 - reddish, 4 - greenish, 5 - blue, 6 - retro
+        }
+
+        // auto exposure controls
+        s->set_aec2(s, _aec2 ? 1 : 0);
+        s->set_ae_level(s, _autoExposureLevel); // -2 to 2
+        s->set_gainceiling(s, GAINCEILING_2X); // GAINCEILING_2X 4X 8X 16X 32X 64X 128X
+
+        // post processing
+        if (_autoSharpness) {
+            s->set_sharpness(s, 0); // auto-sharpness is not officially supported, default to 0
+        }
         s->set_saturation(s, _saturation);
         s->set_contrast(s, _contrast);
         s->set_brightness(s, _brightness);
 
-        /* Workaround - bug in cam library - enable bits are set without using bitwise OR logic -> only latest enable setting is used */
-        /* Library version: https://github.com/espressif/esp32-camera/commit/5c8349f4cf169c8a61283e0da9b8cff10994d3f3 */
-        /* Reference: https://esp32.com/viewtopic.php?f=19&t=14376#p93178 */
-        /* The memory structure is as follows for 
-        byte_0 = enable_bits
-            byte_0->bit0 = enable saturation and hue --> OK
-            byte_0->bit1 = enable saturation --> OK
-            byte_0->bit2 = enable brightness and contrast --> OK
-            byte_0->bit3 = enable green -> blue spitial effect (Antique and blunish and greenish and readdish and b&w) enable
-            byte_0->bit4 = anable gray -> read spitial effect (Antique and blunish and greenish and readdish and b&w) enable
-            byte_0->bit5 = remove (UV) in YUV color system
-            byte_0->bit6 = enable negative
-            byte_0->bit7 = remove (Y) in YUV color system
-        byte_1 = saturation1 0-255 --> ?
-        byte_2 = hue 0-255 --> OK
-        byte_3 = saturation2 0-255 --> OK
-        byte_4 = reenter saturation2 in documents --> ?
-        byte_5 = spital effect green -> blue 0-255 --> ?
-        byte_6 = spital effect gray -> read 0-255 --> ?
-        byte_7 = contrast lower byte 0-255 --> OK
-        byte_8 = contrast higher byte 0-255 --> OK
-        byte_9 = brightness 0-255 --> OK
-        byte_10= if byte_10==4 contrast effective --> ?
-        */
+        camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
+        if (sensor_info != NULL) {
+            if (sensor_info->model == CAMERA_OV2640) {
+                if (_autoSharpness) {
+                    ov2640_enable_auto_sharpness(s);
+                } else {
+                    ov2640_set_sharpness(s, _sharpnessLevel);
+                }
 
-        //s->set_reg(s, 0x7C, 0xFF, 2); // Optional feature - hue setting: Select byte 2 in register 0x7C to set hue value
-        //s->set_reg(s, 0x7D, 0xFF, 0); // Optional feature - hue setting: Hue value 0 - 255
-        s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
-        s->set_reg(s, 0x7C, 0xFF, 0); // Select byte 0 in register 0x7C
-        s->set_reg(s, 0x7D, 7, 7); // Set bit 0, 1, 2 in register 0x7D to enable saturation, contrast, brightness and hue control
+                /* Workaround - bug in cam library - enable bits are set without using bitwise OR logic -> only latest enable setting is used */
+                /* Library version: https://github.com/espressif/esp32-camera/commit/5c8349f4cf169c8a61283e0da9b8cff10994d3f3 */
+                /* Reference: https://esp32.com/viewtopic.php?f=19&t=14376#p93178 */
+                /* The memory structure is as follows for 
+                byte_0 = enable_bits
+                    byte_0->bit0 = enable saturation and hue --> OK
+                    byte_0->bit1 = enable saturation --> OK
+                    byte_0->bit2 = enable brightness and contrast --> OK
+                    byte_0->bit3 = enable green -> blue spitial effect (Antique and blunish and greenish and readdish and b&w) enable
+                    byte_0->bit4 = anable gray -> read spitial effect (Antique and blunish and greenish and readdish and b&w) enable
+                    byte_0->bit5 = remove (UV) in YUV color system
+                    byte_0->bit6 = enable negative
+                    byte_0->bit7 = remove (Y) in YUV color system
+                byte_1 = saturation1 0-255 --> ?
+                byte_2 = hue 0-255 --> OK
+                byte_3 = saturation2 0-255 --> OK
+                byte_4 = reenter saturation2 in documents --> ?
+                byte_5 = spital effect green -> blue 0-255 --> ?
+                byte_6 = spital effect gray -> read 0-255 --> ?
+                byte_7 = contrast lower byte 0-255 --> OK
+                byte_8 = contrast higher byte 0-255 --> OK
+                byte_9 = brightness 0-255 --> OK
+                byte_10= if byte_10==4 contrast effective --> ?
+                */
+
+                //s->set_reg(s, 0x7C, 0xFF, 2); // Optional feature - hue setting: Select byte 2 in register 0x7C to set hue value
+                //s->set_reg(s, 0x7D, 0xFF, 0); // Optional feature - hue setting: Hue value 0 - 255
+                int indirectReg0 = 0x07; // Set bit 0, 1, 2 to enable saturation, contrast, brightness and hue control
+                if (_grayscale) {
+                    indirectReg0 |= 0x18;
+                }
+                // camera gives precedence to negative over grayscale, so it's easier to do negative ourselves.
+                // if (_negative) {
+                //     indirectReg0 |= 0x40;
+                // }
+                // Indirect register access
+                s->set_reg(s, 0xFF, 0x01, 0); // Select DSP bank
+                s->set_reg(s, OV2640_IRA_BPADDR, 0xFF, 0x00); // Address 0x00
+                s->set_reg(s, OV2640_IRA_BPDATA, 0xFF, indirectReg0);
+                s->set_reg(s, OV2640_IRA_BPADDR, 0xFF, 0x05); // Address 0x05
+                s->set_reg(s, OV2640_IRA_BPDATA, 0xFF, 0x80);
+                s->set_reg(s, OV2640_IRA_BPDATA, 0xFF, 0x80);
+            }
+        }
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetBrightnessContrastSaturation: Failed to get control structure");
@@ -219,38 +270,127 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     brightness = _brightness;
     contrast = _contrast;
     saturation = _saturation;
+    autoExposureLevel = _autoExposureLevel;
+    imageGrayscale = _grayscale;
+    imageNegative = _negative;
+    imageAec2 = _aec2;
+    imageAutoSharpness = _autoSharpness;
+    imageSharpnessLevel = _sharpnessLevel;
 
-    ESP_LOGD(TAG, "brightness %d, contrast: %d, saturation %d", brightness, contrast, saturation);
+    ESP_LOGD(TAG, "brightness %d, contrast: %d, saturation %d, autoExposureLevel %d, grayscale %d", brightness, contrast, saturation, autoExposureLevel, (int)imageGrayscale);
 
     return true;
 }
 
 
-void CCamera::SetQualitySize(int qual, framesize_t resol)
+/*
+* resolution = 0 \\ 1600 x 1200
+* resolution = 1 \\  800 x  600
+* resolution = 2 \\  400 x  296
+*/
+void CCamera::SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset, int xLength, int yLength)
 {
-    qual = min(63, max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
-    
-    sensor_t * s = esp_camera_sensor_get();
-    if (s) {
-        s->set_quality(s, qual);    
-        s->set_framesize(s, resol);
-    }
-    else {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetQualitySize: Failed to get control structure");
-    }
+    s->set_res_raw(s, resolution, 0, 0, 0, xOffset, yOffset, xLength, yLength, xLength, yLength, false, false);
+}
 
-    ActualResolution = resol;
-    ActualQuality = qual;
 
+void CCamera::SetImageWidthHeightFromResolution(framesize_t resol)
+{
     if (resol == FRAMESIZE_QVGA)
     {
         image_height = 240;
-        image_width = 320;             
+        image_width = 320;
     }
     else if (resol == FRAMESIZE_VGA)
     {
         image_height = 480;
-        image_width = 640;             
+        image_width = 640;
+    }
+    else if (resol == FRAMESIZE_SVGA)
+    {
+        image_height = 600;
+        image_width = 800;
+    }
+    else if (resol == FRAMESIZE_XGA)
+    {
+        image_height = 768;
+        image_width = 1024;
+    }
+    else if (resol == FRAMESIZE_HD)
+    {
+        image_height = 720;
+        image_width = 1280;
+    }
+    else if (resol == FRAMESIZE_SXGA)
+    {
+        image_height = 1024;
+        image_width = 1280;
+    }
+    else if (resol == FRAMESIZE_UXGA)
+    {
+        image_height = 1200;
+        image_width = 1600;
+    }
+}
+
+
+void CCamera::SetZoom(bool zoomEnabled, int zoomMode, int zoomOffsetX, int zoomOffsetY)
+{
+    imageZoomEnabled = zoomEnabled;
+    imageZoomMode = zoomMode;
+    imageZoomOffsetX = zoomOffsetX;
+    imageZoomOffsetY = zoomOffsetY;
+
+    sensor_t *s = esp_camera_sensor_get();
+    if (s) {
+        if (imageZoomEnabled) {
+            int z = imageZoomMode;
+            int x = imageZoomOffsetX;
+            int y = imageZoomOffsetY;
+            if (z > 1)
+                z = 1;
+            if (image_width >= 800 || image_height >= 600) {
+                z = 0;
+            }
+            int maxX = 1600 - image_width;
+            int maxY = 1200 - image_height;
+            if (z == 1) {
+                maxX = 800 - image_width;
+                maxY = 600 - image_height;
+            }
+            if (x > maxX)
+                x = maxX;
+            if (y > maxY)
+                y = maxY;
+            SetCamWindow(s, z, x, y, image_width, image_height);
+        } else {
+            s->set_framesize(s, ActualResolution);
+        }
+    }
+}
+
+
+void CCamera::SetQualitySize(int qual, framesize_t resol, bool zoomEnabled, int zoomMode, int zoomOffsetX, int zoomOffsetY)
+{
+    qual = min(63, max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
+    
+    ActualResolution = resol;
+    ActualQuality = qual;
+
+    imageZoomEnabled = zoomEnabled;
+    imageZoomMode = zoomMode;
+    imageZoomOffsetX = zoomOffsetX;
+    imageZoomOffsetY = zoomOffsetY;
+
+    SetImageWidthHeightFromResolution(resol);
+
+    sensor_t * s = esp_camera_sensor_get();
+    if (s) {
+        s->set_quality(s, qual);
+        SetZoom(zoomEnabled, zoomMode, zoomOffsetX, zoomOffsetY);
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetQualitySize: Failed to get control structure");
     }
 }
 
@@ -315,7 +455,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 	#endif
 
     camera_fb_t * fb = esp_camera_fb_get();
-    esp_camera_fb_return(fb);        
+    esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
     if (!fb) {
         LEDOnOff(false);
@@ -340,23 +480,31 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
     }
-    esp_camera_fb_return(fb);        
+    esp_camera_fb_return(fb);
 
     #ifdef DEBUG_DETAIL_ON
         LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
     #endif
 
-    LEDOnOff(false);  
+    LEDOnOff(false);
 
     if (delay > 0) 
         LightOnOff(false);
  
-//    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;     
+//    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
 //    vTaskDelay( xDelay );  // wait for power to recover
     
     #ifdef DEBUG_DETAIL_ON
         LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
     #endif
+
+    if (_zwImage == NULL) {
+        return ESP_OK;
+    }
+
+    if (imageNegative) {
+        _zwImage->Negative();
+    }
 
     stbi_uc* p_target;
     stbi_uc* p_source;    
@@ -375,9 +523,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         {
             p_target = _Image->rgb_image + (channels * (y * width + x));
             p_source = _zwImage->rgb_image + (channels * (y * width + x));
-            p_target[0] = p_source[0];
-            p_target[1] = p_source[1];
-            p_target[2] = p_source[2];
+            for (int c = 0; c < channels; c++) {
+                p_target[c] = p_source[c];
+            }
         }
 
     delete _zwImage;
@@ -386,7 +534,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
     #endif
 
-    return ESP_OK;    
+    return ESP_OK;
 }
 
 
@@ -394,7 +542,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
     string ftype;
 
-     LEDOnOff(true);              // Switched off to save power !
+    LEDOnOff(true);              // Switched off to save power !
 
     if (delay > 0) {
         LightOnOff(true);
@@ -414,7 +562,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
         return ESP_FAIL;
     }
-    LEDOnOff(false);    
+    LEDOnOff(false);
 
     #ifdef DEBUG_DETAIL_ON    
         ESP_LOGD(TAG, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
@@ -504,8 +652,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         return ESP_FAIL;
     }
 
-    LEDOnOff(false); 
-    
+    LEDOnOff(false);
     res = httpd_resp_set_type(req, "image/jpeg");
     if(res == ESP_OK){
         res = httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=raw.jpg");
@@ -662,48 +809,88 @@ void CCamera::LEDOnOff(bool status)
 }
 
 
-void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol)
+void CCamera::GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol, bool &zoomEnabled, int &zoomMode, int &zoomOffsetX, int &zoomOffsetY)
 {
     char _query[100];
-    char _qual[10];
-    char _size[10];
+    char _value[10];
 
     resol = ActualResolution;
     qual = ActualQuality;
-
+    zoomEnabled = imageZoomEnabled;
+    zoomMode = imageZoomMode;
+    zoomOffsetX = imageZoomOffsetX;
+    zoomOffsetY = imageZoomOffsetY;
 
     if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
     {
         ESP_LOGD(TAG, "Query: %s", _query);
-        if (httpd_query_key_value(_query, "size", _size, 10) == ESP_OK)
+        if (httpd_query_key_value(_query, "size", _value, sizeof(_value)) == ESP_OK)
         {
-            #ifdef DEBUG_DETAIL_ON   
+            #ifdef DEBUG_DETAIL_ON
             ESP_LOGD(TAG, "Size: %s", _size);
             #endif
-            if (strcmp(_size, "QVGA") == 0)
+            if (strcmp(_value, "QVGA") == 0)
                 resol = FRAMESIZE_QVGA;       // 320x240
-            else if (strcmp(_size, "VGA") == 0)
+            else if (strcmp(_value, "VGA") == 0)
                 resol = FRAMESIZE_VGA;      // 640x480
-            else if (strcmp(_size, "SVGA") == 0)
+            else if (strcmp(_value, "SVGA") == 0)
                 resol = FRAMESIZE_SVGA;     // 800x600
-            else if (strcmp(_size, "XGA") == 0)
+            else if (strcmp(_value, "XGA") == 0)
                 resol = FRAMESIZE_XGA;      // 1024x768
-            else if (strcmp(_size, "SXGA") == 0)
+            else if (strcmp(_value, "SXGA") == 0)
                 resol = FRAMESIZE_SXGA;     // 1280x1024
-            else if (strcmp(_size, "UXGA") == 0)
+            else if (strcmp(_value, "UXGA") == 0)
                  resol = FRAMESIZE_UXGA;     // 1600x1200   
         }
-        if (httpd_query_key_value(_query, "quality", _qual, 10) == ESP_OK)
+        if (httpd_query_key_value(_query, "quality", _value, sizeof(_value)) == ESP_OK)
         {
-            #ifdef DEBUG_DETAIL_ON   
+            #ifdef DEBUG_DETAIL_ON
             ESP_LOGD(TAG, "Quality: %s", _qual);
             #endif
-            qual = atoi(_qual);
-                
+            qual = atoi(_value);
             if (qual > 63)      // Limit to max. 63
                 qual = 63;
             else if (qual < 8)  // Limit to min. 8
                 qual = 8;
+        }
+        if (httpd_query_key_value(_query, "z", _value, sizeof(_value)) == ESP_OK)
+        {
+            #ifdef DEBUG_DETAIL_ON
+            ESP_LOGD(TAG, "Zoom: %s", _value);
+            #endif
+            if (atoi(_value) != 0)
+                zoomEnabled = true;
+            else
+                zoomEnabled = false;
+        }
+        if (httpd_query_key_value(_query, "zm", _value, sizeof(_value)) == ESP_OK)
+        {
+            #ifdef DEBUG_DETAIL_ON
+            ESP_LOGD(TAG, "Zoom mode: %s", _value);
+            #endif
+            zoomMode = atoi(_value);
+            if (zoomMode > 2)
+                zoomMode = 2;
+            else if (zoomMode < 0)
+                zoomMode = 0;
+        }
+        if (httpd_query_key_value(_query, "x", _value, sizeof(_value)) == ESP_OK)
+        {
+            #ifdef DEBUG_DETAIL_ON
+            ESP_LOGD(TAG, "X offset: %s", _value);
+            #endif
+            zoomOffsetX = atoi(_value);
+            if (zoomOffsetX < 0)
+                zoomOffsetX = 0;
+        }
+        if (httpd_query_key_value(_query, "y", _value, sizeof(_value)) == ESP_OK)
+        {
+            #ifdef DEBUG_DETAIL_ON
+            ESP_LOGD(TAG, "Y offset: %s", _value);
+            #endif
+            zoomOffsetY = atoi(_value);
+            if (zoomOffsetY < 0)
+                zoomOffsetY = 0;
         }
     }
 }
