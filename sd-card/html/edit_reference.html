@@ -339,53 +339,65 @@
         // Create New Reference, Update Image
         function doTakeReference(){ 
             var xhttp = new XMLHttpRequest();
-
             var domainname = getDomainname();
-			
-            var _intensity = "";
-            var _brightness = "";
-            var _contrast = "";
-            var _saturation = "";			
-			
-            _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
-				
-            if (_intensity == "") {
-               _intensity = "50";
-            }
 
-            _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
-            _negative = document.getElementById("negative").checked ? "1" : "0";
-            _aec2 = document.getElementById("aec2").checked ? "1" : "0";
-            _FixedExposure = document.getElementById("FixedExposure").checked ? "1" : "0";
-            _zoom = document.getElementById("zoom").checked ? "1" : "0";
-            _zm = document.getElementById("zoommode").value;
-            if (_zm == "") _zm = "0";
-            _x = document.getElementById("zoomoffsetx").value;
-            if (_x == "") _x = "0";
-            _y = document.getElementById("zoomoffsety").value;
-            if (_y == "") _y = "0";
-            _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
-            if (_intensity == "") _intensity = "50";
-            _brightness = document.getElementById("TakeImage_Brightness_value1").value;
-            _contrast = document.getElementById("TakeImage_Contrast_value1").value;
-            _saturation = document.getElementById("TakeImage_Saturation_value1").value;
-            _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
-            _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
-            url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
-            url = url + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
-            if (_zoom != '0')
-                url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
-            url = url + "&ae=" + _ae + "&a2=" + _aec2;
-        
-            url = domainname + "/editflow?task=test_take"
+            var _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
+            var _negative = document.getElementById("negative").checked ? "1" : "0";
+            var _aec2 = document.getElementById("aec2").checked ? "1" : "0";
+            var _FixedExposure = document.getElementById("FixedExposure").checked ? "1" : "0";
+            var _zoom = document.getElementById("zoom").checked ? "1" : "0";
 			
+            var _zm = document.getElementById("zoommode").value;
+            if (_zm == "") {
+                _zm = "0";
+            }
+			
+            var _x = document.getElementById("zoomoffsetx").value;
+            if (_x == "") {
+                _x = "0";
+            }
+			
+            var _y = document.getElementById("zoomoffsety").value;
+            if (_y == "") {
+                _y = "0";
+            }
+			
+            var _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
+            if (_intensity == "") {
+                _intensity = "50";
+            }
+			
+            var _brightness = document.getElementById("TakeImage_Brightness_value1").value;
+            var _contrast = document.getElementById("TakeImage_Contrast_value1").value;
+            var _saturation = document.getElementById("TakeImage_Saturation_value1").value;
+            var _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
+			
+            var _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
+
+            param["TakeImage"]["Grayscale"].value1 = _grayscale;
+            param["TakeImage"]["Negative"].value1 = _negative;
+            param["TakeImage"]["Aec2"].value1 = _aec2;
+            param["TakeImage"]["FixedExposure"].value1 = _FixedExposure;
+            param["TakeImage"]["Zoom"].value1 = _zoom;
+            param["TakeImage"]["ZoomMode"].value1 = _zm;
+            param["TakeImage"]["ZoomOffsetX"].value1 = _x;
+            param["TakeImage"]["ZoomOffsetY"].value1 = _y;
             param["TakeImage"]["LEDIntensity"].value1 = _intensity;
             param["TakeImage"]["Brightness"].value1 = _brightness;
             param["TakeImage"]["Contrast"].value1 = _contrast;
-            param["TakeImage"]["Saturation"].value1 = _saturation;		
+            param["TakeImage"]["Saturation"].value1 = _saturation;
+            param["TakeImage"]["Sharpness"].value1 = _sharpness;
+            param["TakeImage"]["AutoExposureLevel"].value1 = _ae;			
+			
+            var url = domainname + "/editflow?task=test_take";
+            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness;
+            url = url + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+			
+            if (_zoom != '0') {
+                url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
+            }
 				
-            url = domainname + "/editflow?task=test_take";
-            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
+            url = url + "&ae=" + _ae + "&a2=" + _aec2;		
 			
             if (domainname.length > 0){
                 url = url + "&host=" + domainname;
@@ -417,7 +429,6 @@
             document.getElementById("updateReference").disabled = false;
 			
             if (param["Alignment"]["InitialMirror"].found) {
-
                 document.getElementById("mirror").disabled = false;
             }
             else {
@@ -427,13 +438,11 @@
             if (param["Alignment"]["FlipImageSize"].found) {
                 document.getElementById("flip").disabled = false;
             }
-            else
-            {
+            else {
                 document.getElementById("labelflip").style = "color:lightgrey;";
             }
 
-            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-            {
+            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled) {
                 document.getElementById("TakeImage_Brightness_value1").disabled = false;
                 document.getElementById("TakeImage_Contrast_value1").disabled = false;
                 document.getElementById("TakeImage_Saturation_value1").disabled = false;
@@ -444,11 +453,6 @@
                 document.getElementById("labelflip").style = "color:lightgrey;";
             }
 
-            document.getElementById("TakeImage_Brightness_value1").disabled = false;
-            document.getElementById("TakeImage_Contrast_value1").disabled = false;
-            document.getElementById("TakeImage_Saturation_value1").disabled = false;
-            document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
-
             isActReference = false;
             loadCanvas(url, true);
             camSettingsSet(param_temp);
@@ -456,18 +460,40 @@
 		
         function camSettingsSet(_param){
             var xhttp = new XMLHttpRequest();
+            var domainname = getDomainname();
 			
+            var _grayscale = _param["TakeImage"]["Grayscale"].value1;
+            var _negative = _param["TakeImage"]["Negative"].value1;
+            var _aec2 = _param["TakeImage"]["Aec2"].value1;
+            var _FixedExposure = _param["TakeImage"]["FixedExposure"].value1;
+            var _zoom = _param["TakeImage"]["Zoom"].value1;
+            var _zm = _param["TakeImage"]["ZoomMode"].value1;
+            var _x = _param["TakeImage"]["ZoomOffsetX"].value1;
+            var _y = _param["TakeImage"]["ZoomOffsetY"].value1;
+            var _intensity = _param["TakeImage"]["LEDIntensity"].value1;
             var _brightness = _param["TakeImage"]["Brightness"].value1;
             var _contrast = _param["TakeImage"]["Contrast"].value1;
             var _saturation = _param["TakeImage"]["Saturation"].value1;
-            var _intensity = _param["TakeImage"]["LEDIntensity"].value1;
+            var _sharpness = _param["TakeImage"]["Sharpness"].value1;
+            var _ae = _param["TakeImage"]["AutoExposureLevel"].value1;			
 
-            var url = getDomainname() + "/editflow?task=cam_settings";
-            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&int=" + _intensity;
+            var url = domainname + "/editflow?task=test_take";
+            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness;
+            url = url + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+			
+            if (_zoom != '0') {
+                url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
+            }
+				
+            url = url + "&ae=" + _ae + "&a2=" + _aec2;
+			
+            if (domainname.length > 0){
+                url = url + "&host=" + domainname;
+            }
 
             xhttp.open("GET", url, false);
             xhttp.send();
-        }		
+        }	
 		
         // wird von init() und SaveReference() benutzt
         function showReference(_param){
@@ -570,44 +596,6 @@
                 }
                 else {
                     param["Alignment"]["FlipImageSize"].value1 = "false";
-
-                if ((param["TakeImage"]["Grayscale"].found == true) && (document.getElementById("grayscale").checked))
-                    param["TakeImage"]["Grayscale"].value1 = "true";
-                else
-                    param["TakeImage"]["Grayscale"].value1 = "false";
-
-                if ((param["TakeImage"]["Negative"].found == true) && (document.getElementById("negative").checked))
-                    param["TakeImage"]["Negative"].value1 = "true";
-                else
-                    param["TakeImage"]["Negative"].value1 = "false";
-
-                if ((param["TakeImage"]["Aec2"].found == true) && (document.getElementById("aec2").checked))
-                    param["TakeImage"]["Aec2"].value1 = "true";
-                else
-                    param["TakeImage"]["Aec2"].value1 = "false";
-
-                if ((param["TakeImage"]["FixedExposure"].found == true) && (document.getElementById("FixedExposure").checked))
-                    param["TakeImage"]["FixedExposure"].value1 = "true";
-                else
-                    param["TakeImage"]["FixedExposure"].value1 = "false";
-
-                if ((param["TakeImage"]["Zoom"].found == true) && (document.getElementById("zoom").checked))
-                    param["TakeImage"]["Zoom"].value1 = "true";
-                else
-                    param["TakeImage"]["Zoom"].value1 = "false";
-
-                param["TakeImage"]["ZoomMode"].value1 = document.getElementById("zoommode").value;
-                param["TakeImage"]["ZoomOffsetX"].value1 = document.getElementById("zoomoffsetx").value;
-                param["TakeImage"]["ZoomOffsetY"].value1 = document.getElementById("zoomoffsety").value;
-
-                if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-                {
-                    ReadParameter(param, "TakeImage", "Brightness", false);
-                    ReadParameter(param, "TakeImage", "Contrast", false);
-                    ReadParameter(param, "TakeImage", "Saturation", false);
-                    ReadParameter(param, "TakeImage", "Sharpness", false);
-                    ReadParameter(param, "TakeImage", "LEDIntensity", false);
-                    ReadParameter(param, "TakeImage", "AutoExposureLevel", false);
                 }
 
                 var canvas = document.getElementById("canvas");
@@ -695,82 +683,66 @@
             param["TakeImage"]["ZoomOffsetX"]["enabled"] = true;
             param["TakeImage"]["ZoomOffsetY"]["enabled"] = true;
 
-            if (!param["TakeImage"]["Grayscale"]["found"])
-            {
+            if (!param["TakeImage"]["Grayscale"]["found"]) {
                 param["TakeImage"]["Grayscale"]["found"] = true;
                 param["TakeImage"]["Grayscale"].value1 = "false";
             }
-            if (!param["TakeImage"]["Negative"]["found"])
-            {
+            if (!param["TakeImage"]["Negative"]["found"]) {
                 param["TakeImage"]["Negative"]["found"] = true;
                 param["TakeImage"]["Negative"].value1 = "false";
             }
-            if (!param["TakeImage"]["Aec2"]["found"])
-            {
+            if (!param["TakeImage"]["Aec2"]["found"]) {
                 param["TakeImage"]["Aec2"]["found"] = true;
                 param["TakeImage"]["Aec2"].value1 = "false";
             }
-            if (!param["TakeImage"]["FixedExposure"]["found"])
-            {
+            if (!param["TakeImage"]["FixedExposure"]["found"]) {
                 param["TakeImage"]["FixedExposure"]["found"] = true;
                 param["TakeImage"]["FixedExposure"].value1 = "false";
             }
-            if (!param["TakeImage"]["Zoom"]["found"])
-            {
+            if (!param["TakeImage"]["Zoom"]["found"]) {
                 param["TakeImage"]["Zoom"]["found"] = true;
                 param["TakeImage"]["Zoom"].value1 = "false";
             }
-            if (!param["TakeImage"]["ZoomMode"]["found"])
-            {
+            if (!param["TakeImage"]["ZoomMode"]["found"]) {
                 param["TakeImage"]["ZoomMode"]["found"] = true;
                 param["TakeImage"]["ZoomMode"].value1 = "0";
             }
-            if (!param["TakeImage"]["ZoomOffsetX"]["found"])
-            {
+            if (!param["TakeImage"]["ZoomOffsetX"]["found"]) {
                 param["TakeImage"]["ZoomOffsetX"]["found"] = true;
                 param["TakeImage"]["ZoomOffsetX"].value1 = "0";
             }
-            if (!param["TakeImage"]["ZoomOffsetY"]["found"])
-            {
+            if (!param["TakeImage"]["ZoomOffsetY"]["found"]) {
                 param["TakeImage"]["ZoomOffsetY"]["found"] = true;
                 param["TakeImage"]["ZoomOffsetY"].value1 = "0";
             }
-
-            if (!param["TakeImage"]["AutoExposureLevel"]["found"])
-            {
+            if (!param["TakeImage"]["AutoExposureLevel"]["found"]) {
                 param["TakeImage"]["AutoExposureLevel"]["found"] = true;
                 param["TakeImage"]["AutoExposureLevel"]["value1"] = "0";
             }
-            if (!param["TakeImage"]["LEDIntensity"]["found"])
-            {
+            if (!param["TakeImage"]["LEDIntensity"]["found"]) {
                 param["TakeImage"]["LEDIntensity"]["found"] = true;
                 param["TakeImage"]["LEDIntensity"]["value1"] = "50";
             }
-			
             if (!param["TakeImage"]["Brightness"]["found"]) {
                 param["TakeImage"]["Brightness"]["found"] = true;
                 param["TakeImage"]["Brightness"]["value1"] = "0";
             }		
-			
             if (!param["TakeImage"]["Contrast"]["found"]) {
                 param["TakeImage"]["Contrast"]["found"] = true;
                 param["TakeImage"]["Contrast"]["value1"] = "0";
             }		
-			
             if (!param["TakeImage"]["Saturation"]["found"]) {
                 param["TakeImage"]["Saturation"]["found"] = true;
                 param["TakeImage"]["Saturation"]["value1"] = "0";
             }			
-          
-            if (!param["TakeImage"]["Sharpness"]["found"])
-            {
+            if (!param["TakeImage"]["Sharpness"]["found"]) {
                 param["TakeImage"]["Sharpness"]["found"] = true;
                 param["TakeImage"]["Sharpness"]["value1"] = "0";
             }
 
-            showReference(param); 
+            UpdateExpertModus();
+            showReference(param);
         }
-
 
         function UpdateInput() {
             WriteParameter(param, category, "TakeImage", "AutoExposureLevel", false, true);
@@ -808,7 +780,6 @@
             document.getElementById("zoomoffsetx").value = param["TakeImage"]["ZoomOffsetX"].value1;
             document.getElementById("zoomoffsety").value = param["TakeImage"]["ZoomOffsetY"].value1;
         }
-
 
         function ReadParameter(_param, _cat, _name, _optional, _select = false){
             if (_param[_cat][_name]["found"]){
@@ -866,12 +837,10 @@
 
             negative = document.getElementById("negative").checked;
 
-            if (isActReference)
-            {
+            if (isActReference) {
                 context.drawImage(imageObj,0,0);
             }
-            else
-            {
+            else {
                 if (negative) {
                     context.filter = 'invert(1)';
                 }
@@ -947,32 +916,29 @@
             context.stroke();            
         }
 
-        init();
-        UpdateExpertModus();
-    
-
-
         function UpdateExpertModus()
         {
-        //	var _style = 'display:none;';
+            // var _style = 'display:none;';
             var _style_pur = 'none';
             var _hidden = true;
+		
             if (document.getElementById("ExpertModus_enabled").checked) {
-        //		_style = '';
+                // _style = '';
                 _style_pur = '';
                 _hidden = false;
                 firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
             }
 
             const expert = document.querySelectorAll(".expert");
+		
             for (var i = 0; i < expert.length; i++) {
                 expert[i].style.display = _style_pur;
-        //		document.getElementById(expert[i].id).style = _style;
+                // document.getElementById(expert[i].id).style = _style;
             }
         }
 
+        init();	    
 
     </script>
-
 </body>
 </html>
