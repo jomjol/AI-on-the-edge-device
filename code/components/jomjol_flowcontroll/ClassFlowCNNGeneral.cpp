@@ -373,9 +373,17 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph)
             neuroi->deltax = std::stoi(splitted[3]);
             neuroi->deltay = std::stoi(splitted[4]);
             neuroi->CCW = false;
+            neuroi->calibrate = false;
             if (splitted.size() >= 6)
             {
                 neuroi->CCW = toUpper(splitted[5]) == "TRUE";
+            }
+            if (splitted.size() >= 9)
+            {
+                neuroi->calibrate = true;
+                neuroi->parallax_x = std::stof(splitted[6]);
+                neuroi->parallax_y = std::stof(splitted[7]);
+                neuroi->value_offset = std::stof(splitted[8]);
             }
             neuroi->result_float = -1;
             neuroi->image = NULL;
@@ -707,8 +715,24 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                             GENERAL[n]->ROI[roi]->result_float = 10 - (result * 10);
                         else
                             GENERAL[n]->ROI[roi]->result_float = result * 10;
-                              
+                        
                         ESP_LOGD(TAG, "General result (Analog)%i - CCW: %d -  %f", roi, GENERAL[n]->ROI[roi]->CCW, GENERAL[n]->ROI[roi]->result_float);
+
+                        if(GENERAL[n]->ROI[roi]->calibrate)
+                        {
+                            float cw = GENERAL[n]->ROI[roi]->CCW ? 1 : -1;
+                            float dx = GENERAL[n]->ROI[roi]->parallax_x;
+                            float dy = GENERAL[n]->ROI[roi]->parallax_y;
+                            float dval = GENERAL[n]->ROI[roi]->value_offset;
+                            float value = GENERAL[n]->ROI[roi]->result_float;
+                            float angle = cw * value / 10 * (2 * M_PI);
+                            float corrected_angle = atan2(sin(angle) + dx, cos(angle) + dy);
+                            float corrected_value = cw * corrected_angle / (2 * M_PI) * 10 + dval;
+                            GENERAL[n]->ROI[roi]->result_float = fmod(corrected_value + 10, 10);
+
+                            ESP_LOGD(TAG, "General result (Analog)%i - Calibrated: %f (%f, %f, %f)", roi, GENERAL[n]->ROI[roi]->result_float, dx, dy, dval);
+                        }
+                              
                         if (isLogImage)
                             LogImage(logPath, GENERAL[n]->ROI[roi]->name, &GENERAL[n]->ROI[roi]->result_float, NULL, time, GENERAL[n]->ROI[roi]->image_org);
                     } break;

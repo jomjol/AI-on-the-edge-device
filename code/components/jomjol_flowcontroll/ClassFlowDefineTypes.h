@@ -10,6 +10,8 @@ struct roi {
     float result_float;
     int result_klasse;
     bool isReject, CCW;
+    bool calibrate;
+    float value_offset, parallax_x, parallax_y;
     string name;
     CImageBasis *image, *image_org;
 };
