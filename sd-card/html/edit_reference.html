@@ -374,11 +374,32 @@
 			
             var _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
 
-            param["TakeImage"]["Grayscale"].value1 = _grayscale;
-            param["TakeImage"]["Negative"].value1 = _negative;
-            param["TakeImage"]["Aec2"].value1 = _aec2;
-            param["TakeImage"]["FixedExposure"].value1 = _FixedExposure;
-            param["TakeImage"]["Zoom"].value1 = _zoom;
+            if (_grayscale) {
+                param["TakeImage"]["Grayscale"].value1 = "true";
+            } else {
+                param["TakeImage"]["Grayscale"].value1 = "false";
+            }
+            if (_negative) {
+                param["TakeImage"]["Negative"].value1 = "true";
+            } else {
+                param["TakeImage"]["Negative"].value1 = "false";
+            }			
+            if (_aec2) {
+                param["TakeImage"]["Aec2"].value1 = "true";
+            } else {
+                param["TakeImage"]["Aec2"].value1 = "false";
+            }
+            if (_FixedExposure) {
+                param["TakeImage"]["FixedExposure"].value1 = "true";
+            } else {
+                param["TakeImage"]["FixedExposure"].value1 = "false";
+            }
+            if (_zoom) {
+                param["TakeImage"]["Zoom"].value1 = "true";
+            } else {
+                param["TakeImage"]["Zoom"].value1 = "false";
+            }
+		
             param["TakeImage"]["ZoomMode"].value1 = _zm;
             param["TakeImage"]["ZoomOffsetX"].value1 = _x;
             param["TakeImage"]["ZoomOffsetY"].value1 = _y;
@@ -442,16 +463,11 @@
                 document.getElementById("labelflip").style = "color:lightgrey;";
             }
 
-            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled) {
-                document.getElementById("TakeImage_Brightness_value1").disabled = false;
-                document.getElementById("TakeImage_Contrast_value1").disabled = false;
-                document.getElementById("TakeImage_Saturation_value1").disabled = false;
-                document.getElementById("TakeImage_Sharpness_value1").disabled = false;
-                document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
-            }
-            else {
-                document.getElementById("labelflip").style = "color:lightgrey;";
-            }
+            document.getElementById("TakeImage_Brightness_value1").disabled = false;
+            document.getElementById("TakeImage_Contrast_value1").disabled = false;
+            document.getElementById("TakeImage_Saturation_value1").disabled = false;
+            document.getElementById("TakeImage_Sharpness_value1").disabled = false;
+            document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
 
             isActReference = false;
             loadCanvas(url, true);
@@ -462,11 +478,28 @@
             var xhttp = new XMLHttpRequest();
             var domainname = getDomainname();
 			
-            var _grayscale = _param["TakeImage"]["Grayscale"].value1;
-            var _negative = _param["TakeImage"]["Negative"].value1;
-            var _aec2 = _param["TakeImage"]["Aec2"].value1;
-            var _FixedExposure = _param["TakeImage"]["FixedExposure"].value1;
-            var _zoom = _param["TakeImage"]["Zoom"].value1;
+            var _grayscale = 0;
+            var _negative = 0;
+            var _aec2 = 0;
+            var _FixedExposure = 0;
+            var _zoom = 0;
+
+            if (_param["TakeImage"]["Grayscale"].value1 == "rtue") {
+                _grayscale = 1;
+            }
+            if (_param["TakeImage"]["Negative"].value1 == "true") {
+                _negative = 1;
+            }			
+            if (_param["TakeImage"]["Aec2"].value1 == "true") {
+                _aec2 = 1;
+            }
+            if (_param["TakeImage"]["FixedExposure"].value1 = "true") {
+                _FixedExposure = 1;
+            }
+            if (_param["TakeImage"]["Zoom"].value1 == "true") {
+                _zoom = 1;
+            }
+		
             var _zm = _param["TakeImage"]["ZoomMode"].value1;
             var _x = _param["TakeImage"]["ZoomOffsetX"].value1;
             var _y = _param["TakeImage"]["ZoomOffsetY"].value1;
@@ -525,6 +558,45 @@
                 document.getElementById("flip").checked = false;
             }			
 
+            if (_param["TakeImage"]["Grayscale"].value1 == "true") {
+                document.getElementById("grayscale").checked = true;
+            }
+            else {
+                document.getElementById("grayscale").checked = false;
+            }
+
+            if (_param["TakeImage"]["Negative"].value1 == "true") {
+                document.getElementById("negative").checked = true;
+            }
+            else {
+                document.getElementById("negative").checked = false;
+            }
+
+            if (_param["TakeImage"]["Aec2"].value1 == "true") {
+                document.getElementById("aec2").checked = true;
+            }
+            else {
+                document.getElementById("aec2").checked = false;
+            }
+			
+            if (_param["TakeImage"]["FixedExposure"].value1 == "true") {
+                document.getElementById("FixedExposure").checked = true;
+            }
+            else {
+                document.getElementById("FixedExposure").checked = false;
+            }
+
+            if (_param["TakeImage"]["Zoom"].value1 == "true") {
+                document.getElementById("zoom").checked = true;
+            }
+            else {
+                document.getElementById("zoom").checked = false;
+            }			
+			
+            document.getElementById("zoommode").value = _param["TakeImage"]["ZoomMode"].value1;
+            document.getElementById("zoomoffsetx").value = _param["TakeImage"]["ZoomOffsetX"].value1;
+            document.getElementById("zoomoffsety").value = _param["TakeImage"]["ZoomOffsetY"].value1;			
+			
             document.getElementById("TakeImage_LEDIntensity_value1").value = _param["TakeImage"]["LEDIntensity"].value1;
 			
             document.getElementById("TakeImage_Brightness_value1").value = _param["TakeImage"]["Brightness"].value1;
@@ -535,6 +607,12 @@
 			
             document.getElementById("TakeImage_Saturation_value1").value = _param["TakeImage"]["Saturation"].value1;
             document.getElementById("TakeImage_Saturation_value1_output").value = _param["TakeImage"]["Saturation"].value1;
+			
+            document.getElementById("TakeImage_Sharpness_value1").value = _param["TakeImage"]["Sharpness"].value1;
+            document.getElementById("TakeImage_Sharpness_value1_output").value = _param["TakeImage"]["Sharpness"].value1;			
+			
+            document.getElementById("TakeImage_AutoExposureLevel_value1").value = _param["TakeImage"]["AutoExposureLevel"].value1;
+            document.getElementById("TakeImage_AutoExposureLevel_value1_output").value = _param["TakeImage"]["AutoExposureLevel"].value1;
 
             document.getElementById("grayscale").disabled = true;
             document.getElementById("negative").disabled = true;
