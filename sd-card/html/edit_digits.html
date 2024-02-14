@@ -997,10 +997,12 @@
         }
 
         erg = RenameROI(_number, "digit", _roialt, _roinew);
-        if (erg != "")
+        if (erg != "") {
             firework.launch(erg, 'danger', 30000);
-        else
+        }
+        else {
             UpdateROIs(_roinew);
+        }
     }
 
     function numberChanged() {
