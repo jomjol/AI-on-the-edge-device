@@ -81,6 +81,29 @@
             height: calc(100% - 2px);
             padding: 1px;
         }
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2;
+        }
+
+        #overlaytext{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 150%;
+            color: white;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
     </style>
 
     <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
@@ -97,6 +120,10 @@
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+
     <h2>Reference Image and Camera Settings</h2>
     <details id="desc_details" style="font-size:16px">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
@@ -331,8 +358,9 @@
         }
 
         // Create New Reference, Update Image
-        function doTakeReference(){
-            firework.launch('Taking new image...', 'success', 5000);
+        function doTakeReference(){            
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("overlaytext").innerHTML = "Taking new image...";
 
             document.getElementById("grayscale").disabled = false;
             document.getElementById("negative").disabled = false;
@@ -458,7 +486,7 @@
                     url = url + "&host=" + domainname;
                 }
 
-                xhttp.open("GET", url, false);
+                xhttp.open("GET", url, true);
                 xhttp.send();
             
                 var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
@@ -466,7 +494,8 @@
                 isActReference = false;
                 loadCanvas(_url, true);
                 camSettingsSet();
-            }, 300);
+                
+            }, 1); // Delay so the overlay gets shown
         }
 
 
@@ -510,7 +539,7 @@
                 url = url + "&host=" + domainname;
             }
 
-            xhttp.open("GET", url, false);
+            xhttp.open("GET", url, true);
             xhttp.send();			
         }
 		
@@ -693,18 +722,21 @@
                 else {
                     drawRotated(false);
                 }
+
+                console.log("Done");
+                document.getElementById("overlay").style.display = "none";
+
             };
 
             imageObj.src = dataURL;
-            console.log("Done");
         }
 
         function callbackError(errorEvent) {
-            console.log(errorEvent);
-            alert('An error occurred loading an image');
+            console.log("loadCanvas errorEvent");
         }
 
         function callbackSuccess(dataUrl) {
+            console.log("loadCanvas callbackSuccess");
             var rtn = dataURLtoBlob(dataUrl);
 
             if (_delete) {
