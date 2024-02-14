@@ -124,29 +124,21 @@
     </details>
     <hr>
 
-	<table style="width: 100%">
-        <colgroup>
-            <col span="1" style="width: 25%;">
-            <col span="1" style="width: 25%;">
-            <col span="1" style="width: 25%;">
-            <col span="1" style="width: 25%;">
-        </colgroup>
+    <table>
         <tr>
-            <td class="indent1">
-                <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
-                <label for="ExpertModus_enabled">Show Expert Parameters</label> 
-            </td>
-            <td></td>
-            <td colspan="2">
-                <b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
-            </td>
-        </tr>
-        <tr>
-            <td><input class="button" type="button" id="orignReference" value="Show Actual Reference" onclick="showReference()"></td>	  
-            <td><input class="button" type="button" id="newReference" value="Create New Reference" onclick="doTakeReference()"></td>
-            <td><input class="button" type="button" id="updateReference" value="Update Image" onclick="doTakeReference()">
+            <td><input class="button" type="button" id="showcurrentreference" disabled value="Reset and show current Reference and Camera Settings" onclick="showReference()"></td>
+            <td><input class="button" type="button" id="startreference" value="Create New Reference / Change Camera Settings" onclick="doTakeReference()"></td>
         </tr>
     </table>
+
+    <hr>
+
+    <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
+    <label for="ExpertModus_enabled">Show Expert Parameters</label> 
+
+    <br><br>
+    <b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
+
     <table style="width: 100%">
         <colgroup>
             <col span="1" style="width: 12%;">
@@ -297,27 +289,17 @@
             <td>$TOOLTIP_TakeImage_Sharpness</td>
         </tr>
     </table>
+
     <table>
-        <colgroup>
-            <col span="1" style="width: 33.3%;">
-            <col span="1" style="width: 33.3%;">
-            <col span="1" style="width: 33.3%;">
-        </colgroup>
-        <tr>
-            <td style="vertical-align: bottom;"><b>Reference Image:</b></td>
-            <td></td>
-            <td>
-                <input style="font-weight:bold;" class="button" type="button" id="saveReference" value="Save New Reference" onclick="SaveReference()">
-            </td>
         </tr>
-        <tr>
-            <td colspan="3"><canvas id="canvas"></canvas></td>
+            <td><input class="button" type="submit" id="take" onclick="doTakeReference()" value="Update Reference Image"></td>
+            <td><input class="button" type="button" id="updatereferenceimage" value="Save new Reference Image and Camera Settings" onclick="SaveReference()"></td>
         </tr>	
     </table>
 
-    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script> 
+    <hr>
+    <b>Reference Image:</b><br>
+    <canvas id="canvas"></canvas></td>
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -354,7 +336,7 @@
         }
 
         // Create New Reference, Update Image
-        function doTakeReference(){ 
+        function doTakeReference(){
             var xhttp = new XMLHttpRequest();
             var domainname = getDomainname();
 
@@ -448,7 +430,7 @@
 		
             var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
 			
-            document.getElementById("saveReference").disabled = false;
+            document.getElementById("updatereferenceimage").disabled = false;
 
             document.getElementById("grayscale").disabled = false;
             document.getElementById("negative").disabled = false;
@@ -462,9 +444,9 @@
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;
 
-            document.getElementById("orignReference").disabled = false;
-            document.getElementById("newReference").disabled = true;
-            document.getElementById("updateReference").disabled = false;
+            document.getElementById("showcurrentreference").disabled = false;
+            document.getElementById("startreference").disabled = true;
+            document.getElementById("updatereferenceimage").disabled = false;
 			
             if (param["Alignment"]["InitialMirror"].found) {
                 document.getElementById("mirror").disabled = false;
@@ -537,7 +519,7 @@
         }
 		
 		
-        function showReference(_param){
+        function showReference(){
             var domainname = getDomainname();
 		
             url = domainname + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
@@ -632,10 +614,9 @@
             document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = true;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
-            document.getElementById("saveReference").disabled = true;
-            document.getElementById("orignReference").disabled = true;
-            document.getElementById("newReference").disabled = false;
-            document.getElementById("updateReference").disabled = true;
+            document.getElementById("updatereferenceimage").disabled = true;
+            document.getElementById("showcurrentreference").disabled = true;
+            document.getElementById("startreference").disabled = false;
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
             document.getElementById("TakeImage_Saturation_value1").disabled = true;
             document.getElementById("TakeImage_Contrast_value1").disabled = true;
