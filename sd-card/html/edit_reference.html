@@ -466,7 +466,7 @@
                 isActReference = false;
                 loadCanvas(_url, true);
                 camSettingsSet();
-            }, 100);
+            }, 300);
         }
 
 
@@ -641,42 +641,40 @@
         }			
         
         function SaveReference(){
-            //if (confirm("Are you sure you want to save the new reference image configuration?")) {
-                var domainname = getDomainname();
-			
-                param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
-                                                                Number(document.getElementById("finerotate").value)).toFixed(1);
+            var domainname = getDomainname();
+        
+            param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
+                                                            Number(document.getElementById("finerotate").value)).toFixed(1);
 
-                if (document.getElementById("mirror").checked) {
-                    param["Alignment"]["InitialMirror"].value1 = "true";
-                }
-                else {
-                    param["Alignment"]["InitialMirror"].value1 = "false";
-                }
+            if (document.getElementById("mirror").checked) {
+                param["Alignment"]["InitialMirror"].value1 = "true";
+            }
+            else {
+                param["Alignment"]["InitialMirror"].value1 = "false";
+            }
 
-                if (document.getElementById("flip").checked) {
-                    param["Alignment"]["FlipImageSize"].value1 = "true";
-                }
-                else {
-                    param["Alignment"]["FlipImageSize"].value1 = "false";
-                }
+            if (document.getElementById("flip").checked) {
+                param["Alignment"]["FlipImageSize"].value1 = "true";
+            }
+            else {
+                param["Alignment"]["FlipImageSize"].value1 = "false";
+            }
 
-                var canvas = document.getElementById("canvas");
-                drawRotated(false);
+            var canvas = document.getElementById("canvas");
+            drawRotated(false);
 
-                WriteConfigININew();
-                SaveConfigToServer(domainname);    
-                //document.getElementById("savereferenceimage").disabled = true;
-                //document.getElementById("updatereferenceimage").disabled = true;
+            WriteConfigININew();
+            SaveConfigToServer(domainname);    
+            //document.getElementById("savereferenceimage").disabled = true;
+            //document.getElementById("updatereferenceimage").disabled = true;
 
-                SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
-				
-                LoadParamTemp();				
-                camSettingsSet();
-				
-                showReference();				
-                firework.launch('Reference image configuration saved', 'success', 5000);
-            //}
+            SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
+            
+            LoadParamTemp();				
+            camSettingsSet();
+            
+            showReference();				
+            firework.launch('Reference image configuration saved', 'success', 5000);
         }
 
         function loadCanvas(dataURL, grid) {
@@ -701,14 +699,6 @@
             console.log("Done");
         }
 
-        function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = "", 
-                callbackSuccess, callbackError){
-            var JPEG_QUALITY=0.8;
-
-            _canvas.onerror = callbackError;
-            callbackSuccess(_canvas.toDataURL('image/jpeg', JPEG_QUALITY));
-        }
-
         function callbackError(errorEvent) {
             console.log(errorEvent);
             alert('An error occurred loading an image');
@@ -722,6 +712,14 @@
             }
 
             FileSendContent(rtn, _filename, _domainname);
+        }
+
+        function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = "", 
+                callbackSuccess, callbackError){
+            var JPEG_QUALITY=0.8;
+
+            _canvas.onerror = callbackError;
+            callbackSuccess(_canvas.toDataURL('image/jpeg', JPEG_QUALITY));
         }
 
 
