@@ -230,19 +230,6 @@ function FileSendContent(_content, _filename, _domainname = ""){
 }
 
 
-function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = ""){
-     var JPEG_QUALITY=0.8;
-     var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
-     var rtn = dataURLtoBlob(dataUrl);
-
-     if (_delete) {
-          FileDeleteOnServer(_filename, _domainname);
-     }
-	
-     FileSendContent(rtn, _filename, _domainname);
-}
-
-
 function MakeRefImageZW(zw, _enhance, _domainname){
      var _filename = zw["name"].replace("/config/", "/img_tmp/");
 	 
