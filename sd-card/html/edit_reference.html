@@ -731,12 +731,9 @@
             imageObj.src = dataURL;
         }
 
-        function callbackError(errorEvent) {
-            console.log("loadCanvas errorEvent");
-        }
-
-        function callbackSuccess(dataUrl) {
-            console.log("loadCanvas callbackSuccess");
+        function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = ""){
+            var JPEG_QUALITY=0.8;
+            var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
             var rtn = dataURLtoBlob(dataUrl);
 
             if (_delete) {
@@ -745,15 +742,6 @@
 
             FileSendContent(rtn, _filename, _domainname);
         }
-
-        function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = "", 
-                callbackSuccess, callbackError){
-            var JPEG_QUALITY=0.8;
-
-            _canvas.onerror = callbackError;
-            callbackSuccess(_canvas.toDataURL('image/jpeg', JPEG_QUALITY));
-        }
-
 
         function getCoords(elem) { 
             // crossbrowser version
