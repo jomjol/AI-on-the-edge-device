@@ -124,13 +124,8 @@
     </details>
     <hr>
 
-    <table>
-        <tr>
-            <td><input class="button" type="button" id="showcurrentreference" disabled value="Reset and show current Reference and Camera Settings" onclick="showReference()"></td>
-            <td><input class="button" type="button" id="startreference" value="Create New Reference / Change Camera Settings" onclick="doTakeReference()"></td>
-        </tr>
-    </table>
-
+    <input class="button" type="button" id="showcurrentreference" disabled value="Reset and show current Reference and Camera Settings" onclick="showReference()"><br><br>
+    <input class="button" type="button" id="startreference" value="Create New Reference / Change Camera Settings" onclick="doTakeReference()">
     <hr>
 
     <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
@@ -292,14 +287,14 @@
 
     <table>
         </tr>
-            <td><input class="button" type="submit" id="take" onclick="doTakeReference()" value="Update Reference Image"></td>
-            <td><input class="button" type="button" id="updatereferenceimage" value="Save new Reference Image and Camera Settings" onclick="SaveReference()"></td>
+            <td><input class="button" type="submit" id="updatereferenceimage" disabled onclick="doTakeReference()" value="Update Reference Image"></td>
+            <td><input class="button" type="button" id="savereferenceimage" value="Save new Reference Image and Camera Settings" onclick="SaveReference()"></td>
         </tr>	
     </table>
 
     <hr>
     <b>Reference Image:</b><br>
-    <canvas id="canvas"></canvas></td>
+    <canvas id="canvas"></canvas>
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -337,6 +332,45 @@
 
         // Create New Reference, Update Image
         function doTakeReference(){
+            firework.launch('Taking new image...', 'success', 5000);
+
+            document.getElementById("grayscale").disabled = false;
+            document.getElementById("negative").disabled = false;
+            document.getElementById("aec2").disabled = false;
+            document.getElementById("FixedExposure").disabled = false;
+            document.getElementById("zoom").disabled = false;
+            document.getElementById("zoommode").disabled = false;
+            document.getElementById("zoomoffsetx").disabled = false;
+            document.getElementById("zoomoffsety").disabled = false;
+            document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = false;
+            document.getElementById("finerotate").disabled = false;
+            document.getElementById("prerotateangle").disabled = false;
+
+            document.getElementById("showcurrentreference").disabled = false;
+            document.getElementById("startreference").disabled = true;
+            document.getElementById("updatereferenceimage").disabled = false;
+            document.getElementById("savereferenceimage").disabled = false;
+			
+            if (param["Alignment"]["InitialMirror"].found) {
+                document.getElementById("mirror").disabled = false;
+            }
+            else {
+                document.getElementById("labelmirror").style = "color:lightgrey;";
+            }
+
+            if (param["Alignment"]["FlipImageSize"].found) {
+                document.getElementById("flip").disabled = false;
+            }
+            else {
+                document.getElementById("labelflip").style = "color:lightgrey;";
+            }
+
+            document.getElementById("TakeImage_Brightness_value1").disabled = false;
+            document.getElementById("TakeImage_Contrast_value1").disabled = false;
+            document.getElementById("TakeImage_Saturation_value1").disabled = false;
+            document.getElementById("TakeImage_Sharpness_value1").disabled = false;
+            document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
+
             var xhttp = new XMLHttpRequest();
             var domainname = getDomainname();
 
@@ -425,49 +459,9 @@
 
             xhttp.open("GET", url, false);
             xhttp.send();
-
-            firework.launch('Taking new image...', 'success', 5000);
 		
             var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
 			
-            document.getElementById("updatereferenceimage").disabled = false;
-
-            document.getElementById("grayscale").disabled = false;
-            document.getElementById("negative").disabled = false;
-            document.getElementById("aec2").disabled = false;
-            document.getElementById("FixedExposure").disabled = false;
-            document.getElementById("zoom").disabled = false;
-            document.getElementById("zoommode").disabled = false;
-            document.getElementById("zoomoffsetx").disabled = false;
-            document.getElementById("zoomoffsety").disabled = false;
-            document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = false;
-            document.getElementById("finerotate").disabled = false;
-            document.getElementById("prerotateangle").disabled = false;
-
-            document.getElementById("showcurrentreference").disabled = false;
-            document.getElementById("startreference").disabled = true;
-            document.getElementById("updatereferenceimage").disabled = false;
-			
-            if (param["Alignment"]["InitialMirror"].found) {
-                document.getElementById("mirror").disabled = false;
-            }
-            else {
-                document.getElementById("labelmirror").style = "color:lightgrey;";
-            }
-
-            if (param["Alignment"]["FlipImageSize"].found) {
-                document.getElementById("flip").disabled = false;
-            }
-            else {
-                document.getElementById("labelflip").style = "color:lightgrey;";
-            }
-
-            document.getElementById("TakeImage_Brightness_value1").disabled = false;
-            document.getElementById("TakeImage_Contrast_value1").disabled = false;
-            document.getElementById("TakeImage_Saturation_value1").disabled = false;
-            document.getElementById("TakeImage_Sharpness_value1").disabled = false;
-            document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
-
             isActReference = false;
             loadCanvas(_url, true);
             camSettingsSet();
@@ -614,6 +608,7 @@
             document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = true;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
+            document.getElementById("savereferenceimage").disabled = true;
             document.getElementById("updatereferenceimage").disabled = true;
             document.getElementById("showcurrentreference").disabled = true;
             document.getElementById("startreference").disabled = false;
@@ -669,7 +664,8 @@
 
                 WriteConfigININew();
                 SaveConfigToServer(domainname);    
-                document.getElementById("saveReference").disabled = true;
+                //document.getElementById("savereferenceimage").disabled = true;
+                //document.getElementById("updatereferenceimage").disabled = true;
 
                 SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
 				
