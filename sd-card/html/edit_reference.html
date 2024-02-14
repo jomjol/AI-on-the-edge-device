@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
 <head>
-    <title>Reference Image</title>
+    <title>Reference Image and Camera Settings</title>
     <meta charset="utf-8"/>
         
     <style>
@@ -37,7 +37,6 @@
 
         .button {
             padding: 5px 10px;
-            width: 205px;
             font-size: 16px;
         }
 
@@ -91,10 +90,14 @@
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-    <h2>Reference Image</h2>
+    <h2>Reference Image and Camera Settings</h2>
     <details id="desc_details" style="font-size:16px">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
                 <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/ target=_blank>Reference Image</a>
@@ -103,48 +106,39 @@
             The reference image is the base image on which the alignment markers, digit ROIs and anlog ROIs will be defined.
         </p>        
         <p>
-            Firstly the actual saved reference image is shown. If you start with the setup from scratch a default image is shown as placeholder.
-            Use the button <b>"Create New Reference"</b> to start creation of your own reference image. After selecting the button a new image will be taken
-            all configured parameter will be applied to the shown image. With the button <b>"Update Image"</b> you can update the image again (still all parameter
-            get applied to the new image).
+            Initially the currently saved reference image is shown. If you start with a setup from scratch, a default image is shown as a placeholder.
+            Use the button <b>"Create New Reference / Change Camera Settings"</b> to start the creation of your own reference image. After clicking the button, the camera will take a
+            photo using the configured parameters. This will be your new reference image. With the button <b>"Update Reference Image"</b> you can update the image again.
         </p>        
         <p>
-            To have reliable evaluation processing a properly horizontal aligned evaluation area is mandatory. Using the parameters "Rotation angle" and
-            "Rotation angle (Fine-tune)" the image can be rotated in both directions. The resulting rotation anlge is used to prerotate the image before
-            the alignment algorithm is processed to compensate only small misalignments. Further information can be found in documenation:
+            To have a reliable evaluation processing, it is mandatory to have the digit ROIs horizontally aligned. Using the two input fields "Rotation angle" and
+            "(Fine-tune)" the image can be rotated in both directions. The resulting rotation angle is used to pre-rotate the image before
+            the alignment algorithm is processed to compensate only small misalignments (See next step Alignment Markers). Further information can be found in documenation:
             <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/ target=_blank>Reference Image</a>
         </p>
         <p>
-            After setting up your reference image don't forget to save with the <b>"Save New Reference"</b> button!<br>
+            After setting up your reference image don't forget to save with the <b>"Save new Reference Image and Camera Settings"</b> button!<br><br>
             <b>NOTE:</b> There is no need to perform a reboot after every saving or step. It's sufficient to reboot after all configuration steps 
             (reference image, alignment, ROI configuration) are completed to activate new configuration.
         </p>
     </details>
-    <hr />
+    <hr>
 
-	<table style="width: 100%">
-        <colgroup>
-            <col span="1" style="width: 25%;">
-            <col span="1" style="width: 25%;">
-            <col span="1" style="width: 25%;">
-            <col span="1" style="width: 25%;">
-        </colgroup>
+    <table>
         <tr>
-            <td class="indent1">
-                <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
-                <label for="ExpertModus_enabled">Show Expert Parameters</label> 
-            </td>
-            <td></td>
-            <td colspan="2">
-                <b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
-            </td>
-        </tr>
-        <tr>
-            <td><input class="button" type="button" id="orignReference" value="Show Actual Reference" onclick="showReference()"></td>	  
-            <td><input class="button" type="button" id="newReference" value="Create New Reference" onclick="doTakeReference()"></td>
-            <td><input class="button" type="button" id="updateReference" value="Update Image" onclick="doTakeReference()">
+            <td><input class="button" type="button" id="showcurrentreference" disabled value="Reset and show current Reference and Camera Settings" onclick="showReference()"></td>
+            <td><input class="button" type="button" id="startreference" value="Create New Reference / Change Camera Settings" onclick="doTakeReference()"></td>
         </tr>
     </table>
+
+    <hr>
+
+    <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
+    <label for="ExpertModus_enabled">Show Expert Parameters</label> 
+
+    <br><br>
+    <b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
+
     <table style="width: 100%">
         <colgroup>
             <col span="1" style="width: 12%;">
@@ -295,27 +289,17 @@
             <td>$TOOLTIP_TakeImage_Sharpness</td>
         </tr>
     </table>
+
     <table>
-        <colgroup>
-            <col span="1" style="width: 33.3%;">
-            <col span="1" style="width: 33.3%;">
-            <col span="1" style="width: 33.3%;">
-        </colgroup>
-        <tr>
-            <td style="vertical-align: bottom;"><b>Reference Image:</b></td>
-            <td></td>
-            <td>
-                <input style="font-weight:bold;" class="button" type="button" id="saveReference" value="Save New Reference" onclick="SaveReference()">
-            </td>
         </tr>
-        <tr>
-            <td colspan="3"><canvas id="canvas"></canvas></td>
+            <td><input class="button" type="submit" id="take" onclick="doTakeReference()" value="Update Reference Image"></td>
+            <td><input class="button" type="button" id="updatereferenceimage" value="Save new Reference Image and Camera Settings" onclick="SaveReference()"></td>
         </tr>	
     </table>
 
-    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script> 
+    <hr>
+    <b>Reference Image:</b><br>
+    <canvas id="canvas"></canvas></td>
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
@@ -352,7 +336,7 @@
         }
 
         // Create New Reference, Update Image
-        function doTakeReference(){ 
+        function doTakeReference(){
             var xhttp = new XMLHttpRequest();
             var domainname = getDomainname();
 
@@ -442,11 +426,11 @@
             xhttp.open("GET", url, false);
             xhttp.send();
 
-            firework.launch('Taking updated image...', 'success', 5000);
+            firework.launch('Taking new image...', 'success', 5000);
 		
             var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
 			
-            document.getElementById("saveReference").disabled = false;
+            document.getElementById("updatereferenceimage").disabled = false;
 
             document.getElementById("grayscale").disabled = false;
             document.getElementById("negative").disabled = false;
@@ -460,9 +444,9 @@
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;
 
-            document.getElementById("orignReference").disabled = false;
-            document.getElementById("newReference").disabled = true;
-            document.getElementById("updateReference").disabled = false;
+            document.getElementById("showcurrentreference").disabled = false;
+            document.getElementById("startreference").disabled = true;
+            document.getElementById("updatereferenceimage").disabled = false;
 			
             if (param["Alignment"]["InitialMirror"].found) {
                 document.getElementById("mirror").disabled = false;
@@ -535,7 +519,7 @@
         }
 		
 		
-        function showReference(_param){
+        function showReference(){
             var domainname = getDomainname();
 		
             url = domainname + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
@@ -630,10 +614,9 @@
             document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = true;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
-            document.getElementById("saveReference").disabled = true;
-            document.getElementById("orignReference").disabled = true;
-            document.getElementById("newReference").disabled = false;
-            document.getElementById("updateReference").disabled = true;
+            document.getElementById("updatereferenceimage").disabled = true;
+            document.getElementById("showcurrentreference").disabled = true;
+            document.getElementById("startreference").disabled = false;
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
             document.getElementById("TakeImage_Saturation_value1").disabled = true;
             document.getElementById("TakeImage_Contrast_value1").disabled = true;
@@ -661,7 +644,7 @@
         }			
         
         function SaveReference(){
-            if (confirm("Are you sure you want to save the new reference image configuration?")) {
+            //if (confirm("Are you sure you want to save the new reference image configuration?")) {
                 var domainname = getDomainname();
 			
                 param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
@@ -695,7 +678,7 @@
 				
                 showReference();				
                 firework.launch('Reference image configuration saved', 'success', 5000);
-            }
+            //}
         }
 
         function loadCanvas(dataURL, grid) {
@@ -975,7 +958,7 @@
             if (document.getElementById("ExpertModus_enabled").checked) {
                 _style_pur = '';
                 _hidden = false;
-                firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
+                firework.launch("Expert parameter view activated. Please use carefully", 'warning', 5000);
             }
 
             const expert = document.querySelectorAll(".expert");
