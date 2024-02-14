@@ -81,6 +81,29 @@
             height: calc(100% - 2px);
             padding: 1px;
         }
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2;
+        }
+
+        #overlaytext{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 150%;
+            color: white;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
     </style>
 
     <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
@@ -97,6 +120,10 @@
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+
     <h2>Reference Image and Camera Settings</h2>
     <details id="desc_details" style="font-size:16px">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
@@ -331,8 +358,9 @@
         }
 
         // Create New Reference, Update Image
-        function doTakeReference(){
-            firework.launch('Taking new image...', 'success', 5000);
+        function doTakeReference(){            
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("overlaytext").innerHTML = "Taking new image...";
 
             document.getElementById("grayscale").disabled = false;
             document.getElementById("negative").disabled = false;
@@ -371,100 +399,103 @@
             document.getElementById("TakeImage_Sharpness_value1").disabled = false;
             document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
 
-            var xhttp = new XMLHttpRequest();
-            var domainname = getDomainname();
+            setTimeout(function() {
+                var xhttp = new XMLHttpRequest();
+                var domainname = getDomainname();
 
-            var _grayscale = document.getElementById("grayscale").checked ? '1' : '0';
-            var _negative = document.getElementById("negative").checked ? '1' : '0';
-            var _aec2 = document.getElementById("aec2").checked ? '1' : '0';
-            var _FixedExposure = document.getElementById("FixedExposure").checked ? '1' : '0';
-            var _zoom = document.getElementById("zoom").checked ? '1' : '0';
-			
-            var _zm = document.getElementById("zoommode").value;
-            if (_zm == '') {
-                _zm = '0';
-            }
-			
-            var _x = document.getElementById("zoomoffsetx").value;
-            if (_x == '') {
-                _x = '0';
-            }
-			
-            var _y = document.getElementById("zoomoffsety").value;
-            if (_y == '') {
-                _y = '0';
-            }
-			
-            var _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
-            if (_intensity == '') {
-                _intensity = '50';
-            }
-			
-            var _brightness = document.getElementById("TakeImage_Brightness_value1").value;
-            var _contrast = document.getElementById("TakeImage_Contrast_value1").value;
-            var _saturation = document.getElementById("TakeImage_Saturation_value1").value;
-            var _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
-			
-            var _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
+                var _grayscale = document.getElementById("grayscale").checked ? '1' : '0';
+                var _negative = document.getElementById("negative").checked ? '1' : '0';
+                var _aec2 = document.getElementById("aec2").checked ? '1' : '0';
+                var _FixedExposure = document.getElementById("FixedExposure").checked ? '1' : '0';
+                var _zoom = document.getElementById("zoom").checked ? '1' : '0';
+                
+                var _zm = document.getElementById("zoommode").value;
+                if (_zm == '') {
+                    _zm = '0';
+                }
+                
+                var _x = document.getElementById("zoomoffsetx").value;
+                if (_x == '') {
+                    _x = '0';
+                }
+                
+                var _y = document.getElementById("zoomoffsety").value;
+                if (_y == '') {
+                    _y = '0';
+                }
+                
+                var _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
+                if (_intensity == '') {
+                    _intensity = '50';
+                }
+                
+                var _brightness = document.getElementById("TakeImage_Brightness_value1").value;
+                var _contrast = document.getElementById("TakeImage_Contrast_value1").value;
+                var _saturation = document.getElementById("TakeImage_Saturation_value1").value;
+                var _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
+                
+                var _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
 
-            if (_grayscale == '1') {
-                param["TakeImage"]["Grayscale"].value1 = "true";
-            } else {
-                param["TakeImage"]["Grayscale"].value1 = "false";
-            }
-            if (_negative == '1') {
-                param["TakeImage"]["Negative"].value1 = "true";
-            } else {
-                param["TakeImage"]["Negative"].value1 = "false";
-            }			
-            if (_aec2 == '1') {
-                param["TakeImage"]["Aec2"].value1 = "true";
-            } else {
-                param["TakeImage"]["Aec2"].value1 = "false";
-            }
-            if (_FixedExposure == '1') {
-                param["TakeImage"]["FixedExposure"].value1 = "true";
-            } else {
-                param["TakeImage"]["FixedExposure"].value1 = "false";
-            }
-            if (_zoom == '1') {
-                param["TakeImage"]["Zoom"].value1 = "true";
-            } else {
-                param["TakeImage"]["Zoom"].value1 = "false";
-            }
+                if (_grayscale == '1') {
+                    param["TakeImage"]["Grayscale"].value1 = "true";
+                } else {
+                    param["TakeImage"]["Grayscale"].value1 = "false";
+                }
+                if (_negative == '1') {
+                    param["TakeImage"]["Negative"].value1 = "true";
+                } else {
+                    param["TakeImage"]["Negative"].value1 = "false";
+                }			
+                if (_aec2 == '1') {
+                    param["TakeImage"]["Aec2"].value1 = "true";
+                } else {
+                    param["TakeImage"]["Aec2"].value1 = "false";
+                }
+                if (_FixedExposure == '1') {
+                    param["TakeImage"]["FixedExposure"].value1 = "true";
+                } else {
+                    param["TakeImage"]["FixedExposure"].value1 = "false";
+                }
+                if (_zoom == '1') {
+                    param["TakeImage"]["Zoom"].value1 = "true";
+                } else {
+                    param["TakeImage"]["Zoom"].value1 = "false";
+                }
 
-            param["TakeImage"]["ZoomMode"].value1 = _zm;
-            param["TakeImage"]["ZoomOffsetX"].value1 = _x;
-            param["TakeImage"]["ZoomOffsetY"].value1 = _y;
-            param["TakeImage"]["LEDIntensity"].value1 = _intensity;
-            param["TakeImage"]["Brightness"].value1 = _brightness;
-            param["TakeImage"]["Contrast"].value1 = _contrast;
-            param["TakeImage"]["Saturation"].value1 = _saturation;
-            param["TakeImage"]["Sharpness"].value1 = _sharpness;
-            param["TakeImage"]["AutoExposureLevel"].value1 = _ae;			
-			
-            var url = domainname + "/editflow?task=test_take";
-            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness;
-            url = url + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
-			
-            if (_zoom != '0') {
-                url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
-            }
-				
-            url = url + "&ae=" + _ae + "&a2=" + _aec2;		
-			
-            if (domainname.length > 0){
-                url = url + "&host=" + domainname;
-            }
+                param["TakeImage"]["ZoomMode"].value1 = _zm;
+                param["TakeImage"]["ZoomOffsetX"].value1 = _x;
+                param["TakeImage"]["ZoomOffsetY"].value1 = _y;
+                param["TakeImage"]["LEDIntensity"].value1 = _intensity;
+                param["TakeImage"]["Brightness"].value1 = _brightness;
+                param["TakeImage"]["Contrast"].value1 = _contrast;
+                param["TakeImage"]["Saturation"].value1 = _saturation;
+                param["TakeImage"]["Sharpness"].value1 = _sharpness;
+                param["TakeImage"]["AutoExposureLevel"].value1 = _ae;			
+                
+                var url = domainname + "/editflow?task=test_take";
+                url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness;
+                url = url + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+                
+                if (_zoom != '0') {
+                    url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
+                }
+                    
+                url = url + "&ae=" + _ae + "&a2=" + _aec2;		
+                
+                if (domainname.length > 0){
+                    url = url + "&host=" + domainname;
+                }
 
-            xhttp.open("GET", url, false);
-            xhttp.send();
-		
-            var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
-			
-            isActReference = false;
-            loadCanvas(_url, true);
-            camSettingsSet();
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            
+                var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+                
+                isActReference = false;
+                loadCanvas(_url, true);
+                camSettingsSet();
+                
+            }, 1); // Delay so the overlay gets shown
         }
 
 
@@ -508,7 +539,7 @@
                 url = url + "&host=" + domainname;
             }
 
-            xhttp.open("GET", url, false);
+            xhttp.open("GET", url, true);
             xhttp.send();			
         }
 		
@@ -639,48 +670,48 @@
         }			
         
         function SaveReference(){
-            //if (confirm("Are you sure you want to save the new reference image configuration?")) {
-                var domainname = getDomainname();
-			
-                param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
-                                                                Number(document.getElementById("finerotate").value)).toFixed(1);
+            var domainname = getDomainname();
+        
+            param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
+                                                            Number(document.getElementById("finerotate").value)).toFixed(1);
 
-                if (document.getElementById("mirror").checked) {
-                    param["Alignment"]["InitialMirror"].value1 = "true";
-                }
-                else {
-                    param["Alignment"]["InitialMirror"].value1 = "false";
-                }
+            if (document.getElementById("mirror").checked) {
+                param["Alignment"]["InitialMirror"].value1 = "true";
+            }
+            else {
+                param["Alignment"]["InitialMirror"].value1 = "false";
+            }
 
-                if (document.getElementById("flip").checked) {
-                    param["Alignment"]["FlipImageSize"].value1 = "true";
-                }
-                else {
-                    param["Alignment"]["FlipImageSize"].value1 = "false";
-                }
+            if (document.getElementById("flip").checked) {
+                param["Alignment"]["FlipImageSize"].value1 = "true";
+            }
+            else {
+                param["Alignment"]["FlipImageSize"].value1 = "false";
+            }
 
-                var canvas = document.getElementById("canvas");
-                drawRotated(false);
+            var canvas = document.getElementById("canvas");
+            drawRotated(false);
 
-                WriteConfigININew();
-                SaveConfigToServer(domainname);    
-                //document.getElementById("savereferenceimage").disabled = true;
-                //document.getElementById("updatereferenceimage").disabled = true;
+            WriteConfigININew();
+            SaveConfigToServer(domainname);    
+            //document.getElementById("savereferenceimage").disabled = true;
+            //document.getElementById("updatereferenceimage").disabled = true;
 
-                SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
-				
-                LoadParamTemp();				
-                camSettingsSet();
-				
-                showReference();				
-                firework.launch('Reference image configuration saved', 'success', 5000);
-            //}
+            SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
+            
+            LoadParamTemp();				
+            camSettingsSet();
+            
+            showReference();				
+            firework.launch('Reference image configuration saved', 'success', 5000);
         }
 
         function loadCanvas(dataURL, grid) {
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
 
+            console.log("loadCanvas");
+        
             imageObj.onload = function() {
                 canvas.width = this.width;
                 canvas.height = this.height;
@@ -691,9 +722,25 @@
                 else {
                     drawRotated(false);
                 }
+
+                console.log("Done");
+                document.getElementById("overlay").style.display = "none";
+
             };
 
             imageObj.src = dataURL;
+        }
+
+        function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = ""){
+            var JPEG_QUALITY=0.8;
+            var dataUrl = _canvas.toDataURL('image/jpeg', JPEG_QUALITY);	
+            var rtn = dataURLtoBlob(dataUrl);
+
+            if (_delete) {
+                FileDeleteOnServer(_filename, _domainname);
+            }
+
+            FileSendContent(rtn, _filename, _domainname);
         }
 
         function getCoords(elem) { 
