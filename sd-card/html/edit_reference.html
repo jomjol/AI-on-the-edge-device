@@ -20,14 +20,14 @@
             vertical-align: middle;
         }
 
-		input:out-of-range {
-			background-color: rgba(255, 0, 0, 0.25);
-			border: 1px solid red;
+        input:out-of-range {
+            background-color: rgba(255, 0, 0, 0.25);
+            border: 1px solid red;
         }
 
-		input:invalid {
-			background-color: rgba(255, 0, 0, 0.25);
-			border: 1px solid red;
+        input:invalid {
+            background-color: rgba(255, 0, 0, 0.25);
+            border: 1px solid red;
         }
 
         .expert {
@@ -130,20 +130,19 @@
             <col span="1" style="width: 25%;">
         </colgroup>
         <tr>
-			<td class="indent1">
-				<input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
-					<label for="ExpertModus_enabled">Show Expert Parameters</label> 
-			</td>
-			<td>
-			</td>
-			<td colspan="2">
-				<b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
+            <td class="indent1">
+                <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
+                <label for="ExpertModus_enabled">Show Expert Parameters</label> 
             </td>
-		</tr>
+            <td></td>
+            <td colspan="2">
+                <b>*)</b> A change of this parameter only is applied on the next update of the Refrence Image.
+            </td>
+        </tr>
         <tr>
-            <td><input class="button" type="button" value="Show Actual Reference" onclick="showReference(param)"></td>	  
-            <td><input class="button" type="button" id="startreference" value="Create New Reference" onclick="loadRawImage(false)"></td>
-            <td><input class="button" type="submit" id="take" onclick="doTake()" value="Update Reference Image">
+            <td><input class="button" type="button" id="orignReference" value="Show Actual Reference" onclick="showReference()"></td>	  
+            <td><input class="button" type="button" id="newReference" value="Create New Reference" onclick="doTakeReference()"></td>
+            <td><input class="button" type="button" id="updateReference" value="Update Image" onclick="doTakeReference()">
         </tr>
     </table>
     <table style="width: 100%">
@@ -306,7 +305,7 @@
             <td style="vertical-align: bottom;"><b>Reference Image:</b></td>
             <td></td>
             <td>
-                <input style="font-weight:bold;" class="button" type="button" id="updatereferenceimage" value="Save New Reference" onclick="SaveReference()">
+                <input style="font-weight:bold;" class="button" type="button" id="saveReference" value="Save New Reference" onclick="SaveReference()">
             </td>
         </tr>
         <tr>
@@ -314,64 +313,128 @@
         </tr>	
     </table>
 
-
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
     <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
-    
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script> 
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
-            ctx = canvas.getContext('2d'),
-            imageObj = new Image()
-            domainname = getDomainname();   
-            isActReference = false;
-            param;
+            context = canvas.getContext('2d'),
+            imageObj = new Image(),
+            isActReference = false,
+            param,
+            _rotate_temp,
+            _mirror_temp,
+            _isize_temp,			
+            _grayscale_temp,
+            _negative_temp,
+            _aec2_temp,
+            _FixedExposure_temp,
+            _zoom_temp,
+            _zm_temp,
+            _x_temp,
+            _y_temp,
+            _intensity_temp,
+            _brightness_temp,
+            _contrast_temp,
+            _saturation_temp,
+            _sharpness_temp,
+            _ae_temp;		
 
-       
         function doReboot() {
             if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-                    var stringota = getDomainname() + "/reboot";
-                    window.location = stringota;
-                    window.location.href = stringota;
-                    window.location.assign(stringota);
-                    window.location.replace(stringota);
+               var stringota = getDomainname() + "/reboot";
+               window.location = stringota;
+               window.location.href = stringota;
+               window.location.assign(stringota);
+               window.location.replace(stringota);
             }
         }
 
-
-        function doTake(){ 
+        // Create New Reference, Update Image
+        function doTakeReference(){ 
             var xhttp = new XMLHttpRequest();
-            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-            {
-                _grayscale = document.getElementById("grayscale").checked ? "1" : "0";
-                _negative = document.getElementById("negative").checked ? "1" : "0";
-                _aec2 = document.getElementById("aec2").checked ? "1" : "0";
-                _FixedExposure = document.getElementById("FixedExposure").checked ? "1" : "0";
-                _zoom = document.getElementById("zoom").checked ? "1" : "0";
-                _zm = document.getElementById("zoommode").value;
-                if (_zm == "") _zm = "0";
-                _x = document.getElementById("zoomoffsetx").value;
-                if (_x == "") _x = "0";
-                _y = document.getElementById("zoomoffsety").value;
-                if (_y == "") _y = "0";
-                _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
-                if (_intensity == "") _intensity = "50";
-                _brightness = document.getElementById("TakeImage_Brightness_value1").value;
-                _contrast = document.getElementById("TakeImage_Contrast_value1").value;
-                _saturation = document.getElementById("TakeImage_Saturation_value1").value;
-                _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
-                _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
-                url = getDomainname() + "/editflow?task=test_take&bri=" + _brightness;
-                url = url + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
-                if (_zoom != '0')
-                    url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
-                url = url + "&ae=" + _ae + "&a2=" + _aec2;
+            var domainname = getDomainname();
+
+            var _grayscale = document.getElementById("grayscale").checked ? '1' : '0';
+            var _negative = document.getElementById("negative").checked ? '1' : '0';
+            var _aec2 = document.getElementById("aec2").checked ? '1' : '0';
+            var _FixedExposure = document.getElementById("FixedExposure").checked ? '1' : '0';
+            var _zoom = document.getElementById("zoom").checked ? '1' : '0';
+			
+            var _zm = document.getElementById("zoommode").value;
+            if (_zm == '') {
+                _zm = '0';
             }
-            else
-            {
-                url = domainname + "/editflow?task=test_take";
+			
+            var _x = document.getElementById("zoomoffsetx").value;
+            if (_x == '') {
+                _x = '0';
             }
+			
+            var _y = document.getElementById("zoomoffsety").value;
+            if (_y == '') {
+                _y = '0';
+            }
+			
+            var _intensity = document.getElementById("TakeImage_LEDIntensity_value1").value;
+            if (_intensity == '') {
+                _intensity = '50';
+            }
+			
+            var _brightness = document.getElementById("TakeImage_Brightness_value1").value;
+            var _contrast = document.getElementById("TakeImage_Contrast_value1").value;
+            var _saturation = document.getElementById("TakeImage_Saturation_value1").value;
+            var _sharpness = document.getElementById("TakeImage_Sharpness_value1").value;
+			
+            var _ae = document.getElementById("TakeImage_AutoExposureLevel_value1").value;
+
+            if (_grayscale == '1') {
+                param["TakeImage"]["Grayscale"].value1 = "true";
+            } else {
+                param["TakeImage"]["Grayscale"].value1 = "false";
+            }
+            if (_negative == '1') {
+                param["TakeImage"]["Negative"].value1 = "true";
+            } else {
+                param["TakeImage"]["Negative"].value1 = "false";
+            }			
+            if (_aec2 == '1') {
+                param["TakeImage"]["Aec2"].value1 = "true";
+            } else {
+                param["TakeImage"]["Aec2"].value1 = "false";
+            }
+            if (_FixedExposure == '1') {
+                param["TakeImage"]["FixedExposure"].value1 = "true";
+            } else {
+                param["TakeImage"]["FixedExposure"].value1 = "false";
+            }
+            if (_zoom == '1') {
+                param["TakeImage"]["Zoom"].value1 = "true";
+            } else {
+                param["TakeImage"]["Zoom"].value1 = "false";
+            }
+
+            param["TakeImage"]["ZoomMode"].value1 = _zm;
+            param["TakeImage"]["ZoomOffsetX"].value1 = _x;
+            param["TakeImage"]["ZoomOffsetY"].value1 = _y;
+            param["TakeImage"]["LEDIntensity"].value1 = _intensity;
+            param["TakeImage"]["Brightness"].value1 = _brightness;
+            param["TakeImage"]["Contrast"].value1 = _contrast;
+            param["TakeImage"]["Saturation"].value1 = _saturation;
+            param["TakeImage"]["Sharpness"].value1 = _sharpness;
+            param["TakeImage"]["AutoExposureLevel"].value1 = _ae;			
+			
+            var url = domainname + "/editflow?task=test_take";
+            url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness;
+            url = url + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+			
+            if (_zoom != '0') {
+                url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
+            }
+				
+            url = url + "&ae=" + _ae + "&a2=" + _aec2;		
+			
             if (domainname.length > 0){
                 url = url + "&host=" + domainname;
             }
@@ -380,19 +443,10 @@
             xhttp.send();
 
             firework.launch('Taking updated image...', 'success', 5000);
-            loadRawImage(true);
-        }
-        
-
-        function loadRawImage(new_image) {
-            if (new_image) {
-                url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
-                document.getElementById("updatereferenceimage").disabled = false;
-            }
-            else {
-                document.getElementById("updatereferenceimage").disabled = true;
-                doTake();
-            }
+		
+            var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+			
+            document.getElementById("saveReference").disabled = false;
 
             document.getElementById("grayscale").disabled = false;
             document.getElementById("negative").disabled = false;
@@ -405,65 +459,165 @@
             document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = false;
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;
-            document.getElementById("startreference").disabled = true;
-            document.getElementById("take").disabled = false;
-            if (param["Alignment"]["InitialMirror"].found)
+
+            document.getElementById("orignReference").disabled = false;
+            document.getElementById("newReference").disabled = true;
+            document.getElementById("updateReference").disabled = false;
+			
+            if (param["Alignment"]["InitialMirror"].found) {
                 document.getElementById("mirror").disabled = false;
-            else
-            {
+            }
+            else {
                 document.getElementById("labelmirror").style = "color:lightgrey;";
             }
 
-            if (param["Alignment"]["FlipImageSize"].found)
+            if (param["Alignment"]["FlipImageSize"].found) {
                 document.getElementById("flip").disabled = false;
-            else
-            {
+            }
+            else {
                 document.getElementById("labelflip").style = "color:lightgrey;";
             }
 
-            if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-            {
-                document.getElementById("TakeImage_Brightness_value1").disabled = false;
-                document.getElementById("TakeImage_Contrast_value1").disabled = false;
-                document.getElementById("TakeImage_Saturation_value1").disabled = false;
-                document.getElementById("TakeImage_Sharpness_value1").disabled = false;
-                document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
-            }
-            else
-            {
-                document.getElementById("TakeImage_Brightness_value1").type = "hidden";
-                document.getElementById("TakeImage_Brightness_text").style.visibility = "hidden";
-                
-            }
-
-//            if (param["TakeImage"]["Saturation"].found)
-//                document.getElementById("TakeImage_Saturation_value1").disabled = false;
-//            if (param["TakeImage"]["Contrast"].found)
-//                document.getElementById("TakeImage_Contrast_value1").disabled = false;
+            document.getElementById("TakeImage_Brightness_value1").disabled = false;
+            document.getElementById("TakeImage_Contrast_value1").disabled = false;
+            document.getElementById("TakeImage_Saturation_value1").disabled = false;
+            document.getElementById("TakeImage_Sharpness_value1").disabled = false;
+            document.getElementById("TakeImage_LEDIntensity_value1").disabled = false;
 
             isActReference = false;
-            loadCanvas(url, true);
+            loadCanvas(_url, true);
+            camSettingsSet();
         }
-        
 
+
+        function camSettingsSet(){
+            var domainname = getDomainname();
+            var xhttp = new XMLHttpRequest();
+			
+            var _grayscale = '0';
+            var _negative = '0';
+            var _aec2 = '0';
+            var _FixedExposure = '0';
+            var _zoom = '0';
+
+            if (_grayscale_temp == "true") {
+                _grayscale = '1';
+            }
+            if (_negative_temp == "true") {
+                _negative = '1';
+            }			
+            if (_aec2_temp == "true") {
+                _aec2 = '1';
+            }
+            if (_FixedExposure_temp == "true") {
+                _FixedExposure = '1';
+            }
+            if (_zoom_temp == "true") {
+                _zoom = '1';
+            }
+
+            var url = domainname + "/editflow?task=cam_settings";
+            url = url + "&bri=" + _brightness_temp + "&con=" + _contrast_temp + "&sat=" + _saturation_temp + "&sh=" + _sharpness_temp;
+            url = url + "&int=" + _intensity_temp + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+			
+            if (_zoom != '0') {
+                url = url + "&zm=" + _zm_temp + "&x=" + _x_temp + "&y=" + _y_temp;
+            }
+				
+            url = url + "&ae=" + _ae_temp + "&a2=" + _aec2;
+			
+            if (domainname.length > 0){
+                url = url + "&host=" + domainname;
+            }
+
+            xhttp.open("GET", url, false);
+            xhttp.send();			
+        }
+		
+		
         function showReference(_param){
-            url = getDomainname() + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
+            var domainname = getDomainname();
+		
+            url = domainname + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
 
-            if (_param["Alignment"]["InitialRotate"].value1 < 0) {
-                document.getElementById("prerotateangle").value = Math.ceil(_param["Alignment"]["InitialRotate"].value1);
+            if (_rotate_temp < 0) {
+                document.getElementById("prerotateangle").value = Math.ceil(_rotate_temp);
             }
             else {
-                document.getElementById("prerotateangle").value = Math.floor(_param["Alignment"]["InitialRotate"].value1);
+                document.getElementById("prerotateangle").value = Math.floor(_rotate_temp);
             }
 
-            document.getElementById("finerotate").value = (Number(_param["Alignment"]["InitialRotate"].value1) - 
-                                                            Number(document.getElementById("prerotateangle").value)).toFixed(1);
+            document.getElementById("finerotate").value = (Number(_rotate_temp) - Number(document.getElementById("prerotateangle").value)).toFixed(1);
 
-            if (_param["Alignment"]["InitialMirror"].found && (_param["Alignment"]["InitialMirror"].value1 == "true"))
+            if (_mirror_temp == "true") {
                 document.getElementById("mirror").checked = true;
+            }
+            else {
+                document.getElementById("mirror").checked = false;
+            }
 
-            if (_param["Alignment"]["FlipImageSize"].found && (_param["Alignment"]["FlipImageSize"].value1 == "true"))
+            if (_isize_temp == "true") {
                 document.getElementById("flip").checked = true;
+            }
+            else {
+                document.getElementById("flip").checked = false;
+            }			
+
+            if (_grayscale_temp == "true") {
+                document.getElementById("grayscale").checked = true;
+            }
+            else {
+                document.getElementById("grayscale").checked = false;
+            }
+
+            if (_negative_temp == "true") {
+                document.getElementById("negative").checked = true;
+            }
+            else {
+                document.getElementById("negative").checked = false;
+            }
+
+            if (_aec2_temp == "true") {
+                document.getElementById("aec2").checked = true;
+            }
+            else {
+                document.getElementById("aec2").checked = false;
+            }
+			
+            if (_FixedExposure_temp == "true") {
+                document.getElementById("FixedExposure").checked = true;
+            }
+            else {
+                document.getElementById("FixedExposure").checked = false;
+            }
+
+            if (_zoom_temp == "true") {
+                document.getElementById("zoom").checked = true;
+            }
+            else {
+                document.getElementById("zoom").checked = false;
+            }			
+			
+            document.getElementById("zoommode").value = _zm_temp;
+            document.getElementById("zoomoffsetx").value = _x_temp;
+            document.getElementById("zoomoffsety").value = _y_temp;			
+			
+            document.getElementById("TakeImage_LEDIntensity_value1").value = _intensity_temp;
+			
+            document.getElementById("TakeImage_Brightness_value1").value = _brightness_temp;
+            document.getElementById("TakeImage_Brightness_value1_output").value = _brightness_temp;
+			
+            document.getElementById("TakeImage_Contrast_value1").value = _contrast_temp;
+            document.getElementById("TakeImage_Contrast_value1_output").value = _contrast_temp;
+			
+            document.getElementById("TakeImage_Saturation_value1").value = _saturation_temp;
+            document.getElementById("TakeImage_Saturation_value1_output").value = _saturation_temp;
+			
+            document.getElementById("TakeImage_Sharpness_value1").value = _sharpness_temp;
+            document.getElementById("TakeImage_Sharpness_value1_output").value = _sharpness_temp;			
+			
+            document.getElementById("TakeImage_AutoExposureLevel_value1").value = _ae_temp;
+            document.getElementById("TakeImage_AutoExposureLevel_value1_output").value = _ae_temp;
 
             document.getElementById("grayscale").disabled = true;
             document.getElementById("negative").disabled = true;
@@ -476,23 +630,15 @@
             document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = true;
             document.getElementById("finerotate").disabled = true;
             document.getElementById("prerotateangle").disabled = true; 
-            document.getElementById("updatereferenceimage").disabled = true;
-            document.getElementById("startreference").disabled = false;
-            document.getElementById("take").disabled = true;
+            document.getElementById("saveReference").disabled = true;
+            document.getElementById("orignReference").disabled = true;
+            document.getElementById("newReference").disabled = false;
+            document.getElementById("updateReference").disabled = true;
             document.getElementById("TakeImage_Brightness_value1").disabled = true;
             document.getElementById("TakeImage_Saturation_value1").disabled = true;
             document.getElementById("TakeImage_Contrast_value1").disabled = true;
             document.getElementById("TakeImage_Sharpness_value1").disabled = true;
             document.getElementById("TakeImage_LEDIntensity_value1").disabled = true;
-            document.getElementById("mirror").disabled = false;
-            document.getElementById("flip").disabled = false;
-            if (!(param["TakeImage"]["Brightness"].found))
-            {
-                document.getElementById("TakeImage_Brightness_value1").type = "hidden";
-                document.getElementById("TakeImage_Brightness_text").style.visibility = "hidden";
-            }
-
-
             document.getElementById("mirror").disabled = true;
             document.getElementById("flip").disabled = true;
 
@@ -500,109 +646,79 @@
             loadCanvas(url, false);
         }
         
-        
         function dataURLtoBlob(dataurl) {
-            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            var arr = dataurl.split(',');
+            var mime = arr[0].match(/:(.*?);/)[1];
+            var bstr = atob(arr[1]);
+            var n = bstr.length;
+            var u8arr = new Uint8Array(n);
+				
             while(n--){
                 u8arr[n] = bstr.charCodeAt(n);
             }
+			
             return new Blob([u8arr], {type:mime});
         }			
         
-        
         function SaveReference(){
             if (confirm("Are you sure you want to save the new reference image configuration?")) {
+                var domainname = getDomainname();
+			
                 param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("prerotateangle").value) + 
                                                                 Number(document.getElementById("finerotate").value)).toFixed(1);
 
-                if ((param["Alignment"]["InitialMirror"].found == true) && (document.getElementById("mirror").checked))
-                {
+                if (document.getElementById("mirror").checked) {
                     param["Alignment"]["InitialMirror"].value1 = "true";
-                    param["Alignment"]["InitialMirror"]["found"] = true;
-                    param["Alignment"]["InitialMirror"]["enabled"] = true;
                 }
-                else
+                else {
                     param["Alignment"]["InitialMirror"].value1 = "false";
+                }
 
-                if ((param["Alignment"]["FlipImageSize"].found == true) && (document.getElementById("flip").checked))
+                if (document.getElementById("flip").checked) {
                     param["Alignment"]["FlipImageSize"].value1 = "true";
-                else
+                }
+                else {
                     param["Alignment"]["FlipImageSize"].value1 = "false";
-
-                if ((param["TakeImage"]["Grayscale"].found == true) && (document.getElementById("grayscale").checked))
-                    param["TakeImage"]["Grayscale"].value1 = "true";
-                else
-                    param["TakeImage"]["Grayscale"].value1 = "false";
-
-                if ((param["TakeImage"]["Negative"].found == true) && (document.getElementById("negative").checked))
-                    param["TakeImage"]["Negative"].value1 = "true";
-                else
-                    param["TakeImage"]["Negative"].value1 = "false";
-
-                if ((param["TakeImage"]["Aec2"].found == true) && (document.getElementById("aec2").checked))
-                    param["TakeImage"]["Aec2"].value1 = "true";
-                else
-                    param["TakeImage"]["Aec2"].value1 = "false";
-
-                if ((param["TakeImage"]["FixedExposure"].found == true) && (document.getElementById("FixedExposure").checked))
-                    param["TakeImage"]["FixedExposure"].value1 = "true";
-                else
-                    param["TakeImage"]["FixedExposure"].value1 = "false";
-
-                if ((param["TakeImage"]["Zoom"].found == true) && (document.getElementById("zoom").checked))
-                    param["TakeImage"]["Zoom"].value1 = "true";
-                else
-                    param["TakeImage"]["Zoom"].value1 = "false";
-
-                param["TakeImage"]["ZoomMode"].value1 = document.getElementById("zoommode").value;
-                param["TakeImage"]["ZoomOffsetX"].value1 = document.getElementById("zoomoffsetx").value;
-                param["TakeImage"]["ZoomOffsetY"].value1 = document.getElementById("zoomoffsety").value;
-
-                if (param["TakeImage"]["Brightness"].found && param["TakeImage"]["Brightness"].enabled)
-                {
-                    ReadParameter(param, "TakeImage", "Brightness", false);
-                    ReadParameter(param, "TakeImage", "Contrast", false);
-                    ReadParameter(param, "TakeImage", "Saturation", false);
-                    ReadParameter(param, "TakeImage", "Sharpness", false);
-                    ReadParameter(param, "TakeImage", "LEDIntensity", false);
-                    ReadParameter(param, "TakeImage", "AutoExposureLevel", false);
                 }
 
                 var canvas = document.getElementById("canvas");
                 drawRotated(false);
 
                 WriteConfigININew();
-                SaveConfigToServer(getDomainname());    
-                document.getElementById("updatereferenceimage").disabled = true;
+                SaveConfigToServer(domainname);    
+                document.getElementById("saveReference").disabled = true;
 
-                SaveCanvasToImage(canvas, "/config/reference.jpg", true, getDomainname());
-                showReference(param);
-                //UpdatePage();
-                
-                firework.launch('Reference image configuration saved. It will get applied after next reboot', 'success', 5000);
+                SaveCanvasToImage(canvas, "/config/reference.jpg", true, domainname);
+				
+                LoadParamTemp();				
+                camSettingsSet();
+				
+                showReference();				
+                firework.launch('Reference image configuration saved', 'success', 5000);
             }
         }
 
-
         function loadCanvas(dataURL, grid) {
-                var canvas = document.getElementById('canvas');
-                var context = canvas.getContext('2d');
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
 
-                imageObj.onload = function() {
-                    canvas.width = this.width;
-                    canvas.height = this.height;
-                    if (grid)
-                        drawRotated(true);
-                    else
-                        drawRotated(false);
-                };
+            imageObj.onload = function() {
+                canvas.width = this.width;
+                canvas.height = this.height;
+                
+                if (grid) {
+                    drawRotated(true);
+                }
+                else {
+                    drawRotated(false);
+                }
+            };
 
-                imageObj.src = dataURL;
-            }
+            imageObj.src = dataURL;
+        }
 
-
-        function getCoords(elem) { // crossbrowser version
+        function getCoords(elem) { 
+            // crossbrowser version
             var box = elem.getBoundingClientRect();
             var body = document.body;
             var docEl = document.documentElement;
@@ -612,23 +728,24 @@
             var clientLeft = docEl.clientLeft || body.clientLeft || 0;
             var top  = box.top +  scrollTop - clientTop;
             var left = box.left + scrollLeft - clientLeft;
+			
             return { top: Math.round(top), left: Math.round(left) };
         }
 
-        
-        /* hash #description open the details part of the page */
         function openDescription() {
-        if(window.location.hash) {
-            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
-            if(hash == 'description')
-                document.getElementById("desc_details").open = true;
+            if(window.location.hash) {
+                var hash = window.location.hash.substring(1);
+				
+                if(hash == 'description') {
+                    document.getElementById("desc_details").open = true;
+                }
             }
         }
     
-
         function init() {
             openDescription();
-            canvas.addEventListener('mousemove', mouseMove, false);    
+            canvas.addEventListener('mousemove', mouseMove, false);
+			
             loadConfig(getDomainname()); 
             ParseConfig();
             param = getConfigParameters();
@@ -649,282 +766,197 @@
             param["TakeImage"]["ZoomOffsetX"]["enabled"] = true;
             param["TakeImage"]["ZoomOffsetY"]["enabled"] = true;
 
-            if (!param["TakeImage"]["Grayscale"]["found"])
-            {
+            if (!param["TakeImage"]["Grayscale"]["found"]) {
                 param["TakeImage"]["Grayscale"]["found"] = true;
-                param["TakeImage"]["Grayscale"].value1 = "false";
+                param["TakeImage"]["Grayscale"].value1 = 'false';
             }
-            if (!param["TakeImage"]["Negative"]["found"])
-            {
+            if (!param["TakeImage"]["Negative"]["found"]) {
                 param["TakeImage"]["Negative"]["found"] = true;
-                param["TakeImage"]["Negative"].value1 = "false";
+                param["TakeImage"]["Negative"].value1 = 'false';
             }
-            if (!param["TakeImage"]["Aec2"]["found"])
-            {
+            if (!param["TakeImage"]["Aec2"]["found"]) {
                 param["TakeImage"]["Aec2"]["found"] = true;
-                param["TakeImage"]["Aec2"].value1 = "false";
+                param["TakeImage"]["Aec2"].value1 = 'false';
             }
-            if (!param["TakeImage"]["FixedExposure"]["found"])
-            {
+            if (!param["TakeImage"]["FixedExposure"]["found"]) {
                 param["TakeImage"]["FixedExposure"]["found"] = true;
-                param["TakeImage"]["FixedExposure"].value1 = "false";
+                param["TakeImage"]["FixedExposure"].value1 = 'false';
             }
-            if (!param["TakeImage"]["Zoom"]["found"])
-            {
+            if (!param["TakeImage"]["Zoom"]["found"]) {
                 param["TakeImage"]["Zoom"]["found"] = true;
-                param["TakeImage"]["Zoom"].value1 = "false";
+                param["TakeImage"]["Zoom"].value1 = 'false';
             }
-            if (!param["TakeImage"]["ZoomMode"]["found"])
-            {
+            if (!param["TakeImage"]["ZoomMode"]["found"]) {
                 param["TakeImage"]["ZoomMode"]["found"] = true;
-                param["TakeImage"]["ZoomMode"].value1 = "0";
+                param["TakeImage"]["ZoomMode"].value1 = '0';
             }
-            if (!param["TakeImage"]["ZoomOffsetX"]["found"])
-            {
+            if (!param["TakeImage"]["ZoomOffsetX"]["found"]) {
                 param["TakeImage"]["ZoomOffsetX"]["found"] = true;
-                param["TakeImage"]["ZoomOffsetX"].value1 = "0";
+                param["TakeImage"]["ZoomOffsetX"].value1 = '0';
             }
-            if (!param["TakeImage"]["ZoomOffsetY"]["found"])
-            {
+            if (!param["TakeImage"]["ZoomOffsetY"]["found"]) {
                 param["TakeImage"]["ZoomOffsetY"]["found"] = true;
-                param["TakeImage"]["ZoomOffsetY"].value1 = "0";
+                param["TakeImage"]["ZoomOffsetY"].value1 = '0';
             }
-
-            if (!param["TakeImage"]["AutoExposureLevel"]["found"])
-            {
+            if (!param["TakeImage"]["AutoExposureLevel"]["found"]) {
                 param["TakeImage"]["AutoExposureLevel"]["found"] = true;
-                param["TakeImage"]["AutoExposureLevel"]["value1"] = "0";
+                param["TakeImage"]["AutoExposureLevel"]["value1"] = '0';
             }
-            if (!param["TakeImage"]["LEDIntensity"]["found"])
-            {
+            if (!param["TakeImage"]["LEDIntensity"]["found"]) {
                 param["TakeImage"]["LEDIntensity"]["found"] = true;
-                param["TakeImage"]["LEDIntensity"]["value1"] = "50";
+                param["TakeImage"]["LEDIntensity"]["value1"] = '50';
             }
-            if (!param["TakeImage"]["Brightness"]["found"])
-            {
+            if (!param["TakeImage"]["Brightness"]["found"]) {
                 param["TakeImage"]["Brightness"]["found"] = true;
-                param["TakeImage"]["Brightness"]["value1"] = "0";
-            }
-            if (!param["TakeImage"]["Contrast"]["found"])
-            {
+                param["TakeImage"]["Brightness"]["value1"] = '0';
+            }		
+            if (!param["TakeImage"]["Contrast"]["found"]) {
                 param["TakeImage"]["Contrast"]["found"] = true;
-                param["TakeImage"]["Contrast"]["value1"] = "0";
-            }
-            if (!param["TakeImage"]["Saturation"]["found"])
-            {
+                param["TakeImage"]["Contrast"]["value1"] = '0';
+            }		
+            if (!param["TakeImage"]["Saturation"]["found"]) {
                 param["TakeImage"]["Saturation"]["found"] = true;
-                param["TakeImage"]["Saturation"]["value1"] = "0";
-            }
-            if (!param["TakeImage"]["Sharpness"]["found"])
-            {
+                param["TakeImage"]["Saturation"]["value1"] = '0';
+            }			
+            if (!param["TakeImage"]["Sharpness"]["found"]) {
                 param["TakeImage"]["Sharpness"]["found"] = true;
-                param["TakeImage"]["Sharpness"]["value1"] = "0";
+                param["TakeImage"]["Sharpness"]["value1"] = '0';
             }
-
-            UpdateInput();
-            showReference(param); 
+			
+            UpdateExpertModus();
+            LoadParamTemp();
+            showReference();
         }
 
 
-        function UpdateInput() {
-            WriteParameter(param, category, "TakeImage", "AutoExposureLevel", false, true);
-            WriteParameter(param, category, "TakeImage", "Brightness", false, true);
-            WriteParameter(param, category, "TakeImage", "Contrast", false, true);
-            WriteParameter(param, category, "TakeImage", "Saturation", false, true);
-            WriteParameter(param, category, "TakeImage", "Sharpness", false, true);
-            WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
-            if (param["TakeImage"]["Grayscale"].value1 == "true") {
-                document.getElementById("grayscale").checked = true;
-            } else {
-                document.getElementById("grayscale").checked = false;
-            }
-            if (param["TakeImage"]["Negative"].value1 == "true") {
-                document.getElementById("negative").checked = true;
-            } else {
-                document.getElementById("negative").checked = false;
-            }
-            if (param["TakeImage"]["Aec2"].value1 == "true") {
-                document.getElementById("aec2").checked = true;
-            } else {
-                document.getElementById("aec2").checked = false;
-            }
-            if (param["TakeImage"]["FixedExposure"].value1 == "true") {
-                document.getElementById("FixedExposure").checked = true;
-            } else {
-                document.getElementById("FixedExposure").checked = false;
-            }
-            if (param["TakeImage"]["Zoom"].value1 == "true") {
-                document.getElementById("zoom").checked = true;
-            } else {
-                document.getElementById("zoom").checked = false;
-            }
-            document.getElementById("zoommode").value = param["TakeImage"]["ZoomMode"].value1;
-            document.getElementById("zoomoffsetx").value = param["TakeImage"]["ZoomOffsetX"].value1;
-            document.getElementById("zoomoffsety").value = param["TakeImage"]["ZoomOffsetY"].value1;
+        function LoadParamTemp() {
+            _rotate_temp = param["Alignment"]["InitialRotate"].value1;
+            _mirror_temp = param["Alignment"]["InitialMirror"].value1;
+            _isize_temp = param["Alignment"]["FlipImageSize"].value1;		
+		
+            _grayscale_temp = param["TakeImage"]["Grayscale"].value1;
+            _negative_temp = param["TakeImage"]["Negative"].value1;
+            _aec2_temp = param["TakeImage"]["Aec2"].value1;
+            _FixedExposure_temp = param["TakeImage"]["FixedExposure"].value1;
+            _zoom_temp = param["TakeImage"]["Zoom"].value1;
+            _zm_temp = param["TakeImage"]["ZoomMode"].value1;
+            _x_temp = param["TakeImage"]["ZoomOffsetX"].value1;
+            _y_temp = param["TakeImage"]["ZoomOffsetY"].value1;
+            _intensity_temp = param["TakeImage"]["LEDIntensity"]["value1"];
+            _brightness_temp = param["TakeImage"]["Brightness"]["value1"];
+            _contrast_temp = param["TakeImage"]["Contrast"]["value1"];
+            _saturation_temp = param["TakeImage"]["Saturation"]["value1"];
+            _sharpness_temp = param["TakeImage"]["Sharpness"]["value1"];
+            _ae_temp = param["TakeImage"]["AutoExposureLevel"]["value1"];
         }
 
-
-        function ReadParameter(_param, _cat, _name, _optional, _select = false){
-            if (_param[_cat][_name]["found"]){
-                if (_optional) {
-                    _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-                }
-                if (_select) {
-                    var sel = document.getElementById(_cat+"_"+_name+"_value1");
-                    _param[_cat][_name]["value1"] = sel.options[sel.selectedIndex].text;
-                }
-                else {
-                    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-                        _param[_cat][_name]["value"+j] = document.getElementById(_cat+"_"+_name+"_value"+j).value;
-                    }
-                }
-            }
-        }
         
-
-        function WriteParameter(_param, _category, _cat, _name, _optional, outval = false, _select = false, _anzpara = 1){
-            if (_param[_cat][_name]["found"]){
-                if (_optional) {
-                    document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
-                    for (var j = 1; j <= _anzpara; ++j) {
-                        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
-                    }		
-                }
-                document.getElementById(_cat+"_"+_name+"_text").style="color:black;"
-                if (_select) {
-                    var textToFind = _param[_cat][_name]["value1"];
-                    var dd = document.getElementById(_cat+"_"+_name+"_value1");
-                    for (var i = 0; i < dd.options.length; i++) {
-                        if (dd.options[i].text.toLowerCase() === textToFind.toLowerCase()) {
-                            dd.selectedIndex = i;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    for (var j = 1; j <= _anzpara; ++j) {
-                        document.getElementById(_cat+"_"+_name+"_value"+j).value = _param[_cat][_name]["value"+j];
-                    }
-                }
-                if (outval)
-                    document.getElementById(_cat+"_"+_name+"_value1_output").value = document.getElementById(_cat+"_"+_name+"_value1").value;
-            }
-            else {
-                if (_optional) {
-                    document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;	
-                    for (var j = 1; j <= _anzpara; ++j) {
-                        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;	
-                    }	
-                }
-                document.getElementById(_cat+"_"+_name+"_text").style="color:lightgrey;"		
-            }
-        }
-
-
         function drawRotated(_grid = true) {
-            finerot= parseFloat(document.getElementById("finerotate").value);
-            prerot = parseFloat(document.getElementById("prerotateangle").value);
-            mirror = document.getElementById("mirror").checked;
-            flip = document.getElementById("flip").checked;
-
-            if (finerot == 1) {
-                prerot+=1
-                finerot = 0
-            }
-            if (finerot == -1) {
-                prerot-=1
-                finerot = 0
-            }
-            degrees = finerot + prerot;
-            document.getElementById("finerotate").value =  finerot;
-            document.getElementById("prerotateangle").value =  prerot;
-
             var canvas = document.getElementById('canvas');
-            if (flip == 1)
-            {
+            var context = canvas.getContext('2d');		
+		
+            var _finerot = parseFloat(document.getElementById("finerotate").value);
+            var _prerot = parseFloat(document.getElementById("prerotateangle").value);
+			
+            var _mirror = document.getElementById("mirror").checked ? '1' : '0';
+            var _flip = document.getElementById("flip").checked ? '1' : '0';
+            var _negative = document.getElementById("negative").checked ? '1' : '0';			
+
+            if (_finerot == 1) {
+                _prerot+=1
+                _finerot = 0
+            }
+			
+            if (_finerot == -1) {
+                _prerot-=1
+                _finerot = 0
+            }
+			
+            degrees = _finerot + _prerot;
+            document.getElementById("finerotate").value =  _finerot;
+            document.getElementById("prerotateangle").value =  _prerot;
+			
+            if (_flip == '1') {
                 canvas.width = imageObj.height;
                 canvas.height = imageObj.width;
             }
-            else
-            {
+            else {
                 canvas.width = imageObj.width;
                 canvas.height = imageObj.height;
             }
 
-            var canvas = document.getElementById('canvas');
-            var context = canvas.getContext('2d');
-
             context.clearRect(0,0,canvas.width,canvas.height);
             context.save();
 
-            negative = document.getElementById("negative").checked;
-
-            if (isActReference)
-            {
+            if (isActReference) {
                 context.drawImage(imageObj,0,0);
             }
-            else
-            {
-                if (negative) {
+            else {
+                if (_negative == '1') {
                     context.filter = 'invert(1)';
                 }
+              
                 context.translate(canvas.width/2,canvas.height/2);
                 context.rotate(degrees*Math.PI/180);
-                if (mirror) {
+				
+                if (_mirror == '1') {
                     context.scale(-1, 1);
                 }
+				
                 context.drawImage(imageObj,-imageObj.width/2,-imageObj.height/2);
             }
             
-            
             context.restore();
 
-            if (_grid)
-                    drawGrid();
+            if (_grid) {
+                drawGrid();
+            }
         }
-
 
         function drawGrid(){
             var canvas = document.getElementById('canvas');
-            var ctx = canvas.getContext('2d');
-            w = canvas.width;
-            h = canvas.height;
-            ctx.save();
-            ctx.strokeStyle = '#00FF00';
+            var context = canvas.getContext('2d');
+			
+            var w = canvas.width;
+            var h = canvas.height;
+            context.save();
+            context.strokeStyle = '#00FF00';
 
-            for (i = h/2; i < h; i += 100) 
-                {
-                ctx.moveTo(0, i);
-                ctx.lineTo(w, i);
-                ctx.stroke();
-                ctx.moveTo(0, h-i);
-                ctx.lineTo(w, h-i);
-                ctx.stroke();
-                }
-            for (i = w/2; i < w; i += 100) 
-                {
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, h);
-                ctx.stroke();
-                ctx.moveTo(w-i, 0);
-                ctx.lineTo(w-i, h);
-                ctx.stroke();                }
-            ctx.restore();
+            for (i = h/2; i < h; i += 100) {
+                context.moveTo(0, i);
+                context.lineTo(w, i);
+                context.stroke();
+                context.moveTo(0, h-i);
+                context.lineTo(w, h-i);
+                context.stroke();
+            }
+			
+            for (i = w/2; i < w; i += 100) {
+                context.moveTo(i, 0);
+                context.lineTo(i, h);
+                context.stroke();
+                context.moveTo(w-i, 0);
+                context.lineTo(w-i, h);
+                context.stroke();                
+            }
+			
+            context.restore();
         }
 
-
         function mouseMove(e) {
-            if (isActReference)
-                drawRotated(false);
-            else
-                drawRotated(true);
-            
             var canvas = document.getElementById('canvas');
-            var context = canvas.getContext('2d');
-
-            zw = getCoords(this);
-            x = e.pageX - zw.left;
-            y = e.pageY - zw.top;
+            var context = canvas.getContext('2d');            
+			
+            if (isActReference) {
+                drawRotated(false);
+            }
+            else {
+                drawRotated(true);
+            }
+            
+            var zw = getCoords(this);
+            var x = e.pageX - zw.left;
+            var y = e.pageY - zw.top;
             
             context.lineWidth = 2;
             context.strokeStyle = "#00FF00";
@@ -936,32 +968,25 @@
             context.stroke();            
         }
 
-        init();
-        UpdateExpertModus();
-    
-
-
-        function UpdateExpertModus()
-        {
-        //	var _style = 'display:none;';
+        function UpdateExpertModus() {
             var _style_pur = 'none';
             var _hidden = true;
+			
             if (document.getElementById("ExpertModus_enabled").checked) {
-        //		_style = '';
                 _style_pur = '';
                 _hidden = false;
                 firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
             }
 
             const expert = document.querySelectorAll(".expert");
+			
             for (var i = 0; i < expert.length; i++) {
                 expert[i].style.display = _style_pur;
-        //		document.getElementById(expert[i].id).style = _style;
             }
         }
 
+        init();
 
     </script>
-
 </body>
 </html>

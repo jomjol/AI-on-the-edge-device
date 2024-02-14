@@ -39,13 +39,11 @@ function createReader(file) {
  }
 
 
-
 function ZerlegeZeile(input, delimiter = " =\t\r")
      {
           var Output = Array(0);
 //          delimiter = " =,\t";
      
-
           /* The input can have multiple formats: 
            *  - key = value
            *  - key = value1 value2 value3 ...
@@ -82,7 +80,6 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
           }
      
           return Output;
-     
      }    
 
 
@@ -109,7 +106,6 @@ function findDelimiterPos(input, delimiter)
           }
           return pos;
      }
-     
      
 
 function trim(istring, adddelimiter)
@@ -247,19 +243,21 @@ function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = "")
 }
 
 
-function MakeContrastImageZW(zw, _enhance, _domainname){
-     _filename = zw["name"].replace("/config/", "/img_tmp/");
-     url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+function MakeRefImageZW(zw, _enhance, _domainname){
+     var _filename = zw["name"].replace("/config/", "/img_tmp/");
+	 
+     var url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
+     
      if (_enhance == true){
           url = url + "&enhance=true";
      }
 
      var xhttp = new XMLHttpRequest();  
+     
      try {
           xhttp.open("GET", url, false);
           xhttp.send();
-     }
-     catch (error){}
+     } catch (error){}
 
      if (xhttp.responseText == "CutImage Done") {
           firework.launch('Image Contrast got enhanced', 'success', 5000);
@@ -269,28 +267,3 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
           return false;
      }
 }
-
-
-function MakeRefZW(zw, _domainname){
-     _filetarget = zw["name"].replace("/config/", "/img_tmp/");
-     _filetarget = _filetarget.replace(".jpg", "_org.jpg");
-     url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
-     var xhttp = new XMLHttpRequest();  
-     try {
-          xhttp.open("GET", url, false);
-          xhttp.send();
-     }
-     catch (error){}
-
-     if (xhttp.responseText == "CutImage Done") {
-          _filetarget2 = zw["name"].replace("/config/", "/img_tmp/");
-     //     _filetarget2 = _filetarget2.replace(".jpg", "_org.jpg");
-          FileCopyOnServer(_filetarget, _filetarget2, _domainname);
-          firework.launch('Marker got updated', 'success', 5000);
-          return true;
-     }
-     else {
-          return false;
-     }
-}
-
