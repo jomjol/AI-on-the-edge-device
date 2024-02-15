@@ -11,7 +11,7 @@
         p {font-size: 1em;}
 
         input[type=number] {
-            width: 60px;
+            width: 40px;
             margin-right: 10px;
             padding: 3px 5px;
             display: inline-block;
@@ -176,25 +176,23 @@
         <tr>
             <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
             <td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-            <td><input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label></td>
-        </tr>
+            </tr>
         <tr>
             <td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
             <td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-            <td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label></td>
-        </tr>
-        <tr>
-            <td colspan="2"></td>
-            <td><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
-                <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" step=1 onchange="valuemanualchangedspace()" tabindex=9> between all ROIs</label>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2"></td>
-            <td><input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=10><label for="showall">Show all ROIs</label></td>
         </tr>
     </table>	
 </div>
+
+
+<hr>
+The following settings are only used for easier setup, they are <b>not</b> persisted on the device:<br>
+<input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=10><label for="showall">Show all ROIs</label><br>
+<input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label><br>
+<input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><br>
+<input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
+    <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" maxlength="2" max=99 step=1 onchange="valuemanualchangedspace()" tabindex=9> between all ROIs</label><br>
+<hr>
 
     <table>
         <colgroup>
