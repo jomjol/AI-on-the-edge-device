@@ -81,9 +81,9 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, string& aktparamgraph)
     std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
-    int _brightness = -100;
-    int _contrast = -100;
-    int _saturation = -100;
+    int _brightness = 0;
+    int _contrast = 0;
+    int _saturation = 0;
     int _sharpness = 0;
     int _autoExposureLevel = 0;
 
