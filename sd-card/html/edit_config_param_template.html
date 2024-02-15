@@ -281,7 +281,7 @@
 				<class id="TakeImage_Brightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Brightness_value1" size="13" min="-2" max="2" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_Brightness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -293,7 +293,7 @@
 				<class id="TakeImage_Contrast_text" style="color:black;">Contrast</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Contrast_value1" size="13" min="-2" max="2" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_Contrast_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -305,7 +305,7 @@
 				<class id="TakeImage_Saturation_text" style="color:black;">Saturation</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Saturation_value1" size="13" min="-2" max="2" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_Saturation_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -317,7 +317,7 @@
 				<class id="TakeImage_Sharpness_text" style="color:black;">Sharpness</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Sharpness_value1" size="13" min="-4" max="3" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_Sharpness_value1" size="13" min="-4" max="3" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=-4)) && (!validity.rangeOverflow||(value=3)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -329,7 +329,7 @@
 				<class id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -341,7 +341,7 @@
 				<class id="TakeImage_ImageQuality_text" style="color:black;">Image Quality</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_ImageQuality_value1" size="13" min="8" max="63" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_ImageQuality_value1" size="13" min="8" max="63" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=8)) && (!validity.rangeOverflow||(value=63)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -353,7 +353,7 @@
 				<class id="TakeImage_ImageSize_text" style="color:black;">Image Size</class>
 			</td>
 			<td>
-				<select id="TakeImage_ImageSize_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_ImageSize_value1" onchange="cameraParameterChanged()">
 					<option value="VGA" selected>VGA</option>
 					<option value="QVGA" >QVGA</option>
 				</select>
@@ -366,7 +366,7 @@
 				<class id="TakeImage_Zoom_text" style="color:black;">Zoom</class>
 			</td>
 			<td>
-				<select id="TakeImage_Zoom_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_Zoom_value1" onchange="cameraParameterChanged()">
 					<option value="true">true</option>
 					<option value="false" selected>false</option>
 				</select>
@@ -379,7 +379,7 @@
 				<class id="TakeImage_ZoomMode_text" style="color:black;">Zoom Mode</class>
 			</td>
 			<td>
-				<select id="TakeImage_ZoomMode_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_ZoomMode_value1" onchange="cameraParameterChanged()">
 					<option value="1">1</option>
 					<option value="0" selected>0</option>
 				</select>
@@ -393,7 +393,7 @@
 				<class id="TakeImage_ZoomOffsetX_text" style="color:black;">Zoom Offset X</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_ZoomOffsetX_value1" size="13" min="0" step="any" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_ZoomOffsetX_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=0));">Pixel
 			</td>
 			<td>$TOOLTIP_TakeImage_ZoomOffsetX</td>
@@ -405,7 +405,7 @@
 				<class id="TakeImage_ZoomOffsetY_text" style="color:black;">Zoom Offset Y</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_ZoomOffsetY_value1" size="13" min="0" step="any" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_ZoomOffsetY_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=0));">Pixel
 			</td>
 			<td>$TOOLTIP_TakeImage_ZoomOffsetY</td>
@@ -416,7 +416,7 @@
 				<class id="TakeImage_Grayscale_text" style="color:black;">Grayscale</class>
 			</td>
 			<td>
-				<select id="TakeImage_Grayscale_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_Grayscale_value1" onchange="cameraParameterChanged()">
 					<option value="true">true</option>
 					<option value="false" selected>false</option>
 				</select>
@@ -429,7 +429,7 @@
 				<class id="TakeImage_Negative_text" style="color:black;">Negative</class>
 			</td>
 			<td>
-				<select id="TakeImage_Negative_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_Negative_value1" onchange="cameraParameterChanged()">
 					<option value="true">true</option>
 					<option value="false" selected>false</option>
 				</select>
@@ -442,7 +442,7 @@
 				<class id="TakeImage_Aec2_text" style="color:black;">Auto-exposure Control 2</class>
 			</td>
 			<td>
-				<select id="TakeImage_Aec2_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_Aec2_value1" onchange="cameraParameterChanged()">
 					<option value="true">true</option>
 					<option value="false" selected>false</option>
 				</select>
@@ -455,7 +455,7 @@
 				<class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_AutoExposureLevel_value1" size="13" min="-2" max="2" onchange="changeSettingValue()"
+				<input required type="number" id="TakeImage_AutoExposureLevel_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
@@ -467,7 +467,7 @@
 				<class id="TakeImage_FixedExposure_text" style="color:black;">Fixed Exposure</class>
 			</td>
 			<td>
-				<select id="TakeImage_FixedExposure_value1" onchange="changeSettingValue()">
+				<select id="TakeImage_FixedExposure_value1" onchange="cameraParameterChanged()">
 					<option value="true">true</option>
 					<option value="false" selected>false</option>
 				</select>
@@ -1802,7 +1802,7 @@ var canvas = document.getElementById('canvas'),
     NUMBERS;
 
 
-function changeSettingValue() {
+function cameraParameterChanged() {
     changeCamValue = 1;
 }
 	
