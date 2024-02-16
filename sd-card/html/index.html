@@ -24,7 +24,7 @@
                 'channelmode=no,directories=no,fullscreen=no,' +
                 'location=no,dependent=yes,menubar=no,resizable=no,scrollbars=no,' +
                 'status=no,toolbar=no,titlebar=no,' +
-                'left=10,top=250,width=640px,height=480px';
+                'left=10,top=260,width=640px,height=480px';
 
          function loadPage(page) {
             console.log("loadPage( " + page + " )");
@@ -88,21 +88,21 @@
   <ul>
     <li><a href="#" onclick="loadPage('overview.html?v=$COMMIT_HASH');">Overview</a></li>
     <li><a>Settings <i class="arrow down"></i></a>
-      <ul class="submenu">
-        <li><a href="#" onclick="loadPage('prevalue_set.html?v=$COMMIT_HASH');">Set "Previous Value"</a></li>
-        <li><a href="#" onclick="loadPage('edit_config_param.html?v=$COMMIT_HASH');">Configuration</a></li>
-        <li><a>Alignment <i class="arrow right"></i></a>
+      <ul class="submenu" style="width: 260px">
+        <li style="width: 260px"><a href="#" onclick="loadPage('prevalue_set.html?v=$COMMIT_HASH');">Set "Previous Value"</a></li>
+        <li style="width: 260px"><a>Reference <i class="arrow right"></i></a>
             <ul style="width: 350px">
                 <li style="width: 350px"><a href="#" onclick="loadPage('edit_reference.html?v=$COMMIT_HASH');">Reference Image and Camera Settings</a></li>
                 <li style="width: 350px"><a href="#" onclick="loadPage('edit_alignment.html?v=$COMMIT_HASH');">Alignment Markers</a></li>
             </ul>
         </li>
-        <li><a><strong>R</strong>egions <strong>O</strong>f <strong>I</strong>nterest <i class="arrow right"></i></a>
+        <li style="width: 260px"><a>Regions of Interest (ROIs)<i class="arrow right"></i></a>
             <ul>
                 <li><a href="#" onclick="loadPage('edit_digits.html?v=$COMMIT_HASH');">Digit ROI</a></li>
                 <li><a href="#" onclick="loadPage('edit_analog.html?v=$COMMIT_HASH');">Analog ROI</a></li>
             </ul>
         </li>
+        <li style="width: 260px"><a href="#" onclick="loadPage('edit_config.html?v=$COMMIT_HASH');">Configuration</a></li>
       </ul>
 
 
