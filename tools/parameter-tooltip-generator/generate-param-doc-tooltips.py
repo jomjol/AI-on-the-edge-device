@@ -8,8 +8,8 @@ import markdown
 
 parameterDocsFolder = "../../param-docs/parameter-pages"
 docsMainFolder = "../../sd-card/html"
-configPageTemplate = "edit_config_param_template.html"
-configPage = "edit_config_param.html"
+configPageTemplate = "edit_config_template.html"
+configPage = "edit_config.html"
 refImagePage = "edit_reference.html"
 
 htmlTooltipPrefix = """

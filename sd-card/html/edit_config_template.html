@@ -220,7 +220,7 @@
 					<label for="ExpertModus_enabled">Show Expert Parameters</label> 
 			</td>
 			<td>
-				<button style="display:none;" class="button" id="Edit_Config_Direct" onclick="editConfigDirect()">Edit Config file directly</button>
+				<button style="display:none;" class="button" id="Button_Edit_Config_Raw" onclick="editConfigRaw()">Edit Config file in raw mode</button>
 			</td>
 		</tr>
 
@@ -2508,11 +2508,11 @@ function UpdateExpertModus() {
         // _style = '';
         _style_pur = '';
         _hidden = false;
-        document.getElementById("Edit_Config_Direct").style.display = "";
+        document.getElementById("Button_Edit_Config_Raw").style.display = "";
         firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
     }
     else {
-        document.getElementById("Edit_Config_Direct").style.display = "none"; 
+        document.getElementById("Button_Edit_Config_Raw").style.display = "none"; 
     }
 
     const expert = document.querySelectorAll(".expert");
@@ -2568,9 +2568,9 @@ function doReboot() {
 }
 
 
-function editConfigDirect() {
-    if (confirm("Proceed to switch the view? Unsaved changes get lost")) {
-        var stringota = getDomainname() + "/edit_config.html?v=$COMMIT_HASH";
+function editConfigRaw() {
+    if (confirm("Proceed to switch to raw edit mode? Unsaved changes will get lost")) {
+        var stringota = getDomainname() + "/edit_config_raw.html?v=$COMMIT_HASH";
         window.location = stringota;
         window.location.href = stringota;
         window.location.assign(stringota);
