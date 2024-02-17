@@ -272,11 +272,11 @@
             <td>$TOOLTIP_TakeImage_Saturation</td>
         </tr>
         <tr class="expert">
+	    <td>
+                <label for="negative" id="labelnegative">Negative:</label></td>
             <td>
-                <label for="grayscale" id="labelgrayscale">Grayscale: <b>*)</b></label></td>
-            <td>
-                <input type="checkbox" id="grayscale" name="grayscale" value="0" onchange="cameraParameterChanged()"></td>
-                <td>$TOOLTIP_TakeImage_Grayscale</td>
+                <input type="checkbox" id="negative" name="negative" value="0" onchange="cameraParameterChangedDR()"></td>
+            <td>$TOOLTIP_TakeImage_Negative</td>
             <td>
                 <label for="aec2" id="labelaec2">Auto Exposure Control 2: <b>*)</b></label></td>
             <td>
@@ -285,10 +285,10 @@
         </tr>
         <tr class="expert">
             <td>
-                <label for="negative" id="labelnegative">Negative: <b>*)</b></label></td>
+                <label for="grayscale" id="labelgrayscale">Grayscale: <b>*)</b></label></td>
             <td>
-                <input type="checkbox" id="negative" name="negative" value="0" onchange="cameraParameterChangedDR()"></td>
-            <td>$TOOLTIP_TakeImage_Negative</td>
+                <input type="checkbox" id="grayscale" name="grayscale" value="0" onchange="cameraParameterChanged()"></td>
+                <td>$TOOLTIP_TakeImage_Grayscale</td>
             <td>
                 <class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level: <b>*)</b></class>
             </td>
