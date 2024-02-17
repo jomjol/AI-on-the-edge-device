@@ -1801,9 +1801,20 @@ var canvas = document.getElementById('canvas'),
     NUNBERSAkt = -1,
     NUMBERS;
 
-
+	
 function cameraParameterChanged() {
     changeCamValue = 1;
+
+    if (document.getElementById("TakeImage_Zoom_value1").value == "false") {
+        document.getElementById("TakeImage_ZoomMode_value1").disabled = true;
+        document.getElementById("TakeImage_ZoomOffsetX_value1").disabled = true;
+        document.getElementById("TakeImage_ZoomOffsetY_value1").disabled = true;		
+    }
+    else {
+        document.getElementById("TakeImage_ZoomMode_value1").disabled = false;
+        document.getElementById("TakeImage_ZoomOffsetX_value1").disabled = false;
+        document.getElementById("TakeImage_ZoomOffsetY_value1").disabled = false;	
+    }	
 }
 	
 
@@ -1823,6 +1834,17 @@ function LoadConfigNeu() {
     UpdateInputIndividual(sel);
     UpdateExpertModus();
     document.getElementById("divall").style.display = ''; 
+
+    if (document.getElementById("TakeImage_Zoom_value1").value == "false") {
+        document.getElementById("TakeImage_ZoomMode_value1").disabled = true;
+        document.getElementById("TakeImage_ZoomOffsetX_value1").disabled = true;
+        document.getElementById("TakeImage_ZoomOffsetY_value1").disabled = true;		
+    }
+    else {
+        document.getElementById("TakeImage_ZoomMode_value1").disabled = false;
+        document.getElementById("TakeImage_ZoomOffsetX_value1").disabled = false;
+        document.getElementById("TakeImage_ZoomOffsetY_value1").disabled = false;	
+    }	
 }
 
 
@@ -2551,11 +2573,54 @@ function saveTextAsFile() {
         firework.launch('Configuration saved. It will get applied after the next reboot!', 'success', 5000);
 
         if (changeCamValue == 1) {
+            camSettingsSet(param);
             firework.launch('You have changed the camera settings, so creating a new reference image and updating the alignment marks is mandatory!', 'success', 10000);		
         }	    
     }
 }
 
+
+function camSettingsSet(_param) {
+    var domainname = getDomainname();
+    var xhttp = new XMLHttpRequest();
+			
+    var _grayscale = _param["TakeImage"]["Grayscale"].value1;
+    var _negative = _param["TakeImage"]["Negative"].value1;
+    var _aec2 = _param["TakeImage"]["Aec2"].value1;
+    var _FixedExposure = _param["TakeImage"]["FixedExposure"].value1;
+    var _zoom = _param["TakeImage"]["Zoom"].value1;
+
+    var _zm = _param["TakeImage"]["ZoomMode"].value1;
+    var _x = _param["TakeImage"]["ZoomOffsetX"].value1;
+    var _y = _param["TakeImage"]["ZoomOffsetY"].value1;
+    var _intensity = _param["TakeImage"]["LEDIntensity"].value1;
+    var _brightness = _param["TakeImage"]["Brightness"].value1;
+    var _contrast = _param["TakeImage"]["Contrast"].value1;
+    var _saturation = _param["TakeImage"]["Saturation"].value1;
+    var _sharpness = _param["TakeImage"]["Sharpness"].value1;
+    var _ae = _param["TakeImage"]["AutoExposureLevel"].value1;
+
+    var url = domainname + "/editflow?task=cam_settings";
+    url = url + "&bri=" + _brightness + "&con=" + _contrast + "&sat=" + _saturation + "&sh=" + _sharpness;
+    url = url + "&int=" + _intensity + "&gs=" + _grayscale + "&ne=" + _negative + "&z=" + _zoom;
+			
+    if (_zoom != '0') {
+        url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
+    }
+    else {
+        url = url + "&zm=0" + "&x=0" + "&y=0";
+    }	
+				
+    url = url + "&ae=" + _ae + "&a2=" + _aec2;
+			
+    if (domainname.length > 0){
+        url = url + "&host=" + domainname;
+    }
+
+    xhttp.open("GET", url, true);
+    xhttp.send();			
+}
+	
 
 function doReboot() {
     if (confirm("Are you sure you want to reboot?")) {
