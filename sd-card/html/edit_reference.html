@@ -363,7 +363,18 @@
         }
 
         function cameraParameterChanged() {
-            document.getElementById("savereferenceimage").disabled = true;		
+            document.getElementById("savereferenceimage").disabled = true;
+
+            if(document.getElementById("zoom").checked) {
+                document.getElementById("zoommode").disabled = false;
+                document.getElementById("zoomoffsetx").disabled = false;
+                document.getElementById("zoomoffsety").disabled = false;
+            }
+            else {
+                document.getElementById("zoommode").disabled = true;
+                document.getElementById("zoomoffsetx").disabled = true;
+                document.getElementById("zoomoffsety").disabled = true;			
+            }		
         }
 
         function cameraParameterChangedDR() {
@@ -380,10 +391,20 @@
             document.getElementById("negative").disabled = false;
             document.getElementById("aec2").disabled = false;
             document.getElementById("FixedExposure").disabled = false;
+		
             document.getElementById("zoom").disabled = false;
-            document.getElementById("zoommode").disabled = false;
-            document.getElementById("zoomoffsetx").disabled = false;
-            document.getElementById("zoomoffsety").disabled = false;
+		
+            if(document.getElementById("zoom").checked) {
+                document.getElementById("zoommode").disabled = false;
+                document.getElementById("zoomoffsetx").disabled = false;
+                document.getElementById("zoomoffsety").disabled = false;
+            }
+            else {
+                document.getElementById("zoommode").disabled = true;
+                document.getElementById("zoomoffsetx").disabled = true;
+                document.getElementById("zoomoffsety").disabled = true;			
+            }
+		
             document.getElementById("TakeImage_AutoExposureLevel_value1").disabled = false;
             document.getElementById("finerotate").disabled = false;
             document.getElementById("prerotateangle").disabled = false;
@@ -493,6 +514,9 @@
                 if (_zoom != '0') {
                     url = url + "&zm=" + _zm + "&x=" + _x + "&y=" + _y;
                 }
+                else {
+                    url = url + "&zm=0" + "&x=0" + "&y=0";
+                }		    
                     
                 url = url + "&ae=" + _ae + "&a2=" + _aec2;		
                 
