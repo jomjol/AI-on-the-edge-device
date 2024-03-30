@@ -1,3 +1,15 @@
+## [update] - 2024-03-30
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
+
+#### Core Changes
+
+- New tflite-Model for Analog (v13.0.0)
+
+#### Bug Fixes
+
+- tbd
+
 ## [15.7.0] - 2024-02-17
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
