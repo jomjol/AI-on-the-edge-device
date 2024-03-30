@@ -5,6 +5,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 #### Core Changes
 
 - New tflite-Model for Analog (v13.0.0)
+- New tflite-Model for Digital Hybrid (v7.0.0)
 
 #### Bug Fixes
 
