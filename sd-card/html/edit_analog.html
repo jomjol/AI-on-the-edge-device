@@ -125,7 +125,6 @@
 
 
 <div id="div1">
-
     <table>
         <colgroup>
             <col span="1" style="width: 22%;">
@@ -133,9 +132,11 @@
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td colspan="4" style="padding: 0px"><class id="Numbers_text" style="color:black;">Number Sequence:</class></td>
         </tr>
+		
         <tr>
             <td>
                 <select id="Numbers_value1" onchange="numberChanged()">
@@ -156,15 +157,18 @@
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td style="padding: 0px">ROI:</td>
         </tr>
+		
         <tr>
             <td><select id="index" name="index" onchange="ChangeSelection()" tabindex=1></select></td>
             <td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI"></td>
             <td><input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename ROI"></td>	  
             <td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
         </tr>
+		
         <tr>       
             <td class="multiplier">Multiplier: <output type="text" id="multiplier" name="multiplier"></output><br>
                 (only based on order)
@@ -183,14 +187,17 @@
             <col span="1" style="width: 18%;">
             <col span="1" style="width: 64%;">
         </colgroup>
+		
         <tr>
             <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
             <td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
         </tr>
+		
         <tr>
             <td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
             <td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
         </tr>
+		
         <tr>
             <td colspan="3"><input type="checkbox" id="CCW" name="CCW" value="0" onclick="changeCCW()" unchecked tabindex=8><label for="CCW">Counter clockwise rotation (CCW)</label></td>
         </tr>		
@@ -202,7 +209,6 @@ The following settings are only used for easier setup, they are <b>not</b> persi
 <input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=9><label for="showall"> Show all ROIs</label><br>
 <input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label><br>
 <input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><br>
-
 <hr>
 
     <table>
@@ -212,20 +218,23 @@ The following settings are only used for easier setup, they are <b>not</b> persi
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td colspan="3" style="vertical-align: bottom;"><b>Reference Image:</b></td>
-            <!---<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot device</button></td>-->
-            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=10></td>
+            <td>
+				<input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=10>
+			</td>
         </tr>
+		
         <tr>
             <td colspan="4"><canvas id="canvas" crossorigin></canvas></td>
         </tr>
     </table>
 
-
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
     <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+	<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     
 <script language="JavaScript">
     var canvas = document.getElementById('canvas'),
@@ -595,7 +604,7 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         if(window.location.hash) {
             var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
             if(hash == 'description') {
-                document.getElementById("desc_details").open = true;
+                document.getElementById("desc_details").open = false;
             }
         }
     }
@@ -603,18 +612,26 @@ The following settings are only used for easier setup, they are <b>not</b> persi
     function init() {
         openDescription();
         domainname = getDomainname();
-        canvas.addEventListener('mousedown', mouseDown, false);
-        canvas.addEventListener('mouseup', mouseUp, false);
-        canvas.addEventListener('mousemove', mouseMove, false);
-        loadCanvas(domainname + "/fileserver/config/reference.jpg");
-        loadConfig(domainname); 
+		
+		if (!loadConfig(domainname)) {
+			firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+			return;
+		}
+	
         ParseConfig();
         param = getConfigParameters(); 
         cofcat = getConfigCategory();
+		
+        canvas.addEventListener('mousedown', mouseDown, false);
+        canvas.addEventListener('mouseup', mouseUp, false);
+        canvas.addEventListener('mousemove', mouseMove, false);
+        loadCanvas(domainname + "/fileserver/config/reference.jpg");		
+		
         UpdateNUMBERS();
 
         /* Check if the ROIs have same dy and dx. If so, tick the sync checkbox */
         var all_dx_dy_Identical = true;
+		
         if (ROIInfo.length > 1) {
             for (var i = 1; i < (ROIInfo.length); ++i) { // 2nd .. last ROI
                 if (parseInt(ROIInfo[i].dx) != parseInt(ROIInfo[0].dx) || parseInt(ROIInfo[i].dy) != parseInt(ROIInfo[0].dy)) { 
