@@ -113,49 +113,56 @@
     <hr />
 
 	<table>
-    <colgroup>
-        <col span="1" style="width: 33.3%;">
-        <col span="1" style="width: 33.3%;">
-        <col span="1" style="width: 33.3%;">
-    </colgroup>
-	  <tr>
-		<td>Marker: 
-			<select id="index" name="reference" onchange="ChangeSelection()">
-			  <option value="0" selected>Marker 1</option>
-			  <option value="1" >Marker 2</option>
-			</select>
-		</td>
-		<td colspan="2" style="padding-left: 22px; color: grey;">Filename: <output type="text" name="name" id="name" onchange="namechanged()"></td>
-	  </tr>
-	  <tr>
-		<td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
-		<td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
-		<td rowspan="2" style="padding-top: 10px;"><input class="button" type="button" value="Update Marker" onclick="CutOutReference()"></td>	
-	  </tr>
-	  <tr>
-		<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>
-		<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
-	  </tr>
-	  <tr>
-		<td style="vertical-align: bottom;">Selected Image Area:</td>
-		<td style="vertical-align: bottom;">Resulting Marker:</td>
-        <td><input class="button" type="button" id="enhancecontrast" value="Enhance Image Contrast" onclick="EnhanceContrast()"></td>	
-	  </tr> 
-	  <tr>
-		<td style="height:70px; vertical-align: top;"><img id="img_ref_org" src = ""></td>    <!--/img_tmp/ref_zw_org.jpg-->
-		<td style="height:70px; vertical-align: top;"><img id="img_ref" src = ""></td>        <!--/img_tmp/ref_zw.jpg-->
-	  </tr> 
-        <tr>
-            <td style="vertical-align:bottom;"><b>Reference Image:</b></td>
-            <td></td>
-            <td><input style="font-weight:bold;" class="button" type="submit" name="saveroi" id="savemarker" onclick="SaveToConfig()" value="Save New Marker">
-            </td>
-        </tr> 
-        <tr>
-            <td colspan="3"><canvas id="canvas" crossorigin></canvas></td>
-        </tr>
-    </table>
-
+		<colgroup>
+			<col span="1" style="width: 33.3%;">
+			<col span="1" style="width: 33.3%;">
+			<col span="1" style="width: 33.3%;">
+		</colgroup>
+	
+		<tr>
+			<td>Marker: 
+				<select id="index" name="reference" onchange="ChangeSelection()">
+					<option value="0" selected>Marker 1</option>
+					<option value="1" >Marker 2</option>
+				</select>
+			</td>
+			<td colspan="2" style="padding-left: 22px; color: grey;">Filename: <output type="text" name="name" id="name" onchange="namechanged()"></td>
+		</tr>
+	  
+		<tr>
+			<td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
+			<td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
+			<td rowspan="2" style="padding-top: 10px;"><input class="button" type="button" value="Update Marker" onclick="CutOutReference()"></td>	
+		</tr>
+	  
+		<tr>
+			<td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>
+			<td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
+		</tr>
+	  
+		<tr>
+			<td style="vertical-align: bottom;">Selected Image Area:</td>
+			<td style="vertical-align: bottom;">Resulting Marker:</td>
+			<td><input class="button" type="button" id="enhancecontrast" value="Enhance Image Contrast" onclick="EnhanceContrast()"></td>	
+		</tr> 
+	  
+		<tr>
+			<td style="height:70px; vertical-align: top;"><img id="img_ref_org" src = ""></td>    <!--/img_tmp/ref_zw_org.jpg-->
+			<td style="height:70px; vertical-align: top;"><img id="img_ref" src = ""></td>        <!--/img_tmp/ref_zw.jpg-->
+		</tr>
+	  
+		<tr>
+			<td style="vertical-align:bottom;"><b>Reference Image:</b></td>
+			<td></td>
+			<td>
+				<input style="font-weight:bold;" class="button" type="submit" name="saveroi" id="savemarker" onclick="SaveToConfig()" value="Save New Marker">
+			</td>
+		</tr>
+	  
+		<tr>
+			<td colspan="3"><canvas id="canvas" crossorigin></canvas></td>
+		</tr>
+	</table>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
@@ -173,6 +180,7 @@ var canvas = document.getElementById('canvas'),
     domainname = getDomainname(),
 	neueref1,
 	neueref2,
+	cofcat,	
     param;
     
 function doReboot() {
@@ -290,8 +298,7 @@ function UpdateReference(){
         draw();
     }
 
-    _filenameurl = refInfo[aktindex]["name"].replace("/config/", "/img_tmp/");
-
+    var _filenameurl = refInfo[aktindex]["name"].replace("/config/", "/img_tmp/");
     var url = domainname + "/fileserver" + _filenameurl + "?"  + Date.now();
     document.getElementById("img_ref").src = url;
 
@@ -352,7 +359,7 @@ function openDescription() {
     if(window.location.hash) {
         var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
         if(hash == 'description') {
-            document.getElementById("desc_details").open = true;
+            document.getElementById("desc_details").open = false;
 		}
     }
 }
@@ -368,7 +375,7 @@ function LoadReference(){
         draw();
     }
 
-    _filenameurl = refInfo[aktindex]["name"];
+    var _filenameurl = refInfo[aktindex]["name"];
     var url = domainname + "/fileserver" + _filenameurl + "?"  + Date.now();
     document.getElementById("img_ref").src = url;
 	
@@ -387,17 +394,23 @@ function LoadReference(){
 function init() {
     openDescription();
     domainname = getDomainname();
-    loadConfig(domainname); 
+	
+    if (!loadConfig(domainname)) {
+		firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+		return;
+    }
+
     ParseConfig();
     param = getConfigParameters();
+	cofcat = getConfigCategory();
 
     document.getElementById("savemarker").disabled = true;
     document.getElementById("enhancecontrast").disabled = true;
-
+	
     canvas.addEventListener('mousedown', mouseDown, false);
     canvas.addEventListener('mouseup', mouseUp, false);
     canvas.addEventListener('mousemove', mouseMove, false);
-    loadCanvas(domainname + "/fileserver/config/reference.jpg");
+    loadCanvas(domainname + "/fileserver/config/reference.jpg");	
 
     //CopyReferenceToImgTmp(domainname);
     refInfo = GetReferencesInfo();
@@ -405,6 +418,7 @@ function init() {
     //UpdateReference();
 	LoadReference();
     drawImage();
+	draw();
 }
 
 function drawImage(){

@@ -18,50 +18,6 @@ CRotateImage::CRotateImage(std::string _name, CImageBasis *_org, CImageBasis *_t
     doflip = _flip;
 }
 
-
-void CRotateImage::Mirror(){
-    int memsize = width * height * channels;
-    uint8_t* odata;
-    if (ImageTMP)
-    {
-        odata = ImageTMP->RGBImageLock();
-    }
-    else
-    {
-        odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
-    }
-
-
-    int x_source, y_source;
-    stbi_uc* p_target;
-    stbi_uc* p_source;
-
-    RGBImageLock();
-
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
-        {
-            p_target = odata + (channels * (y * width + x));
-
-            x_source = width - x;
-            y_source = y;
-
-            p_source = rgb_image + (channels * (y_source * width + x_source));
-            for (int _channels = 0; _channels < channels; ++_channels)
-                p_target[_channels] = p_source[_channels];
-        }
-
-    //    memcpy(rgb_image, odata, memsize);
-    memCopy(odata, rgb_image, memsize);
-    if (!ImageTMP)
-        free_psram_heap(std::string(TAG) + "->odata", odata);
-
-    if (ImageTMP)
-        ImageTMP->RGBImageRelease();
-
-    RGBImageRelease();
-}
-
 void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
 {
     int org_width, org_height;
