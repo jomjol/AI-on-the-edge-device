@@ -11,7 +11,7 @@
         p {font-size: 1em;}
 
         input[type=number] {
-            width: 40px;
+            width: 60px;
             margin-right: 10px;
             padding: 3px 5px;
             display: inline-block;
@@ -123,17 +123,25 @@
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td colspan="4" style="padding: 0px"><class id="Numbers_text" style="color:black;">Number Sequence:</class></td>
         </tr>
+		
         <tr>
             <td>
                 <select id="Numbers_value1" onchange="numberChanged()">
                 </select>
             </td>
-            <td><input class="button" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New Sequence"></td>
-            <td><input class="button" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename Sequence"></td> 
-            <td><input class="button" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Delete Sequence"></td>
+            <td>
+				<input class="button" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New Sequence">
+			</td>
+            <td>
+				<input class="button" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename Sequence">
+			</td> 
+            <td>
+				<input class="button" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Delete Sequence">
+			</td>
         </tr>
     </table>
 
@@ -146,15 +154,26 @@
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td style="padding: 0px">ROI:</td>
         </tr>
+		
         <tr>
-            <td><select id="index" name="index" onchange="ChangeSelection()" tabindex=1></select></td>
-            <td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI"></td>
-            <td><input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename ROI"></td>	  
-            <td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
+            <td>
+				<select id="index" name="index" onchange="ChangeSelection()" tabindex=1></select>
+			</td>
+            <td>
+				<input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI">
+			</td>
+            <td>
+				<input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename ROI">
+			</td>	  
+            <td>
+				<input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI">
+			</td>
         </tr>
+		
         <tr>       
             <td class="multiplier">Multiplier: <output type="text" id="multiplier" name="multiplier"></output><br>
                 (only based on order)
@@ -162,8 +181,12 @@
             <td class="multiplier">Multiplier: <output type="text" id="multiplier_decshift" name="multiplier_decshift"></output><br>
                 (order + decimal shift: <output type="text" id="decimalShift" name="decimalShift"></output>)
             </td>
-            <td><input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="Move ROI Higher"></td> 
-            <td><input class="button" type="submit" id="moveNext" onclick="moveNext()" value="Move ROI Lower"></td>
+            <td>
+				<input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="Move ROI Higher">
+			</td> 
+            <td>
+				<input class="button" type="submit" id="moveNext" onclick="moveNext()" value="Move ROI Lower">
+			</td>
         </tr>
     </table>
 
@@ -173,10 +196,12 @@
             <col span="1" style="width: 18%;">
             <col span="1" style="width: 64%;">
         </colgroup>
+		
         <tr>
             <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
             <td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-            </tr>
+        </tr>
+		
         <tr>
             <td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
             <td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
@@ -186,11 +211,11 @@
 
 
 <hr>
-The following settings are only used for easier setup, they are <b>not</b> persisted on the device:<br>
-<input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=10><label for="showall">Show all ROIs</label><br>
-<input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label><br>
-<input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><br>
-<input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
+	The following settings are only used for easier setup, they are <b>not</b> persisted on the device:<br>
+	<input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=10><label for="showall">Show all ROIs</label><br>
+	<input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label><br>
+	<input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><br>
+	<input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
     <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" maxlength="2" max=99 step=1 onchange="valuemanualchangedspace()" tabindex=9> between all ROIs</label><br>
 <hr>
 
@@ -201,10 +226,14 @@ The following settings are only used for easier setup, they are <b>not</b> persi
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td colspan="3" style="vertical-align: bottom;"><b>Reference Image:</b></td>
-            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=11></td>
-        </tr> 
+            <td>
+				<input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=11>
+			</td>
+        </tr>
+		
         <tr>
             <td colspan="4"><canvas id="canvas" crossorigin></canvas></td>
         </tr>
@@ -491,6 +520,7 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         }
 
         var _index = document.getElementById("index");
+		
         while (_index.length){
             _index.remove(0);
         }
@@ -582,7 +612,7 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         if(window.location.hash) {
             var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
             if(hash == 'description') {
-                document.getElementById("desc_details").open = true;
+                document.getElementById("desc_details").open = false;
             }
         }
     }
@@ -590,14 +620,21 @@ The following settings are only used for easier setup, they are <b>not</b> persi
     function init() {
         openDescription();
         domainname = getDomainname();
-        canvas.addEventListener('mousedown', mouseDown, false);
-        canvas.addEventListener('mouseup', mouseUp, false);
-        canvas.addEventListener('mousemove', mouseMove, false);
-        loadCanvas(domainname + "/fileserver/config/reference.jpg");
-        loadConfig(domainname); 
+		
+		if (!loadConfig(domainname)) {
+			firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+			return;
+		}
+		
         ParseConfig();
         param = getConfigParameters(); 
         cofcat = getConfigCategory();
+		
+        canvas.addEventListener('mousedown', mouseDown, false);
+        canvas.addEventListener('mouseup', mouseUp, false);
+        canvas.addEventListener('mousemove', mouseMove, false);
+        loadCanvas(domainname + "/fileserver/config/reference.jpg");		
+		
         UpdateNUMBERS();
 
         /* Check if the ROIs are equidistant. Only if not, untick the checkbox */
@@ -717,6 +754,7 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         }
 
         erg = CreateNUMBER(_numbernew);
+		
         if (erg != "") {
             firework.launch(erg, 'danger', 30000);
         }
@@ -844,14 +882,17 @@ The following settings are only used for easier setup, they are <b>not</b> persi
 
     function mouseUp() {
         drag = false;
+		
         if (rect.w < 0) {
             rect.w = -rect.w
             rect.startX-=rect.w
         }
+		
         if (rect.h < 0) {
             rect.h = -rect.h
             rect.startY-=rect.h
         }
+		
         document.getElementById("refdx").value = rect.w;
         document.getElementById("refdy").value = rect.h;
         document.getElementById("refx").value = rect.startX;
@@ -876,10 +917,12 @@ The following settings are only used for easier setup, they are <b>not</b> persi
             }
             document.getElementById("refdx").value = rect.w;
             document.getElementById("refdy").value = rect.h;
+			
             draw();
         }
         else {
             draw();
+			
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
 
@@ -915,10 +958,10 @@ The following settings are only used for easier setup, they are <b>not</b> persi
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
 
-            draw();   
             if (lockSpaceEquidistant) {
                 makeX_SpaceEquidistant();
-            }   
+            }
+			
             draw();      
         }
         document.getElementById("saveroi").disabled = false;
@@ -990,11 +1033,13 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         _roialt= sel.options[sel.selectedIndex].text;
 
         var _roinew = prompt("Please enter a new name for the selected ROI", _roialt);
+		
         if (_roinew === null) {
             return; //break out of the function early because prompt was aborted
         }
 
         erg = RenameROI(_number, "digit", _roialt, _roinew);
+		
         if (erg != "") {
             firework.launch(erg, 'danger', 30000);
         }
