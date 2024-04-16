@@ -2018,22 +2018,22 @@ function cameraParameterChanged() {
     changeCamValue = 1;
 
     if(!document.getElementById("TakeImage_CamZoom_value1").selectedIndex) {
-		// EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
-		EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetX", false);
-		EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetY", false);
-		EnDisableItem(true, param, category, "TakeImage", "CamZoomSize", false);				
+        // EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomSize", false);				
     }
     else {
-		EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
-		EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetY", false);
-		EnDisableItem(false, param, category, "TakeImage", "CamZoomSize", false);				
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomSize", false);				
     }
 
-    if(!document.getElementById("TakeImage_CamAutoSharpness_value1").selectedIndex) {
-		EnDisableItem(true, param, category, "TakeImage", "CamSharpness", false);				
+    if(document.getElementById("TakeImage_CamAutoSharpness_value1").selectedIndex) {
+        EnDisableItem(true, param, category, "TakeImage", "CamSharpness", false);				
     }
     else {
-		EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
+        EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
     }
 }
 
@@ -2053,26 +2053,26 @@ function LoadConfigNeu() {
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
     UpdateExpertModus();
-	UpdateTooltipModus();	
+    UpdateTooltipModus();	
     document.getElementById("divall").style.display = ''; 
 
     if(!document.getElementById("TakeImage_CamZoom_value1").selectedIndex) {
-		// EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
-		EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetX", false);
-		EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetY", false);
-		EnDisableItem(true, param, category, "TakeImage", "CamZoomSize", false);				
+        // EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomSize", false);				
     }
     else {
-		EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
-		EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetY", false);
-		EnDisableItem(false, param, category, "TakeImage", "CamZoomSize", false);				
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomSize", false);				
     }
 
-    if(!document.getElementById("TakeImage_CamAutoSharpness_value1").selectedIndex) {
-		EnDisableItem(true, param, category, "TakeImage", "CamSharpness", false);				
+    if(document.getElementById("TakeImage_CamAutoSharpness_value1").selectedIndex) {
+        EnDisableItem(true, param, category, "TakeImage", "CamSharpness", false);				
     }
     else {
-		EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
+        EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
     }	
 }
 
@@ -2670,19 +2670,11 @@ function camSettingsSet(){
         _zoom_temp = '0';
     }
 	
-    var _zmode_temp = document.getElementById("TakeImage_CamZoomMode_value1").selectedIndex;
-    if (_zmode_temp == '0') {
-        _zmode_temp = '1';
-    }
-    else {
-        _zmode_temp = '0';
-    }
-	
     var _zoomx_temp = document.getElementById("TakeImage_CamZoomOffsetX_value1").value;
     var _zoomy_temp = document.getElementById("TakeImage_CamZoomOffsetY_value1").value;
     var _zooms_temp = document.getElementById("TakeImage_CamZoomSize_value1").value;	
 	
-	// bei einmal Alles senden kommt es zu problemen!!!!!!!!!!!!!!!!!!!!
+    // bei einmal Alles senden kommt es zu problemen!!!!!!!!!!!!!!!!!!!!
     var url_1 = domainname + "/editflow?task=cam_settings";
     url_1 = url_1 + "&waitb=" + _waitb_temp + "&qual=" + _qual_temp;
     url_1 = url_1 + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
@@ -2696,7 +2688,7 @@ function camSettingsSet(){
 
     if (_zoom_temp != '0') {
         url_2 = url_2 + "&zoom=" + _zoom_temp + "&zooms=" + _zooms_temp;
-		url_2 = url_2 + "&zoomx=" + _zoomx_temp + "&zoomy=" + _zoomy_temp;
+        url_2 = url_2 + "&zoomx=" + _zoomx_temp + "&zoomy=" + _zoomy_temp;
     }
     else {
         url_2 = url_2 + "&zoom=0" + "&zooms=0" + "&zoomx=0" + "&zoomy=0";
@@ -2719,7 +2711,7 @@ function camSettingsSet(){
             var xhttp2 = new XMLHttpRequest();
 			
             if (durchlaufe > 10) {
-				document.getElementById("overlay").style.display = "none";
+                document.getElementById("overlay").style.display = "none";
                 firework.launch('Save Cam Settings aborted, timeout!', 'success', 5000);
                 return;
             }			
@@ -2732,13 +2724,13 @@ function camSettingsSet(){
             } catch (error){}				
             
             if ((xhttp1.responseText == "CamSettingsSet") && (xhttp2.responseText == "CamSettingsSet")) {
-				document.getElementById("overlay").style.display = "none";
+                document.getElementById("overlay").style.display = "none";
                 return;
             }
             else {
                 // Get status
                 var _xhttp = new XMLHttpRequest();
-				durchlaufe = durchlaufe + 1;				
+                durchlaufe = durchlaufe + 1;				
 				
                 try {
                     _xhttp.open("GET", domainname + "/statusflow", false);
