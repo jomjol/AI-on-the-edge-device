@@ -833,6 +833,19 @@
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Post-Processing</h4></td>
 		</tr>
 
+		<tr>
+			<td class="indent1">
+				<label><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
+			</td>
+			<td>
+				<select id="PostProcessing_PreValueUse_value1">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_PostProcessing_PreValueUse</td>
+		</tr>
+		
 		<tr class="expert" unused_id="ex11">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
@@ -882,23 +895,10 @@
 
 		<tr>
 			<td class="indent2">
-				<label><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
+				<label><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rate</class></label>
 			</td>
 			<td>
-				<select id="PostProcessing_PreValueUse_value1">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_PreValueUse</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<label><class id="PostProcessing_AllowNegativeRate_text" style="color:black;">Allow Negative Rate</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_AllowNegativeRate_value1">
+				<select id="PostProcessing_AllowNegativeRates_value1">
 					<option value="true">enable</option>
 					<option value="false" selected>disable</option>
 				</select>
@@ -982,8 +982,8 @@
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreLeadingNaN</td>
-		</tr>
-		
+		</tr>	
+		<!-------------
 		<tr>
 			<td class="indent2">
 				<label><class id="PostProcessing_IgnoreAllNaN_text" style="color:black;">Ignore All NaNs</class></label>
@@ -996,7 +996,7 @@
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreAllNaN</td>
 		</tr>		
-
+		------------------>
 
 		<!------------- MQTT ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -1634,8 +1634,8 @@
 					<option value="input-pullup">input pullup</option>
 					<option value="input-pulldown">input pulldown</option>
 					<option value="output">output</option>
-					<option value="output-pwm">output-pwm</option>
-					<option value="external-flash-pwm">external-flash-pwm</option>					
+					<!-- <option value="output-pwm">output-pwm</option> -->
+					<!-- <option value="external-flash-pwm">external-flash-pwm</option> -->				
 					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
 				</select>
 			</td>
@@ -2118,15 +2118,15 @@ function InitIndivParameter() {
 
 function UpdateInputIndividual(sel) {
     if (NUNBERSAkt != -1) {
-        ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
+        // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
-		ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
-        ReadParameter(param, "PostProcessing", "AllowNegativeRate", false, NUNBERSAkt);
+        // ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
@@ -2135,15 +2135,15 @@ function UpdateInputIndividual(sel) {
 
     // var sel = document.getElementById("Numbers_value1");
     NUNBERSAkt = sel.selectedIndex;
-	WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
+    // WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
-	WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
-    WriteParameter(param, category, "PostProcessing", "AllowNegativeRate", false, NUNBERSAkt);
+    // WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
@@ -2216,15 +2216,10 @@ function UpdateInput() {
     WriteParameter(param, category, "Analog", "ROIImagesLocation", true);		
     WriteParameter(param, category, "Analog", "ROIImagesRetention", true);		
     
-    // WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
+    WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
     WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
     WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
     WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
-	
-    // WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false);
-    // WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false);
-	// WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false);
-    // WriteParameter(param, category, "PostProcessing", "AllowNegativeRate", false);	
 
     WriteParameter(param, category, "MQTT", "Uri", true);	
     WriteParameter(param, category, "MQTT", "MainTopic", true);	
@@ -2382,15 +2377,10 @@ function ReadParameterAll() {
     ReadParameter(param, "Analog", "ROIImagesLocation", true);
     ReadParameter(param, "Analog", "ROIImagesRetention", true);
 
-    // ReadParameter(param, "PostProcessing", "PreValueUse", false);
+    ReadParameter(param, "PostProcessing", "PreValueUse", false);
     ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);
     ReadParameter(param, "PostProcessing", "ErrorMessage", false);
-    ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);
-	
-    // ReadParameter(param, "PostProcessing", "ExtendedResolution", false);
-    // ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false);
-	// ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false);
-    // ReadParameter(param, "PostProcessing", "AllowNegativeRate", false);		
+    ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);	
 
     ReadParameter(param, "MQTT", "Uri", true);
     ReadParameter(param, "MQTT", "MainTopic", true);
