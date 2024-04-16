@@ -173,18 +173,15 @@ function ParseConfig() {
     param[catname] = new Object();
     ParamAddValue(param, catname, "DecimalShift", 1, true);
     ParamAddValue(param, catname, "AnalogDigitalTransitionStart", 1, true);
-    ParamAddValue(param, catname, "PreValueUse", 1, true, "true");
+    // ParamAddValue(param, catname, "PreValueUse", 1, true, "true");
+    ParamAddValue(param, catname, "PreValueUse");
     ParamAddValue(param, catname, "PreValueAgeStartup");
-	ParamAddValue(param, catname, "AllowNegativeRate", 1, true, "false");
-    // ParamAddValue(param, catname, "AllowNegativeRate");
+    ParamAddValue(param, catname, "AllowNegativeRates", 1, true, "false");
     ParamAddValue(param, catname, "MaxRateValue", 1, true);
     ParamAddValue(param, catname, "MaxRateType", 1, true);
-	ParamAddValue(param, catname, "ExtendedResolution", 1, true, "false");
-    // ParamAddValue(param, catname, "ExtendedResolution");
-	ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true, "false");
-    // ParamAddValue(param, catname, "IgnoreLeadingNaN");
-	ParamAddValue(param, catname, "IgnoreAllNaN", 1, true, "false");
-    // ParamAddValue(param, catname, "IgnoreAllNaN");
+    ParamAddValue(param, catname, "ExtendedResolution", 1, true, "false");
+    ParamAddValue(param, catname, "IgnoreLeadingNaN", 1, true, "false");
+    // ParamAddValue(param, catname, "IgnoreAllNaN", 1, true, "false");
     ParamAddValue(param, catname, "ErrorMessage");
     ParamAddValue(param, catname, "CheckDigitIncreaseConsistency");
 
