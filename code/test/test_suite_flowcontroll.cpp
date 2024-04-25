@@ -140,6 +140,8 @@ void task_UnityTesting(void *pvParameter)
         RUN_TEST(test_doFlowPP4);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP_rainman110);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110_transition);
     UNITY_END();
 
     while(1);

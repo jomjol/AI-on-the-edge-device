@@ -584,3 +584,52 @@ void test_doFlowPP_rainman110() {
                                         Digital100, false, false, 0).c_str());
     delete undertestPost;
 }
+
+
+void test_doFlowPP_rainman110_transition() {
+
+   // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    std::vector<float> digits = {4.0, 1.0, 7.9};  
+    std::vector<float> analogs = {1.4, 5.8, 7.7, 9.0};
+    
+    UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    std::string result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.1579", result.c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    digits = {4.0, 1.0, 7.9};  
+    analogs = {3.4, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.3579", result.c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    digits = {4.0, 1.0, 8.5};  
+    analogs = {3.7, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.3579", result.c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    digits = {4.0, 1.0, 8.9};  
+    analogs = {4.0, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.4579", result.c_str());
+    delete undertestPost;
+
+}
