@@ -161,7 +161,7 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         return result;
     }
 
-    if ((number_of_predecessors >= Digital_Transition_Area_Predecessor ) && (number_of_predecessors <= (10.0 - Digital_Transition_Area_Predecessor)))
+    if ((number_of_predecessors > Digital_Transition_Area_Predecessor ) && (number_of_predecessors < (10.0 - Digital_Transition_Area_Predecessor)))
     {
         // no digit change, because predecessor is far enough away (0+/-DigitalTransitionRangePredecessor) --> number is rounded
         if ((result_after_decimal_point <= DigitalBand) || (result_after_decimal_point >= (10-DigitalBand)))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
