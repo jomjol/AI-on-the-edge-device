@@ -310,6 +310,7 @@
 			xhttp.send();		
 		}
 
+		/* 
 		function setImageMaxWidth() {
 			loadConfig(domainname); 
 			ParseConfig();
@@ -322,10 +323,10 @@
 				document.getElementById("img").style.maxWidth = "640px";
 			}
 		}
-
+		*/
 		function init(){
 			domainname = getDomainname();
-			setImageMaxWidth();
+			// setImageMaxWidth(); // CamFrameSize was replaced by zoom - CamFrameSize is no longer needed/used for zoom 
 			Refresh();
 		}
 
