@@ -548,47 +548,59 @@ void test_doFlowPP4() {
 }
 
 
-void test_doFlowPP_rainman110() {
+void test_doFlowPP_rainman110()
+{
     // https://github.com/jomjol/AI-on-the-edge-device/issues/2743
     // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
     std::vector<float> digits = {4.0, 1.0, 1.8};  // wrong result: 412.3983
     std::vector<float> analogs = {3.6, 9.9, 8.1, 3.5};
-
     UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
     setAnalogdigitTransistionStart(undertestPost, 3.5);
-    std::string result = process_doFlow(undertestPost);
-    TEST_ASSERT_EQUAL_STRING("411.3983", result.c_str());
+    TEST_ASSERT_EQUAL_STRING("411.3983", process_doFlow(undertestPost).c_str());
     delete undertestPost;
-    
+
     // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
     // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
     digits = {4.0, 1.0, 7.9};  // wrong result: 417.2579
     analogs = {2.5, 5.8, 7.7, 9.0};
-    
+
     undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
     setAnalogdigitTransistionStart(undertestPost, 3.5);
-    result = process_doFlow(undertestPost);
-    TEST_ASSERT_EQUAL_STRING("418.2579", result.c_str());
+    TEST_ASSERT_EQUAL_STRING("418.2579", process_doFlow(undertestPost).c_str());
     delete undertestPost;
 
-    // Edge cases
+    // Edge Case
+    digits = {9.9, 9.4};
+    analogs = {5.0, 0.0};
+
     undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
     setAnalogdigitTransistionStart(undertestPost, 8.0);
-    TEST_ASSERT_EQUAL_STRING("99.50", process_doFlow({5.0, 0.0}, {9.9, 9.4}, 
-                                        Digital100, false, false, 0).c_str());
+    TEST_ASSERT_EQUAL_STRING("99.50", process_doFlow(undertestPost).c_str());
     delete undertestPost;
-    
+
+    // Edge Case
+    digits = {1.0, 0.0, 0.0};
+    analogs = {9.5, 5.0};
     undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
     setAnalogdigitTransistionStart(undertestPost, 8.0);
-    TEST_ASSERT_EQUAL_STRING("99.95", process_doFlow({9.5, 5.0}, {1.0, 0.0, 0.0}, 
-                                        Digital100, false, false, 0).c_str());
+    TEST_ASSERT_EQUAL_STRING("99.95", process_doFlow(undertestPost).c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Discussion 149365.9 vs. 149364.9
+    digits = {0.9, 4.8, 9.0, 3.0, 6.0, 5.0};
+    analogs = {9.6};
+
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 9.2);
+    TEST_ASSERT_EQUAL_STRING("149364.9", process_doFlow(undertestPost).c_str());
     delete undertestPost;
 }
 
 
-void test_doFlowPP_rainman110_transition() {
-
-   // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+void test_doFlowPP_rainman110_transition()
+{
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
     // Edge cases
     std::vector<float> digits = {4.0, 1.0, 7.9};  
     std::vector<float> analogs = {1.4, 5.8, 7.7, 9.0};
@@ -631,5 +643,4 @@ void test_doFlowPP_rainman110_transition() {
     result = process_doFlow(undertestPost);
     TEST_ASSERT_EQUAL_STRING("418.4579", result.c_str());
     delete undertestPost;
-
 }
