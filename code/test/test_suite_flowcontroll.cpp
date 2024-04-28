@@ -148,6 +148,11 @@ void task_UnityTesting(void *pvParameter)
         RUN_TEST(test_doFlowIssue2857);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowLateTransitionHanging);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110_transition);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110);
+
     UNITY_END();
 
     while(1);
@@ -161,7 +166,7 @@ extern "C" void app_main()
 {
     initGPIO();
     Init_NVS_SDCard();
-    esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to DEBUG level
+    esp_log_level_set("*", ESP_LOG_ERROR);        // set all components to DEBUG level
 
     // Create dedicated testing task (heap size can be configured - large enough to handle a lot of testing cases)
     // ********************************************
