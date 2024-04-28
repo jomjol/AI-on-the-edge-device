@@ -1,3 +1,31 @@
+## [update] - 2024-03-30
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
+
+#### Core Changes
+
+- New tflite-Model for Analog (v13.0.0)
+- New tflite-Model for Digital Hybrid (v7.0.0)
+
+#### Bug Fixes
+
+- tbd
+
+## [15.7.0] - 2024-02-17
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
+
+#### Core Changes
+- Added new camera settings (See `Settings > Alignment > Reference Image and Camera Settings`). You might need to re-create the reference image and alignment marks. Note worthy:
+  - You can now crop the image
+  - Support to configure sharpness, grayscale, negatoive and exposure
+- Enhanced various WebUI pages with better explanations and usability
+- Add Firmware Version to MQTT
+
+#### Bug Fixes
+- Reverted "Implemented late analog / digital transition [#2778](https://github.com/jomjol/AI-on-the-edge-device/pull/2778) (introduced in `v15.5`) as is seems to cause issues for many users.
+
+
 ## [15.6.0] - 2024-02-09
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.5.0...v15.6.0)
@@ -42,6 +70,8 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
    - dig-class100-0167_s2_q.tflite
    - dig-class11_1700_s2.tflite
    - ana-cont_1208_s2_q.tflite
+  
+ - Added config entries for MQTT TLS
 
 
 #### Fixed

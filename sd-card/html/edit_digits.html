@@ -123,17 +123,25 @@
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td colspan="4" style="padding: 0px"><class id="Numbers_text" style="color:black;">Number Sequence:</class></td>
         </tr>
+		
         <tr>
             <td>
                 <select id="Numbers_value1" onchange="numberChanged()">
                 </select>
             </td>
-            <td><input class="button" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New Sequence"></td>
-            <td><input class="button" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename Sequence"></td> 
-            <td><input class="button" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Delete Sequence"></td>
+            <td>
+				<input class="button" type="submit" id="newNumber" name="newNumber" onclick="newNumber()" value="New Sequence">
+			</td>
+            <td>
+				<input class="button" type="submit" id="renameNumber" name="renameNumber" onclick="renameNumber()" value="Rename Sequence">
+			</td> 
+            <td>
+				<input class="button" type="submit" id="removeNumber" name="removeNumber" onclick="removeNumber()" value="Delete Sequence">
+			</td>
         </tr>
     </table>
 
@@ -146,15 +154,26 @@
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
+		
         <tr>
             <td style="padding: 0px">ROI:</td>
         </tr>
+		
         <tr>
-            <td><select id="index" name="index" onchange="ChangeSelection()" tabindex=1></select></td>
-            <td><input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI"></td>
-            <td><input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename ROI"></td>	  
-            <td><input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI"></td>
+            <td>
+				<select id="index" name="index" onchange="ChangeSelection()" tabindex=1></select>
+			</td>
+            <td>
+				<input class="button" type="submit" id="newROI" name="newROI" onclick="newROI()" value="New ROI">
+			</td>
+            <td>
+				<input class="button" type="submit" id="renameROI" name="renameROI" onclick="renameROI()" value="Rename ROI">
+			</td>	  
+            <td>
+				<input class="button" type="submit" id="deleteROI" name="deleteROI" onclick="deleteROI()" value="Delete ROI">
+			</td>
         </tr>
+		
         <tr>       
             <td class="multiplier">Multiplier: <output type="text" id="multiplier" name="multiplier"></output><br>
                 (only based on order)
@@ -162,8 +181,12 @@
             <td class="multiplier">Multiplier: <output type="text" id="multiplier_decshift" name="multiplier_decshift"></output><br>
                 (order + decimal shift: <output type="text" id="decimalShift" name="decimalShift"></output>)
             </td>
-            <td><input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="Move ROI Higher"></td> 
-            <td><input class="button" type="submit" id="moveNext" onclick="moveNext()" value="Move ROI Lower"></td>
+            <td>
+				<input class="button" type="submit" id="movePrevious" onclick="movePrevious()" value="Move ROI Higher">
+			</td> 
+            <td>
+				<input class="button" type="submit" id="moveNext" onclick="moveNext()" value="Move ROI Lower">
+			</td>
         </tr>
     </table>
 
@@ -173,36 +196,44 @@
             <col span="1" style="width: 18%;">
             <col span="1" style="width: 64%;">
         </colgroup>
+		
         <tr>
             <td>x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()" tabindex=2></td>	  
             <td>Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchangeddx()" tabindex=4></td>
-            <td><input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label></td>
         </tr>
+		
         <tr>
             <td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()" tabindex=3></td>	
             <td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()" tabindex=5></td>
-            <td><input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label></td>
-        </tr>
-        <tr>
-            <td colspan="2"></td>
-            <td><input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
-                <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" step=1 onchange="valuemanualchangedspace()" tabindex=9> between all ROIs</label>
-            </td>
         </tr>
     </table>	
 </div>
 
-	<table>
+
+<hr>
+	  The following settings are only used for easier setup, they are <b>not</b> persisted on the device:<br>
+	  <input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=10><label for="showall">Show all ROIs</label><br>
+	  <input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label><br>
+	  <input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><br>
+	  <input type="checkbox" id="lockSpaceEquidistant" name="lockSpaceEquidistant" value="1" onclick="changeLockSpaceEquidistant()" checked tabindex=8>
+    <label for="lockSpaceEquidistant">Keep equidistance of <input type="number" name="space" id="space" maxlength="2" max=99 step=1 onchange="valuemanualchangedspace()" tabindex=9> between all ROIs</label><br>
+<hr>
+
+    <table>
         <colgroup>
             <col span="1" style="width: 22%;">
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
             <col span="1" style="width: 26%;">
         </colgroup>
-	    <tr>
+		
+        <tr>
             <td colspan="3" style="vertical-align: bottom;"><b>Reference Image:</b></td>
-            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=10></td>
-	    </tr> 
+            <td>
+				<input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=11>
+			</td>
+        </tr>
+		
         <tr>
             <td colspan="4"><canvas id="canvas" crossorigin></canvas></td>
         </tr>
@@ -215,44 +246,42 @@
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
 
 <script language="JavaScript">
-        var canvas = document.getElementById('canvas'),
-            imageObj = new Image(),
-            rect = {},
-            drag = false,
-            aktindex = 0,
-            ROIInfo,
-            cofcat,
-            param,
-			_roialt = "dig",
-            enhanceCon = false,
-            lockAspectRatio = true,
-            lockSizes = false,
-            lockSpaceEquidistant = true,
-            space = 3,
-            domainname = getDomainname();
+    var canvas = document.getElementById('canvas'),
+        imageObj = new Image(),
+        rect = {},
+        drag = false,
+        aktindex = 0,
+        ROIInfo,
+        cofcat,
+        param,
+        _roialt = "dig",
+        enhanceCon = false,
+        lockAspectRatio = true,
+        lockSizes = false,
+        lockSpaceEquidistant = true,
+        space = 3,
+        domainname = getDomainname();
 
     function doReboot() {
         if (confirm("Are you sure you want to reboot? Did you save your changes?")) {
-                var stringota = getDomainname() + "/reboot";
-                window.location = stringota;
-                window.location.href = stringota;
-                window.location.assign(stringota);
-                window.location.replace(stringota);
+            var stringota = getDomainname() + "/reboot";
+            window.location = stringota;
+            window.location.href = stringota;
+            window.location.assign(stringota);
+            window.location.replace(stringota);
         }
     }
 
-function EnDisableDigits() {
+    function EnDisableDigits() {
         isEnabled = document.getElementById("Category_Digits_enabled").checked;
 
-		$("#div2").attr("disabled", "disabled").off('click');
+        $("#div2").attr("disabled", "disabled").off('click');
         var x1=$("#div2").hasClass("disabledDiv");
         
-        if (isEnabled)
-        {
+        if (isEnabled) {
             $("#div2").removeClass("disabledDiv");
         }
-        else
-        {
+        else {
             $("#div2").addClass("disabledDiv");
         }
 		
@@ -261,16 +290,16 @@ function EnDisableDigits() {
         cofcat["Digits"]["enabled"] = isEnabled;
         document.getElementById("saveroi").disabled = false;
                 
-        if (isEnabled)
-        {
+        if (isEnabled) {
             UpdateROIs();
         }
-}
+    }
 
     function sah1(el, _target) {
         try {
             el.disabled = _target;
         } catch (E) {}
+	    
         if (el.childNodes && el.childNodes.length > 0) {
             for (var x = 0; x < el.childNodes.length; x++) {
                 sah1(el.childNodes[x], _target);
@@ -278,475 +307,492 @@ function EnDisableDigits() {
         }
     }
 
-
-function onNameChange(){
-    ROIInfo[aktindex]["name"] = document.getElementById("name").value;
-    UpdateROIs();
-}
-
-function deleteROI(){
-    if (!confirm("Delete the selected ROI?")) {
-        return; //break out of the function early because prompt was aborted
+    function onNameChange() {
+        ROIInfo[aktindex]["name"] = document.getElementById("name").value;
+        UpdateROIs();
     }
 
-    ROIInfo.splice(aktindex, 1);
-    if (aktindex > ROIInfo.length - 1){
-        aktindex = ROIInfo.length - 1;
-    }
-    UpdateROIs();
-    draw();
-}
-
-function newROI() {
-    var sel = document.getElementById("Numbers_value1");
-    var _number= sel.options[sel.selectedIndex].text;
-    sel = document.getElementById("index");
-	
-    if (ROIInfo.length > 0) {
-	_roialt = sel.options[sel.selectedIndex].text;
-    }
-    else {
-	_roialt = "dig";
-    }
-
-    var _roinew = prompt("Please enter a name for the new ROI", _roialt);
-	
-    if (_roinew === null) {
-        return; //break out of the function early because prompt was aborted
-    }
-
-    if (ROIInfo.length > 0) {
-        if (ROIInfo.length > 1) {
-            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+    function deleteROI() {
+        if (!confirm("Delete the selected ROI?")) {
+            return; //break out of the function early because prompt was aborted
         }
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, parseInt(ROIInfo[sel.selectedIndex].x) + parseInt(ROIInfo[sel.selectedIndex].dx) + space,
-                parseInt(ROIInfo[sel.selectedIndex].y), ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
-    }
-    else
-        erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 15, 30, 30, 51, 0);
 
-    if (erg != "")
-        firework.launch(erg, 'danger', 30000);
-    else {
-        UpdateROIs(_roinew);
-        // Shift all ROIs on right side to the right
-        for (var _nb = sel.selectedIndex + 1; _nb < ROIInfo.length; _nb++) {
-            ROIInfo[_nb].x = parseInt(ROIInfo[_nb].x) + parseInt(ROIInfo[_nb].dx) + space;
+        ROIInfo.splice(aktindex, 1);
+	    
+        if (aktindex > ROIInfo.length - 1){
+            aktindex = ROIInfo.length - 1;
         }
+        UpdateROIs();
         draw();
     }
-}
 
-function movePrevious(){
-    var zw = ROIInfo[aktindex];
-    ROIInfo[aktindex] = ROIInfo[aktindex-1];
-    ROIInfo[aktindex-1] = zw;
-    aktindex--;
-    UpdateROIs(); 
-    valuemanualchanged();
-}
-
-function moveNext(){
-    var zw = ROIInfo[aktindex];
-    ROIInfo[aktindex] = ROIInfo[aktindex+1];
-    ROIInfo[aktindex+1] = zw;
-    aktindex++;
-    UpdateROIs();   
-    valuemanualchanged();
-}
-
-function changelockAspectRatio(){
-    lockAspectRatio = document.getElementById("lockAspectRatio").checked;
-}
-
-function changelockSizes(){
-    lockSizes = document.getElementById("lockSizes").checked;
-    UpdateROIs(); 
-    valuemanualchangedspace();
-
-    if (!lockSizes) {
-        firework.launch("In most cases it's advised to keep the y, Δx and Δy identical!", 'warning', 10000);
-    }
-}
-
-function changeLockSpaceEquidistant(){
-    lockSpaceEquidistant = document.getElementById("lockSpaceEquidistant").checked;
-    if (!lockSpaceEquidistant) {
-        document.getElementById("space").disabled = true;
-    }
-    else {
-        document.getElementById("space").disabled = false;
-    }
-    UpdateROIs(); 
-}
-
-function ChangeSelection(){
-    aktindex = parseInt(document.getElementById("index").value);
-//    lockAspectRatio = true;
-    UpdateROIs();
-}
-
-function SaveToConfig(){
-    if (confirm("Are you sure you want to save the new digit ROI configuration?")) {
-        // _zwcat = getConfigCategory();
-        cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
-        WriteConfigININew();
-        SaveConfigToServer(domainname);
-        UpdateROIs();
-        document.getElementById("saveroi").disabled = true;
-
-        firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
-    }
-}
-
-
-function ShowMultiplier()
-{
-    var decimalShift = 0;
-    var multiplier;
-    var multiplier_decshift;
-    var fixedDecimals_decshift;
-    var NumberInfo = getNUMBERInfo();
-
-    var sel = document.getElementById("Numbers_value1");
-    var _number= sel.options[sel.selectedIndex].text;
-    document.getElementById("decimalShift").value = 0;
-    for (var i = 0; i < NumberInfo.length; ++i) {
-        if (NumberInfo[i]["name"] == _number) {
-            if (NumberInfo[i]["PostProcessing"]["DecimalShift"]["enabled"]) {
-                decimalShift = NumberInfo[i]["PostProcessing"]["DecimalShift"]["value1"];
-                document.getElementById("decimalShift").value = decimalShift; 
-            }
+    function newROI() {
+        var sel = document.getElementById("Numbers_value1");
+        var _number= sel.options[sel.selectedIndex].text;
+        sel = document.getElementById("index");
+	
+        if (ROIInfo.length > 0) {
+            _roialt = sel.options[sel.selectedIndex].text;
         }
-    }
-
-    multiplier = ROIInfo.length - 1 - aktindex;
-    multiplier_decshift = fixedDecimals_decshift = multiplier + Number(decimalShift);
-
-    if (multiplier_decshift > 0)
-        fixedDecimals_decshift = 0;
-
-    if (fixedDecimals_decshift < 0) {
-        fixedDecimals_decshift = -1*fixedDecimals_decshift;
-    }
-    
-    document.getElementById("multiplier").value="x" + Number(10 ** multiplier).toFixed(0);
-    document.getElementById("multiplier_decshift").value="x" + Number(10 ** multiplier_decshift).toFixed(fixedDecimals_decshift);
-}
-
-
-function UpdateROIs(_sel){
-    document.getElementById("Category_Digits_enabled").checked = true;
-    var sel = document.getElementById("Numbers_value1");
-    var _number = sel.options[sel.selectedIndex].text;
-
-    ROIInfo = getROIInfo("digit", _number);
-//    _catzw = getConfigCategory();
-
-    if (cofcat["Digits"]["enabled"] == false) 
-    {
-        document.getElementById("Category_Digits_enabled").checked = false;
-        EnDisableDigits();
-        firework.launch('Digit ROI processing is disabled. Activate with checkbox if needed', 'warning', 10000);
-        return;
-    }
-
-    if (ROIInfo.length == 0){
-        firework.launch('No digit ROIs defined in selected number sequence', 'warning', 10000);
-        document.getElementById("newROI").disabled = false;
-        document.getElementById("deleteROI").disabled = true;
-        document.getElementById("renameROI").disabled = true;
-        document.getElementById("index").disabled = true;
-        document.getElementById("multiplier").style.display = "none";
-        document.getElementById("multiplier_decshift").style.display = "none";
-        document.getElementById("refx").disabled = true;
-        document.getElementById("refdx").disabled = true;
-        document.getElementById("refy").disabled = true;
-        document.getElementById("refdy").disabled = true;
-        document.getElementById("lockSizes").disabled = true;
-        document.getElementById("lockAspectRatio").disabled = true;
-        document.getElementById("lockSpaceEquidistant").disabled = true;
-        document.getElementById("moveNext").disabled = true;
-        document.getElementById("movePrevious").disabled = true;
-        document.getElementById("saveroi").disabled = false;
-        return;
-    }
-    else
-    {
-        document.getElementById("newROI").disabled = false;
-        document.getElementById("deleteROI").disabled = false;
-        document.getElementById("renameROI").disabled = false;
-        document.getElementById("index").disabled = false;
-        document.getElementById("multiplier").style.display = "";
-        document.getElementById("multiplier_decshift").style.display = "";
-        document.getElementById("refx").disabled = false;
-        document.getElementById("refdx").disabled = false;
-        document.getElementById("refy").disabled = false;
-        document.getElementById("refdy").disabled = false;
-        document.getElementById("lockSizes").disabled = false;
-        document.getElementById("lockAspectRatio").disabled = false;
-        document.getElementById("lockSpaceEquidistant").disabled = false;
-        document.getElementById("saveroi").disabled = false;
-    }
-
-    var _index = document.getElementById("index");
-    while (_index.length){
-        _index.remove(0);
-    }
-
-    if (aktindex > ROIInfo.length)
-        aktindex = ROIInfo.length-1;
-
-    for (var i = 0; i < ROIInfo.length; ++i){
-        var option = document.createElement("option");
-        option.text = ROIInfo[i]["name"];
-        option.value = i;
-        _index.add(option);
-        if (typeof _sel !== 'undefined') {
-            if (option.text == _sel)
-                aktindex = i;
-        }
-    }
-    _index.selectedIndex = aktindex; 
-
-
-    document.getElementById("movePrevious").disabled = false;
-    if (aktindex == 0){
-        document.getElementById("movePrevious").disabled = true;
-    }
-
-    document.getElementById("moveNext").disabled = false;
-    if (aktindex == (ROIInfo.length-1)){
-        document.getElementById("moveNext").disabled = true;
-    }
-
-    ShowMultiplier();
-    
-    document.getElementById("lockAspectRatio").checked = lockAspectRatio;
-    document.getElementById("lockSizes").checked = lockSizes;
-    document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
-    document.getElementById("space").value = space;
-    if (!lockSpaceEquidistant) {
-        document.getElementById("space").disabled = true;
-    }
-    else {
-        document.getElementById("space").disabled = false;
-    }
-       
-    document.getElementById("refx").value = ROIInfo[aktindex]["x"];
-    document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
-    document.getElementById("refdx").value = ROIInfo[aktindex]["dx"];  
-    document.getElementById("refdy").value = ROIInfo[aktindex]["dy"];  
-    rect.startX = ROIInfo[aktindex]["x"];
-    rect.startY = ROIInfo[aktindex]["y"];
-    rect.w = ROIInfo[aktindex]["dx"];
-    rect.h = ROIInfo[aktindex]["dy"];
-    draw();
-}
-    
-        function loadCanvas(dataURL) {
-                var canvas = document.getElementById('canvas');
-                var context = canvas.getContext('2d');
-    
-                imageObj.onload = function() {
-                    canvas.width = this.width;
-                    canvas.height = this.height;
-                    drawImage();
-                    draw();
-                };
-    
-                imageObj.src = dataURL;
-            }
-    
-    
-        function getCoords(elem) { // crossbrowser version
-            var box = elem.getBoundingClientRect();
-            var body = document.body;
-            var docEl = document.documentElement;
-            var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-            var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
-            var clientTop = docEl.clientTop || body.clientTop || 0;
-            var clientLeft = docEl.clientLeft || body.clientLeft || 0;
-            var top  = box.top +  scrollTop - clientTop;
-            var left = box.left + scrollLeft - clientLeft;
-            return { top: Math.round(top), left: Math.round(left) };
+        else {
+            _roialt = "dig";
         }
 
-
-        /* hash #description open the details part of the page */
-        function openDescription() {
-        if(window.location.hash) {
-            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
-            if(hash == 'description')
-                document.getElementById("desc_details").open = true;
-            }
+        var _roinew = prompt("Please enter a name for the new ROI", _roialt);
+	
+        if (_roinew === null) {
+            return; //break out of the function early because prompt was aborted
         }
-    
 
-        function init() {
-            openDescription();
-            domainname = getDomainname();
-            canvas.addEventListener('mousedown', mouseDown, false);
-            canvas.addEventListener('mouseup', mouseUp, false);
-            canvas.addEventListener('mousemove', mouseMove, false);
-            loadCanvas(domainname + "/fileserver/config/reference.jpg");
-            loadConfig(domainname); 
-            ParseConfig();
-            param = getConfigParameters(); 
-            cofcat = getConfigCategory();
-            UpdateNUMBERS();
-
-
-            /* Check if the ROIs are equidistant. Only if not, untick the checkbox */
-            if (ROIInfo.length > 1) {
-				var distanceROI0_to_ROI1 = parseInt(ROIInfo[1].x) - (parseInt(ROIInfo[0].x) + parseInt(ROIInfo[0].dx)); // Distance between 1st and 2nd ROI
-				//console.log("0->1: " + distanceROI0_to_ROI1);
-				for (var i = 1; i < (ROIInfo.length - 1); ++i) { // 2nd .. 2nd-last ROI
-					//console.log(i + "->" + i+1 + ": " + (parseInt(ROIInfo[i+1].x) - (parseInt(ROIInfo[i].x) + parseInt(ROIInfo[i].dx))));
-					if (distanceROI0_to_ROI1 != (parseInt(ROIInfo[i+1].x) - (parseInt(ROIInfo[i].x) + parseInt(ROIInfo[i].dx)))) {
-						console.log("Not equidistant, unticking the checkbox!");
-						lockSpaceEquidistant = false;
-    					document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
-                        if (!lockSpaceEquidistant) {
-                            document.getElementById("space").disabled = true;
-                        }
-                        else {
-                            document.getElementById("space").disabled = false;
-                        }
-						break;
-					}
-				}
-			}
-			/* Check if the ROIs have same y, dy and dx. If so, tick the sync checkbox */
-           var all_y_dx_dy_Identical = true;
-            if (ROIInfo.length > 1) {
-                for (var i = 1; i < (ROIInfo.length); ++i) { // 2nd .. last ROI
-                    if (parseInt(ROIInfo[i].y) != parseInt(ROIInfo[0].y) ||
-                        parseInt(ROIInfo[i].dx) != parseInt(ROIInfo[0].dx) ||
-                        parseInt(ROIInfo[i].dy) != parseInt(ROIInfo[0].dy)) { 
-                        all_y_dx_dy_Identical = false;
-						break;
-                    }
-                }
-			}
-
-            if (all_y_dx_dy_Identical) {
-                lockSizes = true;
-                console.log("All ROI have the same Y, dX and dY, ticking the sync checkbox!");
-                document.getElementById("lockSizes").checked = lockSizes;
-            }
-            else {
-                console.log("Not all ROI have the same Y, dX and dY, unticking the sync checkbox!");
-            }
-
+        if (ROIInfo.length > 0) {
             if (ROIInfo.length > 1) {
                 space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
-                document.getElementById("space").value = space;
             }
+            erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, parseInt(ROIInfo[sel.selectedIndex].x) + parseInt(ROIInfo[sel.selectedIndex].dx) + space,
+                parseInt(ROIInfo[sel.selectedIndex].y), ROIInfo[aktindex]["dx"], ROIInfo[aktindex]["dy"], 0);
+        }
+        else {
+            erg = CreateROI(_number, "digit", sel.selectedIndex, _roinew, 15, 30, 30, 51, 0);
+        }
 
-            document.getElementById("saveroi").disabled = true;
-
-            drawImage();
+        if (erg != "") {
+            firework.launch(erg, 'danger', 30000);
+        }
+        else {
+            UpdateROIs(_roinew);
+            // Shift all ROIs on right side to the right
+            for (var _nb = sel.selectedIndex + 1; _nb < ROIInfo.length; _nb++) {
+                ROIInfo[_nb].x = parseInt(ROIInfo[_nb].x) + parseInt(ROIInfo[_nb].dx) + space;
+            }
             draw();
         }
-
-        function drawImage(){
-            var canvas = document.getElementById('canvas');
-            var context = canvas.getContext('2d');
-
-            context.clearRect(0,0,imageObj.width,imageObj.height);
-            context.save();
-            context.drawImage(imageObj, 0, 0);
-//            context.restore();
-        }  
-
-function UpdateNUMBERS(_sel){
-    zw = getNUMBERInfo();
-
-    index = 0;
-
-    var _index = document.getElementById("Numbers_value1");
-    while (_index.length){
-        _index.remove(0);
     }
 
-    for (var i = 0; i < zw.length; ++i){
-        var option = document.createElement("option");
-        option.text = zw[i]["name"];
-        option.value = i;
-        _index.add(option); 
+    function movePrevious() {
+        var zw = ROIInfo[aktindex];
+        ROIInfo[aktindex] = ROIInfo[aktindex-1];
+        ROIInfo[aktindex-1] = zw;
+        aktindex--;
+        UpdateROIs(); 
+        valuemanualchanged();
+    }
 
-        if (typeof _sel !== 'undefined') {
-            if (zw[i]["name"] == _sel)
-                index = i
+    function moveNext() {
+        var zw = ROIInfo[aktindex];
+        ROIInfo[aktindex] = ROIInfo[aktindex+1];
+        ROIInfo[aktindex+1] = zw;
+        aktindex++;
+        UpdateROIs();   
+        valuemanualchanged();
+    }
+
+    function changelockAspectRatio() {
+        lockAspectRatio = document.getElementById("lockAspectRatio").checked;
+    }
+
+    function changelockSizes() {
+        lockSizes = document.getElementById("lockSizes").checked;
+        UpdateROIs(); 
+        valuemanualchangedspace();
+
+        if (!lockSizes) {
+            firework.launch("In most cases it's advised to keep the y, Δx and Δy identical!", 'warning', 10000);
         }
     }
-    _index.selectedIndex = index;
 
-    UpdateROIs();
-}
-
-function renameNumber(){
-    var sel = document.getElementById("Numbers_value1");
-    var _delete= sel.options[sel.selectedIndex].text;
-    var _numbernew = prompt("Please enter a new name for the selected number sequence", _delete);
-    if (_numbernew === null) {
-        return; //break out of the function early because prompt was aborted
+    function changeLockSpaceEquidistant() {
+        lockSpaceEquidistant = document.getElementById("lockSpaceEquidistant").checked;
+        if (!lockSpaceEquidistant) {
+            document.getElementById("space").disabled = true;
+        }
+        else {
+            document.getElementById("space").disabled = false;
+        }
+        UpdateROIs(); 
     }
 
-    erg = RenameNUMBER(_delete, _numbernew);
-    if (erg != "")
-        firework.launch(erg, 'danger', 30000);
-    else
-        UpdateNUMBERS(_numbernew);
-}
-
-function newNumber(){
-    var _numbernew = prompt("Please enter a name for the new number sequence", "name");
-    if (_numbernew === null) {
-        return; //break out of the function early because prompt was aborted
+    function ChangeSelection() {
+        aktindex = parseInt(document.getElementById("index").value);
+        //lockAspectRatio = true;
+        UpdateROIs();
     }
 
-    erg = CreateNUMBER(_numbernew);
-    if (erg != "")
-        firework.launch(erg, 'danger', 30000);
-    else
-        UpdateNUMBERS(_numbernew);
-}
+    function SaveToConfig() {
+        if (confirm("Are you sure you want to save the new digit ROI configuration?")) {
+            // _zwcat = getConfigCategory();
+            cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
+            WriteConfigININew();
+            SaveConfigToServer(domainname);
+            UpdateROIs();
+            document.getElementById("saveroi").disabled = true;
 
+            firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
+        }
+    }
 
-function removeNumber(){
-	if (confirm("The entire number sequence will be removed (digit + analog parts). " +
-                "To remove single ROI of the number sequence, use \"Delete ROI\" instead.\n" +
-                "Do you really want to proceed?")) 
-    {
+    function ShowMultiplier() {
+        var decimalShift = 0;
+        var multiplier;
+        var multiplier_decshift;
+        var fixedDecimals_decshift;
+        var NumberInfo = getNUMBERInfo();
+
+        var sel = document.getElementById("Numbers_value1");
+        var _number= sel.options[sel.selectedIndex].text;
+        document.getElementById("decimalShift").value = 0;
+        
+        for (var i = 0; i < NumberInfo.length; ++i) {
+            if (NumberInfo[i]["name"] == _number) {
+                if (NumberInfo[i]["PostProcessing"]["DecimalShift"]["enabled"]) {
+                    decimalShift = NumberInfo[i]["PostProcessing"]["DecimalShift"]["value1"];
+                    document.getElementById("decimalShift").value = decimalShift; 
+                }
+            }
+        }
+
+        multiplier = ROIInfo.length - 1 - aktindex;
+        multiplier_decshift = fixedDecimals_decshift = multiplier + Number(decimalShift);
+
+        if (multiplier_decshift > 0) {
+            fixedDecimals_decshift = 0;
+        }
+
+        if (fixedDecimals_decshift < 0) {
+            fixedDecimals_decshift = -1*fixedDecimals_decshift;
+        }
+    
+        document.getElementById("multiplier").value="x" + Number(10 ** multiplier).toFixed(0);
+        document.getElementById("multiplier_decshift").value="x" + Number(10 ** multiplier_decshift).toFixed(fixedDecimals_decshift);
+    }
+
+    function UpdateROIs(_sel){
+        document.getElementById("Category_Digits_enabled").checked = true;
+        var sel = document.getElementById("Numbers_value1");
+        var _number = sel.options[sel.selectedIndex].text;
+
+        ROIInfo = getROIInfo("digit", _number);
+        // _catzw = getConfigCategory();
+
+        if (cofcat["Digits"]["enabled"] == false)  {
+            document.getElementById("Category_Digits_enabled").checked = false;
+            EnDisableDigits();
+            firework.launch('Digit ROI processing is disabled. Activate with checkbox if needed', 'warning', 10000);
+            return;
+        }
+
+        if (ROIInfo.length == 0){
+            firework.launch('No digit ROIs defined in selected number sequence', 'warning', 10000);
+            document.getElementById("newROI").disabled = false;
+            document.getElementById("deleteROI").disabled = true;
+            document.getElementById("renameROI").disabled = true;
+            document.getElementById("index").disabled = true;
+            document.getElementById("multiplier").style.display = "none";
+            document.getElementById("multiplier_decshift").style.display = "none";
+            document.getElementById("refx").disabled = true;
+            document.getElementById("refdx").disabled = true;
+            document.getElementById("refy").disabled = true;
+            document.getElementById("refdy").disabled = true;
+            document.getElementById("lockSizes").disabled = true;
+            document.getElementById("lockAspectRatio").disabled = true;
+            document.getElementById("showall").disabled = true;   
+            document.getElementById("lockSpaceEquidistant").disabled = true;
+            document.getElementById("moveNext").disabled = true;
+            document.getElementById("movePrevious").disabled = true;
+            document.getElementById("saveroi").disabled = false;
+            return;
+        }
+        else {
+            document.getElementById("newROI").disabled = false;
+            document.getElementById("deleteROI").disabled = false;
+            document.getElementById("renameROI").disabled = false;
+            document.getElementById("index").disabled = false;
+            document.getElementById("multiplier").style.display = "";
+            document.getElementById("multiplier_decshift").style.display = "";
+            document.getElementById("refx").disabled = false;
+            document.getElementById("refdx").disabled = false;
+            document.getElementById("refy").disabled = false;
+            document.getElementById("refdy").disabled = false;
+            document.getElementById("lockSizes").disabled = false;
+            document.getElementById("showall").disabled = false;    
+            document.getElementById("lockAspectRatio").disabled = false;
+            document.getElementById("lockSpaceEquidistant").disabled = false;
+            document.getElementById("saveroi").disabled = false;
+        }
+
+        var _index = document.getElementById("index");
+		
+        while (_index.length){
+            _index.remove(0);
+        }
+
+        if (aktindex > ROIInfo.length) {
+            aktindex = ROIInfo.length-1;
+        }
+
+        for (var i = 0; i < ROIInfo.length; ++i){
+            var option = document.createElement("option");
+            option.text = ROIInfo[i]["name"];
+            option.value = i;
+            _index.add(option);
+		
+            if (typeof _sel !== 'undefined') {
+                if (option.text == _sel) {
+                    aktindex = i;
+                }
+            }
+        }
+	    
+        _index.selectedIndex = aktindex; 
+
+        document.getElementById("movePrevious").disabled = false;
+        if (aktindex == 0){
+            document.getElementById("movePrevious").disabled = true;
+        }
+
+        document.getElementById("moveNext").disabled = false;
+        if (aktindex == (ROIInfo.length-1)){
+            document.getElementById("moveNext").disabled = true;
+        }
+
+        ShowMultiplier();
+    
+        document.getElementById("lockAspectRatio").checked = lockAspectRatio;
+        document.getElementById("lockSizes").checked = lockSizes;
+        document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
+        document.getElementById("space").value = space;
+	    
+        if (!lockSpaceEquidistant) {
+            document.getElementById("space").disabled = true;
+        }
+        else {
+            document.getElementById("space").disabled = false;
+        }
+       
+        document.getElementById("refx").value = ROIInfo[aktindex]["x"];
+        document.getElementById("refy").value = ROIInfo[aktindex]["y"];  
+        document.getElementById("refdx").value = ROIInfo[aktindex]["dx"];  
+        document.getElementById("refdy").value = ROIInfo[aktindex]["dy"];  
+        rect.startX = ROIInfo[aktindex]["x"];
+        rect.startY = ROIInfo[aktindex]["y"];
+        rect.w = ROIInfo[aktindex]["dx"];
+        rect.h = ROIInfo[aktindex]["dy"];
+        draw();
+    }
+    
+    function loadCanvas(dataURL) {
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+    
+        imageObj.onload = function() {
+            canvas.width = this.width;
+            canvas.height = this.height;
+            drawImage();
+            draw();
+        };
+    
+        imageObj.src = dataURL;
+    }
+    
+    function getCoords(elem) { 
+        // crossbrowser version
+        var box = elem.getBoundingClientRect();
+        var body = document.body;
+        var docEl = document.documentElement;
+        var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+        var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+        var clientTop = docEl.clientTop || body.clientTop || 0;
+        var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+        var top  = box.top +  scrollTop - clientTop;
+        var left = box.left + scrollLeft - clientLeft;
+        return { top: Math.round(top), left: Math.round(left) };
+    }
+
+    /* hash #description open the details part of the page */
+    function openDescription() {
+        if(window.location.hash) {
+            var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+            if(hash == 'description') {
+                document.getElementById("desc_details").open = false;
+            }
+        }
+    }
+    
+    function init() {
+        openDescription();
+        domainname = getDomainname();
+		
+		if (!loadConfig(domainname)) {
+			firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+			return;
+		}
+		
+        ParseConfig();
+        param = getConfigParameters(); 
+        cofcat = getConfigCategory();
+		
+        canvas.addEventListener('mousedown', mouseDown, false);
+        canvas.addEventListener('mouseup', mouseUp, false);
+        canvas.addEventListener('mousemove', mouseMove, false);
+        loadCanvas(domainname + "/fileserver/config/reference.jpg");		
+		
+        UpdateNUMBERS();
+
+        /* Check if the ROIs are equidistant. Only if not, untick the checkbox */
+        if (ROIInfo.length > 1) {
+            var distanceROI0_to_ROI1 = parseInt(ROIInfo[1].x) - (parseInt(ROIInfo[0].x) + parseInt(ROIInfo[0].dx)); // Distance between 1st and 2nd ROI
+            //console.log("0->1: " + distanceROI0_to_ROI1);
+            for (var i = 1; i < (ROIInfo.length - 1); ++i) { // 2nd .. 2nd-last ROI
+                //console.log(i + "->" + i+1 + ": " + (parseInt(ROIInfo[i+1].x) - (parseInt(ROIInfo[i].x) + parseInt(ROIInfo[i].dx))));
+                if (distanceROI0_to_ROI1 != (parseInt(ROIInfo[i+1].x) - (parseInt(ROIInfo[i].x) + parseInt(ROIInfo[i].dx)))) {
+                    console.log("Not equidistant, unticking the checkbox!");
+                    lockSpaceEquidistant = false;
+                    document.getElementById("lockSpaceEquidistant").checked = lockSpaceEquidistant;
+                    if (!lockSpaceEquidistant) {
+                        document.getElementById("space").disabled = true;
+                    }
+                    else {
+                        document.getElementById("space").disabled = false;
+                    }
+                    break;
+                }
+            }
+        }
+	    
+        /* Check if the ROIs have same y, dy and dx. If so, tick the sync checkbox */
+        var all_y_dx_dy_Identical = true;
+	    
+        if (ROIInfo.length > 1) {
+            for (var i = 1; i < (ROIInfo.length); ++i) { // 2nd .. last ROI
+                if (parseInt(ROIInfo[i].y) != parseInt(ROIInfo[0].y) ||
+                    parseInt(ROIInfo[i].dx) != parseInt(ROIInfo[0].dx) ||
+                    parseInt(ROIInfo[i].dy) != parseInt(ROIInfo[0].dy)) { 
+                    all_y_dx_dy_Identical = false;
+                    break;
+                }
+            }
+        }
+
+        if (all_y_dx_dy_Identical) {
+            lockSizes = true;
+            console.log("All ROI have the same Y, dX and dY, ticking the sync checkbox!");
+            document.getElementById("lockSizes").checked = lockSizes;
+        }
+        else {
+            console.log("Not all ROI have the same Y, dX and dY, unticking the sync checkbox!");
+        }
+
+        if (ROIInfo.length > 1) {
+            space = ROIInfo[1].x - parseInt(ROIInfo[0].x) - parseInt(ROIInfo[0].dx);
+            document.getElementById("space").value = space;
+        }
+
+        document.getElementById("saveroi").disabled = true;
+
+        drawImage();
+        draw();
+    }
+
+    function drawImage() {
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        context.clearRect(0,0,imageObj.width,imageObj.height);
+        context.save();
+        context.drawImage(imageObj, 0, 0);
+        // context.restore();
+    }  
+
+    function UpdateNUMBERS(_sel) {
+        zw = getNUMBERInfo();
+        index = 0;
+
+        var _index = document.getElementById("Numbers_value1");
+	    
+        while (_index.length){
+            _index.remove(0);
+        }
+
+        for (var i = 0; i < zw.length; ++i) {
+            var option = document.createElement("option");
+            option.text = zw[i]["name"];
+            option.value = i;
+            _index.add(option); 
+
+            if (typeof _sel !== 'undefined') {
+                if (zw[i]["name"] == _sel) {
+                    index = i;
+                }
+            }
+        }
+	    
+        _index.selectedIndex = index;
+        UpdateROIs();
+    }
+
+    function renameNumber() {
         var sel = document.getElementById("Numbers_value1");
         var _delete= sel.options[sel.selectedIndex].text;
-        erg = DeleteNUMBER(_delete);
-        if (erg != "")
+        var _numbernew = prompt("Please enter a new name for the selected number sequence", _delete);
+	    
+        if (_numbernew === null) {
+            return; //break out of the function early because prompt was aborted
+        }
+
+        erg = RenameNUMBER(_delete, _numbernew);
+        if (erg != "") {
             firework.launch(erg, 'danger', 30000);
-        UpdateNUMBERS();
-	}	    
-}
-
-
-function drawTextBG(context, txt, x, y, padding) {
-    context.font = "15px Arial";
-    context.textAlign = "center";
-
-    context.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    var width = context.measureText(txt).width;
-    context.fillRect(x-(width+padding)/2, y-12, width + padding*2, parseInt(context.font, 10) + padding);
-
-    context.fillStyle = "black";
-    context.fillText(txt, x + padding / 2, y + padding / 2);
-}
-
-
-function draw() {
-    if (typeof ROIInfo === 'undefined') { // During init, ROIInfo is not defined yet
-        return;
+        }
+        else {
+            UpdateNUMBERS(_numbernew);
+        }
     }
+
+    function newNumber() {
+        var _numbernew = prompt("Please enter a name for the new number sequence", "name");
+        if (_numbernew === null) {
+            return; //break out of the function early because prompt was aborted
+        }
+
+        erg = CreateNUMBER(_numbernew);
+		
+        if (erg != "") {
+            firework.launch(erg, 'danger', 30000);
+        }
+        else {
+            UpdateNUMBERS(_numbernew);
+        }
+    }
+
+    function removeNumber() {
+        if (confirm("The entire number sequence will be removed (digit + analog parts). " +
+                "To remove single ROI of the number sequence, use \"Delete ROI\" instead.\n" +
+                "Do you really want to proceed?")) {
+            var sel = document.getElementById("Numbers_value1");
+            var _delete= sel.options[sel.selectedIndex].text;
+            erg = DeleteNUMBER(_delete);
+            if (erg != "") {
+                firework.launch(erg, 'danger', 30000);
+            }
+            UpdateNUMBERS();
+        }	    
+    }
+
+    function drawTextBG(context, txt, x, y, padding) {
+        context.font = "15px Arial";
+        context.textAlign = "center";
+
+        context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        var width = context.measureText(txt).width;
+        context.fillRect(x-(width+padding)/2, y-12, width + padding*2, parseInt(context.font, 10) + padding);
+
+        context.fillStyle = "black";
+        context.fillText(txt, x + padding / 2, y + padding / 2);
+    }
+
+    function draw() {
+        if (typeof ROIInfo === 'undefined') { // During init, ROIInfo is not defined yet
+            return;
+        }
 
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
@@ -756,17 +802,14 @@ function draw() {
             return;
         }
 
-        if (document.getElementById("Category_Digits_enabled").checked)
-        {
+        if (document.getElementById("Category_Digits_enabled").checked) {
             var sel = document.getElementById("index");
             var _number = sel.selectedIndex;
 
             if (lockSizes) {
                 // Synchronize Y, dx and dy
-                for (var _nb = 0; _nb < ROIInfo.length; _nb++)
-                {
-                    if (_nb != _number)
-                    {
+                for (var _nb = 0; _nb < ROIInfo.length; _nb++) {
+                    if (_nb != _number) {
                         ROIInfo[_nb].y = rect.startY;
                         ROIInfo[_nb].dy = rect.h;
                         ROIInfo[_nb].dx = rect.w;
@@ -774,31 +817,31 @@ function draw() {
                 }
             }
 
-            for (var _nb = 0; _nb < ROIInfo.length; _nb++)
-            {
-                if (_nb != _number)
-                {
-                    lw = 2;
-                    context.lineWidth = lw;
-                    context.strokeStyle = "#990000";
-                    var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
-                    var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
-                    var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
-                    var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
-                    context.strokeRect(x0, y0, dx, dy);
-                    drawTextBG(context, ROIInfo[_nb]["name"], x0+dx/2, y0-12, 5);
+            if (document.getElementById("showall").checked) {
+                for (var _nb = 0; _nb < ROIInfo.length; _nb++) {
+                    if (_nb != _number) {
+                        lw = 2;
+                        context.lineWidth = lw;
+                        context.strokeStyle = "#990000";
+                        var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                        var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                        var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                        var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                        context.strokeRect(x0, y0, dx, dy);
+                        drawTextBG(context, ROIInfo[_nb]["name"], x0+dx/2, y0-12, 5);
 
-                    lw = 1
-                    var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
-                    var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
-                    var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
-                    var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
-                    context.lineWidth = lw;
-                    context.beginPath();
-                    context.moveTo(x0, y0+dy/2);
-                    context.lineTo(x0+dx, y0+dy/2);
-                    context.stroke();   
-                    context.strokeRect(x0+dx*0.2, y0+dy*0.2, dx*0.6, dy*0.6);
+                        lw = 1
+                        var x0 = parseInt(ROIInfo[_nb].x) - parseInt(lw/2);
+                        var y0 = parseInt(ROIInfo[_nb].y) - parseInt(lw/2);
+                        var dx = parseInt(ROIInfo[_nb].dx) + parseInt(lw);
+                        var dy = parseInt(ROIInfo[_nb].dy) + parseInt(lw);
+                        context.lineWidth = lw;
+                        context.beginPath();
+                        context.moveTo(x0, y0+dy/2);
+                        context.lineTo(x0+dx, y0+dy/2);
+                        context.stroke();   
+                        context.strokeRect(x0+dx*0.2, y0+dy*0.2, dx*0.6, dy*0.6);
+                    }
                 }
             }
 
@@ -813,7 +856,6 @@ function draw() {
             drawTextBG(context, ROIInfo[aktindex]["name"], x0+dx/2, y0-11, 5);
             context.lineWidth = 1;
             context.strokeRect(x0+dx*0.2, y0+dy*0.2, dx*0.6, dy*0.6);
-
 
             context.lineWidth = 2;
             context.beginPath();
@@ -840,14 +882,17 @@ function draw() {
 
     function mouseUp() {
         drag = false;
+		
         if (rect.w < 0) {
             rect.w = -rect.w
             rect.startX-=rect.w
-            }
+        }
+		
         if (rect.h < 0) {
             rect.h = -rect.h
             rect.startY-=rect.h
-            }
+        }
+		
         document.getElementById("refdx").value = rect.w;
         document.getElementById("refdy").value = rect.h;
         document.getElementById("refx").value = rect.startX;
@@ -864,17 +909,20 @@ function draw() {
 
             if (lockAspectRatio) {
                 rect.h = (e.pageY - zw.top) - rect.startY;
-                rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);            }
+                rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);            
+            }
             else {
                 rect.w = (e.pageX - zw.left) - rect.startX;
                 rect.h = (e.pageY - zw.top) - rect.startY;
             }
             document.getElementById("refdx").value = rect.w;
             document.getElementById("refdy").value = rect.h;
+			
             draw();
         }
         else {
             draw();
+			
             var canvas = document.getElementById('canvas');
             var context = canvas.getContext('2d');
 
@@ -893,7 +941,7 @@ function draw() {
         }
     }
 
-    function valuemanualchanged(){
+    function valuemanualchanged() {
         if (ROIInfo.length == 0) {
             return;
         }
@@ -910,16 +958,16 @@ function draw() {
             rect.startX = document.getElementById("refx").value;
             rect.startY = document.getElementById("refy").value; 
 
-            draw();   
             if (lockSpaceEquidistant) {
                 makeX_SpaceEquidistant();
-            }   
+            }
+			
             draw();      
         }
         document.getElementById("saveroi").disabled = false;
     }
 
-    function valuemanualchangeddx(){
+    function valuemanualchangeddx() {
         if (ROIInfo.length == 0) {
             return;
         }
@@ -945,7 +993,7 @@ function draw() {
         document.getElementById("saveroi").disabled = false;
     }
 
-    function valuemanualchangedspace(){
+    function valuemanualchangedspace() {
         if (!drag) {
            space = document.getElementById("space").value;
            valuemanualchanged();
@@ -978,34 +1026,35 @@ function draw() {
         }
     }
 
-    function renameROI(){
+    function renameROI() {
         var sel = document.getElementById("Numbers_value1");
         var _number= sel.options[sel.selectedIndex].text;
         sel = document.getElementById("index");
         _roialt= sel.options[sel.selectedIndex].text;
 
         var _roinew = prompt("Please enter a new name for the selected ROI", _roialt);
+		
         if (_roinew === null) {
             return; //break out of the function early because prompt was aborted
         }
 
         erg = RenameROI(_number, "digit", _roialt, _roinew);
-        if (erg != "")
+		
+        if (erg != "") {
             firework.launch(erg, 'danger', 30000);
-        else
+        }
+        else {
             UpdateROIs(_roinew);
+        }
     }
 
-    function numberChanged()
-    {
+    function numberChanged() {
         aktindex = 0;
         UpdateROIs();
     }    
 
-
     init();
 
 </script>
-
 </body>
 </html>

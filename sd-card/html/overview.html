@@ -5,13 +5,64 @@
 <meta charset="UTF-8" />
 
 <style>
-.tg  {border-collapse:collapse;border-spacing:0;width:100%;min-width:600px;height:100%;color:darkslategray;}
-.tg th{min-width:325px;width:325px;height:20px;font-size:18px;text-align:left;font-weight:bold;padding:5px 10px 5px 10px;;overflow:hidden;word-break:normal;background-color:lightgrey;}
-.tg td{font-size:15px;padding:5px 10px 5px 10px;overflow:hidden;word-break:normal;}
-.tg .tg-1{font-size:15px;vertical-align: top; font-family:Arial, Helvetica, sans-serif !important;}
-.tg .tg-2{height:52px;font-size:15px;padding:3px 0px 3px 10px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;}
-.tg .tg-3{height:45px;font-size:15px;padding:3px 10px 3px 10px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;}
-.tg .tg-4{height:fit-content;font-size:15px;padding:5px 10px 5px 10px;vertical-align:text-top;font-family:Arial, Helvetica, sans-serif !important;}
+.tg  {
+	border-collapse:collapse;
+	border-spacing:0;
+	width:100%;
+	min-width:600px;
+	height:100%;
+	color:darkslategray;
+	}
+	
+.tg th{
+	min-width:325px;
+	width:325px;
+	height:20px;
+	font-size:18px;
+	text-align:left;
+	font-weight:bold;
+	padding:5px 10px 5px 10px;
+	overflow:hidden;
+	word-break:normal;
+	background-color:lightgrey;
+	}
+
+.tg td{
+	font-size:15px;
+	padding:5px 10px 5px 10px;
+	overflow:hidden;
+	word-break:normal;
+	}
+
+.tg .tg-1{
+	font-size:15px;
+	vertical-align: top;
+	font-family:Arial, Helvetica, sans-serif !important;
+	}
+
+.tg .tg-2{
+	height:52px;
+	font-size:15px;
+	padding:3px 0px 3px 10px;
+	vertical-align:middle;
+	font-family:Arial, Helvetica, sans-serif !important;
+	}
+
+.tg .tg-3{
+	height:45px;
+	font-size:15px;
+	padding:3px 10px 3px 10px;
+	vertical-align:middle;
+	font-family:Arial, Helvetica, sans-serif !important;
+	}
+
+.tg .tg-4{
+	height:fit-content;
+	font-size:15px;
+	padding:5px 10px 5px 10px;
+	vertical-align:text-top;
+	font-family:Arial, Helvetica, sans-serif !important;
+	}
 </style>
 
 </head>
@@ -78,221 +129,209 @@
 		</tr>
 	</table>
 
-
 	<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
 	<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
 	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 	<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+	
 	<script type="text/javascript">
+		function addZero(i) {
+			if (i < 10) {
+				i = "0" + i;
+			}
+			return i;
+		}
 
-	function addZero(i) {
-	  if (i < 10) {
-		i = "0" + i;
-	  }
-	  return i;
-	}
-
-
-	$(document).ready(function() {
-		LoadData();
-		LoadROIImage();
-	});
-
-
-	function LoadData(){
-		loadValue("value", "value", "border-collapse: collapse; width: 100%");
-		loadValue("raw", "raw", "border-collapse: collapse; width: 100%");
-		loadValue("prevalue", "prevalue", "border-collapse: collapse; width: 100%");
-		loadValue("error", "error", "border-collapse: collapse; width: 100%");
-		loadStatus();
-		loadCPUTemp();
-		loadRSSI();
-		loadUptime();
-		loadRoundCounter();
-	}
-
-
-	function LoadROIImage(){
-		var d = new Date();
-		var timestamp = d.getTime();
-		var h = addZero(d.getHours());
-		var m = addZero(d.getMinutes());
-		var s = addZero(d.getSeconds());
-		document.getElementById("img").src = getDomainname() + '/img_tmp/alg_roi.jpg?timestamp=' + timestamp;
-		$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
-	}
-
-
-	function Refresh() {
-		setTimeout (function() {
+		$(document).ready(function() {
 			LoadData();
 			LoadROIImage();
-			Refresh();
-		}, 300000);
-	}
+		});
 
-
-	function loadStatus() {
-		url = domainname + '/statusflow';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				var _rsp = xhttp.responseText;
-				$('#statusflow').html(_rsp);
-			}
+		function LoadData(){
+			loadValue("value", "value", "border-collapse: collapse; width: 100%");
+			loadValue("raw", "raw", "border-collapse: collapse; width: 100%");
+			loadValue("prevalue", "prevalue", "border-collapse: collapse; width: 100%");
+			loadValue("error", "error", "border-collapse: collapse; width: 100%");
+			loadStatus();
+			loadCPUTemp();
+			loadRSSI();
+			loadUptime();
+			loadRoundCounter();
 		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
 
-
-	function loadCPUTemp() {
-		url = domainname + '/cpu_temperature';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				var _rsp = xhttp.responseText;
-				$('#cputemp').html("CPU Temperature: " +_rsp + "°C");
-			}
+		function LoadROIImage(){
+			var d = new Date();
+			var timestamp = d.getTime();
+			var h = addZero(d.getHours());
+			var m = addZero(d.getMinutes());
+			var s = addZero(d.getSeconds());
+			document.getElementById("img").src = getDomainname() + '/img_tmp/alg_roi.jpg?timestamp=' + timestamp;
+			$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
 
+		function Refresh() {
+			setTimeout (function() {
+				LoadData();
+				LoadROIImage();
+				Refresh();
+			}, 300000);
+		}
 
-	function loadRSSI() {
-		url = domainname + '/rssi';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				var _rsp = xhttp.responseText;
+		function loadStatus() {
+			url = domainname + '/statusflow';     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
+					$('#statusflow').html(_rsp);
+				}
+			}
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
+
+		function loadCPUTemp() {
+			url = domainname + '/cpu_temperature';     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
+					$('#cputemp').html("CPU Temperature: " +_rsp + "°C");
+				}
+			}
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
+
+		function loadRSSI() {
+			url = domainname + '/rssi';     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
 				
-				if (_rsp >= -55) {
-					$('#rssi').html("WIFI Signal: Excellent (" + _rsp + "dBm)");
-				}
-				else if (_rsp < -55 && _rsp >= -67) {
-					$('#rssi').html("WIFI Signal: Good (" + _rsp + "dBm)");
-				}
-				else if (_rsp < -67 && _rsp >= -78) {
-					$('#rssi').html("WIFI Signal: Fair (" + _rsp + "dBm)");
-				}
-				else if (_rsp < -78 && _rsp >= -85) {
-					$('#rssi').html("WIFI Signal: Weak (" + _rsp + "dBm)");
-				}
-				else {
-					$('#rssi').html("WIFI Signal: Unreliable (" + _rsp + "dBm)");
+					if (_rsp >= -55) {
+						$('#rssi').html("WIFI Signal: Excellent (" + _rsp + "dBm)");
+					}
+					else if (_rsp < -55 && _rsp >= -67) {
+						$('#rssi').html("WIFI Signal: Good (" + _rsp + "dBm)");
+					}
+					else if (_rsp < -67 && _rsp >= -78) {
+						$('#rssi').html("WIFI Signal: Fair (" + _rsp + "dBm)");
+					}
+					else if (_rsp < -78 && _rsp >= -85) {
+						$('#rssi').html("WIFI Signal: Weak (" + _rsp + "dBm)");
+					}
+					else {
+						$('#rssi').html("WIFI Signal: Unreliable (" + _rsp + "dBm)");
+					}
 				}
 			}
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();		
 		}
-		xhttp.open("GET", url, true);
-		xhttp.send();		
-	}
 
-
-	function loadUptime() {
-		url = domainname + '/uptime';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				var _rsp = xhttp.responseText;
-				$('#uptime').html("Uptime: " + _rsp);
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-
-	function loadRoundCounter() {
-		url = domainname + '/info?type=Round';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				var _rsp = xhttp.responseText;
-				$('#round').html("(Round: " + _rsp + ")");
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-		
-	
-	function loadValue(_type, _div, _style) {
-		url = domainname + '/value?all=true&type=' + _type;     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-			var _rsp = xhttp.responseText;
-			var _split = _rsp.split("\r");
-			if (typeof _style == undefined)
-				out = "<table>";
-			else
-				out = "<table style=\"" + _style + "\">";
-
-			if (_split.length == 1)
-			{
-				var _zer = ZerlegeZeile(_split[0], "\t")
-				if (_zer.length > 1)
-					out = _zer[1]; 
-				else
-					out = ""; 
-			}
-			else
-			{
-				for (var j = 0; j < _split.length; ++j)
-				{
-					var _zer = ZerlegeZeile(_split[j], "\t")
-					if (_zer.length == 1)
-						out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
-							_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\"> </td></tr>"; 
-					else
-						out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
-							_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\" >" + _zer[1] + "</td></tr>"; 
+		function loadUptime() {
+			url = domainname + '/uptime';     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
+					$('#uptime').html("Uptime: " + _rsp);
 				}
-				out = out + "</table>"
-
-				}
-			document.getElementById(_div).innerHTML = out;
 			}
-		};
-		xhttp.open("GET", url, true);
-		xhttp.send();		
-	}
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
 
+		function loadRoundCounter() {
+			url = domainname + '/info?type=Round';     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
+					$('#round').html("(Round: " + _rsp + ")");
+				}
+			}
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
 
-	function setImageMaxWidth()
-	{
-		loadConfig(domainname); 
-		ParseConfig();
-		param = getConfigParameters();
-		if(param["TakeImage"]["ImageSize"]["value1"] == "QVGA") {
-			if (param["Alignment"]["FlipImageSize"]["value1"] == "false") {
+		function loadValue(_type, _div, _style) {
+			url = domainname + '/value?all=true&type=' + _type;     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
+					var _split = _rsp.split("\r");
+					
+					if (typeof _style == undefined) {
+						out = "<table>";
+					}
+					else {
+						out = "<table style=\"" + _style + "\">";
+					}
+
+					if (_split.length == 1) {
+						var _zer = ZerlegeZeile(_split[0], "\t")
+					
+						if (_zer.length > 1) {
+							out = _zer[1];
+						}
+						else {
+							out = "";
+						}
+					}
+					else {
+						for (var j = 0; j < _split.length; ++j) {
+							var _zer = ZerlegeZeile(_split[j], "\t")
+						
+							if (_zer.length == 1) {
+								out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
+								_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\"> </td></tr>"; 
+							}
+							else {
+								out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
+								_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\" >" + _zer[1] + "</td></tr>";
+							}
+						}
+						out = out + "</table>"
+					}
+				document.getElementById(_div).innerHTML = out;
+				}
+			};
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();		
+		}
+
+		/* 
+		function setImageMaxWidth() {
+			loadConfig(domainname); 
+			ParseConfig();
+			param = getConfigParameters();
+			
+			if(param["TakeImage"]["CamFrameSize"].value == "QVGA") {
 				document.getElementById("img").style.maxWidth = "320px";
 			}
 			else {
-				document.getElementById("img").style.maxWidth = "240px";
-			}
-		}
-		else {
-			if (param["Alignment"]["FlipImageSize"]["value1"] == "false") { 
 				document.getElementById("img").style.maxWidth = "640px";
 			}
-			else {
-				document.getElementById("img").style.maxWidth = "480px";
-			}
 		}
-	}
+		*/
+		function init(){
+			domainname = getDomainname();
+			// setImageMaxWidth(); // CamFrameSize was replaced by zoom - CamFrameSize is no longer needed/used for zoom 
+			Refresh();
+		}
 
+		init();
 
-	function init(){
-		domainname = getDomainname();
-		setImageMaxWidth();
-		Refresh();
-	}
-
-	
-	init();
-
-</script>
+	</script>
 </body>
 </html>

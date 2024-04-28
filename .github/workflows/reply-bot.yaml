@@ -1,5 +1,5 @@
 # Reply Bot
-# It uses the configuration in .github/label-commenter-config.yml
+# It uses the configuration in .github/label-commenter-config.yaml
 # See https://github.com/peaceiris/actions-label-commenter
 
 name: Reply-Bot
@@ -25,7 +25,7 @@ jobs:
       
       ####################################################################
       ## Remove labels again (issues only)
-      ## Make sure to also add the reply message to .github/label-commenter-config.yml!
+      ## Make sure to also add the reply message to .github/label-commenter-config.yaml!
       ## This currently seems no longer to work due to changes on the actions-cool/issues-helper!
       ####################################################################
 #      - name: Remove 'Logfile' label again (issues only)
@@ -74,6 +74,7 @@ jobs:
       ## Write the response
       ####################################################################
       - name: Write Response
-        uses: peaceiris/actions-label-commenter@c2d00660c86f2b9ed0fb35b372c451558eba85b3
+        uses: peaceiris/actions-label-commenter@v1
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          config_file: .github/label-commenter-config.yaml

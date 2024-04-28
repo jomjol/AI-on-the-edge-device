@@ -23,7 +23,6 @@ class CRotateImage: public CImageBasis
         void RotateAntiAliasing(float _angle, int _centerx, int _centery);
 
         void Translate(int _dx, int _dy);
-        void Mirror();
 };
 
 #endif //CROTATEIMAGE_H

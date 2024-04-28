@@ -242,7 +242,7 @@ table {
 
 
 <h3>Copyright</h3>
-Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
+Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
 
 </body>
 </html>
@@ -347,32 +347,6 @@ Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edg
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
  				document.getElementById("IP-address").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadWLANSSID() 
-	{
-		url = getDomainname() + '/info?type=SSID';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("WLAN-SSID").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadWLANSSID() 
-	{
-		url = getDomainname() + '/info?type=SSID';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("wlan-ssid").value = xhttp.response;
 			}
 		}
 		xhttp.open("GET", url, true);

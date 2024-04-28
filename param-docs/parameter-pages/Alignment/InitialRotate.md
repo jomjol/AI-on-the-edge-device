@@ -1,9 +1,12 @@
 # Parameter `InitialRotate`
-Default Value: `179`
+Default Value: `0`
 
 Unit: Degrees
 
-Initial rotation of image before alignment in degree (0 .. 359)
+!!! Note
+    This parameter can also be set on the Reference Image configuration page!
 
 !!! Note
-    This parameter is accessible on the Reference Image Page but not on the Config page!
+    After changing this parameter you need to update your reference image and alignment markers!
+
+Initial rotation of image before alignment in degree (`-360` .. `+360`)
