@@ -206,7 +206,7 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     // number can still be x.6 - x.7. 
     // Preceding (else - branch) does not already happen from 9.
     if (((Digital_Transition_Area_Forward>=number_of_predecessors) && (eval_predecessors == (int)number_of_predecessors)) 
-        || result_after_decimal_point >= 4)
+        || result_after_decimal_point >= 4) {
         // The current digit, like the previous digit, does not yet have a zero crossing. 
         result =  result_before_decimal_point % 10;
     }

@@ -138,6 +138,11 @@ void task_UnityTesting(void *pvParameter)
         RUN_TEST(test_doFlowPP3);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP4);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110_transition);
+
     UNITY_END();
 
     while(1);
@@ -155,7 +160,7 @@ extern "C" void app_main()
 
   UNITY_BEGIN();
     RUN_TEST(testNegative_Issues);
-   RUN_TEST(testNegative);
+    RUN_TEST(testNegative);
    
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
