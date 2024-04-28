@@ -139,6 +139,16 @@ void task_UnityTesting(void *pvParameter)
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP4);
         printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowLateTransition);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowEarlyTransition);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowEarlyTransitionEdgeCase);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowIssue2857);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowLateTransitionHanging);
+        printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP_rainman110);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP_rainman110_transition);

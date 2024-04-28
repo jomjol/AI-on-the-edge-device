@@ -656,6 +656,7 @@ void test_doFlowIssue2857()
 
     // FrankCGN01
     decimalShift = -3;
+    a2dt = 9.0;
     TEST_ASSERT_EQUAL_STRING("159.3659", postProcess({ 0.9, 4.8, 9.0, 3.0, 6.0, 5.0}, { 9.6},
                                                     a2dt, decimalShift).c_str());
 
@@ -709,6 +710,7 @@ void test_doFlowLateTransitionHanging()
 
 void test_doFlowPP_rainman110()
 {
+
     // https://github.com/jomjol/AI-on-the-edge-device/issues/2743
     // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
     std::vector<float> digits = {4.0, 1.0, 1.8};  // wrong result: 412.3983
