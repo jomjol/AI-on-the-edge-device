@@ -46,7 +46,7 @@ void test_analogToDigit_Standard() {
     // Default: dig=6.8, ana=8.6 => erg=7
     // Transition = no
     // Offset = no
-    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 6.8, 8.6, 6, 9.2));
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 6.8, 8.6, 8, 9.2));
 
     // https://github.com/jomjol/AI-on-the-edge-device/issues/1143#issuecomment-1274434805
     // Also hanging digit () with small pointer after 0 pass.

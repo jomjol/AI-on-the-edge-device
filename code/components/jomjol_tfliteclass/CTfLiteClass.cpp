@@ -333,3 +333,17 @@ CTfLiteClass::~CTfLiteClass()
 
   psram_free_shared_tensor_arena_and_model_memory();
 }        
+
+#ifdef SUPRESS_TFLITE_ERRORS
+namespace tflite 
+{
+//tflite::ErrorReporter
+//  int OwnMicroErrorReporter::Report(const char* format, va_list args) 
+
+  int OwnMicroErrorReporter::Report(const char* format, va_list args) 
+  {
+    return 0;
+  }
+} 
+#endif
+ 
