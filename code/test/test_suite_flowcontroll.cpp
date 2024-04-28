@@ -156,7 +156,7 @@ extern "C" void app_main()
 {
   initGPIO();
   Init_NVS_SDCard();
-  esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to ERROR level
+  esp_log_level_set("*", ESP_LOG_ERROR);        // set all components to ERROR level
 
     // Create dedicated testing task (heap size can be configured - large enough to handle a lot of testing cases)
     // ********************************************
