@@ -1,8 +1,60 @@
-## [unreleased] - 2023-12-21
+## [update] - 2024-03-30
 
-### Changes
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/rolling...v15.3.0)
+#### Core Changes
+
+- New tflite-Model for Analog (v13.0.0)
+- New tflite-Model for Digital Hybrid (v7.0.0)
+
+#### Bug Fixes
+
+- tbd
+
+## [15.7.0] - 2024-02-17
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
+
+#### Core Changes
+- Added new camera settings (See `Settings > Alignment > Reference Image and Camera Settings`). You might need to re-create the reference image and alignment marks. Note worthy:
+  - You can now crop the image
+  - Support to configure sharpness, grayscale, negatoive and exposure
+- Enhanced various WebUI pages with better explanations and usability
+- Add Firmware Version to MQTT
+
+#### Bug Fixes
+- Reverted "Implemented late analog / digital transition [#2778](https://github.com/jomjol/AI-on-the-edge-device/pull/2778) (introduced in `v15.5`) as is seems to cause issues for many users.
+
+
+## [15.6.0] - 2024-02-09
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.5.0...v15.6.0)
+
+#### Fixed
+
+* Fixed issues with the SD-Card initialization
+
+## [15.5.0] - 2024-02-02
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.4.0...v15.5.0)
+
+#### Changed
+
+ - Update PlattformIO to v6.5.0, which means esp-idf to v5.1
+ - Enhance busy notification
+ - Implemented late analog / digital transition
+
+#### Fixed
+
+* ATA-TRIM: workaround for old SD-cards with no trim function to work with esp-idf v5.x
+* InfluxDB: Modified the time conversions to be more stable (UTC vs. local time shifts)
+* Fix negatives on extended resolution false
+* Show chip infos on info page
+* Fix memory leaks in tflite integration
+
+## [15.4.0] - 2023-12-22
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.4.0)
 
 #### Changed
 
@@ -18,6 +70,8 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
    - dig-class100-0167_s2_q.tflite
    - dig-class11_1700_s2.tflite
    - ana-cont_1208_s2_q.tflite
+  
+ - Added config entries for MQTT TLS
 
 
 #### Fixed
@@ -27,12 +81,9 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 * Minor html response bugfix 
 
  - Memory leakage (MQTT)
-
    
 
 ## [15.3.0] - 2023-07-22
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.2.4)
 
@@ -43,12 +94,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
    - ana-cont_1207_s2_q.tflite
    - dig-cont_0620_s3_q.tflite
 
-
-
-
 ## [15.2.4] - 2023-05-02
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4)
 
@@ -72,8 +118,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 
 ## [15.2.0] - 2023-04-23
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0)
 
@@ -103,8 +147,6 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 
 
 ## [15.1.1] - 2023-03-23
-
-### Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1)
 

@@ -79,6 +79,34 @@ table {
 		</tr>
 	</table>
 
+	<table>
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>
+			<h3>Device Info</h3>
+		</tr>
+		<tr>
+			<td>Chip Cores:</td>
+			<td>
+				<output id="chip-cores"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Chip Revision:</td>
+			<td>
+				<output id="chip-revision"></output>
+			</td>
+		</tr>
+		<tr>
+			<td>Chip Features:</td>
+			<td>
+				<output id="chip-features"></output>
+			</td>
+		</tr>
+	</table>
+
 
 	<table>
 		<colgroup>
@@ -214,7 +242,7 @@ table {
 
 
 <h3>Copyright</h3>
-Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
+Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
 
 </body>
 </html>
@@ -319,32 +347,6 @@ Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edg
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
  				document.getElementById("IP-address").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadWLANSSID() 
-	{
-		url = getDomainname() + '/info?type=SSID';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("WLAN-SSID").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadWLANSSID() 
-	{
-		url = getDomainname() + '/info?type=SSID';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("wlan-ssid").value = xhttp.response;
 			}
 		}
 		xhttp.open("GET", url, true);
@@ -475,6 +477,45 @@ Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edg
 		xhttp.send();
 	}
 
+	function loadChipCores() 
+	{
+		url = getDomainname() + '/info?type=ChipCores';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {				
+ 				document.getElementById("chip-cores").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadChipRevision() 
+	{
+		url = getDomainname() + '/info?type=ChipRevision';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {				
+ 				document.getElementById("chip-revision").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadChipFeatures() 
+	{
+		url = getDomainname() + '/info?type=ChipFeatures';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {				
+ 				document.getElementById("chip-features").value = xhttp.response;
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
 	function init()
 	{
 		loadMemoryInfo();
@@ -493,6 +534,9 @@ Copyright &copy; 2020 - 2023 by <a href="https://github.com/jomjol/AI-on-the-edg
 		loadSDCardPartitionSize();
 		loadSDCardFreePartitionSpace();
 		loadSDCardPartitionAllocationSize();
+		loadChipCores();
+		loadChipRevision();
+		loadChipFeatures();
 	}
 
 	init();
