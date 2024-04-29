@@ -691,6 +691,8 @@ void test_doFlowLateTransitionHanging()
     // Slider0007: In my opionion this series starts with 11.x with this a2dt value
     // As I remember right, this is a real series from rainman110, therefore the following cases 
     // also needs to be corrected the same way
+    TEST_ASSERT_EQUAL_STRING("11.4210", postProcess({0.0, 1.0, 1.9}, {4.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
     TEST_ASSERT_EQUAL_STRING("11.6210", postProcess({0.0, 1.0, 1.9}, {6.3, 2.2, 1.0, 0.0}, a2dt).c_str());
 
     TEST_ASSERT_EQUAL_STRING("12.1210", postProcess({0.0, 1.0, 1.9}, {1.2, 2.2, 1.0, 0.0}, a2dt).c_str());
