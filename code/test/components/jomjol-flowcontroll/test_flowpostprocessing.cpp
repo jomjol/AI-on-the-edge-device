@@ -615,7 +615,10 @@ void test_doFlowEarlyTransitionEdgeCase()
 
     // Silder0007: In my opinion this is a unrealistic case {0.0, **0.0**, 9.9, 9,0}, {5.0, 0.0}
     // More realistic values: {0.0, 0.9, 9.9, 9,0}, {5.0, 0.0}
-    TEST_ASSERT_EQUAL_STRING("99.50", postProcess({0.0, 0.9, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
+    TEST_ASSERT_EQUAL_STRING("99.50", postProcess({0.0, 0.0, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
+
+    // fails with 99.50    
+    TEST_ASSERT_EQUAL_STRING("199.50", postProcess({0.0, 1.0, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
 
     TEST_ASSERT_EQUAL_STRING("99.95", postProcess({0.0, 1.0, 0.0, 0.0}, {9.5, 5.0}, a2dt).c_str());
 }
@@ -687,6 +690,13 @@ void test_doFlowLateTransitionHanging()
 {
     float a2dt = 3.6;
 
+    // haverland: this is the case if the analog pointer is a bit before the digit.
+    // It's the normal late transition up to 2.0 on analog must the digit transition ends
+    // After 2.0 on analog it named "hanging digit" by me. It never reach the x.0 until the next
+    // transition begins.
+    // BUT. It makes the issue you have later, because all other unter 3.6 are negative values now.
+    TEST_ASSERT_EQUAL_STRING("12.1210", postProcess({0.0, 1.0, 1.9}, {1.2, 2.2, 1.0, 0.0}, a2dt).c_str());
+
     // Questionable? (meter shows 012.4210 , this is after transition)
     // Slider0007: In my opionion this series starts with 11.x with this a2dt value
     // As I remember right, this is a real series from rainman110, therefore the following cases 
@@ -694,8 +704,6 @@ void test_doFlowLateTransitionHanging()
     TEST_ASSERT_EQUAL_STRING("11.4210", postProcess({0.0, 1.0, 1.9}, {4.3, 2.2, 1.0, 0.0}, a2dt).c_str());
 
     TEST_ASSERT_EQUAL_STRING("11.6210", postProcess({0.0, 1.0, 1.9}, {6.3, 2.2, 1.0, 0.0}, a2dt).c_str());
-
-    TEST_ASSERT_EQUAL_STRING("12.1210", postProcess({0.0, 1.0, 1.9}, {1.2, 2.2, 1.0, 0.0}, a2dt).c_str());
 
     TEST_ASSERT_EQUAL_STRING("12.3610", postProcess({0.0, 1.0, 2.5}, {3.5, 6.2, 1.0, 0.0}, a2dt).c_str());
 
