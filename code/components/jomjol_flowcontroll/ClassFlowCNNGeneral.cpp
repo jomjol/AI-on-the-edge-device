@@ -166,7 +166,8 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         return result;
     }
 
-    if ((number_of_predecessors >= Digital_Transition_Area_Predecessor ) && (number_of_predecessors <= (10.0 - Digital_Transition_Area_Predecessor))) {
+    if ((number_of_predecessors > Digital_Transition_Area_Predecessor ) && (number_of_predecessors < (10.0 - Digital_Transition_Area_Predecessor)))
+    {
         // no digit change, because predecessor is far enough away (0+/-DigitalTransitionRangePredecessor) --> number is rounded
         // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
         if ((result_after_decimal_point <= DigitalBand) || (result_after_decimal_point >= (10-DigitalBand))) {
@@ -204,7 +205,8 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
     // number can still be x.6 - x.7. 
     // Preceding (else - branch) does not already happen from 9.
-    if (Digital_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4) {
+    if (((Digital_Transition_Area_Forward>=number_of_predecessors) && (eval_predecessors == (int)number_of_predecessors)) 
+        || result_after_decimal_point >= 4) {
         // The current digit, like the previous digit, does not yet have a zero crossing. 
         result =  result_before_decimal_point % 10;
     }
@@ -227,8 +229,8 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     bool roundedUp = false;
 
     // Within the digital inequalities 
-    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
-        || (eval_predecessors <= 4 && result_after_decimal_point>=6))  {   // or digit runs after (analogue =0..4, digit >=6)
+    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10) && ((int)numeral_preceder == eval_predecessors))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+        || (eval_predecessors <= 4 && result_after_decimal_point>=6)) {   // or digit runs after (analogue =0..4, digit >=6)
         result = (int) (round(number) + 10) % 10;
         roundedUp = true;
         // before/ after decimal point, because we adjust the number based on the uncertainty.
@@ -238,7 +240,14 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
                                                     " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
                                                     " erg before comma: " + std::to_string(result_before_decimal_point) + 
                                                     " erg after comma: " + std::to_string(result_after_decimal_point));
-    } 
+    }
+    else if (result_after_decimal_point < Digital_Uncertainty && numeral_preceder > analogDigitalTransitionStart) {
+        result = ((result_before_decimal_point+10) - 1) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Digital Uncertainty - Too early zero crossing - Result = " + std::to_string(result) +
+                                            " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
+                                            " erg before comma: " + std::to_string(result_before_decimal_point) + 
+                                            " erg after comma: " + std::to_string(result_after_decimal_point)); 
+    }
     else {
         result = (int) ((int) trunc(number) + 10) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digital Uncertainty - Result = " + std::to_string(result) +
@@ -248,9 +257,10 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     // No zero crossing has taken place.
     // Only eval_predecessors used because numeral_preceder could be wrong here.
     // numeral_preceder<=0.1 & eval_predecessors=9 corresponds to analogue was reset because of previous analogue that are not yet at 0.
-    if ((eval_predecessors>=6 && (numeral_preceder>analogDigitalTransitionStart || numeral_preceder<=0.2) && roundedUp)) {
-        result =  ((result_before_decimal_point+10) - 1) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
+    if ((eval_predecessors >= 3 && (numeral_preceder > analogDigitalTransitionStart) && roundedUp))
+    {
+        result = ((result_before_decimal_point+10) - 1) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - No correction = " + std::to_string(result) +
                                     " number: " + std::to_string(number) + 
                                     " numeral_preceder = " + std::to_string(numeral_preceder) + 
                                     " eerg after comma = " +  std::to_string(result_after_decimal_point));

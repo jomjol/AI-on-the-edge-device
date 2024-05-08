@@ -1,7 +1,6 @@
 #include "test_flow_postrocess_helper.h"
 
-
-
+#include <memory>
 
 /**
  * ACHTUNG! Die Test laufen aktuell nur mit ausgeschaltetem Debug in ClassFlowCNNGeneral 
@@ -477,12 +476,18 @@ void test_doFlowPP3() {
         expected_extended= "126.9231";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+        setAnalogdigitTransistionStart(undertestPost, 9.4); // Extreme late transition
+        result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
+        delete undertestPost;
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        undertestPost = init_do_flow(analogs, digits, Digital100, false, true, 0);
+        setAnalogdigitTransistionStart(undertestPost, 9.4); // Extreme late transition
+        result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
+        delete undertestPost;
 
        // Fehler  V12.0.1 
         // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1282168030
@@ -542,4 +547,259 @@ void test_doFlowPP4() {
 
 }
 
+std::string postProcess(std::vector<float> digits,
+                        std::vector<float> analogs,
+                        float analog2DigitalTransition=0.0,
+                        int decimalShift=0)
+{
+        std::unique_ptr<UnderTestPost> undertestPost(init_do_flow(std::move(analogs),
+                                                                  std::move(digits),
+                                                                  Digital100,
+                                                                  false, false, decimalShift));
+
+        setAnalogdigitTransistionStart(undertestPost.get(), analog2DigitalTransition);
+        return process_doFlow(undertestPost.get());
+}
+
+void test_doFlowLateTransition()
+{
+        // in these test cases, the last digit before comma turns 3.6 too late
+        float a2dt = 3.6;
+
+        // meter shows 011.0210 but it already needs to be 012.0210,  before transition
+        TEST_ASSERT_EQUAL_STRING("12.0210", postProcess({0.0, 1.0, 1.0}, {0.2, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+        // meter shows 011.3210 but it already needs to be 012.3210, just before transition
+        TEST_ASSERT_EQUAL_STRING("12.3210", postProcess({0.0, 1.0, 1.2}, {3.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+        // meter shows 012.4210 , this is after transition
+        TEST_ASSERT_EQUAL_STRING("12.4210", postProcess({0.0, 1.0, 2.0}, {4.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+        // meter shows 012.987
+        TEST_ASSERT_EQUAL_STRING("12.9870", postProcess({0.0, 1.0, 2.0}, {9.8, 8.7, 7.0, 0.0}, a2dt).c_str());
+
+        // meter shows 0012.003
+        TEST_ASSERT_EQUAL_STRING("13.003", postProcess({0.0, 0.0, 1.0, 2.0}, {0.1, 0.3, 3.1}, a2dt).c_str());
+
+        // meter shows 0012.351
+        TEST_ASSERT_EQUAL_STRING("13.351", postProcess({0.0, 0.0, 1.0, 2.8}, {3.5, 5.2, 1.1}, a2dt).c_str());
+
+        // meter shows 0013.421
+        TEST_ASSERT_EQUAL_STRING("13.421", postProcess({0.0, 0.0, 1.0, 3.0}, {4.1, 2.2, 1.1}, a2dt).c_str());
+}
+
+void test_doFlowEarlyTransition()
+{
+        // in these test cases, the last digit before comma turns at around 7.5
+        // start transition 7.0 end transition 8.0
+        float a2dt = 7.5;
+
+        // meter shows 011.0210 but it already needs to be 012.0210,  before transition
+        TEST_ASSERT_EQUAL_STRING("12.6789", postProcess({0.0, 1.0, 2.0}, {6.7, 7.8, 8.9, 9.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("12.7234", postProcess({0.0, 1.0, 2.4}, {7.2, 2.3, 3.4, 4.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("12.7789", postProcess({0.0, 1.0, 2.7}, {7.7, 7.8, 8.9, 9.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("12.8123", postProcess({0.0, 1.0, 3.0}, {8.1, 1.2, 2.3, 3.0}, a2dt).c_str());
+
+        TEST_ASSERT_EQUAL_STRING("13.1234", postProcess({0.0, 1.0, 3.0}, {1.2, 2.3, 3.4, 4.0}, a2dt).c_str());
+}
+
+
+void test_doFlowEarlyTransitionEdgeCase()
+{
+    float a2dt = 8.;
+
+    // THIS TEST FAILS and reports 9.50. Not sure yet why. Predecessor value seems to play in here.
+    TEST_ASSERT_EQUAL_STRING("99.50", postProcess({0.0, 0.0, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("99.95", postProcess({0.0, 1.0, 0.0, 0.0}, {9.5, 5.0}, a2dt).c_str());
+}
+
+void test_doFlowIssue2857()
+{
+    // reported by gec75
+    float a2dt = 9.2;
+    int decimalShift = 3;
+    TEST_ASSERT_EQUAL_STRING("252090.0", postProcess({ 2.0, 5.0, 1.9}, { 0.8, 8.8, 9.9, 0.1},
+                                                     a2dt, decimalShift).c_str());
+
+    // reported by Kornelius777
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("1017.8099", postProcess({ 0.0, 1.0, 0.0, 1.0, 7.0}, { 8.2, 0.9, 9.9, 9.8},
+                                                     a2dt, decimalShift).c_str());
+
+    // with hanging digit
+    TEST_ASSERT_EQUAL_STRING("1017.8099", postProcess({ 0.0, 1.0, 0.0, 1.0, 6.9}, { 8.2, 0.9, 9.9, 9.8},
+                                                      a2dt, decimalShift).c_str());
+
+    // and deccimal shift
+    decimalShift = -2;
+    TEST_ASSERT_EQUAL_STRING("10.178099", postProcess({ 0.0, 1.0, 0.0, 1.0, 6.9}, { 8.2, 0.9, 9.9, 9.8},
+                                                      a2dt, decimalShift).c_str());
+
+
+    // reported by marcniedersachsen
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("778.1480", postProcess({ 0.0, 7.0, 7.0, 7.9}, { 1.4, 4.7, 8.0, 0.5},
+                                                      a2dt, decimalShift).c_str());
+
+    decimalShift = 3;
+    TEST_ASSERT_EQUAL_STRING("778148.0", postProcess({ 0.0, 7.0, 7.0, 7.9}, { 1.4, 4.7, 8.0, 0.5},
+                                                     a2dt, decimalShift).c_str());
+
+     // reported by ohkaja
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("1052.6669", postProcess({ 0.0, 1.0, 10.0, 4.9, 2.0}, { 6.7, 6.7, 6.9, 9.1},
+                                                     a2dt, decimalShift).c_str());
+
+    // FrankCGN01
+    decimalShift = -3;
+    TEST_ASSERT_EQUAL_STRING("159.3659", postProcess({ 0.9, 4.8, 9.0, 3.0, 6.0, 5.0}, { 9.6},
+                                                    a2dt, decimalShift).c_str());
+
+    // THIS TEST FAILS
+    // THIS TEST CASE COULD BE INVALID
+    //
+    // Second test in https://github.com/jomjol/AI-on-the-edge-device/issues/2857#issuecomment-1937452352
+    // The last digit seems to be falsely recongnized. It looks like a regular "2" (no transition)
+    // but it is recognized by the inference as "2.5".
+    //
+    // @TODO: Feedback required by @FrankCGN01
+    decimalShift = -3;
+    TEST_ASSERT_EQUAL_STRING("159.5022", postProcess({ 0.9, 4.9, 9.0, 5.0, 0.0, 2.5}, { 2.2},
+                                                      a2dt, decimalShift).c_str());
+
+    // THIS TEST FAILS
+    //
+    // reported by penapena
+    // Note: this is a strange example, as the last digit (4.4) seems to have very early transition
+    //
+    // @TODO: The analog to digital value needs to be determined. Feed required by @penapena
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("124.4981", postProcess({ 0.0, 1.0, 2.0, 4.4}, { 5.1, 9.8, 8.3, 1.6},
+                                                      a2dt, decimalShift).c_str());
+
+    // reported by warnmat
+    decimalShift = 0;
+    TEST_ASSERT_EQUAL_STRING("51.653", postProcess({ 0.1, 0.1, 5.0, 1.0}, { 6.7, 5.4, 3.1},
+                                                     a2dt, decimalShift).c_str());
+}
+
+
+void test_doFlowLateTransitionHanging()
+{
+    float a2dt = 3.6;
+
+    // meter shows 012.4210 , this is after transition
+    TEST_ASSERT_EQUAL_STRING("12.4210", postProcess({0.0, 1.0, 1.9}, {4.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("12.6210", postProcess({0.0, 1.0, 1.9}, {6.3, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.1210", postProcess({0.0, 1.0, 1.9}, {1.2, 2.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.3610", postProcess({0.0, 1.0, 2.5}, {3.5, 6.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.4510", postProcess({0.0, 1.0, 3.0}, {4.5, 5.2, 1.0, 0.0}, a2dt).c_str());
+
+    TEST_ASSERT_EQUAL_STRING("13.4510", postProcess({0.0, 1.0, 2.9}, {4.5, 5.2, 1.0, 0.0}, a2dt).c_str());
+}
+
+void test_doFlowPP_rainman110()
+{
+    // https://github.com/jomjol/AI-on-the-edge-device/issues/2743
+    // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
+    std::vector<float> digits = {4.0, 1.0, 1.8};  // wrong result: 412.3983
+    std::vector<float> analogs = {3.6, 9.9, 8.1, 3.5};
+    UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    TEST_ASSERT_EQUAL_STRING("411.3983", process_doFlow(undertestPost).c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // --> Extreme early digit transition. AnanlogDigitTransition needs to set to 3.5 (was limited to 6)
+    digits = {4.0, 1.0, 7.9};  // wrong result: 417.2579
+    analogs = {2.5, 5.8, 7.7, 9.0};
+
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    TEST_ASSERT_EQUAL_STRING("418.2579", process_doFlow(undertestPost).c_str());
+    delete undertestPost;
+
+    // Edge Case
+    digits = {9.9, 9.4};
+    analogs = {5.0, 0.0};
+
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 8.0);
+    TEST_ASSERT_EQUAL_STRING("99.50", process_doFlow(undertestPost).c_str());
+    delete undertestPost;
+
+    // Edge Case
+    digits = {1.0, 0.0, 0.0};
+    analogs = {9.5, 5.0};
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 8.0);
+    TEST_ASSERT_EQUAL_STRING("99.95", process_doFlow(undertestPost).c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Discussion 149365.9 vs. 149364.9
+    digits = {0.9, 4.8, 9.0, 3.0, 6.0, 5.0};
+    analogs = {9.6};
+
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 9.2);
+    TEST_ASSERT_EQUAL_STRING("149364.9", process_doFlow(undertestPost).c_str());
+    delete undertestPost;
+}
+
+
+void test_doFlowPP_rainman110_transition()
+{
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    std::vector<float> digits = {4.0, 1.0, 7.9};  
+    std::vector<float> analogs = {1.4, 5.8, 7.7, 9.0};
+    
+    UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    std::string result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.1579", result.c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    digits = {4.0, 1.0, 7.9};  
+    analogs = {3.4, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.3579", result.c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    digits = {4.0, 1.0, 8.5};  
+    analogs = {3.7, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.3579", result.c_str());
+    delete undertestPost;
+
+    // https://github.com/jomjol/AI-on-the-edge-device/pull/2887
+    // Edge cases
+    digits = {4.0, 1.0, 8.9};  
+    analogs = {4.0, 5.8, 7.7, 9.0};
+    
+    undertestPost = init_do_flow(analogs, digits, Digital100, false, false, 0);
+    setAnalogdigitTransistionStart(undertestPost, 3.5);
+    result = process_doFlow(undertestPost);
+    TEST_ASSERT_EQUAL_STRING("418.4579", result.c_str());
+    delete undertestPost;
+}
 

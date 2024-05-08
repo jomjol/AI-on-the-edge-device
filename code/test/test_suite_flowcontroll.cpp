@@ -138,6 +138,21 @@ void task_UnityTesting(void *pvParameter)
         RUN_TEST(test_doFlowPP3);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP4);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowLateTransition);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowEarlyTransition);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowEarlyTransitionEdgeCase);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowIssue2857);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowLateTransitionHanging);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110_transition);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_rainman110);
+
     UNITY_END();
 
     while(1);
@@ -149,24 +164,11 @@ void task_UnityTesting(void *pvParameter)
  */
 extern "C" void app_main()
 {
-  initGPIO();
-  Init_NVS_SDCard();
-  esp_log_level_set("*", ESP_LOG_ERROR);        // set all components to ERROR level
+    initGPIO();
+    Init_NVS_SDCard();
+    esp_log_level_set("*", ESP_LOG_ERROR);        // set all components to DEBUG level
 
-  UNITY_BEGIN();
-    RUN_TEST(testNegative_Issues);
-   RUN_TEST(testNegative);
-   
-    RUN_TEST(test_analogToDigit_Standard);
-    RUN_TEST(test_analogToDigit_Transition);
-    RUN_TEST(test_doFlowPP);
-    RUN_TEST(test_doFlowPP1);
-    RUN_TEST(test_doFlowPP2);
-    RUN_TEST(test_doFlowPP3);
-    RUN_TEST(test_doFlowPP4);
-
-    // getReadoutRawString test
-    RUN_TEST(test_getReadoutRawString);
-  
-  UNITY_END();
+    // Create dedicated testing task (heap size can be configured - large enough to handle a lot of testing cases)
+    // ********************************************
+    xTaskCreate(&task_UnityTesting, "task_UnityTesting", 12 * 1024, NULL, tskIDLE_PRIORITY+2, NULL);
 }
