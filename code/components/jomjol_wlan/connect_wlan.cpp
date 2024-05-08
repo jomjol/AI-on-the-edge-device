@@ -478,6 +478,7 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 		}
 
 		if (WIFIReconnectCnt >= 10) {
+			vTaskDelay(5000 / portTICK_PERIOD_MS); // Delay between the reconnections
 			WIFIReconnectCnt = 0;
 			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Disconnected, multiple reconnect attempts failed (" + 
 													 std::to_string(disconn->reason) + "), still retrying...");
