@@ -480,34 +480,39 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
 
 void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
 {
-    _sharpnessLevel = min(2, max(-2, _sharpnessLevel));
-
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
     {
+        _sharpnessLevel = min(3, max(-3, _sharpnessLevel));
+
         camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
+
         if (sensor_info != NULL)
         {
-            // post processing
-            if (_autoSharpnessEnabled)
+            if (sensor_info->model == CAMERA_OV5640)
             {
-                if (sensor_info->model == CAMERA_OV2640)
+                if (_autoSharpnessEnabled)
                 {
-                    ov2640_enable_auto_sharpness(s);
-                } else {
+                    // autoSharpness is not supported, default to zero
                     s->set_sharpness(s, 0);
-                }
-            }
-            else
-            {
-                if (sensor_info->model == CAMERA_OV2640)
-                {
-                    ov2640_set_sharpness(s, _sharpnessLevel);
                 }
                 else
                 {
                     s->set_sharpness(s, _sharpnessLevel);
+                }
+            }
+            else
+            {
+                // The OV2640 does not officially support sharpness, so the detour is made with the ov2640_sharpness.cpp.
+                if (_autoSharpnessEnabled)
+                {
+                    s->set_sharpness(s, 0);
+                    ov2640_enable_auto_sharpness(s);
+                }
+                else
+                {
+                    ov2640_set_sharpness(s, _sharpnessLevel);
                 }
             }
         }
