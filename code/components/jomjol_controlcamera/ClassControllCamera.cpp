@@ -484,7 +484,7 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
 
     if (s != NULL)
     {
-        _sharpnessLevel = min(3, max(-3, _sharpnessLevel));
+        _sharpnessLevel = min(2, max(-2, _sharpnessLevel));
 
         camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
 
