@@ -81,7 +81,7 @@ protected:
     long GetFileSize(std::string filename);
     void SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput);
     void SetImageWidthHeightFromResolution(framesize_t resol);
-    void SanitizeZoomOffset(int frameSizeX, int frameSizeY, int imageWidth, int imageHeight, int &zoomOffsetX, int &zoomOffsetY);
+    void SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, int &imageWidth, int &imageHeight, int &zoomOffsetX, int &zoomOffsetY);
 
 public:
     CCamera(void);

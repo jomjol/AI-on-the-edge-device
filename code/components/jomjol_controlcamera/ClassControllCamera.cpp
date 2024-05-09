@@ -329,8 +329,12 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
 }
 
 
-void CCamera::SanitizeZoomOffset(int frameSizeX, int frameSizeY, int imageWidth, int imageHeight, int &zoomOffsetX, int &zoomOffsetY)
+void CCamera::SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, int &imageWidth, int &imageHeight, int &zoomOffsetX, int &zoomOffsetY)
 {
+    // This works only if the aspect ratio of 4:3 is preserved in the window size.
+    // use values divisible by 8 without remainder
+    int _imageWidth = imageWidth + (imageSize * 4 * 8);
+    int _imageHeight = imageHeight + (imageSize * 3 * 8);
     int _offsetx = zoomOffsetX;
     int _offsety = zoomOffsetY;
     int _maxX = 0;
@@ -395,6 +399,8 @@ void CCamera::SanitizeZoomOffset(int frameSizeX, int frameSizeY, int imageWidth,
 
     zoomOffsetX = _offsetx;
     zoomOffsetY = _offsety;
+    imageWidth = _imageWidth;
+    imageHeight = _imageHeight;
 }
 
 
@@ -407,18 +413,29 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
         camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
         if (zoomEnabled && (sensor_info != NULL))
         {
+            int _imageSize_temp = 0;
+            int _imageWidth = CCstatus.ImageWidth;
+            int _imageHeight = CCstatus.ImageHeight;
             int _offsetx = zoomOffsetX;
             int _offsety = zoomOffsetY;
             if (sensor_info->model == CAMERA_OV5640)
             {
+                int unused = 0;
+
                 int frameSizeX = 2560;
                 int frameSizeY = 1920;
-                SanitizeZoomOffset(frameSizeX, frameSizeY, CCstatus.ImageWidth, CCstatus.ImageHeight, _offsetx, _offsety);
 
-                s->set_res_raw(s, _offsetx, _offsety, _offsetx + CCstatus.ImageWidth, _offsety + CCstatus.ImageHeight, 0, 0, frameSizeX, frameSizeY, CCstatus.ImageWidth, CCstatus.ImageHeight, false, false);
+                // imageSize is causing cam_hal: NO-EOI and FB-OVF issues
+                // if (imageSize < 79)
+                // {
+                //     _imageSize_temp = (79 - imageSize);
+                // }
+                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+
+                SetCamWindow(s, unused, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
 
             }
-            else if (sensor_info->model == CAMERA_OV2640)
+            else
             {
                 // ov2640_sensor_mode_t _mode = OV2640_MODE_UXGA; // 1600x1200
                 // ov2640_sensor_mode_t _mode = OV2640_MODE_SVGA; // 800x600
@@ -427,18 +444,12 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
 
                 int frameSizeX = 1600;
                 int frameSizeY = 1200;
-                int _imageSize_temp = 0;
 
                 if (imageSize < 29)
                 {
                     _imageSize_temp = (29 - imageSize);
                 }
-
-                // This works only if the aspect ratio of 4:3 is preserved in the window size.
-                // use values divisible by 8 without remainder
-                int _imageWidth = CCstatus.ImageWidth + (_imageSize_temp * 4 * 8);
-                int _imageHeight = CCstatus.ImageHeight + (_imageSize_temp * 3 * 8);
-                SanitizeZoomOffset(frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
 
                 // _mode sets the sensor resolution (3 options available),
                 // _offsetx and _offsety set the start of the ROI,
@@ -446,10 +457,6 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
                 // CCstatus.ImageWidth and CCstatus.ImageHeight set the output window size.
                 SetCamWindow(s, _mode, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
 
-            }
-            else
-            {
-                s->set_framesize(s, CCstatus.ImageFrameSize);
             }
         }
         else
@@ -527,43 +534,55 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
  * resolution = 0 \\ OV2640_MODE_UXGA -> 1600 x 1200
  * resolution = 1 \\ OV2640_MODE_SVGA -> 800  x 600
  * resolution = 2 \\ OV2640_MODE_CIF  -> 400  x 296
- * resolution = 3 \\ OV2640_MODE_MAX
  */
 void CCamera::SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput)
 {
-    // - (xOffset,yOffset) is the origin of the window in pixels and (xLength,yLength) is the size of the window in pixels.
-    // - (xOffset,yOffset) ist der Ursprung des Fensters in Pixel und (xLength,yLength) ist die Größe des Fensters in Pixel.
+    camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
+    if (sensor_info != NULL)
+    {
+        if (sensor_info->model == CAMERA_OV5640)
+        {
+            int frameSizeX = 2560;
+            int frameSizeY = 1920;
+            s->set_res_raw(s, xOffset, yOffset, xOffset + xOutput, yOffset + yOutput, 0, 0, frameSizeX, frameSizeY, xOutput, yOutput, false, false);
+        }
+        else
+        {
+            // - (xOffset,yOffset) is the origin of the window in pixels and (xLength,yLength) is the size of the window in pixels.
+            // - (xOffset,yOffset) ist der Ursprung des Fensters in Pixel und (xLength,yLength) ist die Größe des Fensters in Pixel.
 
-    // - Be aware that changing the resolution will effectively overwrite these settings.
-    // - Beachten Sie, dass eine Änderung der Auflösung diese Einstellungen effektiv überschreibt.
+            // - Be aware that changing the resolution will effectively overwrite these settings.
+            // - Beachten Sie, dass eine Änderung der Auflösung diese Einstellungen effektiv überschreibt.
 
-    // - This works only if the aspect ratio of 4:3 is preserved in the window size.
-    // - Dies funktioniert nur, wenn das Seitenverhältnis von 4:3 in der Fenstergröße beibehalten wird.
+            // - This works only if the aspect ratio of 4:3 is preserved in the window size.
+            // - Dies funktioniert nur, wenn das Seitenverhältnis von 4:3 in der Fenstergröße beibehalten wird.
 
-    // - total_x and total_y defines the size on the sensor
-    // - total_x und total_y definieren die Größe des Sensors
+            // - total_x and total_y defines the size on the sensor
+            // - total_x und total_y definieren die Größe des Sensors
 
-    // - width and height defines the resulting image(may be smaller than the size on the sensor)
-    // - width und height definieren das resultierende Bild (kann kleiner sein als die Größe des Sensor)
+            // - width and height defines the resulting image(may be smaller than the size on the sensor)
+            // - width und height definieren das resultierende Bild (kann kleiner sein als die Größe des Sensor)
 
-    // - keep the aspect total_x : total_y == width : height
-    // - Behalten Sie den Aspekt total_x : total_y == width : height bei
+            // - keep the aspect total_x : total_y == width : height
+            // - Behalten Sie den Aspekt total_x : total_y == width : height bei
 
-    // - use values divisible by 8 without remainder
-    // - Verwenden Sie Werte, die ohne Rest durch 8 teilbar sind
+            // - use values divisible by 8 without remainder
+            // - Verwenden Sie Werte, die ohne Rest durch 8 teilbar sind
 
-    // - start with total_x = width and total_y = height, reduce both values by eg.32 pixels
-    // - Beginnen Sie mit total_x = width und total_y = height und reduzieren Sie beide Werte um z.B.32 Pixel
+            // - start with total_x = width and total_y = height, reduce both values by eg.32 pixels
+            // - Beginnen Sie mit total_x = width und total_y = height und reduzieren Sie beide Werte um z.B.32 Pixel
 
-    // - next try moving with offset_x or offset_y by 8 pixels
-    // - Versuchen Sie als Nächstes, mit offset_x oder offset_y um 8 Pixel zu verschieben
+            // - next try moving with offset_x or offset_y by 8 pixels
+            // - Versuchen Sie als Nächstes, mit offset_x oder offset_y um 8 Pixel zu verschieben
 
-    // set_res_raw(sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning)
-    // set_window(sensor, (ov2640_sensor_mode_t)startX, offsetX, offsetY, totalX, totalY, outputX, outputY);
-    // set_window(sensor, mode, offset_x, offset_y, max_x, max_y, w, h);
+            // set_res_raw(sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning)
+            // set_window(sensor, (ov2640_sensor_mode_t)startX, offsetX, offsetY, totalX, totalY, outputX, outputY);
+            // set_window(sensor, mode, offset_x, offset_y, max_x, max_y, w, h);
 
-    int unused = 0;
-    s->set_res_raw(s, resolution, unused, unused, unused, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, unused, unused);
+            int unused = 0;
+            s->set_res_raw(s, resolution, unused, unused, unused, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, unused, unused);
+        }
+    }
 }
 
 static size_t jpg_encode_stream(void *arg, size_t index, const void *data, size_t len)
