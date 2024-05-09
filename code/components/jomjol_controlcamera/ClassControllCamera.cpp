@@ -497,7 +497,7 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
 
         if (sensor_info != NULL)
         {
-            if (sensor_info->model == CAMERA_OV5640)
+            if (sensor_info->model == CAMERA_OV5640 || sensor_info->model == CAMERA_OV3660)
             {
                 if (_autoSharpnessEnabled)
                 {
@@ -509,7 +509,7 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
                     s->set_sharpness(s, _sharpnessLevel);
                 }
             }
-            else
+            else if (sensor_info->model == CAMERA_OV2640)
             {
                 // The OV2640 does not officially support sharpness, so the detour is made with the ov2640_sharpness.cpp.
                 if (_autoSharpnessEnabled)
