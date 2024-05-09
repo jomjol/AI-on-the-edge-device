@@ -413,50 +413,58 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
         camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
         if (zoomEnabled && (sensor_info != NULL))
         {
+            int unused = 0;
+            int _mode = 0;
             int _imageSize_temp = 0;
             int _imageWidth = CCstatus.ImageWidth;
             int _imageHeight = CCstatus.ImageHeight;
             int _offsetx = zoomOffsetX;
             int _offsety = zoomOffsetY;
-            if (sensor_info->model == CAMERA_OV5640)
+            int frameSizeX;
+            int frameSizeY;
+            switch (sensor_info->model)
             {
-                int unused = 0;
+                case CAMERA_OV5640:
+                    frameSizeX = 2560;
+                    frameSizeY = 1920;
+                    // imageSize is causing cam_hal: NO-EOI and FB-OVF issues
+                    // if (imageSize < 79)
+                    // {
+                    //     _imageSize_temp = (79 - imageSize);
+                    // }
+                    SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                    SetCamWindow(s, unused, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
+                    break;
 
-                int frameSizeX = 2560;
-                int frameSizeY = 1920;
+                case CAMERA_OV3660:
+                    frameSizeX = 2048;
+                    frameSizeY = 1536;
+                    SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                    SetCamWindow(s, unused, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
+                    break;
 
-                // imageSize is causing cam_hal: NO-EOI and FB-OVF issues
-                // if (imageSize < 79)
-                // {
-                //     _imageSize_temp = (79 - imageSize);
-                // }
-                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
-
-                SetCamWindow(s, unused, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
-
-            }
-            else
-            {
-                // ov2640_sensor_mode_t _mode = OV2640_MODE_UXGA; // 1600x1200
-                // ov2640_sensor_mode_t _mode = OV2640_MODE_SVGA; // 800x600
-                // ov2640_sensor_mode_t _mode = OV2640_MODE_CIF;  // 400x296
-                int _mode = 0;
-
-                int frameSizeX = 1600;
-                int frameSizeY = 1200;
-
-                if (imageSize < 29)
-                {
-                    _imageSize_temp = (29 - imageSize);
-                }
-                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
-
-                // _mode sets the sensor resolution (3 options available),
-                // _offsetx and _offsety set the start of the ROI,
-                // _imageWidth and _imageHeight set the size of the ROI,
-                // CCstatus.ImageWidth and CCstatus.ImageHeight set the output window size.
-                SetCamWindow(s, _mode, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
-
+                case CAMERA_OV2640:
+                    // ov2640_sensor_mode_t _mode = OV2640_MODE_UXGA; // 1600x1200
+                    // ov2640_sensor_mode_t _mode = OV2640_MODE_SVGA; // 800x600
+                    // ov2640_sensor_mode_t _mode = OV2640_MODE_CIF;  // 400x296
+                    _mode = 0;
+                    frameSizeX = 1600;
+                    frameSizeY = 1200;
+                    if (imageSize < 29)
+                    {
+                        _imageSize_temp = (29 - imageSize);
+                    }
+                    SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                    // _mode sets the sensor resolution (3 options available),
+                    // _offsetx and _offsety set the start of the ROI,
+                    // _imageWidth and _imageHeight set the size of the ROI,
+                    // CCstatus.ImageWidth and CCstatus.ImageHeight set the output window size.
+                    SetCamWindow(s, _mode, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
+                    break;
+                
+                default:
+                    // do nothing
+                    break;
             }
         }
         else
@@ -535,18 +543,12 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
  * resolution = 1 \\ OV2640_MODE_SVGA -> 800  x 600
  * resolution = 2 \\ OV2640_MODE_CIF  -> 400  x 296
  */
-void CCamera::SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput)
+void CCamera::SetCamWindow(sensor_t *s, int resolution, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput)
 {
     camera_sensor_info_t *sensor_info = esp_camera_sensor_get_info(&(s->id));
     if (sensor_info != NULL)
     {
-        if (sensor_info->model == CAMERA_OV5640)
-        {
-            int frameSizeX = 2560;
-            int frameSizeY = 1920;
-            s->set_res_raw(s, xOffset, yOffset, xOffset + xOutput, yOffset + yOutput, 0, 0, frameSizeX, frameSizeY, xOutput, yOutput, false, false);
-        }
-        else
+        if (sensor_info->model == CAMERA_OV2640)
         {
             // - (xOffset,yOffset) is the origin of the window in pixels and (xLength,yLength) is the size of the window in pixels.
             // - (xOffset,yOffset) ist der Ursprung des Fensters in Pixel und (xLength,yLength) ist die Größe des Fensters in Pixel.
@@ -581,6 +583,11 @@ void CCamera::SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset
 
             int unused = 0;
             s->set_res_raw(s, resolution, unused, unused, unused, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, unused, unused);
+        }
+        else
+        {
+            // for CAMERA_OV5640 and CAMERA_OV3660
+            s->set_res_raw(s, xOffset, yOffset, xOffset + xOutput, yOffset + yOutput, 0, 0, frameSizeX, frameSizeY, xOutput, yOutput, false, false);
         }
     }
 }
