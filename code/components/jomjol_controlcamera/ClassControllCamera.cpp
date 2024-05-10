@@ -425,6 +425,8 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
             switch (sensor_info->model)
             {
                 case CAMERA_OV5640:
+                    frameSizeX = 2592;
+                    frameSizeY = 1944;
                     // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) - 1
                     // 59 = ((2560 - 640) / 8 / 4) - 1
                     if (imageSize < 59)
