@@ -425,13 +425,12 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
             switch (sensor_info->model)
             {
                 case CAMERA_OV5640:
-                    frameSizeX = 2560;
-                    frameSizeY = 1920;
-                    // imageSize is causing cam_hal: NO-EOI and FB-OVF issues
-                    // if (imageSize < 79)
-                    // {
-                    //     _imageSize_temp = (79 - imageSize);
-                    // }
+                    // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) - 1
+                    // 59 = ((2560 - 640) / 8 / 4) - 1
+                    if (imageSize < 59)
+                    {
+                        _imageSize_temp = (59 - imageSize);
+                    }
                     SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
                     SetCamWindow(s, unused, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
                     break;
@@ -439,6 +438,12 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
                 case CAMERA_OV3660:
                     frameSizeX = 2048;
                     frameSizeY = 1536;
+                    // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) -1
+                    // 43 = ((2048 - 640) / 8 / 4) - 1
+                    if (imageSize < 43)
+                    {
+                        _imageSize_temp = (43 - imageSize);
+                    }
                     SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
                     SetCamWindow(s, unused, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
                     break;
@@ -450,6 +455,8 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
                     _mode = 0;
                     frameSizeX = 1600;
                     frameSizeY = 1200;
+                    // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) -1
+                    // 29 = ((1600 - 640) / 8 / 4) - 1
                     if (imageSize < 29)
                     {
                         _imageSize_temp = (29 - imageSize);
