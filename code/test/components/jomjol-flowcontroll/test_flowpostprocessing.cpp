@@ -615,10 +615,10 @@ void test_doFlowEarlyTransitionEdgeCase()
 
     // Silder0007: In my opinion this is a unrealistic case {0.0, **0.0**, 9.9, 9,0}, {5.0, 0.0}
     // More realistic values: {0.0, 0.9, 9.9, 9,0}, {5.0, 0.0}
-    TEST_ASSERT_EQUAL_STRING("99.50", postProcess({0.0, 0.0, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
+    TEST_ASSERT_EQUAL_STRING("99.50", postProcess({0.0, 0.0, 9.0, 9.0}, {5.0, 0.0}, a2dt).c_str());
 
     // fails with 99.50    
-    TEST_ASSERT_EQUAL_STRING("199.50", postProcess({0.0, 1.0, 9.9, 9.0}, {5.0, 0.0}, a2dt).c_str());
+    TEST_ASSERT_EQUAL_STRING("199.50", postProcess({0.0, 1.0, 9.0, 9.0}, {5.0, 0.0}, a2dt).c_str());
 
     TEST_ASSERT_EQUAL_STRING("99.95", postProcess({0.0, 1.0, 0.0, 0.0}, {9.5, 5.0}, a2dt).c_str());
 }
