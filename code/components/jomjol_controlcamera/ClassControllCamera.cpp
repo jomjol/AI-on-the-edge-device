@@ -142,8 +142,10 @@ esp_err_t CCamera::InitCam(void)
 
     if (s != NULL)
     {
+		CCstatus.CamSensor_id = s->id.PID;
+		
         // Dump camera module, warn for unsupported modules.
-        switch (s->id.PID)
+        switch (CCstatus.CamSensor_id)
         {
         case OV2640_PID:
             ESP_LOGI(TAG, "OV2640 camera module detected");
@@ -274,6 +276,8 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
         s->set_awb_gain(s, CCstatus.ImageAwbGain); // 0 = disable , 1 = enable
         s->set_whitebal(s, CCstatus.ImageAwb);     // 0 = disable , 1 = enable
 
+        s->set_denoise(s, CCstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
         // special_effect muß als Letztes gesetzt werden, sonst geht es nicht
         s->set_special_effect(s, CCstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
 
@@ -294,6 +298,8 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
 
     if (s != NULL)
     {
+		CCstatus.CamSensor_id = s->id.PID;
+		
         CCstatus.ImageFrameSize = (framesize_t)s->status.framesize;
         CCstatus.ImageGainceiling = (gainceiling_t)s->status.gainceiling;
 
@@ -319,6 +325,7 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
         CCstatus.ImageHmirror = s->status.hmirror;
         CCstatus.ImageVflip = s->status.vflip;
         CCstatus.ImageDcw = s->status.dcw;
+		CCstatus.ImageDenoiseLevel = s->status.denoise;
 
         return ESP_OK;
     }
@@ -407,7 +414,7 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
             int frameSizeX;
             int frameSizeY;
 
-            switch (s->id.PID)
+            switch (CCstatus.CamSensor_id)
             {
                 case OV5640_PID:
                     frameSizeX = 2592;
@@ -464,13 +471,13 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
 {
     sensor_t *s = esp_camera_sensor_get();
 
-    if (s->id.PID == OV5640_PID)
+    if (CCstatus.CamSensor_id == OV5640_PID)
     {
         qual = min(63, max(18, qual)); // Limit quality from 18..63 (values lower than 20 tent to be unstable)
     }
     else
     {
-        qual = min(63, max(6, qual)); // Limit quality from 6..63 (values lower than 8 tent to be unstable)
+        qual = min(63, max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
     }
 
     SetImageWidthHeightFromResolution(resol);
@@ -493,10 +500,9 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
 
     if (s != NULL)
     {
-        _sharpnessLevel = min(2, max(-2, _sharpnessLevel));
-
-        if (s->id.PID == OV2640_PID)
+        if (CCstatus.CamSensor_id == OV2640_PID)
         {
+            _sharpnessLevel = min(2, max(-2, _sharpnessLevel));
             // The OV2640 does not officially support sharpness, so the detour is made with the ov2640_sharpness.cpp.
             if (_autoSharpnessEnabled)
             {
@@ -509,6 +515,7 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
         }
         else
         {
+            _sharpnessLevel = min(3, max(-3, _sharpnessLevel));
             // for CAMERA_OV5640 and CAMERA_OV3660
             if (_autoSharpnessEnabled)
             {
@@ -529,7 +536,7 @@ void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
 
 void CCamera::SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput)
 {
-    if (s->id.PID == OV2640_PID)
+    if (CCstatus.CamSensor_id == OV2640_PID)
     {
         s->set_res_raw(s, 0, 0, 0, 0, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, false, false);
     }

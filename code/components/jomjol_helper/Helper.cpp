@@ -1206,3 +1206,26 @@ bool isInString(std::string &s, std::string const &toFind)
 
 	return true;
 }
+
+int clipInt(int input, int high, int low)
+{
+	if (input < low)
+	{
+		input = low;
+	}
+	else if (input > high)
+	{
+		input = high;
+	}
+	return input;
+}
+
+bool numericStrToBool(char *input)
+{
+	return (std::stoi(input) != 0);
+}
+
+bool stringToBoolean(std::string input)
+{
+	return (input == "TRUE");
+}

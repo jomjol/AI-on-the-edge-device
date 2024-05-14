@@ -102,4 +102,8 @@ bool replaceString(std::string& s, std::string const& toReplace, std::string con
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
 bool isInString(std::string& s, std::string const& toFind);
 
+int clipInt(int input, int high, int low);
+bool numericStrToBool(char *input);
+bool stringToBoolean(std::string input);
+
 #endif //HELPER_H

@@ -1,5 +1,5 @@
 # Parameter `CamDenoise`
-Default Value: ` `
+Default Value: `0`
     
 !!! Warning
     This is an **Expert Parameter**! Only change it if you understand what it does!
@@ -7,4 +7,6 @@ Default Value: ` `
 !!! Note
     After changing this parameter you need to update your reference image and alignment markers!
 
-Denoise Image (not supported)
+Denoise Image, is only supported by OV3660 and OV5640
+
+Range (`0` .. `8`)

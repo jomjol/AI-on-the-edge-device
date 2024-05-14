@@ -145,6 +145,8 @@ bool doflow(void)
 
 esp_err_t setCCstatusToCFstatus(void)
 {
+    CFstatus.CamSensor_id = CCstatus.CamSensor_id;
+
     CFstatus.ImageFrameSize = CCstatus.ImageFrameSize;
     CFstatus.ImageGainceiling = CCstatus.ImageGainceiling;
 
@@ -171,11 +173,11 @@ esp_err_t setCCstatusToCFstatus(void)
     CFstatus.ImageHmirror = CCstatus.ImageHmirror;
     CFstatus.ImageVflip = CCstatus.ImageVflip;
     CFstatus.ImageDcw = CCstatus.ImageDcw;
+    CFstatus.ImageDenoiseLevel = CCstatus.ImageDenoiseLevel;
 
     CFstatus.ImageLedIntensity = CCstatus.ImageLedIntensity;
 
     CFstatus.ImageZoomEnabled = CCstatus.ImageZoomEnabled;
-    CFstatus.ImageZoomMode = CCstatus.ImageZoomMode;
     CFstatus.ImageZoomOffsetX = CCstatus.ImageZoomOffsetX;
     CFstatus.ImageZoomOffsetY = CCstatus.ImageZoomOffsetY;
     CFstatus.ImageZoomSize = CCstatus.ImageZoomSize;
@@ -187,6 +189,8 @@ esp_err_t setCCstatusToCFstatus(void)
 
 esp_err_t setCFstatusToCCstatus(void)
 {
+    // CCstatus.CamSensor_id = CFstatus.CamSensor_id;
+
     CCstatus.ImageFrameSize = CFstatus.ImageFrameSize;
     CCstatus.ImageGainceiling = CFstatus.ImageGainceiling;
 
@@ -213,11 +217,11 @@ esp_err_t setCFstatusToCCstatus(void)
     CCstatus.ImageHmirror = CFstatus.ImageHmirror;
     CCstatus.ImageVflip = CFstatus.ImageVflip;
     CCstatus.ImageDcw = CFstatus.ImageDcw;
+    CCstatus.ImageDenoiseLevel = CFstatus.ImageDenoiseLevel;
 
     CCstatus.ImageLedIntensity = CFstatus.ImageLedIntensity;
 
     CCstatus.ImageZoomEnabled = CFstatus.ImageZoomEnabled;
-    CCstatus.ImageZoomMode = CFstatus.ImageZoomMode;
     CCstatus.ImageZoomOffsetX = CFstatus.ImageZoomOffsetX;
     CCstatus.ImageZoomOffsetY = CFstatus.ImageZoomOffsetY;
     CCstatus.ImageZoomSize = CFstatus.ImageZoomSize;
@@ -266,6 +270,8 @@ esp_err_t setCFstatusToCam(void)
         s->set_wb_mode(s, CFstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
         s->set_awb_gain(s, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
         s->set_whitebal(s, CFstatus.ImageAwb);     // 0 = disable , 1 = enable
+
+        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
         // special_effect muß als Letztes gesetzt werden, sonst geht es nicht
         s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
@@ -884,277 +890,208 @@ esp_err_t handler_editflow(httpd_req_t *req)
             if (httpd_query_key_value(_query, "qual", _valuechar, 30) == ESP_OK)
             {
                 int _qual = std::stoi(_valuechar);
-                if ((_qual >= 0) && (_qual <= 63))
-                {
-                    CFstatus.ImageQuality = _qual;
-                }
+                CFstatus.ImageQuality = clipInt(_qual, 63, 6);
             }
 
             if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK)
             {
                 int _bri = std::stoi(_valuechar);
-                if ((_bri >= -2) && (_bri <= 2))
-                {
-                    CFstatus.ImageBrightness = _bri;
-                }
+                CFstatus.ImageBrightness = clipInt(_bri, 2, -2);
             }
 
             if (httpd_query_key_value(_query, "con", _valuechar, 30) == ESP_OK)
             {
                 int _con = std::stoi(_valuechar);
-                if ((_con >= -2) && (_con <= 2))
-                {
-                    CFstatus.ImageContrast = _con;
-                }
+                CFstatus.ImageContrast = clipInt(_con, 2, -2);
             }
 
             if (httpd_query_key_value(_query, "sat", _valuechar, 30) == ESP_OK)
             {
                 int _sat = std::stoi(_valuechar);
-                if ((_sat >= -2) && (_sat <= 2))
-                {
-                    CFstatus.ImageSaturation = _sat;
-                }
+                CFstatus.ImageSaturation = clipInt(_sat, 2, -2);
             }
 
             if (httpd_query_key_value(_query, "shp", _valuechar, 30) == ESP_OK)
             {
                 int _shp = std::stoi(_valuechar);
-                if ((_shp >= -2) && (_shp <= 2))
+                if (CCstatus.CamSensor_id == OV2640_PID)
                 {
-                    CFstatus.ImageSharpness = _shp;
+                    CFstatus.ImageSharpness = clipInt(_shp, 2, -2);
+                }
+                else
+                {
+                    CFstatus.ImageSharpness = clipInt(_shp, 3, -3);
                 }
             }
 
             if (httpd_query_key_value(_query, "ashp", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageAutoSharpness = 1;
-                }
-                else
-                {
-                    CFstatus.ImageAutoSharpness = 0;
-                }
+                CFstatus.ImageAutoSharpness = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "spe", _valuechar, 30) == ESP_OK)
             {
                 int _spe = std::stoi(_valuechar);
-                if ((_spe >= 0) && (_spe <= 6))
-                {
-                    CFstatus.ImageSpecialEffect = _spe;
-                }
+                CFstatus.ImageSpecialEffect = clipInt(_spe, 6, 0);
             }
 
             if (httpd_query_key_value(_query, "wbm", _valuechar, 30) == ESP_OK)
             {
                 int _wbm = std::stoi(_valuechar);
-                if ((_wbm >= 0) && (_wbm <= 4))
-                {
-                    CFstatus.ImageWbMode = _wbm;
-                }
+                CFstatus.ImageWbMode = clipInt(_wbm, 4, 0);
             }
 
             if (httpd_query_key_value(_query, "awb", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageAwb = 1;
-                }
-                else
-                {
-                    CFstatus.ImageAwb = 0;
-                }
+                CFstatus.ImageAwb = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "awbg", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageAwbGain = 1;
-                }
-                else
-                {
-                    CFstatus.ImageAwbGain = 0;
-                }
+                CFstatus.ImageAwbGain = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "aec", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageAec = 1;
-                }
-                else
-                {
-                    CFstatus.ImageAec = 0;
-                }
+                CFstatus.ImageAec = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "aec2", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageAec2 = 1;
-                }
-                else
-                {
-                    CFstatus.ImageAec2 = 0;
-                }
+                CFstatus.ImageAec2 = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "ael", _valuechar, 30) == ESP_OK)
             {
                 int _ael = std::stoi(_valuechar);
-                if ((_ael >= -2) && (_ael <= 2))
+                if (CCstatus.CamSensor_id == OV2640_PID)
                 {
-                    CFstatus.ImageAeLevel = _ael;
+                    CFstatus.ImageAeLevel = clipInt(_ael, 2, -2);
+                }
+                else
+                {
+                    CFstatus.ImageAeLevel = clipInt(_ael, 5, -5);
                 }
             }
 
             if (httpd_query_key_value(_query, "aecv", _valuechar, 30) == ESP_OK)
             {
                 int _aecv = std::stoi(_valuechar);
-                if ((_aecv >= 0) && (_aecv <= 1200))
-                {
-                    CFstatus.ImageAecValue = _aecv;
-                }
+                CFstatus.ImageAecValue = clipInt(_aecv, 1200, 0);
             }
 
             if (httpd_query_key_value(_query, "agc", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageAgc = 1;
-                }
-                else
-                {
-                    CFstatus.ImageAgc = 0;
-                }
+                CFstatus.ImageAgc = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "agcg", _valuechar, 30) == ESP_OK)
             {
                 int _agcg = std::stoi(_valuechar);
-                if ((_agcg >= 0) && (_agcg <= 30))
-                {
-                    CFstatus.ImageAgcGain = _agcg;
-                }
+                CFstatus.ImageAgcGain = clipInt(_agcg, 30, 0);
             }
 
             if (httpd_query_key_value(_query, "bpc", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageBpc = 1;
-                }
-                else
-                {
-                    CFstatus.ImageBpc = 0;
-                }
+                CFstatus.ImageBpc = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "wpc", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageWpc = 1;
-                }
-                else
-                {
-                    CFstatus.ImageWpc = 0;
-                }
+                CFstatus.ImageWpc = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "rgma", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageRawGma = 1;
-                }
-                else
-                {
-                    CFstatus.ImageRawGma = 0;
-                }
+                CFstatus.ImageRawGma = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "lenc", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageLenc = 1;
-                }
-                else
-                {
-                    CFstatus.ImageLenc = 0;
-                }
+                CFstatus.ImageLenc = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "mirror", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageHmirror = 1;
-                }
-                else
-                {
-                    CFstatus.ImageHmirror = 0;
-                }
+                CFstatus.ImageHmirror = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "flip", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageVflip = 1;
-                }
-                else
-                {
-                    CFstatus.ImageVflip = 0;
-                }
+                CFstatus.ImageVflip = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "dcw", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
+                CFstatus.ImageDcw = numericStrToBool(_valuechar);
+            }
+
+            if (httpd_query_key_value(_query, "den", _valuechar, 30) == ESP_OK)
+            {
+                int _ImageDenoiseLevel = std::stoi(_valuechar);
+                if (CCstatus.CamSensor_id == OV2640_PID)
                 {
-                    CFstatus.ImageDcw = 1;
+                    CCstatus.ImageDenoiseLevel = 0;
                 }
                 else
                 {
-                    CFstatus.ImageDcw = 0;
+                    CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
                 }
             }
 
             if (httpd_query_key_value(_query, "zoom", _valuechar, 30) == ESP_OK)
             {
-                if (std::stoi(_valuechar) != 0)
-                {
-                    CFstatus.ImageZoomEnabled = 1;
-                }
-                else
-                {
-                    CFstatus.ImageZoomEnabled = 0;
-                }
+                CFstatus.ImageZoomEnabled = numericStrToBool(_valuechar);
             }
 
             if (httpd_query_key_value(_query, "zoomx", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageZoomOffsetX = std::stoi(_valuechar);
+                int _ImageZoomOffsetX = std::stoi(_valuechar);
+                if (CCstatus.CamSensor_id == OV2640_PID)
+                {
+                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
+                }
+                else if (CCstatus.CamSensor_id == OV3660_PID)
+                {
+                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
+                }
+                else if (CCstatus.CamSensor_id == OV5640_PID)
+                {
+                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+                }
             }
 
             if (httpd_query_key_value(_query, "zoomy", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageZoomOffsetY = std::stoi(_valuechar);
+                int _ImageZoomOffsetY = std::stoi(_valuechar);
+                if (CCstatus.CamSensor_id == OV2640_PID)
+                {
+                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
+                }
+                else if (CCstatus.CamSensor_id == OV3660_PID)
+                {
+                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
+                }
+                else if (CCstatus.CamSensor_id == OV5640_PID)
+                {
+                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+                }
             }
 
             if (httpd_query_key_value(_query, "zooms", _valuechar, 30) == ESP_OK)
             {
                 int _ImageZoomSize = std::stoi(_valuechar);
-                if (_ImageZoomSize >= 0)
+                if (CCstatus.CamSensor_id == OV2640_PID)
                 {
-                    CFstatus.ImageZoomSize = _ImageZoomSize;
+                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+                }
+                else if (CCstatus.CamSensor_id == OV3660_PID)
+                {
+                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
+                }
+                else if (CCstatus.CamSensor_id == OV5640_PID)
+                {
+                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
                 }
             }
 

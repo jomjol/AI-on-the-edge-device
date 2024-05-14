@@ -375,8 +375,8 @@
 				<class id="TakeImage_CamSharpness_text" style="color:black;">Sharpness</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+				<input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-3" max="3" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-3)) && (!validity.rangeOverflow||(value=3)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_CamSharpness</td>
 		</tr>
@@ -472,8 +472,8 @@
 				<class id="TakeImage_CamAeLevel_text" style="color:black;">Auto Exposure Level</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+				<input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-5" max="5" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-5)) && (!validity.rangeOverflow||(value=5)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAeLevel</td>
 		</tr>
@@ -603,6 +603,17 @@
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamDcw</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamDenoise_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamDenoise_text" style="color:black;">Denoise</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamDenoise_value1" value="0" min="0" max="8" step="1" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeOverflow||(value=8)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamDenoise</td>
 		</tr>
 
 		<tr class="expert" unused_id="TakeImage_CamZoom_ex3">
@@ -2197,6 +2208,7 @@ function UpdateInput() {
     WriteParameter(param, category, "TakeImage", "CamHmirror", false);
     WriteParameter(param, category, "TakeImage", "CamVflip", false);
     WriteParameter(param, category, "TakeImage", "CamDcw", false);
+    WriteParameter(param, category, "TakeImage", "CamDenoise", false);
     WriteParameter(param, category, "TakeImage", "CamZoom", false);
     WriteParameter(param, category, "TakeImage", "CamZoomOffsetX", false);
     WriteParameter(param, category, "TakeImage", "CamZoomOffsetY", false);
@@ -2355,7 +2367,8 @@ function ReadParameterAll() {
     ReadParameter(param, "TakeImage", "CamLenc", false);
     ReadParameter(param, "TakeImage", "CamHmirror", false);
     ReadParameter(param, "TakeImage", "CamVflip", false);
-    ReadParameter(param, "TakeImage", "CamDcw", false);	
+    ReadParameter(param, "TakeImage", "CamDcw", false);
+    ReadParameter(param, "TakeImage", "CamDenoise", false);
     ReadParameter(param, "TakeImage", "CamZoom", false);
     ReadParameter(param, "TakeImage", "CamZoomOffsetX", false);
     ReadParameter(param, "TakeImage", "CamZoomOffsetY", false);	
@@ -2658,10 +2671,12 @@ function camSettingsSet(){
     }
     else {
         _dcw_temp = '0';
-    }	
-	
+    }
+
+    var _denoise_temp = document.getElementById("TakeImage_CamDenoise_value1").value;
+
     var _ledi_temp = document.getElementById("TakeImage_LEDIntensity_value1").value;
-	
+
     var _zoom_temp = document.getElementById("TakeImage_CamZoom_value1").selectedIndex;
     if (_zoom_temp == '0') {
         _zoom_temp = '1';
@@ -2669,7 +2684,7 @@ function camSettingsSet(){
     else {
         _zoom_temp = '0';
     }
-	
+
     var _zoomx_temp = document.getElementById("TakeImage_CamZoomOffsetX_value1").value;
     var _zoomy_temp = document.getElementById("TakeImage_CamZoomOffsetY_value1").value;
     var _zooms_temp = document.getElementById("TakeImage_CamZoomSize_value1").value;	
@@ -2684,7 +2699,7 @@ function camSettingsSet(){
     var url_2 = domainname + "/editflow?task=cam_settings";	
     url_2 = url_2 + "&agc=" + _agc_temp + "&agcg=" + _agcg_temp + "&bpc=" + _bpc_temp + "&wpc=" + _wpc_temp;
     url_2 = url_2 + "&rgma=" + _rgma_temp + "&lenc=" + _lenc_temp + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;
-    url_2 = url_2 + "&dcw=" + _dcw_temp + "&ledi=" + _ledi_temp;
+    url_2 = url_2 + "&dcw=" + _dcw_temp + "&den=" + _denoise_temp + "&ledi=" + _ledi_temp;
 
     if (_zoom_temp != '0') {
         url_2 = url_2 + "&zoom=" + _zoom_temp + "&zooms=" + _zooms_temp;

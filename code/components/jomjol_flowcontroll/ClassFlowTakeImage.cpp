@@ -101,14 +101,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
         else if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.SaveAllFiles = 1;
-            }
-            else
-            {
-                CCstatus.SaveAllFiles = 0;
-            }
+            CCstatus.SaveAllFiles = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
@@ -160,58 +153,43 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         else if ((toUpper(splitted[0]) == "CAMQUALITY") && (splitted.size() > 1))
         {
             int _ImageQuality = std::stoi(splitted[1]);
-            if ((_ImageQuality >= 0) && (_ImageQuality <= 63))
-            {
-                CCstatus.ImageQuality = _ImageQuality;
-            }
+            CCstatus.ImageQuality = clipInt(_ImageQuality, 63, 6);
         }
 
         else if ((toUpper(splitted[0]) == "CAMBRIGHTNESS") && (splitted.size() > 1))
         {
             int _ImageBrightness = std::stoi(splitted[1]);
-            if ((_ImageBrightness >= -2) && (_ImageBrightness <= 2))
-            {
-                CCstatus.ImageBrightness = _ImageBrightness;
-            }
+            CCstatus.ImageBrightness = clipInt(_ImageBrightness, 2, -2);
         }
 
         else if ((toUpper(splitted[0]) == "CAMCONTRAST") && (splitted.size() > 1))
         {
             int _ImageContrast = std::stoi(splitted[1]);
-            if ((_ImageContrast >= -2) && (_ImageContrast <= 2))
-            {
-                CCstatus.ImageContrast = _ImageContrast;
-            }
+            CCstatus.ImageContrast = clipInt(_ImageContrast, 2, -2);
         }
 
         else if ((toUpper(splitted[0]) == "CAMSATURATION") && (splitted.size() > 1))
         {
             int _ImageSaturation = std::stoi(splitted[1]);
-            if ((_ImageSaturation >= -2) && (_ImageSaturation <= 2))
-            {
-                CCstatus.ImageSaturation = _ImageSaturation;
-            }
+            CCstatus.ImageSaturation = clipInt(_ImageSaturation, 2, -2);
         }
 
         else if ((toUpper(splitted[0]) == "CAMSHARPNESS") && (splitted.size() > 1))
         {
             int _ImageSharpness = std::stoi(splitted[1]);
-            if ((_ImageSharpness >= -2) && (_ImageSharpness <= 2))
+            if (CCstatus.CamSensor_id == OV2640_PID)
             {
-                CCstatus.ImageSharpness = _ImageSharpness;
+                CCstatus.ImageSharpness = clipInt(_ImageSharpness, 2, -2);
+            }
+            else
+            {
+                CCstatus.ImageSharpness = clipInt(_ImageSharpness, 3, -3);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMAUTOSHARPNESS") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAutoSharpness = 1;
-            }
-            else
-            {
-                CCstatus.ImageAutoSharpness = 0;
-            }
+            CCstatus.ImageAutoSharpness = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMSPECIALEFFECT") && (splitted.size() > 1))
@@ -274,203 +252,155 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
         else if ((toUpper(splitted[0]) == "CAMAWB") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAwb = 1;
-            }
-            else
-            {
-                CCstatus.ImageAwb = 0;
-            }
+            CCstatus.ImageAwb = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMAWBGAIN") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAwbGain = 1;
-            }
-            else
-            {
-                CCstatus.ImageAwbGain = 0;
-            }
+            CCstatus.ImageAwbGain = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMAEC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAec = 1;
-            }
-            else
-            {
-                CCstatus.ImageAec = 0;
-            }
+            CCstatus.ImageAec = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMAEC2") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAec2 = 1;
-            }
-            else
-            {
-                CCstatus.ImageAec2 = 0;
-            }
+            CCstatus.ImageAec2 = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMAELEVEL") && (splitted.size() > 1))
         {
             int _ImageAeLevel = std::stoi(splitted[1]);
-            if ((_ImageAeLevel >= -2) && (_ImageAeLevel <= 2))
+            if (CCstatus.CamSensor_id == OV2640_PID)
             {
-                CCstatus.ImageAeLevel = _ImageAeLevel;
+                CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 2, -2);
+            }
+            else
+            {
+                CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 5, -5);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMAECVALUE") && (splitted.size() > 1))
         {
             int _ImageAecValue = std::stoi(splitted[1]);
-            if ((_ImageAecValue >= 0) && (_ImageAecValue <= 1200))
-            {
-                CCstatus.ImageAecValue = _ImageAecValue;
-            }
+            CCstatus.ImageAecValue = clipInt(_ImageAecValue, 1200, 0);
         }
 
         else if ((toUpper(splitted[0]) == "CAMAGC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAgc = 1;
-            }
-            else
-            {
-                CCstatus.ImageAgc = 0;
-            }
+            CCstatus.ImageAgc = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMAGCGAIN") && (splitted.size() > 1))
         {
             int _ImageAgcGain = std::stoi(splitted[1]);
-            if ((_ImageAgcGain >= 0) && (_ImageAgcGain <= 30))
-            {
-                CCstatus.ImageAgcGain = _ImageAgcGain;
-            }
+            CCstatus.ImageAgcGain = clipInt(_ImageAgcGain, 30, 0);
         }
 
         else if ((toUpper(splitted[0]) == "CAMBPC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageBpc = 1;
-            }
-            else
-            {
-                CCstatus.ImageBpc = 0;
-            }
+            CCstatus.ImageBpc = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMWPC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageWpc = 1;
-            }
-            else
-            {
-                CCstatus.ImageWpc = 0;
-            }
+            CCstatus.ImageWpc = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMRAWGMA") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageRawGma = 1;
-            }
-            else
-            {
-                CCstatus.ImageRawGma = 0;
-            }
+            CCstatus.ImageRawGma = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMLENC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageLenc = 1;
-            }
-            else
-            {
-                CCstatus.ImageLenc = 0;
-            }
+            CCstatus.ImageLenc = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMHMIRROR") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageHmirror = 1;
-            }
-            else
-            {
-                CCstatus.ImageHmirror = 0;
-            }
+            CCstatus.ImageHmirror = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMVFLIP") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageVflip = 1;
-            }
-            else
-            {
-                CCstatus.ImageVflip = 0;
-            }
+            CCstatus.ImageVflip = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMDCW") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
+            CCstatus.ImageDcw = stringToBoolean(toUpper(splitted[1]));
+        }
+
+        else if ((toUpper(splitted[0]) == "CAMSDENOISE") && (splitted.size() > 1))
+        {
+            int _ImageDenoiseLevel = std::stoi(splitted[1]);
+            if (CCstatus.CamSensor_id == OV2640_PID)
             {
-                CCstatus.ImageDcw = 1;
+                CCstatus.ImageDenoiseLevel = 0;
             }
             else
             {
-                CCstatus.ImageDcw = 0;
+                CCstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOM") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageZoomEnabled = 1;
-            }
-            else
-            {
-                CCstatus.ImageZoomEnabled = 0;
-            }
+            CCstatus.ImageZoomEnabled = stringToBoolean(toUpper(splitted[1]));
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOMOFFSETX") && (splitted.size() > 1))
         {
-            CCstatus.ImageZoomOffsetX = std::stoi(splitted[1]);
+            int _ImageZoomOffsetX = std::stoi(splitted[1]);
+            if (CCstatus.CamSensor_id == OV2640_PID)
+            {
+                CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
+            }
+            else if (CCstatus.CamSensor_id == OV3660_PID)
+            {
+                CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
+            }
+            else if (CCstatus.CamSensor_id == OV5640_PID)
+            {
+                CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+            }
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOMOFFSETY") && (splitted.size() > 1))
         {
-            CCstatus.ImageZoomOffsetY = std::stoi(splitted[1]);
+            int _ImageZoomOffsetY = std::stoi(splitted[1]);
+            if (CCstatus.CamSensor_id == OV2640_PID)
+            {
+                CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
+            }
+            else if (CCstatus.CamSensor_id == OV3660_PID)
+            {
+                CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
+            }
+            else if (CCstatus.CamSensor_id == OV5640_PID)
+            {
+                CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+            }
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOMSIZE") && (splitted.size() > 1))
         {
             int _ImageZoomSize = std::stoi(splitted[1]);
-            if (_ImageZoomSize >= 0)
+            if (CCstatus.CamSensor_id == OV2640_PID)
             {
-                CCstatus.ImageZoomSize = _ImageZoomSize;
+                CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+            }
+            else if (CCstatus.CamSensor_id == OV3660_PID)
+            {
+                CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
+            }
+            else if (CCstatus.CamSensor_id == OV5640_PID)
+            {
+                CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
             }
         }
 
@@ -482,14 +412,10 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
         else if ((toUpper(splitted[0]) == "DEMO") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
+            CCstatus.DemoMode = stringToBoolean(toUpper(splitted[1]));
+            if (CCstatus.DemoMode)
             {
-                CCstatus.DemoMode = true;
                 Camera.useDemoMode();
-            }
-            else
-            {
-                CCstatus.DemoMode = false;
             }
         }
     }

@@ -12,4 +12,5 @@ Default Value: `0`
 
 Auto-Exposure Compensation. Lower values produce darker image.
 
-Range (`-2` .. `2`)
+available range on OV2640 (`-2` .. `2`)
+available range on OV3660 and OV5640 (`-5` .. `5`)

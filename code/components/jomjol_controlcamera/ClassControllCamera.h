@@ -15,15 +15,10 @@
 #include "CImageBasis.h"
 #include "../../include/defines.h"
 
-typedef enum
-{
-    OV2640_MODE_UXGA,
-    OV2640_MODE_SVGA,
-    OV2640_MODE_CIF
-} ov2640_sensor_mode_t;
-
 typedef struct
 {
+    uint16_t CamSensor_id;
+
     framesize_t ImageFrameSize = FRAMESIZE_VGA; // 0 - 10
     gainceiling_t ImageGainceiling;             // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
 
@@ -51,13 +46,14 @@ typedef struct
     int ImageVflip;         // Invert image (0 or 1)
     int ImageDcw;           // downsize enable (1 or 0)
 
+    int ImageDenoiseLevel = 0; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
     int ImageWidth;
     int ImageHeight;
 
     int ImageLedIntensity;
 
     bool ImageZoomEnabled;
-    int ImageZoomMode;
     int ImageZoomOffsetX;
     int ImageZoomOffsetY;
     int ImageZoomSize;
@@ -86,7 +82,7 @@ protected:
 public:
     CCamera(void);
     esp_err_t InitCam(void);
-	
+
     void LightOnOff(bool status);
     void LEDOnOff(bool status);
 
@@ -99,14 +95,14 @@ public:
     void SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize);
     void SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize);
     void SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel);
-    
-	void SetLEDIntensity(float _intrel);
+
+    void SetLEDIntensity(float _intrel);
     bool testCamera(void);
     bool getCameraInitSuccessful(void);
     void useDemoMode(void);
 
     framesize_t TextToFramesize(const char *text);
-	
+
     esp_err_t CaptureToFile(std::string nm, int delay = 0);
     esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);
 };
