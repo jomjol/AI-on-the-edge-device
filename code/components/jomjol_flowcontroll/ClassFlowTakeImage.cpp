@@ -117,6 +117,11 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             }
         }
 
+        else if ((toUpper(splitted[0]) == "CAMCOLORSWAPED") && (splitted.size() > 1))
+        {
+            CCstatus.isImageColorSwaped = stringToBoolean(toUpper(splitted[1]));
+        }
+
         else if ((toUpper(splitted[0]) == "CAMGAINCEILING") && (splitted.size() > 1))
         {
             std::string _ImageGainceiling = toUpper(splitted[1]);

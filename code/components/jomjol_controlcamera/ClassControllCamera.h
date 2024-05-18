@@ -46,10 +46,11 @@ typedef struct
     int ImageVflip;         // Invert image (0 or 1)
     int ImageDcw;           // downsize enable (1 or 0)
 
-    int ImageDenoiseLevel = 0; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+    int ImageDenoiseLevel; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
     int ImageWidth;
     int ImageHeight;
+    bool isImageColorSwaped;
 
     int ImageLedIntensity;
 

@@ -106,6 +106,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "RawImagesLocation");
     ParamAddValue(param, catname, "RawImagesRetention");
     ParamAddValue(param, catname, "WaitBeforeTakingPicture");
+    ParamAddValue(param, catname, "CamColorSwaped");
     ParamAddValue(param, catname, "CamGainceiling");		// Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
     ParamAddValue(param, catname, "CamQuality");    		// 0 - 63
     ParamAddValue(param, catname, "CamBrightness"); 		// (-2 to 2) - set brightness
@@ -470,6 +471,7 @@ function getCamConfig() {
     param["Alignment"]["InitialRotate"]["enabled"] = true;
 			
     param["TakeImage"]["WaitBeforeTakingPicture"]["enabled"] = true;
+    param["TakeImage"]["CamColorSwaped"]["enabled"] = true;
     param["TakeImage"]["CamGainceiling"]["enabled"] = true;		// Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
     param["TakeImage"]["CamQuality"]["enabled"] = true;    		// 0 - 63
     param["TakeImage"]["CamBrightness"]["enabled"] = true; 		// (-2 to 2) - set brightness
@@ -514,6 +516,10 @@ function getCamConfig() {
     if (!param["TakeImage"]["WaitBeforeTakingPicture"]["found"]) {
         param["TakeImage"]["WaitBeforeTakingPicture"]["found"] = true;
         param["TakeImage"]["WaitBeforeTakingPicture"].value1 = '5';
+    }
+    if (!param["TakeImage"]["CamColorSwaped"]["found"]) {
+        param["TakeImage"]["CamColorSwaped"]["found"] = true;
+        param["TakeImage"]["CamColorSwaped"].value1 = 'false';
     }
     if (!param["TakeImage"]["CamGainceiling"]["found"]) {
         param["TakeImage"]["CamGainceiling"]["found"] = true;

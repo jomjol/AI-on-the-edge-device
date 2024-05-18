@@ -142,8 +142,8 @@ esp_err_t CCamera::InitCam(void)
 
     if (s != NULL)
     {
-		CCstatus.CamSensor_id = s->id.PID;
-		
+        CCstatus.CamSensor_id = s->id.PID;
+
         // Dump camera module, warn for unsupported modules.
         switch (CCstatus.CamSensor_id)
         {
@@ -298,8 +298,8 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
 
     if (s != NULL)
     {
-		CCstatus.CamSensor_id = s->id.PID;
-		
+        CCstatus.CamSensor_id = s->id.PID;
+
         CCstatus.ImageFrameSize = (framesize_t)s->status.framesize;
         CCstatus.ImageGainceiling = (gainceiling_t)s->status.gainceiling;
 
@@ -325,7 +325,7 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
         CCstatus.ImageHmirror = s->status.hmirror;
         CCstatus.ImageVflip = s->status.vflip;
         CCstatus.ImageDcw = s->status.dcw;
-		CCstatus.ImageDenoiseLevel = s->status.denoise;
+        CCstatus.ImageDenoiseLevel = s->status.denoise;
 
         return ESP_OK;
     }
@@ -334,7 +334,6 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
         return ESP_FAIL;
     }
 }
-
 
 // - It always zooms to the image center when offsets are zero
 // - if imageSize = 0 then the image is not zoomed
@@ -397,7 +396,6 @@ void CCamera::SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, 
     }
 }
 
-
 void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize)
 {
     sensor_t *s = esp_camera_sensor_get();
@@ -416,48 +414,48 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
 
             switch (CCstatus.CamSensor_id)
             {
-                case OV5640_PID:
-                    frameSizeX = 2592;
-                    frameSizeY = 1944;
-                    // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) - 1
-                    // 59 = ((2560 - 640) / 8 / 4) - 1
-                    if (imageSize < 59)
-                    {
-                        _imageSize_temp = (59 - imageSize);
-                    }
-                    SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
-                    SetCamWindow(s, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
-                    break;
+            case OV5640_PID:
+                frameSizeX = 2592;
+                frameSizeY = 1944;
+                // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) - 1
+                // 59 = ((2560 - 640) / 8 / 4) - 1
+                if (imageSize < 59)
+                {
+                    _imageSize_temp = (59 - imageSize);
+                }
+                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                SetCamWindow(s, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
+                break;
 
-                case OV3660_PID:
-                    frameSizeX = 2048;
-                    frameSizeY = 1536;
-                    // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) -1
-                    // 43 = ((2048 - 640) / 8 / 4) - 1
-                    if (imageSize < 43)
-                    {
-                        _imageSize_temp = (43 - imageSize);
-                    }
-                    SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
-                    SetCamWindow(s, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
-                    break;
+            case OV3660_PID:
+                frameSizeX = 2048;
+                frameSizeY = 1536;
+                // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) -1
+                // 43 = ((2048 - 640) / 8 / 4) - 1
+                if (imageSize < 43)
+                {
+                    _imageSize_temp = (43 - imageSize);
+                }
+                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                SetCamWindow(s, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
+                break;
 
-                case OV2640_PID:
-                    frameSizeX = 1600;
-                    frameSizeY = 1200;
-                    // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) -1
-                    // 29 = ((1600 - 640) / 8 / 4) - 1
-                    if (imageSize < 29)
-                    {
-                        _imageSize_temp = (29 - imageSize);
-                    }
-                    SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
-                    SetCamWindow(s, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
-                    break;
-                
-                default:
-                    // do nothing
-                    break;
+            case OV2640_PID:
+                frameSizeX = 1600;
+                frameSizeY = 1200;
+                // max imageSize = ((frameSizeX - CCstatus.ImageWidth) / 8 / 4) -1
+                // 29 = ((1600 - 640) / 8 / 4) - 1
+                if (imageSize < 29)
+                {
+                    _imageSize_temp = (29 - imageSize);
+                }
+                SanitizeZoomParams(_imageSize_temp, frameSizeX, frameSizeY, _imageWidth, _imageHeight, _offsetx, _offsety);
+                SetCamWindow(s, frameSizeX, frameSizeY, _offsetx, _offsety, _imageWidth, _imageHeight, CCstatus.ImageWidth, CCstatus.ImageHeight);
+                break;
+
+            default:
+                // do nothing
+                break;
             }
         }
         else
@@ -481,7 +479,6 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
     }
 
     SetImageWidthHeightFromResolution(resol);
-
 
     if (s != NULL)
     {
@@ -538,14 +535,29 @@ void CCamera::SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOff
 {
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
-        s->set_res_raw(s, 0, 0, 0, 0, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, false, false);
+        if (CCstatus.isImageColorSwaped == true)
+        {
+            s->set_res_raw(s, 0, 0, 0, 0, xOffset, yOffset, xTotal + 1, yTotal + 1, xOutput, yOutput, false, false);
+        }
+        else
+        {
+            s->set_res_raw(s, 0, 0, 0, 0, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, false, false);
+        }
     }
     else
     {
         // for CAMERA_OV5640 and CAMERA_OV3660
         bool scale = !(xOutput == xTotal && yOutput == yTotal);
-        bool binning = (xTotal >= (frameSizeX>>1));
-        s->set_res_raw(s, xOffset, yOffset, xOffset + xTotal, yOffset + yTotal, 0, 0, frameSizeX, frameSizeY, xOutput, yOutput, scale, binning);
+        bool binning = (xTotal >= (frameSizeX >> 1));
+
+        if (CCstatus.isImageColorSwaped == true)
+        {
+            s->set_res_raw(s, xOffset, yOffset, xOffset + xTotal + 1, yOffset + yTotal + 1, 0, 0, frameSizeX, frameSizeY, xOutput, yOutput, scale, binning);
+        }
+        else
+        {
+            s->set_res_raw(s, xOffset, yOffset, xOffset + xTotal, yOffset + yTotal, 0, 0, frameSizeX, frameSizeY, xOutput, yOutput, scale, binning);
+        }
     }
 }
 
