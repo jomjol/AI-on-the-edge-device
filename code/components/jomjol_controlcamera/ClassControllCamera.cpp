@@ -469,13 +469,17 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
 {
     sensor_t *s = esp_camera_sensor_get();
 
+    // OV2640 has no lower limit on jpeg quality
     if (CCstatus.CamSensor_id == OV5640_PID)
     {
-        qual = min(63, max(18, qual)); // Limit quality from 18..63 (values lower than 20 tent to be unstable)
-    }
-    else
-    {
-        qual = min(63, max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
+        if (CCstatus.isImageColorSwaped == true)
+        {
+            qual = min(63, max(8, qual));
+        }
+        else
+        {
+            qual = min(63, max(18, qual)); // Limit quality from 18..63 (values lower than 20 tent to be unstable)
+        }
     }
 
     SetImageWidthHeightFromResolution(resol);
