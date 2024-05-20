@@ -475,30 +475,36 @@ esp_err_t handler_json(httpd_req_t *req)
 }
 
 /**
- * generates a http response in prometheus format containing the current value
+ * Generates a http response containing the OpenMetrics (https://openmetrics.io/) text wire format 
+ * according to https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format.
+ * The 
+ * 
+ * A MetricFamily (default 'meter') with a Metric for each Sequence.
+ * The MetricPoints are provided without a timestamp.
+ * 
+ * example configuration for Prometheus (`prometheus.yml`):
+ * 
+ *    - job_name: watermeter
+ *      static_configs:
+ *        - targets: ['watermeter.fritz.box']
+ * 
 */
-esp_err_t handler_prometheus(httpd_req_t *req)
+esp_err_t handler_openmetrics(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_prometheus - Start");
+    LogFile.WriteHeapInfo("handler_openmetrics - Start");
 #endif
 
-    ESP_LOGD(TAG, "handler_prometheus uri: %s", req->uri);
+    ESP_LOGD(TAG, "handler_openmetrics uri: %s", req->uri);
 
     if (bTaskAutoFlowCreated)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_set_type(req, "text/plain; version=0.0.4");
+        httpd_resp_set_type(req, "text/plain");     // as per https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format
 
-        std::string zw = flowctrl.getPrometheus();
-        if (zw.length() > 0)
-        {
-            httpd_resp_send(req, zw.c_str(), zw.length());
-        }
-        else
-        {
-            httpd_resp_send(req, NULL, 0);
-        }
+        // the response always contains at least the metadata (HELP, TYPE) for the MetricFamily so no length check is needed
+        std::string zw = flowctrl.getOpenMetrics("water");  // FIXME: replace with something configurable
+        httpd_resp_send(req, zw.c_str(), zw.length());
     }
     else
     {
@@ -507,7 +513,7 @@ esp_err_t handler_prometheus(httpd_req_t *req)
     }
 
 #ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_prometheus - Done");
+    LogFile.WriteHeapInfo("handler_openmetrics - Done");
 #endif
 
     return ESP_OK;
@@ -1690,10 +1696,10 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.user_ctx = (void *)"stream";
     httpd_register_uri_handler(server, &camuri);
 
-    /** will handle prometheus requests */
+    /** will handle metrics requests */
     camuri.uri = "/metrics";
-    camuri.handler = handler_prometheus;
-    camuri.user_ctx = (void *)"prometheus";
+    camuri.handler = handler_openmetrics;
+    camuri.user_ctx = (void *)"metrics";
     httpd_register_uri_handler(server, &camuri);
 
     /** when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */

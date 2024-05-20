@@ -77,12 +77,18 @@ string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend) {
     return json;
 }
 
-std::string ClassFlowPostProcessing::getPrometheus() {
-    if(NUMBERS.size() == 0) return "";
-
-    std::string res = "# HELP water_meter watermeter current value in m3\n# TYPE water_meter gauge\n";
+/**
+ * Generate the MetricFamily from all available sequences
+ * @returns the string containing the text wire format of the MetricFamily
+*/
+std::string ClassFlowPostProcessing::getOpenMetrics(std::string metricFamily) {
+    std::string metric = "meter_" + metricFamily;
+    std::string res = "# HELP " + metric + " current value of meter readout\n# TYPE " + metric + " gauge\n";
     for (int i = 0; i < NUMBERS.size(); ++i) {
-        res += "water_meter{sequence=\"" + NUMBERS[i]->name + "\"} " + NUMBERS[i]->ReturnValue +"\n";
+        // only valid data is reported (https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#missing-data)
+        if(NUMBERS[i]->ReturnValue.length() > 0) {
+            res += metric + "{sequence=\"" + NUMBERS[i]->name + "\"} " + NUMBERS[i]->ReturnValue + "\n";
+        }
     }
     return res;
 }

@@ -71,7 +71,7 @@ public:
     bool SetPreValue(double zw, string _numbers, bool _extern = false);
 
     std::string GetJSON(std::string _lineend = "\n");
-    std::string getPrometheus();
+    std::string getOpenMetrics(std::string metricFamily);
     std::string getNumbersName();
 
     void UpdateNachkommaDecimalShift();

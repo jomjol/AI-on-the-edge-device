@@ -928,7 +928,11 @@ string ClassFlowControll::getJSON()
     return flowpostprocessing->GetJSON();
 }
 
-string ClassFlowControll::getPrometheus()
+/** 
+ * Get metric information after processing
+ * @returns the string containing the text wire format of the MetricFamily
+ **/
+string ClassFlowControll::getOpenMetrics(std::string metricFamily)
 {
-    return flowpostprocessing->getPrometheus();
+    return flowpostprocessing->getOpenMetrics(metricFamily);
 }
