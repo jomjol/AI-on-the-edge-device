@@ -77,6 +77,16 @@ string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend) {
     return json;
 }
 
+std::string ClassFlowPostProcessing::getPrometheus() {
+    if(NUMBERS.size() == 0) return "";
+
+    std::string res = "# HELP water_meter watermeter current value in m3\n# TYPE water_meter gauge\n";
+    for (int i = 0; i < NUMBERS.size(); ++i) {
+        res += "water_meter{sequence=\"" + NUMBERS[i]->name + "\"} " + NUMBERS[i]->ReturnValue +"\n";
+    }
+    return res;
+}
+
 string ClassFlowPostProcessing::GetPreValue(std::string _number) {
     std::string result;
     int index = -1;

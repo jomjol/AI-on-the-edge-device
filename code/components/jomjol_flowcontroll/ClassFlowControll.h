@@ -52,6 +52,7 @@ public:
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
+	string getPrometheus();
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);

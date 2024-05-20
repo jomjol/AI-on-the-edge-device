@@ -927,3 +927,8 @@ string ClassFlowControll::getJSON()
 {
     return flowpostprocessing->GetJSON();
 }
+
+string ClassFlowControll::getPrometheus()
+{
+    return flowpostprocessing->getPrometheus();
+}

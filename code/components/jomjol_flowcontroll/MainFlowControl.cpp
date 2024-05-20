@@ -474,6 +474,45 @@ esp_err_t handler_json(httpd_req_t *req)
     return ESP_OK;
 }
 
+/**
+ * generates a http response in prometheus format containing the current value
+*/
+esp_err_t handler_prometheus(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_prometheus - Start");
+#endif
+
+    ESP_LOGD(TAG, "handler_prometheus uri: %s", req->uri);
+
+    if (bTaskAutoFlowCreated)
+    {
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_set_type(req, "text/plain; version=0.0.4");
+
+        std::string zw = flowctrl.getPrometheus();
+        if (zw.length() > 0)
+        {
+            httpd_resp_send(req, zw.c_str(), zw.length());
+        }
+        else
+        {
+            httpd_resp_send(req, NULL, 0);
+        }
+    }
+    else
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow not (yet) started: REST API /prometheus not yet available!");
+        return ESP_ERR_NOT_FOUND;
+    }
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_prometheus - Done");
+#endif
+
+    return ESP_OK;
+}
+
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON
@@ -1650,4 +1689,12 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.handler = handler_stream;
     camuri.user_ctx = (void *)"stream";
     httpd_register_uri_handler(server, &camuri);
+
+    /** will handle prometheus requests */
+    camuri.uri = "/metrics";
+    camuri.handler = handler_prometheus;
+    camuri.user_ctx = (void *)"prometheus";
+    httpd_register_uri_handler(server, &camuri);
+
+    /** when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }
