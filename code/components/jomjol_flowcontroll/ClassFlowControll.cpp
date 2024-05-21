@@ -932,17 +932,15 @@ string ClassFlowControll::getJSON()
  * Generate the MetricFamily from all available sequences
  * @returns the string containing the text wire format of the MetricFamily
  **/
-string ClassFlowControll::getOpenMetrics(std::string metricFamily)
+string ClassFlowControll::getOpenMetrics(string prefix)
 {
     std::vector<NumberPost*> *numbers = flowpostprocessing->GetNumbers();
 
-    std::string metric = "meter_" + metricFamily;
-    std::string res = "# HELP " + metric + " current value of meter readout\n# TYPE " + metric + " gauge\n";
-
+    string res = "# HELP " + prefix + "flow_value current value of meter readout\n# TYPE " + prefix + "flow_value gauge\n";
     for (int i = 0; i < (*numbers).size(); ++i) {
         // only valid data is reported (https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#missing-data)
         if((*numbers)[i]->ReturnValue.length() > 0) {
-            res += metric + "{sequence=\"" + (*numbers)[i]->name + "\"} " + (*numbers)[i]->ReturnValue + "\n";
+            res += prefix + "flow_value{sequence=\"" + (*numbers)[i]->name + "\"} " + (*numbers)[i]->ReturnValue + "\n";
         }
     }        
    

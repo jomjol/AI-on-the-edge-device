@@ -502,9 +502,19 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "text/plain");     // as per https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format
 
+        const string metricNamePrefix = "ai_on_the_edge_device_";   // FIXME: move to config-file
+
+        // get current measurements data
+        string response = flowctrl.getOpenMetrics(metricNamePrefix);
+
+        // add cpu temperature metric
+        response += "# HELP " + metricNamePrefix + "cpu_temperature_celsius current cpu temperature in celsius\n# TYPE " + metricNamePrefix + "cpu_temperature_celsius gauge\n" + metricNamePrefix + "cpu_temperature_celsius " + std::to_string((int)temperatureRead()) + "\n";
+
+        // add rssi metric
+        response += "# HELP " + metricNamePrefix + "rssi_dbm current WiFi signal strength in dBm\n# TYPE " + metricNamePrefix + "rssi_dbm gauge\n" + metricNamePrefix + "rssi_dbm " + std::to_string(get_WIFI_RSSI()) + "\n";
+
         // the response always contains at least the metadata (HELP, TYPE) for the MetricFamily so no length check is needed
-        std::string zw = flowctrl.getOpenMetrics("water");  // FIXME: replace with something configurable
-        httpd_resp_send(req, zw.c_str(), zw.length());
+        httpd_resp_send(req, response.c_str(), response.length());
     }
     else
     {

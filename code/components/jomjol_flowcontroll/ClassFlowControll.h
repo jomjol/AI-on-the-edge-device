@@ -52,7 +52,7 @@ public:
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
-	string getOpenMetrics(std::string metricFamily);
+	string getOpenMetrics(string prefix);
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);
