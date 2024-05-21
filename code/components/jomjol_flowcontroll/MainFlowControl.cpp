@@ -508,7 +508,7 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
     }
     else
     {
-        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow not (yet) started: REST API /prometheus not yet available!");
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow not (yet) started: REST API /metrics not yet available!");
         return ESP_ERR_NOT_FOUND;
     }
 

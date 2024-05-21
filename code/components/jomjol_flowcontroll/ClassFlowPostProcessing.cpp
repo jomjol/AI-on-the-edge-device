@@ -77,22 +77,6 @@ string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend) {
     return json;
 }
 
-/**
- * Generate the MetricFamily from all available sequences
- * @returns the string containing the text wire format of the MetricFamily
-*/
-std::string ClassFlowPostProcessing::getOpenMetrics(std::string metricFamily) {
-    std::string metric = "meter_" + metricFamily;
-    std::string res = "# HELP " + metric + " current value of meter readout\n# TYPE " + metric + " gauge\n";
-    for (int i = 0; i < NUMBERS.size(); ++i) {
-        // only valid data is reported (https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#missing-data)
-        if(NUMBERS[i]->ReturnValue.length() > 0) {
-            res += metric + "{sequence=\"" + NUMBERS[i]->name + "\"} " + NUMBERS[i]->ReturnValue + "\n";
-        }
-    }
-    return res;
-}
-
 string ClassFlowPostProcessing::GetPreValue(std::string _number) {
     std::string result;
     int index = -1;
