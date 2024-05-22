@@ -477,10 +477,11 @@ esp_err_t handler_json(httpd_req_t *req)
 /**
  * Generates a http response containing the OpenMetrics (https://openmetrics.io/) text wire format 
  * according to https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format.
- * The 
  * 
- * A MetricFamily (default 'meter') with a Metric for each Sequence.
- * The MetricPoints are provided without a timestamp.
+ * A MetricFamily with a Metric for each Sequence is provided. If no valid value is available, the metric is not provided.
+ * MetricPoints are provided without a timestamp. Additional metrics with some device information is also provided.
+ * 
+ * The default metric prefix is 'ai_on_the_edge_device_'.
  * 
  * example configuration for Prometheus (`prometheus.yml`):
  * 
