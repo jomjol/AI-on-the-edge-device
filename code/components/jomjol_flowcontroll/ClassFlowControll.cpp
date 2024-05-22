@@ -934,15 +934,19 @@ string ClassFlowControll::getJSON()
  **/
 string ClassFlowControll::getOpenMetrics(string prefix)
 {
+    string res = "";
     std::vector<NumberPost*> *numbers = flowpostprocessing->GetNumbers();
-
-    string res = "# HELP " + prefix + "flow_value current value of meter readout\n# TYPE " + prefix + "flow_value gauge\n";
+    
     for (int i = 0; i < (*numbers).size(); ++i) {
         // only valid data is reported (https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#missing-data)
         if((*numbers)[i]->ReturnValue.length() > 0) {
             res += prefix + "flow_value{sequence=\"" + (*numbers)[i]->name + "\"} " + (*numbers)[i]->ReturnValue + "\n";
         }
-    }        
-   
+    }
+
+    // prepend metadata if a valid metric was created
+    if(res.length() > 0) {
+        res = "# HELP " + prefix + "flow_value current value of meter readout\n# TYPE " + prefix + "flow_value gauge\n" + res;
+    }
     return res;
 }

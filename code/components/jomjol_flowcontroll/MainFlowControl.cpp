@@ -500,18 +500,37 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
     if (bTaskAutoFlowCreated)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_set_type(req, "text/plain");     // as per https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format
+        httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus
 
         const string metricNamePrefix = "ai_on_the_edge_device_";   // FIXME: move to config-file
 
-        // get current measurements data
+        // get current measurement (flow)
         string response = flowctrl.getOpenMetrics(metricNamePrefix);
 
-        // add cpu temperature metric
-        response += "# HELP " + metricNamePrefix + "cpu_temperature_celsius current cpu temperature in celsius\n# TYPE " + metricNamePrefix + "cpu_temperature_celsius gauge\n" + metricNamePrefix + "cpu_temperature_celsius " + std::to_string((int)temperatureRead()) + "\n";
+        // CPU Temperature
+        response += "# HELP " + metricNamePrefix + "cpu_temperature_celsius current cpu temperature in celsius\n# TYPE " 
+            + metricNamePrefix + "cpu_temperature_celsius gauge\n" 
+            + metricNamePrefix + "cpu_temperature_celsius " + std::to_string((int)temperatureRead()) + "\n";
 
-        // add rssi metric
-        response += "# HELP " + metricNamePrefix + "rssi_dbm current WiFi signal strength in dBm\n# TYPE " + metricNamePrefix + "rssi_dbm gauge\n" + metricNamePrefix + "rssi_dbm " + std::to_string(get_WIFI_RSSI()) + "\n";
+        // WiFi signal strength
+        response += "# HELP " + metricNamePrefix + "rssi_dbm current WiFi signal strength in dBm\n# TYPE " 
+            + metricNamePrefix + "rssi_dbm gauge\n" 
+            + metricNamePrefix + "rssi_dbm " + std::to_string(get_WIFI_RSSI()) + "\n";
+
+        // memory info
+        response += "# HELP " + metricNamePrefix + "memory_heap_free_bytes available heap memory\n# TYPE " 
+            + metricNamePrefix + "memory_heap_free_bytes gauge\n" 
+            + metricNamePrefix + "memory_heap_free_bytes " + std::to_string(getESPHeapSize()) + "\n";
+
+        // device uptime
+        response += "# HELP " + metricNamePrefix + "uptime_seconds device uptime in seconds\n# TYPE " 
+            + metricNamePrefix + "uptime_seconds gauge\n" 
+            + metricNamePrefix + "uptime_seconds " + std::to_string((long)getUpTime()) + "\n";
+
+        // data aquisition round
+        response += "# HELP " + metricNamePrefix + "rounds_total data aquisition rounds since device startup\n# TYPE " 
+            + metricNamePrefix + "rounds_total counter\n" 
+            + metricNamePrefix + "rounds_total " + std::to_string(countRounds) + "\n";
 
         // the response always contains at least the metadata (HELP, TYPE) for the MetricFamily so no length check is needed
         httpd_resp_send(req, response.c_str(), response.length());
