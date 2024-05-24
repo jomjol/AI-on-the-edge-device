@@ -100,7 +100,7 @@ esp_err_t handler_capture(httpd_req_t *req)
         if (CFstatus.changedCameraSettings)
         {
             Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize);
+            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
             CFstatus.changedCameraSettings = false;
         }
 
@@ -158,7 +158,7 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
         if (CFstatus.changedCameraSettings)
         {
             Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize);
+            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
             CFstatus.changedCameraSettings = false;
         }
 
@@ -240,7 +240,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
         if (CFstatus.changedCameraSettings)
         {
             Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize);
+            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
             CFstatus.changedCameraSettings = false;
         }
 

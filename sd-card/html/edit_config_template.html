@@ -293,19 +293,6 @@
 			</td>
 			<td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
 		</tr>
-		
-		<tr class="expert" unused_id="TakeImage_CamColorSwaped_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamColorSwaped_text" style="color:black;">isCamColorSwaped</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamColorSwaped_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamColorSwaped</td>
-		</tr>
 
 		<tr class="expert" unused_id="TakeImage_CamGainceiling_ex3">
 			<td class="indent1">
@@ -2197,7 +2184,6 @@ function UpdateInput() {
     WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
 
     WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
-    WriteParameter(param, category, "TakeImage", "CamColorSwaped", false);
     WriteParameter(param, category, "TakeImage", "CamGainceiling", false);	
     WriteParameter(param, category, "TakeImage", "CamQuality", false);
     WriteParameter(param, category, "TakeImage", "CamBrightness", false);
@@ -2358,7 +2344,6 @@ function ReadParameterAll() {
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
     ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
-    ReadParameter(param, "TakeImage", "CamColorSwaped", false);
     ReadParameter(param, "TakeImage", "CamGainceiling", false);	
     ReadParameter(param, "TakeImage", "CamQuality", false);	
     ReadParameter(param, "TakeImage", "CamBrightness", false);
@@ -2569,15 +2554,7 @@ function camSettingsSet(){
     document.getElementById("overlaytext").innerHTML = "Save Cam Settings...";
 	
     var _waitb_temp = document.getElementById("TakeImage_WaitBeforeTakingPicture_value1").value;
-	
-    var _ics_temp = document.getElementById("TakeImage_CamColorSwaped_value1").selectedIndex;
-    if (_ics_temp == '0') {
-        _ics_temp = '1';
-    }
-    else {
-        _ics_temp = '0';
-    }
-	
+
     var _qual_temp = document.getElementById("TakeImage_CamQuality_value1").value;	
                 
     var _bri_temp = document.getElementById("TakeImage_CamBrightness_value1").value;
@@ -2715,7 +2692,7 @@ function camSettingsSet(){
 	
     // bei einmal Alles senden kommt es zu problemen!!!!!!!!!!!!!!!!!!!!
     var url_1 = domainname + "/editflow?task=cam_settings";
-    url_1 = url_1 + "&waitb=" + _waitb_temp + "&ics=" + _ics_temp + "&qual=" + _qual_temp;
+    url_1 = url_1 + "&waitb=" + _waitb_temp + "&qual=" + _qual_temp;
     url_1 = url_1 + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
     url_1 = url_1 + "&spe=" + _spe_temp + "&wbm=" + _wbm_temp + "&awb=" + _awb_temp + "&awbg=" + _awbg_temp;
     url_1 = url_1 + "&aec=" + _aec_temp + "&aec2=" + _aec2_temp + "&ael=" + _ael_temp + "&aecv=" + _aecv_temp;

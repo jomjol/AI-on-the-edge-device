@@ -146,7 +146,6 @@ bool doflow(void)
 esp_err_t setCCstatusToCFstatus(void)
 {
     CFstatus.CamSensor_id = CCstatus.CamSensor_id;
-    CFstatus.isImageColorSwaped = CCstatus.isImageColorSwaped;
 
     CFstatus.ImageFrameSize = CCstatus.ImageFrameSize;
     CFstatus.ImageGainceiling = CCstatus.ImageGainceiling;
@@ -191,7 +190,6 @@ esp_err_t setCCstatusToCFstatus(void)
 esp_err_t setCFstatusToCCstatus(void)
 {
     // CCstatus.CamSensor_id = CFstatus.CamSensor_id;
-    CCstatus.isImageColorSwaped = CFstatus.isImageColorSwaped;
 
     CCstatus.ImageFrameSize = CFstatus.ImageFrameSize;
     CCstatus.ImageGainceiling = CFstatus.ImageGainceiling;
@@ -889,11 +887,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
             }
 
-            if (httpd_query_key_value(_query, "ics", _valuechar, 30) == ESP_OK)
-            {
-                CFstatus.isImageColorSwaped = numericStrToBool(_valuechar);
-            }
-
             if (httpd_query_key_value(_query, "qual", _valuechar, 30) == ESP_OK)
             {
                 int _qual = std::stoi(_valuechar);
@@ -1128,8 +1121,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 // CFstatus >>> Kamera
                 setCFstatusToCam();
 
-                Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize);
-                // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize);
+                Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
+                // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
 
                 // Kameraeinstellungen wurden verädert
                 CFstatus.changedCameraSettings = true;

@@ -45,7 +45,6 @@ typedef struct
 
     int ImageWidth;
     int ImageHeight;
-    bool isImageColorSwaped;
 
     int ImageLedIntensity;
 

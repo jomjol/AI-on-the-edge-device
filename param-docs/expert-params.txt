@@ -1,5 +1,4 @@
 WaitBeforeTakingPicture
-CamColorSwaped
 CamFrameSize
 CamGainceiling
 CamQuality
