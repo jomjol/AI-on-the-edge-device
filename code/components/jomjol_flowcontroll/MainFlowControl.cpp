@@ -503,7 +503,7 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus
 
-        const string metricNamePrefix = "ai_on_the_edge_device_";   // FIXME: move to config-file
+        const string metricNamePrefix = "ai_on_the_edge_device_";
 
         // get current measurement (flow)
         string response = flowctrl.getOpenMetrics(metricNamePrefix);
