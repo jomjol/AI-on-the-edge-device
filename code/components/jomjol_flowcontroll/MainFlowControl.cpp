@@ -27,6 +27,7 @@
 #include "read_wlanini.h"
 #include "connect_wlan.h"
 #include "psram.h"
+#include "openmetrics.h"
 
 // support IDF 5.x
 #ifndef portTICK_RATE_MS
@@ -506,32 +507,22 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
         const string metricNamePrefix = "ai_on_the_edge_device_";
 
         // get current measurement (flow)
-        string response = flowctrl.getOpenMetrics(metricNamePrefix);
+        string response = createSequenceMetrics(metricNamePrefix, flowctrl.getNumbers());       // flowctrl.getOpenMetrics(metricNamePrefix);
 
         // CPU Temperature
-        response += "# HELP " + metricNamePrefix + "cpu_temperature_celsius current cpu temperature in celsius\n# TYPE " 
-            + metricNamePrefix + "cpu_temperature_celsius gauge\n" 
-            + metricNamePrefix + "cpu_temperature_celsius " + std::to_string((int)temperatureRead()) + "\n";
+        response += createMetric(metricNamePrefix + "cpu_temperature_celsius", "current cpu temperature in celsius", "gauge", std::to_string((int)temperatureRead())); 
 
         // WiFi signal strength
-        response += "# HELP " + metricNamePrefix + "rssi_dbm current WiFi signal strength in dBm\n# TYPE " 
-            + metricNamePrefix + "rssi_dbm gauge\n" 
-            + metricNamePrefix + "rssi_dbm " + std::to_string(get_WIFI_RSSI()) + "\n";
+        response += createMetric(metricNamePrefix + "rssi_dbm", "current WiFi signal strength in dBm", "gauge", std::to_string(get_WIFI_RSSI())); 
 
         // memory info
-        response += "# HELP " + metricNamePrefix + "memory_heap_free_bytes available heap memory\n# TYPE " 
-            + metricNamePrefix + "memory_heap_free_bytes gauge\n" 
-            + metricNamePrefix + "memory_heap_free_bytes " + std::to_string(getESPHeapSize()) + "\n";
+        response += createMetric(metricNamePrefix + "memory_heap_free_bytes", "available heap memory", "gauge", std::to_string(getESPHeapSize())); 
 
         // device uptime
-        response += "# HELP " + metricNamePrefix + "uptime_seconds device uptime in seconds\n# TYPE " 
-            + metricNamePrefix + "uptime_seconds gauge\n" 
-            + metricNamePrefix + "uptime_seconds " + std::to_string((long)getUpTime()) + "\n";
+        response += createMetric(metricNamePrefix + "uptime_seconds", "device uptime in seconds", "gauge", std::to_string((long)getUpTime())); 
 
         // data aquisition round
-        response += "# HELP " + metricNamePrefix + "rounds_total data aquisition rounds since device startup\n# TYPE " 
-            + metricNamePrefix + "rounds_total counter\n" 
-            + metricNamePrefix + "rounds_total " + std::to_string(countRounds) + "\n";
+        response += createMetric(metricNamePrefix + "rounds_total", "data aquisition rounds since device startup", "counter", std::to_string(countRounds));
 
         // the response always contains at least the metadata (HELP, TYPE) for the MetricFamily so no length check is needed
         httpd_resp_send(req, response.c_str(), response.length());
