@@ -481,7 +481,7 @@ esp_err_t handler_json(httpd_req_t *req)
  * A MetricFamily with a Metric for each Sequence is provided. If no valid value is available, the metric is not provided.
  * MetricPoints are provided without a timestamp. Additional metrics with some device information is also provided.
  * 
- * The default metric prefix is 'ai_on_the_edge_device_'.
+ * The metric name prefix is 'ai_on_the_edge_device_'.
  * 
  * example configuration for Prometheus (`prometheus.yml`):
  * 
@@ -501,12 +501,12 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
     if (bTaskAutoFlowCreated)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus
+        httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus so we use text/plain for now
 
         const string metricNamePrefix = "ai_on_the_edge_device_";
 
         // get current measurement (flow)
-        string response = createSequenceMetrics(metricNamePrefix, flowctrl.getNumbers());       // flowctrl.getOpenMetrics(metricNamePrefix);
+        string response = createSequenceMetrics(metricNamePrefix, flowctrl.getNumbers());
 
         // CPU Temperature
         response += createMetric(metricNamePrefix + "cpu_temperature_celsius", "current cpu temperature in celsius", "gauge", std::to_string((int)temperatureRead())); 
