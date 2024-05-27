@@ -242,8 +242,6 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
     if (s != NULL)
     {
         s->set_framesize(s, CCstatus.ImageFrameSize);
-        s->set_gainceiling(s, CCstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
-
         s->set_quality(s, CCstatus.ImageQuality); // 0 - 63
 
         s->set_brightness(s, CCstatus.ImageBrightness); // -2 to 2
@@ -252,36 +250,37 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
         // s->set_sharpness(s, CCstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
         SetCamSharpness(CCstatus.ImageAutoSharpness, CCstatus.ImageSharpness);
 
-        s->set_exposure_ctrl(s, CCstatus.ImageAec);  // 0 = disable , 1 = enable
+        s->set_denoise(s, CCstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
+        s->set_special_effect(s, CCstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        s->set_wb_mode(s, CCstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+
         s->set_ae_level(s, CCstatus.ImageAeLevel);   // -2 to 2
         s->set_aec_value(s, CCstatus.ImageAecValue); // 0 to 1200
+        s->set_agc_gain(s, CCstatus.ImageAgcGain);   // 0 to 30
 
-        s->set_aec2(s, CCstatus.ImageAec2); // 0 = disable , 1 = enable
+        // s->set_gainceiling(s, CCstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+        ov5640_set_gainceiling(s, CCstatus.ImageGainceiling);
 
-        s->set_gain_ctrl(s, CCstatus.ImageAgc);    // 0 = disable , 1 = enable
-        s->set_agc_gain(s, CCstatus.ImageAgcGain); // 0 to 30
+        s->set_lenc(s, CCstatus.ImageLenc);         // 0 = disable , 1 = enable
+        s->set_gain_ctrl(s, CCstatus.ImageAgc);     // 0 = disable , 1 = enable
+        s->set_exposure_ctrl(s, CCstatus.ImageAec); // 0 = disable , 1 = enable
+
+        s->set_hmirror(s, CCstatus.ImageHmirror); // 0 = disable , 1 = enable
+        s->set_vflip(s, CCstatus.ImageVflip);     // 0 = disable , 1 = enable
+        s->set_aec2(s, CCstatus.ImageAec2);       // 0 = disable , 1 = enable
 
         s->set_bpc(s, CCstatus.ImageBpc); // 0 = disable , 1 = enable
         s->set_wpc(s, CCstatus.ImageWpc); // 0 = disable , 1 = enable
 
         s->set_raw_gma(s, CCstatus.ImageRawGma); // 0 = disable , 1 = enable
-        s->set_lenc(s, CCstatus.ImageLenc);      // 0 = disable , 1 = enable
 
-        s->set_hmirror(s, CCstatus.ImageHmirror); // 0 = disable , 1 = enable
-        s->set_vflip(s, CCstatus.ImageVflip);     // 0 = disable , 1 = enable
-
-        s->set_dcw(s, CCstatus.ImageDcw); // 0 = disable , 1 = enable
-
-        s->set_wb_mode(s, CCstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
         s->set_awb_gain(s, CCstatus.ImageAwbGain); // 0 = disable , 1 = enable
         s->set_whitebal(s, CCstatus.ImageAwb);     // 0 = disable , 1 = enable
 
-        s->set_denoise(s, CCstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+        s->set_dcw(s, CCstatus.ImageDcw); // 0 = disable , 1 = enable
 
-        // special_effect muß als Letztes gesetzt werden, sonst geht es nicht
-        s->set_special_effect(s, CCstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-
-        TickType_t xDelay2 = 1000 / portTICK_PERIOD_MS;
+        TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
         vTaskDelay(xDelay2);
 
         return ESP_OK;
@@ -333,6 +332,31 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
     {
         return ESP_FAIL;
     }
+}
+
+// on the OV5640, gainceiling must be set with the real value (x2>>>level = 2, .... x128>>>level = 128)
+int CCamera::ov5640_set_gainceiling(sensor_t *s, gainceiling_t level)
+{
+	int ret = 0;
+		
+    if (CCstatus.CamSensor_id == OV2640_PID)
+    {
+        ret = s->set_gainceiling(s, CCstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+    }
+    else
+    {
+		int _level = (1 << ((int)level + 1));
+
+		ret = s->set_reg(s, 0x3A18, 0xFF, (_level >> 8) & 3) || s->set_reg(s, 0x3A19, 0xFF, _level & 0xFF);
+
+		if (ret == 0)
+		{
+			// ESP_LOGD(TAG, "Set gainceiling to: %d", level);
+			s->status.gainceiling = level;
+		}
+    }
+
+    return ret;
 }
 
 // - It always zooms to the image center when offsets are zero

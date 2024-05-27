@@ -2555,6 +2555,7 @@ function camSettingsSet(){
 	
     var _waitb_temp = document.getElementById("TakeImage_WaitBeforeTakingPicture_value1").value;
 
+    var _aecgc_temp = document.getElementById("TakeImage_CamGainceiling_value1").selectedIndex;
     var _qual_temp = document.getElementById("TakeImage_CamQuality_value1").value;	
                 
     var _bri_temp = document.getElementById("TakeImage_CamBrightness_value1").value;
@@ -2692,7 +2693,7 @@ function camSettingsSet(){
 	
     // bei einmal Alles senden kommt es zu problemen!!!!!!!!!!!!!!!!!!!!
     var url_1 = domainname + "/editflow?task=cam_settings";
-    url_1 = url_1 + "&waitb=" + _waitb_temp + "&qual=" + _qual_temp;
+    url_1 = url_1 + "&waitb=" + _waitb_temp + "&aecgc=" + _aecgc_temp + "&qual=" + _qual_temp;
     url_1 = url_1 + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
     url_1 = url_1 + "&spe=" + _spe_temp + "&wbm=" + _wbm_temp + "&awb=" + _awb_temp + "&awbg=" + _awbg_temp;
     url_1 = url_1 + "&aec=" + _aec_temp + "&aec2=" + _aec2_temp + "&ael=" + _ael_temp + "&aecv=" + _aecv_temp;

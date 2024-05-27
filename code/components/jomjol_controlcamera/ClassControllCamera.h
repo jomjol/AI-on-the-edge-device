@@ -89,6 +89,8 @@ public:
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
+    int ov5640_set_gainceiling(sensor_t *s, gainceiling_t level);
+
     esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
     esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
 

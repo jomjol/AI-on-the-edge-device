@@ -238,8 +238,6 @@ esp_err_t setCFstatusToCam(void)
     if (s != NULL)
     {
         s->set_framesize(s, CFstatus.ImageFrameSize);
-        s->set_gainceiling(s, CFstatus.ImageGainceiling);
-
         s->set_quality(s, CFstatus.ImageQuality); // 0 - 63
 
         s->set_brightness(s, CFstatus.ImageBrightness); // -2 to 2
@@ -248,35 +246,37 @@ esp_err_t setCFstatusToCam(void)
         // s->set_sharpness(s, CFstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
         Camera.SetCamSharpness(CFstatus.ImageAutoSharpness, CFstatus.ImageSharpness);
 
-        s->set_exposure_ctrl(s, CFstatus.ImageAec);  // 0 = disable , 1 = enable
+        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
+        s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        s->set_wb_mode(s, CFstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+
         s->set_ae_level(s, CFstatus.ImageAeLevel);   // -2 to 2
         s->set_aec_value(s, CFstatus.ImageAecValue); // 0 to 1200
-        s->set_aec2(s, CFstatus.ImageAec2);          // 0 = disable , 1 = enable
+        s->set_agc_gain(s, CFstatus.ImageAgcGain);   // 0 to 30
 
-        s->set_gain_ctrl(s, CFstatus.ImageAgc);    // 0 = disable , 1 = enable
-        s->set_agc_gain(s, CFstatus.ImageAgcGain); // 0 to 30
+        // s->set_gainceiling(s, CFstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+        Camera.ov5640_set_gainceiling(s, CFstatus.ImageGainceiling);
+
+        s->set_lenc(s, CFstatus.ImageLenc);         // 0 = disable , 1 = enable
+        s->set_gain_ctrl(s, CFstatus.ImageAgc);     // 0 = disable , 1 = enable
+        s->set_exposure_ctrl(s, CFstatus.ImageAec); // 0 = disable , 1 = enable
+
+        s->set_hmirror(s, CFstatus.ImageHmirror); // 0 = disable , 1 = enable
+        s->set_vflip(s, CFstatus.ImageVflip);     // 0 = disable , 1 = enable
+        s->set_aec2(s, CFstatus.ImageAec2);       // 0 = disable , 1 = enable
 
         s->set_bpc(s, CFstatus.ImageBpc); // 0 = disable , 1 = enable
         s->set_wpc(s, CFstatus.ImageWpc); // 0 = disable , 1 = enable
 
         s->set_raw_gma(s, CFstatus.ImageRawGma); // 0 = disable , 1 = enable
-        s->set_lenc(s, CFstatus.ImageLenc);      // 0 = disable , 1 = enable
 
-        s->set_hmirror(s, CFstatus.ImageHmirror); // 0 = disable , 1 = enable
-        s->set_vflip(s, CFstatus.ImageVflip);     // 0 = disable , 1 = enable
-
-        s->set_dcw(s, CFstatus.ImageDcw); // 0 = disable , 1 = enable
-
-        s->set_wb_mode(s, CFstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
         s->set_awb_gain(s, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
         s->set_whitebal(s, CFstatus.ImageAwb);     // 0 = disable , 1 = enable
 
-        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+        s->set_dcw(s, CFstatus.ImageDcw); // 0 = disable , 1 = enable
 
-        // special_effect muß als Letztes gesetzt werden, sonst geht es nicht
-        s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-
-        TickType_t xDelay2 = 1000 / portTICK_PERIOD_MS;
+        TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
         vTaskDelay(xDelay2);
 
         return ESP_OK;
@@ -884,6 +884,21 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (_waitb != 0)
                 {
                     CFstatus.WaitBeforePicture = _waitb;
+                }
+            }
+
+            if (httpd_query_key_value(_query, "aecgc", _valuechar, 30) == ESP_OK)
+            {
+                int _aecgc = std::stoi(_valuechar);
+                switch (_aecgc)
+                {
+                    case 1: CFstatus.ImageGainceiling = GAINCEILING_4X; break;
+                    case 2: CFstatus.ImageGainceiling = GAINCEILING_8X; break;
+                    case 3: CFstatus.ImageGainceiling = GAINCEILING_16X; break;
+                    case 4: CFstatus.ImageGainceiling = GAINCEILING_32X; break;
+                    case 5: CFstatus.ImageGainceiling = GAINCEILING_64X; break;
+                    case 6: CFstatus.ImageGainceiling = GAINCEILING_128X; break;
+                    default: CFstatus.ImageGainceiling = GAINCEILING_2X;
                 }
             }
 
