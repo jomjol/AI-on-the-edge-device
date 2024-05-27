@@ -7,7 +7,7 @@
 #include <fstream>
 #include <vector>
 
-#include "../jomjol_flowcontroll/ClassFlowDefineTypes.h"
+#include "ClassFlowDefineTypes.h"
 
 using namespace std;
 

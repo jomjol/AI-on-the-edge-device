@@ -27,7 +27,6 @@
 #include "read_wlanini.h"
 #include "connect_wlan.h"
 #include "psram.h"
-#include "openmetrics.h"
 
 // support IDF 5.x
 #ifndef portTICK_RATE_MS
