@@ -10,18 +10,20 @@ string createMetric(const string &metricName, const string &help, const string &
     return "# HELP " + metricName + " " + help + "\n# TYPE " + metricName + " " + type + "\n" + metricName + " " + value + "\n";
 }
 
-/** 
+/**
  * Generate the MetricFamily from all available sequences
  * @returns the string containing the text wire format of the MetricFamily
  **/
-string createSequenceMetrics(string prefix, std::vector<NumberPost*> *numbers)
+string createSequenceMetrics(string prefix, std::vector<NumberPost *> *numbers)
 {
     string res = "";
-    
-    for (int i = 0; i < (*numbers).size(); ++i) {
+
+    for (int i = 0; i < (*numbers).size(); ++i)
+    {
         auto number = (*numbers)[i];
         // only valid data is reported (https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#missing-data)
-        if(number->ReturnValue.length() > 0) {
+        if (number->ReturnValue.length() > 0)
+        {
             auto label = number->name;
 
             // except newline, double quote, and backslash (https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#abnf)
@@ -29,13 +31,14 @@ string createSequenceMetrics(string prefix, std::vector<NumberPost*> *numbers)
             label = ReplaceString(label, "\\", "");
             label = ReplaceString(label, "\"", "");
             label = ReplaceString(label, "\n", "");
-            res += prefix + "flow_value{sequence=\"" + label + "\"} " + number->ReturnValue + "\n";
+            res += prefix + "_flow_value{sequence=\"" + label + "\"} " + number->ReturnValue + "\n";
         }
     }
 
     // prepend metadata if a valid metric was created
-    if(res.length() > 0) {
-        res = "# HELP " + prefix + "flow_value current value of meter readout\n# TYPE " + prefix + "flow_value gauge\n" + res;
+    if (res.length() > 0)
+    {
+        res = "# HELP " + prefix + "_flow_value current value of meter readout\n# TYPE " + prefix + "_flow_value gauge\n" + res;
     }
     return res;
 }

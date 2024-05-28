@@ -20,6 +20,7 @@
 #include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
 #include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 #include "components/jomjol-flowcontroll/test_cnnflowcontroll.cpp"
+#include "components/openmetrics/test_openmetrics.cpp"
 
 
 bool Init_NVS_SDCard()
@@ -167,6 +168,7 @@ extern "C" void app_main()
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
+    RUN_TEST(test_openmetrics);
   
   UNITY_END();
 }
