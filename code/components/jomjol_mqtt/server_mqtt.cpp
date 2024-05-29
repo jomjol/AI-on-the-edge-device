@@ -69,11 +69,20 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         name = group + " " + name;
     }    
 
+    /** 
+     * homeassistant needs the MQTT discovery topic according to the following structure:
+     *      <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+     * if the main topic is embedded in a nested structure, we just use the last part as node_id 
+     * This means a maintopic "home/test/watermeter" is transformed to the discovery topic "homeassistant/sensor/watermeter/..."
+    */
+    auto splitPos = maintopic.find_last_of('/');
+    string node_id = ((splitPos == string::npos) ? maintopic : maintopic.substr(splitPos + 1));
+
     if (field == "problem") { // Special binary sensor which is based on error topic
-        topicFull = "homeassistant/binary_sensor/" + maintopic + "/" + configTopic + "/config";
+        topicFull = "homeassistant/binary_sensor/" + node_id + "/" + configTopic + "/config";
     }
     else {
-        topicFull = "homeassistant/sensor/" + maintopic + "/" + configTopic + "/config";
+        topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
     }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
