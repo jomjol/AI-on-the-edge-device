@@ -9,9 +9,7 @@
 
 #include "ClassFlowDefineTypes.h"
 
-using namespace std;
+std::string createMetric(const std::string &metricName, const std::string &help, const std::string &type, const std::string &value);
+std::string createSequenceMetrics(std::string prefix, const std::vector<NumberPost *> &numbers);
 
-string createMetric(const string &metricName, const string &help, const string &type, const string &value);
-string createSequenceMetrics(string prefix, std::vector<NumberPost*> *numbers);
-
-#endif //OPENMETRICS_H
+#endif // OPENMETRICS_H

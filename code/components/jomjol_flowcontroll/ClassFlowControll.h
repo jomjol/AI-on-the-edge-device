@@ -52,7 +52,7 @@ public:
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
 	string getJSON();
-	std::vector<NumberPost*> *getNumbers();
+	const std::vector<NumberPost*> &getNumbers();
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);

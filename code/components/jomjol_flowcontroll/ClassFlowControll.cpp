@@ -931,7 +931,7 @@ string ClassFlowControll::getJSON()
 /** 
  * @returns a vector of all current sequences
  **/
-std::vector<NumberPost*> *ClassFlowControll::getNumbers()
+const std::vector<NumberPost*> &ClassFlowControll::getNumbers()
 {
-    return flowpostprocessing->GetNumbers();
+    return *flowpostprocessing->GetNumbers();
 }
