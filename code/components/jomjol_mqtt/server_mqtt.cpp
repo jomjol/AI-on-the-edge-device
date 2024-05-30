@@ -76,7 +76,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
      * This means a maintopic "home/test/watermeter" is transformed to the discovery topic "homeassistant/sensor/watermeter/..."
     */
     auto splitPos = maintopic.find_last_of('/');
-    string node_id = ((splitPos == string::npos) ? maintopic : maintopic.substr(splitPos + 1));
+    std::string node_id = ((splitPos == std::string::npos) ? maintopic : maintopic.substr(splitPos + 1));
 
     if (field == "problem") { // Special binary sensor which is based on error topic
         topicFull = "homeassistant/binary_sensor/" + node_id + "/" + configTopic + "/config";
