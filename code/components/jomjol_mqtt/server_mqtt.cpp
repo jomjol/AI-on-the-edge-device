@@ -49,6 +49,15 @@ void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std
     rateUnit = _rateUnit;
 }
 
+/**
+ * Takes any multi-level MQTT-topic and returns the last topic level as nodeId
+ * see https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/ for details about MQTT topics
+*/
+std::string createNodeId(std::string &topic) {
+    auto splitPos = topic.find_last_of('/');
+    return (splitPos == std::string::npos) ? topic : topic.substr(splitPos + 1);
+}
+
 bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory,
     int qos) {
@@ -69,11 +78,18 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         name = group + " " + name;
     }    
 
+    /** 
+     * homeassistant needs the MQTT discovery topic according to the following structure:
+     *      <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+     * if the main topic is embedded in a nested structure, we just use the last part as node_id 
+     * This means a maintopic "home/test/watermeter" is transformed to the discovery topic "homeassistant/sensor/watermeter/..."
+    */
+    std::string node_id = createNodeId(maintopic);
     if (field == "problem") { // Special binary sensor which is based on error topic
-        topicFull = "homeassistant/binary_sensor/" + maintopic + "/" + configTopic + "/config";
+        topicFull = "homeassistant/binary_sensor/" + node_id + "/" + configTopic + "/config";
     }
     else {
-        topicFull = "homeassistant/sensor/" + maintopic + "/" + configTopic + "/config";
+        topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
     }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */

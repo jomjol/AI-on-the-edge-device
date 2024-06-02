@@ -22,6 +22,7 @@ std::string getTimeUnit(void);
 void GotConnected(std::string maintopic, bool SetRetainFlag);
 esp_err_t sendDiscovery_and_static_Topics(void);
 
+std::string createNodeId(std::string &topic);
 
 #endif //SERVERMQTT_H
 #endif //ENABLE_MQTT
