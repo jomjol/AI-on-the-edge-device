@@ -20,7 +20,7 @@
 #include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
 #include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 #include "components/jomjol-flowcontroll/test_cnnflowcontroll.cpp"
-
+#include "components/jomjol_mqtt/test_server_mqtt.cpp"
 
 bool Init_NVS_SDCard()
 {
@@ -167,6 +167,7 @@ extern "C" void app_main()
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
+    RUN_TEST(test_mqtt);
   
   UNITY_END();
 }
