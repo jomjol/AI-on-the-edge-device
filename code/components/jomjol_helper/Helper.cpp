@@ -1206,3 +1206,13 @@ bool isInString(std::string &s, std::string const &toFind)
 
 	return true;
 }
+
+// from https://stackoverflow.com/a/14678800
+void replaceAll(std::string& s, const std::string& toReplace, const std::string& replaceWith)
+{
+    size_t pos = 0;
+    while ((pos = s.find(toReplace, pos)) != std::string::npos) {
+         s.replace(pos, toReplace.length(), replaceWith);
+         pos += replaceWith.length();
+    }
+}

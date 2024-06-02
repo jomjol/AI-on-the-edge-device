@@ -9,6 +9,7 @@
 #include <esp_http_server.h>
 #include "CImageBasis.h"
 #include "ClassFlowControll.h"
+#include "openmetrics.h"
 
 typedef struct
 {

@@ -474,6 +474,71 @@ esp_err_t handler_json(httpd_req_t *req)
     return ESP_OK;
 }
 
+/**
+ * Generates a http response containing the OpenMetrics (https://openmetrics.io/) text wire format 
+ * according to https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format.
+ * 
+ * A MetricFamily with a Metric for each Sequence is provided. If no valid value is available, the metric is not provided.
+ * MetricPoints are provided without a timestamp. Additional metrics with some device information is also provided.
+ * 
+ * The metric name prefix is 'ai_on_the_edge_device_'.
+ * 
+ * example configuration for Prometheus (`prometheus.yml`):
+ * 
+ *    - job_name: watermeter
+ *      static_configs:
+ *        - targets: ['watermeter.fritz.box']
+ * 
+*/
+esp_err_t handler_openmetrics(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_openmetrics - Start");
+#endif
+
+    ESP_LOGD(TAG, "handler_openmetrics uri: %s", req->uri);
+
+    if (bTaskAutoFlowCreated)
+    {
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus so we use text/plain for now
+
+        const string metricNamePrefix = "ai_on_the_edge_device";
+
+        // get current measurement (flow)
+        string response = createSequenceMetrics(metricNamePrefix, flowctrl.getNumbers());
+
+        // CPU Temperature
+        response += createMetric(metricNamePrefix + "_cpu_temperature_celsius", "current cpu temperature in celsius", "gauge", std::to_string((int)temperatureRead())); 
+
+        // WiFi signal strength
+        response += createMetric(metricNamePrefix + "_rssi_dbm", "current WiFi signal strength in dBm", "gauge", std::to_string(get_WIFI_RSSI())); 
+
+        // memory info
+        response += createMetric(metricNamePrefix + "_memory_heap_free_bytes", "available heap memory", "gauge", std::to_string(getESPHeapSize())); 
+
+        // device uptime
+        response += createMetric(metricNamePrefix + "_uptime_seconds", "device uptime in seconds", "gauge", std::to_string((long)getUpTime())); 
+
+        // data aquisition round
+        response += createMetric(metricNamePrefix + "_rounds_total", "data aquisition rounds since device startup", "counter", std::to_string(countRounds));
+
+        // the response always contains at least the metadata (HELP, TYPE) for the MetricFamily so no length check is needed
+        httpd_resp_send(req, response.c_str(), response.length());
+    }
+    else
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow not (yet) started: REST API /metrics not yet available!");
+        return ESP_ERR_NOT_FOUND;
+    }
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_openmetrics - Done");
+#endif
+
+    return ESP_OK;
+}
+
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON
@@ -1650,4 +1715,12 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.handler = handler_stream;
     camuri.user_ctx = (void *)"stream";
     httpd_register_uri_handler(server, &camuri);
+
+    /** will handle metrics requests */
+    camuri.uri = "/metrics";
+    camuri.handler = handler_openmetrics;
+    camuri.user_ctx = (void *)"metrics";
+    httpd_register_uri_handler(server, &camuri);
+
+    /** when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }
