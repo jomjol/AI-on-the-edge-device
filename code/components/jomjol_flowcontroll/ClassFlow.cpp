@@ -67,11 +67,6 @@ string ClassFlow::getHTMLSingleStep(string host){
 	return "";
 }
 
-string ClassFlow::getReadout()
-{
-	return string();
-}
-
 std::string ClassFlow::GetParameterName(std::string _input)
 {
     string _param;
