@@ -468,22 +468,7 @@ string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = fal
     if (flowpostprocessing)
         return flowpostprocessing->getReadoutParam(_rawvalue, _noerror, _number);
 
-    string zw = "";
-    string result = "";
-
-    for (int i = 0; i < FlowControll.size(); ++i)
-    {
-        zw = FlowControll[i]->getReadout();
-        if (zw.length() > 0)
-        {
-            if (result.length() == 0)
-                result = zw;
-            else
-                result = result + "\t" + zw;
-        }
-    }
-
-    return result;
+    return std::string("");
 }
 
 
