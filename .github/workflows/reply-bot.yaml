@@ -74,7 +74,7 @@ jobs:
       ## Write the response
       ####################################################################
       - name: Write Response
-        uses: peaceiris/actions-label-commenter@0ea8026e060f1ae52d4440a9aa44155588ef436c
+        uses: peaceiris/actions-label-commenter@c2d00660c86f2b9ed0fb35b372c451558eba85b3
         with:
           github_token: "${{ secrets.GITHUB_TOKEN }}"
           config_file: .github/label-commenter-config.yaml
