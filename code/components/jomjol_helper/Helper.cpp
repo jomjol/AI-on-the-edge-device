@@ -1221,6 +1221,14 @@ void replaceAll(std::string& s, const std::string& toReplace, const std::string&
 
 bool isStringNumeric(std::string &input)
 {
+	if (input.size() <= 0)
+	{
+		return false;
+	}
+    
+	// Replace comma with a dot
+	replaceString(input, ",", ".", false);
+	
 	int start = 0;
 	int punkt_existiert_schon = 0;
 
@@ -1231,8 +1239,7 @@ bool isStringNumeric(std::string &input)
 
 	for (int i = start; i < input.size(); i++)
 	{
-		// if ((ispunct(input[i])) && (i > 0) && (punkt_existiert_schon == 0))
-		if (((input[i] == '.') || (input[i] == ',')) && (i > 0) && (punkt_existiert_schon == 0))
+		if ((input[i] == '.') && (i > 0) && (punkt_existiert_schon == 0))
 		{
 			punkt_existiert_schon = 1;
 			i++;
