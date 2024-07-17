@@ -1198,7 +1198,7 @@ bool isInString(std::string &s, std::string const &toFind)
 {
 	std::size_t pos = s.find(toFind);
 
-	if (pos == std::string::npos)
+	if (pos == std::string::npos) 
 	{
 		// Not found
 		return false;
@@ -1210,9 +1210,101 @@ bool isInString(std::string &s, std::string const &toFind)
 // from https://stackoverflow.com/a/14678800
 void replaceAll(std::string& s, const std::string& toReplace, const std::string& replaceWith)
 {
-    size_t pos = 0;
-    while ((pos = s.find(toReplace, pos)) != std::string::npos) {
-         s.replace(pos, toReplace.length(), replaceWith);
-         pos += replaceWith.length();
-    }
+	size_t pos = 0;
+	
+	while ((pos = s.find(toReplace, pos)) != std::string::npos) 
+	{
+		s.replace(pos, toReplace.length(), replaceWith);
+		pos += replaceWith.length();
+	}
+}
+
+bool isStringNumeric(std::string &input)
+{
+	int start = 0;
+	int punkt_existiert_schon = 0;
+
+	if (input[0] == '-')
+	{
+		start = 1;
+	}
+
+	for (int i = start; i < input.size(); i++)
+	{
+		// if ((ispunct(input[i])) && (i > 0) && (punkt_existiert_schon == 0))
+		if (((input[i] == '.') || (input[i] == ',')) && (i > 0) && (punkt_existiert_schon == 0))
+		{
+			punkt_existiert_schon = 1;
+			i++;
+		}
+		else if (!isdigit(input[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool isStringAlphabetic(std::string &input)
+{
+	for (int i = 0; i < input.size(); i++)
+	{
+		if (!isalpha(input[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool isStringAlphanumeric(std::string &input)
+{
+	for (int i = 0; i < input.size(); i++)
+	{
+		if (!isalnum(input[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool alphanumericToBoolean(std::string &input)
+{
+	if (isStringAlphabetic(input))
+	{
+		return stringToBoolean(toUpper(input));
+	}
+	else if (isStringNumeric(input))
+	{
+		return numericStrToBool(input);
+	}
+
+	return false;
+}
+
+int clipInt(int input, int high, int low)
+{
+	if (input < low)
+	{
+		input = low;
+	}
+	else if (input > high)
+	{
+		input = high;
+	}
+	return input;
+}
+
+bool numericStrToBool(std::string input)
+{
+	return (std::stoi(input) != 0);
+}
+
+bool stringToBoolean(std::string input)
+{
+	return (input == "TRUE");
 }
