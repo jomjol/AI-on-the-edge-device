@@ -515,7 +515,8 @@ function getCamConfig() {
     }
     if (!param["TakeImage"]["CamGainceiling"]["found"]) {
         param["TakeImage"]["CamGainceiling"]["found"] = true;
-        param["TakeImage"]["CamGainceiling"].value1 = '1';
+        // param["TakeImage"]["CamGainceiling"].value1 = '1';
+        param["TakeImage"]["CamGainceiling"].value1 = 'x4';
     }
     if (!param["TakeImage"]["CamQuality"]["found"]) {
         param["TakeImage"]["CamQuality"]["found"] = true;
