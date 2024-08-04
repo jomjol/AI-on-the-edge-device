@@ -92,10 +92,6 @@ esp_err_t handler_capture(httpd_req_t *req)
 
     if (Camera.getCameraInitSuccessful())
     {
-#ifdef DEBUG_DETAIL_ON
-        ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
-#endif
-
         // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
         if (CFstatus.changedCameraSettings)
         {
@@ -149,10 +145,6 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
                 }
             }
         }
-
-#ifdef DEBUG_DETAIL_ON
-        ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
-#endif
 
         // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
         if (CFstatus.changedCameraSettings)
@@ -231,10 +223,6 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
         {
             fn.append("noname.jpg");
         }
-
-#ifdef DEBUG_DETAIL_ON
-        ESP_LOGD(TAG, "Size: %d, Quality: %d", res, quality);
-#endif
 
         // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
         if (CFstatus.changedCameraSettings)
