@@ -559,7 +559,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
     }
 
     if (PreValueUse) {
-        LoadPreValue();
+        return LoadPreValue();
     }
 
     return true;
