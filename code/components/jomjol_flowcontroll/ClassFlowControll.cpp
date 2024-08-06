@@ -65,6 +65,11 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
         _classname = "ClassFlowInfluxDBv2";
     }
     #endif //ENABLE_INFLUXDB
+    #ifdef ENABLE_WEBHOOK
+    if ((_stepname.compare("[Webhook]") == 0) || (_stepname.compare(";[Webhook]") == 0)){
+        _classname = "ClassFlowWebhook";
+    }
+    #endif //ENABLE_WEBHOOK
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
@@ -97,6 +102,10 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
         if (_input.compare("ClassFlowInfluxDBv2") == 0)
             return ("Sending InfluxDBv2");
     #endif //ENABLE_INFLUXDB
+    #ifdef ENABLE_WEBHOOK
+        if (_input.compare("ClassFlowWebhook") == 0)
+            return ("Sending Webhook");
+    #endif //ENABLE_WEBHOOK
     if (_input.compare("ClassFlowPostProcessing") == 0)
         return ("Post-Processing");
 
@@ -238,6 +247,10 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     if (toUpper(_type).compare("[INFLUXDBV2]") == 0)
         cfc = new ClassFlowInfluxDBv2(&FlowControll);
     #endif //ENABLE_INFLUXDB  
+    #ifdef ENABLE_WEBHOOK
+    if (toUpper(_type).compare("[WEBHOOK]") == 0)
+        cfc = new ClassFlowWebhook(&FlowControll);
+    #endif //ENABLE_WEBHOOK
 
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {

@@ -17,6 +17,9 @@
 	#include "ClassFlowInfluxDB.h"
 	#include "ClassFlowInfluxDBv2.h"
 #endif //ENABLE_INFLUXDB
+#ifdef ENABLE_WEBHOOK
+	#include "ClassFlowWebhook.h"
+#endif //ENABLE_WEBHOOK
 #include "ClassFlowCNNGeneral.h"
 
 class ClassFlowControll :
