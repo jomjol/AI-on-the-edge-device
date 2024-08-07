@@ -7,6 +7,7 @@
 #include "esp_http_client.h"
 #include "time_sntp.h"
 #include "../../include/defines.h"
+#include <cJSON.h>
 
 
 static const char *TAG = "WEBHOOK";
@@ -22,56 +23,51 @@ void WebhookInit(std::string _uri, std::string _apiKey)
     _webhookApiKey = _apiKey;
 }
 
-void WebhookPublish(std::string _key, std::string _content, long int _timeUTC) 
+void WebhookPublish(std::string _value,std::string _valueraw,std::string _error,std::string _rate,std::string _timestamp, long int _timeUTC)
 {
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddStringToObject(json, "value", _value.c_str());
+    cJSON_AddStringToObject(json, "valueraw", _valueraw.c_str());
+    cJSON_AddStringToObject(json, "error", _error.c_str());
+    cJSON_AddStringToObject(json, "rate", _rate.c_str());
+    cJSON_AddStringToObject(json, "timestamp", _timestamp.c_str());
+    cJSON_AddNumberToObject(json, "timeUTC", _timeUTC);
+
+    char *jsonString = cJSON_PrintUnformatted(json);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending webhook");
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "sending JSON: " + std::string(jsonString));
+
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
     esp_http_client_config_t http_config = {
-       .user_agent = "ESP32 Meter reader",
-       .method = HTTP_METHOD_POST,
-       .event_handler = http_event_handler,
-       .buffer_size = MAX_HTTP_OUTPUT_BUFFER,
-       .user_data = response_buffer
+        .url = _webhookURI.c_str(),
+        .user_agent = "ESP32 Meter reader",
+        .method = HTTP_METHOD_POST,
+        .event_handler = http_event_handler,
+        .buffer_size = MAX_HTTP_OUTPUT_BUFFER,
+        .user_data = response_buffer
     };
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Webhook_Publish - Key: " + _key + ", Content: " + _content + ", timeUTC: " + std::to_string(_timeUTC));
-
-    std::string payload;
-    char nowTimestamp[21];
-
-    payload = _content;
-    payload.shrink_to_fit();
-
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to webhook uri:" + payload);
-
-    std::string apiURI = _webhookURI;
-    apiURI.shrink_to_fit();
-    http_config.url = apiURI.c_str();
-    ESP_LOGI(TAG, "http_config: %s", http_config.url); // Add mark on log to see when it restarted
-
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "API URI: " + apiURI);
-
     esp_http_client_handle_t http_client = esp_http_client_init(&http_config);
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "client is initialized");
 
-    esp_http_client_set_header(http_client, "Content-Type", "text/plain");
-
+    esp_http_client_set_header(http_client, "Content-Type", "application/json");
     esp_http_client_set_header(http_client, "APIKEY", _webhookApiKey.c_str());
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "header is set");
-
-    ESP_ERROR_CHECK(esp_http_client_set_post_field(http_client, payload.c_str(), payload.length()));
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "post payload is set");
+    ESP_ERROR_CHECK(esp_http_client_set_post_field(http_client, jsonString, strlen(jsonString)));
 
     esp_err_t err = ESP_ERROR_CHECK_WITHOUT_ABORT(esp_http_client_perform(http_client));
 
-    if( err == ESP_OK ) {
-      LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request was performed");
-      int status_code = esp_http_client_get_status_code(http_client);
-      LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP status code" + std::to_string(status_code));
+    if(err == ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request was performed");
+        int status_code = esp_http_client_get_status_code(http_client);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP status code: " + std::to_string(status_code));
     } else {
-      LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "HTTP request failed");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP request failed");
     }
+
     esp_http_client_cleanup(http_client);
+    cJSON_Delete(json);
+    free(jsonString);
 }
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt)

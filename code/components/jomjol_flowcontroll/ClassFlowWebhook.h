@@ -16,7 +16,6 @@ class ClassFlowWebhook :
 {
 protected:
     std::string uri, apikey;
-    std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
     bool WebhookEnable;
 

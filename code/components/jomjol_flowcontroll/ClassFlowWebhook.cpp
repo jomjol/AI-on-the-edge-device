@@ -20,7 +20,6 @@ static const char* TAG = "WEBHOOK";
 void ClassFlowWebhook::SetInitialParameter(void)
 {
     uri = "";
-    OldValue = "";
     flowpostprocessing = NULL;  
     previousElement = NULL;
     ListFlowControll = NULL; 
@@ -133,7 +132,7 @@ bool ClassFlowWebhook::doFlow(string zwtime)
     if (!WebhookEnable)
         return true;
 
-    std::string result;
+    std::string resultValue;
     std::string resulterror = "";
     std::string resultraw = "";
     std::string resultrate = "";
@@ -149,36 +148,18 @@ bool ClassFlowWebhook::doFlow(string zwtime)
 
         for (int i = 0; i < (*NUMBERS).size(); ++i)
         {
-            result =  (*NUMBERS)[i]->ReturnValue;
+            resultValue =  (*NUMBERS)[i]->ReturnValue;
             resultraw =  (*NUMBERS)[i]->ReturnRawValue;
             resulterror = (*NUMBERS)[i]->ErrorMessageText;
             resultrate = (*NUMBERS)[i]->ReturnRateValue;
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
             resulttimeutc = (*NUMBERS)[i]->timeStampTimeUTC;
-
-
-            if ((*NUMBERS)[i]->FieldV2.length() > 0)
-            {
-                namenumber = (*NUMBERS)[i]->FieldV2;
-            }
-            else
-            {
-                namenumber = (*NUMBERS)[i]->name;
-                if (namenumber == "default")
-                    namenumber = "value";
-                else
-                    namenumber = namenumber + "/value";
-            }
             
-            printf("vor sende WebHook - namenumber. %s, result: %s, timestampt: %s", namenumber.c_str(), result.c_str(), resulttimestamp.c_str());
-
-            if (result.length() > 0)   
-                WebhookPublish(namenumber, result, resulttimeutc);
+            printf("vor sende WebHook - result: %s, timestampt: %s", resultValue.c_str(), resulttimestamp.c_str());
+            WebhookPublish(resultValue, resultraw, resulterror, resultrate, resulttimestamp, resulttimeutc);
         }
     }
-   
-    OldValue = result;
-    
+       
     return true;
 }
 
