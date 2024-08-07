@@ -78,9 +78,11 @@ bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
     if (toUpper(aktparamgraph).compare("[WEBHOOK]") != 0) 
         return false;
 
+    
+
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
-//        ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
+        ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
         splitted = ZerlegeZeile(aktparamgraph);
         std::string _param = GetParameterName(splitted[0]);
             
@@ -88,41 +90,20 @@ bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->uri = splitted[1];
         }
-        if (((toUpper(_param) == "FIELD")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "APIKEY")) && (splitted.size() > 1))
         {
-            handleFieldname(splitted[0], splitted[1]);
-        }
-        if (((toUpper(_param) == "MEASUREMENT")) && (splitted.size() > 1))
-        {
-            handleMeasurement(splitted[0], splitted[1]);
+            this->apikey = splitted[1];
         }
     }
+    
+    WebhookInit(uri,apikey);
+    WebhookEnable = true;
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Webhook Enabled for Uri " + uri);
 
     printf("uri:         %s\n", uri.c_str());   
     return true;
 }
 
-void ClassFlowWebhook::handleFieldname(string _decsep, string _value)
-{
-    string _digit, _decpos;
-    int _pospunkt = _decsep.find_first_of(".");
-//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
-    if (_pospunkt > -1)
-        _digit = _decsep.substr(0, _pospunkt);
-    else
-        _digit = "default";
-    for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
-    {
-        if (_digit == "default")                        //  Set to default first (if nothing else is set)
-        {
-            flowpostprocessing->NUMBERS[j]->FieldV2 = _value;
-        }
-        if (flowpostprocessing->NUMBERS[j]->name == _digit)
-        {
-            flowpostprocessing->NUMBERS[j]->FieldV2 = _value;
-        }
-    }
-}
 
 void ClassFlowWebhook::handleMeasurement(string _decsep, string _value)
 {
