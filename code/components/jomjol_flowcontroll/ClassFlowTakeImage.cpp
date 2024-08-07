@@ -96,31 +96,30 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
         else if ((toUpper(splitted[0]) == "RAWIMAGESRETENTION") && (splitted.size() > 1))
         {
-            this->imagesRetention = std::stod(splitted[1]);
+            if (isStringNumeric(splitted[1]))
+            {
+                this->imagesRetention = std::stod(splitted[1]);
+            }          
         }
 
         else if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.SaveAllFiles = 1;
-            }
-            else
-            {
-                CCstatus.SaveAllFiles = 0;
-            }
+            CCstatus.SaveAllFiles = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
         {
-            int _WaitBeforePicture = std::stoi(splitted[1]);
-            if (_WaitBeforePicture != 0)
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.WaitBeforePicture = _WaitBeforePicture;
-            }
-            else
-            {
-                CCstatus.WaitBeforePicture = 2;
+                int _WaitBeforePicture = std::stoi(splitted[1]);
+                if (_WaitBeforePicture != 0)
+                {
+                    CCstatus.WaitBeforePicture = _WaitBeforePicture;
+                }
+                else
+                {
+                    CCstatus.WaitBeforePicture = 2;
+                }
             }
         }
 
@@ -159,59 +158,52 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
         else if ((toUpper(splitted[0]) == "CAMQUALITY") && (splitted.size() > 1))
         {
-            int _ImageQuality = std::stoi(splitted[1]);
-            if ((_ImageQuality >= 0) && (_ImageQuality <= 63))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageQuality = _ImageQuality;
+                int _ImageQuality = std::stoi(splitted[1]);
+                CCstatus.ImageQuality = clipInt(_ImageQuality, 63, 6);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMBRIGHTNESS") && (splitted.size() > 1))
         {
-            int _ImageBrightness = std::stoi(splitted[1]);
-            if ((_ImageBrightness >= -2) && (_ImageBrightness <= 2))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageBrightness = _ImageBrightness;
+                int _ImageBrightness = std::stoi(splitted[1]);
+                CCstatus.ImageBrightness = clipInt(_ImageBrightness, 2, -2);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMCONTRAST") && (splitted.size() > 1))
         {
-            int _ImageContrast = std::stoi(splitted[1]);
-            if ((_ImageContrast >= -2) && (_ImageContrast <= 2))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageContrast = _ImageContrast;
+                int _ImageContrast = std::stoi(splitted[1]);
+                CCstatus.ImageContrast = clipInt(_ImageContrast, 2, -2);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMSATURATION") && (splitted.size() > 1))
         {
-            int _ImageSaturation = std::stoi(splitted[1]);
-            if ((_ImageSaturation >= -2) && (_ImageSaturation <= 2))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageSaturation = _ImageSaturation;
+                int _ImageSaturation = std::stoi(splitted[1]);
+                CCstatus.ImageSaturation = clipInt(_ImageSaturation, 2, -2);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMSHARPNESS") && (splitted.size() > 1))
         {
-            int _ImageSharpness = std::stoi(splitted[1]);
-            if ((_ImageSharpness >= -2) && (_ImageSharpness <= 2))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageSharpness = _ImageSharpness;
+                int _ImageSharpness = std::stoi(splitted[1]);
+                CCstatus.ImageSharpness = clipInt(_ImageSharpness, 2, -2);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMAUTOSHARPNESS") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAutoSharpness = 1;
-            }
-            else
-            {
-                CCstatus.ImageAutoSharpness = 0;
-            }
+            CCstatus.ImageAutoSharpness = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMSPECIALEFFECT") && (splitted.size() > 1))
@@ -274,222 +266,135 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
         else if ((toUpper(splitted[0]) == "CAMAWB") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAwb = 1;
-            }
-            else
-            {
-                CCstatus.ImageAwb = 0;
-            }
+            CCstatus.ImageAwb = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMAWBGAIN") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAwbGain = 1;
-            }
-            else
-            {
-                CCstatus.ImageAwbGain = 0;
-            }
+            CCstatus.ImageAwbGain = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMAEC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAec = 1;
-            }
-            else
-            {
-                CCstatus.ImageAec = 0;
-            }
+            CCstatus.ImageAec = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMAEC2") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAec2 = 1;
-            }
-            else
-            {
-                CCstatus.ImageAec2 = 0;
-            }
+            CCstatus.ImageAec2 = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMAELEVEL") && (splitted.size() > 1))
         {
-            int _ImageAeLevel = std::stoi(splitted[1]);
-            if ((_ImageAeLevel >= -2) && (_ImageAeLevel <= 2))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageAeLevel = _ImageAeLevel;
+                int _ImageAeLevel = std::stoi(splitted[1]);
+                CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 2, -2);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMAECVALUE") && (splitted.size() > 1))
         {
-            int _ImageAecValue = std::stoi(splitted[1]);
-            if ((_ImageAecValue >= 0) && (_ImageAecValue <= 1200))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageAecValue = _ImageAecValue;
+                int _ImageAecValue = std::stoi(splitted[1]);
+                CCstatus.ImageAecValue = clipInt(_ImageAecValue, 1200, 0);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMAGC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageAgc = 1;
-            }
-            else
-            {
-                CCstatus.ImageAgc = 0;
-            }
+            CCstatus.ImageAgc = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMAGCGAIN") && (splitted.size() > 1))
         {
-            int _ImageAgcGain = std::stoi(splitted[1]);
-            if ((_ImageAgcGain >= 0) && (_ImageAgcGain <= 30))
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageAgcGain = _ImageAgcGain;
+                int _ImageAgcGain = std::stoi(splitted[1]);
+                CCstatus.ImageAgcGain = clipInt(_ImageAgcGain, 30, 0);
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMBPC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageBpc = 1;
-            }
-            else
-            {
-                CCstatus.ImageBpc = 0;
-            }
+            CCstatus.ImageBpc = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMWPC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageWpc = 1;
-            }
-            else
-            {
-                CCstatus.ImageWpc = 0;
-            }
+            CCstatus.ImageWpc = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMRAWGMA") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageRawGma = 1;
-            }
-            else
-            {
-                CCstatus.ImageRawGma = 0;
-            }
+            CCstatus.ImageRawGma = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMLENC") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageLenc = 1;
-            }
-            else
-            {
-                CCstatus.ImageLenc = 0;
-            }
+            CCstatus.ImageLenc = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMHMIRROR") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageHmirror = 1;
-            }
-            else
-            {
-                CCstatus.ImageHmirror = 0;
-            }
+            CCstatus.ImageHmirror = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMVFLIP") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageVflip = 1;
-            }
-            else
-            {
-                CCstatus.ImageVflip = 0;
-            }
+            CCstatus.ImageVflip = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMDCW") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageDcw = 1;
-            }
-            else
-            {
-                CCstatus.ImageDcw = 0;
-            }
+            CCstatus.ImageDcw = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOM") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                CCstatus.ImageZoomEnabled = 1;
-            }
-            else
-            {
-                CCstatus.ImageZoomEnabled = 0;
-            }
+            CCstatus.ImageZoomEnabled = alphanumericToBoolean(splitted[1]);
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOMOFFSETX") && (splitted.size() > 1))
         {
-            CCstatus.ImageZoomOffsetX = std::stoi(splitted[1]);
+            if (isStringNumeric(splitted[1]))
+            {
+                CCstatus.ImageZoomOffsetX = std::stoi(splitted[1]);
+            }
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOMOFFSETY") && (splitted.size() > 1))
         {
-            CCstatus.ImageZoomOffsetY = std::stoi(splitted[1]);
+            if (isStringNumeric(splitted[1]))
+            {
+                CCstatus.ImageZoomOffsetY = std::stoi(splitted[1]);
+            }
         }
 
         else if ((toUpper(splitted[0]) == "CAMZOOMSIZE") && (splitted.size() > 1))
         {
-            int _ImageZoomSize = std::stoi(splitted[1]);
-            if (_ImageZoomSize >= 0)
+            if (isStringNumeric(splitted[1]))
             {
-                CCstatus.ImageZoomSize = _ImageZoomSize;
+                CCstatus.ImageZoomSize = std::stoi(splitted[1]);
             }
         }
 
         else if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
         {
-            float ledintensity = std::stof(splitted[1]);
-            Camera.SetLEDIntensity(ledintensity);
+            if (isStringNumeric(splitted[1]))
+            {
+                float ledintensity = std::stof(splitted[1]);
+                Camera.SetLEDIntensity(ledintensity);
+            }
         }
 
         else if ((toUpper(splitted[0]) == "DEMO") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
+            CCstatus.DemoMode = alphanumericToBoolean(splitted[1]);
+            if (CCstatus.DemoMode == true)
             {
-                CCstatus.DemoMode = true;
                 Camera.useDemoMode();
-            }
-            else
-            {
-                CCstatus.DemoMode = false;
             }
         }
     }
