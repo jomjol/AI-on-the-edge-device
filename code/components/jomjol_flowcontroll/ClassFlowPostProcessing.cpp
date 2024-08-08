@@ -161,6 +161,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
         return false;
     }
 
+    // Makes sure that an empty file is treated as such.
+    zw[0] = '\0';
+
     fgets(zw, 1024, pFile);
     ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
     zwtime = trim(std::string(zw));
