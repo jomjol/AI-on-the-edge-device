@@ -160,7 +160,7 @@ bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
     // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
     if (References[0].alignment_algo != 3)
     {
-        LoadReferenceAlignmentValues();
+        return LoadReferenceAlignmentValues();
     }
 
     return true;
@@ -285,7 +285,7 @@ bool ClassFlowAlignment::doFlow(string time)
     // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
     if (References[0].alignment_algo != 3)
     {
-        LoadReferenceAlignmentValues();
+        return LoadReferenceAlignmentValues();
     }
 
     return true;

@@ -92,13 +92,17 @@ esp_err_t handler_capture(httpd_req_t *req)
 
     if (Camera.getCameraInitSuccessful())
     {
-        // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+        // If the camera settings were changed by creating a new reference image, they must be reset
         if (CFstatus.changedCameraSettings)
         {
             Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
             Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize);
             CFstatus.changedCameraSettings = false;
         }
+
+#ifdef DEBUG_DETAIL_ON
+        ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
+#endif        
 
         esp_err_t result;
         result = Camera.CaptureToHTTP(req);
@@ -146,13 +150,17 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
             }
         }
 
-        // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+        // If the camera settings were changed by creating a new reference image, they must be reset
         if (CFstatus.changedCameraSettings)
         {
             Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
             Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize);
             CFstatus.changedCameraSettings = false;
         }
+
+#ifdef DEBUG_DETAIL_ON
+        ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
+#endif        
 
         Camera.LightOnOff(true);
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
@@ -224,13 +232,17 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
             fn.append("noname.jpg");
         }
 
-        // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+        // If the camera settings were changed by creating a new reference image, they must be reset
         if (CFstatus.changedCameraSettings)
         {
             Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
             Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize);
             CFstatus.changedCameraSettings = false;
         }
+
+#ifdef DEBUG_DETAIL_ON
+        ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
+#endif        
 
         esp_err_t result;
         result = Camera.CaptureToFile(fn, delay);
