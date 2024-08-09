@@ -7,9 +7,10 @@
 #include <string>
 #include <map>
 #include <functional>
+#include <ClassFlowDefineTypes.h>
 
 void WebhookInit(std::string _webhookURI, std::string _apiKey);
-void WebhookPublish(std::string _value,std::string _valueraw,std::string _error,std::string _rate,std::string _timestamp, long int _timeUTC);
+void WebhookPublish(std::vector<NumberPost*>* numbers);
 
 #endif //INTERFACE_WEBHOOK_H
 #endif //ENABLE_WEBHOOK

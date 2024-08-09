@@ -2,6 +2,6 @@ FILE(GLOB_RECURSE app_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.*)
 
 idf_component_register(SRCS ${app_sources}
                     INCLUDE_DIRS "."
-                    REQUIRES esp_http_client jomjol_logfile json)
+                    REQUIRES esp_http_client jomjol_logfile jomjol_flowcontroll json)
 
 

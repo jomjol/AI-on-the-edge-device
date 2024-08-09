@@ -8,6 +8,7 @@
 #include "time_sntp.h"
 #include "../../include/defines.h"
 #include <cJSON.h>
+#include <ClassFlowDefineTypes.h>
 
 
 static const char *TAG = "WEBHOOK";
@@ -23,17 +24,26 @@ void WebhookInit(std::string _uri, std::string _apiKey)
     _webhookApiKey = _apiKey;
 }
 
-void WebhookPublish(std::string _value,std::string _valueraw,std::string _error,std::string _rate,std::string _timestamp, long int _timeUTC)
+void WebhookPublish(std::vector<NumberPost*>* numbers)
 {
-    cJSON *json = cJSON_CreateObject();
-    cJSON_AddStringToObject(json, "value", _value.c_str());
-    cJSON_AddStringToObject(json, "valueraw", _valueraw.c_str());
-    cJSON_AddStringToObject(json, "error", _error.c_str());
-    cJSON_AddStringToObject(json, "rate", _rate.c_str());
-    cJSON_AddStringToObject(json, "timestamp", _timestamp.c_str());
-    cJSON_AddNumberToObject(json, "timeUTC", _timeUTC);
 
-    char *jsonString = cJSON_PrintUnformatted(json);
+    cJSON *jsonArray = cJSON_CreateArray();
+
+    for (int i = 0; i < (*numbers).size(); ++i)
+    {
+        cJSON *json = cJSON_CreateObject();
+        cJSON_AddStringToObject(json, "name", (*numbers)[i]->name.c_str());
+        cJSON_AddStringToObject(json, "value", (*numbers)[i]->ReturnValue.c_str());
+        cJSON_AddStringToObject(json, "valueraw", (*numbers)[i]->ReturnRawValue.c_str());
+        cJSON_AddStringToObject(json, "error", (*numbers)[i]->ErrorMessageText.c_str());
+        cJSON_AddStringToObject(json, "rate", (*numbers)[i]->ReturnRateValue.c_str());
+        cJSON_AddStringToObject(json, "timestamp", (*numbers)[i]->timeStamp.c_str());
+        cJSON_AddNumberToObject(json, "timeUTC", (*numbers)[i]->timeStampTimeUTC);
+
+        cJSON_AddItemToArray(jsonArray, json);
+    }
+
+    char *jsonString = cJSON_PrintUnformatted(jsonArray);
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending webhook");
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "sending JSON: " + std::string(jsonString));
@@ -65,8 +75,10 @@ void WebhookPublish(std::string _value,std::string _valueraw,std::string _error,
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP request failed");
     }
 
+    
+
     esp_http_client_cleanup(http_client);
-    cJSON_Delete(json);
+    cJSON_Delete(jsonArray);
     free(jsonString);
 }
 

@@ -132,35 +132,12 @@ bool ClassFlowWebhook::doFlow(string zwtime)
     if (!WebhookEnable)
         return true;
 
-    std::string resultValue;
-    std::string resulterror = "";
-    std::string resultraw = "";
-    std::string resultrate = "";
-    std::string resulttimestamp = "";
-    long int resulttimeutc = 0;
-    string zw = "";
-    string namenumber = "";
-
-
     if (flowpostprocessing)
     {
-        std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
-
-        for (int i = 0; i < (*NUMBERS).size(); ++i)
-        {
-            resultValue =  (*NUMBERS)[i]->ReturnValue;
-            resultraw =  (*NUMBERS)[i]->ReturnRawValue;
-            resulterror = (*NUMBERS)[i]->ErrorMessageText;
-            resultrate = (*NUMBERS)[i]->ReturnRateValue;
-            resulttimestamp = (*NUMBERS)[i]->timeStamp;
-            resulttimeutc = (*NUMBERS)[i]->timeStampTimeUTC;
-            
-            printf("vor sende WebHook - result: %s, timestampt: %s", resultValue.c_str(), resulttimestamp.c_str());
-            WebhookPublish(resultValue, resultraw, resulterror, resultrate, resulttimestamp, resulttimeutc);
-        }
+        printf("vor sende WebHook");
+        WebhookPublish(flowpostprocessing->GetNumbers());
     }
        
     return true;
 }
-
 #endif //ENABLE_WEBHOOK
