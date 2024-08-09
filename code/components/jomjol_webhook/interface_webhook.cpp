@@ -26,6 +26,7 @@ void WebhookInit(std::string _uri, std::string _apiKey)
 
 void WebhookPublish(std::vector<NumberPost*>* numbers)
 {
+    
 
     
 
@@ -33,9 +34,14 @@ void WebhookPublish(std::vector<NumberPost*>* numbers)
 
     for (int i = 0; i < (*numbers).size(); ++i)
     {
+        string timezw = "";
+        char buffer[80];
+        struct tm* timeinfo = localtime(&(*numbers)[i]->lastvalue);
+        strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
+        timezw = std::string(buffer);
+
         cJSON *json = cJSON_CreateObject();
-        cJSON_AddNumberToObject(json, "timeUTC", (*numbers)[i]->timeStampTimeUTC);
-        cJSON_AddStringToObject(json, "timestamp", (*numbers)[i]->timeStamp.c_str());
+        cJSON_AddStringToObject(json, "timestamp", timezw.c_str());
         cJSON_AddStringToObject(json, "name", (*numbers)[i]->name.c_str());
         cJSON_AddStringToObject(json, "rawValue", (*numbers)[i]->ReturnRawValue.c_str());
         cJSON_AddStringToObject(json, "value", (*numbers)[i]->ReturnValue.c_str());
