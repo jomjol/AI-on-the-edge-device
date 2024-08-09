@@ -10,7 +10,8 @@
 #include <ClassFlowDefineTypes.h>
 
 void WebhookInit(std::string _webhookURI, std::string _apiKey);
-void WebhookPublish(std::vector<NumberPost*>* numbers);
+bool WebhookPublish(std::vector<NumberPost*>* numbers);
+void WebhookUploadPic(ImageData *Img);
 
 #endif //INTERFACE_WEBHOOK_H
 #endif //ENABLE_WEBHOOK

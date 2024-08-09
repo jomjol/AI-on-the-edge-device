@@ -8,6 +8,7 @@
 #include "ClassFlow.h"
 
 #include "ClassFlowPostProcessing.h"
+#include "ClassFlowAlignment.h"
 
 #include <string>
 
@@ -16,8 +17,11 @@ class ClassFlowWebhook :
 {
 protected:
     std::string uri, apikey;
-	ClassFlowPostProcessing* flowpostprocessing;  
+	ClassFlowPostProcessing* flowpostprocessing;
+    ClassFlowAlignment* flowAlignment;
+
     bool WebhookEnable;
+    int WebhookUploadImg;
 
     void SetInitialParameter(void); 
 

@@ -8,6 +8,7 @@
 #include "interface_webhook.h"
 
 #include "ClassFlowPostProcessing.h"
+#include "ClassFlowAlignment.h"
 #include "esp_log.h"
 #include "../../include/defines.h"
 
@@ -20,11 +21,13 @@ static const char* TAG = "WEBHOOK";
 void ClassFlowWebhook::SetInitialParameter(void)
 {
     uri = "";
-    flowpostprocessing = NULL;  
+    flowpostprocessing = NULL;
+    flowAlignment = NULL;
     previousElement = NULL;
     ListFlowControll = NULL; 
     disabled = false;
     WebhookEnable = false;
+    WebhookUploadImg = 1; //todo read from param
 }       
 
 ClassFlowWebhook::ClassFlowWebhook()
@@ -43,6 +46,11 @@ ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow*>* lfc)
         {
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
         }
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
+        {
+            flowAlignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
+        }
+
     }
 }
 
@@ -58,6 +66,10 @@ ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow*>* lfc, ClassFlow *_pre
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
             flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+        }
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
+        {
+            flowAlignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
         }
     }
 }
@@ -135,7 +147,13 @@ bool ClassFlowWebhook::doFlow(string zwtime)
     if (flowpostprocessing)
     {
         printf("vor sende WebHook");
-        WebhookPublish(flowpostprocessing->GetNumbers());
+        bool numbersWithError = WebhookPublish(flowpostprocessing->GetNumbers());
+
+        #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+            if ((WebhookUploadImg == 1 || (WebhookUploadImg != 0 && numbersWithError)) && flowAlignment && flowAlignment->AlgROI) {
+                WebhookUploadPic(flowAlignment->AlgROI);
+            }
+        #endif
     }
        
     return true;
