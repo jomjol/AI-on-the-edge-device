@@ -1355,6 +1355,20 @@
 			<td>$TOOLTIP_Webhook_ApiKey</td>
 		</tr>
 
+		<tr class="WebhookItem">
+			<td class="indent1">
+				<class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class>
+			</td>
+			<td>
+				<select id="Webhook_UploadImg_value1">
+					<option value="0" selected>NEVER</option>
+					<option value="1">ALWAYS</option>
+					<option value="2">ON_ERROR</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_Webhook_UploadImg</td>
+		</tr>
+
 
 		<!------------- GPIO ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -2283,6 +2297,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "Webhook", "Uri", true);	
     WriteParameter(param, category, "Webhook", "ApiKey", true);
+	WriteParameter(param, category, "Webhook", "UploadImg", false);
 
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
@@ -2446,6 +2461,7 @@ function ReadParameterAll() {
 
 	ReadParameter(param, "Webhook", "Uri", true);	
     ReadParameter(param, "Webhook", "ApiKey", true);
+	ReadParameter(param, "Webhook", "UploadImg", false);
 
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);

@@ -235,6 +235,7 @@ function ParseConfig() {
     param[catname] = new Object();
     ParamAddValue(param, catname, "Uri");
     ParamAddValue(param, catname, "ApiKey");
+    ParamAddValue(param, catname, "UploadImg");
 
     var catname = "GPIO";
     category[catname] = new Object();

@@ -27,7 +27,7 @@ void ClassFlowWebhook::SetInitialParameter(void)
     ListFlowControll = NULL; 
     disabled = false;
     WebhookEnable = false;
-    WebhookUploadImg = 1; //todo read from param
+    WebhookUploadImg = 0;
 }       
 
 ClassFlowWebhook::ClassFlowWebhook()
@@ -104,6 +104,16 @@ bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (((toUpper(_param) == "APIKEY")) && (splitted.size() > 1))
         {
             this->apikey = splitted[1];
+        }
+        if (((toUpper(_param) == "UPLOADIMG")) && (splitted.size() > 1))
+        {
+            if (toUpper(splitted[1]) == "1")
+            {
+                this->WebhookUploadImg = 1;
+            } else if (toUpper(splitted[1]) == "2")
+            {
+                this->WebhookUploadImg = 2;
+            }
         }
     }
     
