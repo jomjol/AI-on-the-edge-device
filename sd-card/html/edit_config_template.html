@@ -1329,7 +1329,8 @@
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
 			    <h4>
 				<input type="checkbox" id="Category_Webhook_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Webhook_enabled>Webhook</label></h4>		
+				<label for=Category_Webhook_enabled>Webhook</label>
+				</h4>		
 			</td>
 		</tr>
 
@@ -1357,7 +1358,7 @@
 
 		<tr class="WebhookItem">
 			<td class="indent1">
-				<class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class>
+				<label><class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class></label>
 			</td>
 			<td>
 				<select id="Webhook_UploadImg_value1">
@@ -1368,7 +1369,6 @@
 			</td>
 			<td>$TOOLTIP_Webhook_UploadImg</td>
 		</tr>
-
 
 		<!------------- GPIO ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -2379,6 +2379,7 @@ function ReadParameterAll() {
     category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
+	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
