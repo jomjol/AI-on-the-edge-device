@@ -45,7 +45,8 @@ struct NumberPost {
     bool PreValueOkay;          // previousValueValid; indicates that the reading of the previous round has no errors
     bool AllowNegativeRates;    // allowNegativeRate; defines if the consistency checks allow negative rates between consecutive meter readings.
     bool checkDigitIncreaseConsistency; // extendedConsistencyCheck; performs an additional consistency check to avoid wrong readings
-    time_t lastvalue;           // previousValueTimestamp; FIXME: usage in the code is ambigious, as sometimes it's `time_t` and sometimes `struct tm`
+    time_t timeStampLastValue;     // Timestamp for the last read value; is used for the log
+    time_t timeStampLastPreValue;  // Timestamp for the last PreValue set; is used for useMaxRateValue
     time_t timeStampTimeUTC;    // FIXME: not used; can be removed.
     string timeStamp;           // localTimeStr; timestamp of last valid reading formatted as local time
     double FlowRateAct;         // currentRate; ΔValue/min; since usage is not limited to water meters, the physical unit is not known.
