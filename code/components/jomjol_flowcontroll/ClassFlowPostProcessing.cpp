@@ -725,12 +725,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
 
-        // calculate time difference BEFORE we overwrite the 'lastvalue'
+        // calculate time difference
         double difference = difftime(imagetime, NUMBERS[j]->timeStampLastPreValue);      // in seconds
-
-        // TODO:
-        // We could call `NUMBERS[j]->lastvalue = imagetime;` here and remove all other such calls further down.
-        // But we should check nothing breaks!
 
         UpdateNachkommaDecimalShift();
 
@@ -794,9 +790,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             else {
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
-               /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
                 NUMBERS[j]->timeStampLastValue = imagetime;
-
                 WriteDataLog(j);
                 continue; // there is no number because there is still an N.
             }
