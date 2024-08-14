@@ -726,7 +726,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         NUMBERS[j]->Value = -1;
 
         // calculate time difference
-        double difference = difftime(imagetime, NUMBERS[j]->timeStampLastPreValue);      // in seconds
+        // double LastValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastValue);         // in seconds
+        double LastPreValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastPreValue);   // in seconds
 
         UpdateNachkommaDecimalShift();
 
@@ -871,8 +872,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
 
-        difference /= 60;  
-        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+        // LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
+        LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
+        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
         if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay) {
@@ -882,6 +884,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             }
             else {
+                // TODO:
+                // Since I don't know if this is desired, I'll comment it out first.
+                // int roundDifference = (int)(round(LastPreValueTimeDifference / LastValueTimeDifference)); // calculate how many rounds have passed since NUMBERS[j]->timeLastPreValue was set
+                // _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / roundDifference; // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
                 _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
             }
 
