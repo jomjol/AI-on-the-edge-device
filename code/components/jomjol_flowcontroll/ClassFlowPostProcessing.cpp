@@ -887,7 +887,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 // TODO:
                 // Since I don't know if this is desired, I'll comment it out first.
                 // int roundDifference = (int)(round(LastPreValueTimeDifference / LastValueTimeDifference)); // calculate how many rounds have passed since NUMBERS[j]->timeLastPreValue was set
-                // _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / roundDifference; // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
+                // _ratedifference = ((NUMBERS[j]->Value - NUMBERS[j]->PreValue) / ((int)(round(LastPreValueTimeDifference / LastValueTimeDifference)))); // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
                 _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
             }
 
