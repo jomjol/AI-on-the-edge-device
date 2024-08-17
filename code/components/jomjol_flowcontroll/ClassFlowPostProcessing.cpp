@@ -344,11 +344,7 @@ void ClassFlowPostProcessing::handleDecimalExtendedResolution(string _decsep, st
     }
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        bool _zwdc = false;
-
-        if (toUpper(_value) == "TRUE") {
-            _zwdc = true;
-        }
+        bool _zwdc = alphanumericToBoolean(_value);
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -371,7 +367,10 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         int _zwdc = 0;
-        _zwdc = stoi(_value);
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stoi(_value);
+        }
 
         //  Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -397,7 +396,10 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         float _zwdc = 9.2;
-        _zwdc = stof(_value);
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stof(_value);
+        }
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -420,15 +422,11 @@ void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _va
     }
   
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        bool _rt = false;
-
-        if (toUpper(_value) == "TRUE") {
-            _rt = true;
-        }
+        bool _zwdc = alphanumericToBoolean(_value);
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->AllowNegativeRates = _rt;
+            NUMBERS[j]->AllowNegativeRates = _zwdc;
         }
     }
 }
@@ -446,15 +444,15 @@ void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value) {
     }
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        t_RateType _rt = AbsoluteChange;
+        t_RateType _zwdc = AbsoluteChange;
 
         if (toUpper(_value) == "RATECHANGE") {
-            _rt = RateChange;
+            _zwdc = RateChange;
         }
 
         // Set to default first (if nothing else is set)			
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->RateType = _rt;
+            NUMBERS[j]->RateType = _zwdc;
         }
     }
 }
@@ -473,7 +471,10 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value) 
 	
     for (int j = 0; j < NUMBERS.size(); ++j) {
         float _zwdc = 1;
-        _zwdc = stof(_value);
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stof(_value);
+        }
 
         // Set to default first (if nothing else is set)			
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -527,13 +528,11 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 	    
         if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                PreValueUse = true;
-            }
+            PreValueUse = alphanumericToBoolean(splitted[1]);
         }
 	    
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
+            if (alphanumericToBoolean(splitted[1])) {
                 for (_n = 0; _n < NUMBERS.size(); ++_n) {
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
                 }
@@ -545,19 +544,17 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 			
         if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                ErrorMessage = true;
-            }
+            ErrorMessage = alphanumericToBoolean(splitted[1]);
         }
 			
         if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                IgnoreLeadingNaN = true;
-            }
+            IgnoreLeadingNaN = alphanumericToBoolean(splitted[1]);
         }
 
         if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1)) {
-            PreValueAgeStartup = std::stoi(splitted[1]);
+            if (isStringNumeric(splitted[1])) {
+                PreValueAgeStartup = std::stoi(splitted[1]);
+            }
         }
     }
 
