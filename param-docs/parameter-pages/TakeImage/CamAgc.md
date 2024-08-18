@@ -4,7 +4,10 @@ Default Value: `true`
 !!! Warning
     This is an **Expert Parameter**! Only change it if you understand what it does!
 
-!!! Note
     After changing this parameter you need to update your reference image and alignment markers!
 
-This sets the Automatic Gain Control, how the camera responds to the overall level of light in the image.
+**Auto Gain**
+
+When **true**, the camera attempts to automatically control the sensor gain, up to the value in the **CamGainceiling** property.
+
+When **false**, the **CamAgcGain** setting is used instead.
