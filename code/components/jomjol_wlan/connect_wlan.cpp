@@ -562,6 +562,12 @@ esp_err_t wifi_init_sta(void)
 		return retval;
 	}
 
+	retval = esp_wifi_set_ps(WIFI_PS_NONE);		// Disable wifi power saving
+	if (retval != ESP_OK) {
+		LogFile.WriteToFile(ESP_LOG_WARN, TAG, "esp_wifi_set_ps: Warning: "  + std::to_string(retval));
+		return retval;
+	}
+
     if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
     {
         if (wlan_config.dns.empty()) {
