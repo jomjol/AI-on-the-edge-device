@@ -9,7 +9,7 @@ Default Value: `15`
 !!! Note
     This is used when **CamAgc** is off.
 
-**Gain Manuall Value**
+**Gain Manual Value**
 
 Access the gain level of the sensor, higher values produce brighter images.
 
