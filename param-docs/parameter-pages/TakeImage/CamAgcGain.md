@@ -1,13 +1,16 @@
 # Parameter `CamAgcGain`
-Default Value: ` `
+Default Value: `15`
 
 !!! Warning
     This is an **Expert Parameter**! Only change it if you understand what it does!
 
-!!! Note
-    After changing this parameter you need to update your reference image and alignment markers!
+	After changing this parameter you need to update your reference image and alignment markers!
 
 !!! Note
-    This is visible when AGC is off. Gain is an amplification of the values read from the image sensor. 
+    This is used when **CamAgc** is off.
+
+**Gain Manual Value**
+
+Access the gain level of the sensor, higher values produce brighter images.
 
 Range (`0` .. `30`)

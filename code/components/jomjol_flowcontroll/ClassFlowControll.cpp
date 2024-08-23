@@ -32,7 +32,6 @@ static const char* TAG = "FLOWCTRL";
 
 //#define DEBUG_DETAIL_ON
 
-
 std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
     std::string _classname = "";
     std::string result = "";
@@ -73,8 +72,11 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 
     for (int i = 0; i < FlowControll.size(); ++i)
         if (FlowControll[i]->name().compare(_classname) == 0){
-            if (!(FlowControll[i]->name().compare("ClassFlowTakeImage") == 0))      // if it is a TakeImage, the image does not need to be included, this happens automatically with the html query.
+            if (!(FlowControll[i]->name().compare("ClassFlowTakeImage") == 0)) {
+                // if it is a TakeImage, the image does not need to be included, this happens automatically with the html query.
                 FlowControll[i]->doFlow("");
+            }
+		
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
 
@@ -83,40 +85,50 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     return result;
 }
 
-
 std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 {
-    if (_input.compare("ClassFlowTakeImage") == 0)
+    if (_input.compare("ClassFlowTakeImage") == 0) {
         return ("Take Image");
-    if (_input.compare("ClassFlowAlignment") == 0)
+    }
+
+    if (_input.compare("ClassFlowAlignment") == 0) {
         return ("Aligning");
-    if (_input.compare("ClassFlowCNNGeneral") == 0)
+    }
+
+    if (_input.compare("ClassFlowCNNGeneral") == 0) {
         return ("Digitalization of ROIs");
+    }
+
     #ifdef ENABLE_MQTT
-        if (_input.compare("ClassFlowMQTT") == 0)
+        if (_input.compare("ClassFlowMQTT") == 0) {
             return ("Sending MQTT");
+        }
     #endif //ENABLE_MQTT
+		
     #ifdef ENABLE_INFLUXDB
-        if (_input.compare("ClassFlowInfluxDB") == 0)
+        if (_input.compare("ClassFlowInfluxDB") == 0) {
             return ("Sending InfluxDB");
-        if (_input.compare("ClassFlowInfluxDBv2") == 0)
+        }
+		
+        if (_input.compare("ClassFlowInfluxDBv2") == 0) {
             return ("Sending InfluxDBv2");
+        }
     #endif //ENABLE_INFLUXDB
     #ifdef ENABLE_WEBHOOK
-        if (_input.compare("ClassFlowWebhook") == 0)
-            return ("Sending Webhook");
+    if (_input.compare("ClassFlowWebhook") == 0) {
+        return ("Sending Webhook");
+    }
     #endif //ENABLE_WEBHOOK
-    if (_input.compare("ClassFlowPostProcessing") == 0)
+    if (_input.compare("ClassFlowPostProcessing") == 0) {
         return ("Post-Processing");
+    }
 
     return "Unkown Status";
 }
 
-
 std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital() 
 {
-    if (flowdigit)
-    {
+    if (flowdigit) {
         ESP_LOGD(TAG, "ClassFlowControll::GetAllDigital - flowdigit != NULL");
         return flowdigit->GetHTMLInfo();
     }
@@ -125,64 +137,62 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
     return empty;
 }
 
-
 std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 {
-    if (flowanalog)
+    if (flowanalog) {
         return flowanalog->GetHTMLInfo();
+    }
 
     std::vector<HTMLInfo*> empty;
     return empty;
 }
 
-
 t_CNNType ClassFlowControll::GetTypeDigital()
 {
-    if (flowdigit)
+    if (flowdigit) {
         return flowdigit->getCNNType();
+    }
 
     return t_CNNType::None;
 }
-
 
 t_CNNType ClassFlowControll::GetTypeAnalog()
 {
-    if (flowanalog)
+    if (flowanalog) {
         return flowanalog->getCNNType();
+    }
 
     return t_CNNType::None;
 }
-
 
 #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
 void ClassFlowControll::DigitalDrawROI(CImageBasis *_zw)
 {
-    if (flowdigit)
+    if (flowdigit) {
         flowdigit->DrawROI(_zw);
+    }
 }
-
 
 void ClassFlowControll::AnalogDrawROI(CImageBasis *_zw)
 {
-    if (flowanalog)
+    if (flowanalog) {
         flowanalog->DrawROI(_zw);
+    }
 }
 #endif
-
 
 #ifdef ENABLE_MQTT
 bool ClassFlowControll::StartMQTTService() 
 {
     /* Start the MQTT service */
-        for (int i = 0; i < FlowControll.size(); ++i) {
-            if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {
-                return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoInterval);
-            }  
-        } 
+    for (int i = 0; i < FlowControll.size(); ++i) {
+        if (FlowControll[i]->name().compare("ClassFlowMQTT") == 0) {
+            return ((ClassFlowMQTT*) (FlowControll[i]))->Start(AutoInterval);
+        }  
+    } 
     return false;
 }
 #endif //ENABLE_MQTT
-
 
 void ClassFlowControll::SetInitialParameter(void)
 {
@@ -198,7 +208,6 @@ void ClassFlowControll::SetInitialParameter(void)
     aktstatusWithTime = aktstatus;
 }
 
-
 bool ClassFlowControll::getIsAutoStart(void)
 {
     return AutoStart;
@@ -210,72 +219,80 @@ void ClassFlowControll::setAutoStartInterval(long &_interval)
     _interval = AutoInterval * 60 * 1000; // AutoInterval: minutes -> ms
 }
 
-
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 {
     ClassFlow* cfc = NULL;
 
     _type = trim(_type);
 
-    if (toUpper(_type).compare("[TAKEIMAGE]") == 0)
-    {
+    if (toUpper(_type).compare("[TAKEIMAGE]") == 0) {
         cfc = new ClassFlowTakeImage(&FlowControll);
         flowtakeimage = (ClassFlowTakeImage*) cfc;
     }
-    if (toUpper(_type).compare("[ALIGNMENT]") == 0)
-    {
+	
+    if (toUpper(_type).compare("[ALIGNMENT]") == 0) {
         cfc = new ClassFlowAlignment(&FlowControll);
         flowalignment = (ClassFlowAlignment*) cfc;
     }
-    if (toUpper(_type).compare("[ANALOG]") == 0)
-    {
+	
+    if (toUpper(_type).compare("[ANALOG]") == 0) {
         cfc = new ClassFlowCNNGeneral(flowalignment);
         flowanalog = (ClassFlowCNNGeneral*) cfc;
     }
-    if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
-    {
+	
+    if (toUpper(_type).compare(0, 7, "[DIGITS") == 0) {
         cfc = new ClassFlowCNNGeneral(flowalignment);
         flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
+	
     #ifdef ENABLE_MQTT
-    if (toUpper(_type).compare("[MQTT]") == 0)
+    if (toUpper(_type).compare("[MQTT]") == 0) {
         cfc = new ClassFlowMQTT(&FlowControll);
+    }
     #endif //ENABLE_MQTT
+	
     #ifdef ENABLE_INFLUXDB
-    if (toUpper(_type).compare("[INFLUXDB]") == 0)
+    if (toUpper(_type).compare("[INFLUXDB]") == 0) {
         cfc = new ClassFlowInfluxDB(&FlowControll);
-    if (toUpper(_type).compare("[INFLUXDBV2]") == 0)
+    }
+
+    if (toUpper(_type).compare("[INFLUXDBV2]") == 0) {
         cfc = new ClassFlowInfluxDBv2(&FlowControll);
+    }
     #endif //ENABLE_INFLUXDB  
     #ifdef ENABLE_WEBHOOK
     if (toUpper(_type).compare("[WEBHOOK]") == 0)
         cfc = new ClassFlowWebhook(&FlowControll);
     #endif //ENABLE_WEBHOOK
 
-    if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
-    {
+    if (toUpper(_type).compare("[POSTPROCESSING]") == 0) {
         cfc = new ClassFlowPostProcessing(&FlowControll, flowanalog, flowdigit); 
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
     }
 
-    if (cfc)                            // Attached only if it is not [AutoTimer], because this is for FlowControll
+    if (cfc) {                           
+        // Attached only if it is not [AutoTimer], because this is for FlowControll
         FlowControll.push_back(cfc);
+    }
 
-    if (toUpper(_type).compare("[AUTOTIMER]") == 0)
-        cfc = this;    
+    if (toUpper(_type).compare("[AUTOTIMER]") == 0) {
+        cfc = this;
+    }
 
-    if (toUpper(_type).compare("[DATALOGGING]") == 0)
-        cfc = this;  
+    if (toUpper(_type).compare("[DATALOGGING]") == 0) {
+        cfc = this;
+    }
 
-    if (toUpper(_type).compare("[DEBUG]") == 0)
-        cfc = this;  
+    if (toUpper(_type).compare("[DEBUG]") == 0) {
+        cfc = this;
+    }
 
-    if (toUpper(_type).compare("[SYSTEM]") == 0)
-        cfc = this;          
+    if (toUpper(_type).compare("[SYSTEM]") == 0) {
+        cfc = this;
+    }
 
     return cfc;
 }
-
 
 void ClassFlowControll::InitFlow(std::string config)
 {
@@ -297,48 +314,43 @@ void ClassFlowControll::InitFlow(std::string config)
     line = "";
 
     char zw[1024];
-    if (pFile != NULL)
-    {
+	
+    if (pFile != NULL) {
         fgets(zw, 1024, pFile);
         ESP_LOGD(TAG, "%s", zw);
         line = std::string(zw);
     }
 
-    while ((line.size() > 0) && !(feof(pFile)))
-    {
+    while ((line.size() > 0) && !(feof(pFile))) {
         cfc = CreateClassFlow(line);
-//        printf("Name: %s\n", cfc->name().c_str());
-        if (cfc)
-        {
+        // printf("Name: %s\n", cfc->name().c_str());
+	    
+        if (cfc) {
             ESP_LOGD(TAG, "Start ReadParameter (%s)", line.c_str());
             cfc->ReadParameter(pFile, line);
         }
-        else
-        {
+        else {
             line = "";
-            if (fgets(zw, 1024, pFile) && !feof(pFile))
-                {
-                    ESP_LOGD(TAG, "Read: %s", zw);
-                    line = std::string(zw);
-                }
+		
+            if (fgets(zw, 1024, pFile) && !feof(pFile)) {
+                ESP_LOGD(TAG, "Read: %s", zw);
+                line = std::string(zw);
+            }
         }
     }
 
     fclose(pFile);
 }
 
-
 std::string* ClassFlowControll::getActStatusWithTime()
 {
     return &aktstatusWithTime;
 }
 
-
 std::string* ClassFlowControll::getActStatus()
 {
     return &aktstatus;
 }
-
 
 void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
@@ -346,13 +358,11 @@ void ClassFlowControll::setActStatus(std::string _aktstatus)
     aktstatusWithTime = aktstatus;
 }
 
-
 void ClassFlowControll::doFlowTakeImageOnly(string time)
 {
     std::string zw_time;
 
-    for (int i = 0; i < FlowControll.size(); ++i)
-    {
+    for (int i = 0; i < FlowControll.size(); ++i) {
         if (FlowControll[i]->name() == "ClassFlowTakeImage") {
             zw_time = getCurrentTimeString("%H:%M:%S");
             aktstatus = TranslateAktstatus(FlowControll[i]->name());
@@ -365,7 +375,6 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
         }
     }
 }
-
 
 bool ClassFlowControll::doFlow(string time)
 {
@@ -386,8 +395,7 @@ bool ClassFlowControll::doFlow(string time)
 
     //checkNtpStatus(0);
 
-    for (int i = 0; i < FlowControll.size(); ++i)
-    {
+    for (int i = 0; i < FlowControll.size(); ++i) {
         zw_time = getCurrentTimeString("%H:%M:%S");
         aktstatus = TranslateAktstatus(FlowControll[i]->name());
         aktstatusWithTime = aktstatus + " (" + zw_time + ")";
@@ -404,7 +412,7 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            if (i) i -= 1;    // vPrevious step must be repeated (probably take pictures)
+            if (i) { i -= 1; }   // vPrevious step must be repeated (probably take pictures)
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
@@ -412,8 +420,7 @@ bool ClassFlowControll::doFlow(string time)
                 //Step was repeated 5x --> reboot
             }
         }
-        else
-        {
+        else {
             result = true;
         }
         
@@ -437,27 +444,29 @@ bool ClassFlowControll::doFlow(string time)
 string ClassFlowControll::getReadoutAll(int _type)
 {
     std::string out = "";
-    if (flowpostprocessing)
-    {
+	
+    if (flowpostprocessing) {
         std::vector<NumberPost*> *numbers = flowpostprocessing->GetNumbers();
 
-        for (int i = 0; i < (*numbers).size(); ++i)
-        {
+        for (int i = 0; i < (*numbers).size(); ++i) {
             out = out + (*numbers)[i]->name + "\t";
+		
             switch (_type) {
                 case READOUT_TYPE_VALUE:
                     out = out + (*numbers)[i]->ReturnValue;
                     break;
                 case READOUT_TYPE_PREVALUE:
-                    if (flowpostprocessing->PreValueUse)
-                    {
-                        if ((*numbers)[i]->PreValueOkay)
+                    if (flowpostprocessing->PreValueUse) {
+                        if ((*numbers)[i]->PreValueOkay) {
                             out = out + (*numbers)[i]->ReturnPreValue;
-                        else
-                            out = out + "PreValue too old";                
+			}
+                        else {
+                            out = out + "PreValue too old"; 
+			}
                     }
-                    else
+                    else {
                         out = out + "PreValue deactivated";
+		    }
                     break;
                 case READOUT_TYPE_RAWVALUE:
                     out = out + (*numbers)[i]->ReturnRawValue;
@@ -466,8 +475,10 @@ string ClassFlowControll::getReadoutAll(int _type)
                     out = out + (*numbers)[i]->ErrorMessageText;
                     break;
             }
-            if (i < (*numbers).size()-1)
+		
+            if (i < (*numbers).size()-1) {
                 out = out + "\r\n";
+	    }
         }
     //    ESP_LOGD(TAG, "OUT: %s", out.c_str());
     }
@@ -475,27 +486,23 @@ string ClassFlowControll::getReadoutAll(int _type)
     return out;
 }	
 
-
 string ClassFlowControll::getReadout(bool _rawvalue = false, bool _noerror = false, int _number = 0)
 {
-    if (flowpostprocessing)
+    if (flowpostprocessing) {
         return flowpostprocessing->getReadoutParam(_rawvalue, _noerror, _number);
+    }
 
     return std::string("");
 }
 
-
 string ClassFlowControll::GetPrevalue(std::string _number)	
 {
-    if (flowpostprocessing)
-    {
+    if (flowpostprocessing) {
         return flowpostprocessing->GetPreValue(_number);   
     }
 
-
     return std::string("");    
 }
-
 
 bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern)
 {
@@ -517,10 +524,12 @@ bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbe
     }
     
     if (flowpostprocessing) {
-        if (flowpostprocessing->SetPreValue(newvalueAsDouble, _numbers, _extern))
+        if (flowpostprocessing->SetPreValue(newvalueAsDouble, _numbers, _extern)) {
             return true;
-        else
+	}
+        else {
             return false;
+	}
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "UpdatePrevalue: ERROR - Class Post-Processing not initialized");
@@ -528,93 +537,85 @@ bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbe
     }
 }
 
-
 bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
 
-    if (aktparamgraph.size() == 0)
-        if (!this->GetNextParagraph(pfile, aktparamgraph))
+    if (aktparamgraph.size() == 0) {
+        if (!this->GetNextParagraph(pfile, aktparamgraph)) {
             return false;
-
+	}
+    }
 
     if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
-        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0)))      // Paragraph passt nicht zu Debug oder DataLogging
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0))) {     
+        // Paragraph passt nicht zu Debug oder DataLogging
         return false;
+    }
 
-    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
-    {
+    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph, " =");
-        if ((toUpper(splitted[0]) == "AUTOSTART") && (splitted.size() > 1))
-        {
-            if (toUpper(splitted[1]) == "TRUE")
+	    
+        if ((toUpper(splitted[0]) == "AUTOSTART") && (splitted.size() > 1)) {
+            AutoStart = alphanumericToBoolean(splitted[1]);
+        }
+
+        if ((toUpper(splitted[0]) == "INTERVAL") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1]))
             {
-                AutoStart = true;
+                AutoInterval = std::stof(splitted[1]);
             }
         }
 
-        if ((toUpper(splitted[0]) == "INTERVAL") && (splitted.size() > 1))
-        {
-            AutoInterval = std::stof(splitted[1]);
+        if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1)) {
+            LogFile.SetDataLogToSD(alphanumericToBoolean(splitted[1]));
         }
 
-        if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1))
-        {
-            if (toUpper(splitted[1]) == "TRUE")
+        if ((toUpper(splitted[0]) == "DATAFILESRETENTION") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1]))
             {
-                LogFile.SetDataLogToSD(true);
-            }
-            else {
-                LogFile.SetDataLogToSD(false);
+                LogFile.SetDataLogRetention(std::stoi(splitted[1]));
             }
         }
 
-        if ((toUpper(splitted[0]) == "DATAFILESRETENTION") && (splitted.size() > 1))
-        {
-            LogFile.SetDataLogRetention(std::stoi(splitted[1]));
-        }
-
-        if ((toUpper(splitted[0]) == "LOGLEVEL") && (splitted.size() > 1))
-        {
+        if ((toUpper(splitted[0]) == "LOGLEVEL") && (splitted.size() > 1)) {
             /* matches esp_log_level_t */
-            if ((toUpper(splitted[1]) == "TRUE") || (toUpper(splitted[1]) == "2"))
-            {
+            if ((toUpper(splitted[1]) == "TRUE") || (toUpper(splitted[1]) == "2")) {
                 LogFile.setLogLevel(ESP_LOG_WARN);
             }
-            else if ((toUpper(splitted[1]) == "FALSE") || (toUpper(splitted[1]) == "0") || (toUpper(splitted[1]) == "1"))
-            {
+            else if ((toUpper(splitted[1]) == "FALSE") || (toUpper(splitted[1]) == "0") || (toUpper(splitted[1]) == "1")) {
                 LogFile.setLogLevel(ESP_LOG_ERROR);
             }
-            else if (toUpper(splitted[1]) == "3")
-            {
+            else if (toUpper(splitted[1]) == "3") {
                 LogFile.setLogLevel(ESP_LOG_INFO);
             }
-            else if (toUpper(splitted[1]) == "4")
-            {
+            else if (toUpper(splitted[1]) == "4") {
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
             }
 
             /* If system reboot was not triggered by user and reboot was caused by execption -> keep log level to DEBUG */
-            if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC))
+            if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC)) {
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
+	    }
         }
-        if ((toUpper(splitted[0]) == "LOGFILESRETENTION") && (splitted.size() > 1))
-        {
-            LogFile.SetLogFileRetention(std::stoi(splitted[1]));
+	    
+        if ((toUpper(splitted[0]) == "LOGFILESRETENTION") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1]))
+            {
+                LogFile.SetLogFileRetention(std::stoi(splitted[1]));
+            }
         }
 
         /* TimeServer and TimeZone got already read from the config, see setupTime () */
         
         #if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
-        if ((toUpper(splitted[0]) == "RSSITHRESHOLD") && (splitted.size() > 1))
-        {
+        if ((toUpper(splitted[0]) == "RSSITHRESHOLD") && (splitted.size() > 1)) {
             int RSSIThresholdTMP = atoi(splitted[1].c_str());
             RSSIThresholdTMP = min(0, max(-100, RSSIThresholdTMP)); // Verify input limits (-100 - 0)
             
-            if (ChangeRSSIThreshold(WLAN_CONFIG_FILE, RSSIThresholdTMP))
-            {
+            if (ChangeRSSIThreshold(WLAN_CONFIG_FILE, RSSIThresholdTMP)) {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new RSSITHRESHOLD ...");
@@ -623,10 +624,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         #endif
 
-        if ((toUpper(splitted[0]) == "HOSTNAME") && (splitted.size() > 1))
-        {
-            if (ChangeHostName(WLAN_CONFIG_FILE, splitted[1]))
-            {
+        if ((toUpper(splitted[0]) == "HOSTNAME") && (splitted.size() > 1)) {
+            if (ChangeHostName(WLAN_CONFIG_FILE, splitted[1])) {
                 // reboot necessary so that the new wlan.ini is also used !!!
                 fclose(pfile);
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Rebooting to activate new HOSTNAME...");             
@@ -634,23 +633,19 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(splitted[0]) == "SETUPMODE") && (splitted.size() > 1))
-        {
-            if (toUpper(splitted[1]) == "TRUE")
-            {
-                SetupModeActive = true;
-            }        
+        if ((toUpper(splitted[0]) == "SETUPMODE") && (splitted.size() > 1)) {
+            SetupModeActive = alphanumericToBoolean(splitted[1]);        
         }
     }
     return true;
 }
-
 
 int ClassFlowControll::CleanTempFolder() {
     const char* folderPath = "/sdcard/img_tmp";
     
     ESP_LOGD(TAG, "Clean up temporary folder to avoid damage of sdcard sectors: %s", folderPath);
     DIR *dir = opendir(folderPath);
+	
     if (!dir) {
         ESP_LOGE(TAG, "Failed to stat dir: %s", folderPath);
         return -1;
@@ -658,30 +653,32 @@ int ClassFlowControll::CleanTempFolder() {
 
     struct dirent *entry;
     int deleted = 0;
+	
     while ((entry = readdir(dir)) != NULL) {
         std::string path = string(folderPath) + "/" + entry->d_name;
-		if (entry->d_type == DT_REG) {
-			if (unlink(path.c_str()) == 0) {
-				deleted ++;
-			} else {
-				ESP_LOGE(TAG, "can't delete file: %s", path.c_str());
-			}
-        } else if (entry->d_type == DT_DIR) {
-			deleted += removeFolder(path.c_str(), TAG);
-		}
+	if (entry->d_type == DT_REG) {
+	    if (unlink(path.c_str()) == 0) {
+		deleted ++;
+	    } 
+	    else {
+		ESP_LOGE(TAG, "can't delete file: %s", path.c_str());
+	    }
+        } 
+	else if (entry->d_type == DT_DIR) {
+	    deleted += removeFolder(path.c_str(), TAG);
+	}
     }
+	
     closedir(dir);
     ESP_LOGD(TAG, "%d files deleted", deleted);
     
     return 0;
 }
 
-
 esp_err_t ClassFlowControll::SendRawJPG(httpd_req_t *req)
 {
     return flowtakeimage != NULL ? flowtakeimage->SendRawJPG(req) : ESP_FAIL;
 }
-
 
 esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 {
@@ -914,12 +911,10 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     return result;
 }
 
-
 string ClassFlowControll::getNumbersName()
 {
     return flowpostprocessing->getNumbersName();
 }
-
 
 string ClassFlowControll::getJSON()
 {
