@@ -1,10 +1,12 @@
 # Parameter `CamVflip`
 Default Value: `false`
-    
+
+!!! Warning
+    After changing this parameter you need to update your reference image and alignment markers!
+
 !!! Note
     This parameter can also be set on the Reference Image configuration page!
 
-!!! Note
-    After changing this parameter you need to update your reference image and alignment markers!
+**Flip Image**
 
-Option for initially flip the image on the original y-axis. 
+When **true**, the camera image is flipped top-to-bottom.

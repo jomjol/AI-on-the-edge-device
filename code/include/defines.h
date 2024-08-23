@@ -105,7 +105,7 @@
     #define LOGFILE_LAST_PART_BYTES 80 * 1024 // 80 kBytes  // Size of partial log file to return 
 
     #define SERVER_FILER_SCRATCH_BUFSIZE  4096 
-    #define SERVER_HELPER_SCRATCH_BUFSIZE  8192
+    #define SERVER_HELPER_SCRATCH_BUFSIZE  4096
     #define SERVER_OTA_SCRATCH_BUFSIZE  1024 
 
 
