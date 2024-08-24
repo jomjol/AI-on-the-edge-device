@@ -26,17 +26,13 @@ void WebhookInit(std::string _uri, std::string _apiKey)
 
 void WebhookPublish(std::vector<NumberPost*>* numbers)
 {
-    
-
-    
-
     cJSON *jsonArray = cJSON_CreateArray();
 
     for (int i = 0; i < (*numbers).size(); ++i)
     {
         string timezw = "";
         char buffer[80];
-        struct tm* timeinfo = localtime(&(*numbers)[i]->lastvalue);
+        struct tm* timeinfo = localtime(&(*numbers)[i]->timeStampLastPreValue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         timezw = std::string(buffer);
 
@@ -84,8 +80,6 @@ void WebhookPublish(std::vector<NumberPost*>* numbers)
     } else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP request failed");
     }
-
-    
 
     esp_http_client_cleanup(http_client);
     cJSON_Delete(jsonArray);
