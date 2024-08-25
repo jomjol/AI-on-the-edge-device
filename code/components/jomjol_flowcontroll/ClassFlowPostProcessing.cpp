@@ -876,15 +876,15 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             }
 
             if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
-				LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
 					
-				if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
-					// more debug if extended resolution is on, see #2447
-					if (NUMBERS[j]->isExtendedResolution) {
-						LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
+                if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
+                    // more debug if extended resolution is on, see #2447
+                    if (NUMBERS[j]->isExtendedResolution) {
+                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
                                                     + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) 
                                                     + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
-					} 
+                    } 
 
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -898,47 +898,47 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 }
             }
 
-			#ifdef SERIAL_DEBUG
-				ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
-			#endif
+            #ifdef SERIAL_DEBUG
+                ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
+            #endif
 
-			// LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
-			LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
-			NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
-			NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
+            // LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
+            LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
+            NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
+            NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
-			if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue)) {
-				double _ratedifference;
+            if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue)) {
+                double _ratedifference;
 					
-				if (NUMBERS[j]->RateType == RateChange) {
-					_ratedifference = NUMBERS[j]->FlowRateAct;
-				}
-				else {
-					// TODO:
-					// Since I don't know if this is desired, I'll comment it out first.
-					// int roundDifference = (int)(round(LastPreValueTimeDifference / LastValueTimeDifference)); // calculate how many rounds have passed since NUMBERS[j]->timeLastPreValue was set
-					// _ratedifference = ((NUMBERS[j]->Value - NUMBERS[j]->PreValue) / ((int)(round(LastPreValueTimeDifference / LastValueTimeDifference)))); // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
-					_ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
-				}
+                if (NUMBERS[j]->RateType == RateChange) {
+                    _ratedifference = NUMBERS[j]->FlowRateAct;
+                }
+                else {
+                    // TODO:
+                    // Since I don't know if this is desired, I'll comment it out first.
+                    // int roundDifference = (int)(round(LastPreValueTimeDifference / LastValueTimeDifference)); // calculate how many rounds have passed since NUMBERS[j]->timeLastPreValue was set
+                    // _ratedifference = ((NUMBERS[j]->Value - NUMBERS[j]->PreValue) / ((int)(round(LastPreValueTimeDifference / LastValueTimeDifference)))); // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
+                    _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
+                }
 
-				if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue)) {
-					NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " - Rate: " + RundeOutput(_ratedifference, NUMBERS[j]->Nachkomma);
-					NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-					NUMBERS[j]->ReturnValue = "";
-					NUMBERS[j]->ReturnRateValue = "";
-					NUMBERS[j]->timeStampLastValue = imagetime;
+                if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue)) {
+                    NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " - Rate: " + RundeOutput(_ratedifference, NUMBERS[j]->Nachkomma);
+                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                    NUMBERS[j]->ReturnValue = "";
+                    NUMBERS[j]->ReturnRateValue = "";
+                    NUMBERS[j]->timeStampLastValue = imagetime;
 
-					string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-					LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
-					WriteDataLog(j);
-					continue;
-				}
-			}
+                    string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
+                    WriteDataLog(j);
+                    continue;
+                }
+            }
 
         #ifdef SERIAL_DEBUG
            ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
-		}
+        }
         
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
@@ -983,11 +983,9 @@ void ClassFlowPostProcessing::WriteDataLog(int _index) {
         digital = flowDigit->getReadoutRawString(_index);
     }
 	
-    LogFile.WriteToData(timezw, NUMBERS[_index]->name, 
-                        NUMBERS[_index]->ReturnRawValue, NUMBERS[_index]->ReturnValue, NUMBERS[_index]->ReturnPreValue, 
-                        NUMBERS[_index]->ReturnRateValue, NUMBERS[_index]->ReturnChangeAbsolute,
-                        NUMBERS[_index]->ErrorMessageText, 
-                        digital, analog);
+    LogFile.WriteToData(timezw, NUMBERS[_index]->name, NUMBERS[_index]->ReturnRawValue, NUMBERS[_index]->ReturnValue, NUMBERS[_index]->ReturnPreValue, 
+        NUMBERS[_index]->ReturnRateValue, NUMBERS[_index]->ReturnChangeAbsolute, NUMBERS[_index]->ErrorMessageText, digital, analog);
+
     ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_index]->ReturnRawValue.c_str(), NUMBERS[_index]->ReturnValue.c_str(), NUMBERS[_index]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
 }
 
