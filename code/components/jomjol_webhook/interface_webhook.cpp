@@ -33,7 +33,7 @@ bool WebhookPublish(std::vector<NumberPost*>* numbers)
     {
         string timezw = "";
         char buffer[80];
-        struct tm* timeinfo = localtime(&(*numbers)[i]->lastvalue);
+        struct tm* timeinfo = localtime(&(*numbers)[i]->timeStampLastPreValue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         timezw = std::string(buffer);
 
@@ -86,10 +86,9 @@ bool WebhookPublish(std::vector<NumberPost*>* numbers)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP request failed");
     } 
 
+    esp_http_client_cleanup(http_client);
     cJSON_Delete(jsonArray);
     free(jsonString);
-    esp_http_client_cleanup(http_client);
-
     return numbersWithError;    
 }
 

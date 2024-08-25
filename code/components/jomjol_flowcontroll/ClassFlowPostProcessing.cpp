@@ -128,8 +128,8 @@ bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, boo
             NUMBERS[j]->PreValueOkay = true;
 
             if (_extern) {
-                time(&(NUMBERS[j]->lastvalue));
-                localtime(&(NUMBERS[j]->lastvalue));
+                time(&(NUMBERS[j]->timeStampLastPreValue));
+                localtime(&(NUMBERS[j]->timeStampLastPreValue));
             }
 
             //ESP_LOGD(TAG, "Found %d! - set to %.8f", j,  NUMBERS[j]->PreValue);
@@ -199,11 +199,11 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                     whenStart.tm_sec = ss;
                     whenStart.tm_isdst = -1;
 
-                    NUMBERS[j]->lastvalue = mktime(&whenStart);
+                    NUMBERS[j]->timeStampLastPreValue = mktime(&whenStart);
 
                     time(&tStart);
                     localtime(&tStart);
-                    double difference = difftime(tStart, NUMBERS[j]->lastvalue);
+                    double difference = difftime(tStart, NUMBERS[j]->timeStampLastPreValue);
                     difference /= 60;
 			
                     if (difference > PreValueAgeStartup) {
@@ -254,11 +254,11 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
         ESP_LOGD(TAG, "TIME: %d, %d, %d, %d, %d, %d", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
 
-        NUMBERS[0]->lastvalue = mktime(&whenStart);
+        NUMBERS[0]->timeStampLastPreValue = mktime(&whenStart);
 
         time(&tStart);
         localtime(&tStart);
-        double difference = difftime(tStart, NUMBERS[0]->lastvalue);
+        double difference = difftime(tStart, NUMBERS[0]->timeStampLastPreValue);
         difference /= 60;
 			
         if (difference > PreValueAgeStartup) {
@@ -292,10 +292,10 @@ void ClassFlowPostProcessing::SavePreValue() {
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         char buffer[80];
-        struct tm* timeinfo = localtime(&NUMBERS[j]->lastvalue);
+        struct tm* timeinfo = localtime(&NUMBERS[j]->timeStampLastPreValue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         NUMBERS[j]->timeStamp = std::string(buffer);
-        NUMBERS[j]->timeStampTimeUTC = NUMBERS[j]->lastvalue;
+        NUMBERS[j]->timeStampTimeUTC = NUMBERS[j]->timeStampLastPreValue;
         // ESP_LOGD(TAG, "SaverPreValue %d, Value: %f, Nachkomma %d", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
         _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
@@ -722,12 +722,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
 
-        // calculate time difference BEFORE we overwrite the 'lastvalue'
-        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
-
-        // TODO:
-        // We could call `NUMBERS[j]->lastvalue = imagetime;` here and remove all other such calls further down.
-        // But we should check nothing breaks!
+        // calculate time difference
+        // double LastValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastValue);         // in seconds
+        double LastPreValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastPreValue);   // in seconds
 
         UpdateNachkommaDecimalShift();
 
@@ -791,9 +788,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             else {
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
-               /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
-                NUMBERS[j]->lastvalue = imagetime;
-
+                NUMBERS[j]->timeStampLastValue = imagetime;
                 WriteDataLog(j);
                 continue; // there is no number because there is still an N.
             }
@@ -860,7 +855,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
-                    NUMBERS[j]->lastvalue = imagetime;
+                    NUMBERS[j]->timeStampLastValue = imagetime;
 
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
@@ -874,8 +869,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
 
-        difference /= 60;  
-        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+        // LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
+        LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
+        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
         if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay) {
@@ -885,6 +881,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             }
             else {
+                // TODO:
+                // Since I don't know if this is desired, I'll comment it out first.
+                // int roundDifference = (int)(round(LastPreValueTimeDifference / LastValueTimeDifference)); // calculate how many rounds have passed since NUMBERS[j]->timeLastPreValue was set
+                // _ratedifference = ((NUMBERS[j]->Value - NUMBERS[j]->PreValue) / ((int)(round(LastPreValueTimeDifference / LastValueTimeDifference)))); // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
                 _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
             }
 
@@ -893,7 +893,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
-                NUMBERS[j]->lastvalue = imagetime;
+                NUMBERS[j]->timeStampLastValue = imagetime;
 
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
@@ -909,7 +909,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
-        NUMBERS[j]->lastvalue = imagetime;
+
+        NUMBERS[j]->timeStampLastValue = imagetime;    
+        NUMBERS[j]->timeStampLastPreValue = imagetime;
 
         NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
@@ -935,7 +937,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _index) {
     string digital = "";
     string timezw = "";
     char buffer[80];
-    struct tm* timeinfo = localtime(&NUMBERS[_index]->lastvalue);
+    struct tm* timeinfo = localtime(&NUMBERS[_index]->timeStampLastValue);
     strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
     timezw = std::string(buffer);
     
