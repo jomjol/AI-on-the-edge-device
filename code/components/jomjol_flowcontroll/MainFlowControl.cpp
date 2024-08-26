@@ -1027,11 +1027,11 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     int _shp_ = std::stoi(_valuechar);
                     if (CCstatus.CamSensor_id == OV2640_PID)
                     {
-                        CFstatus.ImageSharpness = clipInt(_shp, 2, -2);
+                        CFstatus.ImageSharpness = clipInt(_shp_, 2, -2);
                     }
                     else
                     {
-                        CFstatus.ImageSharpness = clipInt(_shp, 3, -3);
+                        CFstatus.ImageSharpness = clipInt(_shp_, 3, -3);
                     }
                 }
             }
@@ -1094,11 +1094,11 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     int _ael_ = std::stoi(_valuechar);
                     if (CCstatus.CamSensor_id == OV2640_PID)
                     {
-                        CFstatus.ImageAeLevel = clipInt(_ael, 2, -2);
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
                     }
                     else
                     {
-                        CFstatus.ImageAeLevel = clipInt(_ael, 5, -5);
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 5, -5);
                     }
                 }
             }
