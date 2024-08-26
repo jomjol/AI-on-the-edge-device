@@ -557,7 +557,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         bool _noerror = false;
         bool _all = false;
         std::string _type = "value";
-        string zw;
+        std::string zw;
 
         ESP_LOGD(TAG, "handler water counter uri: %s", req->uri);
 
@@ -635,12 +635,12 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         }
 
         std::string *status = flowctrl.getActStatus();
-        string query = std::string(_query);
+        std::string query = std::string(_query);
         //    ESP_LOGD(TAG, "Query: %s, query.c_str());
 
         if (query.find("full") != std::string::npos)
         {
-            string txt;
+            std::string txt;
             txt = "<body style=\"font-family: arial\">";
 
             if ((countRounds <= 1) && (*status != std::string("Flow finished")))
@@ -665,7 +665,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
         if (query.find("full") != std::string::npos)
         {
-            string txt, zw;
+            std::string txt, zw;
 
             if ((countRounds <= 1) && (*status != std::string("Flow finished")))
             {
@@ -692,7 +692,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                         }
                         else
                         {
-                            zw = to_string((int)htmlinfodig[i]->val);
+                            zw = std::to_string((int)htmlinfodig[i]->val);
                         }
 
                         txt += "<td style=\"width: 100px\"><h4>" + zw + "</h4><p><img src=\"/img_tmp/" + htmlinfodig[i]->filename + "\"></p></td>\n";
@@ -789,7 +789,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     char _query[200];
     char _valuechar[30];
-    string _task;
+    std::string _task;
 
     if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
     {
@@ -798,7 +798,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 #ifdef DEBUG_DETAIL_ON
             ESP_LOGD(TAG, "task is found: %s", _valuechar);
 #endif
-            _task = string(_valuechar);
+            _task = std::string(_valuechar);
         }
     }
 
@@ -822,12 +822,12 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     if (_task.compare("copy") == 0)
     {
-        string in, out, zw;
+        std::string in, out, zw;
 
         httpd_query_key_value(_query, "in", _valuechar, 30);
-        in = string(_valuechar);
+        in = std::string(_valuechar);
         httpd_query_key_value(_query, "out", _valuechar, 30);
-        out = string(_valuechar);
+        out = std::string(_valuechar);
 
 #ifdef DEBUG_DETAIL_ON
         ESP_LOGD(TAG, "in: %s", in.c_str());
@@ -845,31 +845,43 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     if (_task.compare("cutref") == 0)
     {
-        string in, out, zw;
-        int x, y, dx, dy;
+        std::string in, out, zw;
+        int x = 0, y = 0, dx = 20, dy = 20;
         bool enhance = false;
 
         httpd_query_key_value(_query, "in", _valuechar, 30);
-        in = string(_valuechar);
+        in = std::string(_valuechar);
 
         httpd_query_key_value(_query, "out", _valuechar, 30);
-        out = string(_valuechar);
+        out = std::string(_valuechar);
 
         httpd_query_key_value(_query, "x", _valuechar, 30);
-        string _x = string(_valuechar);
-        x = stoi(_x);
+        std::string _x = std::string(_valuechar);
+        if (isStringNumeric(_x))
+        {
+            x = std::stoi(_x);
+        }
 
         httpd_query_key_value(_query, "y", _valuechar, 30);
-        string _y = string(_valuechar);
-        y = stoi(_y);
+        std::string _y = std::string(_valuechar);
+        if (isStringNumeric(_y))
+        {
+            y = std::stoi(_y);
+        }
 
         httpd_query_key_value(_query, "dx", _valuechar, 30);
-        string _dx = string(_valuechar);
-        dx = stoi(_dx);
+        std::string _dx = std::string(_valuechar);
+        if (isStringNumeric(_dx))
+        {
+            dx = std::stoi(_dx);
+        }
 
         httpd_query_key_value(_query, "dy", _valuechar, 30);
-        string _dy = string(_valuechar);
-        dy = stoi(_dy);
+        std::string _dy = std::string(_valuechar);
+        if (isStringNumeric(_dy))
+        {
+            dy = std::stoi(_dy);
+        }
 
 #ifdef DEBUG_DETAIL_ON
         ESP_LOGD(TAG, "in: %s", in.c_str());
@@ -882,7 +894,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         if (httpd_query_key_value(_query, "enhance", _valuechar, 10) == ESP_OK)
         {
-            string _enhance = string(_valuechar);
+            string _enhance = std::string(_valuechar);
 
             if (_enhance.compare("true") == 0)
             {
@@ -893,7 +905,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         in = "/sdcard" + in;
         out = "/sdcard" + out;
 
-        string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
+        std::string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
         if ((flowctrl.SetupModeActive || (*flowctrl.getActStatus() == std::string("Flow finished"))) && psram_init_shared_memory_for_take_image_step())
         {
@@ -945,10 +957,10 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "waitb", _valuechar, 30) == ESP_OK)
             {
-                int _waitb = std::stoi(_valuechar);
-                if (_waitb != 0)
+                std::string _waitb = std::string(_valuechar);
+                if (isStringNumeric(_waitb))
                 {
-                    CFstatus.WaitBeforePicture = _waitb;
+                    CFstatus.WaitBeforePicture = std::stoi(_valuechar);
                 }
             }
 
@@ -969,217 +981,291 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "qual", _valuechar, 30) == ESP_OK)
             {
-                int _qual = std::stoi(_valuechar);
-                CFstatus.ImageQuality = clipInt(_qual, 63, 6);
+                std::string _qual = std::string(_valuechar);
+                if (isStringNumeric(_qual))
+                {
+                    int _qual_ = std::stoi(_valuechar);
+                    CFstatus.ImageQuality = clipInt(_qual_, 63, 6);
+                }
             }
 
             if (httpd_query_key_value(_query, "bri", _valuechar, 30) == ESP_OK)
             {
-                int _bri = std::stoi(_valuechar);
-                CFstatus.ImageBrightness = clipInt(_bri, 2, -2);
+                std::string _bri = std::string(_valuechar);
+                if (isStringNumeric(_bri))
+                {
+                    int _bri_ = std::stoi(_valuechar);
+                    CFstatus.ImageBrightness = clipInt(_bri_, 2, -2);
+                }
             }
 
             if (httpd_query_key_value(_query, "con", _valuechar, 30) == ESP_OK)
             {
-                int _con = std::stoi(_valuechar);
-                CFstatus.ImageContrast = clipInt(_con, 2, -2);
+                std::string _con = std::string(_valuechar);
+                if (isStringNumeric(_con))
+                {
+                    int _con_ = std::stoi(_valuechar);
+                    CFstatus.ImageContrast = clipInt(_con_, 2, -2);
+                }
             }
 
             if (httpd_query_key_value(_query, "sat", _valuechar, 30) == ESP_OK)
             {
-                int _sat = std::stoi(_valuechar);
-                CFstatus.ImageSaturation = clipInt(_sat, 2, -2);
+                std::string _sat = std::string(_valuechar);
+                if (isStringNumeric(_sat))
+                {
+                    int _sat_ = std::stoi(_valuechar);
+                    CFstatus.ImageSaturation = clipInt(_sat_, 2, -2);
+                }
             }
 
             if (httpd_query_key_value(_query, "shp", _valuechar, 30) == ESP_OK)
             {
-                int _shp = std::stoi(_valuechar);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                std::string _shp = std::string(_valuechar);
+                if (isStringNumeric(_shp))
                 {
-                    CFstatus.ImageSharpness = clipInt(_shp, 2, -2);
-                }
-                else
-                {
-                    CFstatus.ImageSharpness = clipInt(_shp, 3, -3);
+                    int _shp_ = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageSharpness = clipInt(_shp, 2, -2);
+                    }
+                    else
+                    {
+                        CFstatus.ImageSharpness = clipInt(_shp, 3, -3);
+                    }
                 }
             }
 
             if (httpd_query_key_value(_query, "ashp", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageAutoSharpness = numericStrToBool(_valuechar);
+                std::string _ashp = std::string(_valuechar);
+                CFstatus.ImageAutoSharpness = alphanumericToBoolean(_ashp);
             }
 
             if (httpd_query_key_value(_query, "spe", _valuechar, 30) == ESP_OK)
             {
-                int _spe = std::stoi(_valuechar);
-                CFstatus.ImageSpecialEffect = clipInt(_spe, 6, 0);
+                std::string _spe = std::string(_valuechar);
+                if (isStringNumeric(_spe))
+                {
+                    int _spe_ = std::stoi(_valuechar);
+                    CFstatus.ImageSpecialEffect = clipInt(_spe_, 6, 0);
+                }
             }
 
             if (httpd_query_key_value(_query, "wbm", _valuechar, 30) == ESP_OK)
             {
-                int _wbm = std::stoi(_valuechar);
-                CFstatus.ImageWbMode = clipInt(_wbm, 4, 0);
+                std::string _wbm = std::string(_valuechar);
+                if (isStringNumeric(_wbm))
+                {
+                    int _wbm_ = std::stoi(_valuechar);
+                    CFstatus.ImageWbMode = clipInt(_wbm_, 4, 0);
+                }
             }
 
             if (httpd_query_key_value(_query, "awb", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageAwb = numericStrToBool(_valuechar);
+                std::string _awb = std::string(_valuechar);
+                CFstatus.ImageAwb = alphanumericToBoolean(_awb);
             }
 
             if (httpd_query_key_value(_query, "awbg", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageAwbGain = numericStrToBool(_valuechar);
+                std::string _awbg = std::string(_valuechar);
+                CFstatus.ImageAwbGain = alphanumericToBoolean(_awbg);
             }
 
             if (httpd_query_key_value(_query, "aec", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageAec = numericStrToBool(_valuechar);
+                std::string _aec = std::string(_valuechar);
+                CFstatus.ImageAec = alphanumericToBoolean(_aec);
             }
 
             if (httpd_query_key_value(_query, "aec2", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageAec2 = numericStrToBool(_valuechar);
+                std::string _aec2 = std::string(_valuechar);
+                CFstatus.ImageAec2 = alphanumericToBoolean(_aec2);
             }
 
             if (httpd_query_key_value(_query, "ael", _valuechar, 30) == ESP_OK)
             {
-                int _ael = std::stoi(_valuechar);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                std::string _ael = std::string(_valuechar);
+                if (isStringNumeric(_ael))
                 {
-                    CFstatus.ImageAeLevel = clipInt(_ael, 2, -2);
-                }
-                else
-                {
-                    CFstatus.ImageAeLevel = clipInt(_ael, 5, -5);
+                    int _ael_ = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageAeLevel = clipInt(_ael, 2, -2);
+                    }
+                    else
+                    {
+                        CFstatus.ImageAeLevel = clipInt(_ael, 5, -5);
+                    }
                 }
             }
 
             if (httpd_query_key_value(_query, "aecv", _valuechar, 30) == ESP_OK)
             {
-                int _aecv = std::stoi(_valuechar);
-                CFstatus.ImageAecValue = clipInt(_aecv, 1200, 0);
+                std::string _aecv = std::string(_valuechar);
+                if (isStringNumeric(_aecv))
+                {
+                    int _aecv_ = std::stoi(_valuechar);
+                    CFstatus.ImageAecValue = clipInt(_aecv_, 1200, 0);
+                }
             }
 
             if (httpd_query_key_value(_query, "agc", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageAgc = numericStrToBool(_valuechar);
+                std::string _agc = std::string(_valuechar);
+                CFstatus.ImageAgc = alphanumericToBoolean(_agc);
             }
 
             if (httpd_query_key_value(_query, "agcg", _valuechar, 30) == ESP_OK)
             {
-                int _agcg = std::stoi(_valuechar);
-                CFstatus.ImageAgcGain = clipInt(_agcg, 30, 0);
+                std::string _agcg = std::string(_valuechar);
+                if (isStringNumeric(_agcg))
+                {
+                    int _agcg_ = std::stoi(_valuechar);
+                    CFstatus.ImageAgcGain = clipInt(_agcg_, 30, 0);
+                }
             }
 
             if (httpd_query_key_value(_query, "bpc", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageBpc = numericStrToBool(_valuechar);
+                std::string _bpc = std::string(_valuechar);
+                CFstatus.ImageBpc = alphanumericToBoolean(_bpc);
             }
 
             if (httpd_query_key_value(_query, "wpc", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageWpc = numericStrToBool(_valuechar);
+                std::string _wpc = std::string(_valuechar);
+                CFstatus.ImageWpc = alphanumericToBoolean(_wpc);
             }
 
             if (httpd_query_key_value(_query, "rgma", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageRawGma = numericStrToBool(_valuechar);
+                std::string _rgma = std::string(_valuechar);
+                CFstatus.ImageRawGma = alphanumericToBoolean(_rgma);
             }
 
             if (httpd_query_key_value(_query, "lenc", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageLenc = numericStrToBool(_valuechar);
+                std::string _lenc = std::string(_valuechar);
+                CFstatus.ImageLenc = alphanumericToBoolean(_lenc);
             }
 
             if (httpd_query_key_value(_query, "mirror", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageHmirror = numericStrToBool(_valuechar);
+                std::string _mirror = std::string(_valuechar);
+                CFstatus.ImageHmirror = alphanumericToBoolean(_mirror);
             }
 
             if (httpd_query_key_value(_query, "flip", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageVflip = numericStrToBool(_valuechar);
+                std::string _flip = std::string(_valuechar);
+                CFstatus.ImageVflip = alphanumericToBoolean(_flip);
             }
 
             if (httpd_query_key_value(_query, "dcw", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageDcw = numericStrToBool(_valuechar);
+                std::string _dcw = std::string(_valuechar);
+                CFstatus.ImageDcw = alphanumericToBoolean(_dcw);
             }
 
             if (httpd_query_key_value(_query, "den", _valuechar, 30) == ESP_OK)
             {
-                int _ImageDenoiseLevel = std::stoi(_valuechar);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                std::string _idlv = std::string(_valuechar);
+                if (isStringNumeric(_idlv))
                 {
-                    CCstatus.ImageDenoiseLevel = 0;
-                }
-                else
-                {
-                    CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
+                    int _ImageDenoiseLevel = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CCstatus.ImageDenoiseLevel = 0;
+                    }
+                    else
+                    {
+                        CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
+                    }
                 }
             }
 
             if (httpd_query_key_value(_query, "zoom", _valuechar, 30) == ESP_OK)
             {
-                CFstatus.ImageZoomEnabled = numericStrToBool(_valuechar);
+                std::string _zoom = std::string(_valuechar);
+                CFstatus.ImageZoomEnabled = alphanumericToBoolean(_zoom);
             }
 
             if (httpd_query_key_value(_query, "zoomx", _valuechar, 30) == ESP_OK)
             {
-                int _ImageZoomOffsetX = std::stoi(_valuechar);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                std::string _zoomx = std::string(_valuechar);
+                if (isStringNumeric(_zoomx))
                 {
-                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
-                }
-                else if (CCstatus.CamSensor_id == OV3660_PID)
-                {
-                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
-                }
-                else if (CCstatus.CamSensor_id == OV5640_PID)
-                {
-                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+                    int _ImageZoomOffsetX = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
+                    }
+                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
+                    }
+                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+                    }
                 }
             }
 
             if (httpd_query_key_value(_query, "zoomy", _valuechar, 30) == ESP_OK)
             {
-                int _ImageZoomOffsetY = std::stoi(_valuechar);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                std::string _zoomy = std::string(_valuechar);
+                if (isStringNumeric(_zoomy))
                 {
-                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
-                }
-                else if (CCstatus.CamSensor_id == OV3660_PID)
-                {
-                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
-                }
-                else if (CCstatus.CamSensor_id == OV5640_PID)
-                {
-                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+                    int _ImageZoomOffsetY = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
+                    }
+                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
+                    }
+                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+                    }
                 }
             }
 
             if (httpd_query_key_value(_query, "zooms", _valuechar, 30) == ESP_OK)
             {
-                int _ImageZoomSize = std::stoi(_valuechar);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                std::string _zooms = std::string(_valuechar);
+                if (isStringNumeric(_zooms))
                 {
-                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
-                }
-                else if (CCstatus.CamSensor_id == OV3660_PID)
-                {
-                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
-                }
-                else if (CCstatus.CamSensor_id == OV5640_PID)
-                {
-                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
+                    int _ImageZoomSize = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+                    }
+                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
+                    }
+                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
+                    }
                 }
             }
 
             if (httpd_query_key_value(_query, "ledi", _valuechar, 30) == ESP_OK)
             {
-                float _ImageLedIntensity = std::stof(_valuechar);
-                Camera.SetLEDIntensity(_ImageLedIntensity);
-                CFstatus.ImageLedIntensity = CCstatus.ImageLedIntensity;
+                std::string _ledi = std::string(_valuechar);
+                if (isStringNumeric(_ledi))
+                {
+                    float _ImageLedIntensity = std::stof(_valuechar);
+                    Camera.SetLEDIntensity(_ImageLedIntensity);
+                    CFstatus.ImageLedIntensity = CCstatus.ImageLedIntensity;
+                }
             }
 
             if (_task.compare("cam_settings") == 0)

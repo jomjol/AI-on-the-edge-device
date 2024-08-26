@@ -229,6 +229,14 @@ function ParseConfig() {
     ParamAddValue(param, catname, "Measurement", 1, true);
     ParamAddValue(param, catname, "Field", 1, true);
 
+    var catname = "Webhook";
+    category[catname] = new Object();
+    category[catname]["enabled"] = false;
+    category[catname]["found"] = false;
+    param[catname] = new Object();
+    ParamAddValue(param, catname, "Uri");
+    ParamAddValue(param, catname, "ApiKey");
+
     var catname = "GPIO";
     category[catname] = new Object();
     category[catname]["enabled"] = false;
@@ -517,7 +525,8 @@ function getCamConfig() {
     }
     if (!param["TakeImage"]["CamGainceiling"]["found"]) {
         param["TakeImage"]["CamGainceiling"]["found"] = true;
-        param["TakeImage"]["CamGainceiling"].value1 = '1';
+        // param["TakeImage"]["CamGainceiling"].value1 = '1';
+        param["TakeImage"]["CamGainceiling"].value1 = 'x4';
     }
     if (!param["TakeImage"]["CamQuality"]["found"]) {
         param["TakeImage"]["CamQuality"]["found"] = true;

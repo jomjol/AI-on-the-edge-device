@@ -11,10 +11,13 @@
 #include "esp_chip_info.h"
 
 // SD-Card ////////////////////
-#include "sdcard_init.h"
 #include "esp_vfs_fat.h"
 #include "ffconf.h"
 #include "driver/sdmmc_host.h"
+
+#if (ESP_IDF_VERSION <= ESP_IDF_VERSION_VAL(5, 1, 2))
+#include "sdcard_init.h"
+#endif
 ///////////////////////////////
 
 #include "ClassLogFile.h"
@@ -91,10 +94,10 @@ static const char *TAG = "MAIN";
 
 #define MOUNT_POINT "/sdcard"
 
-
 bool Init_NVS_SDCard()
 {
     esp_err_t ret = nvs_flash_init();
+	
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
@@ -144,7 +147,11 @@ bool Init_NVS_SDCard()
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
     // production applications.
+#if (ESP_IDF_VERSION <= ESP_IDF_VERSION_VAL(5, 1, 2))
     ret = esp_vfs_fat_sdmmc_mount_mh(mount_point, &host, &slot_config, &mount_config, &card);
+#else
+    ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
+#endif
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
@@ -166,7 +173,6 @@ bool Init_NVS_SDCard()
     SaveSDCardInfo(card);
     return true;
 }
-
 
 extern "C" void app_main(void)
 {
@@ -191,7 +197,6 @@ extern "C" void app_main(void)
     // ********************************************
     ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
  
-
     // Init SD card
     // ********************************************
     if (!Init_NVS_SDCard())
@@ -211,7 +216,6 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
-
 
     // Init external PSRAM
     // ********************************************
@@ -261,7 +265,6 @@ extern "C" void app_main(void)
                     ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
                     vTaskDelay( xDelay );
 
-
                     // Check camera init
                     // ********************************************
                     if (camStatus != ESP_OK) { // Camera init failed, retry to init
@@ -310,7 +313,6 @@ extern "C" void app_main(void)
         }
     }
 
-
     // SD card: basic R/W check
     // ********************************************
     int iSDCardStatus = SDCardCheckRW();
@@ -335,11 +337,9 @@ extern "C" void app_main(void)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
 
-
     // Set CPU Frequency
     // ********************************************
     setCpuFrequency();
-
 
     // SD card: Create further mandatory directories (if not already existing)
     // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
@@ -432,15 +432,12 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
     vTaskDelay( xDelay );
 
-
     // manual reset the time
     // ********************************************
     if (!time_manual_reset_sync())
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Manual Time Sync failed during startup" );
     }
-
-
 
     // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
     // ********************************************
@@ -465,8 +462,6 @@ extern "C" void app_main(void)
         #endif
     #endif
    
-
-
     // Print Device info
     // ********************************************
     esp_chip_info_t chipInfo;
@@ -521,7 +516,6 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Initialization failed. Flow task start aborted. Loading reduced web interface...");
     }
 }
-
 
 void migrateConfiguration(void) {
     bool migrated = false;
@@ -705,7 +699,6 @@ void migrateConfiguration(void) {
     }
 }
 
-
 std::vector<std::string> splitString(const std::string& str) {
     std::vector<std::string> tokens;
  
@@ -718,8 +711,6 @@ std::vector<std::string> splitString(const std::string& str) {
  
     return tokens;
 }
-
-
 
 /*bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
     std::string buf;
@@ -748,11 +739,10 @@ std::vector<std::string> splitString(const std::string& str) {
     return found;
 }*/
 
-
 bool setCpuFrequency(void) {
     ConfigFile configFile = ConfigFile(CONFIG_FILE); 
     string cpuFrequency = "160";
-    esp_pm_config_esp32_t  pm_config; 
+    esp_pm_config_t  pm_config; 
 
     if (!configFile.ConfigFileExists()){
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "No ConfigFile defined - exit setCpuFrequency()!");
@@ -763,7 +753,6 @@ bool setCpuFrequency(void) {
     std::string line = "";
     bool disabledLine = false;
     bool eof = false;
-
 
     /* Load config from config file */
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || 

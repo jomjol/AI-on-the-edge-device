@@ -19,7 +19,6 @@ static const char* TAG = "CNN";
     static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
 #endif
 
-
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG) {
     string cnnmodelfile = "";
     modelxsize = 1;
@@ -35,7 +34,6 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     flowpostalignment = _flowalign;
     imagesRetention = 5;
 }
-
 
 string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float analogDigitalTransitionStart) {
     string result = "";    
@@ -198,7 +196,6 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         return result;
     }
 
-    
     // remains only >= 9.x --> no zero crossing yet --> 2.8 --> 2, 
     // and from 9.7(DigitalTransitionRangeLead) 3.1 --> 2
     // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
@@ -218,7 +215,6 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
                                                 " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
     return result;
 }
-
 
 int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float analogDigitalTransitionStart) {
     int result;
@@ -259,7 +255,6 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     return result;
 }
 
-
 int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder) {
     float number_min, number_max;
     int result;
@@ -296,7 +291,6 @@ int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder
     return result;
 }
 
-
 bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
     std::vector<string> splitted;
 
@@ -322,7 +316,6 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         return true;
     }
 
-
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph);
         if ((toUpper(splitted[0]) == "ROIIMAGESLOCATION") && (splitted.size() > 1)) {
@@ -336,7 +329,9 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         }
 
         if ((toUpper(splitted[0]) == "ROIIMAGESRETENTION") && (splitted.size() > 1)) {
-            this->imagesRetention = std::stoi(splitted[1]);
+            if (isStringNumeric(splitted[1])) {
+                this->imagesRetention = std::stoi(splitted[1]);
+            }
         }
 
         if ((toUpper(splitted[0]) == "MODEL") && (splitted.size() > 1)) {
@@ -344,7 +339,9 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         }
         
         if ((toUpper(splitted[0]) == "CNNGOODTHRESHOLD") && (splitted.size() > 1)) {
-            CNNGoodThreshold = std::stof(splitted[1]);
+            if (isStringNumeric(splitted[1])) {
+                CNNGoodThreshold = std::stof(splitted[1]);
+            }
         }
         
         if (splitted.size() >= 5) {
@@ -366,9 +363,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         }
 
         if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                SaveAllFiles = true;
-            }
+            SaveAllFiles = alphanumericToBoolean(splitted[1]);
         }
     }
 
@@ -377,7 +372,6 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         disabled = true; // An error occured, disable this CNN!
         return false;
     }
-
 
     for (int _ana = 0; _ana < GENERAL.size(); ++_ana) {
         for (int i = 0; i < GENERAL[_ana]->ROI.size(); ++i) {
@@ -391,7 +385,6 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
     return true;
 }
 
-
 general* ClassFlowCNNGeneral::FindGENERAL(string _name_number) {
     for (int i = 0; i < GENERAL.size(); ++i) {
         if (GENERAL[i]->name == _name_number) {
@@ -401,7 +394,6 @@ general* ClassFlowCNNGeneral::FindGENERAL(string _name_number) {
     
     return NULL;
 }
-
 
 general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true) {
     string _analog, _roi;
@@ -445,7 +437,6 @@ general* ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true) {
     return _ret;
 }
 
-
 string ClassFlowCNNGeneral::getHTMLSingleStep(string host) {
     string result, zw;
     std::vector<HTMLInfo*> htmlinfo;
@@ -468,7 +459,6 @@ string ClassFlowCNNGeneral::getHTMLSingleStep(string host) {
 
     return result;
 }
-
 
 bool ClassFlowCNNGeneral::doFlow(string time) {
 #ifdef HEAP_TRACING_CLASS_FLOW_CNN_GENERAL_DO_ALING_AND_CUT
@@ -499,7 +489,6 @@ bool ClassFlowCNNGeneral::doFlow(string time) {
 
     return true;
 }
-
 
 bool ClassFlowCNNGeneral::doAlignAndCut(string time) {
     if (disabled) {
@@ -537,7 +526,6 @@ bool ClassFlowCNNGeneral::doAlignAndCut(string time) {
     return true;
 } 
 
-
 void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw) {
     if (_zw->ImageOkay()) { 
         if (CNNType == Analogue || CNNType == Analogue100) {
@@ -563,7 +551,6 @@ void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw) {
         }
     }
 } 
-
 
 bool ClassFlowCNNGeneral::getNetworkParameter() {
     if (disabled) {
@@ -636,7 +623,6 @@ bool ClassFlowCNNGeneral::getNetworkParameter() {
     delete tflite;
     return true;
 }
-
 
 bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
     if (disabled) {
@@ -842,7 +828,6 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
     return true;
 }
 
-
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number) {
     if (CNNType == Digital) {
         return false;
@@ -850,7 +835,6 @@ bool ClassFlowCNNGeneral::isExtendedResolution(int _number) {
     
     return true;
 }
-
 
 std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo() {
     std::vector<HTMLInfo*> result;
@@ -894,11 +878,9 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo() {
     return result;
 }
 
-
 int ClassFlowCNNGeneral::getNumberGENERAL() {
     return GENERAL.size();
 }
-
 
 string ClassFlowCNNGeneral::getNameGENERAL(int _analog) {
     if (_analog < GENERAL.size()) {
@@ -908,7 +890,6 @@ string ClassFlowCNNGeneral::getNameGENERAL(int _analog) {
     return "GENERAL DOES NOT EXIST";
 }
 
-
 general* ClassFlowCNNGeneral::GetGENERAL(int _analog) {
     if (_analog < GENERAL.size()) {
         return GENERAL[_analog];
@@ -916,7 +897,6 @@ general* ClassFlowCNNGeneral::GetGENERAL(int _analog) {
 
     return NULL;
 }
-
 
 void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numbers) {
     for (int _dig = 0; _dig < GENERAL.size(); _dig++) {
@@ -933,7 +913,6 @@ void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numb
         }
     }
 }
-
 
 string ClassFlowCNNGeneral::getReadoutRawString(int _analog) 
 {
@@ -963,4 +942,3 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
     }
     return rt;
 }
-

@@ -128,8 +128,8 @@ bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, boo
             NUMBERS[j]->PreValueOkay = true;
 
             if (_extern) {
-                time(&(NUMBERS[j]->lastvalue));
-                localtime(&(NUMBERS[j]->lastvalue));
+                time(&(NUMBERS[j]->timeStampLastPreValue));
+                localtime(&(NUMBERS[j]->timeStampLastPreValue));
             }
 
             //ESP_LOGD(TAG, "Found %d! - set to %.8f", j,  NUMBERS[j]->PreValue);
@@ -160,6 +160,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
     if (pFile == NULL) {
         return false;
     }
+
+    // Makes sure that an empty file is treated as such.
+    zw[0] = '\0';
 
     fgets(zw, 1024, pFile);
     ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
@@ -196,11 +199,11 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                     whenStart.tm_sec = ss;
                     whenStart.tm_isdst = -1;
 
-                    NUMBERS[j]->lastvalue = mktime(&whenStart);
+                    NUMBERS[j]->timeStampLastPreValue = mktime(&whenStart);
 
                     time(&tStart);
                     localtime(&tStart);
-                    double difference = difftime(tStart, NUMBERS[j]->lastvalue);
+                    double difference = difftime(tStart, NUMBERS[j]->timeStampLastPreValue);
                     difference /= 60;
 			
                     if (difference > PreValueAgeStartup) {
@@ -251,11 +254,11 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
         ESP_LOGD(TAG, "TIME: %d, %d, %d, %d, %d, %d", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
 
-        NUMBERS[0]->lastvalue = mktime(&whenStart);
+        NUMBERS[0]->timeStampLastPreValue = mktime(&whenStart);
 
         time(&tStart);
         localtime(&tStart);
-        double difference = difftime(tStart, NUMBERS[0]->lastvalue);
+        double difference = difftime(tStart, NUMBERS[0]->timeStampLastPreValue);
         difference /= 60;
 			
         if (difference > PreValueAgeStartup) {
@@ -289,10 +292,10 @@ void ClassFlowPostProcessing::SavePreValue() {
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         char buffer[80];
-        struct tm* timeinfo = localtime(&NUMBERS[j]->lastvalue);
+        struct tm* timeinfo = localtime(&NUMBERS[j]->timeStampLastPreValue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         NUMBERS[j]->timeStamp = std::string(buffer);
-        NUMBERS[j]->timeStampTimeUTC = NUMBERS[j]->lastvalue;
+        NUMBERS[j]->timeStampTimeUTC = NUMBERS[j]->timeStampLastPreValue;
         // ESP_LOGD(TAG, "SaverPreValue %d, Value: %f, Nachkomma %d", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
         _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
@@ -341,11 +344,7 @@ void ClassFlowPostProcessing::handleDecimalExtendedResolution(string _decsep, st
     }
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        bool _zwdc = false;
-
-        if (toUpper(_value) == "TRUE") {
-            _zwdc = true;
-        }
+        bool _zwdc = alphanumericToBoolean(_value);
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -368,7 +367,10 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         int _zwdc = 0;
-        _zwdc = stoi(_value);
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stoi(_value);
+        }
 
         //  Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -394,7 +396,10 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         float _zwdc = 9.2;
-        _zwdc = stof(_value);
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stof(_value);
+        }
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -417,15 +422,11 @@ void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _va
     }
   
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        bool _rt = false;
-
-        if (toUpper(_value) == "TRUE") {
-            _rt = true;
-        }
+        bool _zwdc = alphanumericToBoolean(_value);
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->AllowNegativeRates = _rt;
+            NUMBERS[j]->AllowNegativeRates = _zwdc;
         }
     }
 }
@@ -443,15 +444,15 @@ void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value) {
     }
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        t_RateType _rt = AbsoluteChange;
+        t_RateType _zwdc = AbsoluteChange;
 
         if (toUpper(_value) == "RATECHANGE") {
-            _rt = RateChange;
+            _zwdc = RateChange;
         }
 
         // Set to default first (if nothing else is set)			
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->RateType = _rt;
+            NUMBERS[j]->RateType = _zwdc;
         }
     }
 }
@@ -470,7 +471,10 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value) 
 	
     for (int j = 0; j < NUMBERS.size(); ++j) {
         float _zwdc = 1;
-        _zwdc = stof(_value);
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stof(_value);
+        }
 
         // Set to default first (if nothing else is set)			
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
@@ -524,13 +528,11 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 	    
         if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                PreValueUse = true;
-            }
+            PreValueUse = alphanumericToBoolean(splitted[1]);
         }
 	    
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
+            if (alphanumericToBoolean(splitted[1])) {
                 for (_n = 0; _n < NUMBERS.size(); ++_n) {
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
                 }
@@ -542,24 +544,22 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 			
         if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                ErrorMessage = true;
-            }
+            ErrorMessage = alphanumericToBoolean(splitted[1]);
         }
 			
         if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1)) {
-            if (toUpper(splitted[1]) == "TRUE") {
-                IgnoreLeadingNaN = true;
-            }
+            IgnoreLeadingNaN = alphanumericToBoolean(splitted[1]);
         }
 
         if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1)) {
-            PreValueAgeStartup = std::stoi(splitted[1]);
+            if (isStringNumeric(splitted[1])) {
+                PreValueAgeStartup = std::stoi(splitted[1]);
+            }
         }
     }
 
     if (PreValueUse) {
-        LoadPreValue();
+        return LoadPreValue();
     }
 
     return true;
@@ -722,12 +722,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
 
-        // calculate time difference BEFORE we overwrite the 'lastvalue'
-        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
-
-        // TODO:
-        // We could call `NUMBERS[j]->lastvalue = imagetime;` here and remove all other such calls further down.
-        // But we should check nothing breaks!
+        // calculate time difference
+        // double LastValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastValue);         // in seconds
+        double LastPreValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastPreValue);   // in seconds
 
         UpdateNachkommaDecimalShift();
 
@@ -791,9 +788,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             else {
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
-               /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
-                NUMBERS[j]->lastvalue = imagetime;
-
+                NUMBERS[j]->timeStampLastValue = imagetime;
                 WriteDataLog(j);
                 continue; // there is no number because there is still an N.
             }
@@ -860,7 +855,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
-                    NUMBERS[j]->lastvalue = imagetime;
+                    NUMBERS[j]->timeStampLastValue = imagetime;
 
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
@@ -874,8 +869,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
         #endif
 
-        difference /= 60;  
-        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
+        // LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
+        LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
+        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
         if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay) {
@@ -885,6 +881,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             }
             else {
+                // TODO:
+                // Since I don't know if this is desired, I'll comment it out first.
+                // int roundDifference = (int)(round(LastPreValueTimeDifference / LastValueTimeDifference)); // calculate how many rounds have passed since NUMBERS[j]->timeLastPreValue was set
+                // _ratedifference = ((NUMBERS[j]->Value - NUMBERS[j]->PreValue) / ((int)(round(LastPreValueTimeDifference / LastValueTimeDifference)))); // Difference per round, as a safeguard in case a reading error(Neg. Rate - Read: or Rate too high - Read:) occurs in the meantime
                 _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
             }
 
@@ -893,7 +893,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
-                NUMBERS[j]->lastvalue = imagetime;
+                NUMBERS[j]->timeStampLastValue = imagetime;
 
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
@@ -909,7 +909,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
-        NUMBERS[j]->lastvalue = imagetime;
+
+        NUMBERS[j]->timeStampLastValue = imagetime;    
+        NUMBERS[j]->timeStampLastPreValue = imagetime;
 
         NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
@@ -935,7 +937,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _index) {
     string digital = "";
     string timezw = "";
     char buffer[80];
-    struct tm* timeinfo = localtime(&NUMBERS[_index]->lastvalue);
+    struct tm* timeinfo = localtime(&NUMBERS[_index]->timeStampLastValue);
     strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
     timezw = std::string(buffer);
     

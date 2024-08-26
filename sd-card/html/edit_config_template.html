@@ -1335,6 +1335,37 @@
 			<td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
 		</tr>
 
+		<!------------- Webhook ------------------>
+		<tr style="border-bottom: 2px solid lightgray;">
+			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+			    <h4>
+				<input type="checkbox" id="Category_Webhook_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+				<label for=Category_Webhook_enabled>Webhook</label></h4>		
+			</td>
+		</tr>
+
+		<tr class="WebhookItem">
+			<td class="indent1">
+				<input type="checkbox" id="Webhook_Uri_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "Uri")' unchecked >
+				<label for=Webhook_Uri_enabled><class id="Webhook_Uri_text" style="color:black;">URI</class></label>
+			</td>
+			<td>
+				<input required type="text" id="Webhook_Uri_value1">
+			</td>
+			<td>$TOOLTIP_Webhook_Uri</td>
+		</tr>
+
+        <tr class="WebhookItem">
+			<td class="indent1">
+				<input type="checkbox" id="Webhook_ApiKey_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "ApiKey")' unchecked >
+				<label for=Webhook_ApiKey_enabled><class id="Webhook_ApiKey_text" style="color:black;">ApiKey</class></label>
+			</td>
+			<td>
+				<input required type="text" id="Webhook_ApiKey_value1">
+			</td>
+			<td>$TOOLTIP_Webhook_ApiKey</td>
+		</tr>
+
 
 		<!------------- GPIO ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -2180,6 +2211,9 @@ function UpdateInput() {
     document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
     setVisible("InfluxDBv2Item", category["InfluxDBv2"]["enabled"]);
 
+	document.getElementById("Category_Webhook_enabled").checked = category["Webhook"]["enabled"];
+    setVisible("WebhookItem", category["Webhook"]["enabled"]);
+
     WriteParameter(param, category, "TakeImage", "RawImagesLocation", true);
     WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
 
@@ -2258,6 +2292,9 @@ function UpdateInput() {
     WriteParameter(param, category, "InfluxDBv2", "Org", true);	
     WriteParameter(param, category, "InfluxDBv2", "Token", true);	
     // WriteParameter(param, category, "InfluxDBv2", "Field", true);
+
+	WriteParameter(param, category, "Webhook", "Uri", true);	
+    WriteParameter(param, category, "Webhook", "ApiKey", true);
 
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
@@ -2420,6 +2457,9 @@ function ReadParameterAll() {
     ReadParameter(param, "InfluxDBv2", "Token", true);
     // ReadParameter(param, "InfluxDB", "Field", true);	
 
+	ReadParameter(param, "Webhook", "Uri", true);	
+    ReadParameter(param, "Webhook", "ApiKey", true);
+
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);
     ReadParameter(param, "GPIO", "IO3", true);
@@ -2468,6 +2508,7 @@ function UpdateAfterCategoryCheck() {
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
+	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
 
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
