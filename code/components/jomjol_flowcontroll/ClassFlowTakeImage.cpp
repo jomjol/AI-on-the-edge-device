@@ -365,7 +365,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             CCstatus.ImageDcw = alphanumericToBoolean(splitted[1]);
         }
 
-        else if ((toUpper(splitted[0]) == "CAMSDENOISE") && (splitted.size() > 1))
+        else if ((toUpper(splitted[0]) == "CAMDENOISE") && (splitted.size() > 1))
         {
             if (isStringNumeric(splitted[1]))
             {
