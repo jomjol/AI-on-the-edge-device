@@ -35,14 +35,6 @@ static const char* TAG = "sdcard_init";
     } \
     } while(0)
 
-typedef struct vfs_fat_sd_ctx_t {
-    BYTE pdrv;                                  //Drive number that is mounted
-    esp_vfs_fat_mount_config_t mount_config;    //Mount configuration
-    FATFS *fs;                                  //FAT structure pointer that is registered
-    sdmmc_card_t *card;                         //Card info
-    char *base_path;                            //Path where partition is registered
-} vfs_fat_sd_ctx_t;
-
 static vfs_fat_sd_ctx_t *s_ctx[FF_VOLUMES] = {};
 
 /**
