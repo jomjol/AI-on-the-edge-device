@@ -245,7 +245,12 @@ function MakeRefImageZW(zw, _enhance, _domainname){
     } catch (error){}
 
     if (xhttp.responseText == "CutImage Done") {
-        firework.launch('Image Contrast got enhanced', 'success', 5000);
+        if (_enhance == true) {
+            firework.launch('Image Contrast got enhanced', 'success', 5000);
+        }
+        else {
+            firework.launch('Alignment Marker have been updated', 'success', 5000);
+        }
         return true;
     }
     else {
