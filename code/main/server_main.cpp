@@ -451,7 +451,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
 httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
-    httpd_config_t config = { };
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 
     config.task_priority = tskIDLE_PRIORITY+3; // previously -> 2022-12-11: tskIDLE_PRIORITY+1; 2021-09-24: tskIDLE_PRIORITY+5
     config.stack_size = 12288; // previously -> 2023-01-02: 32768
