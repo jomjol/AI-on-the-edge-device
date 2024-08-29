@@ -129,7 +129,8 @@ function ParseConfig() {
     ParamAddValue(param, catname, "CamLenc");          	// lens correction (1 or 0)
     ParamAddValue(param, catname, "CamHmirror");       	// (0 or 1) flip horizontally
     ParamAddValue(param, catname, "CamVflip");         	// Invert image (0 or 1)
-    ParamAddValue(param, catname, "CamDcw");           	// downsize enable (1 or 0)	 
+    ParamAddValue(param, catname, "CamDcw");           	// downsize enable (1 or 0)
+    ParamAddValue(param, catname, "CamDenoise");        // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
     ParamAddValue(param, catname, "CamZoom");
     ParamAddValue(param, catname, "CamZoomOffsetX");
     ParamAddValue(param, catname, "CamZoomOffsetY");
@@ -483,7 +484,7 @@ function getCamConfig() {
     param["TakeImage"]["CamContrast"]["enabled"] = true;   		//-2 - 2
     param["TakeImage"]["CamSaturation"]["enabled"] = true; 		//-2 - 2
     param["TakeImage"]["CamSharpness"]["enabled"] = true;  		//-2 - 2
-    param["TakeImage"]["CamAutoSharpness"]["enabled"] = true;  	//(1 or 0)			
+    param["TakeImage"]["CamAutoSharpness"]["enabled"] = true;  	//(1 or 0)
     param["TakeImage"]["CamSpecialEffect"]["enabled"] = true;	// 0 - 6
     param["TakeImage"]["CamWbMode"]["enabled"] = true;        	// 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
     param["TakeImage"]["CamAwb"]["enabled"] = true;           	// white balance enable (0 or 1)
@@ -500,12 +501,13 @@ function getCamConfig() {
     param["TakeImage"]["CamLenc"]["enabled"] = true;          	// lens correction (1 or 0)
     param["TakeImage"]["CamHmirror"]["enabled"] = true;       	// (0 or 1) flip horizontally
     param["TakeImage"]["CamVflip"]["enabled"] = true;         	// Invert image (0 or 1)
-    param["TakeImage"]["CamDcw"]["enabled"] = true;           	// downsize enable (1 or 0) 
+    param["TakeImage"]["CamDcw"]["enabled"] = true;           	// downsize enable (1 or 0)
+    param["TakeImage"]["CamDenoise"]["enabled"] = true;       	// The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
     param["TakeImage"]["CamZoom"]["enabled"] = true;
     param["TakeImage"]["CamZoomOffsetX"]["enabled"] = true;
     param["TakeImage"]["CamZoomOffsetY"]["enabled"] = true;
-    param["TakeImage"]["CamZoomSize"]["enabled"] = true;			
-    param["TakeImage"]["LEDIntensity"]["enabled"] = true;	 			
+    param["TakeImage"]["CamZoomSize"]["enabled"] = true;
+    param["TakeImage"]["LEDIntensity"]["enabled"] = true;
 
     if (!param["System"]["Tooltip"]["found"]) {
         param["System"]["Tooltip"]["found"] = true;
@@ -617,6 +619,10 @@ function getCamConfig() {
     if (!param["TakeImage"]["CamDcw"]["found"]) {
         param["TakeImage"]["CamDcw"]["found"] = true;
         param["TakeImage"]["CamDcw"].value1 = 'true';
+    }
+    if (!param["TakeImage"]["CamDenoise"]["found"]) {
+        param["TakeImage"]["CamDenoise"]["found"] = true;
+        param["TakeImage"]["CamDenoise"].value1 = '0';
     }
     if (!param["TakeImage"]["CamZoom"]["found"]) {
         param["TakeImage"]["CamZoom"]["found"] = true;

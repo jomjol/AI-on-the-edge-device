@@ -145,6 +145,8 @@ bool doflow(void)
 
 esp_err_t setCCstatusToCFstatus(void)
 {
+    CFstatus.CamSensor_id = CCstatus.CamSensor_id;
+
     CFstatus.ImageFrameSize = CCstatus.ImageFrameSize;
     CFstatus.ImageGainceiling = CCstatus.ImageGainceiling;
 
@@ -171,11 +173,11 @@ esp_err_t setCCstatusToCFstatus(void)
     CFstatus.ImageHmirror = CCstatus.ImageHmirror;
     CFstatus.ImageVflip = CCstatus.ImageVflip;
     CFstatus.ImageDcw = CCstatus.ImageDcw;
+    CFstatus.ImageDenoiseLevel = CCstatus.ImageDenoiseLevel;
 
     CFstatus.ImageLedIntensity = CCstatus.ImageLedIntensity;
 
     CFstatus.ImageZoomEnabled = CCstatus.ImageZoomEnabled;
-    CFstatus.ImageZoomMode = CCstatus.ImageZoomMode;
     CFstatus.ImageZoomOffsetX = CCstatus.ImageZoomOffsetX;
     CFstatus.ImageZoomOffsetY = CCstatus.ImageZoomOffsetY;
     CFstatus.ImageZoomSize = CCstatus.ImageZoomSize;
@@ -187,6 +189,8 @@ esp_err_t setCCstatusToCFstatus(void)
 
 esp_err_t setCFstatusToCCstatus(void)
 {
+    // CCstatus.CamSensor_id = CFstatus.CamSensor_id;
+
     CCstatus.ImageFrameSize = CFstatus.ImageFrameSize;
     CCstatus.ImageGainceiling = CFstatus.ImageGainceiling;
 
@@ -213,11 +217,11 @@ esp_err_t setCFstatusToCCstatus(void)
     CCstatus.ImageHmirror = CFstatus.ImageHmirror;
     CCstatus.ImageVflip = CFstatus.ImageVflip;
     CCstatus.ImageDcw = CFstatus.ImageDcw;
+    CCstatus.ImageDenoiseLevel = CFstatus.ImageDenoiseLevel;
 
     CCstatus.ImageLedIntensity = CFstatus.ImageLedIntensity;
 
     CCstatus.ImageZoomEnabled = CFstatus.ImageZoomEnabled;
-    CCstatus.ImageZoomMode = CFstatus.ImageZoomMode;
     CCstatus.ImageZoomOffsetX = CFstatus.ImageZoomOffsetX;
     CCstatus.ImageZoomOffsetY = CFstatus.ImageZoomOffsetY;
     CCstatus.ImageZoomSize = CFstatus.ImageZoomSize;
@@ -234,8 +238,6 @@ esp_err_t setCFstatusToCam(void)
     if (s != NULL)
     {
         s->set_framesize(s, CFstatus.ImageFrameSize);
-        s->set_gainceiling(s, CFstatus.ImageGainceiling);
-
         s->set_quality(s, CFstatus.ImageQuality); // 0 - 63
 
         s->set_brightness(s, CFstatus.ImageBrightness); // -2 to 2
@@ -244,33 +246,37 @@ esp_err_t setCFstatusToCam(void)
         // s->set_sharpness(s, CFstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
         Camera.SetCamSharpness(CFstatus.ImageAutoSharpness, CFstatus.ImageSharpness);
 
-        s->set_exposure_ctrl(s, CFstatus.ImageAec);  // 0 = disable , 1 = enable
+        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
+        s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        s->set_wb_mode(s, CFstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+
         s->set_ae_level(s, CFstatus.ImageAeLevel);   // -2 to 2
         s->set_aec_value(s, CFstatus.ImageAecValue); // 0 to 1200
-        s->set_aec2(s, CFstatus.ImageAec2);          // 0 = disable , 1 = enable
+        s->set_agc_gain(s, CFstatus.ImageAgcGain);   // 0 to 30
 
-        s->set_gain_ctrl(s, CFstatus.ImageAgc);    // 0 = disable , 1 = enable
-        s->set_agc_gain(s, CFstatus.ImageAgcGain); // 0 to 30
+        // s->set_gainceiling(s, CFstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+        Camera.ov5640_set_gainceiling(s, CFstatus.ImageGainceiling);
+
+        s->set_lenc(s, CFstatus.ImageLenc);         // 0 = disable , 1 = enable
+        s->set_gain_ctrl(s, CFstatus.ImageAgc);     // 0 = disable , 1 = enable
+        s->set_exposure_ctrl(s, CFstatus.ImageAec); // 0 = disable , 1 = enable
+
+        s->set_hmirror(s, CFstatus.ImageHmirror); // 0 = disable , 1 = enable
+        s->set_vflip(s, CFstatus.ImageVflip);     // 0 = disable , 1 = enable
+        s->set_aec2(s, CFstatus.ImageAec2);       // 0 = disable , 1 = enable
 
         s->set_bpc(s, CFstatus.ImageBpc); // 0 = disable , 1 = enable
         s->set_wpc(s, CFstatus.ImageWpc); // 0 = disable , 1 = enable
 
         s->set_raw_gma(s, CFstatus.ImageRawGma); // 0 = disable , 1 = enable
-        s->set_lenc(s, CFstatus.ImageLenc);      // 0 = disable , 1 = enable
 
-        s->set_hmirror(s, CFstatus.ImageHmirror); // 0 = disable , 1 = enable
-        s->set_vflip(s, CFstatus.ImageVflip);     // 0 = disable , 1 = enable
-
-        s->set_dcw(s, CFstatus.ImageDcw); // 0 = disable , 1 = enable
-
-        s->set_wb_mode(s, CFstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
         s->set_awb_gain(s, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
         s->set_whitebal(s, CFstatus.ImageAwb);     // 0 = disable , 1 = enable
 
-        // special_effect muß als Letztes gesetzt werden, sonst geht es nicht
-        s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        s->set_dcw(s, CFstatus.ImageDcw); // 0 = disable , 1 = enable
 
-        TickType_t xDelay2 = 1000 / portTICK_PERIOD_MS;
+        TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
         vTaskDelay(xDelay2);
 
         return ESP_OK;
@@ -961,6 +967,21 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
             }
 
+            if (httpd_query_key_value(_query, "aecgc", _valuechar, 30) == ESP_OK)
+            {
+                int _aecgc = std::stoi(_valuechar);
+                switch (_aecgc)
+                {
+                    case 1: CFstatus.ImageGainceiling = GAINCEILING_4X; break;
+                    case 2: CFstatus.ImageGainceiling = GAINCEILING_8X; break;
+                    case 3: CFstatus.ImageGainceiling = GAINCEILING_16X; break;
+                    case 4: CFstatus.ImageGainceiling = GAINCEILING_32X; break;
+                    case 5: CFstatus.ImageGainceiling = GAINCEILING_64X; break;
+                    case 6: CFstatus.ImageGainceiling = GAINCEILING_128X; break;
+                    default: CFstatus.ImageGainceiling = GAINCEILING_2X;
+                }
+            }
+
             if (httpd_query_key_value(_query, "qual", _valuechar, 30) == ESP_OK)
             {
                 std::string _qual = std::string(_valuechar);
@@ -1007,7 +1028,14 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_shp))
                 {
                     int _shp_ = std::stoi(_valuechar);
-                    CFstatus.ImageSaturation = clipInt(_shp_, 2, -2);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageSharpness = clipInt(_shp_, 2, -2);
+                    }
+                    else
+                    {
+                        CFstatus.ImageSharpness = clipInt(_shp_, 3, -3);
+                    }
                 }
             }
 
@@ -1067,7 +1095,14 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_ael))
                 {
                     int _ael_ = std::stoi(_valuechar);
-                    CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
+                    }
+                    else
+                    {
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 5, -5);
+                    }
                 }
             }
 
@@ -1139,6 +1174,23 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 CFstatus.ImageDcw = alphanumericToBoolean(_dcw);
             }
 
+            if (httpd_query_key_value(_query, "den", _valuechar, 30) == ESP_OK)
+            {
+                std::string _idlv = std::string(_valuechar);
+                if (isStringNumeric(_idlv))
+                {
+                    int _ImageDenoiseLevel = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CCstatus.ImageDenoiseLevel = 0;
+                    }
+                    else
+                    {
+                        CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
+                    }
+                }
+            }
+
             if (httpd_query_key_value(_query, "zoom", _valuechar, 30) == ESP_OK)
             {
                 std::string _zoom = std::string(_valuechar);
@@ -1151,7 +1203,18 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomx))
                 {
                     int _ImageZoomOffsetX = std::stoi(_valuechar);
-                    CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
+                    }
+                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
+                    }
+                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+                    }
                 }
             }
 
@@ -1161,7 +1224,18 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomy))
                 {
                     int _ImageZoomOffsetY = std::stoi(_valuechar);
-                    CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
+                    }
+                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
+                    }
+                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+                    }
                 }
             }
 
@@ -1171,7 +1245,18 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zooms))
                 {
                     int _ImageZoomSize = std::stoi(_valuechar);
-                    CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+                    }
+                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
+                    }
+                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
+                    }
                 }
             }
 
@@ -1205,8 +1290,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 // CFstatus >>> Kamera
                 setCFstatusToCam();
 
-                Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize);
-                // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize);
+                Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
+                // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
 
                 // Kameraeinstellungen wurden verädert
                 CFstatus.changedCameraSettings = true;
