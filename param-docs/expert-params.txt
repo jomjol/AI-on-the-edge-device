@@ -19,6 +19,7 @@ CamWpc
 CamRawGma
 CamLenc
 CamDcw
+CamDenoise
 CamZoom
 CamZoomSize
 CamZoomOffsetX

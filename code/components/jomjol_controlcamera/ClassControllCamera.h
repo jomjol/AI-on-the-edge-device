@@ -15,15 +15,10 @@
 #include "CImageBasis.h"
 #include "../../include/defines.h"
 
-typedef enum
-{
-    OV2640_MODE_UXGA,
-    OV2640_MODE_SVGA,
-    OV2640_MODE_CIF
-} ov2640_sensor_mode_t;
-
 typedef struct
 {
+    uint16_t CamSensor_id;
+
     framesize_t ImageFrameSize = FRAMESIZE_VGA; // 0 - 10
     gainceiling_t ImageGainceiling;             // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
 
@@ -51,13 +46,14 @@ typedef struct
     int ImageVflip;         // Invert image (0 or 1)
     int ImageDcw;           // downsize enable (1 or 0)
 
+    int ImageDenoiseLevel; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
     int ImageWidth;
     int ImageHeight;
 
     int ImageLedIntensity;
 
     bool ImageZoomEnabled;
-    int ImageZoomMode;
     int ImageZoomOffsetX;
     int ImageZoomOffsetY;
     int ImageZoomSize;
@@ -79,33 +75,36 @@ protected:
     void ledc_init(void);
     bool loadNextDemoImage(camera_fb_t *fb);
     long GetFileSize(std::string filename);
-    void SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput);
+    void SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip);
     void SetImageWidthHeightFromResolution(framesize_t resol);
+    void SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, int &imageWidth, int &imageHeight, int &zoomOffsetX, int &zoomOffsetY);
 
 public:
     CCamera(void);
     esp_err_t InitCam(void);
-	
+
     void LightOnOff(bool status);
     void LEDOnOff(bool status);
 
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
+    int ov5640_set_gainceiling(sensor_t *s, gainceiling_t level);
+
     esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
     esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
 
-    void SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize);
-    void SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize);
+    void SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
+    void SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
     void SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel);
-    
-	void SetLEDIntensity(float _intrel);
+
+    void SetLEDIntensity(float _intrel);
     bool testCamera(void);
     bool getCameraInitSuccessful(void);
     void useDemoMode(void);
 
     framesize_t TextToFramesize(const char *text);
-	
+
     esp_err_t CaptureToFile(std::string nm, int delay = 0);
     esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);
 };
