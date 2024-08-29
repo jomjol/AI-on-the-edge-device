@@ -919,6 +919,19 @@
 
 		<tr>
 			<td class="indent2">
+				<input type="checkbox" id="PostProcessing_PreValueHysterese_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueHysterese")' unchecked >
+				<label for=PostProcessing_PreValueHysterese_enabled><class id="PostProcessing_PreValueHysterese_text" style="color:black;">Neg. Rate Threshold</class></label>
+			</td>
+			<td>
+				<input required type="number" id="PostProcessing_PreValueHysterese_value1" step="1" min="1" max="9" value="2"
+					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
+						(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.PreValueHysterese</td>
+		</tr>
+
+		<tr>
+			<td class="indent2">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
 				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">Decimal Shift</class></label>
 			</td>
@@ -941,19 +954,6 @@
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogDigitalTransitionStart</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_PreValueHysterese_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueHysterese")' unchecked >
-				<label for=PostProcessing_PreValueHysterese_enabled><class id="PostProcessing_PreValueHysterese_text" style="color:black;">Rate Threshold</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_PreValueHysterese_value1" step="1" min="1" max="9" value="2"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.PreValueHysterese</td>
 		</tr>
 
 		<tr>
