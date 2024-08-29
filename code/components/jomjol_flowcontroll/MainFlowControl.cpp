@@ -969,16 +969,33 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "aecgc", _valuechar, 30) == ESP_OK)
             {
-                int _aecgc = std::stoi(_valuechar);
-                switch (_aecgc)
+                std::string _aecgc = std::string(_valuechar);
+                if (isStringNumeric(_aecgc))
                 {
-                    case 1: CFstatus.ImageGainceiling = GAINCEILING_4X; break;
-                    case 2: CFstatus.ImageGainceiling = GAINCEILING_8X; break;
-                    case 3: CFstatus.ImageGainceiling = GAINCEILING_16X; break;
-                    case 4: CFstatus.ImageGainceiling = GAINCEILING_32X; break;
-                    case 5: CFstatus.ImageGainceiling = GAINCEILING_64X; break;
-                    case 6: CFstatus.ImageGainceiling = GAINCEILING_128X; break;
-                    default: CFstatus.ImageGainceiling = GAINCEILING_2X;
+                    int _aecgc_ = std::stoi(_valuechar);
+                    switch (_aecgc_)
+                    {
+                        case 1:
+                            CFstatus.ImageGainceiling = GAINCEILING_4X; 
+                            break;
+                        case 2:
+                            CFstatus.ImageGainceiling = GAINCEILING_8X; 
+                            break;
+                        case 3:
+                            CFstatus.ImageGainceiling = GAINCEILING_16X; 
+                            break;
+                        case 4:
+                            CFstatus.ImageGainceiling = GAINCEILING_32X; 
+                            break;
+                        case 5:
+                            CFstatus.ImageGainceiling = GAINCEILING_64X; 
+                            break;
+                        case 6:
+                            CFstatus.ImageGainceiling = GAINCEILING_128X; 
+                            break;
+                        default:
+                            CFstatus.ImageGainceiling = GAINCEILING_2X;
+                    }
                 }
             }
 
