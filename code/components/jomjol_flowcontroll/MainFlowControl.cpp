@@ -680,7 +680,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 {
                     if (flowctrl.GetTypeDigital() == Digital)
                     {
-                        if (htmlinfodig[i]->val >= 10)
+                        // Numbers greater than 10 and less than 0 indicate NaN, since a Roi can only have values ​​from 0 to 9.
+                        if ((htmlinfodig[i]->val >= 10) || (htmlinfodig[i]->val < 0))
                         {
                             zw = "NaN";
                         }
@@ -697,7 +698,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                         stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
                         zw = stream.str();
 
-                        if (std::stod(zw) >= 10)
+                        // Numbers greater than 10 and less than 0 indicate NaN, since a Roi can only have values ​​from 0 to 9.
+                        if ((std::stod(zw) >= 10) || (std::stod(zw) < 0))
                         {
                             zw = "NaN";
                         }
@@ -724,8 +726,9 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                     std::stringstream stream;
                     stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
                     zw = stream.str();
-
-                    if (std::stod(zw) >= 10)
+                    
+                    // Numbers greater than 10 and less than 0 indicate NaN, since a Roi can only have values ​​from 0 to 9.
+                    if ((std::stod(zw) >= 10) || (std::stod(zw) < 0))
                     {
                         zw = "NaN";
                     }
