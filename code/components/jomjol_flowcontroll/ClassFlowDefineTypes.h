@@ -42,6 +42,7 @@ struct NumberPost {
     bool useMaxRateValue;       // consistencyChecksEnabled; enables consistency checks; uses maxRate and maxRateType
     t_RateType RateType;        // maxRateType; affects how the value of maxRate is used for comparing the current and previous value
     bool ErrorMessage;          // FIXME: not used; can be removed
+    int ChangeRateThreshold;  // threshold parameter for negative rate detection
     bool PreValueOkay;          // previousValueValid; indicates that the reading of the previous round has no errors
     bool AllowNegativeRates;    // allowNegativeRate; defines if the consistency checks allow negative rates between consecutive meter readings.
     bool checkDigitIncreaseConsistency; // extendedConsistencyCheck; performs an additional consistency check to avoid wrong readings
