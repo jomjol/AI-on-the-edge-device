@@ -15,6 +15,7 @@ static const char *TAG = "WEBHOOK";
 
 std::string _webhookURI;
 std::string _webhookApiKey;
+long _lastTimestamp;
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt);
 
@@ -22,6 +23,7 @@ void WebhookInit(std::string _uri, std::string _apiKey)
 {
     _webhookURI = _uri;
     _webhookApiKey = _apiKey;
+    _lastTimestamp = 0L;
 }
 
 bool WebhookPublish(std::vector<NumberPost*>* numbers)
@@ -33,12 +35,15 @@ bool WebhookPublish(std::vector<NumberPost*>* numbers)
     {
         string timezw = "";
         char buffer[80];
-        struct tm* timeinfo = localtime(&(*numbers)[i]->timeStampLastPreValue);
+        time_t &lastPreValue = (*numbers)[i]->timeStampLastPreValue;
+        struct tm* timeinfo = localtime(&lastPreValue);
+        _lastTimestamp = static_cast<long>(lastPreValue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
         timezw = std::string(buffer);
 
         cJSON *json = cJSON_CreateObject();
         cJSON_AddStringToObject(json, "timestamp", timezw.c_str());
+        cJSON_AddStringToObject(json, "timestampLong", std::to_string(_lastTimestamp).c_str());
         cJSON_AddStringToObject(json, "name", (*numbers)[i]->name.c_str());
         cJSON_AddStringToObject(json, "rawValue", (*numbers)[i]->ReturnRawValue.c_str());
         cJSON_AddStringToObject(json, "value", (*numbers)[i]->ReturnValue.c_str());
@@ -95,9 +100,10 @@ bool WebhookPublish(std::vector<NumberPost*>* numbers)
 void WebhookUploadPic(ImageData *Img) {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Starting WebhookUploadPic");
 
+    std::string fullURI = _webhookURI + "?timestamp=" + std::to_string(_lastTimestamp);
     char response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
     esp_http_client_config_t http_config = {
-        .url = _webhookURI.c_str(),
+        .url = fullURI.c_str(),
         .user_agent = "ESP32 Meter reader",
         .method = HTTP_METHOD_PUT,
         .event_handler = http_event_handler,
