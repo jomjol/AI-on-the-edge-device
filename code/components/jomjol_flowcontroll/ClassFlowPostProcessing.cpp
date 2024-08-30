@@ -484,7 +484,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value) 
     }
 }
 
-void ClassFlowPostProcessing::handlePreValueHysterese(string _decsep, string _value) {
+void ClassFlowPostProcessing::handleNegativeRateThreshold(string _decsep, string _value) {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
     // ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
@@ -505,7 +505,7 @@ void ClassFlowPostProcessing::handlePreValueHysterese(string _decsep, string _va
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->PreValueHysterese = _zwdc;
+            NUMBERS[j]->NegativeRateThreshold = _zwdc;
         }
     }
 }
@@ -557,8 +557,8 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
             PreValueUse = alphanumericToBoolean(splitted[1]);
         }
 		
-        if ((toUpper(_param) == "PREVALUEHYSTERESE") && (splitted.size() > 1)) {
-            handlePreValueHysterese(splitted[0], splitted[1]);
+        if ((toUpper(_param) == "NEGATIVERATETHRESHOLD") && (splitted.size() > 1)) {
+            handleNegativeRateThreshold(splitted[0], splitted[1]);
         }
 	    
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
@@ -657,7 +657,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
         _number->AnalogDigitalTransitionStart=9.2;
-        _number->PreValueHysterese = 2;
+        _number->NegativeRateThreshold = 2;
 
         _number->FlowRateAct = 0; // m3 / min
         _number->PreValue = 0; // last value read out well
@@ -866,8 +866,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (PreValueUse && NUMBERS[j]->PreValueOkay) {
             if (NUMBERS[j]->Nachkomma > 0) {
-                double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->PreValueHysterese / pow(10, NUMBERS[j]->Nachkomma)));
-                double _difference2 = (NUMBERS[j]->PreValue + (NUMBERS[j]->PreValueHysterese / pow(10, NUMBERS[j]->Nachkomma)));
+                double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->NegativeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
+                double _difference2 = (NUMBERS[j]->PreValue + (NUMBERS[j]->NegativeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
 
                 if ((NUMBERS[j]->Value >= _difference1) && (NUMBERS[j]->Value <= _difference2)) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;

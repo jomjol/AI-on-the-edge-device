@@ -174,7 +174,7 @@ function ParseConfig() {
     param[catname] = new Object();
     ParamAddValue(param, catname, "DecimalShift", 1, true);
     ParamAddValue(param, catname, "AnalogDigitalTransitionStart", 1, true, "9.2");
-    ParamAddValue(param, catname, "PreValueHysterese", 1, true, "2");
+    ParamAddValue(param, catname, "NegativeRateThreshold", 1, true, "2");
     // ParamAddValue(param, catname, "PreValueUse", 1, true, "true");
     ParamAddValue(param, catname, "PreValueUse");
     ParamAddValue(param, catname, "PreValueAgeStartup");

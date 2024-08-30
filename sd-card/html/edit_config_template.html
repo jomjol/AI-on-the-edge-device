@@ -919,15 +919,15 @@
 
 		<tr>
 			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_PreValueHysterese_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueHysterese")' unchecked >
-				<label for=PostProcessing_PreValueHysterese_enabled><class id="PostProcessing_PreValueHysterese_text" style="color:black;">Neg. Rate Threshold</class></label>
+				<input type="checkbox" id="PostProcessing_NegativeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "NegativeRateThreshold")' unchecked >
+				<label for=PostProcessing_NegativeRateThreshold_enabled><class id="PostProcessing_NegativeRateThreshold_text" style="color:black;">Neg. Rate Threshold</class></label>
 			</td>
 			<td>
-				<input required type="number" id="PostProcessing_PreValueHysterese_value1" step="1" min="1" max="9" value="2"
+				<input required type="number" id="PostProcessing_NegativeRateThreshold_value1" step="1" min="1" max="9" value="2"
 					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.PreValueHysterese</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.NegativeRateThreshold</td>
 		</tr>
 
 		<tr>
@@ -2176,7 +2176,7 @@ function UpdateInputIndividual(sel) {
         // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
-        ReadParameter(param, "PostProcessing", "PreValueHysterese", true, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "NegativeRateThreshold", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
@@ -2194,7 +2194,7 @@ function UpdateInputIndividual(sel) {
     // WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
-    WriteParameter(param, category, "PostProcessing", "PreValueHysterese", true, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "NegativeRateThreshold", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
