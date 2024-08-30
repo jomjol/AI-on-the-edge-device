@@ -15,7 +15,7 @@ Example:
 	
     Extended Resolution disabled:
     PreValue: 123.456'7 >>> Threshold = +/- 0.000'2
-	Comparative value >>> max = 123.4569 and min = 123.4565
+	Comparative value >>> max = 123.456'9 and min = 123.456'5
 	
     Extended Resolution enabled:
     PreValue: 123.456'78 >>> Threshold = +/- 0.000'02
