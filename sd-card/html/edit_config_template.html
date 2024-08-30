@@ -919,19 +919,6 @@
 
 		<tr>
 			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_ChangeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ChangeRateThreshold")' unchecked >
-				<label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.ChangeRateThreshold</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
 				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
 				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">Decimal Shift</class></label>
 			</td>
@@ -980,6 +967,19 @@
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateType</td>
+		</tr>
+
+		<tr>
+			<td class="indent2">
+				<input type="checkbox" id="PostProcessing_ChangeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ChangeRateThreshold")' unchecked >
+				<label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
+			</td>
+			<td>
+				<input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
+					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
+						(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.ChangeRateThreshold</td>
 		</tr>
 
 		<tr>
