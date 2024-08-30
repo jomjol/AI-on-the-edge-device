@@ -41,7 +41,7 @@ protected:
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogDigitalTransitionStart(string _decsep, string _value);
     void handleAllowNegativeRate(string _decsep, string _value);
-    void handleNegativeRateThreshold(string _decsep, string _value);
+    void handleChangeRateThreshold(string _decsep, string _value);
     
     std::string GetStringReadouts(general);
 
