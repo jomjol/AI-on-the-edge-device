@@ -13,8 +13,10 @@
 
 typedef struct
 {
+    uint16_t CamSensor_id;
+
     framesize_t ImageFrameSize = FRAMESIZE_VGA; // 0 - 10
-    gainceiling_t ImageGainceiling; // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+    gainceiling_t ImageGainceiling;             // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
 
     int ImageQuality;    // 0 - 63
     int ImageBrightness; // (-2 to 2) - set brightness
@@ -40,13 +42,14 @@ typedef struct
     int ImageVflip;         // Invert image (0 or 1)
     int ImageDcw;           // downsize enable (1 or 0)
 
+    int ImageDenoiseLevel; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+
     int ImageWidth;
     int ImageHeight;
 
     int ImageLedIntensity;
 
     bool ImageZoomEnabled;
-    int ImageZoomMode;
     int ImageZoomOffsetX;
     int ImageZoomOffsetY;
     int ImageZoomSize;

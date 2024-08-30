@@ -21,10 +21,8 @@ protected:
     bool ErrorMessage;
     bool IgnoreLeadingNaN;          // SPECIAL CASE for User Gustl ???
 
-
     ClassFlowCNNGeneral* flowAnalog;
     ClassFlowCNNGeneral* flowDigit;    
-
 
     string FilePreValue;
 
@@ -43,18 +41,15 @@ protected:
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogDigitalTransitionStart(string _decsep, string _value);
     void handleAllowNegativeRate(string _decsep, string _value);
+    void handleChangeRateThreshold(string _decsep, string _value);
     
     std::string GetStringReadouts(general);
 
     void WriteDataLog(int _index);
 
-
-
-
 public:
     bool PreValueUse;
     std::vector<NumberPost*> NUMBERS;
-
 
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
     virtual ~ClassFlowPostProcessing(){};

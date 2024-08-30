@@ -13,4 +13,5 @@ Default Value: `0`
 
 The exposure offset for automatic exposure, lower values produce darker image.
 
-Range (`-2` .. `2`)
+available range on OV2640 (`-2` .. `2`)
+available range on OV3660 and OV5640 (`-5` .. `5`)

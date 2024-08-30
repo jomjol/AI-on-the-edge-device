@@ -375,8 +375,8 @@
 				<class id="TakeImage_CamSharpness_text" style="color:black;">Sharpness</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+				<input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-3" max="3" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-3)) && (!validity.rangeOverflow||(value=3)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_CamSharpness</td>
 		</tr>
@@ -472,8 +472,8 @@
 				<class id="TakeImage_CamAeLevel_text" style="color:black;">Auto Exposure Level</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+				<input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-5" max="5" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-5)) && (!validity.rangeOverflow||(value=5)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAeLevel</td>
 		</tr>
@@ -605,6 +605,17 @@
 			<td>$TOOLTIP_TakeImage_CamDcw</td>
 		</tr>
 
+		<tr class="expert" unused_id="TakeImage_CamDenoise_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamDenoise_text" style="color:black;">Denoise</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamDenoise_value1" value="0" min="0" max="8" step="1" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeOverflow||(value=8)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamDenoise</td>
+		</tr>
+
 		<tr class="expert" unused_id="TakeImage_CamZoom_ex3">
 			<td class="indent1">
 				<class id="TakeImage_CamZoom_text" style="color:black;">Zoom</class>
@@ -623,8 +634,8 @@
 				<class id="TakeImage_CamZoomSize_text" style="color:black;">Zoom Size</class>
 			</td>
 			<td>
-                <input required type="number" id="TakeImage_CamZoomSize_value1" value="0" min="0" max="29" step="1" onchange="cameraParameterChanged()"
-                    oninput="(!validity.rangeOverflow||(value=29)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+                <input required type="number" id="TakeImage_CamZoomSize_value1" value="0" min="0" max="59" step="1" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=59)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_CamZoomSize</td>			
 		</tr>
@@ -634,8 +645,8 @@
 				<class id="TakeImage_CamZoomOffsetX_text" style="color:black;">Zoom Offset X</class>
 			</td>
 			<td>
-                <input required type="number" id="TakeImage_CamZoomOffsetX_value1" value="0" min="-480" max="480" step="8" onchange="cameraParameterChanged()"
-                    oninput="(!validity.rangeOverflow||(value=480)) && (!validity.rangeUnderflow||(value=-480)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+                <input required type="number" id="TakeImage_CamZoomOffsetX_value1" value="0" min="-960" max="960" step="8" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=-960)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
 			</td>
 			<td>$TOOLTIP_TakeImage_CamZoomOffsetX</td>
 		</tr>
@@ -645,11 +656,11 @@
 				<class id="TakeImage_CamZoomOffsetY_text" style="color:black;">Zoom Offset Y</class>
 			</td>
             <td>
-                <input required type="number" id="TakeImage_CamZoomOffsetY_value1" value="0" min="-360" max="360" step="8" onchange="cameraParameterChanged()"
-                    oninput="(!validity.rangeOverflow||(value=360)) && (!validity.rangeUnderflow||(value=-360)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+                <input required type="number" id="TakeImage_CamZoomOffsetY_value1" value="0" min="-720" max="720" step="8" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=720)) && (!validity.rangeUnderflow||(value=-720)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
 			</td>
 			<td>$TOOLTIP_TakeImage_CamZoomOffsetY</td>
-		</tr>		
+		</tr>
 
 		<tr unused_id="TakeImage_LEDIntensity_ex3">
 			<td class="indent1">
@@ -956,6 +967,19 @@
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateType</td>
+		</tr>
+
+		<tr>
+			<td class="indent2">
+				<input type="checkbox" id="PostProcessing_ChangeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ChangeRateThreshold")' unchecked >
+				<label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
+			</td>
+			<td>
+				<input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
+					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
+						(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.ChangeRateThreshold</td>
 		</tr>
 
 		<tr>
@@ -2167,6 +2191,7 @@ function UpdateInputIndividual(sel) {
         // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
@@ -2184,6 +2209,7 @@ function UpdateInputIndividual(sel) {
     // WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
@@ -2246,6 +2272,7 @@ function UpdateInput() {
     WriteParameter(param, category, "TakeImage", "CamHmirror", false);
     WriteParameter(param, category, "TakeImage", "CamVflip", false);
     WriteParameter(param, category, "TakeImage", "CamDcw", false);
+    WriteParameter(param, category, "TakeImage", "CamDenoise", false);
     WriteParameter(param, category, "TakeImage", "CamZoom", false);
     WriteParameter(param, category, "TakeImage", "CamZoomOffsetX", false);
     WriteParameter(param, category, "TakeImage", "CamZoomOffsetY", false);
@@ -2385,7 +2412,7 @@ function ReadParameterAll() {
 
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
-    ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);	
+    ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
     ReadParameter(param, "TakeImage", "CamGainceiling", false);	
     ReadParameter(param, "TakeImage", "CamQuality", false);	
     ReadParameter(param, "TakeImage", "CamBrightness", false);
@@ -2409,7 +2436,8 @@ function ReadParameterAll() {
     ReadParameter(param, "TakeImage", "CamLenc", false);
     ReadParameter(param, "TakeImage", "CamHmirror", false);
     ReadParameter(param, "TakeImage", "CamVflip", false);
-    ReadParameter(param, "TakeImage", "CamDcw", false);	
+    ReadParameter(param, "TakeImage", "CamDcw", false);
+    ReadParameter(param, "TakeImage", "CamDenoise", false);
     ReadParameter(param, "TakeImage", "CamZoom", false);
     ReadParameter(param, "TakeImage", "CamZoomOffsetX", false);
     ReadParameter(param, "TakeImage", "CamZoomOffsetY", false);	
@@ -2600,6 +2628,8 @@ function camSettingsSet(){
     document.getElementById("overlaytext").innerHTML = "Save Cam Settings...";
 	
     var _waitb_temp = document.getElementById("TakeImage_WaitBeforeTakingPicture_value1").value;
+
+    var _aecgc_temp = document.getElementById("TakeImage_CamGainceiling_value1").selectedIndex;
     var _qual_temp = document.getElementById("TakeImage_CamQuality_value1").value;	
                 
     var _bri_temp = document.getElementById("TakeImage_CamBrightness_value1").value;
@@ -2717,10 +2747,12 @@ function camSettingsSet(){
     }
     else {
         _dcw_temp = '0';
-    }	
-	
+    }
+
+    var _denoise_temp = document.getElementById("TakeImage_CamDenoise_value1").value;
+
     var _ledi_temp = document.getElementById("TakeImage_LEDIntensity_value1").value;
-	
+
     var _zoom_temp = document.getElementById("TakeImage_CamZoom_value1").selectedIndex;
     if (_zoom_temp == '0') {
         _zoom_temp = '1';
@@ -2728,14 +2760,14 @@ function camSettingsSet(){
     else {
         _zoom_temp = '0';
     }
-	
+
     var _zoomx_temp = document.getElementById("TakeImage_CamZoomOffsetX_value1").value;
     var _zoomy_temp = document.getElementById("TakeImage_CamZoomOffsetY_value1").value;
     var _zooms_temp = document.getElementById("TakeImage_CamZoomSize_value1").value;	
 	
     // bei einmal Alles senden kommt es zu problemen!!!!!!!!!!!!!!!!!!!!
     var url_1 = domainname + "/editflow?task=cam_settings";
-    url_1 = url_1 + "&waitb=" + _waitb_temp + "&qual=" + _qual_temp;
+    url_1 = url_1 + "&waitb=" + _waitb_temp + "&aecgc=" + _aecgc_temp + "&qual=" + _qual_temp;
     url_1 = url_1 + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
     url_1 = url_1 + "&spe=" + _spe_temp + "&wbm=" + _wbm_temp + "&awb=" + _awb_temp + "&awbg=" + _awbg_temp;
     url_1 = url_1 + "&aec=" + _aec_temp + "&aec2=" + _aec2_temp + "&ael=" + _ael_temp + "&aecv=" + _aecv_temp;
@@ -2743,7 +2775,7 @@ function camSettingsSet(){
     var url_2 = domainname + "/editflow?task=cam_settings";	
     url_2 = url_2 + "&agc=" + _agc_temp + "&agcg=" + _agcg_temp + "&bpc=" + _bpc_temp + "&wpc=" + _wpc_temp;
     url_2 = url_2 + "&rgma=" + _rgma_temp + "&lenc=" + _lenc_temp + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;
-    url_2 = url_2 + "&dcw=" + _dcw_temp + "&ledi=" + _ledi_temp;
+    url_2 = url_2 + "&dcw=" + _dcw_temp + "&den=" + _denoise_temp + "&ledi=" + _ledi_temp;
 
     if (_zoom_temp != '0') {
         url_2 = url_2 + "&zoom=" + _zoom_temp + "&zooms=" + _zooms_temp;
