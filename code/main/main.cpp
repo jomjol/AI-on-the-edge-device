@@ -517,6 +517,7 @@ extern "C" void app_main(void)
     }
 }
 
+// FIXME: needs to be revised or removed!!!
 void migrateConfiguration(void) {
     bool migrated = false;
 
@@ -563,16 +564,19 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";Demo", "Demo"); // Enable it
 
-            migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
+            // Parameter is no longer used
+            // migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
+            // migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
         }
 
         if (section == "[Alignment]") {
-            migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
-
-            migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
+            // Parameter is no longer used
+            // migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
+            // migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
+		
+            // Parameter is no longer used
+            // migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
+            // migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
         }
 
         if (section == "[Digits]") {
