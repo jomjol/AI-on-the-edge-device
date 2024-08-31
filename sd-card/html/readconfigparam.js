@@ -526,8 +526,8 @@ function getCamConfig() {
     }
     if (!param["TakeImage"]["CamGainceiling"]["found"]) {
         param["TakeImage"]["CamGainceiling"]["found"] = true;
-        // param["TakeImage"]["CamGainceiling"].value1 = '1';
-        param["TakeImage"]["CamGainceiling"].value1 = 'x4';
+        // param["TakeImage"]["CamGainceiling"].value1 = '2';
+        param["TakeImage"]["CamGainceiling"].value1 = 'x8';
     }
     if (!param["TakeImage"]["CamQuality"]["found"]) {
         param["TakeImage"]["CamQuality"]["found"] = true;
@@ -575,15 +575,15 @@ function getCamConfig() {
     }
     if (!param["TakeImage"]["CamAec2"]["found"]) {
         param["TakeImage"]["CamAec2"]["found"] = true;
-        param["TakeImage"]["CamAec2"].value1 = 'false';
+        param["TakeImage"]["CamAec2"].value1 = 'true';
     }
     if (!param["TakeImage"]["CamAeLevel"]["found"]) {
         param["TakeImage"]["CamAeLevel"]["found"] = true;
-        param["TakeImage"]["CamAeLevel"].value1 = '0';
+        param["TakeImage"]["CamAeLevel"].value1 = '2';
     }
     if (!param["TakeImage"]["CamAecValue"]["found"]) {
         param["TakeImage"]["CamAecValue"]["found"] = true;
-        param["TakeImage"]["CamAecValue"].value1 = '168';
+        param["TakeImage"]["CamAecValue"].value1 = '600';
     }
     if (!param["TakeImage"]["CamAgc"]["found"]) {
         param["TakeImage"]["CamAgc"]["found"] = true;
@@ -591,11 +591,11 @@ function getCamConfig() {
     }
     if (!param["TakeImage"]["CamAgcGain"]["found"]) {
         param["TakeImage"]["CamAgcGain"]["found"] = true;
-        param["TakeImage"]["CamAgcGain"].value1 = '0';
+        param["TakeImage"]["CamAgcGain"].value1 = '8';
     }
     if (!param["TakeImage"]["CamBpc"]["found"]) {
         param["TakeImage"]["CamBpc"]["found"] = true;
-        param["TakeImage"]["CamBpc"].value1 = 'false';
+        param["TakeImage"]["CamBpc"].value1 = 'true';
     }
     if (!param["TakeImage"]["CamWpc"]["found"]) {
         param["TakeImage"]["CamWpc"]["found"] = true;
