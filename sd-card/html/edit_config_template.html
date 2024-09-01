@@ -1353,7 +1353,8 @@
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
 			    <h4>
 				<input type="checkbox" id="Category_Webhook_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Webhook_enabled>Webhook</label></h4>		
+				<label for=Category_Webhook_enabled>Webhook</label>
+				</h4>		
 			</td>
 		</tr>
 
@@ -1379,6 +1380,20 @@
 			<td>$TOOLTIP_Webhook_ApiKey</td>
 		</tr>
 
+		<tr class="WebhookItem">
+			<td class="indent1">
+				<input type="checkbox" id="Webhook_UploadImg_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "UploadImg")' unchecked>
+				<label for=Webhook_UploadImg_enabled><class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class></label>
+			</td>
+			<td>
+				<select id="Webhook_UploadImg_value1">
+					<option value="0" selected>NEVER</option>
+					<option value="1">ALWAYS</option>
+					<option value="2">ON_ERROR</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_Webhook_UploadImg</td>
+		</tr>
 
 		<!------------- GPIO ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -2310,6 +2325,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "Webhook", "Uri", true);	
     WriteParameter(param, category, "Webhook", "ApiKey", true);
+	WriteParameter(param, category, "Webhook", "UploadImg", true);
 
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
@@ -2391,6 +2407,7 @@ function ReadParameterAll() {
     category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
+	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
@@ -2474,6 +2491,7 @@ function ReadParameterAll() {
 
 	ReadParameter(param, "Webhook", "Uri", true);	
     ReadParameter(param, "Webhook", "ApiKey", true);
+	ReadParameter(param, "Webhook", "UploadImg", true);
 
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);
