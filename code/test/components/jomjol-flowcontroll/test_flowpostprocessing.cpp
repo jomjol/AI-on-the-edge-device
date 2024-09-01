@@ -178,7 +178,7 @@ void test_doFlowPP2() {
         std::vector<float> digits = { 1.0, 9.0, 9.0};  // Übergang wurde um 1 erhöht (200, statt 199)
         std::vector<float> analogs = { 7.1, 4.8, 8.3};
         const char* expected = "199.748";
-        std::string result = process_doFlow(analogs, digits, Digital);
+        std::string result = process_doFlow(analogs, digits, Digit);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // Fehler bei Rolling (2002-09-09)
@@ -191,15 +191,15 @@ void test_doFlowPP2() {
         // expected_extended= "32289.4198";
 
         // extendResolution=false, checkConsistency=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // checkConsistency=true und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // Fehler Rolling (2022-09-10)
@@ -210,20 +210,20 @@ void test_doFlowPP2() {
         expected_extended= "83.99401";
 
         // checkConsistency=false
-        result = process_doFlow(analogs, digits, Digital100, false);
+        result = process_doFlow(analogs, digits, Digit100, false);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
 
         // checkConsistency=true
-        result = process_doFlow(analogs, digits, Digital100, true);
+        result = process_doFlow(analogs, digits, Digit100, true);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true);
+        result = process_doFlow(analogs, digits, Digit100, false, true);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // checkConsistency=true und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true);
+        result = process_doFlow(analogs, digits, Digit100, false, true);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // Fehler Rolling (2022-09-10)
@@ -234,16 +234,16 @@ void test_doFlowPP2() {
         expected_extended= "123235.6";
         
         // checkConsistency=true
-        result = process_doFlow(analogs, digits, Digital100, false, false);
+        result = process_doFlow(analogs, digits, Digit100, false, false);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
 
         // checkConsistency=true
-        result = process_doFlow(analogs, digits, Digital100, true, false);
+        result = process_doFlow(analogs, digits, Digit100, true, false);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true);
+        result = process_doFlow(analogs, digits, Digit100, false, true);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler bei V11.2.0 
@@ -254,11 +254,11 @@ void test_doFlowPP2() {
         expected_extended= "3249.4692";
 
         // checkConsistency=true
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler bei V11.2.0 
@@ -269,11 +269,11 @@ void test_doFlowPP2() {
         expected_extended= "269.92272";
         
         // extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, false);
+        result = process_doFlow(analogs, digits, Digit100, false, false);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true);
+        result = process_doFlow(analogs, digits, Digit100, false, true);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler bei V11.3.1 
@@ -284,11 +284,11 @@ void test_doFlowPP2() {
         expected_extended= "169.35935";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler bei V12.0.1 
@@ -299,11 +299,11 @@ void test_doFlowPP2() {
         expected_extended= "211.03555";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler bei V12.0.1 
@@ -314,11 +314,11 @@ void test_doFlowPP2() {
         expected_extended= "245.9386";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
       // Fehler bei V12.0.1 
@@ -329,11 +329,11 @@ void test_doFlowPP2() {
         expected_extended= "245.9386";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 }
 
@@ -346,11 +346,11 @@ void test_doFlowPP3() {
         const char* expected_extended= "247.2045";
         
         // extendResolution=false
-        std::string result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        std::string result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         
@@ -362,11 +362,11 @@ void test_doFlowPP3() {
         expected_extended= "142.92690";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 
@@ -379,14 +379,14 @@ void test_doFlowPP3() {
         expected_extended= "170.05287";
         
         // extendResolution=false
-        UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digital100, false, false, -3);
+        UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digit100, false, false, -3);
         setAnalogdigitTransistionStart(undertestPost, 7.7);
         result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
         delete undertestPost;
 
         // checkConsistency=false und extendResolution=true
-        undertestPost = init_do_flow(analogs, digits, Digital100, false, true, -3);
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, true, -3);
         setAnalogdigitTransistionStart(undertestPost, 7.7);
         result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
@@ -400,11 +400,11 @@ void test_doFlowPP3() {
         expected_extended= "91.88174";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 
@@ -416,11 +416,11 @@ void test_doFlowPP3() {
         expected_extended= "92.38320";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // Fehler  V11.3.0 
@@ -431,11 +431,11 @@ void test_doFlowPP3() {
         expected_extended= "7472.7594";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // Fehler  V12.0.1 
@@ -446,11 +446,11 @@ void test_doFlowPP3() {
         expected_extended= "577.86490";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 
@@ -462,11 +462,11 @@ void test_doFlowPP3() {
         expected_extended= "211.03580";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler  V12.0.1 
@@ -477,11 +477,11 @@ void test_doFlowPP3() {
         expected_extended= "126.9231";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, false, 0);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, 0);
+        result = process_doFlow(analogs, digits, Digit100, false, true, 0);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
        // Fehler  V12.0.1 
@@ -492,11 +492,11 @@ void test_doFlowPP3() {
         expected_extended= "386.05672";
         
         // extendResolution=false
-        result = process_doFlow(analogs, digits, Digital100, false, false, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, false, -3);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true, -3);
+        result = process_doFlow(analogs, digits, Digit100, false, true, -3);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
         // Fehler  V12.0.1 
@@ -508,14 +508,14 @@ void test_doFlowPP3() {
         expected_extended= "171.24178";
         
         // extendResolution=false
-        undertestPost = init_do_flow(analogs, digits, Digital100, false, false, -3);
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, false, -3);
         setAnalogdigitTransistionStart(undertestPost, 7.7);
         result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
         delete undertestPost;
 
         // checkConsistency=false und extendResolution=true
-        undertestPost = init_do_flow(analogs, digits, Digital100, false, true, -3);
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, true, -3);
         setAnalogdigitTransistionStart(undertestPost, 7.7);
         result = process_doFlow(undertestPost);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
@@ -533,11 +533,11 @@ void test_doFlowPP4() {
         const char* expected_extended= "717.01658";
         
         // extendResolution=false
-        std::string result = process_doFlow(analogs, digits, Digital100, false, false);
+        std::string result = process_doFlow(analogs, digits, Digit100, false, false);
         TEST_ASSERT_EQUAL_STRING(expected, result.c_str());
 
         // checkConsistency=false und extendResolution=true
-        result = process_doFlow(analogs, digits, Digital100, false, true);
+        result = process_doFlow(analogs, digits, Digit100, false, true);
         TEST_ASSERT_EQUAL_STRING(expected_extended, result.c_str());
 
 }

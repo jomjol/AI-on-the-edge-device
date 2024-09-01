@@ -37,9 +37,9 @@ std::string process_doFlow(UnderTestPost* _underTestPost) {
  * @brief setup flow like it runs after recognition.
  * 
  * @param analog the analog recognitions as array begins with the highest ROI
- * @param digits the digital regocnitions as array begins with the highest ROI
- * @param digType type of the model defaults do Digital100
- * @param checkConsistency for Digital type only. Not relvant for newer models
+ * @param digits the digit regocnitions as array begins with the highest ROI
+ * @param digType type of the model defaults do Digit100
+ * @param checkConsistency for Digit type only. Not relvant for newer models
  * @param extendedResolution the lowest ROI will directly used (9.7 => 9.7) if false 9.7 => 9
  * @param decimal_shift the decimal point offset. -3 corresponds to x.yyy
  * @return std::string the value result
@@ -162,7 +162,7 @@ void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analog
         std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();    
         for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
             ESP_LOGD(TAG, "Setting decimal shift on number: %d to %f", _n, _analogdigitTransistionStart);
-            (*NUMBERS)[_n]->AnalogDigitalTransitionStart = _analogdigitTransistionStart; 
+            (*NUMBERS)[_n]->AnalogDigitTransitionStart = _analogdigitTransistionStart; 
         }       
     }
 }

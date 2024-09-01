@@ -243,7 +243,7 @@ bool ClassFlowAlignment::doFlow(string time)
             DrawRef(ImageTMP);
         }
 
-        flowctrl.DigitalDrawROI(ImageTMP);
+        flowctrl.DigitDrawROI(ImageTMP);
         flowctrl.AnalogDrawROI(ImageTMP);
         ImageTMP->writeToMemoryAsJPG((ImageData *)AlgROI, 90);
     }

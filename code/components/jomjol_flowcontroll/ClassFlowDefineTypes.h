@@ -33,7 +33,7 @@ enum t_RateType {
 
 
 /**
- * Holds all properties and settings of a sequence. A sequence is a set of digital and/or analog ROIs that are combined to 
+ * Holds all properties and settings of a sequence. A sequence is a set of digit and/or analog ROIs that are combined to 
  * provide one meter reading (value).
  * FIXME: can be renamed to `Sequence`
  */
@@ -60,10 +60,10 @@ struct NumberPost {
     string ReturnPreValue;      // lastValidValueStr; corrected return value without error message
     string ErrorMessageText;    // errorMessage; Error message for consistency checks
     int AnzahlAnalog;           // numAnalogRoi; number of analog ROIs used in this sequence
-    int AnzahlDigital;          // numDigitalRoi; number of digital ROIs used in this sequence
+    int AnzahlDigit;          // numDigitRoi; number of digit ROIs used in this sequence
     int DecimalShift;           // decimalShift; each increment shifts the decimal separator by one digit; value=value*10^decimalShift; pos. value shifts to the right
     int DecimalShiftInitial;    // decimalShiftInitial; same as decimalShift but is a const to reset decimalShift after calculations
-    float AnalogDigitalTransitionStart; // analogDigitalTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
+    float AnalogDigitTransitionStart; // AnalogDigitTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;              // decimalPlaces; usually defined by the number of analog ROIs; affected by DecimalShift
 
     string FieldV1;             // influxdbFieldName_v1; Name of the Field in InfluxDBv1
@@ -74,7 +74,7 @@ struct NumberPost {
 
     bool isExtendedResolution;  // extendResolution; Adds the decimal place of the least significant analog ROI to the value
 
-    general *digit_roi;         // digitalRoi; set of digital ROIs for the sequence
+    general *digit_roi;         // digitRoi; set of digit ROIs for the sequence
     general *analog_roi;        // analogRoi; set of analog ROIs for the sequence
 
     string name;                // name; Designation for the sequence 

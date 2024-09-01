@@ -382,7 +382,7 @@ void ClassFlowPostProcessing::handleDecimalSeparator(string _decsep, string _val
     }
 }
 
-void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep, string _value) {
+void ClassFlowPostProcessing::handleAnalogDigitTransitionStart(string _decsep, string _value) {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
     // ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
@@ -403,7 +403,7 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(string _decsep,
 
         // Set to default first (if nothing else is set)
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->AnalogDigitalTransitionStart = _zwdc;
+            NUMBERS[j]->AnalogDigitTransitionStart = _zwdc;
 
         }
     }
@@ -564,8 +564,8 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
             handleDecimalSeparator(splitted[0], splitted[1]);
         }
 	    
-        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (splitted.size() > 1)) {
-            handleAnalogDigitalTransitionStart(splitted[0], splitted[1]);
+        if ((toUpper(_param) == "AnalogDigitTRANSITIONSTART") && (splitted.size() > 1)) {
+            handleAnalogDigitTransitionStart(splitted[0], splitted[1]);
         }
 	    
         if ((toUpper(_param) == "MAXRATEVALUE") && (splitted.size() > 1)) {
@@ -648,10 +648,10 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         }
         
         if (_number->digit_roi) {
-            _number->AnzahlDigital = _number->digit_roi->ROI.size();
+            _number->AnzahlDigit = _number->digit_roi->ROI.size();
         }
         else {
-            _number->AnzahlDigital = 0;
+            _number->AnzahlDigit = 0;
         }
 
         _number->analog_roi = NULL;
@@ -677,7 +677,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->DecimalShift = 0;
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
-        _number->AnalogDigitalTransitionStart=9.2;
+        _number->AnalogDigitTransitionStart=9.2;
         _number->ChangeRateThreshold = 2;
 
         _number->Value = 0; // last value read out, incl. corrections
@@ -693,7 +693,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
     }
 
     for (int i = 0; i < NUMBERS.size(); ++i) {
-        ESP_LOGD(TAG, "Number %s, Anz DIG: %d, Anz ANA %d", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigital, NUMBERS[i]->AnzahlAnalog);
+        ESP_LOGD(TAG, "Number %s, Anz DIG: %d, Anz ANA %d", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigit, NUMBERS[i]->AnzahlAnalog);
     }
 }
 
@@ -804,7 +804,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (NUMBERS[j]->digit_roi) {
             if (NUMBERS[j]->analog_roi) {
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogDigitalTransitionStart) + NUMBERS[j]->ReturnRawValue;
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogDigitTransitionStart) + NUMBERS[j]->ReturnRawValue;
             }
             else {
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits
@@ -812,7 +812,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         }
 	    
         #ifdef SERIAL_DEBUG
-            ESP_LOGD(TAG, "After digital->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
+            ESP_LOGD(TAG, "After digit->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
 	    
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
@@ -868,8 +868,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency) {
             if (flowDigit) {
-                if (flowDigit->getCNNType() != Digital) {
-                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digital Classification)");
+                if (flowDigit->getCNNType() != Digit) {
+                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digit Classification)");
                 }
                 else {
                     NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
@@ -877,7 +877,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             }
             else {
                 #ifdef SERIAL_DEBUG
-                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - no digital numbers defined!");
+                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - no digit numbers defined!");
                 #endif
             }
         }
@@ -990,7 +990,7 @@ void ClassFlowPostProcessing::WriteDataLog(int _index) {
     }
     
     string analog = "";
-    string digital = "";
+    string digit = "";
     string timezw = "";
     char buffer[80];
     struct tm* timeinfo = localtime(&NUMBERS[_index]->timeStampLastValue);
@@ -1002,20 +1002,20 @@ void ClassFlowPostProcessing::WriteDataLog(int _index) {
     }
 
     if (flowDigit) {
-        digital = flowDigit->getReadoutRawString(_index);
+        digit = flowDigit->getReadoutRawString(_index);
     }
 	
     LogFile.WriteToData(timezw, NUMBERS[_index]->name, NUMBERS[_index]->ReturnRawValue, NUMBERS[_index]->ReturnValue, NUMBERS[_index]->ReturnPreValue, 
-        NUMBERS[_index]->ReturnRateValue, NUMBERS[_index]->ReturnChangeAbsolute, NUMBERS[_index]->ErrorMessageText, digital, analog);
+        NUMBERS[_index]->ReturnRateValue, NUMBERS[_index]->ReturnChangeAbsolute, NUMBERS[_index]->ErrorMessageText, digit, analog);
 
-    ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_index]->ReturnRawValue.c_str(), NUMBERS[_index]->ReturnValue.c_str(), NUMBERS[_index]->ErrorMessageText.c_str(), digital.c_str(), analog.c_str());
+    ESP_LOGD(TAG, "WriteDataLog: %s, %s, %s, %s, %s", NUMBERS[_index]->ReturnRawValue.c_str(), NUMBERS[_index]->ReturnValue.c_str(), NUMBERS[_index]->ErrorMessageText.c_str(), digit.c_str(), analog.c_str());
 }
 
 void ClassFlowPostProcessing::UpdateNachkommaDecimalShift() {
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        // There are only digital digits
+        // There are only digits
         if (NUMBERS[j]->digit_roi && !NUMBERS[j]->analog_roi) {
-            // ESP_LOGD(TAG, "Nurdigital");
+            // ESP_LOGD(TAG, "Nurdigit");
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
 
             // Extended resolution is on and should also be used for this digit.
@@ -1037,9 +1037,9 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift() {
             NUMBERS[j]->Nachkomma = -NUMBERS[j]->DecimalShift;
         }
 
-        // digital + analog
+        // digit + analog
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi) {
-            // ESP_LOGD(TAG, "Nur digital + analog");
+            // ESP_LOGD(TAG, "Nur digit + analog");
 
             NUMBERS[j]->DecimalShift = NUMBERS[j]->DecimalShiftInitial;
             NUMBERS[j]->Nachkomma = NUMBERS[j]->analog_roi->ROI.size() - NUMBERS[j]->DecimalShift;
