@@ -40,7 +40,7 @@ enum t_RateType {
 struct NumberPost {
     float MaxRateValue;         // maxRate; upper bound for the difference between two consecutive readings; affected by maxRateType;
     bool useMaxRateValue;       // consistencyChecksEnabled; enables consistency checks; uses maxRate and maxRateType
-    t_RateType RateType;        // maxRateType; affects how the value of maxRate is used for comparing the current and previous value
+    t_RateType MaxRateType;        // maxRateType; affects how the value of maxRate is used for comparing the current and previous value
     bool ErrorMessage;          // FIXME: not used; can be removed
     int ChangeRateThreshold;  // threshold parameter for negative rate detection
     bool PreValueOkay;          // previousValueValid; indicates that the reading of the previous round has no errors
