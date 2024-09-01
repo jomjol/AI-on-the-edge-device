@@ -452,7 +452,7 @@ void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value) {
 
         // Set to default first (if nothing else is set)			
         if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
-            NUMBERS[j]->RateType = _zwdc;
+            NUMBERS[j]->MaxRateType = _zwdc;
         }
     }
 }
@@ -509,7 +509,30 @@ void ClassFlowPostProcessing::handleChangeRateThreshold(string _decsep, string _
         }
     }
 }
+/*
+void ClassFlowPostProcessing::handlecheckDigitIncreaseConsistency(std::string _decsep, std::string _value)
+{
+    std::string _digit;
+    int _pospunkt = _decsep.find_first_of(".");
+    // ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
 
+    if (_pospunkt > -1) {
+        _digit = _decsep.substr(0, _pospunkt);
+    }
+    else {
+        _digit = "default";
+    }
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        bool _rt = alphanumericToBoolean(_value);
+
+        // Set to default first (if nothing else is set)
+        if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
+            NUMBERS[j]->checkDigitIncreaseConsistency = _rt;
+        }
+    }
+}
+*/
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) {
     std::vector<string> splitted;
     int _n;
@@ -562,6 +585,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 	    
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
+            // handlecheckDigitIncreaseConsistency(splitted[0], splitted[1]);
             if (alphanumericToBoolean(splitted[1])) {
                 for (_n = 0; _n < NUMBERS.size(); ++_n) {
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
@@ -643,14 +667,11 @@ void ClassFlowPostProcessing::InitNUMBERS() {
             _number->AnzahlAnalog = 0;
         }
 
-        _number->ReturnRawValue = ""; // Raw value (with N & leading 0).    
-        _number->ReturnValue = ""; // corrected return value, possibly with error message
-        _number->ErrorMessageText = ""; // Error message for consistency check
-        _number->ReturnPreValue = "";
+        _number->FlowRateAct = 0; // m3 / min
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
         _number->MaxRateValue = 0.1;
-        _number->RateType = AbsoluteChange;
+        _number->MaxRateType = AbsoluteChange;
         _number->useMaxRateValue = false;
         _number->checkDigitIncreaseConsistency = false;
         _number->DecimalShift = 0;
@@ -659,11 +680,11 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->AnalogDigitalTransitionStart=9.2;
         _number->ChangeRateThreshold = 2;
 
-        _number->FlowRateAct = 0; // m3 / min
-        _number->PreValue = 0; // last value read out well
         _number->Value = 0; // last value read out, incl. corrections
-        _number->ReturnRawValue = ""; // raw value (with N & leading 0)    
         _number->ReturnValue = ""; // corrected return value, possibly with error message
+        _number->ReturnRawValue = ""; // raw value (with N & leading 0)    
+        _number->PreValue = 0; // last value read out well
+        _number->ReturnPreValue = "";
         _number->ErrorMessageText = ""; // Error message for consistency check
 
         _number->Nachkomma = _number->AnzahlAnalog;
@@ -819,6 +840,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             else {
                 string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+                NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->timeStampLastValue = imagetime;
                 WriteDataLog(j);
                 continue; // there is no number because there is still an N.
@@ -910,7 +932,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue)) {
                 double _ratedifference;
 					
-                if (NUMBERS[j]->RateType == RateChange) {
+                if (NUMBERS[j]->MaxRateType == RateChange) {
                     _ratedifference = NUMBERS[j]->FlowRateAct;
                 }
                 else {
