@@ -749,8 +749,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                 httpd_resp_sendstr_chunk(req, txt.c_str());
 
                 /* Full Image
-                 * Only show it after the image got taken and aligned */
-                txt = "<hr><h3>Aligned Image (current round)</h3>\n";
+                 * Only show it after the image got taken */
+                txt = "<hr><h3>Full Image (current round)</h3>\n";
 
                 if ((*status == std::string("Initialization")) ||
                     (*status == std::string("Initialization (delayed)")) ||
