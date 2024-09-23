@@ -126,33 +126,64 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         else if ((toUpper(splitted[0]) == "CAMGAINCEILING") && (splitted.size() > 1))
         {
             std::string _ImageGainceiling = toUpper(splitted[1]);
-            if (_ImageGainceiling == "X4")
+
+            if (isStringNumeric(_ImageGainceiling))
             {
-                CCstatus.ImageGainceiling = GAINCEILING_4X;
-            }
-            else if (_ImageGainceiling == "X8")
-            {
-                CCstatus.ImageGainceiling = GAINCEILING_8X;
-            }
-            else if (_ImageGainceiling == "X16")
-            {
-                CCstatus.ImageGainceiling = GAINCEILING_16X;
-            }
-            else if (_ImageGainceiling == "X32")
-            {
-                CCstatus.ImageGainceiling = GAINCEILING_32X;
-            }
-            else if (_ImageGainceiling == "X64")
-            {
-                CCstatus.ImageGainceiling = GAINCEILING_64X;
-            }
-            else if (_ImageGainceiling == "X128")
-            {
-                CCstatus.ImageGainceiling = GAINCEILING_128X;
+                int _ImageGainceiling_ = std::stoi(_ImageGainceiling);
+                switch (_ImageGainceiling_)
+                {
+                case 1:
+                    CFstatus.ImageGainceiling = GAINCEILING_4X;
+                    break;
+                case 2:
+                    CFstatus.ImageGainceiling = GAINCEILING_8X;
+                    break;
+                case 3:
+                    CFstatus.ImageGainceiling = GAINCEILING_16X;
+                    break;
+                case 4:
+                    CFstatus.ImageGainceiling = GAINCEILING_32X;
+                    break;
+                case 5:
+                    CFstatus.ImageGainceiling = GAINCEILING_64X;
+                    break;
+                case 6:
+                    CFstatus.ImageGainceiling = GAINCEILING_128X;
+                    break;
+                default:
+                    CFstatus.ImageGainceiling = GAINCEILING_2X;
+                }
             }
             else
             {
-                CCstatus.ImageGainceiling = GAINCEILING_2X;
+                if (_ImageGainceiling == "X4")
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_4X;
+                }
+                else if (_ImageGainceiling == "X8")
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_8X;
+                }
+                else if (_ImageGainceiling == "X16")
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_16X;
+                }
+                else if (_ImageGainceiling == "X32")
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_32X;
+                }
+                else if (_ImageGainceiling == "X64")
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_64X;
+                }
+                else if (_ImageGainceiling == "X128")
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_128X;
+                }
+                else
+                {
+                    CCstatus.ImageGainceiling = GAINCEILING_2X;
+                }
             }
         }
 
@@ -216,58 +247,76 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         else if ((toUpper(splitted[0]) == "CAMSPECIALEFFECT") && (splitted.size() > 1))
         {
             std::string _ImageSpecialEffect = toUpper(splitted[1]);
-            if (_ImageSpecialEffect == "NEGATIVE")
+
+            if (isStringNumeric(_ImageSpecialEffect))
             {
-                CCstatus.ImageSpecialEffect = 1;
-            }
-            else if (_ImageSpecialEffect == "GRAYSCALE")
-            {
-                CCstatus.ImageSpecialEffect = 2;
-            }
-            else if (_ImageSpecialEffect == "RED")
-            {
-                CCstatus.ImageSpecialEffect = 3;
-            }
-            else if (_ImageSpecialEffect == "GREEN")
-            {
-                CCstatus.ImageSpecialEffect = 4;
-            }
-            else if (_ImageSpecialEffect == "BLUE")
-            {
-                CCstatus.ImageSpecialEffect = 5;
-            }
-            else if (_ImageSpecialEffect == "RETRO")
-            {
-                CCstatus.ImageSpecialEffect = 6;
+                int _ImageSpecialEffect_ = std::stoi(_ImageSpecialEffect);
+                CFstatus.ImageSpecialEffect = clipInt(_ImageSpecialEffect_, 6, 0);
             }
             else
             {
-                CCstatus.ImageSpecialEffect = 0;
+                if (_ImageSpecialEffect == "NEGATIVE")
+                {
+                    CCstatus.ImageSpecialEffect = 1;
+                }
+                else if (_ImageSpecialEffect == "GRAYSCALE")
+                {
+                    CCstatus.ImageSpecialEffect = 2;
+                }
+                else if (_ImageSpecialEffect == "RED")
+                {
+                    CCstatus.ImageSpecialEffect = 3;
+                }
+                else if (_ImageSpecialEffect == "GREEN")
+                {
+                    CCstatus.ImageSpecialEffect = 4;
+                }
+                else if (_ImageSpecialEffect == "BLUE")
+                {
+                    CCstatus.ImageSpecialEffect = 5;
+                }
+                else if (_ImageSpecialEffect == "RETRO")
+                {
+                    CCstatus.ImageSpecialEffect = 6;
+                }
+                else
+                {
+                    CCstatus.ImageSpecialEffect = 0;
+                }
             }
         }
 
         else if ((toUpper(splitted[0]) == "CAMWBMODE") && (splitted.size() > 1))
         {
             std::string _ImageWbMode = toUpper(splitted[1]);
-            if (_ImageWbMode == "SUNNY")
+
+            if (isStringNumeric(_ImageWbMode))
             {
-                CCstatus.ImageWbMode = 1;
-            }
-            else if (_ImageWbMode == "CLOUDY")
-            {
-                CCstatus.ImageWbMode = 2;
-            }
-            else if (_ImageWbMode == "OFFICE")
-            {
-                CCstatus.ImageWbMode = 3;
-            }
-            else if (_ImageWbMode == "HOME")
-            {
-                CCstatus.ImageWbMode = 4;
+                int _ImageWbMode_ = std::stoi(_ImageWbMode);
+                CFstatus.ImageWbMode = clipInt(_ImageWbMode_, 4, 0);
             }
             else
             {
-                CCstatus.ImageWbMode = 0;
+                if (_ImageWbMode == "SUNNY")
+                {
+                    CCstatus.ImageWbMode = 1;
+                }
+                else if (_ImageWbMode == "CLOUDY")
+                {
+                    CCstatus.ImageWbMode = 2;
+                }
+                else if (_ImageWbMode == "OFFICE")
+                {
+                    CCstatus.ImageWbMode = 3;
+                }
+                else if (_ImageWbMode == "HOME")
+                {
+                    CCstatus.ImageWbMode = 4;
+                }
+                else
+                {
+                    CCstatus.ImageWbMode = 0;
+                }
             }
         }
 

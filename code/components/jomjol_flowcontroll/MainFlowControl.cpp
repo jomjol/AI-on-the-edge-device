@@ -790,11 +790,11 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_editflow uri: %s", req->uri);
 
-    char _query[200];
+    char _query[512];
     char _valuechar[30];
     std::string _task;
 
-    if (httpd_req_get_url_query_str(req, _query, 200) == ESP_OK)
+    if (httpd_req_get_url_query_str(req, _query, 512) == ESP_OK)
     {
         if (httpd_query_key_value(_query, "task", _valuechar, 30) == ESP_OK)
         {
@@ -997,6 +997,30 @@ esp_err_t handler_editflow(httpd_req_t *req)
                             CFstatus.ImageGainceiling = GAINCEILING_2X;
                     }
                 }
+                else
+                {
+                    if (_aecgc == "X4") {
+                        CFstatus.ImageGainceiling = GAINCEILING_4X;
+                    }
+                    else if (_aecgc == "X8") {
+                        CFstatus.ImageGainceiling = GAINCEILING_8X;
+                    }
+                    else if (_aecgc == "X16") {
+                        CFstatus.ImageGainceiling = GAINCEILING_16X;
+                    }
+                    else if (_aecgc == "X32") {
+                        CFstatus.ImageGainceiling = GAINCEILING_32X;
+                    }
+                    else if (_aecgc == "X64") {
+                        CFstatus.ImageGainceiling = GAINCEILING_64X;
+                    }
+                    else if (_aecgc == "X128") {
+                        CFstatus.ImageGainceiling = GAINCEILING_128X;
+                    }
+                    else {
+                        CFstatus.ImageGainceiling = GAINCEILING_2X;
+                    }
+                }
             }
 
             if (httpd_query_key_value(_query, "qual", _valuechar, 30) == ESP_OK)
@@ -1070,6 +1094,30 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     int _spe_ = std::stoi(_valuechar);
                     CFstatus.ImageSpecialEffect = clipInt(_spe_, 6, 0);
                 }
+                else
+                {
+                    if (_spe == "negative") {
+                        CFstatus.ImageSpecialEffect = 1;
+                    }
+                    else if (_spe == "grayscale") {
+                        CFstatus.ImageSpecialEffect = 2;
+                    }
+                    else if (_spe == "red") {
+                        CFstatus.ImageSpecialEffect = 3;
+                    }
+                    else if (_spe == "green") {
+                        CFstatus.ImageSpecialEffect = 4;
+                    }
+                    else if (_spe == "blue") {
+                        CFstatus.ImageSpecialEffect = 5;
+                    }
+                    else if (_spe == "retro") {
+                        CFstatus.ImageSpecialEffect = 6;
+                    }
+                    else {
+                        CFstatus.ImageSpecialEffect = 0;
+                    }
+                }
             }
 
             if (httpd_query_key_value(_query, "wbm", _valuechar, 30) == ESP_OK)
@@ -1079,6 +1127,24 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 {
                     int _wbm_ = std::stoi(_valuechar);
                     CFstatus.ImageWbMode = clipInt(_wbm_, 4, 0);
+                }
+                else
+                {
+                    if (_wbm == "sunny") {
+                        CFstatus.ImageWbMode = 1;
+                    }
+                    else if (_wbm == "cloudy") {
+                        CFstatus.ImageWbMode = 2;
+                    }
+                    else if (_wbm == "office") {
+                        CFstatus.ImageWbMode = 3;
+                    }
+                    else if (_wbm == "home") {
+                        CFstatus.ImageWbMode = 4;
+                    }
+                    else {
+                        CFstatus.ImageWbMode = 0;
+                    }
                 }
             }
 

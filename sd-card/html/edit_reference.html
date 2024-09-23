@@ -391,6 +391,7 @@
     
     <script language="JavaScript">
         var canvas = document.getElementById('canvas'),
+            domainname = getDomainname(),
             context = canvas.getContext('2d'),
             imageObj = new Image(),
             isActReference = false,
@@ -399,7 +400,7 @@
 
         function doReboot() {
             if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-               var stringota = getDomainname() + "/reboot";
+               var stringota = domainname + "/reboot";
                window.location = stringota;
                window.location.href = stringota;
                window.location.assign(stringota);
@@ -437,8 +438,6 @@
 
         // Create New Reference, Update Image
         function doTakeReference(){
-            var domainname = getDomainname();
-		
             document.getElementById("overlay").style.display = "block";
             document.getElementById("overlaytext").innerHTML = "Taking new image...";
 			
@@ -554,6 +553,11 @@
             var _effect_temp = document.getElementById("TakeImage_CamSpecialEffect_value1").selectedIndex;
 			
             var url = domainname + "/editflow?task=test_take";
+			
+            if (domainname.length > 0) {
+                url = url + "&host=" + domainname;
+            }
+			
             url = url + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp;
             url = url + "&ashp=" + _ashp_temp + "&ledi=" + _ledi_temp + "&spe=" + _effect_temp + "&zoom=" + _zoom_temp;
                 
@@ -566,10 +570,6 @@
                     
             url = url + "&aec=" + _aec_temp + "&ael=" + _ael_temp + "&aec2=" + _aec2_temp;
             url = url + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;			
-                
-            if (domainname.length > 0){
-                url = url + "&host=" + domainname;
-            }
 
             var durchlaufe = 0;
 
@@ -581,9 +581,9 @@
                 while (true) {
                     var xhttp = new XMLHttpRequest();
 					
-                    if (durchlaufe > 15) {
+                    if (durchlaufe > 10) {
 						document.getElementById("overlay").style.display = "none";
-                        firework.launch('Image capture aborted, timeout!', 'warning', 5000);
+                        firework.launch('Image capture aborted, timeout!', 'danger', 5000);
                         return;
                     }					
 
@@ -596,6 +596,9 @@
                         var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);						
                         loadCanvas(_url, true);
                         isActReference = false;
+						
+                        document.getElementById("overlay").style.display = "none";
+                        firework.launch('Image capture completed, please wait until it loads...', 'success', 5000);
 
                         return;
                     }
@@ -617,14 +620,13 @@
                 }
             }
 
-            setTimeout(function() { // Delay so the overlay gets shown
+            setTimeout(function() { 
+                // Delay so the overlay gets shown
                 task();
             }, 1);
         }
 
         function camSettingsSet(){
-            var domainname = getDomainname();
-			
             document.getElementById("overlay").style.display = "block";
             document.getElementById("overlaytext").innerHTML = "Save Cam Settings...";			
 
@@ -690,7 +692,12 @@
             var _ael_temp = document.getElementById("TakeImage_CamAeLevel_value1").value;
             var _effect_temp = document.getElementById("TakeImage_CamSpecialEffect_value1").selectedIndex;
 
-            var url = domainname + "/editflow?task=cam_settings";	
+            var url = domainname + "/editflow?task=cam_settings";
+
+            if (domainname.length > 0) {
+                url = url + "&host=" + domainname;
+            }
+
             url = url + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp;
             url = url + "&ashp=" + _ashp_temp + "&ledi=" + _ledi_temp + "&spe=" + _effect_temp + "&zoom=" + _zoom_temp;
 
@@ -703,10 +710,6 @@
 
             url = url + "&aec=" + _aec_temp + "&ael=" + _ael_temp + "&aec2=" + _aec2_temp;
             url = url + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;			
-			
-            if (domainname.length > 0){
-                url = url + "&host=" + domainname;
-            }
 
             var durchlaufe = 0;
 
@@ -718,9 +721,9 @@
                 while (true) {
                     var xhttp = new XMLHttpRequest();
 					
-                    if (durchlaufe > 15) {
+                    if (durchlaufe > 10) {
 						document.getElementById("overlay").style.display = "none";
-                        firework.launch('Save Cam Settings aborted, timeout!', 'warning', 5000);
+                        firework.launch('Save Cam Settings aborted, timeout!', 'danger', 5000);
                         return;
                     }					
 
@@ -731,6 +734,7 @@
             
                     if (xhttp.responseText == "CamSettingsSet") {
 						document.getElementById("overlay").style.display = "none";
+                        firework.launch('Cam Settings saved', 'success', 2000);
                         return;
                     }
                     else {
@@ -745,19 +749,20 @@
                         catch (error){}
 
                         document.getElementById("overlaytext").innerHTML = "Device is busy, plase waiting...<br><br>Current step: " + _xhttp.responseText;
-                        console.log("Device is busy, waiting 5s then checking again...");
+                        console.log("Device is busy, waiting 2s then checking again...");
                         await sleep(2000);
                     }
                 }
             }
 
-            setTimeout(function() { // Delay so the overlay gets shown
+            setTimeout(function() { 
+                // Delay so the overlay gets shown
                 task();
             }, 1);
         }
 		
         function showReference(){
-            url = getDomainname() + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);		
+            url = domainname + "/fileserver/config/reference.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);		
             loadCanvas(url, false);
             isActReference = true;			
 		
@@ -830,8 +835,6 @@
         }
 
         function SaveReference(){
-            var domainname = getDomainname();
-        
             param["Alignment"]["InitialRotate"].value1 = (Number(document.getElementById("PreRotateAngle_value1").value) + 
                                                             Number(document.getElementById("FineRotate_value1").value)).toFixed(1);
 
@@ -873,7 +876,6 @@
 
         function init() {
             openDescription();		
-            domainname = getDomainname();
 	
             if (!loadConfig(domainname)) {
 				firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
