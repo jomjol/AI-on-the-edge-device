@@ -63,11 +63,6 @@
     // #define GRAYSCALE_AS_DEFAULT
 
 
-    //ClassControllCamera + ClassFlowTakeImage
-    #define CAMERA_MODEL_AI_THINKER
-    #define BOARD_ESP32CAM_AITHINKER
-
-
     //server_GPIO
     #define __LEDGLOBAL
 
@@ -202,8 +197,24 @@
 ////      Conditionnal definitions       ////
 /////////////////////////////////////////////
 
-//******* camera model 
-#if defined(CAMERA_MODEL_WROVER_KIT)
+
+// ******* Board type   
+#if defined(BOARD_WROVER_KIT) // WROVER-KIT PIN Map
+	// SD card (operated with SDMMC peripheral)
+	//-------------------------------------------------
+	#define GPIO_SDCARD_CLK GPIO_NUM_14
+	#define GPIO_SDCARD_CMD GPIO_NUM_15
+	#define GPIO_SDCARD_D0  GPIO_NUM_2
+	#ifndef __SD_USE_ONE_LINE_MODE__
+		#define GPIO_SDCARD_D1 GPIO_NUM_4
+		#define GPIO_SDCARD_D2 GPIO_NUM_12
+		#define GPIO_SDCARD_D3 GPIO_NUM_13
+	#else
+		#define GPIO_SDCARD_D1 GPIO_NUM_NC
+		#define GPIO_SDCARD_D2 GPIO_NUM_NC
+		#define GPIO_SDCARD_D3 GPIO_NUM_13
+	#endif
+
     #define CAM_PIN_PWDN     GPIO_NUM_NC  //power down is not used
     #define CAM_PIN_RESET    GPIO_NUM_NC  //software reset will be performed
     #define CAM_PIN_XCLK     GPIO_NUM_21
@@ -222,7 +233,14 @@
     #define CAM_PIN_HREF     GPIO_NUM_23
     #define CAM_PIN_PCLK     GPIO_NUM_22
 
-#elif defined(CAMERA_MODEL_M5STACK_PSRAM)
+    //Statusled + ClassControllCamera
+    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED, On the board the LED is on the IO2, but it is used for the SD
+	
+    //ClassControllCamera
+    #define FLASH_GPIO GPIO_NUM_12              // PIN for flashlight LED
+    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
+
+#elif defined(BOARD_M5STACK_PSRAM) // M5STACK PSRAM PIN Map
     #define CAM_PIN_PWDN     GPIO_NUM_NC
     #define CAM_PIN_RESET    GPIO_NUM_15
     #define CAM_PIN_XCLK     GPIO_NUM_27
@@ -241,7 +259,30 @@
     #define CAM_PIN_HREF     GPIO_NUM_26
     #define CAM_PIN_PCLK     GPIO_NUM_21
 
-#elif defined(CAMERA_MODEL_AI_THINKER)
+    //Statusled + ClassControllCamera
+    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
+	
+    //ClassControllCamera
+    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
+    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
+
+
+#elif defined(BOARD_ESP32CAM_AITHINKER) // ESP32Cam (AiThinker) PIN Map
+	// SD card (operated with SDMMC peripheral)
+	//-------------------------------------------------
+	#define GPIO_SDCARD_CLK GPIO_NUM_14
+	#define GPIO_SDCARD_CMD GPIO_NUM_15
+	#define GPIO_SDCARD_D0  GPIO_NUM_2
+	#ifndef __SD_USE_ONE_LINE_MODE__
+		#define GPIO_SDCARD_D1 GPIO_NUM_4
+		#define GPIO_SDCARD_D2 GPIO_NUM_12
+		#define GPIO_SDCARD_D3 GPIO_NUM_13
+	#else
+		#define GPIO_SDCARD_D1 GPIO_NUM_NC
+		#define GPIO_SDCARD_D2 GPIO_NUM_NC
+		#define GPIO_SDCARD_D3 GPIO_NUM_13
+	#endif
+
     #define CAM_PIN_PWDN     GPIO_NUM_32
     #define CAM_PIN_RESET    GPIO_NUM_NC  //software reset will be performed
     #define CAM_PIN_XCLK     GPIO_NUM_0
@@ -260,72 +301,20 @@
     #define CAM_PIN_HREF     GPIO_NUM_23
     #define CAM_PIN_PCLK     GPIO_NUM_22
 
+    //Statusled + ClassControllCamera
+    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
+	
+    //ClassControllCamera
+    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
+    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
+
 #else
-    #error "Camera model not selected"
-#endif  //camera model
-
-// ******* Board type   
-#if defined(BOARD_WROVER_KIT) // WROVER-KIT PIN Map
-	// SD card (operated with SDMMC peripheral)
-	//-------------------------------------------------
-	#define GPIO_SDCARD_CLK GPIO_NUM_14
-	#define GPIO_SDCARD_CMD GPIO_NUM_15
-	#define GPIO_SDCARD_D0 GPIO_NUM_2
-	#ifndef __SD_USE_ONE_LINE_MODE__
-		#define GPIO_SDCARD_D1 GPIO_NUM_4
-		#define GPIO_SDCARD_D2 GPIO_NUM_12
-		#define GPIO_SDCARD_D3 GPIO_NUM_13
-	#else
-		#define GPIO_SDCARD_D1 GPIO_NUM_NC
-		#define GPIO_SDCARD_D2 GPIO_NUM_NC
-		#define GPIO_SDCARD_D3 GPIO_NUM_13
-	#endif
-
-    //Statusled + ClassControllCamera
-    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED, On the board the LED is on the IO2, but it is used for the SD
-	
-    //ClassControllCamera
-    #define FLASH_GPIO GPIO_NUM_12              // PIN for flashlight LED
-    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
-
-#elif defined(BOARD_M5STACK_PSRAM) // M5STACK PSRAM PIN Map
-    //Statusled + ClassControllCamera
-    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
-	
-    //ClassControllCamera
-    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
-    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
-
-
-#elif defined(BOARD_ESP32CAM_AITHINKER) // ESP32Cam (AiThinker) PIN Map
-	// SD card (operated with SDMMC peripheral)
-	//-------------------------------------------------
-	#define GPIO_SDCARD_CLK GPIO_NUM_14
-	#define GPIO_SDCARD_CMD GPIO_NUM_15
-	#define GPIO_SDCARD_D0 GPIO_NUM_2
-	#ifndef __SD_USE_ONE_LINE_MODE__
-		#define GPIO_SDCARD_D1 GPIO_NUM_4
-		#define GPIO_SDCARD_D2 GPIO_NUM_12
-		#define GPIO_SDCARD_D3 GPIO_NUM_13
-	#else
-		#define GPIO_SDCARD_D1 GPIO_NUM_NC
-		#define GPIO_SDCARD_D2 GPIO_NUM_NC
-		#define GPIO_SDCARD_D3 GPIO_NUM_13
-	#endif
-
-    //Statusled + ClassControllCamera
-    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
-	
-    //ClassControllCamera
-    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
-    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
-
-#endif // ESP32Cam (AiThinker) PIN Map
+    #error "Board not selected"
+#endif  //Board PIN Map
 
 
 // ******* LED definition
 #ifdef USE_PWM_LEDFLASH
-
     //// PWM für Flash-LED
     #define LEDC_TIMER              LEDC_TIMER_1 // LEDC_TIMER_0
     #define LEDC_MODE               LEDC_LOW_SPEED_MODE
