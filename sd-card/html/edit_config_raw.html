@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
+
 <head>
-<title>Edit Config</title>
 <meta charset="UTF-8" />
+<title>Edit Config</title>
 
 <style>
 	h1 {font-size: 2em;}
@@ -20,8 +21,11 @@
 		font-size: 15px;
 	}
 </style>
+
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
@@ -43,9 +47,10 @@
 		</td>
 	</table>
 
-	<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-	
+
+	<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+
 	<script type="text/javascript">
 		var canvas = document.getElementById('canvas'),
 			domainname = getDomainname(); 
