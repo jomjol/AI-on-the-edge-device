@@ -2108,8 +2108,6 @@ function cameraParameterChanged() {
 }
 
 function LoadConfigNeu() {
-    domainname = getDomainname();
-	
     if (!loadConfig(domainname)) {
         firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
         return;
@@ -2622,8 +2620,6 @@ function saveTextAsFile() {
 }
 
 function camSettingsSet(){
-    var domainname = getDomainname();
-			
     document.getElementById("overlay").style.display = "block";
     document.getElementById("overlaytext").innerHTML = "Save Cam Settings...";
 	
@@ -2765,29 +2761,27 @@ function camSettingsSet(){
     var _zoomy_temp = document.getElementById("TakeImage_CamZoomOffsetY_value1").value;
     var _zooms_temp = document.getElementById("TakeImage_CamZoomSize_value1").value;	
 	
-    // bei einmal Alles senden kommt es zu problemen!!!!!!!!!!!!!!!!!!!!
-    var url_1 = domainname + "/editflow?task=cam_settings";
-    url_1 = url_1 + "&waitb=" + _waitb_temp + "&aecgc=" + _aecgc_temp + "&qual=" + _qual_temp;
-    url_1 = url_1 + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
-    url_1 = url_1 + "&spe=" + _spe_temp + "&wbm=" + _wbm_temp + "&awb=" + _awb_temp + "&awbg=" + _awbg_temp;
-    url_1 = url_1 + "&aec=" + _aec_temp + "&aec2=" + _aec2_temp + "&ael=" + _ael_temp + "&aecv=" + _aecv_temp;
+    var url = domainname + "/editflow?task=cam_settings";
+	
+    if (domainname.length > 0){
+        url = url + "&host=" + domainname;		
+    }
+	
+    url = url + "&waitb=" + _waitb_temp + "&aecgc=" + _aecgc_temp + "&qual=" + _qual_temp;
+    url = url + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
+    url = url + "&spe=" + _spe_temp + "&wbm=" + _wbm_temp + "&awb=" + _awb_temp + "&awbg=" + _awbg_temp;
+    url = url + "&aec=" + _aec_temp + "&aec2=" + _aec2_temp + "&ael=" + _ael_temp + "&aecv=" + _aecv_temp;
 
-    var url_2 = domainname + "/editflow?task=cam_settings";	
-    url_2 = url_2 + "&agc=" + _agc_temp + "&agcg=" + _agcg_temp + "&bpc=" + _bpc_temp + "&wpc=" + _wpc_temp;
-    url_2 = url_2 + "&rgma=" + _rgma_temp + "&lenc=" + _lenc_temp + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;
-    url_2 = url_2 + "&dcw=" + _dcw_temp + "&den=" + _denoise_temp + "&ledi=" + _ledi_temp;
+    url = url + "&agc=" + _agc_temp + "&agcg=" + _agcg_temp + "&bpc=" + _bpc_temp + "&wpc=" + _wpc_temp;
+    url = url + "&rgma=" + _rgma_temp + "&lenc=" + _lenc_temp + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;
+    url = url + "&dcw=" + _dcw_temp + "&den=" + _denoise_temp + "&ledi=" + _ledi_temp;
 
     if (_zoom_temp != '0') {
-        url_2 = url_2 + "&zoom=" + _zoom_temp + "&zooms=" + _zooms_temp;
-        url_2 = url_2 + "&zoomx=" + _zoomx_temp + "&zoomy=" + _zoomy_temp;
+        url = url + "&zoom=" + _zoom_temp + "&zooms=" + _zooms_temp;
+        url = url + "&zoomx=" + _zoomx_temp + "&zoomy=" + _zoomy_temp;
     }
     else {
-        url_2 = url_2 + "&zoom=0" + "&zooms=0" + "&zoomx=0" + "&zoomy=0";
-    }
-
-    if (domainname.length > 0){
-        url_1 = url_1 + "&host=" + domainname;
-        url_2 = url_2 + "&host=" + domainname;		
+        url = url + "&zoom=0" + "&zooms=0" + "&zoomx=0" + "&zoomy=0";
     }
 
     var durchlaufe = 0;
@@ -2798,24 +2792,22 @@ function camSettingsSet(){
 	
     async function task() {
         while (true) {
-            var xhttp1 = new XMLHttpRequest();
-            var xhttp2 = new XMLHttpRequest();
+            var xhttp = new XMLHttpRequest();
 			
             if (durchlaufe > 10) {
                 document.getElementById("overlay").style.display = "none";
-                firework.launch('Save Cam Settings aborted, timeout!', 'success', 5000);
+                firework.launch('Save Cam Settings aborted, timeout!', 'danger', 5000);
                 return;
             }			
 
             try {
-                xhttp1.open("GET", url_1, false);
-                xhttp1.send();
-                xhttp2.open("GET", url_2, false);
-                xhttp2.send();				
+                xhttp.open("GET", url, false);
+                xhttp.send();			
             } catch (error){}				
             
-            if ((xhttp1.responseText == "CamSettingsSet") && (xhttp2.responseText == "CamSettingsSet")) {
+            if (xhttp.responseText == "CamSettingsSet") {
                 document.getElementById("overlay").style.display = "none";
+                firework.launch('Cam Settings saved', 'success', 2000);
                 return;
             }
             else {
@@ -2836,14 +2828,15 @@ function camSettingsSet(){
         }   
     }
 
-    setTimeout(function() { // Delay so the overlay gets shown
+    setTimeout(function() { 
+        // Delay so the overlay gets shown
         task();
     }, 1);
 }
 	
 function doReboot() {
     if (confirm("Are you sure you want to reboot?")) {
-        var stringota = getDomainname() + "/reboot";
+        var stringota = domainname + "/reboot";
         window.location = stringota;
         window.location.href = stringota;
         window.location.assign(stringota);
@@ -2861,7 +2854,7 @@ function FormatDecimalValue(_param, _cat, _name) {
 
 function editConfigRaw() {
     if (confirm("Proceed to switch to raw edit mode? Unsaved changes will get lost")) {
-        var stringota = getDomainname() + "/edit_config_raw.html?v=$COMMIT_HASH";
+        var stringota = domainname + "/edit_config_raw.html?v=$COMMIT_HASH";
         window.location = stringota;
         window.location.href = stringota;
         window.location.assign(stringota);
