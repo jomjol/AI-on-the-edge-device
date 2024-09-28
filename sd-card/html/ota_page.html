@@ -1,36 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
+
 <head>
+    <meta charset="UTF-8"/>
     <title>OTA Update</title>
-    <meta charset="UTF-8" />
 
-    <style>
-        h1 {font-size: 2em;}
-        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-        h3 {font-size: 1.2em;}
-        p {font-size: 1em;}
-        
-        input[type=file] {
-            width: 660px;
-            padding: 5px 0px;
-            display: inline-block;
-            font-size: 16px; 
-        }    
-        
-        .button {
-            padding: 5px 10px;
-            width: 205px;
-            font-size: 16px;
-        }
-    </style>
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
-    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+
     <h2>OTA Update</h2>
     <p>Check the <a href="https://github.com/jomjol/AI-on-the-edge-device/releases" target=_blank>Release Page</a> to see if there is an update available. </p>
     <p>You can also automatically get notified about a release, see <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/New-Releases-Notification" target=_blank>Release Notifications</a>.</p>
@@ -49,7 +36,7 @@
     <form id="upload_form" enctype="multipart/form-data" method="post">
         <input type="file" accept=".bin,.zip,.tfl,.tflite" name="file_selector" id="file_selector" onchange="validate_file()"><br><br>
 
-        <button class="button" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload And Install</button>
+        <button class="button_middle" id="start_OTA_button" type="button" onclick="start_OTA()" disabled>Upload And Install</button>
         <br><br>
         <progress id="progressBar" value="0" max="100" style="width:600px;"></progress>
         <h3><span id="status">Status: Idle</span></h3>
@@ -57,10 +44,11 @@
     </form>
     
 
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 
-    <script language="JavaScript">
+    <script type="text/javascript">
         var domainname = getDomainname();
-        
         var action_runtime = 0;
         
         /* Max size of an individual file. Make sure this
@@ -127,7 +115,6 @@
             document.getElementById("start_OTA_button").disabled = false;
         }
 
-
         function start_OTA() {
             document.getElementById("start_OTA_button").disabled = true;
 
@@ -139,13 +126,11 @@
             prepareOnServer();
         }
 
-
         function doRebootAfterUpdate() {
             var xhttp = new XMLHttpRequest();
             xhttp.open("GET", "/reboot", true);
             xhttp.send();
         }
-
 
         function prepareOnServer() {
             document.getElementById("status").innerText = "Status: Preparing device...";
@@ -173,7 +158,6 @@
             xhttp.open("GET", _toDo, true);
             xhttp.send();
         }
-
 
         function extract() {
             document.getElementById("status").innerText = "Status: Processing on device...";
@@ -233,11 +217,9 @@
             xhttp.send();
         }
 
-
         function _(el) {
             return document.getElementById(el);
         }
-
 
         function upload() {
             document.getElementById("status").innerText = "Status: Uploading...";
@@ -257,7 +239,6 @@
             ajax.send(file);
         }
 
-
         function progressHandler(event) {
             _("loaded_n_total").innerHTML = "Uploaded " + (event.loaded / 1024 / 1024).toFixed(2) + 
                     " MB of " + (event.total / 1024/ 1024).toFixed(2) + " MB";
@@ -265,7 +246,6 @@
             _("progressBar").value = Math.round(percent);
             _("status").innerHTML = "Status: " + Math.round(percent) + "% uploaded. Please wait...";
         }
-
 
         function completeHandler(event) {
             _("status").innerHTML = "Status: " + event.target.responseText;
@@ -275,13 +255,11 @@
             extract();
         }
 
-
         function errorHandler(event) {
             _("status").innerHTML = "Status: Upload Failed";
             firework.launch('Upload failed!', 'danger', 30000);
             document.getElementById("file_selector").disabled = false;
         }
-
 
         function abortHandler(event) {
             _("status").innerHTML = "Status: Upload Aborted";

@@ -1,74 +1,47 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
-    <head>
-        <title>Data Viewer</title>
-        <meta charset="UTF-8" />
+<html lang="en" xml:lang="en">
 
-        <style>
-            h1 {font-size: 2em;}
-            h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-            h3 {font-size: 1.2em;}
-            p {font-size: 1em;}
+<head>
+    <meta charset="UTF-8"/>
+    <title>Data Viewer</title>
 
-            html,
-            body {
-                height: 100%;
-                margin: 1px;
-                font-family: Arial, Helvetica, sans-serif;
-            }
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
-            .box {
-                display: flex;
-                flex-flow: column;
-                height: 99.75%;
-            }
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script> 
+</head>
+	
+<body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+	
+    <h2>Data Viewer</h2>
+    <h4>Today's latest data</h4>
+    
+	<div class="box">
+        <div class="row header">
+            <button class="button_small" onClick="reload();">Refresh</button>
+            <button class="button_small" onClick="window.open(getDomainname() + '/datafileact');">Show Full File</button>
+            <button class="button_small" onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
+            <button class="button_small" onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show Graph</button>
+        </div>
+        <div class="row content" id="data"><br><br><br><b>Loading data file, please wait...</b></div>
+        <div class="row footer">
+            <button class="button_small" onClick="reload();">Refresh</button>
+            <button class="button_small" onClick="window.open(getDomainname() + '/datafileact');">Show Full File</button>
+            <button class="button_small" onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
+            <button class="button_small" onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show Graph</button>
+        </div>
+    </div>
 
-            .box .row.header {
-                flex: 0 1 auto;
-            }
 
-            .box .row.content {
-                flex: 1 1 auto;
-            }
-
-            .box .row.footer {
-                flex: 0 1 auto;
-            }
-
-            #data {
-                font-family: 'Courier New', Courier, monospace;
-                font-size: small;
-            }
-
-            .button {
-                padding: 5px 10px;
-                width: 160px;
-                font-size: 16px;
-            }
-        </style>
-        <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-    </head>
-    <body>
-            <h2>Data Viewer</h2>
-            <h4>Today's latest data</h4>
-        <div class="box">
-            <div class="row header">
-                <button class="button" onClick="reload();">Refresh</button>
-                <button class="button" onClick="window.open(getDomainname() + '/datafileact');">Show Full File</button>
-                <button class="button" onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
-                <button class="button" onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show Graph</button>
-            </div>
-            <div class="row content" id="data"><br><br><br><b>Loading data file, please wait...</b></div>
-            <div class="row footer">
-                <button class="button" onClick="reload();">Refresh</button>
-                <button class="button" onClick="window.open(getDomainname() + '/datafileact');">Show Full File</button>
-                <button class="button" onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
-                <button class="button" onClick="window.location.href = 'graph.html?v=$COMMIT_HASH'">Show Graph</button>
-            </div>
-          </div>
-    </body>
-
-    <script>  
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+	
+    <script type="text/javascript">  
         function reload() {
             document.getElementById('data').innerHTML += "<br><b>Reloading...<b><br><br>";
             window.scrollBy(0,document.body.scrollHeight);
@@ -98,4 +71,6 @@
         funcRequest(getDomainname() + '/data');
 
     </script>
+	
+</body>
 </html>

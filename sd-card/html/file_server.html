@@ -1,108 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
 
-    <head>
-        <link href="/firework.css?v=$COMMIT_HASH" rel="stylesheet">
-        <script type="text/javascript" src="/jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
-        <script type="text/javascript" src="/firework.js?v=$COMMIT_HASH"></script>
-	
-        <style>
-            h1 {font-size: 2em;}
-            h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-            h3 {font-size: 1.2em;}
-            p {font-size: 1em;}
+<head>
+    <meta charset="UTF-8"/>
+    <title>Fileserver</title>
 
-            #files_table {
-                font-family: Arial, Helvetica, sans-serif;
-                border-collapse: collapse;
-                width: 100%;
-            }
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
-            #files_table td, #files_table th {
-                border: 1px solid #ddd;
-                padding: 8px;
-            }
-
-            #files_table tr:nth-child(even){
-                background-color: #f2f2f2;
-            }
-
-            #files_table tr:hover {
-                background-color: #ddd;
-            }
-
-            #files_table th {
-                padding-top: 12px;
-                padding-bottom: 12px;
-                text-align: left;
-                background-color:lightgrey;
-                color: black;
-            }
-
-            input[type=file] {
-                padding: 5px 0px;
-                display: inline-block;
-                font-size: 16px; 
-            }
-
-            input[type=text] {
-                padding: 5px 10px;
-                display: inline-block;
-                border: 1px solid #ccc;
-                font-size: 16px; 
-            }
-
-            .button {
-                padding: 4px 10px;
-                width: 100px;
-                font-size: 16px;	
-		    }
-        </style>
-    </head>
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+</head>
     
-    </body>
-        <table class="fixed" border="0" width=100% style="font-family: arial">
-            <tr>
-                <td style="vertical-align: top;width: 300px;">
-                    <h2>Fileserver</h2>
-                </td>
-                <td rowspan="2">
-                    <table border="0" style="width:100%">
-                        <tr>
-                            <td style="width:80px">
-                                <label for="newfile">Source</label>
-                            </td>
-                            <td colspan="2">
-                                <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
-                            </td>
-                        </tr>
+<body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+	
+    <table class="fixed" border="0" width=100% style="font-family: arial">
+        <tr>
+            <td style="vertical-align: top;width: 300px;">
+                <h2>Fileserver</h2>
+            </td>
+            <td rowspan="2">
+                <table border="0" style="width:100%">
+                    <tr>
+                        <td style="width:80px">
+                            <label for="newfile">Source</label>
+                        </td>
+                        <td colspan="2">
+                            <input id="newfile" type="file" onchange="setpath()" style="width:100%;">
+                        </td>
+                    </tr>
                         
-                        <tr>
-                            <td>
-                                <label for="filepath">Destination</label>
-                            </td>
-                            <td>
-                                <input id="filepath" type="text" style="width:94%;">
-                            </td>
-                            <td>
-                                <button id="upload" type="button" class="button" onclick="upload()">Upload</button>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr></tr>
-            <tr>
-                <td colspan="2">
-                    <button style="font-size:16px; padding: 5px 10px" id="dirup" type="button" onclick="dirup()" disabled>&#129145; Directory up</button>
-                    <span style="padding-left:15px" id="currentpath"></span>
-                </td>
-            </tr>
-        </table>
+                    <tr>
+                        <td>
+                            <label for="filepath">Destination</label>
+                        </td>
+                        <td>
+                            <input id="filepath" type="text" style="width:94%;">
+                        </td>
+                        <td>
+                            <button id="upload" type="button" class="button_small" onclick="upload()">Upload</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr></tr>
+        <tr>
+            <td colspan="2">
+                <button style="font-size:16px; padding: 5px 10px" id="dirup" type="button" class="button_small" onclick="dirup()" disabled>&#129145; Directory up</button>
+                <span style="padding-left:15px" id="currentpath"></span>
+            </td>
+        </tr>
+    </table>
 
-        <script type="text/javascript" src="/common.js?v=$COMMIT_HASH"></script>
 
-        <script type="text/javascript">
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+
+    <script type="text/javascript">
         function setpath() {
             var fileserverpraefix = "/fileserver";
             var anz_zeichen_fileserver = fileserverpraefix.length;
@@ -125,7 +84,6 @@
 
             window.location.href = res;	
         }
-
 
         function upload() {
             var filePath = document.getElementById("filepath").value;
@@ -177,7 +135,6 @@
             }
         }
 
-
         function checkAtRootLevel(res) {
             if (getPath() == "/fileserver/") { // Already at root level
                 document.getElementById("dirup").disabled = true;
@@ -201,6 +158,6 @@
 
         document.cookie = "page=" + getPath() + "; path=/";
 
-        </script>
-    </body>
+    </script>
+</body>
 </html>

@@ -1,15 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
+
 <head>
-    <title>Backup/Restore Configuration</title>
     <meta charset="UTF-8" />
+    <title>Backup/Restore Configuration</title>
 
     <style>
-        h1 {font-size: 2em;}
-        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-        h3 {font-size: 1.2em;}
-        p {font-size: 1em;}
-
         input[type=number] {
             width: 138px;
             padding: 10px 5px;
@@ -17,33 +13,35 @@
             border: 1px solid #ccc;
             font-size: 16px; 
         }
-
-        .button {
-            padding: 5px 10px;
-            width: 205px;
-            font-size: 16px;
-        }
     </style>
 
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
+
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script> 
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+
     <h2>Backup Configuration</h2>
     <p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
 
-    <button class="button" id="startBackup" type="button" onclick="startBackup()">Create Backup</button>
+    <button class="button_middle" id="startBackup" type="button" onclick="startBackup()">Create Backup</button>
     <p id=progress></p>
     <hr>
     <h2>Restore Configuration</h2>
     <p>Use the <a href="/fileserver/config/" target="_self">File Server</a> to upload individual files.</p>
-</body>
 
 
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="jszip.min.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="FileSaver.min.js?v=$COMMIT_HASH"></script>
-<script>
 
+<script type="text/javascript">
 function startBackup() {  
     document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
     
@@ -97,7 +95,6 @@ function startBackup() {
         return;
     }
 }
-
 
 function fetchFiles(urls, filesData, index, retry, zipFilename) {
     url = urls[index];
@@ -172,7 +169,6 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
     xhr.send(null);
 }
 
-
 function generateZipFile(urls, filesData, zipFilename) {
     setStatus("Creating Zip File...");
 
@@ -190,15 +186,8 @@ function generateZipFile(urls, filesData, zipFilename) {
     setStatus("Backup completed");
 }
 
-
 const backup = (urls, zipFilename) => {
     if(!urls) return;
-
-    /* Testing */
-    /*len = urls.length;
-    for (i = 0; i < len - 3; i++) {
-        urls.pop();
-    }*/
 
     console.log(urls);
 
@@ -206,7 +195,6 @@ const backup = (urls, zipFilename) => {
     setStatus("Fetching files...");
     fetchFiles(urls, [], 0, 0, zipFilename);
 };
-
 
 function setStatus(status) {
     console.log(status);
@@ -219,4 +207,5 @@ function getFilenameFromUrl(url) {
 
 </script>
 
+</body>
 </html>

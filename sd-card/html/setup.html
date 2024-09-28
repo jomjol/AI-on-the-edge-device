@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
-<head>
-<title>AI on the edge</title>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" xml:lang="en">
 
+<head>
+<meta charset="UTF-8"/>
+<title>AI on the edge</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 .h_iframe_explain iframe {
@@ -55,8 +56,8 @@ body, html {
     width: -moz-fit-content;
     width: fit-content;
 }
-
 </style>
+
 <script type="text/javascript">
     function resizeIframe(obj) {
         obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 20 + 'px';
@@ -96,7 +97,6 @@ body, html {
         </tr>
     </table>
 
-
     <div class="h_iframe_explain" id="h_iframe_explain">
         <iframe name="explaincontent" id ="explaincontent" src="" allowfullscreen></iframe>
     </div>
@@ -107,7 +107,8 @@ body, html {
     </div>
 
 
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+
 <script type="text/javascript">
     var aktstep = 0;
     var setupCompleted = false;
@@ -334,7 +335,6 @@ body, html {
 		xhttp.open("GET", url, true);
 		xhttp.send();		
 	}
-
 
    LoadStep();
 

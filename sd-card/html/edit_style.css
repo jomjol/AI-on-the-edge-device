@@ -1,10 +1,20 @@
 /* edit_style.css */
+html, body {
+  height: 100%;
+  margin: 1px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 h1 {font-size: 2em;}
 h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
 h3 {font-size: 1.2em;}
 h4 {font-size: 1.05em; margin-bottom: 0;}
 h5 {font-size: 0.83em; margin-top: 0.2em; margin-bottom: 0;}
 p {font-size: 1em;}
+
+th, td {
+  padding: 5px 5px 5px 5px;
+}
 
 input[type=text] {
   padding: 3px 5px;
@@ -21,6 +31,13 @@ input[type=number] {
   border: 1px solid #ccc;
   font-size: 16px;
   vertical-align: middle;
+}
+
+input[type=file] {
+  width: 660px;
+  padding: 5px 0px;
+  display: inline-block;
+  font-size: 16px; 
 }
 
 .input_large[type=number] {
@@ -126,13 +143,27 @@ textarea {
   font-size: 16px;
 }
 
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 99.75%;
+}
+
+.box .row.header {
+  flex: 0 1 auto;
+}
+
+.box .row.content {
+  flex: 1 1 auto;
+}
+
+.box .row.footer {
+  flex: 0 1 auto;
+}
+
 .multiplier {
   padding: 0px 0px;
   font-size: 12px;
-}
-
-th, td {
-  padding: 5px 5px 5px 5px;
 }
 
 table {
@@ -146,6 +177,10 @@ table {
   border-collapse: collapse;
   table-layout: fixed;
   width:100%;
+}
+
+output {
+  padding-left:5px;
 }
 
 .tooltip {
@@ -207,4 +242,41 @@ table {
 #GPIO_LEDColor_value1 #GPIO_LEDColor_value2 #GPIO_LEDColor_value3 {
   width: 30px;
   font-size: 16px;
+}
+
+#data {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: small;
+}
+
+#log {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: small;
+}
+
+#files_table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#files_table td, #files_table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#files_table tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+#files_table tr:hover {
+  background-color: #ddd;
+}
+
+#files_table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color:lightgrey;
+  color: black;
 }

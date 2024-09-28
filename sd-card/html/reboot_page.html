@@ -1,48 +1,42 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
+
 <head>
-<title>Reboot</title>
-<meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
+    <title>Reboot</title>
 
-<style>
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
-.button {
-	padding: 5px 10px;
-    width: 205px;
-	font-size: 16px;	
-}
-</style>
-
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
 	
-<h3>Do you really want to reboot now?</h3>
+    <h3>Do you really want to reboot now?</h3>
 
-<table class="fixed" border="0">
-	<tr>
-		<td>
-			<button class="button" id="reboot" type="button" onclick="doReboot()">Reboot</button>
-		</td>
-	</tr>
-</table>
+    <table class="fixed" border="0">
+	    <tr>
+		    <td>
+			    <button class="button_middle" id="reboot" type="button" onclick="doReboot()">Reboot</button>
+		    </td>
+	    </tr>
+    </table>
 
-<script>
-function doReboot() {
-	// if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = getDomainname() + "/reboot";
-		window.location = stringota;
-		window.location.href = stringota;
-		window.location.assign(stringota);
-		window.location.replace(stringota);
-	// }
-}
-</script>
+    <script type="text/javascript">
+        function doReboot() {
+		    var stringota = getDomainname() + "/reboot";
+		    window.location = stringota;
+		    window.location.href = stringota;
+		    window.location.assign(stringota);
+		    window.location.replace(stringota);
+        }
+    </script>
 
 </body>
 </html>

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
+
 <head>
+    <meta charset="UTF-8"/>
+    <title>AI on the edge</title>
+
     <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
     <link rel="apple-touch-icon" href="watermeter.svg?v=$COMMIT_HASH" />
-    <title>AI on the edge</title>
-    <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css?v=$COMMIT_HASH" type="text/css" >
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
@@ -16,7 +19,7 @@
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 
-    <script>
+    <script type="text/javascript">
         var streamPopup;
         var streamFlashlight = false;
         var streamWindowFeatures =
@@ -83,7 +86,6 @@
     </tr>
 </table>
 
-
 <div class="menu" onmouseover="resetMenu()">
   <ul>
     <li><a href="#" onclick="loadPage('overview.html?v=$COMMIT_HASH');">Overview</a></li>
@@ -105,7 +107,6 @@
         <li style="width: 260px"><a href="#" onclick="loadPage('edit_config.html?v=$COMMIT_HASH');">Configuration</a></li>
       </ul>
 
-
     <li><a>Data<i class="arrow down"></i></a>
         <ul class="submenu">
             <li><a href="#" onclick="loadPage(getDomainname() + '/value?full');">Recognition</a></li>
@@ -120,7 +121,6 @@
             <li><a href="#" onclick="loadPage(getDomainname() + '/fileserver/log/data/');">Data Files</a></li>
         </ul>
     </li>
-
 
     <li><a>System <i class="arrow down"></i></a>
         <ul class="submenu">
