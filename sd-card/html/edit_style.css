@@ -23,6 +23,16 @@ input[type=number] {
   vertical-align: middle;
 }
 
+.input_large[type=number] {
+  width: 120px;
+  margin-right: 10px;
+  padding: 3px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
 .invalid-input {
   background-color: #FFAA00;
 }
