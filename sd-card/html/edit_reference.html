@@ -4,114 +4,13 @@
 <head>
     <meta charset="utf-8"/>
     <title>Reference Image and Camera Settings</title>
-        
-    <style>
-        h1 {font-size: 2em;}
-        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-        h3 {font-size: 1.2em;}
-        p {font-size: 1em;}
 
-        input[type=number] {
-            width: 60px;
-            margin-right: 10px;
-            padding: 3px 5px;
-            display: inline-block;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            vertical-align: middle;
-        }
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH"/>
 
-        input:out-of-range {
-            background-color: rgba(255, 0, 0, 0.25);
-            border: 1px solid red;
-        }
-
-        input:invalid {
-            background-color: rgba(255, 0, 0, 0.25);
-            border: 1px solid red;
-        }
-
-        .expert {
-            background-color: #ffefef;
-            font-size: 16px;
-        }
-
-        .button {
-            padding: 5px 10px;
-            font-size: 16px;
-        }
-
-        th, td {
-            padding: 5px 5px 5px 5px;
-        }
-
-        table {
-            width: 660px;
-            padding: 5px;
-        }
-
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 460px;
-            background-color: #fcfcfc;
-
-            padding: 5px;
-            padding-bottom: 0;
-
-            border: solid black 2px; 
-
-            /* Position the tooltip */
-            position: absolute;
-            z-index: 1;
-            top: 100%;
-            left: 520%;
-            margin-left: -600px;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-        }
-
-        .tooltip-content {
-            width: calc(100% - 2px);
-            height: calc(100% - 2px);
-            padding: 1px;
-        }
-
-        #overlay {
-            position: fixed;
-            display: none;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.8);
-            z-index: 2;
-        }
-
-        #overlaytext{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            font-size: 150%;
-            color: white;
-            transform: translate(-50%,-50%);
-            -ms-transform: translate(-50%,-50%);
-        }
-    </style>
-
-    <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
-    <link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" />
-    <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
-
-    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
@@ -380,7 +279,7 @@
 			</td>
 			
             <td>
-				<input class="button" type="button" id="savereferenceimage" value="Save new Reference Image and Camera Settings" onclick="SaveReference()">
+				<input style="font-weight:bold;" class="button" type="button" id="savereferenceimage" value="Save new Reference Image and Camera Settings" onclick="SaveReference()">
 			</td>
         </tr>	
     </table>

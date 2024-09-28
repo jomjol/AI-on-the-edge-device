@@ -5,88 +5,12 @@
     <meta charset="UTF-8" />
     <title>Alignment markers</title>
  
-    <style>
-        h1 {font-size: 2em;}
-        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-        h3 {font-size: 1.2em;}
-        p {font-size: 1em;}
-
-        input[type=number] {
-            width: 60px;
-            margin-right: 10px;
-            padding: 3px 5px;
-            display: inline-block;
-            border: 1px solid #ccc;
-            font-size: 16px; 
-        }
-
-        input[type=text] {
-            padding: 3px 5px;
-            display: inline-block;
-            border: 1px solid #ccc;
-            font-size: 16px; 
-        }
-
-        input:out-of-range {
-        background-color: rgba(255, 0, 0, 0.25);
-        border: 1px solid red;
-        }
-
-        select {
-            padding: 3px 5px;
-            display: inline-block;
-            border: 1px solid #ccc;
-            font-size: 16px; 
-            margin-right: 10px;
-            min-width: 100px;
-            vertical-align: middle;
-        }
-
-        .button {
-            padding: 5px 10px;
-            width: 205px;
-            font-size: 16px;
-        }
-
-        th, td {
-            padding: 5px 5px 5px 0px;
-        }
-
-        table {
-            width: 660px;
-            padding: 5px;
-        }
-
-        #overlay {
-            position: fixed;
-            display: none;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.8);
-            z-index: 2;
-        }
-
-        #overlaytext{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            font-size: 150%;
-            color: white;
-            transform: translate(-50%,-50%);
-            -ms-transform: translate(-50%,-50%);
-        }
-    </style>
-
-    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
-
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -137,7 +61,9 @@
         <tr>
             <td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
             <td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
-            <td rowspan="2" style="padding-top: 10px;"><button style="color:black;" type="button" class="button" id="updatemarker" onclick="CutOutReference()">Update Marker</button></td>	
+            <td rowspan="2" style="padding-top: 10px;">
+                <button style="color:black;" type="button" class="button_middle" id="updatemarker" onclick="CutOutReference()">Update Marker</button>
+            </td>	
         </tr>
 	  
         <tr>
@@ -148,7 +74,9 @@
         <tr>
             <td style="vertical-align: bottom;">Selected Image Area:</td>
             <td style="vertical-align: bottom;">Resulting Marker:</td>
-            <td><button style="color:black;" type="button" class="button" id="enhancecontrast" onclick="EnhanceContrast()">Enhance Image Contrast</button></td>	
+            <td>
+                <button style="color:black;" type="button" class="button_middle" id="enhancecontrast" onclick="EnhanceContrast()">Enhance Image Contrast</button>
+            </td>	
         </tr> 
 	  
         <tr>
@@ -160,7 +88,7 @@
             <td style="vertical-align:bottom;"><b>Reference Image:</b></td>
             <td></td>
             <td>
-                <button style="font-weight:bold; color:black;" type="submit" class="button" id="savemarker" onclick="SaveToConfig()">Save New Marker</button>
+                <button style="font-weight:bold;" type="submit" class="button_middle" id="savemarker" onclick="SaveToConfig()">Save New Marker</button>
             </td>
         </tr>
 	  

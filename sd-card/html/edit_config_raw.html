@@ -2,34 +2,21 @@
 <html lang="en" xml:lang="en">
 
 <head>
-<meta charset="UTF-8" />
-<title>Edit Config</title>
+    <meta charset="UTF-8" />
+    <title>Edit Config</title>
 
-<style>
-	h1 {font-size: 2em;}
-	h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-	h3 {font-size: 1.2em;}
-	p {font-size: 1em;}
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
-	.button {
-		padding: 5px 10px;
-		width: 220px;
-		font-size: 16px;	
-	}
-
-	textarea {
-		font-size: 15px;
-	}
-</style>
-
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
  
 	<table style="width:660px">
 		<h2>Configuration - "Config.ini" Editor</h2>
@@ -40,10 +27,10 @@
 
 	<table>
 		<td>
-			<button class="button" onclick="saveTextAsFile()">Save Config</button>
+			<button style="font-weight:bold;" class="button_large" onclick="saveTextAsFile()">Save Config</button>
 		</td>
 	    <td>
-	        <button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
+	        <button class="button_large" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
 		</td>
 	</table>
 

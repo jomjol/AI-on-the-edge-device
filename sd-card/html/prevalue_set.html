@@ -1,67 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
+
 <head>
+    <meta charset="UTF-8"/>
     <title>Set PreValue</title>
-    <meta charset="UTF-8" />
 
-    <style>
-    h1 {font-size: 2em;}
-    h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
-    h3 {font-size: 1.2em;}
-    p {font-size: 1em;}
+    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
-    div {
-        padding: 3px 5px;
-        display: inline-block;
-        border: 1px solid #ccc;
-        font-size: 16px;
-        height: 20px;
-        width: 120px;
-        vertical-align: middle;
-    }
-
-    input[type=number] {
-        width: 120px;
-        margin-right: 10px;
-        padding: 3px 5px;
-        display: inline-block;
-        border: 1px solid #ccc;
-        font-size: 16px; 
-    }
-
-    .invalid-input {
-		background-color: #FFAA00;
-	}
-
-    th, td {
-    padding: 5px 5px 5px 0px;
-    }
-
-    select {
-        padding: 3px 5px;
-        display: inline-block;
-        border: 1px solid #ccc;
-        font-size: 16px; 
-        margin-right: 10px;
-        min-width: 100px;
-        vertical-align: middle;
-    }
-
-    .button {
-        padding: 5px 10px;
-        width: 205px;
-        font-size: 16px;	
-    }
-
-    table {
-        width: 660px;
-        padding: 5px;
-    }
-    </style>
-
+    <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+
     <h2>Set "Previous Value"</h2>
     <details id="desc_details">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
@@ -116,7 +72,7 @@
             <td style="vertical-align: text-top; padding-top: 12px;">Enter new "previous value":</td>
             <td>
                 <input required type="number" id="myInput" name="myInput" min="0" oninput="(!validity.rangeUnderflow||(value=0));">
-                <button class="button" type="button" onclick="setprevalue()">Update Value</button>
+                <button style="font-weight:bold;" class="button_middle" type="button" onclick="setprevalue()">Update Value</button>
                 <p style="padding-left: 5px;">NOTE: The current "raw value" is prefilled as 
                     <br>the suggested new "previous value"</p>
             </td>
@@ -129,16 +85,8 @@
         </tr>	 
     </table>
 
-</body>
-</html>
-
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
-<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
-
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script> 
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>   
 
 <script type="text/javascript">
  	var domainname = getDomainname(); 
@@ -251,3 +199,6 @@ function init(){
 
 init();
 </script>
+
+</body>
+</html>

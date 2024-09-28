@@ -1,0 +1,200 @@
+/* edit_style.css */
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+h3 {font-size: 1.2em;}
+h4 {font-size: 1.05em; margin-bottom: 0;}
+h5 {font-size: 0.83em; margin-top: 0.2em; margin-bottom: 0;}
+p {font-size: 1em;}
+
+input[type=text] {
+  padding: 3px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  font-size: 16px; 
+}
+
+input[type=number] {
+  width: 60px;
+  margin-right: 10px;
+  padding: 3px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.invalid-input {
+  background-color: #FFAA00;
+}
+
+input:out-of-range {
+  background-color: rgba(255, 0, 0, 0.25);
+  border: 1px solid red;
+}
+
+input:invalid {
+  background-color: rgba(255, 0, 0, 0.25);
+  border: 1px solid red;
+}
+
+select {
+  padding: 3px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  font-size: 16px; 
+  margin-right: 10px;
+  min-width: 100px;
+  max-width: 100%;
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+.select_large {
+  width: 100%;
+  min-width: 250px;
+  max-width: 100%;
+  padding: 3px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  font-size: 16px; 
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+textarea {
+  font-size: 14px;
+}
+
+.description {
+  color: black;
+  font-size: 80%;
+}
+
+.disabled {
+  color:rgb(122, 122, 122);
+}
+
+.hidden {
+  display: none;
+}
+
+.expert {
+  background-color: #ffefef;
+  font-size: 16px;
+}
+
+.indent1 {
+  padding-left: 25px;
+  font-size: 16px;
+}
+
+.indent2 {
+  padding-left: 50px;
+  font-size: 16px;
+}
+
+.button {
+  padding: 5px 10px;
+  font-size: 16px;
+}
+
+.button_small {
+  padding: 5px 10px;
+  width: 160px;
+  font-size: 16px;	
+}
+
+.button_middle {
+  padding: 5px 10px;
+  width: 220px;
+  font-size: 16px;
+}
+
+.button_large {
+  padding: 5px 10px;
+  width: 260px;
+  font-size: 16px;
+}
+
+.multiplier {
+  padding: 0px 0px;
+  font-size: 12px;
+}
+
+th, td {
+  padding: 5px 5px 5px 5px;
+}
+
+table {
+  width: 660px;
+  padding: 5px;
+  table-layout: fixed;
+}
+
+.table {
+  border: 0pt;
+  border-collapse: collapse;
+  table-layout: fixed;
+  width:100%;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 460px;
+  background-color: #fcfcfc;
+
+  padding: 5px;
+  padding-bottom: 0;
+
+  border: solid black 2px; 
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 520%;
+  margin-left: -600px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip-content {
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  padding: 1px;
+}
+
+#overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 2;
+}
+
+#overlaytext{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 150%;
+  color: white;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+
+#GPIO_LEDColor_value1 #GPIO_LEDColor_value2 #GPIO_LEDColor_value3 {
+  width: 30px;
+  font-size: 16px;
+}
