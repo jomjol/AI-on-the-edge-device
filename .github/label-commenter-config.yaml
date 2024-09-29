@@ -119,5 +119,5 @@
             If your type is not contained it can be added to our training material, see [here](https://jomjol.github.io/AI-on-the-edge-device-docs/collect-new-images/).
       discussion:
           body: |
-            See [Analog counters](https://jomjol.github.io/neural-network-digital-counter-readout) resp. [Analogue Pointers](https://jomjol.github.io/neural-network-analog-needle-readout) for an overview of all trained data.
+            See [Digits](https://jomjol.github.io/neural-network-digital-counter-readout) resp. [Analogue Pointers](https://jomjol.github.io/neural-network-analog-needle-readout) for an overview of all trained data.
             If your type is not contained it can be added to our training material, see [here](https://jomjol.github.io/AI-on-the-edge-device-docs/collect-new-images/).
