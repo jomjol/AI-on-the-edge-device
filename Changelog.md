@@ -2,6 +2,10 @@
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
 
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
 #### Core Changes
 Those are just the major changes:
 - Add support for OV5640 camera (#3063)
