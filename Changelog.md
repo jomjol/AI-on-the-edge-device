@@ -1,15 +1,27 @@
-## [update] - 2024-03-30
+## [16.0.0-RC1] - 2024-09-24
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
 
 #### Core Changes
-
-- New tflite-Model for Analog (v13.0.0)
-- New tflite-Model for Digital Hybrid (v7.0.0)
+Those are just the major changes:
+- Add support for OV5640 camera (#3063)
+- New tflite-Models
+- Homeassistant service discovery: derive node_id when using nested topics (#3088)
+- Added Prometheus/OpenMetrics exporter (#3081)
+- Added Webhook (#3148, #3163, #3174)
+- Add rate threshold parameter (#3195)
+- Added a Delay between the WiFi reconnections (#3068)
+- Web UI improvements
+- Various minor changes
+- Update platformIO to 6.9.0 (Contains ESP IDF 5.3.1)
 
 #### Bug Fixes
-
-- tbd
+Those are just the major changes:
+- Handle crash on corrupted model (#3220)
+- Bugfix for boot loop (#3175)
+- Bugfix for time stamp (#3180)
+- Handle empty prevalue.ini gracefully (#3162)
+- Added note about only TLS 1.2 is supported (#3213)
 
 ## [15.7.0] - 2024-02-17
 
