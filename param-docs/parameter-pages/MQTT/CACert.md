@@ -16,3 +16,6 @@ Usually there is a common RootCA certificate for the MQTT broker
 
 !!! Note
     This also means that you might have to change the protocol and port in [uri](https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters/#parameter-uri) to `mqtts://example.com:8883`!
+
+!!! Note
+    Only TLS 1.2 is supported!
