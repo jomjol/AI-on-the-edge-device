@@ -32,7 +32,7 @@ void ClassLogFile::WriteHeapInfo(std::string _id)
 }
 
 
-void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::string  _ReturnRawValue, std::string  _ReturnValue, std::string  _ReturnPreValue, std::string  _ReturnRateValue, std::string  _ReturnChangeAbsolute, std::string  _ErrorMessageText, std::string  _digital, std::string  _analog)
+void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::string  _ReturnRawValue, std::string  _ReturnValue, std::string  _ReturnPreValue, std::string  _ReturnRateValue, std::string  _ReturnChangeAbsolute, std::string  _ErrorMessageText, std::string  _digit, std::string  _analog)
 {
     ESP_LOGD(TAG, "Start WriteToData");
     time_t rawtime;
@@ -67,7 +67,7 @@ void ClassLogFile::WriteToData(std::string _timestamp, std::string _name, std::s
         fputs(_ReturnChangeAbsolute.c_str(), pFile);
         fputs(",", pFile);
         fputs(_ErrorMessageText.c_str(), pFile);
-        fputs(_digital.c_str(), pFile);
+        fputs(_digit.c_str(), pFile);
         fputs(_analog.c_str(), pFile);
         fputs("\n", pFile);
 

@@ -176,13 +176,13 @@
 
     //ClassFlowCNNGeneral
     #define Analog_error 3
-    #define AnalogToDigtalFehler 0.8
-    #define Digital_Uncertainty 0.2
-    #define DigitalBand 3
-    #define Digital_Transition_Range_Predecessor 2
-    #define Digital_Transition_Area_Predecessor 0.7 // 9.3 - 0.7
-    #define Digital_Transition_Area_Forward 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
 
+    #define AnalogToDigtalFehler 0.8
+    #define Digit_Uncertainty 0.2
+    #define DigitBand 3
+    #define Digit_Transition_Range_Predecessor 2
+    #define Digit_Transition_Area_Predecessor 0.7 // 9.3 - 0.7
+    #define Digit_Transition_Area_Forward 9.7 // Pre-run zero crossing only happens from approx. 9.7 onwards
 
     //#define DEBUG_DETAIL_ON 
 

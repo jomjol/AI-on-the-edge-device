@@ -674,17 +674,17 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             }
             else
             {
-                /* Digital ROIs */
+                /* Digit ROIs */
                 txt = "<body style=\"font-family: arial\">";
                 txt += "<hr><h3>Recognized Digit ROIs (previous round)</h3>\n";
                 txt += "<table style=\"border-spacing: 5px\"><tr style=\"text-align: center; vertical-align: top;\">\n";
 
                 std::vector<HTMLInfo *> htmlinfodig;
-                htmlinfodig = flowctrl.GetAllDigital();
+                htmlinfodig = flowctrl.GetAllDigit();
 
                 for (int i = 0; i < htmlinfodig.size(); ++i)
                 {
-                    if (flowctrl.GetTypeDigital() == Digital)
+                    if (flowctrl.GetTypeDigit() == Digit)
                     {
                         // Numbers greater than 10 and less than 0 indicate NaN, since a Roi can only have values ​​from 0 to 9.
                         if ((htmlinfodig[i]->val >= 10) || (htmlinfodig[i]->val < 0))

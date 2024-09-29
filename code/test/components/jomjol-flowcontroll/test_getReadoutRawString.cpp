@@ -5,7 +5,7 @@
 void test_getReadoutRawString() {
 
     // no ROIs setted up
-    UnderTestPost* _undertestPost = setUpClassFlowPostprocessing(Digital100, Analogue100);
+    UnderTestPost* _undertestPost = setUpClassFlowPostprocessing(Digit100, Analogue100);
 
     string result = _undertestPost->flowAnalog->getReadoutRawString(0);
     TEST_ASSERT_EQUAL_STRING("", result.c_str());

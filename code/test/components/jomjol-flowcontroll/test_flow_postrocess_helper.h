@@ -33,13 +33,13 @@ UnderTestPost* setUpClassFlowPostprocessing(t_CNNType digType, t_CNNType anaType
  * 
  * @param analog the analog recognitions
  * @param digits the digit recognitions
- * @param digType the digit model type (default Digital100)
+ * @param digType the digit model type (default Digit100)
  * @param checkConsistency sets property checkConsistency (default = false)
  * @param extendedResolution sets property extendedResolution (default = false)
  * @param decimal_shift set property decimal_shift (Nachkommastellen, default = 0)
  * @return UnderTestPost* the created testobject
  */
-UnderTestPost* init_do_flow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType = Digital100, 
+UnderTestPost* init_do_flow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType = Digit100, 
                 bool checkConsistency=false,  bool extendedResolution=false, int decimal_shift=0);
 
 /**
@@ -47,13 +47,13 @@ UnderTestPost* init_do_flow(std::vector<float> analog, std::vector<float> digits
  * 
  * @param analog the analog recognitions
  * @param digits the digit recognitions
- * @param digType the digit model type (default Digital100)
+ * @param digType the digit model type (default Digit100)
  * @param checkConsistency sets property checkConsistency (default = false)
  * @param extendedResolution sets property extendedResolution (default = false)
  * @param decimal_shift set property decimal_shift (Nachkommastellen, default = 0)
  * @return std::string the return value of do_Flow is the Value as string
  */
-std::string process_doFlow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType = Digital100, 
+std::string process_doFlow(std::vector<float> analog, std::vector<float> digits, t_CNNType digType = Digit100, 
                 bool checkConsistency=false,  bool extendedResolution=false, int decimal_shift=0);
 
 /**

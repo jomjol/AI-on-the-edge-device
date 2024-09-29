@@ -61,7 +61,7 @@ public:
 	string TranslateAktstatus(std::string _input);
 
 	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
-	void DigitalDrawROI(CImageBasis *_zw);
+	void DigitDrawROI(CImageBasis *_zw);
 	void AnalogDrawROI(CImageBasis *_zw);
 	#endif
 
@@ -77,10 +77,10 @@ public:
 	std::string* getActStatus();
 	void setActStatus(std::string _aktstatus);
 
-	std::vector<HTMLInfo*> GetAllDigital();
+	std::vector<HTMLInfo*> GetAllDigit();
 	std::vector<HTMLInfo*> GetAllAnalog();	
 
-	t_CNNType GetTypeDigital();
+	t_CNNType GetTypeDigit();
 	t_CNNType GetTypeAnalog();
 	
 	#ifdef ENABLE_MQTT
