@@ -35,8 +35,8 @@ protected:
     bool SaveAllFiles;   
 
     int PointerEvalAnalogNew(float zahl, int numeral_preceder);
-    int PointerEvalAnalogToDigitNew(float zahl, float numeral_preceder,  int eval_predecessors, float AnalogDigitTransitionStart);
-    int PointerEvalHybridNew(float zahl, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors = false, float AnalogDigitTransitionStart=9.2);
+    int PointerEvalAnalogToDigitNew(float zahl, float numeral_preceder,  int eval_predecessors, float AnalogToDigitTransitionStart);
+    int PointerEvalHybridNew(float zahl, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors = false, float AnalogToDigitTransitionStart=9.2);
 
 
 
@@ -52,7 +52,7 @@ public:
     bool doFlow(string time);
 
     string getHTMLSingleStep(string host);
-    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _before_narrow_Analog = -1, float AnalogDigitTransitionStart=9.2); 
+    string getReadout(int _analog, bool _extendedResolution = false, int prev = -1, float _before_narrow_Analog = -1, float AnalogToDigitTransitionStart=9.2); 
 
     string getReadoutRawString(int _analog);  
 

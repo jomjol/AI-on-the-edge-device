@@ -602,7 +602,7 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[PostProcessing]") {
-            migrated = migrated | replaceString(configLines[i], "AnalogDigitalTransitionStart", "AnalogDigitTransitionStart"); // Rename it
+            migrated = migrated | replaceString(configLines[i], "AnalogDigitalTransitionStart", "AnalogToDigitTransitionStart"); // Rename it
             migrated = migrated | replaceString(configLines[i], ";PreValueUse = true", ";PreValueUse = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";PreValueUse", "PreValueUse"); // Enable it
 

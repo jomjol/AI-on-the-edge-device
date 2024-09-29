@@ -63,7 +63,7 @@ struct NumberPost {
     int AnzahlDigit;          // numDigitRoi; number of digit ROIs used in this sequence
     int DecimalShift;           // decimalShift; each increment shifts the decimal separator by one digit; value=value*10^decimalShift; pos. value shifts to the right
     int DecimalShiftInitial;    // decimalShiftInitial; same as decimalShift but is a const to reset decimalShift after calculations
-    float AnalogDigitTransitionStart; // AnalogDigitTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
+    float AnalogToDigitTransitionStart; // AnalogToDigitTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;              // decimalPlaces; usually defined by the number of analog ROIs; affected by DecimalShift
 
     string FieldV1;             // influxdbFieldName_v1; Name of the Field in InfluxDBv1

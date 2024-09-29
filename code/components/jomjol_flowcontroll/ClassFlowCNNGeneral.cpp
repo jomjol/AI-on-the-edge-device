@@ -35,7 +35,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogDigitTransitionStart) {
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart) {
     string result = "";    
 
     if (GENERAL[_analog]->ROI.size() == 0) {
@@ -90,7 +90,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             }
             else {
                 if (_before_narrow_Analog >= 0) {
-                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, AnalogDigitTransitionStart);
+                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, AnalogToDigitTransitionStart);
                 }
                 else {
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
@@ -216,7 +216,7 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     return result;
 }
 
-int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float AnalogDigitTransitionStart) {
+int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float AnalogToDigitTransitionStart) {
     int result;
     int result_after_decimal_point = ((int) floor(number * 10)) % 10;
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
@@ -244,7 +244,7 @@ int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral
     // No zero crossing has taken place.
     // Only eval_predecessors used because numeral_preceder could be wrong here.
     // numeral_preceder<=0.1 & eval_predecessors=9 corresponds to analogue was reset because of previous analogue that are not yet at 0.
-    if ((eval_predecessors>=6 && (numeral_preceder>AnalogDigitTransitionStart || numeral_preceder<=0.2) && roundedUp)) {
+    if ((eval_predecessors>=6 && (numeral_preceder>AnalogToDigitTransitionStart || numeral_preceder<=0.2) && roundedUp)) {
         result =  ((result_before_decimal_point+10) - 1) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
                                     " number: " + std::to_string(number) + 

@@ -162,7 +162,7 @@ void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analog
         std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();    
         for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
             ESP_LOGD(TAG, "Setting decimal shift on number: %d to %f", _n, _analogdigitTransistionStart);
-            (*NUMBERS)[_n]->AnalogDigitTransitionStart = _analogdigitTransistionStart; 
+            (*NUMBERS)[_n]->AnalogToDigitTransitionStart = _analogdigitTransistionStart; 
         }       
     }
 }
