@@ -21,8 +21,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-      
-      
+
       ####################################################################
       ## Remove labels again (issues only)
       ## Make sure to also add the reply message to .github/label-commenter-config.yaml!
@@ -69,7 +68,7 @@ jobs:
 #        with:
 #          actions: 'remove-labels'
 #          labels: 'bot-reply Show Trained Digits/Pointers'
-      
+
       ####################################################################
       ## Write the response
       ####################################################################
