@@ -20,7 +20,8 @@
 #include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
 #include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 #include "components/jomjol-flowcontroll/test_cnnflowcontroll.cpp"
-
+#include "components/openmetrics/test_openmetrics.cpp"
+#include "components/jomjol_mqtt/test_server_mqtt.cpp"
 
 bool Init_NVS_SDCard()
 {
@@ -151,12 +152,12 @@ extern "C" void app_main()
 {
   initGPIO();
   Init_NVS_SDCard();
-  esp_log_level_set("*", ESP_LOG_DEBUG);        // set all components to ERROR level
+  esp_log_level_set("*", ESP_LOG_ERROR);        // set all components to ERROR level
 
   UNITY_BEGIN();
     RUN_TEST(testNegative_Issues);
    RUN_TEST(testNegative);
-   /*
+   
     RUN_TEST(test_analogToDigit_Standard);
     RUN_TEST(test_analogToDigit_Transition);
     RUN_TEST(test_doFlowPP);
@@ -167,6 +168,8 @@ extern "C" void app_main()
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
-  */
+    RUN_TEST(test_openmetrics);
+    RUN_TEST(test_mqtt);
+  
   UNITY_END();
 }

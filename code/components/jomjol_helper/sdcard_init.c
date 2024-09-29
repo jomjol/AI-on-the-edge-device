@@ -35,15 +35,15 @@ static const char* TAG = "sdcard_init";
     } \
     } while(0)
 
-typedef struct vfs_fat_sd_ctx_t {
+typedef struct mh_vfs_fat_sd_ctx_t {
     BYTE pdrv;                                  //Drive number that is mounted
     esp_vfs_fat_mount_config_t mount_config;    //Mount configuration
     FATFS *fs;                                  //FAT structure pointer that is registered
     sdmmc_card_t *card;                         //Card info
     char *base_path;                            //Path where partition is registered
-} vfs_fat_sd_ctx_t;
+} mh_vfs_fat_sd_ctx_t;
 
-static vfs_fat_sd_ctx_t *s_ctx[FF_VOLUMES] = {};
+static mh_vfs_fat_sd_ctx_t *s_ctx[FF_VOLUMES] = {};
 
 /**
  * This `s_saved_ctx_id` is only used by `esp_vfs_fat_sdmmc_unmount`, which is deprecated.
@@ -185,14 +185,9 @@ BYTE ff_diskio_get_pdrv_card_mh(const sdmmc_card_t* card)
     return 0xff;
 }
 
-
-
-
-
-
 static bool s_get_context_id_by_card_mh(const sdmmc_card_t *card, uint32_t *out_id)
 {
-    vfs_fat_sd_ctx_t *p_ctx = NULL;
+    mh_vfs_fat_sd_ctx_t *p_ctx = NULL;
     for (int i = 0; i < FF_VOLUMES; i++) {
         p_ctx = s_ctx[i];
         if (p_ctx) {
@@ -378,7 +373,7 @@ static esp_err_t init_sdmmc_host_mh(int slot, const void *slot_config, int *out_
 esp_err_t esp_vfs_fat_sdmmc_mount_mh(const char* base_path, const sdmmc_host_t* host_config, const void* slot_config, const esp_vfs_fat_mount_config_t* mount_config, sdmmc_card_t** out_card)
 {
     esp_err_t err;
-    vfs_fat_sd_ctx_t *ctx = NULL;
+    mh_vfs_fat_sd_ctx_t *ctx = NULL;
     uint32_t ctx_id = FF_VOLUMES;
     FATFS *fs = NULL;
     int card_handle = -1;   //uninitialized
@@ -419,7 +414,7 @@ esp_err_t esp_vfs_fat_sdmmc_mount_mh(const char* base_path, const sdmmc_host_t* 
         s_saved_ctx_id = 0;
     }
 
-    ctx = calloc(sizeof(vfs_fat_sd_ctx_t), 1);
+    ctx = calloc(sizeof(mh_vfs_fat_sd_ctx_t), 1);
 
     if (!ctx) {
         CHECK_EXECUTE_RESULT(ESP_ERR_NO_MEM, "no mem");
@@ -462,7 +457,7 @@ esp_err_t esp_vfs_fat_sdspi_mount_mh(const char* base_path, const sdmmc_host_t* 
 {
     const sdmmc_host_t* host_config = host_config_input;
     esp_err_t err;
-    vfs_fat_sd_ctx_t *ctx = NULL;
+    mh_vfs_fat_sd_ctx_t *ctx = NULL;
     uint32_t ctx_id = FF_VOLUMES;
     FATFS *fs = NULL;
     int card_handle = -1;   //uninitialized
@@ -514,7 +509,7 @@ esp_err_t esp_vfs_fat_sdspi_mount_mh(const char* base_path, const sdmmc_host_t* 
         s_saved_ctx_id = 0;
     }
 
-    ctx = calloc(sizeof(vfs_fat_sd_ctx_t), 1);
+    ctx = calloc(sizeof(mh_vfs_fat_sd_ctx_t), 1);
 
     if (!ctx) {
         CHECK_EXECUTE_RESULT(ESP_ERR_NO_MEM, "no mem");

@@ -9,54 +9,32 @@
 
 #include <string>
 
-class ClassFlowTakeImage :
-    public ClassFlowImage
+class ClassFlowTakeImage : public ClassFlowImage
 {
 protected:
-    float waitbeforepicture;
-    float waitbeforepicture_store;
-    framesize_t ImageSize;
-    bool isImageSize;
-    bool ZoomEnabled = false;
-    int ZoomMode = 0;
-    int zoomOffsetX = 0;
-    int zoomOffsetY = 0;
-    bool ImageGrayscale;
-    bool ImageNegative;
-    bool ImageAec2;
-    int ImageQuality;
     time_t TimeImageTaken;
     string namerawimage;
-    int image_height, image_width;
-    bool SaveAllFiles;
-    bool FixedExposure;
 
-
-
-    void CopyFile(string input, string output);
-
-    esp_err_t camera_capture();
+    esp_err_t camera_capture(void);
     void takePictureWithFlash(int flash_duration);
 
-
-    void SetInitialParameter(void);       
+    void SetInitialParameter(void);
 
 public:
     CImageBasis *rawImage;
 
-    ClassFlowTakeImage(std::vector<ClassFlow*>* lfc);
+    ClassFlowTakeImage(std::vector<ClassFlow *> *lfc);
 
-    bool ReadParameter(FILE* pfile, string& aktparamgraph);
+    bool ReadParameter(FILE *pfile, string &aktparamgraph);
     bool doFlow(string time);
     string getHTMLSingleStep(string host);
-    time_t getTimeImageTaken();
-    string name(){return "ClassFlowTakeImage";};
+    time_t getTimeImageTaken(void);
+    string name() { return "ClassFlowTakeImage"; };
 
-    ImageData* SendRawImage();
+    ImageData *SendRawImage(void);
     esp_err_t SendRawJPG(httpd_req_t *req);
 
     ~ClassFlowTakeImage(void);
 };
 
-
-#endif //CLASSFFLOWTAKEIMAGE_H
+#endif // CLASSFFLOWTAKEIMAGE_H

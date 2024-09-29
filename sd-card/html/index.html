@@ -2,8 +2,7 @@
 <html lang="en" xml:lang="en">
 <head>
     <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
-<link rel="apple-touch-icon" href="watermeter.svg" />
-<link rel="shortcut icon" href="watermeter.svg" sizes="196x196">
+    <link rel="apple-touch-icon" href="watermeter.svg?v=$COMMIT_HASH" />
     <title>AI on the edge</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,20 +20,20 @@
         var streamPopup;
         var streamFlashlight = false;
         var streamWindowFeatures =
-                'channelmode=no,directories=no,fullscreen=no,' +
-                'location=no,dependent=yes,menubar=no,resizable=no,scrollbars=no,' +
-                'status=no,toolbar=no,titlebar=no,' +
-                'left=10,top=260,width=640px,height=480px';
+            'channelmode=no,directories=no,fullscreen=no,' +
+            'location=no,dependent=yes,menubar=no,resizable=no,scrollbars=no,' +
+            'status=no,toolbar=no,titlebar=no,' +
+            'left=10,top=260,width=640px,height=480px';
 
-         function loadPage(page) {
+        function loadPage(page) {
             console.log("loadPage( " + page + " )");
 
-            if (streamPopup)   // Ensure that stream popup is closed because it's blocking web interface
+            if (streamPopup) {  // Ensure that stream popup is closed because it's blocking web interface
                 streamPopup.close();
+			}
 
             asyncPageLoad(page);
         }
-
 
         async function asyncPageLoad(page ) {
             console.log("  loading " + page + " ...");
@@ -46,7 +45,6 @@
             });
         }
 
-
         function resetMenu() {
             [].forEach.call(document.querySelectorAll('.submenu'), function (el) {
                 el.style.visibility = 'visible';
@@ -54,18 +52,20 @@
         }
         
         function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-            }
-        }
+			let name = cname + "=";
+			let decodedCookie = decodeURIComponent(document.cookie);
+			let ca = decodedCookie.split(';');
+			for(let i = 0; i <ca.length; i++) {
+				let c = ca[i];
+				
+				while (c.charAt(0) == ' ') {
+					c = c.substring(1);
+				}
+				
+				if (c.indexOf(name) == 0) {
+					return c.substring(name.length, c.length);
+				}
+			}
         return "";
         }        
     </script>
@@ -78,7 +78,7 @@
     <tr>
         <td style="padding-right: 10px;"><img style="width:64px; height:64px" src="favicon.ico?v=$COMMIT_HASH"></td>
         <td><h1 id="id_title"> Digitizer - AI on the edge</h1>
-            <h2>An ESP32 all inclusive neural network recognition system for meter digitalization</h2>
+            <h2>An ESP32 all inclusive neural network recognition system for meter Digitization</h2>
         </td>
     </tr>
 </table>
@@ -90,7 +90,7 @@
     <li><a>Settings <i class="arrow down"></i></a>
       <ul class="submenu" style="width: 260px">
         <li style="width: 260px"><a href="#" onclick="loadPage('prevalue_set.html?v=$COMMIT_HASH');">Set "Previous Value"</a></li>
-        <li style="width: 260px"><a>Alignment <i class="arrow right"></i></a>
+        <li style="width: 260px"><a>References <i class="arrow right"></i></a>
             <ul style="width: 350px">
                 <li style="width: 350px"><a href="#" onclick="loadPage('edit_reference.html?v=$COMMIT_HASH');">Reference Image and Camera Settings</a></li>
                 <li style="width: 350px"><a href="#" onclick="loadPage('edit_alignment.html?v=$COMMIT_HASH');">Alignment Markers</a></li>
@@ -153,7 +153,7 @@
     HA_send_discovery_visibility();
 
     if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
-    document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
+		document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
     }
     console.log("Loading page: " + getCookie("page"));
     document.getElementById('maincontent').src = getCookie("page");
@@ -181,18 +181,17 @@
     }
     */
 
-
     function HA_send_discovery_visibility()	{
 		loadConfig(domainname); 
 		ParseConfig();
 		category = getConfigCategory();
         param = getConfigParameters();
-		if (category["MQTT"]["enabled"] && param["MQTT"]["HomeassistantDiscovery"]["value1"] == "true") {
+		
+		if (category["MQTT"]["enabled"] && param["MQTT"]["HomeassistantDiscovery"].value == "true") {
             document.getElementById("ManualControl").style.display="";
             document.getElementById("HASendDiscovery").style.display="";
         }
 	}
-
 
     function HA_send_discovery() {
     console.log("HA Discovery scheduled");
@@ -207,15 +206,17 @@
 		xhttp.send();
     }
 
-
     function start_livestream(streamFlashlight) {
-        if (streamPopup) 
+        if (streamPopup) {
             streamPopup.close();
+		}
 
-        if (streamFlashlight)
+        if (streamFlashlight) {
             streamPopup = window.open(getDomainname() + '/stream?flashlight=true','LivestreamWithlight',streamWindowFeatures);
-        else
+		}
+        else {
             streamPopup = window.open(getDomainname() + '/stream','Livestream',streamWindowFeatures);
+		}
 
         streamPopup.focus();
     }

@@ -20,7 +20,7 @@ void psram_free_shared_stbi_memory(void *p);
 void *psram_reserve_shared_tmp_image_memory(void);
 void psram_free_shared_temp_image_memory(void);
 
-/* Memory used in Digitalization Steps */
+/* Memory used in Digitization Steps */
 void *psram_get_shared_tensor_arena_memory(void);
 void *psram_get_shared_model_memory(void);
 void psram_free_shared_tensor_arena_and_model_memory(void);

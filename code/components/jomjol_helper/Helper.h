@@ -21,7 +21,6 @@ bool RenameFile(string from, string to);
 bool MakeDir(std::string _what);
 bool FileExists(string filename);
 
-
 string RundeOutput(double _in, int _anzNachkomma);
 
 size_t findDelimiterPos(string input, string delimiter);
@@ -32,7 +31,6 @@ bool ctype_space(const char c, string adddelimiter);
 string getFileType(string filename);
 string getFileFullFileName(string filename);
 string getDirectory(string filename);
-
 
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);
@@ -68,7 +66,6 @@ string getSDCardSectorSize();
 
 string getMac(void);
 
-
 /* Error bit fields
    One bit per error
    Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
@@ -98,8 +95,18 @@ const char* get404(void);
 
 std::string UrlDecode(const std::string& value);
 
+void replaceAll(std::string& s, const std::string& toReplace, const std::string& replaceWith);
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith);
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
 bool isInString(std::string& s, std::string const& toFind);
+
+bool isStringNumeric(std::string &input);
+bool isStringAlphabetic(std::string &input);
+bool isStringAlphanumeric(std::string &input);
+bool alphanumericToBoolean(std::string &input);
+
+int clipInt(int input, int high, int low);
+bool numericStrToBool(std::string input);
+bool stringToBoolean(std::string input);
 
 #endif //HELPER_H

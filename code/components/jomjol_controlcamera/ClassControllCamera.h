@@ -15,66 +15,99 @@
 #include "CImageBasis.h"
 #include "../../include/defines.h"
 
-class CCamera {
-    protected:
-        int ActualQuality;
-        framesize_t ActualResolution;
-        int brightness, contrast, saturation, autoExposureLevel;
-        bool isFixedExposure;
-        int waitbeforepicture_org;
-        int led_intensity = 4095;
+typedef struct
+{
+    uint16_t CamSensor_id;
 
-        void ledc_init(void);
-        bool CameraInitSuccessful = false;
-        bool demoMode = false;
+    framesize_t ImageFrameSize = FRAMESIZE_VGA; // 0 - 10
+    gainceiling_t ImageGainceiling;             // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
 
-        bool loadNextDemoImage(camera_fb_t *fb);
-        long GetFileSize(std::string filename);
+    int ImageQuality;    // 0 - 63
+    int ImageBrightness; // (-2 to 2) - set brightness
+    int ImageContrast;   //-2 - 2
+    int ImageSaturation; //-2 - 2
+    int ImageSharpness;  //-2 - 2
+    bool ImageAutoSharpness;
+    int ImageSpecialEffect; // 0 - 6
+    int ImageWbMode;        // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+    int ImageAwb;           // white balance enable (0 or 1)
+    int ImageAwbGain;       // Auto White Balance enable (0 or 1)
+    int ImageAec;           // auto exposure off (1 or 0)
+    int ImageAec2;          // automatic exposure sensor  (0 or 1)
+    int ImageAeLevel;       // auto exposure levels (-2 to 2)
+    int ImageAecValue;      // set exposure manually  (0-1200)
+    int ImageAgc;           // auto gain off (1 or 0)
+    int ImageAgcGain;       // set gain manually (0 - 30)
+    int ImageBpc;           // black pixel correction
+    int ImageWpc;           // white pixel correction
+    int ImageRawGma;        // (1 or 0)
+    int ImageLenc;          // lens correction (1 or 0)
+    int ImageHmirror;       // (0 or 1) flip horizontally
+    int ImageVflip;         // Invert image (0 or 1)
+    int ImageDcw;           // downsize enable (1 or 0)
 
-        void SetCamWindow(sensor_t *s, int resolution, int xOffset, int yOffset, int xLength, int yLength);
-        void SetImageWidthHeightFromResolution(framesize_t resol);
+    int ImageDenoiseLevel; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
-    public:
-        int image_height, image_width;
-        bool imageZoomEnabled = false;
-        int imageZoomMode = 0;
-        int imageZoomOffsetX = 0;
-        int imageZoomOffsetY = 0;
-        bool imageNegative = false;
-        bool imageAec2 = false;
-        bool imageAutoSharpness = false;
-        int imageSharpnessLevel = 0;
-    #ifdef GRAYSCALE_AS_DEFAULT
-        bool imageGrayscale = true;
-    #else
-        bool imageGrayscale = false;
-    #endif
-        
-        CCamera();
-        esp_err_t InitCam();
+    int ImageWidth;
+    int ImageHeight;
 
-        void LightOnOff(bool status);
-        void LEDOnOff(bool status);
-        esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
-        esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
-        void SetQualitySize(int qual, framesize_t resol, bool zoomEnabled, int zoomMode, int zoomOffsetX, int zoomOffsetY);
-        bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation, int _autoExposureLevel, bool _grayscale, bool _negative, bool _aec2, int _sharpnessLevel);
-        void SetZoom(bool zoomEnabled, int zoomMode, int zoomOffsetX, int zoomOffsetY);
-        void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol, bool &zoomEnabled, int &zoomMode, int &zoomOffsetX, int &zoomOffsetY);
-        void SetLEDIntensity(float _intrel);
-        bool testCamera(void);
-        void EnableAutoExposure(int flash_duration);
-        bool getCameraInitSuccessful();
-        void useDemoMode(void);
-       
+    int ImageLedIntensity;
 
-        framesize_t TextToFramesize(const char * text);
+    bool ImageZoomEnabled;
+    int ImageZoomOffsetX;
+    int ImageZoomOffsetY;
+    int ImageZoomSize;
 
-        esp_err_t CaptureToFile(std::string nm, int delay = 0);
-        esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);
+    int WaitBeforePicture;
+    bool isImageSize;
+
+    bool CameraInitSuccessful;
+    bool changedCameraSettings;
+    bool DemoMode;
+    bool SaveAllFiles;
+} camera_controll_config_temp_t;
+
+extern camera_controll_config_temp_t CCstatus;
+
+class CCamera
+{
+protected:
+    void ledc_init(void);
+    bool loadNextDemoImage(camera_fb_t *fb);
+    long GetFileSize(std::string filename);
+    void SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip);
+    void SetImageWidthHeightFromResolution(framesize_t resol);
+    void SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, int &imageWidth, int &imageHeight, int &zoomOffsetX, int &zoomOffsetY);
+
+public:
+    CCamera(void);
+    esp_err_t InitCam(void);
+
+    void LightOnOff(bool status);
+    void LEDOnOff(bool status);
+
+    esp_err_t setSensorDatenFromCCstatus(void);
+    esp_err_t getSensorDatenToCCstatus(void);
+
+    int ov5640_set_gainceiling(sensor_t *s, gainceiling_t level);
+
+    esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
+    esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
+
+    void SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
+    void SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
+    void SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel);
+
+    void SetLEDIntensity(float _intrel);
+    bool testCamera(void);
+    bool getCameraInitSuccessful(void);
+    void useDemoMode(void);
+
+    framesize_t TextToFramesize(const char *text);
+
+    esp_err_t CaptureToFile(std::string nm, int delay = 0);
+    esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);
 };
 
-
 extern CCamera Camera;
-
 #endif

@@ -4,5 +4,5 @@ It should be possible to include the repo directly as a submodule, how ever it c
  - https://github.com/richgel999/miniz/issues/145
  - https://github.com/espressif/esptool/pull/500#issuecomment-574879468
 
- For sumplicity we therefore use the release files as suggested in the readme.
+ For simplicity we therefore use the release files as suggested in the readme.
  Additionally we added the CMakeLists.txt and this readme.

@@ -49,6 +49,15 @@ void mqttServer_setMeterType(std::string _meterType, std::string _valueUnit, std
     rateUnit = _rateUnit;
 }
 
+/**
+ * Takes any multi-level MQTT-topic and returns the last topic level as nodeId
+ * see https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/ for details about MQTT topics
+*/
+std::string createNodeId(std::string &topic) {
+    auto splitPos = topic.find_last_of('/');
+    return (splitPos == std::string::npos) ? topic : topic.substr(splitPos + 1);
+}
+
 bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     std::string name, std::string icon, std::string unit, std::string deviceClass, std::string stateClass, std::string entityCategory,
     int qos) {
@@ -69,11 +78,18 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         name = group + " " + name;
     }    
 
+    /** 
+     * homeassistant needs the MQTT discovery topic according to the following structure:
+     *      <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+     * if the main topic is embedded in a nested structure, we just use the last part as node_id 
+     * This means a maintopic "home/test/watermeter" is transformed to the discovery topic "homeassistant/sensor/watermeter/..."
+    */
+    std::string node_id = createNodeId(maintopic);
     if (field == "problem") { // Special binary sensor which is based on error topic
-        topicFull = "homeassistant/binary_sensor/" + maintopic + "/" + configTopic + "/config";
+        topicFull = "homeassistant/binary_sensor/" + node_id + "/" + configTopic + "/config";
     }
     else {
-        topicFull = "homeassistant/sensor/" + maintopic + "/" + configTopic + "/config";
+        topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
     }
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
@@ -172,10 +188,10 @@ bool MQTThomeassistantDiscovery(int qos) {
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",                      "Value",                            "gauge",                 valueUnit,             meterType,      "total_increasing", "", qos);
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                        "Raw Value",                        "raw",                   "",                    "",             "",                 "diagnostic", qos);
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",                      "Error",                            "alert-circle-outline",  "",                    "",             "",                 "diagnostic", qos);
-        /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitalization_round */
+        /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_Digitization_round */
         // allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate",               "Rate (Unit/Minute)",               "swap-vertical",         "",        "",            "",                 ""); // Legacy, always Unit per Minute
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",          "swap-vertical",         rateUnit,              "",             "measurement",      "", qos);
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitalization_round",  "Change since last digitalization round",  "arrow-expand-vertical", valueUnit,  "",             "measurement",      "", qos); // correctly the Unit is Unit/Interval!
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_Digitization_round",  "Change since last Digitization round",  "arrow-expand-vertical", valueUnit,  "",             "measurement",      "", qos); // correctly the Unit is Unit/Interval!
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "timestamp",                  "Timestamp",                     "clock-time-eight-outline", "",                    "timestamp",    "",                 "diagnostic", qos);
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "json",                       "JSON",                             "code-json",             "",                    "",             "",                 "diagnostic", qos);
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "problem",                    "Problem",                          "alert-outline",         "",                    "problem",      "",                 "", qos); // Special binary sensor which is based on error topic

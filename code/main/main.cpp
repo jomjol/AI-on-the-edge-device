@@ -11,10 +11,13 @@
 #include "esp_chip_info.h"
 
 // SD-Card ////////////////////
-#include "sdcard_init.h"
 #include "esp_vfs_fat.h"
 #include "ffconf.h"
 #include "driver/sdmmc_host.h"
+
+#if (ESP_IDF_VERSION <= ESP_IDF_VERSION_VAL(5, 1, 2))
+#include "sdcard_init.h"
+#endif
 ///////////////////////////////
 
 #include "ClassLogFile.h"
@@ -91,10 +94,10 @@ static const char *TAG = "MAIN";
 
 #define MOUNT_POINT "/sdcard"
 
-
 bool Init_NVS_SDCard()
 {
     esp_err_t ret = nvs_flash_init();
+	
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
@@ -108,12 +111,23 @@ bool Init_NVS_SDCard()
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 
-   // Set bus width to use:
-   #ifdef __SD_USE_ONE_LINE_MODE__
-      slot_config.width = 1;
-   #else
-      slot_config.width = 4;
-   #endif
+    // Set bus width to use:
+#ifdef __SD_USE_ONE_LINE_MODE__
+    slot_config.width = 1;
+#ifdef SOC_SDMMC_USE_GPIO_MATRIX
+    slot_config.clk = GPIO_SDCARD_CLK;
+    slot_config.cmd = GPIO_SDCARD_CMD;
+    slot_config.d0 = GPIO_SDCARD_D0;
+#endif
+
+#else
+    slot_config.width = 4;
+#ifdef SOC_SDMMC_USE_GPIO_MATRIX
+    slot_config.d1 = GPIO_SDCARD_D1;
+    slot_config.d2 = GPIO_SDCARD_D2;
+    slot_config.d3 = GPIO_SDCARD_D3;
+#endif
+#endif
 
     // Enable internal pullups on enabled pins. The internal pullups
     // are insufficient however, please make sure 10k external pullups are
@@ -125,7 +139,7 @@ bool Init_NVS_SDCard()
     // dies führt jedoch bei schlechten Kopien des AI_THINKER Boards
     // zu Problemen mit der SD Initialisierung und eventuell sogar zur reboot-loops.
     // Um diese Probleme zu kompensieren, wird der PullUp manuel gesetzt.
-    gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY); // HS2_D3	
+    gpio_set_pull_mode(GPIO_SDCARD_D3, GPIO_PULLUP_ONLY); // HS2_D3	
 
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
@@ -144,7 +158,11 @@ bool Init_NVS_SDCard()
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
     // production applications.
+#if (ESP_IDF_VERSION <= ESP_IDF_VERSION_VAL(5, 1, 2))
     ret = esp_vfs_fat_sdmmc_mount_mh(mount_point, &host, &slot_config, &mount_config, &card);
+#else
+    ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
+#endif
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
@@ -166,7 +184,6 @@ bool Init_NVS_SDCard()
     SaveSDCardInfo(card);
     return true;
 }
-
 
 extern "C" void app_main(void)
 {
@@ -191,7 +208,6 @@ extern "C" void app_main(void)
     // ********************************************
     ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
  
-
     // Init SD card
     // ********************************************
     if (!Init_NVS_SDCard())
@@ -211,7 +227,6 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
-
 
     // Init external PSRAM
     // ********************************************
@@ -261,7 +276,6 @@ extern "C" void app_main(void)
                     ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
                     vTaskDelay( xDelay );
 
-
                     // Check camera init
                     // ********************************************
                     if (camStatus != ESP_OK) { // Camera init failed, retry to init
@@ -310,7 +324,6 @@ extern "C" void app_main(void)
         }
     }
 
-
     // SD card: basic R/W check
     // ********************************************
     int iSDCardStatus = SDCardCheckRW();
@@ -335,11 +348,9 @@ extern "C" void app_main(void)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
 
-
     // Set CPU Frequency
     // ********************************************
     setCpuFrequency();
-
 
     // SD card: Create further mandatory directories (if not already existing)
     // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
@@ -432,15 +443,12 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
     vTaskDelay( xDelay );
 
-
     // manual reset the time
     // ********************************************
     if (!time_manual_reset_sync())
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Manual Time Sync failed during startup" );
     }
-
-
 
     // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
     // ********************************************
@@ -465,8 +473,6 @@ extern "C" void app_main(void)
         #endif
     #endif
    
-
-
     // Print Device info
     // ********************************************
     esp_chip_info_t chipInfo;
@@ -522,7 +528,7 @@ extern "C" void app_main(void)
     }
 }
 
-
+// FIXME: needs to be revised or removed!!!
 void migrateConfiguration(void) {
     bool migrated = false;
 
@@ -569,16 +575,19 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";Demo", "Demo"); // Enable it
 
-            migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
+            // Parameter is no longer used
+            // migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
+            // migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
         }
 
         if (section == "[Alignment]") {
-            migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
-
-            migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
+            // Parameter is no longer used
+            // migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
+            // migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
+		
+            // Parameter is no longer used
+            // migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
+            // migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
         }
 
         if (section == "[Digits]") {
@@ -593,6 +602,7 @@ void migrateConfiguration(void) {
         }
 
         if (section == "[PostProcessing]") {
+            migrated = migrated | replaceString(configLines[i], "AnalogDigitalTransitionStart", "AnalogToDigitTransitionStart"); // Rename it
             migrated = migrated | replaceString(configLines[i], ";PreValueUse = true", ";PreValueUse = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";PreValueUse", "PreValueUse"); // Enable it
 
@@ -705,7 +715,6 @@ void migrateConfiguration(void) {
     }
 }
 
-
 std::vector<std::string> splitString(const std::string& str) {
     std::vector<std::string> tokens;
  
@@ -718,8 +727,6 @@ std::vector<std::string> splitString(const std::string& str) {
  
     return tokens;
 }
-
-
 
 /*bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
     std::string buf;
@@ -748,11 +755,10 @@ std::vector<std::string> splitString(const std::string& str) {
     return found;
 }*/
 
-
 bool setCpuFrequency(void) {
     ConfigFile configFile = ConfigFile(CONFIG_FILE); 
     string cpuFrequency = "160";
-    esp_pm_config_esp32_t  pm_config; 
+    esp_pm_config_t  pm_config; 
 
     if (!configFile.ConfigFileExists()){
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "No ConfigFile defined - exit setCpuFrequency()!");
@@ -763,7 +769,6 @@ bool setCpuFrequency(void) {
     std::string line = "";
     bool disabledLine = false;
     bool eof = false;
-
 
     /* Load config from config file */
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || 

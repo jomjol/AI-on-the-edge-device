@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
+
 <head>
-<title>Configuration</title>
 <meta charset="UTF-8" />
+<title>Configuration</title>
 
 <style>
     h1 {font-size: 2em;}
@@ -160,6 +161,29 @@
         height: calc(100% - 2px);
         padding: 1px;
     }
+	
+    #overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.8);
+        z-index: 2;
+    }
+
+    #overlaytext{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 150%;
+        color: white;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+    }	
 </style>
 
 <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
@@ -167,11 +191,18 @@
 <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
 
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
+
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
+    <div id="overlay">
+        <div id="overlaytext"></div>
+    </div>
+
 	<h2>Configuration</h2>
 
 	<details id="desc_details">
@@ -252,227 +283,409 @@
 			<td>$TOOLTIP_TakeImage_RawImagesRetention</td>
 		</tr>
 
-		<tr class="expert" unused_id="ex1">
-			<td class="indent1">
-				<label><class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class></label>
-			</td>
-			<td>
-				<select id="TakeImage_Demo_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_Demo</td>
-		</tr>
-
-		<tr class="expert" unused_id="ex1">
+		<tr class="expert" unused_id="TakeImage_WaitBeforeTakingPicture_ex3">
 			<td class="indent1">
 				<class id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">Wait Before Taking Picture</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any"
+				<input required type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
 					oninput="(!validity.rangeUnderflow||(value=0));">Seconds
 			</td>
 			<td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
 		</tr>
 
-		<tr unused_id="Brightness_ex3">
+		<tr class="expert" unused_id="TakeImage_CamGainceiling_ex3">
 			<td class="indent1">
-				<class id="TakeImage_Brightness_text" style="color:black;">Brightness</class>
+				<class id="TakeImage_CamGainceiling_text" style="color:black;">CamGainceiling</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Brightness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+				<select id="TakeImage_CamGainceiling_value1" onchange="cameraParameterChanged()">
+					<option value="x2" selected>x2</option>
+					<option value="x4" >x4</option>
+					<option value="x8" >x8</option>	
+					<option value="x16" >x16</option>
+					<option value="x32" >x32</option>
+					<option value="x64" >x64</option>
+					<option value="x128" >x128</option>
+				</select>
 			</td>
-			<td>$TOOLTIP_TakeImage_Brightness</td>
-		</tr>
-
-		<tr unused_id="Contrast_ex3">
+			<td>$TOOLTIP_TakeImage_CamGainceiling</td>
+		</tr>		
+		
+		<tr class="expert" unused_id="TakeImage_CamQuality_ex3">
 			<td class="indent1">
-				<class id="TakeImage_Contrast_text" style="color:black;">Contrast</class>
+				<class id="TakeImage_CamQuality_text" style="color:black;">Image Quality</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Contrast_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
+				<input required type="number" id="TakeImage_CamQuality_value1" size="13" min="5" max="63" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=5)) && (!validity.rangeOverflow||(value=63)) &&
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
-			<td>$TOOLTIP_TakeImage_Contrast</td>
+			<td>$TOOLTIP_TakeImage_CamQuality</td>
 		</tr>
 
-		<tr unused_id="Saturation_ex3">
+		<tr unused_id="TakeImage_CamBrightness_ex3">
 			<td class="indent1">
-				<class id="TakeImage_Saturation_text" style="color:black;">Saturation</class>
+				<class id="TakeImage_CamBrightness_text" style="color:black;">Brightness</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Saturation_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+				<input required type="number" id="TakeImage_CamBrightness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
-			<td>$TOOLTIP_TakeImage_Saturation</td>
+			<td>$TOOLTIP_TakeImage_CamBrightness</td>
 		</tr>
 
-		<tr class="expert" unused_id="TakeImage_Sharpness_ex3">
+		<tr unused_id="TakeImage_CamContrast_ex3">
 			<td class="indent1">
-				<class id="TakeImage_Sharpness_text" style="color:black;">Sharpness</class>
+				<class id="TakeImage_CamContrast_text" style="color:black;">Contrast</class>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Sharpness_value1" size="13" min="-4" max="3" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-4)) && (!validity.rangeOverflow||(value=3)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+				<input required type="number" id="TakeImage_CamContrast_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
-			<td>$TOOLTIP_TakeImage_Sharpness</td>
+			<td>$TOOLTIP_TakeImage_CamContrast</td>
 		</tr>
 
-		<tr unused_id="LEDIntensity_ex3">
+		<tr unused_id="TakeImage_CamSaturation_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamSaturation_text" style="color:black;">Saturation</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamSaturation_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamSaturation</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAutoSharpness_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamAutoSharpness_text" style="color:black;">AutoSharpness</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamAutoSharpness_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAutoSharpness</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamSharpness_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamSharpness_text" style="color:black;">Sharpness</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-3" max="3" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-3)) && (!validity.rangeOverflow||(value=3)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamSharpness</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamSpecialEffect_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamSpecialEffect_text" style="color:black;">SpecialEffect</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamSpecialEffect_value1" onchange="cameraParameterChanged()">
+					<option value="no_effect" selected>no effect</option>
+					<option value="negative" >negative</option>
+					<option value="grayscale" >grayscale</option>					
+					<option value="red" >red</option>					
+					<option value="green" >green</option>					
+					<option value="blue" >blue</option>					
+					<option value="retro" >retro</option>					
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamSpecialEffect</td>
+		</tr>
+		
+		<tr class="expert" unused_id="TakeImage_CamWbMode_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamWbMode_text" style="color:black;">White Balance Mode</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamWbMode_value1" onchange="cameraParameterChanged()">
+					<option value="auto" selected>auto</option>
+					<option value="sunny" >sunny</option>
+					<option value="cloudy" >cloudy</option>
+					<option value="office" >office</option>
+					<option value="home" >home</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamWbMode</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAwb_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamAwb_text" style="color:black;">White Balance</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamAwb_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAwb</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAwbGain_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamAwbGain_text" style="color:black;">Auto White Balance</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamAwbGain_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAwbGain</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAec_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamAec_text" style="color:black;">Auto-Exposure Control</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamAec_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAec</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAec2_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamAec2_text" style="color:black;">Auto-Exposure Control 2</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamAec2_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAec2</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAeLevel_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamAeLevel_text" style="color:black;">Auto Exposure Level</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-5" max="5" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=-5)) && (!validity.rangeOverflow||(value=5)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAeLevel</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAecValue_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamAecValue_text" style="color:black;">Auto Exposure Value</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamAecValue_value1" size="13" min="0" max="1200" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1200)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAecValue</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamAgc_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamAgc_text" style="color:black;">Auto Gain</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamAgc_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAgc</td>
+		</tr>		
+
+		<tr class="expert" unused_id="TakeImage_CamAgcGain_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamAgcGain_text" style="color:black;">Gain Manuall Value</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamAgcGain_value1" size="13" min="0" max="30" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=30)) &&
+						(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamAgcGain</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamBpc_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamBpc_text" style="color:black;">Black Pixel Correction</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamBpc_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamBpc</td>
+		</tr>
+		
+		<tr class="expert" unused_id="TakeImage_CamWpc_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamWpc_text" style="color:black;">White Pixel Correction</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamWpc_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamWpc</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamRawGma_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamRawGma_text" style="color:black;">CamRawGma</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamRawGma_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamRawGma</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamLenc_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamLenc_text" style="color:black;">Lens Correction</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamLenc_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamLenc</td>
+		</tr>
+		
+		<tr unused_id="TakeImage_CamHmirror_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamHmirror_text" style="color:black;">Mirror Image</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamHmirror_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamHmirror</td>
+		</tr>		
+		
+		<tr unused_id="TakeImage_CamVflip_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamVflip_text" style="color:black;">Flip Image</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamVflip_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamVflip</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamDcw_ex3">
+			<td class="indent1">
+			    <class id="TakeImage_CamDcw_text" style="color:black;">Downsize</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamDcw_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamDcw</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamDenoise_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamDenoise_text" style="color:black;">Denoise</class>
+			</td>
+			<td>
+				<input required type="number" id="TakeImage_CamDenoise_value1" value="0" min="0" max="8" step="1" onchange="cameraParameterChanged()"
+					oninput="(!validity.rangeOverflow||(value=8)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamDenoise</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamZoom_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamZoom_text" style="color:black;">Zoom</class>
+			</td>
+			<td>
+				<select id="TakeImage_CamZoom_value1" onchange="cameraParameterChanged()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_TakeImage_CamZoom</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamZoomSize_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamZoomSize_text" style="color:black;">Zoom Size</class>
+			</td>
+			<td>
+                <input required type="number" id="TakeImage_CamZoomSize_value1" value="0" min="0" max="59" step="1" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=59)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_TakeImage_CamZoomSize</td>			
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamZoomOffsetX_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamZoomOffsetX_text" style="color:black;">Zoom Offset X</class>
+			</td>
+			<td>
+                <input required type="number" id="TakeImage_CamZoomOffsetX_value1" value="0" min="-960" max="960" step="8" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=-960)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+			</td>
+			<td>$TOOLTIP_TakeImage_CamZoomOffsetX</td>
+		</tr>
+
+		<tr class="expert" unused_id="TakeImage_CamZoomOffsetY_ex3">
+			<td class="indent1">
+				<class id="TakeImage_CamZoomOffsetY_text" style="color:black;">Zoom Offset Y</class>
+			</td>
+            <td>
+                <input required type="number" id="TakeImage_CamZoomOffsetY_value1" value="0" min="-720" max="720" step="8" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=720)) && (!validity.rangeUnderflow||(value=-720)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+			</td>
+			<td>$TOOLTIP_TakeImage_CamZoomOffsetY</td>
+		</tr>
+
+		<tr unused_id="TakeImage_LEDIntensity_ex3">
 			<td class="indent1">
 				<class id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</class>
 			</td>
 			<td>
 				<input required type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_LEDIntensity</td>
 		</tr>
-
-		<tr class="expert" unused_id="ex2">
+		
+		<tr class="expert" unused_id="TakeImage_Demo_ex3">
 			<td class="indent1">
-				<class id="TakeImage_ImageQuality_text" style="color:black;">Image Quality</class>
+				<label>
+					<class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class>
+				</label>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_ImageQuality_value1" size="13" min="8" max="63" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=8)) && (!validity.rangeOverflow||(value=63)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_ImageQuality</td>
-		</tr>
-
-		<tr class="expert" unused_id="ex3">
-			<td class="indent1">
-				<class id="TakeImage_ImageSize_text" style="color:black;">Image Size</class>
-			</td>
-			<td>
-				<select id="TakeImage_ImageSize_value1" onchange="cameraParameterChanged()">
-					<option value="VGA" selected>VGA</option>
-					<option value="QVGA" >QVGA</option>
+				<select id="TakeImage_Demo_value1">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
-			<td>$TOOLTIP_TakeImage_ImageSize</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_Zoom_ex10">
-			<td class="indent1">
-				<class id="TakeImage_Zoom_text" style="color:black;">Zoom</class>
-			</td>
-			<td>
-				<select id="TakeImage_Zoom_value1" onchange="cameraParameterChanged()">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_Zoom</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_ZoomMode_ex10">
-			<td class="indent1">
-				<class id="TakeImage_ZoomMode_text" style="color:black;">Zoom Mode</class>
-			</td>
-			<td>
-				<select id="TakeImage_ZoomMode_value1" onchange="cameraParameterChanged()">
-					<option value="1">1</option>
-					<option value="0" selected>0</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_ZoomMode</td>
-		</tr>
-
-		<tr class="expert" unused_id="ex1">
-
-			<td class="indent1">
-				<class id="TakeImage_ZoomOffsetX_text" style="color:black;">Zoom Offset X</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_ZoomOffsetX_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0));">Pixel
-			</td>
-			<td>$TOOLTIP_TakeImage_ZoomOffsetX</td>
-		</tr>
-
-		<tr class="expert" unused_id="ex1">
-
-			<td class="indent1">
-				<class id="TakeImage_ZoomOffsetY_text" style="color:black;">Zoom Offset Y</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_ZoomOffsetY_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0));">Pixel
-			</td>
-			<td>$TOOLTIP_TakeImage_ZoomOffsetY</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_Grayscale_ex10">
-			<td class="indent1">
-				<class id="TakeImage_Grayscale_text" style="color:black;">Grayscale</class>
-			</td>
-			<td>
-				<select id="TakeImage_Grayscale_value1" onchange="cameraParameterChanged()">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_Grayscale</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_Negative_ex10">
-			<td class="indent1">
-				<class id="TakeImage_Negative_text" style="color:black;">Negative</class>
-			</td>
-			<td>
-				<select id="TakeImage_Negative_value1" onchange="cameraParameterChanged()">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_Negative</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_Aec2_ex10">
-			<td class="indent1">
-				<class id="TakeImage_Aec2_text" style="color:black;">Auto-exposure Control 2</class>
-			</td>
-			<td>
-				<select id="TakeImage_Aec2_value1" onchange="cameraParameterChanged()">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_Aec2</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_AutoExposureLevel_ex3">
-			<td class="indent1">
-				<class id="TakeImage_AutoExposureLevel_text" style="color:black;">Auto Exposure Level</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_AutoExposureLevel_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_AutoExposureLevel</td>
-		</tr>
-
-		<tr class="expert" unused_id="TakeImage_FixedExposure_ex10">
-			<td class="indent1">
-				<class id="TakeImage_FixedExposure_text" style="color:black;">Fixed Exposure</class>
-			</td>
-			<td>
-				<select id="TakeImage_FixedExposure_value1" onchange="cameraParameterChanged()">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_FixedExposure</td>
+			<td>$TOOLTIP_TakeImage_Demo</td>
 		</tr>
 
 		<!------------- Alignment ------------------>
@@ -480,7 +693,7 @@
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Alignment</h4></td>
 		</tr>
 
-		<tr class="expert" unused_id="ex6">
+		<tr class="expert" unused_id="Alignment_SearchFieldX_ex6">
 			<td class="indent1">
 			    <class id="Alignment_SearchFieldX_text" style="color:black;">Search Field X</class>
 			</td>
@@ -491,7 +704,7 @@
 			<td>$TOOLTIP_Alignment_SearchFieldX</td>
 		</tr>
 
-		<tr class="expert" unused_id="ex8">
+		<tr class="expert" unused_id="Alignment_SearchFieldY_ex8">
 			<td class="indent1">
 				<class id="Alignment_SearchFieldY_text" style="color:black;">Search Field Y</class>
 			</td>
@@ -502,7 +715,7 @@
 			<td>$TOOLTIP_Alignment_SearchFieldY</td>
 		</tr>
 
-		<tr class="expert" unused_id="AlignmentAlgo_ex8">
+		<tr class="expert" unused_id="Alignment_AlignmentAlgo_ex8">
 			<td class="indent1">
 				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
 				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">Alignment Algorithm</class></label>
@@ -518,39 +731,13 @@
 			<td>$TOOLTIP_Alignment_AlignmentAlgo</td>
 		</tr>
 
-		<tr unused_id="ex13">
-			<td class="indent1">
-			    <class id="Alignment_FlipImageSize_text" style="color:black;">Flip Image Size</class>
-			</td>
-			<td>
-				<select id="Alignment_FlipImageSize_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_Alignment_FlipImageSize</td>
-		</tr>
-
-		<tr unused_id="ex13">
-			<td class="indent1">
-			    <class id="Alignment_InitialMirror_text" style="color:black;">Initial Mirror</class>
-			</td>
-			<td>
-				<select id="Alignment_InitialMirror_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_Alignment_InitialMirror</td>
-		</tr>
-
-		<tr>
+		<tr unused_id="Alignment_InitialRotate_ex8">
 			<td class="indent1">
 				<class id="Alignment_InitialRotate_text" style="color:black;">Rotation angle</class>
 			</td>
 			<td>
-				<input required type="number" name="name" id="Alignment_InitialRotate_value1" size="13" min="-360" max="+360" step="0.1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
+				<input required type="number" name="name" id="Alignment_InitialRotate_value1" size="13" min="-180" max="+180" step="0.1"
+					oninput="(!validity.rangeOverflow||(value=180)) && (!validity.rangeUnderflow||(value=-180)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
 			</td>
 			<td>$TOOLTIP_Alignment_InitialRotate</td>
 		</tr>
@@ -663,13 +850,13 @@
 			</td>
 			<td>
 				<select id="PostProcessing_PreValueUse_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_PreValueUse</td>
 		</tr>
-
+		
 		<tr class="expert" unused_id="ex11">
 			<td class="indent1">
 				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
@@ -688,8 +875,8 @@
 			</td>
 			<td>
 				<select id="PostProcessing_ErrorMessage_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_ErrorMessage</td>
@@ -701,8 +888,8 @@
 			</td>
 			<td>
 				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_CheckDigitIncreaseConsistency</td>
@@ -719,12 +906,12 @@
 
 		<tr>
 			<td class="indent2">
-				<label><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rates</class></label>
+				<label><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rate</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.AllowNegativeRates</td>
@@ -745,15 +932,15 @@
 
 		<tr>
 			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_AnalogDigitalTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogDigitalTransitionStart")' unchecked >
-				<label for=PostProcessing_AnalogDigitalTransitionStart_enabled><class id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">Analog/Digital Transition Start</class></label>
+				<input type="checkbox" id="PostProcessing_AnalogToDigitTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogToDigitTransitionStart")' unchecked >
+				<label for=PostProcessing_AnalogToDigitTransitionStart_enabled><class id="PostProcessing_AnalogToDigitTransitionStart_text" style="color:black;">Analog/Digital Transition Start</class></label>
 			</td>
 			<td>
-				<input required type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2"
-					oninput="(!validity.rangeUnderflow||(value=6.0)) && (!validity.rangeOverflow||(value=9.9)) && 
+				<input required type="number" id="PostProcessing_AnalogToDigitTransitionStart_value1" step="0.1" min="5.0" max="9.9" value="9.2"
+					oninput="(!validity.rangeUnderflow||(value=5.0)) && (!validity.rangeOverflow||(value=9.9)) && 
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogDigitalTransitionStart</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogToDigitTransitionStart</td>
 		</tr>
 
 		<tr>
@@ -784,30 +971,56 @@
 
 		<tr>
 			<td class="indent2">
+				<input type="checkbox" id="PostProcessing_ChangeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ChangeRateThreshold")' unchecked >
+				<label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
+			</td>
+			<td>
+				<input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
+					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
+						(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.ChangeRateThreshold</td>
+		</tr>
+
+		<tr>
+			<td class="indent2">
 				<label><class id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_ExtendedResolution_value1">
-					<option value="true" >true</option>
-					<option value="false" selected>false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.ExtendedResolution</td>
 		</tr>
 
 		<tr>
-			<td id="ex121" class="indent2">
+			<td class="indent2">
 				<label><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</class></label>
 			</td>
 			<td>
 				<select id="PostProcessing_IgnoreLeadingNaN_value1">
-					<option value="true" >true</option>
-					<option value="false" selected>false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreLeadingNaN</td>
-		</tr>
-
+		</tr>	
+		<!-------------
+		<tr>
+			<td class="indent2">
+				<label><class id="PostProcessing_IgnoreAllNaN_text" style="color:black;">Ignore All NaNs</class></label>
+			</td>
+			<td>
+				<select id="PostProcessing_IgnoreAllNaN_value1">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreAllNaN</td>
+		</tr>		
+		------------------>
 
 		<!------------- MQTT ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -913,8 +1126,8 @@
 			</td>
 			<td>
 				<select id="MQTT_RetainMessages_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_MQTT_RetainMessages</td>
@@ -935,8 +1148,8 @@
 			</td>
 			<td>
 				<select id="MQTT_HomeassistantDiscovery_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_MQTT_HomeassistantDiscovery</td>
@@ -1135,6 +1348,52 @@
 			<td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
 		</tr>
 
+		<!------------- Webhook ------------------>
+		<tr style="border-bottom: 2px solid lightgray;">
+			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+			    <h4>
+				<input type="checkbox" id="Category_Webhook_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+				<label for=Category_Webhook_enabled>Webhook</label>
+				</h4>		
+			</td>
+		</tr>
+
+		<tr class="WebhookItem">
+			<td class="indent1">
+				<input type="checkbox" id="Webhook_Uri_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "Uri")' unchecked >
+				<label for=Webhook_Uri_enabled><class id="Webhook_Uri_text" style="color:black;">URI</class></label>
+			</td>
+			<td>
+				<input required type="text" id="Webhook_Uri_value1">
+			</td>
+			<td>$TOOLTIP_Webhook_Uri</td>
+		</tr>
+
+        <tr class="WebhookItem">
+			<td class="indent1">
+				<input type="checkbox" id="Webhook_ApiKey_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "ApiKey")' unchecked >
+				<label for=Webhook_ApiKey_enabled><class id="Webhook_ApiKey_text" style="color:black;">ApiKey</class></label>
+			</td>
+			<td>
+				<input required type="text" id="Webhook_ApiKey_value1">
+			</td>
+			<td>$TOOLTIP_Webhook_ApiKey</td>
+		</tr>
+
+		<tr class="WebhookItem">
+			<td class="indent1">
+				<input type="checkbox" id="Webhook_UploadImg_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "UploadImg")' unchecked>
+				<label for=Webhook_UploadImg_enabled><class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class></label>
+			</td>
+			<td>
+				<select id="Webhook_UploadImg_value1">
+					<option value="0" selected>NEVER</option>
+					<option value="1">ALWAYS</option>
+					<option value="2">ON_ERROR</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_Webhook_UploadImg</td>
+		</tr>
 
 		<!------------- GPIO ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -1445,6 +1704,8 @@
 					<option value="input-pullup">input pullup</option>
 					<option value="input-pulldown">input pulldown</option>
 					<option value="output">output</option>
+					<!-- <option value="output-pwm">output-pwm</option> -->
+					<!-- <option value="external-flash-pwm">external-flash-pwm</option> -->				
 					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
 				</select>
 			</td>
@@ -1533,18 +1794,28 @@
 			<td class="indent1">
 				<span class="GPIO_item" id="GPIO_LEDColor_text">LED Color</span>
 			</td>
-			<td class="GPIO_item">
-				R <input required style="min-width:35px;width:35px;" type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1"
-						size="12" min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-				G <input required style="min-width:35px;width:35px" type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2"
-						size="12" min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-				B <input required style="min-width:35px;width:35px" type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3"
-						size="12" min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
+			<td>
+				R <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1"
+						min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
 							(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_GPIO_LEDColor</td>
+		</tr>			
+		<tr class="GPIO_item" unused_id="LEDRGBex9">
+			<td></td>
+			<td>			
+				G <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2"
+						min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
+							(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
+		</tr>			
+		<tr class="GPIO_item" unused_id="LEDRGBex9">
+			<td></td>		
+			<td>				
+				B <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3"
+						min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
+							(!validity.stepMismatch||(value=parseInt(this.value)));">
+			</td>
 		</tr>
 		<!------------- GPIO12 end ------------------>
 
@@ -1570,15 +1841,15 @@
 				<span class="GPIO_IO13 GPIO_item">GPIO13 Use Interrupt</span>
 			</td>
 			<td>
-					<select id="GPIO_IO13_value2">
-						<option value="disabled">disabled</option>
-						<option value="rising-edge" disabled>rising edge</option>
-						<option value="falling-edge" disabled>falling edge</option>
-						<option value="rising-and-falling">rising and falling</option>
-						<option value="low-level-trigger">low level trigger</option>
-						<option value="high-level-trigger">high level trigger</option>
-					</select>	
-				</td>
+				<select id="GPIO_IO13_value2">
+					<option value="disabled">disabled</option>
+					<option value="rising-edge" disabled>rising edge</option>
+					<option value="falling-edge" disabled>falling edge</option>
+					<option value="rising-and-falling">rising and falling</option>
+					<option value="low-level-trigger">low level trigger</option>
+					<option value="high-level-trigger">high level trigger</option>
+				</select>	
+			</td>
 			<td></td>
 		</tr>
 
@@ -1629,8 +1900,8 @@
 			</td>
 			<td>
 				<select id="AutoTimer_AutoStart_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_AutoTimer_AutoStart</td>
@@ -1659,8 +1930,8 @@
 			</td>
 			<td>
 				<select id="DataLogging_DataLogActive_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_DataLogging_DataLogActive</td>
@@ -1776,6 +2047,18 @@
 			<td>$TOOLTIP_System_CPUFrequency</td>
 		</tr>
 
+		<tr>
+			<td class="indent1">
+				<class id="System_Tooltip_text" style="color:black;">Tooltip</class>
+			</td>
+			<td>
+				<select id="System_Tooltip_value1" onchange="UpdateTooltipModus()">
+					<option value="true">enable</option>
+					<option value="false" selected>disable</option>
+				</select>
+			</td>
+			<td></td>
+		</tr>
 	</table>
 
 	<table style="padding-top:10px">
@@ -1788,9 +2071,9 @@
 	</table>
 </div>
 
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
-<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>  
+
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
  
 <script type="text/javascript">
 var canvas = document.getElementById('canvas'),
@@ -1801,20 +2084,36 @@ var canvas = document.getElementById('canvas'),
     NUNBERSAkt = -1,
     NUMBERS;
 
-
 function cameraParameterChanged() {
     changeCamValue = 1;
+
+    if(!document.getElementById("TakeImage_CamZoom_value1").selectedIndex) {
+        // EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomSize", false);				
+    }
+    else {
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomSize", false);				
+    }
+
+    if(document.getElementById("TakeImage_CamAutoSharpness_value1").selectedIndex) {
+        EnDisableItem(true, param, category, "TakeImage", "CamSharpness", false);				
+    }
+    else {
+        EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
+    }
 }
-	
 
 function LoadConfigNeu() {
-    domainname = getDomainname(); 
     if (!loadConfig(domainname)) {
         firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
         return;
-    } 
-    ParseConfig();	
-    param = getConfigParameters();
+    }
+	
+    param = getCamConfig();
     category = getConfigCategory();
     InitIndivParameter();
 
@@ -1822,9 +2121,28 @@ function LoadConfigNeu() {
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
     UpdateExpertModus();
+    UpdateTooltipModus();	
     document.getElementById("divall").style.display = ''; 
-}
 
+    if(!document.getElementById("TakeImage_CamZoom_value1").selectedIndex) {
+        // EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamZoomSize", false);				
+    }
+    else {
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetY", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamZoomSize", false);				
+    }
+
+    if(document.getElementById("TakeImage_CamAutoSharpness_value1").selectedIndex) {
+        EnDisableItem(true, param, category, "TakeImage", "CamSharpness", false);				
+    }
+    else {
+        EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
+    }	
+}
 
 function InitIndivParameter() {
     NUMBERS = getNUMBERInfo();
@@ -1866,318 +2184,17 @@ function InitIndivParameter() {
     _indexInfluxv1.selectedIndex = 0;
 }
 
-
-function getParameterByName(name, url = window.location.href) {
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-    results = regex.exec(url);
-
-    if (!results) {return null;}
-    if (!results[2]) {return '';}
-	
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}	
-
-
-function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1) {
-    let anzpara;
-    try {
-        anzpara = _param[_cat][_name].anzParam;	
-    }
-    catch (error) {
-        firework.launch("Parameter '" + _name + "' in category '" + _cat + "' is unknown!", 'danger', 30000);
-        return;
-    }
-
-    if (_number > -1) {
-        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined)) {
-            return;
-        }
-
-        if (_optional) {
-            document.getElementById(_cat+"_"+_name+"_enabled").checked = NUMBERS[_number][_cat][_name]["enabled"];
-            for (var j = 1; j <= anzpara; ++j) {
-                document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !NUMBERS[_number][_cat][_name]["enabled"];	
-            }		
-        }
-	    
-        document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
-        setEnabled(_cat+"_"+_name, true);
-
-        for (var j = 1; j <= anzpara; ++j) {
-            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-            if (element.tagName.toLowerCase() == "select") {
-                var textToFind = NUMBERS[_number][_cat][_name]["value"+j];
-                if (textToFind == undefined) {
-                    continue;
-                }
-
-                _isFound = false;
-                element.selectedIndex = -1;
-                for (var i = 0; i < element.options.length; i++) {
-                    if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
-                        element.selectedIndex = i;
-                        _isFound = true;
-                        break;
-                    }
-                }
-                if (!_isFound) {
-                    _zw_txt = "In the selected field the value '" + textToFind + "' in the parameter '";
-                    _zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
-                    firework.launch(_zw_txt, 'warning', 10000);
-                }
-            }
-            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-                element.checked = NUMBERS[_number][_cat][_name]["value"+j] == "true";
-            }
-            else {
-                element.value = NUMBERS[_number][_cat][_name]["value"+j];
-            }
-        }
-    }
-    else {
-        if (_optional) {
-            document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
-            for (var j = 1; j <= anzpara; ++j) {
-                document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
-            }		
-        }
-        document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
-        setEnabled(_cat+"_"+_name, true);
-
-        for (var j = 1; j <= anzpara; ++j) {
-            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-            if (element.tagName.toLowerCase() == "select") {
-                var textToFind = _param[_cat][_name]["value"+j];
-                if (textToFind == undefined) {
-                    continue;
-                }
-                
-                _isFound = false;
-                element.selectedIndex = -1;
-                for (var i = 0; i < element.options.length; i++) {
-                    if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
-                        element.selectedIndex = i;
-                        _isFound = true;
-                        break;
-                    }
-                }
-                if (!_isFound) {
-                    _zw_txt = "In the selected field the value '" + textToFind + "' in the section '";
-                    _zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
-                    firework.launch(_zw_txt, 'warning', 10000);
-                }
-
-            }
-            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-                element.checked = _param[_cat][_name]["value"+j] == "true";
-            }
-            else {
-                element.value = _param[_cat][_name]["value"+j];
-            }
-        }	
-    }
-
-    ///////////////// am Ende, falls Kategorie als gesamtes nicht ausgewählt --> deaktivieren
-    if (_category[_cat]["enabled"] == false) {
-        if (_optional) {
-            document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;
-            for (var j = 1; j <= anzpara; ++j) {
-                document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;
-            }	
-        }
-        document.getElementById(_cat+"_"+_name+"_text").style="color: gray;"
-        setEnabled(_cat+"_"+_name, false);
-    }
-
-    EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional, _number);
-}
-
-
-function InvertEnableItem(_cat, _param) {
-    _zw = _cat + "_" + _param + "_enabled";
-    _isOn = document.getElementById(_zw).checked;
-
-    _color = "rgb(122, 122, 122)";
-	
-    if (_isOn) {
-        _color = "black";
-    }
-
-    _zw = _cat + "_" + _param + "_text";
-    document.getElementById(_zw).disabled = !_isOn;
-    document.getElementById(_zw).style.color = _color;
-
-    setEnabled(_cat + "_" + _param, _isOn);
-
-    for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
-        document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
-        document.getElementById(_cat+"_"+_param+"_value"+j).style.color = _color;
-    }
-}
-
-
-function setEnabled(className, enabled) {
-    _color = "rgb(122, 122, 122)";
-    if (enabled) {
-        _color = "black";
-    }
-
-    let elements = document.getElementsByClassName(className);
-    for (i = 0; i < elements.length; i++) {
-        if (enabled) {
-            elements[i].classList.remove("disabled");
-        } 
-        else {
-            elements[i].classList.add("disabled");
-        }
-
-        let inputs = elements[i].getElementsByTagName("input");
-        for (j = 0; j < inputs.length; j++) {
-            if (inputs[j].id.endsWith("_enabled")) {
-                continue;
-            }
-
-            inputs[j].style.color = _color;
-            if (enabled) {
-                inputs[j].removeAttribute("disabled");
-            } 
-            else {
-                inputs[j].setAttribute("disabled", "disabled");
-            }
-        }
-    }
-}
-
-
-function setVisible(className, visible) {
-    let elements = document.getElementsByClassName(className);
-    for (i = 0; i < elements.length; i++) {
-        if (visible) {
-            elements[i].classList.remove("hidden");
-        } 
-        else {
-            elements[i].classList.add("hidden");
-        }
-    }
-}
-
-
-function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1) {
-    _status = _category[_cat]["enabled"];
-
-    _color = "rgb(122, 122, 122)";
-    if (_status) {
-        _color = "black";
-    }
-
-    if (_optional) {
-        document.getElementById(_cat+"_"+_name+"_enabled").disabled = !_status;
-        document.getElementById(_cat+"_"+_name+"_enabled").style.color = _color;	
-    }
-
-    if (_number == -1) {
-        if (!_param[_cat][_name]["enabled"]) {
-            _status = false;
-            _color = "rgb(122, 122, 122)";
-        }
-    }
-    else {
-        if (!NUMBERS[_number][_cat][_name]["enabled"]) {
-            _status = false;
-            _color = "rgb(122, 122, 122)";
-        }
-    }
-
-    document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
-    document.getElementById(_cat+"_"+_name+"_text").style.color = _color;
-
-    setEnabled(_cat+"_"+_name, _status);
-
-    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
-        document.getElementById(_cat+"_"+_name+"_value"+j).style.color = _color;	
-    }
-}
-
-
-function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
-    if (_number > -1) {
-        if (_cat == "Digits") {
-            _cat = "digit";
-        }
-	    
-        if (_cat == "Analog") {
-            _cat = "analog";
-        }
-
-        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined)) {
-            return;
-        }
-
-        if (_optional) {
-            NUMBERS[_number][_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-        }
-
-        for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-            if (element.tagName.toLowerCase() == "select") {
-                NUMBERS[_number][_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
-            }
-            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-                NUMBERS[_number][_cat][_name]["value"+j] = element.checked;
-            }
-            else {
-                if ((NUMBERS[_number][_cat][_name].checkRegExList != null) && (NUMBERS[_number][_cat][_name].checkRegExList[j-1] != null)) {
-                    if (!element.value.match(NUMBERS[_cat][_name].checkRegExList[j-1])) {
-                        element.classList.add("invalid-input");
-                    } 
-                    else {
-                        element.classList.remove("invalid-input");
-                    }
-                }
-                NUMBERS[_number][_cat][_name]["value"+j] = element.value;
-            }
-        }
-    }
-    else
-    {
-        if (_optional) {
-            _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-        }
-
-        for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-            if (element.tagName.toLowerCase() == "select") {
-                _param[_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
-            }
-            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-                _param[_cat][_name]["value"+j] = element.checked;
-            }
-            else {
-                if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j-1] != null)) {
-                    if (!element.value.match(_param[_cat][_name].checkRegExList[j-1])) {
-                        element.classList.add("invalid-input");
-                    } 
-                    else {
-                        element.classList.remove("invalid-input");
-                    }
-                }
-                _param[_cat][_name]["value"+j] = element.value;
-            }
-        }		
-    }
-}
-
-
 function UpdateInputIndividual(sel) {
     if (NUNBERSAkt != -1) {
+        // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
-        ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "AnalogToDigitTransitionStart", true, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
+        // ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
@@ -2187,19 +2204,21 @@ function UpdateInputIndividual(sel) {
 
     // var sel = document.getElementById("Numbers_value1");
     NUNBERSAkt = sel.selectedIndex;
+    // WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
-    WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", true, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "AnalogToDigitTransitionStart", true, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
+    // WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
 }
-
 
 function UpdateInput() {
     document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
@@ -2220,32 +2239,48 @@ function UpdateInput() {
     document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
     setVisible("InfluxDBv2Item", category["InfluxDBv2"]["enabled"]);
 
+	document.getElementById("Category_Webhook_enabled").checked = category["Webhook"]["enabled"];
+    setVisible("WebhookItem", category["Webhook"]["enabled"]);
+
     WriteParameter(param, category, "TakeImage", "RawImagesLocation", true);
     WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
-    WriteParameter(param, category, "TakeImage", "Demo", false);
-    WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
-    WriteParameter(param, category, "TakeImage", "ImageQuality", false);
-    WriteParameter(param, category, "TakeImage", "Brightness", false);
-    WriteParameter(param, category, "TakeImage", "Contrast", false);
-    WriteParameter(param, category, "TakeImage", "Saturation", false);
-    WriteParameter(param, category, "TakeImage", "Sharpness", false);
-    WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
-    WriteParameter(param, category, "TakeImage", "ImageSize", false);
-    WriteParameter(param, category, "TakeImage", "Zoom", false);
-    WriteParameter(param, category, "TakeImage", "ZoomMode", false);
-    WriteParameter(param, category, "TakeImage", "ZoomOffsetX", false);
-    WriteParameter(param, category, "TakeImage", "ZoomOffsetY", false);
-    WriteParameter(param, category, "TakeImage", "Grayscale", false);
-    WriteParameter(param, category, "TakeImage", "Negative", false);
-    WriteParameter(param, category, "TakeImage", "Aec2", false);
-    WriteParameter(param, category, "TakeImage", "AutoExposureLevel", false);
-    WriteParameter(param, category, "TakeImage", "FixedExposure", false);
 
+    WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
+    WriteParameter(param, category, "TakeImage", "CamGainceiling", false);	
+    WriteParameter(param, category, "TakeImage", "CamQuality", false);
+    WriteParameter(param, category, "TakeImage", "CamBrightness", false);
+    WriteParameter(param, category, "TakeImage", "CamContrast", false);
+    WriteParameter(param, category, "TakeImage", "CamSaturation", false);
+    WriteParameter(param, category, "TakeImage", "CamSharpness", false);
+    WriteParameter(param, category, "TakeImage", "CamAutoSharpness", false);	
+    WriteParameter(param, category, "TakeImage", "CamSpecialEffect", false);
+    WriteParameter(param, category, "TakeImage", "CamWbMode", false);
+    WriteParameter(param, category, "TakeImage", "CamAwb", false);
+    WriteParameter(param, category, "TakeImage", "CamAwbGain", false);	
+    WriteParameter(param, category, "TakeImage", "CamAec", false);
+    WriteParameter(param, category, "TakeImage", "CamAec2", false);
+    WriteParameter(param, category, "TakeImage", "CamAeLevel", false);
+    WriteParameter(param, category, "TakeImage", "CamAecValue", false);	
+    WriteParameter(param, category, "TakeImage", "CamAgc", false);
+    WriteParameter(param, category, "TakeImage", "CamAgcGain", false);	
+    WriteParameter(param, category, "TakeImage", "CamBpc", false);
+    WriteParameter(param, category, "TakeImage", "CamWpc", false);
+    WriteParameter(param, category, "TakeImage", "CamRawGma", false);
+    WriteParameter(param, category, "TakeImage", "CamLenc", false);
+    WriteParameter(param, category, "TakeImage", "CamHmirror", false);
+    WriteParameter(param, category, "TakeImage", "CamVflip", false);
+    WriteParameter(param, category, "TakeImage", "CamDcw", false);
+    WriteParameter(param, category, "TakeImage", "CamDenoise", false);
+    WriteParameter(param, category, "TakeImage", "CamZoom", false);
+    WriteParameter(param, category, "TakeImage", "CamZoomOffsetX", false);
+    WriteParameter(param, category, "TakeImage", "CamZoomOffsetY", false);
+    WriteParameter(param, category, "TakeImage", "CamZoomSize", false);	
+    WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
+    WriteParameter(param, category, "TakeImage", "Demo", false);
+	
     WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
     WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
-    WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);
-    WriteParameter(param, category, "Alignment", "FlipImageSize", false);
-    WriteParameter(param, category, "Alignment", "InitialMirror", false);			
+    WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);			
     WriteParameter(param, category, "Alignment", "InitialRotate", false);
 
     WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
@@ -2257,7 +2292,6 @@ function UpdateInput() {
     
     WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
     WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
-    // WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", true);
     WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
     WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
@@ -2287,6 +2321,10 @@ function UpdateInput() {
     WriteParameter(param, category, "InfluxDBv2", "Token", true);	
     // WriteParameter(param, category, "InfluxDBv2", "Field", true);
 
+	WriteParameter(param, category, "Webhook", "Uri", true);	
+    WriteParameter(param, category, "Webhook", "ApiKey", true);
+	WriteParameter(param, category, "Webhook", "UploadImg", true);
+
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
     WriteParameter(param, category, "GPIO", "IO3", true);
@@ -2306,6 +2344,7 @@ function UpdateInput() {
     WriteParameter(param, category, "Debug", "LogLevel", false);
     WriteParameter(param, category, "Debug", "LogfilesRetention", false);
 
+    WriteParameter(param, category, "System", "Tooltip", false);
     WriteParameter(param, category, "System", "TimeZone", true);
     WriteParameter(param, category, "System", "Hostname", true);
     WriteParameter(param, category, "System", "TimeServer", true);
@@ -2314,7 +2353,6 @@ function UpdateInput() {
 
     WriteModelFiles();
 }
-
 
 function WriteModelFiles() {
     list_tflite = getTFLITEList();
@@ -2361,41 +2399,53 @@ function WriteModelFiles() {
     WriteParameter(param, category, "Digits", "Model", false);		
 }
 
-
 function ReadParameterAll() {
     category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
     category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
     category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
+	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
-    
+
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
-    ReadParameter(param, "TakeImage", "Demo", false);
     ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
-    ReadParameter(param, "TakeImage", "ImageQuality", false);
-    ReadParameter(param, "TakeImage", "Brightness", false);
-    ReadParameter(param, "TakeImage", "Contrast", false);
-    ReadParameter(param, "TakeImage", "Saturation", false);
-    ReadParameter(param, "TakeImage", "Sharpness", false);
-    ReadParameter(param, "TakeImage", "LEDIntensity", false);
-    ReadParameter(param, "TakeImage", "ImageSize", false);
-    ReadParameter(param, "TakeImage", "Zoom", false);
-    ReadParameter(param, "TakeImage", "ZoomMode", false);
-    ReadParameter(param, "TakeImage", "ZoomOffsetX", false);
-    ReadParameter(param, "TakeImage", "ZoomOffsetY", false);
-    ReadParameter(param, "TakeImage", "Grayscale", false);
-    ReadParameter(param, "TakeImage", "Negative", false);
-    ReadParameter(param, "TakeImage", "Aec2", false);
-    ReadParameter(param, "TakeImage", "AutoExposureLevel", false);
-    ReadParameter(param, "TakeImage", "FixedExposure", false);
+    ReadParameter(param, "TakeImage", "CamGainceiling", false);	
+    ReadParameter(param, "TakeImage", "CamQuality", false);	
+    ReadParameter(param, "TakeImage", "CamBrightness", false);
+    ReadParameter(param, "TakeImage", "CamContrast", false);
+    ReadParameter(param, "TakeImage", "CamSaturation", false);
+    ReadParameter(param, "TakeImage", "CamSharpness", false);
+    ReadParameter(param, "TakeImage", "CamAutoSharpness", false);	
+    ReadParameter(param, "TakeImage", "CamSpecialEffect", false);
+    ReadParameter(param, "TakeImage", "CamWbMode", false);
+    ReadParameter(param, "TakeImage", "CamAwb", false);
+    ReadParameter(param, "TakeImage", "CamAwbGain", false);	
+    ReadParameter(param, "TakeImage", "CamAec", false);
+    ReadParameter(param, "TakeImage", "CamAec2", false);
+    ReadParameter(param, "TakeImage", "CamAeLevel", false);
+    ReadParameter(param, "TakeImage", "CamAecValue", false);	
+    ReadParameter(param, "TakeImage", "CamAgc", false);
+    ReadParameter(param, "TakeImage", "CamAgcGain", false);
+    ReadParameter(param, "TakeImage", "CamBpc", false);
+    ReadParameter(param, "TakeImage", "CamWpc", false);
+    ReadParameter(param, "TakeImage", "CamRawGma", false);
+    ReadParameter(param, "TakeImage", "CamLenc", false);
+    ReadParameter(param, "TakeImage", "CamHmirror", false);
+    ReadParameter(param, "TakeImage", "CamVflip", false);
+    ReadParameter(param, "TakeImage", "CamDcw", false);
+    ReadParameter(param, "TakeImage", "CamDenoise", false);
+    ReadParameter(param, "TakeImage", "CamZoom", false);
+    ReadParameter(param, "TakeImage", "CamZoomOffsetX", false);
+    ReadParameter(param, "TakeImage", "CamZoomOffsetY", false);	
+    ReadParameter(param, "TakeImage", "CamZoomSize", false);	
+    ReadParameter(param, "TakeImage", "LEDIntensity", false);	
+    ReadParameter(param, "TakeImage", "Demo", false);	
 
     ReadParameter(param, "Alignment", "SearchFieldX", false);	
     ReadParameter(param, "Alignment", "SearchFieldY", false);
     ReadParameter(param, "Alignment", "AlignmentAlgo", true);
-    ReadParameter(param, "Alignment", "FlipImageSize", false);
-    ReadParameter(param, "Alignment", "InitialMirror", false);
     ReadParameter(param, "Alignment", "InitialRotate", false);
 
     ReadParameter(param, "Digits", "Model", false);
@@ -2410,7 +2460,7 @@ function ReadParameterAll() {
     ReadParameter(param, "PostProcessing", "PreValueUse", false);
     ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);
     ReadParameter(param, "PostProcessing", "ErrorMessage", false);
-    ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);
+    ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);	
 
     ReadParameter(param, "MQTT", "Uri", true);
     ReadParameter(param, "MQTT", "MainTopic", true);
@@ -2437,6 +2487,10 @@ function ReadParameterAll() {
     ReadParameter(param, "InfluxDBv2", "Token", true);
     // ReadParameter(param, "InfluxDB", "Field", true);	
 
+	ReadParameter(param, "Webhook", "Uri", true);	
+    ReadParameter(param, "Webhook", "ApiKey", true);
+	ReadParameter(param, "Webhook", "UploadImg", true);
+
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);
     ReadParameter(param, "GPIO", "IO3", true);
@@ -2446,6 +2500,7 @@ function ReadParameterAll() {
     ReadParameter(param, "GPIO", "LEDType", false);
     ReadParameter(param, "GPIO", "LEDNumbers", false);
     ReadParameter(param, "GPIO", "LEDColor", false);
+	
     // Folgende Zeilen sind für Abwärtskompatibität < v9.0.0 notwendig (manchmal parameter auskommentiert)
     param["GPIO"]["LEDType"]["enabled"] = true;
     param["GPIO"]["LEDNumbers"]["enabled"] = true;
@@ -2463,6 +2518,7 @@ function ReadParameterAll() {
     ReadParameter(param, "Debug", "LogLevel", false);
     ReadParameter(param, "Debug", "LogfilesRetention", false);
 
+    ReadParameter(param, "System", "Tooltip", false);
     ReadParameter(param, "System", "TimeZone", true);
     ReadParameter(param, "System", "Hostname", true);
     ReadParameter(param, "System", "TimeServer", true);
@@ -2475,16 +2531,6 @@ function ReadParameterAll() {
     // FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
 
-
-function FormatDecimalValue(_param, _cat, _name) {
-    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-        var _val = _param[_cat][_name]["value"+j];
-        _val = _val.replace(",", ".");
-        _param[_cat][_name]["value"+j] = _val;
-    }
-}
-
-
 function UpdateAfterCategoryCheck() {
     ReadParameterAll();
     category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
@@ -2493,12 +2539,12 @@ function UpdateAfterCategoryCheck() {
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
+	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
 
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
 }
-
 
 function UpdateExpertModus() {
     // var _style = 'display:none;';
@@ -2535,6 +2581,22 @@ function UpdateExpertModus() {
     });
 }
 
+function UpdateTooltipModus() {
+    var _style_pur = 'none';
+    var _hidden = true;
+	
+    if (!document.getElementById("System_Tooltip_value1").selectedIndex) {
+        _style_pur = '';
+        _hidden = false;
+        //firework.launch("Tooltip view activated.", 'warning', 5000);
+    }
+
+    const tooltip = document.querySelectorAll(".tooltip");
+	
+    for (var i = 0; i < tooltip.length; i++) {
+        tooltip[i].style.display = _style_pur;
+    }
+}
 
 function saveTextAsFile() {
     ReadParameterAll();
@@ -2551,15 +2613,230 @@ function saveTextAsFile() {
         firework.launch('Configuration saved. It will get applied after the next reboot!', 'success', 5000);
 
         if (changeCamValue == 1) {
+            camSettingsSet();
             firework.launch('You have changed the camera settings, so creating a new reference image and updating the alignment marks is mandatory!', 'success', 10000);		
         }	    
     }
 }
 
+function camSettingsSet(){
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("overlaytext").innerHTML = "Save Cam Settings...";
+	
+    var _waitb_temp = document.getElementById("TakeImage_WaitBeforeTakingPicture_value1").value;
 
+    var _aecgc_temp = document.getElementById("TakeImage_CamGainceiling_value1").selectedIndex;
+    var _qual_temp = document.getElementById("TakeImage_CamQuality_value1").value;	
+                
+    var _bri_temp = document.getElementById("TakeImage_CamBrightness_value1").value;
+    var _con_temp = document.getElementById("TakeImage_CamContrast_value1").value;
+    var _sat_temp = document.getElementById("TakeImage_CamSaturation_value1").value;
+    var _shp_temp = document.getElementById("TakeImage_CamSharpness_value1").value;
+	
+	var _ashp_temp = document.getElementById("TakeImage_CamAutoSharpness_value1").value;
+    if (_ashp_temp == '0') {
+        _ashp_temp = '1';
+    }
+    else {
+        _ashp_temp = '0';
+    }	
+
+    var _spe_temp = document.getElementById("TakeImage_CamSpecialEffect_value1").selectedIndex;
+    var _wbm_temp = document.getElementById("TakeImage_CamWbMode_value1").selectedIndex;
+	
+    var _awb_temp = document.getElementById("TakeImage_CamAwb_value1").selectedIndex;
+    if (_awb_temp == '0') {
+        _awb_temp = '1';
+    }
+    else {
+        _awb_temp = '0';
+    }
+
+    var _awbg_temp = document.getElementById("TakeImage_CamAwbGain_value1").selectedIndex;
+    if (_awbg_temp == '0') {
+        _awbg_temp = '1';
+    }
+    else {
+        _awbg_temp = '0';
+    }	
+
+    var _aec_temp = document.getElementById("TakeImage_CamAec_value1").selectedIndex;
+    if (_aec_temp == '0') {
+        _aec_temp = '1';
+    }
+    else {
+        _aec_temp = '0';
+    }	
+	
+    var _aec2_temp = document.getElementById("TakeImage_CamAec2_value1").selectedIndex;
+    if (_aec2_temp == '0') {
+        _aec2_temp = '1';
+    }
+    else {
+        _aec2_temp = '0';
+    }
+	
+    var _ael_temp = document.getElementById("TakeImage_CamAeLevel_value1").value;
+    var _aecv_temp = document.getElementById("TakeImage_CamAecValue_value1").value;
+
+    var _agc_temp = document.getElementById("TakeImage_CamAgc_value1").selectedIndex;
+    if (_agc_temp == '0') {
+        _agc_temp = '1';
+    }
+    else {
+        _agc_temp = '0';
+    }	
+	
+    var _agcg_temp = document.getElementById("TakeImage_CamAgcGain_value1").value;
+	
+    var _bpc_temp = document.getElementById("TakeImage_CamBpc_value1").selectedIndex;
+    if (_bpc_temp == '0') {
+        _bpc_temp = '1';
+    }
+    else {
+        _bpc_temp = '0';
+    }
+	
+    var _wpc_temp = document.getElementById("TakeImage_CamWpc_value1").selectedIndex;
+    if (_wpc_temp == '0') {
+        _wpc_temp = '1';
+    }
+    else {
+        _wpc_temp = '0';
+    }	
+	
+    var _rgma_temp = document.getElementById("TakeImage_CamRawGma_value1").selectedIndex;
+    if (_rgma_temp == '0') {
+        _rgma_temp = '1';
+    }
+    else {
+        _rgma_temp = '0';
+    }	
+	
+    var _lenc_temp = document.getElementById("TakeImage_CamLenc_value1").selectedIndex;
+    if (_lenc_temp == '0') {
+        _lenc_temp = '1';
+    }
+    else {
+        _lenc_temp = '0';
+    }
+
+    var _mirror_temp = document.getElementById("TakeImage_CamHmirror_value1").selectedIndex;
+    if (_mirror_temp == '0') {
+        _mirror_temp = '1';
+    }
+    else {
+        _mirror_temp = '0';
+    }
+	
+    var _flip_temp = document.getElementById("TakeImage_CamVflip_value1").selectedIndex;
+    if (_flip_temp == '0') {
+        _flip_temp = '1';
+    }
+    else {
+        _flip_temp = '0';
+    }	
+	
+    var _dcw_temp = document.getElementById("TakeImage_CamDcw_value1").selectedIndex;
+    if (_dcw_temp == '0') {
+        _dcw_temp = '1';
+    }
+    else {
+        _dcw_temp = '0';
+    }
+
+    var _denoise_temp = document.getElementById("TakeImage_CamDenoise_value1").value;
+
+    var _ledi_temp = document.getElementById("TakeImage_LEDIntensity_value1").value;
+
+    var _zoom_temp = document.getElementById("TakeImage_CamZoom_value1").selectedIndex;
+    if (_zoom_temp == '0') {
+        _zoom_temp = '1';
+    }
+    else {
+        _zoom_temp = '0';
+    }
+
+    var _zoomx_temp = document.getElementById("TakeImage_CamZoomOffsetX_value1").value;
+    var _zoomy_temp = document.getElementById("TakeImage_CamZoomOffsetY_value1").value;
+    var _zooms_temp = document.getElementById("TakeImage_CamZoomSize_value1").value;	
+	
+    var url = domainname + "/editflow?task=cam_settings";
+	
+    if (domainname.length > 0){
+        url = url + "&host=" + domainname;		
+    }
+	
+    url = url + "&waitb=" + _waitb_temp + "&aecgc=" + _aecgc_temp + "&qual=" + _qual_temp;
+    url = url + "&bri=" + _bri_temp + "&con=" + _con_temp + "&sat=" + _sat_temp + "&shp=" + _shp_temp + "&ashp=" + _ashp_temp;
+    url = url + "&spe=" + _spe_temp + "&wbm=" + _wbm_temp + "&awb=" + _awb_temp + "&awbg=" + _awbg_temp;
+    url = url + "&aec=" + _aec_temp + "&aec2=" + _aec2_temp + "&ael=" + _ael_temp + "&aecv=" + _aecv_temp;
+
+    url = url + "&agc=" + _agc_temp + "&agcg=" + _agcg_temp + "&bpc=" + _bpc_temp + "&wpc=" + _wpc_temp;
+    url = url + "&rgma=" + _rgma_temp + "&lenc=" + _lenc_temp + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;
+    url = url + "&dcw=" + _dcw_temp + "&den=" + _denoise_temp + "&ledi=" + _ledi_temp;
+
+    if (_zoom_temp != '0') {
+        url = url + "&zoom=" + _zoom_temp + "&zooms=" + _zooms_temp;
+        url = url + "&zoomx=" + _zoomx_temp + "&zoomy=" + _zoomy_temp;
+    }
+    else {
+        url = url + "&zoom=0" + "&zooms=0" + "&zoomx=0" + "&zoomy=0";
+    }
+
+    var durchlaufe = 0;
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+	
+    async function task() {
+        while (true) {
+            var xhttp = new XMLHttpRequest();
+			
+            if (durchlaufe > 10) {
+                document.getElementById("overlay").style.display = "none";
+                firework.launch('Save Cam Settings aborted, timeout!', 'danger', 5000);
+                return;
+            }			
+
+            try {
+                xhttp.open("GET", url, false);
+                xhttp.send();			
+            } catch (error){}				
+            
+            if (xhttp.responseText == "CamSettingsSet") {
+                document.getElementById("overlay").style.display = "none";
+                firework.launch('Cam Settings saved', 'success', 2000);
+                return;
+            }
+            else {
+                // Get status
+                var _xhttp = new XMLHttpRequest();
+                durchlaufe = durchlaufe + 1;				
+				
+                try {
+                    _xhttp.open("GET", domainname + "/statusflow", false);
+                    _xhttp.send();
+                }
+                catch (error){}
+
+                document.getElementById("overlaytext").innerHTML = "Device is busy, plase waiting...<br><br>Current step: " + _xhttp.responseText;
+                console.log("Device is busy, waiting 2s then checking again...");
+                await sleep(2000);
+            }
+        }   
+    }
+
+    setTimeout(function() { 
+        // Delay so the overlay gets shown
+        task();
+    }, 1);
+}
+	
 function doReboot() {
     if (confirm("Are you sure you want to reboot?")) {
-        var stringota = getDomainname() + "/reboot";
+        var stringota = domainname + "/reboot";
         window.location = stringota;
         window.location.href = stringota;
         window.location.assign(stringota);
@@ -2567,17 +2844,23 @@ function doReboot() {
     }
 }
 
+function FormatDecimalValue(_param, _cat, _name) {
+    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+        var _val = _param[_cat][_name]["value"+j];
+        _val = _val.replace(",", ".");
+        _param[_cat][_name]["value"+j] = _val;
+    }
+}
 
 function editConfigRaw() {
     if (confirm("Proceed to switch to raw edit mode? Unsaved changes will get lost")) {
-        var stringota = getDomainname() + "/edit_config_raw.html?v=$COMMIT_HASH";
+        var stringota = domainname + "/edit_config_raw.html?v=$COMMIT_HASH";
         window.location = stringota;
         window.location.href = stringota;
         window.location.assign(stringota);
         window.location.replace(stringota);
     }	
 }
-
 
 function numberChanged() {
     var sel = document.getElementById("Numbers_value1");
@@ -2589,7 +2872,6 @@ function numberChanged() {
         _selInflux.selectedIndex = _neu
     }
 }
-
     
 function numberInfluxDBv2Changed() {
     var sel = document.getElementById("NumbersInfluxDBv2_value1");
@@ -2607,7 +2889,6 @@ function numberInfluxDBv2Changed() {
     }
 }
 
-
 function numberInfluxDBChanged() {
     var sel = document.getElementById("NumbersInfluxDB_value1");
     _neu = sel.selectedIndex;
@@ -2624,11 +2905,327 @@ function numberInfluxDBChanged() {
     }
 }
 
+function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+    results = regex.exec(url);
+
+    if (!results) {return null;}
+    if (!results[2]) {return '';}
+	
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}	
+
+function InvertEnableItem(_cat, _param) {
+    _zw = _cat + "_" + _param + "_enabled";
+    _isOn = document.getElementById(_zw).checked;
+
+    _color = "rgb(122, 122, 122)";
+	
+    if (_isOn) {
+        _color = "black";
+    }
+
+    _zw = _cat + "_" + _param + "_text";
+    document.getElementById(_zw).disabled = !_isOn;
+    document.getElementById(_zw).style.color = _color;
+
+    setEnabled(_cat + "_" + _param, _isOn);
+
+    for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
+        document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
+        document.getElementById(_cat+"_"+_param+"_value"+j).style.color = _color;
+    }
+}
+
+function setEnabled(className, enabled) {
+    _color = "rgb(122, 122, 122)";
+	
+    if (enabled) {
+        _color = "black";
+    }
+
+    let elements = document.getElementsByClassName(className);
+    for (i = 0; i < elements.length; i++) {
+        if (enabled) {
+            elements[i].classList.remove("disabled");
+        } 
+        else {
+            elements[i].classList.add("disabled");
+        }
+
+        let inputs = elements[i].getElementsByTagName("input");
+        for (j = 0; j < inputs.length; j++) {
+            if (inputs[j].id.endsWith("_enabled")) {
+                continue;
+            }
+
+            inputs[j].style.color = _color;
+            if (enabled) {
+                inputs[j].removeAttribute("disabled");
+            } 
+            else {
+                inputs[j].setAttribute("disabled", "disabled");
+            }
+        }
+    }
+}
+
+function setVisible(className, visible) {
+    let elements = document.getElementsByClassName(className);
+	
+    for (i = 0; i < elements.length; i++) {
+        if (visible) {
+            elements[i].classList.remove("hidden");
+        } 
+        else {
+            elements[i].classList.add("hidden");
+        }
+    }
+}
+
+function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1) {
+    // _status = _category[_cat]["enabled"];
+
+    _color = "rgb(122, 122, 122)";
+	
+    if (_status) {
+        _color = "black";
+    }
+
+    if (_optional) {
+        document.getElementById(_cat+"_"+_name+"_enabled").disabled = !_status;
+        document.getElementById(_cat+"_"+_name+"_enabled").style.color = _color;	
+    }
+
+    if (_number == -1) {
+        if (!_param[_cat][_name]["enabled"]) {
+            _status = false;
+            _color = "rgb(122, 122, 122)";
+        }
+    }
+    else {
+        if (!NUMBERS[_number][_cat][_name]["enabled"]) {
+            _status = false;
+            _color = "rgb(122, 122, 122)";
+        }
+    }
+
+    document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
+    document.getElementById(_cat+"_"+_name+"_text").style.color = _color;
+
+    setEnabled(_cat+"_"+_name, _status);
+
+    for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+        document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
+        document.getElementById(_cat+"_"+_name+"_value"+j).style.color = _color;	
+    }
+}
+
+function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
+    if (_number > -1) {
+        if (_cat == "Digits") {
+            _cat = "digit";
+        }
+	    
+        if (_cat == "Analog") {
+            _cat = "analog";
+        }
+
+        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined)) {
+            return;
+        }
+
+        if (_optional) {
+            NUMBERS[_number][_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+        }
+
+        for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
+			
+            if (element.tagName.toLowerCase() == "select") {
+                NUMBERS[_number][_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
+            }
+            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
+                NUMBERS[_number][_cat][_name]["value"+j] = element.checked;
+            }
+            else {
+                if ((NUMBERS[_number][_cat][_name].checkRegExList != null) && (NUMBERS[_number][_cat][_name].checkRegExList[j-1] != null)) {
+                    if (!element.value.match(NUMBERS[_cat][_name].checkRegExList[j-1])) {
+                        element.classList.add("invalid-input");
+                    } 
+                    else {
+                        element.classList.remove("invalid-input");
+                    }
+                }
+				
+                NUMBERS[_number][_cat][_name]["value"+j] = element.value;
+            }
+        }
+    }
+    else
+    {
+        if (_optional) {
+            _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+        }
+
+        for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
+            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
+			
+            if (element.tagName.toLowerCase() == "select") {
+                _param[_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
+            }
+            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
+                _param[_cat][_name]["value"+j] = element.checked;
+            }
+            else {
+                if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j-1] != null)) {
+                    if (!element.value.match(_param[_cat][_name].checkRegExList[j-1])) {
+                        element.classList.add("invalid-input");
+                    } 
+                    else {
+                        element.classList.remove("invalid-input");
+                    }
+                }
+				
+                _param[_cat][_name]["value"+j] = element.value;
+            }
+        }		
+    }
+}
+
+function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1) {
+    let anzpara;
+    try {
+        anzpara = _param[_cat][_name].anzParam;	
+    }
+    catch (error) {
+        firework.launch("Parameter '" + _name + "' in category '" + _cat + "' is unknown!", 'danger', 30000);
+        return;
+    }
+
+    if (_number > -1) {
+        if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined)) {
+            return;
+        }
+
+        if (_optional) {
+            document.getElementById(_cat+"_"+_name+"_enabled").checked = NUMBERS[_number][_cat][_name]["enabled"];
+			
+            for (var j = 1; j <= anzpara; ++j) {
+                document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !NUMBERS[_number][_cat][_name]["enabled"];	
+            }		
+        }
+	    
+        document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
+        setEnabled(_cat+"_"+_name, true);
+
+        for (var j = 1; j <= anzpara; ++j) {
+            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
+			
+            if (element.tagName.toLowerCase() == "select") {
+                var textToFind = NUMBERS[_number][_cat][_name]["value"+j];
+				
+                if (textToFind == undefined) {
+                    continue;
+                }
+
+                _isFound = false;
+                element.selectedIndex = -1;
+				
+                for (var i = 0; i < element.options.length; i++) {
+                    if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
+                        element.selectedIndex = i;
+                        _isFound = true;
+                        break;
+                    }
+                }
+				
+                if (!_isFound) {
+                    _zw_txt = "In the selected field the value '" + textToFind + "' in the parameter '";
+                    _zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
+                    firework.launch(_zw_txt, 'warning', 10000);
+                }
+            }
+            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
+                element.checked = NUMBERS[_number][_cat][_name]["value"+j] == "true";
+            }
+            else {
+                element.value = NUMBERS[_number][_cat][_name]["value"+j];
+            }
+        }
+    }
+    else {
+        if (_optional) {
+            document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
+			
+            for (var j = 1; j <= anzpara; ++j) {
+                document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
+            }		
+        }
+		
+        document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
+        setEnabled(_cat+"_"+_name, true);
+
+        for (var j = 1; j <= anzpara; ++j) {
+            let element = document.getElementById(_cat+"_"+_name+"_value"+j);
+			
+            if (element.tagName.toLowerCase() == "select") {
+                var textToFind = _param[_cat][_name]["value"+j];
+				
+                if (textToFind == undefined) {
+                    continue;
+                }
+                
+                _isFound = false;
+                element.selectedIndex = -1;
+				
+                for (var i = 0; i < element.options.length; i++) {
+                    if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
+                        element.selectedIndex = i;
+                        _isFound = true;
+                        break;
+                    }
+                }
+				
+                if (!_isFound) {
+                    _zw_txt = "In the selected field the value '" + textToFind + "' in the section '";
+                    _zw_txt = _zw_txt + _cat + "' in the field '" + _name + "' is invalid. PLEASE CHECK BEFORE SAVING!";
+                    firework.launch(_zw_txt, 'warning', 10000);
+                }
+
+            }
+            else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
+                element.checked = _param[_cat][_name]["value"+j] == "true";
+            }
+            else {
+                element.value = _param[_cat][_name]["value"+j];
+            }
+        }	
+    }
+
+    ///////////////// am Ende, falls Kategorie als gesamtes nicht ausgewählt --> deaktivieren
+    if (_category[_cat]["enabled"] == false) {
+        if (_optional) {
+            document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;
+			
+            for (var j = 1; j <= anzpara; ++j) {
+                document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;
+            }	
+        }
+		
+        document.getElementById(_cat+"_"+_name+"_text").style="color: gray;"
+        setEnabled(_cat+"_"+_name, false);
+    }
+
+    EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional, _number);
+}
 	
 /* hash #description open the details part of the page */
 function openDescription() {
     if(window.location.hash) {
         var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+		
         if(hash == 'description') {
             document.getElementById("desc_details").open = true;
             document.getElementById("reboot").style.display = "none";
@@ -2641,6 +3238,5 @@ openDescription();
 LoadConfigNeu();
  
 </script>
- 
 </body>
 </html>
