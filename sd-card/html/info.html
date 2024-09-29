@@ -6,27 +6,33 @@
     <title>Info</title>
 
     <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
+
         th, td {
             padding: 5px 5px 5px 5px;
             border-width: 1px;
             border-style: solid;
             border-color: rgb(240, 240, 240);
         }
+		
+        output {
+	        padding-left:5px;
+        }
+
+        table {
+            width: 660px;
+	        padding: 5px;
+	        border-collapse:collapse;
+        }
     </style>
 
-    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
-    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
-
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
-    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
-    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-    <div id="overlay">
-        <div id="overlaytext"></div>
-    </div>
-	
 	<table>
 		<colgroup>
 			<col span="1" style="width: 35%;">
@@ -236,10 +242,6 @@
 
 <h3>Copyright</h3>
 Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
-
-
-<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
-<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 
 <script type="text/javascript">
 	function loadLastRestart() 

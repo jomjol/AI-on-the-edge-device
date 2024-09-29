@@ -5,7 +5,42 @@
     <meta charset="UTF-8"/>
     <title>Log Viewer</title>
 
-    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 1px;
+        }
+
+        .box {
+            display: flex;
+            flex-flow: column;
+            height: 99.75%;
+        }
+
+        .box .row.header {
+            flex: 0 1 auto;
+        }
+
+        .box .row.content {
+            flex: 1 1 auto;
+        }
+
+        .box .row.footer {
+            flex: 0 1 auto;
+        }
+
+        #log {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: small;
+        }
+
+        .button {
+            padding: 5px 10px;
+            width: 190px;
+            font-size: 16px;
+        }
+    </style>
+
     <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
@@ -14,26 +49,19 @@
 </head>
 	
 <body style="font-family: arial; padding: 0px 10px;">
-    <div id="overlay">
-        <div id="overlaytext"></div>
-    </div>
-	
     <div class="box">
         <div class="row header">
-            <button class="button_middle" onClick="reload();">Reload</button>
-            <button class="button_middle" onClick="window.open(getDomainname() + '/logfileact');">Show Full Log</button>
-            <button class="button_middle" onClick="window.location.href = getDomainname() + '/fileserver/log/message/'">Show Older Log Files</button>
+            <button class="button" onClick="reload();">Reload</button>
+            <button class="button" onClick="window.open(getDomainname() + '/logfileact');">Show Full Log</button>
+            <button class="button" onClick="window.location.href = getDomainname() + '/fileserver/log/message/'">Show Older Log Files</button>
         </div>
         <div class="row content" id="log"><br><br><br><b>Loading logfile, please wait...</b></div>
         <div class="row footer">
-            <button class="button_middle" onClick="reload();">Reload</button>
-            <button class="button_middle" onClick="window.open(getDomainname() + '/logfileact');">Show Full Log</button>
-            <button class="button_middle" onClick="window.location.href = getDomainname() + '/fileserver/log/message/'">Show Older Log Files</button>
+            <button class="button" onClick="reload();">Reload</button>
+            <button class="button" onClick="window.open(getDomainname() + '/logfileact');">Show Full Log</button>
+            <button class="button" onClick="window.location.href = getDomainname() + '/fileserver/log/message/'">Show Older Log Files</button>
         </div>
     </div>
-
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
-    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 	
     <script type="text/javascript">
         function reload() {

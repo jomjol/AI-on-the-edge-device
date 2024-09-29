@@ -63,6 +63,8 @@ body, html {
         obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 20 + 'px';
     }
 </script>
+
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial">
@@ -105,9 +107,6 @@ body, html {
         <iframe name="maincontent" id ="maincontent" src="" onload="resizeIframe(this)" allowfullscreen></iframe>
         <iframe name="stream" id ="stream" src="" display="none" allowfullscreen></iframe>
     </div>
-
-
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
 
 <script type="text/javascript">
     var aktstep = 0;

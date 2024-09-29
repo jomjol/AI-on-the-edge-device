@@ -5,7 +5,19 @@
     <meta charset="UTF-8" />
     <title>AI on the edge</title>
 
-    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <style>
+        h1 {font-size: 2em; margin-block-end: 0.3em;}
+        h2 {font-size: 1.5em;margin-block-start: 0.3em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
+
+        .button {
+            padding: 5px 10px;
+            width: 205px;
+            font-size: 16px;	
+        }
+    </style>
+
     <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
@@ -13,11 +25,7 @@
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 </head>
 
-<body style="font-family: arial">
-    <div id="overlay">
-        <div id="overlaytext"></div>
-    </div>
-	
+<body style="font-family: arial; padding: 0px 10px;">
     <h4>Initial setup aborted!</h4>
 
     <p>You have <b>aborted</b> the initial setup!</p>
@@ -35,7 +43,6 @@
     <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
 
     <script type="text/javascript">
-   
     function reboot() {
         if (confirm("Do you want to abort the setup mode and switch to regular web interface?")) {
             domainname = getDomainname(); 

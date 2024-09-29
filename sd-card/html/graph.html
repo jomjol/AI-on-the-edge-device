@@ -35,7 +35,7 @@
         }
     </style>
 
-    <script>
+    <script type="text/javascript">
     function run() {
         datefile = document.getElementById("datafiles").value;
         numbername = document.getElementById("numbers").value;
@@ -179,6 +179,7 @@
         });
     }
     </script>
+	
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
@@ -196,7 +197,7 @@
     <button class="button" onClick="window.location.href = 'data.html?v=$COMMIT_HASH'">Show Data Viewer</button>
     <button class="button" onClick="window.location.href = getDomainname() + '/fileserver/log/data/'">Show Data Files</button>
 
-<script>
+<script type="text/javascript">
     function WriteModelFiles()
     {
         list_data = getDATAList();

@@ -6,6 +6,11 @@
     <title>Backup/Restore Configuration</title>
 
     <style>
+        h1 {font-size: 2em;}
+        h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+        h3 {font-size: 1.2em;}
+        p {font-size: 1em;}
+
         input[type=number] {
             width: 138px;
             padding: 10px 5px;
@@ -13,9 +18,14 @@
             border: 1px solid #ccc;
             font-size: 16px; 
         }
+
+        .button {
+            padding: 5px 10px;
+            width: 205px;
+            font-size: 16px;
+        }
     </style>
 
-    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
     <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
@@ -24,14 +34,10 @@
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-    <div id="overlay">
-        <div id="overlaytext"></div>
-    </div>
-
     <h2>Backup Configuration</h2>
     <p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
 
-    <button class="button_middle" id="startBackup" type="button" onclick="startBackup()">Create Backup</button>
+    <button class="button" id="startBackup" type="button" onclick="startBackup()">Create Backup</button>
     <p id=progress></p>
     <hr>
     <h2>Restore Configuration</h2>

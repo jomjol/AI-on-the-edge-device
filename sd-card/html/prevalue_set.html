@@ -3,9 +3,63 @@
 
 <head>
     <meta charset="UTF-8"/>
-    <title>Set PreValue</title>
+    <title>Set "Previous Value"</title>
 
-    <link rel="stylesheet" href="edit_style.css?v=$COMMIT_HASH"/>
+    <style>
+    h1 {font-size: 2em;}
+    h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+    h3 {font-size: 1.2em;}
+    p {font-size: 1em;}
+
+    div {
+        padding: 3px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        height: 20px;
+        width: 120px;
+        vertical-align: middle;
+    }
+
+    input[type=number] {
+        width: 120px;
+        margin-right: 10px;
+        padding: 3px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        font-size: 16px; 
+    }
+
+    .invalid-input {
+		background-color: #FFAA00;
+	}
+
+    th, td {
+    padding: 5px 5px 5px 0px;
+    }
+
+    select {
+        padding: 3px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        font-size: 16px; 
+        margin-right: 10px;
+        min-width: 100px;
+        vertical-align: middle;
+    }
+
+    .button {
+        padding: 5px 10px;
+        width: 205px;
+        font-size: 16px;	
+    }
+
+    table {
+        width: 660px;
+        padding: 5px;
+    }
+    </style>
+
     <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
@@ -14,10 +68,6 @@
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-    <div id="overlay">
-        <div id="overlaytext"></div>
-    </div>
-
     <h2>Set "Previous Value"</h2>
     <details id="desc_details">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
@@ -38,7 +88,7 @@
             positive value can be set as new "previous value".
         </p>
     </details>
-    <hr />
+    <hr/>
 
     <table>
         <colgroup>
@@ -55,7 +105,7 @@
         </tr>
     </table>
 
-    <hr />
+    <hr/>
 
     <table>
         <colgroup>
@@ -71,8 +121,8 @@
         <tr>
             <td style="vertical-align: text-top; padding-top: 12px;">Enter new "previous value":</td>
             <td>
-                <input required class="input_large" type="number" id="myInput" name="myInput" min="0" oninput="(!validity.rangeUnderflow||(value=0));">
-                <button style="font-weight:bold;" class="button_middle" type="button" onclick="setprevalue()">Update Value</button>
+                <input required type="number" id="myInput" name="myInput" min="0" step="any" oninput="(!validity.rangeUnderflow||(value=0));">
+                <button style="font-weight:bold;" class="button" type="button" onclick="setprevalue()">Update Value</button>
                 <p style="padding-left: 5px;">NOTE: The current "raw value" is prefilled as 
                     <br>the suggested new "previous value"</p>
             </td>
@@ -90,7 +140,7 @@
 
 <script type="text/javascript">
  	var domainname = getDomainname(); 
-  var	NUMBERS;
+    var NUMBERS;
 
 function setprevalue() {
 	var inputVal = document.getElementById("myInput").value;
@@ -157,7 +207,6 @@ function loadPrevalue(_domainname) {
   }
 }
 
-
 function numberChanged(){
   loadPrevalue(domainname);
 }
@@ -188,7 +237,6 @@ function UpdateNUMBERS(_sel){
     loadPrevalue(domainname);
 }
 
-
 function init(){
   domainname = getDomainname();
   loadConfig(domainname); 
@@ -198,6 +246,7 @@ function init(){
 }
 
 init();
+
 </script>
 
 </body>

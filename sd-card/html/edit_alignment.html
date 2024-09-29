@@ -60,15 +60,15 @@
 	  
         <tr>
             <td style="padding-top: 10px">x: <input type="number" name="refx" id="refx" step=1 onchange="valuemanualchanged()"></td>
-            <td style="padding-top: 10px">dx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
-            <td rowspan="2" style="padding-top: 10px;">
+            <td style="padding-top: 10px">Δx: <input type="number" name="refdx" id="refdx" step=1 onchange="valuemanualchanged()"></td>
+            <td style="padding-top: 10px">
                 <button style="color:black;" type="button" class="button_middle" id="updatemarker" onclick="CutOutReference()">Update Marker</button>
             </td>	
         </tr>
 	  
         <tr>
             <td>y: <input type="number" name="refy" id="refy" step=1 onchange="valuemanualchanged()"></td>
-            <td>dy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
+            <td>Δy: <input type="number" name="refdy" id="refdy" step=1 onchange="valuemanualchanged()"></td>
         </tr>
 	  
         <tr>
@@ -83,11 +83,11 @@
             <td style="height:70px; vertical-align: top;"><img id="img_ref_org" src = ""></td>    <!--/img_tmp/ref_zw_org.jpg-->
             <td style="height:70px; vertical-align: top;"><img id="img_ref" src = ""></td>        <!--/img_tmp/ref_zw.jpg-->
         </tr>
-	  
+
         <tr>
             <td style="vertical-align:bottom;"><b>Reference Image:</b></td>
             <td></td>
-            <td>
+			<td>
                 <button style="font-weight:bold;" type="submit" class="button_middle" id="savemarker" onclick="SaveToConfig()">Save New Marker</button>
             </td>
         </tr>
