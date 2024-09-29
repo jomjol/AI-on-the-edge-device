@@ -64,11 +64,13 @@
     </div>
 	
     <script type="text/javascript">
+        var domainname = getDomainname();
+	
         function reload() {
           //  document.getElementById('log').innerHTML += "<br><b>Reloading...<b><br><br>";
             document.getElementById('log').innerHTML += "<b>Reloading...</b>";
             window.scrollBy(0,document.body.scrollHeight);
-            funcRequest(getDomainname() + '/log');
+            funcRequest(domainname + '/log');
         } 
 
         function processLogLine(line, index, arr) {
@@ -117,7 +119,11 @@
             });
         }
 
-        funcRequest(getDomainname() + '/log');
+        function init() {
+	        funcRequest(domainname + '/log');
+        }
+
+        init();
 
     </script>
 	

@@ -109,16 +109,15 @@ body, html {
     </div>
 
 <script type="text/javascript">
-    var aktstep = 0;
-    var setupCompleted = false;
-    document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
-    document.getElementById("progressBar").value = 0;
+    var domainname = getDomainname(),
+        aktstep = 0,
+        setupCompleted = false;
 
     function clickStart() {
         aktstep = 0;
         setupCompleted = false;
         document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+        document.getElementById('stream').style.display = "none";
         LoadStep();
     }
 
@@ -126,7 +125,7 @@ body, html {
         setupCompleted = false;
         aktstep = 7;
         document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+        document.getElementById('stream').style.display = "none";
         LoadStep();
     }
 
@@ -136,7 +135,7 @@ body, html {
             aktstep = 7;
         }
         document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+        document.getElementById('stream').style.display = "none";
         LoadStep();
     }
 
@@ -146,7 +145,7 @@ body, html {
             aktstep = 0;
         }
         document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+        document.getElementById('stream').style.display = "none";
         LoadStep();
    }
 
@@ -189,7 +188,7 @@ body, html {
             setupCompleted = false;
 
             setTimeout(function() {
-                document.getElementById('stream').src = getDomainname() + '/stream?flashlight=true';   // needs to be the last statement because it's kind of blocking
+                document.getElementById('stream').src = domainname + '/stream?flashlight=true';   // needs to be the last statement because it's kind of blocking
                 document.getElementById('stream').style.display = "";
             }, 500);
             break;
@@ -308,7 +307,7 @@ body, html {
    }
 
    function loadRSSI() {
-		url = getDomainname() + '/rssi';     
+		url = domainname + '/rssi';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -335,7 +334,14 @@ body, html {
 		xhttp.send();		
 	}
 
-   LoadStep();
+    function init() {
+        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+        document.getElementById("progressBar").value = 0;
+	
+        LoadStep();
+    }
+
+    init();
 
 </script>
 

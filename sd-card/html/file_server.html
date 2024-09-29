@@ -115,11 +115,12 @@
             while (zw >= 0)
             {
                 zw = str.indexOf("/", found+1);  
-                if (zw >= 0)
+                if (zw >= 0) {
                     found = zw;
+                }
             }
+			
             var res = str.substring(0, found+1);
-
             window.location.href = res;	
         }
 
@@ -135,17 +136,23 @@
 
             if (fileInput.length == 0) {
                 firework.launch('No file selected!', 'danger', 30000);
-            } else if (filePath.length == 0) {
+            } 
+            else if (filePath.length == 0) {
                 firework.launch('File path on server is not set!', 'danger', 30000);
-            } else if (filePath.length > 100) {
+            } 
+            else if (filePath.length > 100) {
                 firework.launch('Filename is to long! Max 100 characters.', 'danger', 30000);
-            } else if (filePath.indexOf(' ') >= 0) {
+            } 
+            else if (filePath.indexOf(' ') >= 0) {
                 firework.launch('File path on server cannot have spaces!', 'danger', 30000);
-            } else if (filePath[filePath.length-1] == '/') {
+            } 
+            else if (filePath[filePath.length-1] == '/') {
                 firework.launch('File name not specified after path!', 'danger', 30000);
-            } else if (fileInput[0].size > MAX_FILE_SIZE) {
+            } 
+            else if (fileInput[0].size > MAX_FILE_SIZE) {
                 firework.launch("File size must be less than " + MAX_FILE_SIZE_STR + "!", 'danger', 30000);
-            } else {
+            } 
+            else {
                 document.getElementById("newfile").disabled = true;
                 document.getElementById("filepath").disabled = true;
                 document.getElementById("upload").disabled = true;
@@ -159,15 +166,18 @@
                             document.write(xhttp.responseText);
                             document.close();
                             firework.launch('File upload completed', 'success', 5000);
-                        } else if (xhttp.status == 0) {
+                        } 
+                        else if (xhttp.status == 0) {
                             firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                             UpdatePage(false);
-                        } else {
+                        } 
+                        else {
                             firework.launch('An error occured: ' + xhttp.responseText, 'danger', 30000);
                             UpdatePage(false);
                         }
                     }
                 };
+				
                 xhttp.open("POST", upload_path, true);
                 xhttp.send(file);
             }
@@ -188,12 +198,16 @@
             return window.location.pathname.replace(/\/+$/, '') + "/"
         }
 
-        checkAtRootLevel();
+        function init() {
+            checkAtRootLevel();
 
-        console.log("Current path: " + getPath().replace("/fileserver", ""));
-        document.getElementById("currentpath").innerHTML = "Current path: <b>" + getPath().replace("/fileserver", "") + "</b>";
+            console.log("Current path: " + getPath().replace("/fileserver", ""));
+            document.getElementById("currentpath").innerHTML = "Current path: <b>" + getPath().replace("/fileserver", "") + "</b>";
 
-        document.cookie = "page=" + getPath() + "; path=/";
+            document.cookie = "page=" + getPath() + "; path=/";
+        }
+		
+		init();
 
     </script>
 </body>

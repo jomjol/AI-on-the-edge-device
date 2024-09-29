@@ -139,8 +139,8 @@
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>   
 
 <script type="text/javascript">
- 	var domainname = getDomainname(); 
-    var NUMBERS;
+ 	var domainname = getDomainname(),
+        NUMBERS;
 
 function setprevalue() {
 	var inputVal = document.getElementById("myInput").value;
@@ -238,7 +238,6 @@ function UpdateNUMBERS(_sel){
 }
 
 function init(){
-  domainname = getDomainname();
   loadConfig(domainname); 
   ParseConfig();
   UpdateNUMBERS();

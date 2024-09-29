@@ -136,6 +136,8 @@
 	<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
 	
 	<script type="text/javascript">
+		var domainname = getDomainname();
+	
 		function addZero(i) {
 			if (i < 10) {
 				i = "0" + i;
@@ -166,7 +168,7 @@
 			var h = addZero(d.getHours());
 			var m = addZero(d.getMinutes());
 			var s = addZero(d.getSeconds());
-			document.getElementById("img").src = getDomainname() + '/img_tmp/alg_roi.jpg?timestamp=' + timestamp;
+			document.getElementById("img").src = domainname + '/img_tmp/alg_roi.jpg?timestamp=' + timestamp;
 			$('#timestamp').html("Last Page Refresh:" + (h + ":" + m + ":" + s));
 		}
 
@@ -311,23 +313,7 @@
 			xhttp.send();		
 		}
 
-		/* 
-		function setImageMaxWidth() {
-			loadConfig(domainname); 
-			ParseConfig();
-			param = getConfigParameters();
-			
-			if(param["TakeImage"]["CamFrameSize"].value == "QVGA") {
-				document.getElementById("img").style.maxWidth = "320px";
-			}
-			else {
-				document.getElementById("img").style.maxWidth = "640px";
-			}
-		}
-		*/
 		function init(){
-			domainname = getDomainname();
-			// setImageMaxWidth(); // CamFrameSize was replaced by zoom - CamFrameSize is no longer needed/used for zoom 
 			Refresh();
 		}
 

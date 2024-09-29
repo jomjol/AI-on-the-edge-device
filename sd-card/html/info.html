@@ -244,9 +244,11 @@
 Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
 
 <script type="text/javascript">
+    var domainname = getDomainname();
+
 	function loadLastRestart() 
 	{
-		url = getDomainname() + '/starttime';     
+		url = domainname + '/starttime';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -266,7 +268,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadUptime() 
 	{
-		url = getDomainname() + '/uptime';     
+		url = domainname + '/uptime';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -279,7 +281,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadFWVersion() 
 	{
-		url = getDomainname() + '/info?type=FirmwareVersion';     
+		url = domainname + '/info?type=FirmwareVersion';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -292,7 +294,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadFWBuildTime() 
 	{
-		url = getDomainname() + '/info?type=BuildTime';     
+		url = domainname + '/info?type=BuildTime';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -311,7 +313,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadHTMLVersion() 
 	{
-		url = getDomainname() + '/info?type=HTMLVersion';     
+		url = domainname + '/info?type=HTMLVersion';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -324,7 +326,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadHostname() 
 	{
-		url = getDomainname() + '/info?type=Hostname';     
+		url = domainname + '/info?type=Hostname';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -337,7 +339,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadIPAddress() 
 	{
-		url = getDomainname() + '/info?type=IP';     
+		url = domainname + '/info?type=IP';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -350,7 +352,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadWLANSSID() 
 	{
-		url = getDomainname() + '/info?type=SSID';     
+		url = domainname + '/info?type=SSID';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -363,7 +365,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardManufacturer() 
 	{
-		url = getDomainname() + '/info?type=SDCardManufacturer';     
+		url = domainname + '/info?type=SDCardManufacturer';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -376,7 +378,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardName() 
 	{
-		url = getDomainname() + '/info?type=SDCardName';     
+		url = domainname + '/info?type=SDCardName';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -389,7 +391,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardCapacity() 
 	{
-		url = getDomainname() + '/info?type=SDCardCapacity';     
+		url = domainname + '/info?type=SDCardCapacity';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -402,7 +404,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardSectorSize() 
 	{
-		url = getDomainname() + '/info?type=SDCardSectorSize';     
+		url = domainname + '/info?type=SDCardSectorSize';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -415,7 +417,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardPartitionSize() 
 	{
-		url = getDomainname() + '/info?type=SDCardPartitionSize';     
+		url = domainname + '/info?type=SDCardPartitionSize';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -428,7 +430,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardFreePartitionSpace() 
 	{
-		url = getDomainname() + '/info?type=SDCardFreePartitionSpace';     
+		url = domainname + '/info?type=SDCardFreePartitionSpace';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -441,7 +443,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadSDCardPartitionAllocationSize() 
 	{
-		url = getDomainname() + '/info?type=SDCardPartitionAllocationSize';     
+		url = domainname + '/info?type=SDCardPartitionAllocationSize';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -454,7 +456,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadMemoryInfo() 
 	{
-		url = getDomainname() + '/heap';     
+		url = domainname + '/heap';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -474,7 +476,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadChipCores() 
 	{
-		url = getDomainname() + '/info?type=ChipCores';     
+		url = domainname + '/info?type=ChipCores';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {				
@@ -487,7 +489,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadChipRevision() 
 	{
-		url = getDomainname() + '/info?type=ChipRevision';     
+		url = domainname + '/info?type=ChipRevision';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {				
@@ -500,7 +502,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 	function loadChipFeatures() 
 	{
-		url = getDomainname() + '/info?type=ChipFeatures';     
+		url = domainname + '/info?type=ChipFeatures';     
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {				

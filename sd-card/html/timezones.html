@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
+
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 * {
   box-sizing: border-box;
@@ -39,8 +41,8 @@
 }
 </style>
 </head>
-<body>
 
+<body>
 <h2>Timezones</h2>
 
 <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for your region..." title="Type in a region">
@@ -50,7 +52,7 @@
     <tr class="header">
         <th>Region</th>
         <th>Code</th>
-      </tr>
+    </tr>
     <tr><td>Africa/Abidjan</td><td>GMT0</td></tr>
     <tr><td>Africa/Accra</td><td>GMT0</td></tr>
     <tr><td>Africa/Addis_Ababa</td><td>EAT-3</td></tr>
@@ -516,7 +518,7 @@
 
 <p>Source: <a href=https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv target=_blank>https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv</a></p>
 
-<script>
+<script type="text/javascript">
     function myFunction() {
       var input, filter, table, tr, td, i, txtValue;
       input = document.getElementById("myInput");
@@ -537,6 +539,6 @@
     }
     </script>
     
-    </body>
-    </html>
+</body>
+</html>
     

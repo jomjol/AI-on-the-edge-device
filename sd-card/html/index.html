@@ -147,20 +147,25 @@
 <span id="Version" style="font-size: 10px; margin-top: -5px;padding-left: 10px;">Loading version...</span>
 
 <script type="text/javascript">
-    LoadHostname();
-    LoadFwVersion();
-    LoadWebUiVersion();
-    HA_send_discovery_visibility();
+    var domainname = getDomainname();
 
-    if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
-		document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
+    function init() {
+        LoadHostname();
+        LoadFwVersion();
+        LoadWebUiVersion();
+        HA_send_discovery_visibility();
+
+        if (getCookie("page") == "" || getCookie("page") == "reboot_page.html?v=$COMMIT_HASH") {
+		    document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/";
+        }
+		
+        console.log("Loading page: " + getCookie("page"));
+        document.getElementById('maincontent').src = getCookie("page");
     }
-    console.log("Loading page: " + getCookie("page"));
-    document.getElementById('maincontent').src = getCookie("page");
 
     /*
     function flow_start() {
-    var url = getDomainname() + '/flow_start'; 
+    var url = domainname + '/flow_start'; 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -194,8 +199,8 @@
 	}
 
     function HA_send_discovery() {
-    console.log("HA Discovery scheduled");
-    var url = getDomainname() + '/mqtt_publish_discovery'; 
+		console.log("HA Discovery scheduled");
+		var url = domainname + '/mqtt_publish_discovery'; 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -212,14 +217,17 @@
 		}
 
         if (streamFlashlight) {
-            streamPopup = window.open(getDomainname() + '/stream?flashlight=true','LivestreamWithlight',streamWindowFeatures);
+            streamPopup = window.open(domainname + '/stream?flashlight=true','LivestreamWithlight',streamWindowFeatures);
 		}
         else {
-            streamPopup = window.open(getDomainname() + '/stream','Livestream',streamWindowFeatures);
+            streamPopup = window.open(domainname + '/stream','Livestream',streamWindowFeatures);
 		}
 
         streamPopup.focus();
     }
+	
+	init();
+	
 </script>
 
 </body>

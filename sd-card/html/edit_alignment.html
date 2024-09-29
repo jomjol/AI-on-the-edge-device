@@ -101,7 +101,8 @@
     <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 
     <script type="text/javascript">
-        var canvas = document.getElementById('canvas'),
+        var domainname = getDomainname(),
+            canvas = document.getElementById('canvas'),
             ctx = canvas.getContext('2d'),
             imageObj = new Image(),
             rect = {},
@@ -109,10 +110,9 @@
             aktindex = 0,
             refInfo,
             enhanceCon = false,
-            domainname = getDomainname(),
             neueref1,
             neueref2,
-            cofcat,	
+            category,	
             param;
     
         function doReboot() {
@@ -359,7 +359,7 @@
 
             ParseConfig();
             param = getConfigParameters();
-            cofcat = getConfigCategory();
+            category = getConfigCategory();
 
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);

@@ -39,38 +39,39 @@
 	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 
 	<script type="text/javascript">
-		var canvas = document.getElementById('canvas'),
-			domainname = getDomainname(); 
+		var domainname = getDomainname(),
+		    canvas = document.getElementById('canvas'); 
 
-
-	function LoadConfigNeu() {
-		domainname = getDomainname();  
-		loadConfig(domainname); 	
-		document.getElementById("inputTextToSave").value = getConfig();
+	    function LoadConfigNeu() {  
+		    loadConfig(domainname); 	
+		    document.getElementById("inputTextToSave").value = getConfig();
 		}
 
-	function saveTextAsFile()
-	{
-		if (confirm("Are you sure you want to save the configuration?")) {
-			FileDeleteOnServer("/config/config.ini", domainname);
-			var textToSave = document.getElementById("inputTextToSave").value;
-			FileSendContent(textToSave, "/config/config.ini", domainname);
+	    function saveTextAsFile() {
+		    if (confirm("Are you sure you want to save the configuration?")) {
+			    FileDeleteOnServer("/config/config.ini", domainname);
+			    var textToSave = document.getElementById("inputTextToSave").value;
+			    FileSendContent(textToSave, "/config/config.ini", domainname);
 
-			firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
-		}
-	}
+			    firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
+		    }
+	    }
 
-	function doReboot() {
-		if (confirm("Are you sure you want to reboot?")) {
-			var stringota = "/reboot";
-			window.location = stringota;
-			window.location.href = stringota;
-			window.location.assign(stringota);
-			window.location.replace(stringota);
-		}
-	}
-	
-	LoadConfigNeu();
+	    function doReboot() {
+		    if (confirm("Are you sure you want to reboot?")) {
+			    var stringota = "/reboot";
+			    window.location = stringota;
+			    window.location.href = stringota;
+			    window.location.assign(stringota);
+			    window.location.replace(stringota);
+		    }
+	    }
+
+        function init() {
+	        LoadConfigNeu();
+        }
+
+        init();
 	
 	</script>
  

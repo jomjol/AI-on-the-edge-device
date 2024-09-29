@@ -1895,8 +1895,8 @@
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
  
 <script type="text/javascript">
-var canvas = document.getElementById('canvas'),
-    domainname = getDomainname(),
+var domainname = getDomainname(),
+    canvas = document.getElementById('canvas'),
     changeCamValue = 0,	
     param,
     category,
@@ -3053,8 +3053,12 @@ function openDescription() {
     }
 }
 
-openDescription();
-LoadConfigNeu();
+function init() {
+    openDescription();
+    LoadConfigNeu();
+}
+
+init();
  
 </script>
 </body>

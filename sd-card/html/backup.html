@@ -48,13 +48,15 @@
 <script type="text/javascript" src="FileSaver.min.js?v=$COMMIT_HASH"></script>
 
 <script type="text/javascript">
+var domainname = getDomainname();
+
 function startBackup() {  
     document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
     
     // Get hostname
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", getDomainname() + "/info?type=Hostname", false);
+        xhttp.open("GET", domainname + "/info?type=Hostname", false);
         xhttp.send();
         hostname = xhttp.responseText;
     }
@@ -73,7 +75,7 @@ function startBackup() {
     setStatus("Fetching File List...");
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", getDomainname() + "/fileserver/config/", false);
+        xhttp.open("GET", domainname + "/fileserver/config/", false);
         xhttp.send();
         
         var parser = new DOMParser();
@@ -89,7 +91,7 @@ function startBackup() {
     
     for (a of list) {
         url = a.getAttribute("href");
-        urls.push(getDomainname() + url);
+        urls.push(domainname + url);
     }
     
     // Pack as zip and download

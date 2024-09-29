@@ -42,8 +42,7 @@
         showRrelativeValues = document.getElementById("showRrelativeValues").checked;
         //alert("Auslesen: " + datefile + " " + numbername);
 
-        _domainname = getDomainname();
-        fetch(_domainname + '/fileserver/log/data/' + datefile)
+        fetch(getDomainname() + '/fileserver/log/data/' + datefile)
         .then(response => {
             // handle the response
             if (response.status == 404) {
@@ -236,9 +235,6 @@
         }
     }
 
-    WriteModelFiles();
-    WriteNumbers();
-
     function Refresh() {
         setTimeout (function() {
             run();
@@ -246,8 +242,16 @@
         }, 300000);
     }
 
-    run();
-    Refresh();
+    function init() {
+        WriteModelFiles();
+        WriteNumbers();
+
+        run();
+        Refresh();
+    }
+		
+    init();
+
 </script>
 </body>
 </html>
