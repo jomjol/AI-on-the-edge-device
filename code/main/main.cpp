@@ -590,7 +590,7 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
             migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
             std::string linePrefix = "$";
-            migrated = migrated | replaceString(linePrefix + configLines[i), "$Zoom", "$CamZoom"); // Make sure "Zoom" stands at the start of the line since it is not uniqly used in this parameter
+            migrated = migrated | replaceString(linePrefix + configLines[i], "$Zoom", "$CamZoom"); // Make sure "Zoom" stands at the start of the line since it is not uniqly used in this parameter
 
             migrated = migrated | replaceString(configLines[i], "ImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
             migrated = migrated | replaceString(configLines[i], "Grayscale", ";UNUSED_PARAMETER"); // This parameter is no longer used
