@@ -2,14 +2,18 @@
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
 
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
-[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+### :warning: Notes
+- If the image is too dark after the update or otherwise different than before, **you might need to update the camera settings** and create a **new reference image**. We extended the camera settings and some devices need reconfiguration due to this.
+- New parameters got added, please revise the settings!
+
+### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
 #### Core Changes
 Those are just the major changes:
 - Add support for OV5640 camera (#3063)
 - New tflite-Models
+- Migrated CAM parameters (#3280)
 - Homeassistant service discovery: derive node_id when using nested topics (#3088)
 - Added Prometheus/OpenMetrics exporter (#3081)
 - Added Webhook (#3148, #3163, #3174)
