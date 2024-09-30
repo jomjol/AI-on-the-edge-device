@@ -97,7 +97,7 @@ static const char *TAG = "MAIN";
 bool Init_NVS_SDCard()
 {
     esp_err_t ret = nvs_flash_init();
-	
+    
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
@@ -139,7 +139,7 @@ bool Init_NVS_SDCard()
     // dies führt jedoch bei schlechten Kopien des AI_THINKER Boards
     // zu Problemen mit der SD Initialisierung und eventuell sogar zur reboot-loops.
     // Um diese Probleme zu kompensieren, wird der PullUp manuel gesetzt.
-    gpio_set_pull_mode(GPIO_SDCARD_D3, GPIO_PULLUP_ONLY); // HS2_D3	
+    gpio_set_pull_mode(GPIO_SDCARD_D3, GPIO_PULLUP_ONLY); // HS2_D3    
 
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
@@ -534,13 +534,13 @@ void migrateConfiguration(void) {
 
     if (!FileExists(CONFIG_FILE)) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Config file seems to be missing!");
-        return;	
+        return;    
     }
 
     std::string section = "";
-	std::ifstream ifs(CONFIG_FILE);
-  	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-	
+    std::ifstream ifs(CONFIG_FILE);
+      std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+    
     /* Split config file it array of lines */
     std::vector<std::string> configLines = splitString(content);
 
@@ -575,6 +575,26 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";Demo", "Demo"); // Enable it
 
+            migrated = migrated | replaceString(configLines[i], "Brightness", "CamBrightness");
+            migrated = migrated | replaceString(configLines[i], "Contrast", "CamContrast");
+            migrated = migrated | replaceString(configLines[i], "Saturation", "CamSaturation");
+            migrated = migrated | replaceString(configLines[i], "Sharpness", "CamSharpness");
+            
+            migrated = migrated | replaceString(configLines[i], "ImageQuality", "CamQuality");            
+
+            migrated = migrated | replaceString(configLines[i], "Aec2", "CamAec2");
+            migrated = migrated | replaceString(configLines[i], "AutoExposureLevel", "CamAeLevel");
+            migrated = migrated | replaceString(configLines[i], "FixedExposure", "CamAec");
+            
+            migrated = migrated | replaceString(configLines[i], "Zoom", "CamZoom");
+            migrated = migrated | replaceString(configLines[i], "ZoomMode", "CamZoomSize");
+            migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
+            migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
+            
+            migrated = migrated | replaceString(configLines[i], "ImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], "Grayscale", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], "Negative", ";UNUSED_PARAMETER"); // This parameter is no longer used
+
             // Parameter is no longer used
             // migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
             // migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
@@ -582,12 +602,10 @@ void migrateConfiguration(void) {
 
         if (section == "[Alignment]") {
             // Parameter is no longer used
-            // migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
-            // migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
-		
-            // Parameter is no longer used
-            // migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
-            // migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
+            migrated = migrated | replaceString(configLines[i], "InitialMirror", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], ";InitialMirror", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], "FlipImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], ";FlipImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
         }
 
         if (section == "[Digits]") {
