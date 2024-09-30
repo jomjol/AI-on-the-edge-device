@@ -1,4 +1,4 @@
-# Parameter `<NUMBER>.AnalogDigitTransitionStart`
+# Parameter `<NUMBER>.AnalogToDigitTransitionStart`
 Default Value: `9.2`
 
 This can be used if you have wrong values, but the recognition of the individual ROIs are correct.
