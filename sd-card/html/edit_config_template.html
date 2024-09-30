@@ -2323,7 +2323,7 @@ function UpdateInput() {
 
 	WriteParameter(param, category, "Webhook", "Uri", true);	
     WriteParameter(param, category, "Webhook", "ApiKey", true);
-	WriteParameter(param, category, "Webhook", "UploadImg", true);
+	WriteParameter(param, category, "Webhook", "UploadImg", false);
 
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
@@ -2489,7 +2489,7 @@ function ReadParameterAll() {
 
 	ReadParameter(param, "Webhook", "Uri", true);	
     ReadParameter(param, "Webhook", "ApiKey", true);
-	ReadParameter(param, "Webhook", "UploadImg", true);
+	ReadParameter(param, "Webhook", "UploadImg", false);
 
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);
