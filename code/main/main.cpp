@@ -589,9 +589,8 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], "ZoomMode", "CamZoomSize");
             migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
             migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
-            migrated = migrated | replaceString(configLines[i], "Zoom", "CamZoom");
-            migrated = migrated | replaceString(configLines[i], "CamCam", "Cam"); // Reversion of redundant renamings. This is needed since "Zoom" is contained in multiple parameters and gets replaced with "CamZoom"
-            
+            migrated = migrated | replaceString("$" + configLines[i], "$Zoom", "$CamZoom"); // Make sure "Zoom" stands at the start of the line since it is not uniqly used in this parameter
+
             migrated = migrated | replaceString(configLines[i], "ImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
             migrated = migrated | replaceString(configLines[i], "Grayscale", ";UNUSED_PARAMETER"); // This parameter is no longer used
             migrated = migrated | replaceString(configLines[i], "Negative", ";UNUSED_PARAMETER"); // This parameter is no longer used
