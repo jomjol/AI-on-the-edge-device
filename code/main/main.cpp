@@ -586,10 +586,10 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], "AutoExposureLevel", "CamAeLevel");
             migrated = migrated | replaceString(configLines[i], "FixedExposure", "CamAec");
             
-            migrated = migrated | replaceString(configLines[i], "Zoom", "CamZoom");
             migrated = migrated | replaceString(configLines[i], "ZoomMode", "CamZoomSize");
             migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
             migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
+            migrated = migrated | replaceString(configLines[i], "Zoom", "CamZoom");
             
             migrated = migrated | replaceString(configLines[i], "ImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
             migrated = migrated | replaceString(configLines[i], "Grayscale", ";UNUSED_PARAMETER"); // This parameter is no longer used
