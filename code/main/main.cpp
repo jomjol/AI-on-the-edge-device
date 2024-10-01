@@ -575,28 +575,27 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";Demo", "Demo"); // Enable it
 
-            migrated = migrated | replaceString(configLines[i], "Brightness", "CamBrightness");
-            migrated = migrated | replaceString(configLines[i], "Contrast", "CamContrast");
-            migrated = migrated | replaceString(configLines[i], "Saturation", "CamSaturation");
-            migrated = migrated | replaceString(configLines[i], "Sharpness", "CamSharpness");
-            
-            migrated = migrated | replaceString(configLines[i], "ImageQuality", "CamQuality");            
+            if (configLines[i].find("Brightness") == 0) { // Parameter starts with "Brightness"
+                migrated = migrated | replaceString(configLines[i], "Brightness", "CamBrightness");
+                migrated = migrated | replaceString(configLines[i], "Contrast", "CamContrast");
+                migrated = migrated | replaceString(configLines[i], "Saturation", "CamSaturation");
+                migrated = migrated | replaceString(configLines[i], "Sharpness", "CamSharpness");
 
-            migrated = migrated | replaceString(configLines[i], "Aec2", "CamAec2");
-            migrated = migrated | replaceString(configLines[i], "AutoExposureLevel", "CamAeLevel");
-            migrated = migrated | replaceString(configLines[i], "FixedExposure", "CamAec");
-            
-            migrated = migrated | replaceString(configLines[i], "ZoomMode", "CamZoomSize");
-            migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
-            migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
+                migrated = migrated | replaceString(configLines[i], "ImageQuality", "CamQuality");
 
-            if (configLines[i].find("Zoom") == 0) { // Parameter starts with "Zoom"
+                migrated = migrated | replaceString(configLines[i], "Aec2", "CamAec2");
+                migrated = migrated | replaceString(configLines[i], "AutoExposureLevel", "CamAeLevel");
+                migrated = migrated | replaceString(configLines[i], "FixedExposure", "CamAec");
+
+                migrated = migrated | replaceString(configLines[i], "ZoomMode", "CamZoomSize");
+                migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
+                migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
                 migrated = migrated | replaceString(configLines[i], "Zoom", "CamZoom");
-            }
 
-            migrated = migrated | replaceString(configLines[i], "ImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
-            migrated = migrated | replaceString(configLines[i], "Grayscale", ";UNUSED_PARAMETER"); // This parameter is no longer used
-            migrated = migrated | replaceString(configLines[i], "Negative", ";UNUSED_PARAMETER"); // This parameter is no longer used
+                migrated = migrated | replaceString(configLines[i], "ImageSize", ";UNUSED_PARAMETER"); // This parameter is no longer used
+                migrated = migrated | replaceString(configLines[i], "Grayscale", ";UNUSED_PARAMETER"); // This parameter is no longer used
+                migrated = migrated | replaceString(configLines[i], "Negative", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            }
 
             // Parameter is no longer used
             // migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
