@@ -727,8 +727,11 @@ void migrateConfiguration(void) {
 
         FILE* pfile = fopen(CONFIG_FILE, "w");        
         for (int i = 0; i < configLines.size(); i++) {
-            fwrite(configLines[i].c_str() , configLines[i].length(), 1, pfile);
-            fwrite("\n" , 1, 1, pfile);
+            if (!isInString(configLines[i], ";UNUSED_PARAMETER"))
+            {
+                fwrite(configLines[i].c_str() , configLines[i].length(), 1, pfile);
+                fwrite("\n" , 1, 1, pfile);
+            }
         }
         fclose(pfile);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Config file migrated. Saved backup to " + string(CONFIG_FILE_BACKUP));
