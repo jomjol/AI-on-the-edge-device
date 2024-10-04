@@ -528,6 +528,7 @@ extern "C" void app_main(void)
     }
 }
 
+
 void migrateConfiguration(void) {
     std::vector<string> splitted;
     bool migrated = false;
