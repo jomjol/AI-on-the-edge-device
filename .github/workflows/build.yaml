@@ -272,9 +272,6 @@ jobs:
 ## Prepare and create release
 #########################################################################################
   prepare-release: 
-    on:
-      release:
-        types: [released]
     runs-on: ubuntu-latest
     needs: [pack-for-update, pack-for-manual_setup, pack-for-remote_setup]
     if: startsWith(github.ref, 'refs/tags/') 
@@ -384,9 +381,7 @@ jobs:
 #########################################################################################
 # Make sure to also update update-webinstaller.yml!
   update-web-installer:
-    on:
-      release:
-        types: [released]
+    if: startsWith(github.ref, 'refs/tags/v') # Only run on a release
     needs: [prepare-release]
     environment:
       name: github-pages
