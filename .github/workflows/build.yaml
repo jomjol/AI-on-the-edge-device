@@ -271,7 +271,7 @@ jobs:
 #########################################################################################
 ## Prepare and create release
 #########################################################################################
-  release: 
+  prepare-release: 
     on:
       release:
         types: [released]
@@ -387,7 +387,7 @@ jobs:
     on:
       release:
         types: [released]
-    needs: [release]
+    needs: [prepare-release]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
