@@ -331,7 +331,7 @@ jobs:
 
     # extract the version used in next step
     - id: get_version
-      uses: dhkatz/get-version-action@v2
+      uses: dhkatz/get-version-action@v3.0.0
 
 #    # the changelog [unreleased] will now be changed to the release version
 #    - name: Update changelog
