@@ -331,13 +331,11 @@ jobs:
 
     # extract the version used in next step
     - id: get_version
-      if: startsWith(github.ref, 'refs/tags/') 
-      uses: Simply007/get-version-action@v2
+      uses: dhkatz/get-version-action@v2
 
 #    # the changelog [unreleased] will now be changed to the release version
 #    - name: Update changelog
 #      uses: thomaseizinger/keep-a-changelog-new-release@v1
-#      if: startsWith(github.ref, 'refs/tags/') 
 #      with:
 #        changelogPath: Changelog.md
 #        version: ${{ steps.get_version.outputs.version-without-v }}
@@ -345,7 +343,6 @@ jobs:
 #    # the release notes will be extracted from changelog 
 #    - name: Extract release notes
 #      id: extract-release-notes
-#      if: startsWith(github.ref, 'refs/tags/') 
 #      uses: ffurrer2/extract-release-notes@v1
 #      with:
 #          changelog_file: Changelog.md
@@ -353,12 +350,11 @@ jobs:
     # Releases should only be created on master by tagging the last commit.
     # all artifacts in firmware folder pushed to the release
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2.0.8
       # Note:
       # If you get the error "Resource not accessible by integration",
       # The access rights are not sufficient, see
       # https://github.com/softprops/action-gh-release/issues/232#issuecomment-1131379440
-      if: startsWith(github.ref, 'refs/tags/')
       with:
         name:  ${{ steps.get_version.outputs.version-without-v }}
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
@@ -367,7 +363,6 @@ jobs:
 
 #    # Commit&Push Changelog to master branch. Must be manually merged back to rolling
 #    - name: Commit changes and push changes
-#      if: startsWith(github.ref, 'refs/tags/') 
 #      run: |
 #        git config user.name github-actions
 #        git config user.email github-actions@github.com
@@ -380,7 +375,8 @@ jobs:
 ## Update the Web Installer on a release
 #########################################################################################
 # Make sure to also update update-webinstaller.yml!
-  update-web-installer:    
+  update-web-installer:
+    if: "!github.event.release.prerelease" # Only run on release but not on prerelease
     needs: [release]
     environment:
       name: github-pages
@@ -399,7 +395,7 @@ jobs:
 
     - name: Get version of last release
       id: last_release
-      uses: mindojo/get-latest-release@0b8ef1434d7468d6bffcc8263baff5c777f72321
+      uses: mindojo/get-latest-release@00b8ef1434d7468d6bffcc8263baff5c777f72321
       with:
         myToken: ${{ github.token }}
         exclude_types: "draft|prerelease"
