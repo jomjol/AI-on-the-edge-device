@@ -65,7 +65,7 @@ The latest available version can be found on the [Releases page](https://github.
 Initially you will have to flash the ESP32 via a USB connection. Later updates are possible directly over the air (OTA using WIFI).
 
 There are different ways to flash your ESP32:
-- The prefered way is the [Web Installer and Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) which is a browser-based tool to flash the ESP32 and extract the log over USB:
+- The preferred way is the [Web Installer and Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) which is a browser-based tool to flash the ESP32 and extract the log over USB:
 ![](images/web-installer.png)
 - Flash Tool from Espressif
 - ESPtool (command-line tool)

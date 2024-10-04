@@ -1,3 +1,24 @@
+## [16.0.0-RC2] - 2024-10-04
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC1 are listed:
+- Updated parameter documentation pages
+- Rename/remove unused parameters (#3291)
+- Migrate-cam-parameters (#3288)
+
+#### Bug Fixes
+Only changes since RC1 are listed:
+- Reverted TFlite submodule update as certain modules crash with it (#3269)
+- Changed the webhook UploadImg to false (#3279)
+- Changed default value from boolean to numeric value in parameter camDenoise documentation
+- Updated config page
+
 ## [16.0.0-RC1] - 2024-09-24
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
