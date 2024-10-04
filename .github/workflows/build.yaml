@@ -376,7 +376,7 @@ jobs:
 #########################################################################################
 # Make sure to also update update-webinstaller.yml!
   update-web-installer:
-    if: "!github.event.release.prerelease" # Only run on release but not on prerelease
+    if: github.event_name == 'release' && github.event.action == 'published' # Only run on release but not on prerelease
     needs: [release]
     environment:
       name: github-pages
@@ -395,7 +395,7 @@ jobs:
 
     - name: Get version of last release
       id: last_release
-      uses: mindojo/get-latest-release@00b8ef1434d7468d6bffcc8263baff5c777f72321
+      uses: mindojo/get-latest-release@0b8ef1434d7468d6bffcc8263baff5c777f72321
       with:
         myToken: ${{ github.token }}
         exclude_types: "draft|prerelease"
