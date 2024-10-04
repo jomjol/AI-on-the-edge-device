@@ -599,13 +599,11 @@ void migrateConfiguration(void) {
                 migrated = migrated | replaceString(configLines[i], "Aec2", "CamAec2");
             }
             else if ((isInString(configLines[i], "Zoom")) && (!isInString(configLines[i], "CamZoom")) && (!isInString(configLines[i], "ZoomMode")) && (!isInString(configLines[i], "ZoomOffsetX")) && (!isInString(configLines[i], "ZoomOffsetY"))) {
-                // migrated = migrated | replaceString(configLines[i], "Zoom", "CamZoom");
                 CamZoom_lines = i;
                 CamZoom_value = alphanumericToBoolean(splitted[1]);
                 CamZoom_found = true;
             }
             else if ((isInString(configLines[i], "ZoomMode")) && (!isInString(configLines[i], "CamZoom"))) {
-                // migrated = migrated | replaceString(configLines[i], "ZoomMode", "CamZoomSize");
                 CamZoomSize_lines = i;
                 if (isStringNumeric(splitted[1])) {
                     CamZoomSize_value = std::stof(splitted[1]);
@@ -613,7 +611,6 @@ void migrateConfiguration(void) {
                 CamZoom_found = true;
             }
             else if ((isInString(configLines[i], "ZoomOffsetX")) && (!isInString(configLines[i], "CamZoom")) && (!isInString(configLines[i], "ZoomOffsetY"))) {
-                // migrated = migrated | replaceString(configLines[i], "ZoomOffsetX", "CamZoomOffsetX");
                 CamZoomOffsetX_lines = i;
                 if (isStringNumeric(splitted[1])) {
                     CamZoomOffsetX_value = std::stof(splitted[1]);
@@ -621,7 +618,6 @@ void migrateConfiguration(void) {
                 CamZoom_found = true;
             }
             else if ((isInString(configLines[i], "ZoomOffsetY")) && (!isInString(configLines[i], "CamZoom")) && (!isInString(configLines[i], "ZoomOffsetX"))) {
-                // migrated = migrated | replaceString(configLines[i], "ZoomOffsetY", "CamZoomOffsetY");
                 CamZoomOffsetY_lines = i;
                 if (isStringNumeric(splitted[1])) {
                     CamZoomOffsetY_value = std::stof(splitted[1]);
