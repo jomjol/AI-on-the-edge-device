@@ -174,7 +174,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection refused, not authorized. Check username/password (0x05)");
             }
             else {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Other event id:" + event->error_handle->connect_return_code);
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Other event id:" + std::to_string(event->error_handle->connect_return_code));
                 ESP_LOGE(TAG, "Other event id:%d", event->error_handle->connect_return_code);
             }
 
