@@ -2555,7 +2555,7 @@ function UpdateExpertModus() {
         _style_pur = '';
         _hidden = false;
         document.getElementById("Button_Edit_Config_Raw").style.display = "";
-        firework.launch("Expert view activated. Please use carefully", 'warning', 5000);
+        firework.launch("Expert view activated. Please use it carefully", 'warning', 5000);
     }
     else {
         document.getElementById("Button_Edit_Config_Raw").style.display = "none"; 
@@ -2821,7 +2821,7 @@ function camSettingsSet(){
                 }
                 catch (error){}
 
-                document.getElementById("overlaytext").innerHTML = "Device is busy, please waiting...<br><br>Current step: " + _xhttp.responseText;
+                document.getElementById("overlaytext").innerHTML = "Device is busy, please wait.<br><br>Current step: " + _xhttp.responseText;
                 console.log("Device is busy, waiting 2s then checking again...");
                 await sleep(2000);
             }
