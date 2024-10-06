@@ -2,11 +2,11 @@
 <img src="images/icon/watermeter.svg" width="100px">
 
 Artificial intelligence based systems have become established in our everyday lives. Just think of speech or image recognition. Most of the systems rely on either powerful processors or a direct connection to the cloud for doing the calculations there. With the increasing power of modern processors, the AI systems are coming closer to the end user – which is usually called **edge computing**.
-Here, this edge computing is put into a practically oriented example, where an AI network is implemented on an ESP32 device so: **AI on the edge**.
+In this project, edge computing is demonstrated through a practical example, where an AI network is implemented on an ESP32 device, hence: **AI on the edge**.
 
 This project allows you to digitize your **analog** water, gas, power and other meters using cheap and easily available hardware.
 
-All you need is an [ESP32 board with a supported camera](https://jomjol.github.io/AI-on-the-edge-device-docs/Hardware-Compatibility/) and something of a practical hand.
+All you need is an [ESP32 board with a supported camera](https://jomjol.github.io/AI-on-the-edge-device-docs/Hardware-Compatibility/) and some practical skills.
 
 <img src="images/esp32-cam.png" width="200px">
 
@@ -17,13 +17,13 @@ All you need is an [ESP32 board with a supported camera](https://jomjol.github.i
 - Integrated camera and illumination
 - Web interface for administration and control
 - OTA interface for updating directly via the web interface
-- Full integration into Homeassistant
+- Full integration with Home Assistant
 - Support for Influx DB 1 and 2
 - MQTT
 - REST API
 
 ## Workflow
-The device takes a photo of your meter at a defined interval. It then extracts the Regions of Interest (ROIs) from the image and runs them through artificial intelligence. As a result, you get the digitized value of your meter.
+The device captures a photo of your meter at set intervals. It then extracts the Regions of Interest (ROIs) from the image and runs them through artificial intelligence. As a result, you get the digitized value of your meter.
 
 There are several options for what to do with that value. Either send it to an MQTT broker, write it to an InfluxDb or simply provide access to it via a REST API.
 
@@ -74,7 +74,7 @@ See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Inst
 
 ### Flashing the SD Card
 The SD card can be setup automatically after the firmware got installed. See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#remote-setup-using-the-built-in-access-point) for details. For this to work, the SD card must be FAT formated (which is the default on a new SD card).
-Alternatively the SD card still can be setup manually, see the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#3-sd-card) for details!
+Alternatively, the SD card still can be set up manually, see the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#3-sd-card) for details!
 
 ## Casing
 Various 3D-printable housing can be found here:
@@ -89,7 +89,7 @@ If you would like to support the developer with a cup of coffee, you can do that
 <a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL"><img border="0" src="images/paypal.png" width="200px" target="_blank"></a>
 
 ## Support
-If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you found a ug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
+If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you found a bug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
 
