@@ -143,6 +143,9 @@ jobs:
 
     - name: Add Web UI to update
       run: cp -r ./html ./update/
+      
+    - name: Add Demo mode files to update
+      run: cp -r ./demo ./update/
 
     - name: Add CNN to update
       run: |
@@ -207,6 +210,9 @@ jobs:
     - name: Add Web UI to remote_setup
       run: cp -r ./html ./remote_setup/
 
+    - name: Add Demo mode files to update
+      run: cp -r ./demo ./update/
+
     - name: Add whole config folder to remote_setup
       run: |
         rm -rf ./remote_setup/config/
@@ -268,7 +274,9 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "manual_setup/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "manual_setup/partitions.bin"
         rm -rf ./sd-card/html
+        rm -rf ./sd-card/demo
         cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
+        cp -r ./demo ./sd-card/
         cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
 
