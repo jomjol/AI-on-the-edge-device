@@ -53,6 +53,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./html/*
+          ./demo/*
         key: generated-files-${{ github.run_id }}
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache          
 
@@ -87,6 +88,11 @@ jobs:
         echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
 
+    - name: Prepare Demo mode files
+      run: |
+        rm -rf ./demo
+        mkdir demo
+        cp -r ./sd-card/demo/* ./demo/
 
 #########################################################################################
 ## Pack for Update
@@ -97,6 +103,7 @@ jobs:
     #  - /firmware.bin
     #  - (optional) /html/* (inkl. subfolders)
     #  - (optional) /config/*.tfl
+    #  - (optional) /demo/*
     runs-on: ubuntu-latest
     needs: build
 
@@ -111,6 +118,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./html/*
+          ./demo/*
         key: generated-files-${{ github.run_id }}
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
@@ -135,6 +143,9 @@ jobs:
 
     - name: Add Web UI to update
       run: cp -r ./html ./update/
+      
+    - name: Add Demo mode files to update
+      run: cp -r ./demo ./update/
 
     - name: Add CNN to update
       run: |
@@ -158,6 +169,7 @@ jobs:
     # remote_setup__version.zip file with following content:
     #  - /firmware.bin
     #  - /html/* (inkl. subfolders)
+    #  - /demo/*
     #  - /config/*
     runs-on: ubuntu-latest
     needs: build
@@ -173,6 +185,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./html/*
+          ./demo/*
         key: generated-files-${{ github.run_id }}
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
@@ -196,6 +209,9 @@ jobs:
 
     - name: Add Web UI to remote_setup
       run: cp -r ./html ./remote_setup/
+
+    - name: Add Demo mode files to update
+      run: cp -r ./demo ./update/
 
     - name: Add whole config folder to remote_setup
       run: |
@@ -229,6 +245,7 @@ jobs:
           ./code/.pio/build/esp32cam/partitions.bin
           ./code/.pio/build/esp32cam/bootloader.bin
           ./html/*
+          ./demo/*
         key: generated-files-${{ github.run_id }}
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
 
@@ -257,7 +274,9 @@ jobs:
         cp -f "./code/.pio/build/esp32cam/bootloader.bin" "manual_setup/bootloader.bin"
         cp -f "./code/.pio/build/esp32cam/partitions.bin" "manual_setup/partitions.bin"
         rm -rf ./sd-card/html
+        rm -rf ./sd-card/demo
         cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
+        cp -r ./demo ./sd-card/
         cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
 
