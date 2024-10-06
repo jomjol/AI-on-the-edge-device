@@ -122,12 +122,18 @@ esp_err_t CCamera::InitCam(void)
 {
     ESP_LOGD(TAG, "Init Camera");
 
+    TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+
     CCstatus.ImageQuality = camera_config.jpeg_quality;
     CCstatus.ImageFrameSize = camera_config.frame_size;
 
+    // De-init in case it was already initialized
+    esp_camera_deinit();
+    vTaskDelay(cam_xDelay);
+
     // initialize the camera
-    esp_camera_deinit(); // De-init in case it was already initialized
     esp_err_t err = esp_camera_init(&camera_config);
+    vTaskDelay(cam_xDelay);
 
     if (err != ESP_OK)
     {
@@ -280,8 +286,8 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 
         s->set_dcw(s, CCstatus.ImageDcw); // 0 = disable , 1 = enable
 
-        TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay2);
+        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+        vTaskDelay(cam_xDelay);
 
         return ESP_OK;
     }
