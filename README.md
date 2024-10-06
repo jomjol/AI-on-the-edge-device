@@ -106,3 +106,9 @@ See [Build Instructions](code/README.md).
 ## Additional Ideas
 There are some ideas and feature requests which are not currently being pursued – mainly due to capacity reasons on the part of the developers.
 They features are collected in the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and in [FeatureRequest.md](FeatureRequest.md).
+
+## Our Contributors ❤️
+
+<!-- readme: contributors -start -->
+
+<!-- readme: contributors -end -->
