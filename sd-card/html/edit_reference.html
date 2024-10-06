@@ -617,7 +617,7 @@
                         }
                         catch (error){}
 
-                        document.getElementById("overlaytext").innerHTML = "Device is busy, plase waiting...<br><br>Current step: " + _xhttp.responseText;
+                        document.getElementById("overlaytext").innerHTML = "Device is busy, please waiting...<br><br>Current step: " + _xhttp.responseText;
                         console.log("Device is busy, waiting 5s then checking again...");
                         await sleep(2000);
                     }
