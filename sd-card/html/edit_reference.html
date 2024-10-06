@@ -617,7 +617,7 @@
                         }
                         catch (error){}
 
-                        document.getElementById("overlaytext").innerHTML = "Device is busy, please waiting...<br><br>Current step: " + _xhttp.responseText;
+                        document.getElementById("overlaytext").innerHTML = "Device is busy, please wait.<br><br>Current step: " + _xhttp.responseText;
                         console.log("Device is busy, waiting 5s then checking again...");
                         await sleep(2000);
                     }
@@ -1053,7 +1053,7 @@
             if (document.getElementById("ExpertModus_enabled").checked) {
                 _style_pur = '';
                 _hidden = false;
-                firework.launch("Expert parameter view activated. Please use carefully", 'warning', 5000);
+                firework.launch("Expert parameter view activated. Please use it carefully", 'warning', 5000);
             }
 
             const expert = document.querySelectorAll(".expert");
