@@ -1,3 +1,22 @@
+## [16.0.0-RC4] - 2024-10-06
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC2 are listed:
+- Update esp32-camera submodule to `v2.0.13` (#3316)
+- Added contributor list (#3317)
+- Added files for demo mode (#3315)
+
+#### Bug Fixes
+Only changes since RC2 are listed:
+- Added delay in InitCam (#3313) to fix `Camera not detected` issues
+
+
 ## [16.0.0-RC3] - 2024-10-05
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
