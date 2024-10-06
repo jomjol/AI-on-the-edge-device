@@ -200,13 +200,6 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/Ayushjhawar8">
-                    <img src="https://avatars.githubusercontent.com/u/111112495?v=4" width="50;" alt="Ayushjhawar8"/>
-                    <br />
-                    <sub><b>Ayushjhawar8</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/michaeljoos72">
                     <img src="https://avatars.githubusercontent.com/u/20517474?v=4" width="50;" alt="michaeljoos72"/>
                     <br />
@@ -227,8 +220,6 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>pixeldoc2000</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/mad2xlc">
                     <img src="https://avatars.githubusercontent.com/u/37449746?v=4" width="50;" alt="mad2xlc"/>
@@ -236,6 +227,8 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>mad2xlc</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/jochenchrist">
                     <img src="https://avatars.githubusercontent.com/u/2930448?v=4" width="50;" alt="jochenchrist"/>
@@ -285,8 +278,6 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>amantyagiprojects</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/ppisljar">
                     <img src="https://avatars.githubusercontent.com/u/13629809?v=4" width="50;" alt="ppisljar"/>
@@ -294,6 +285,8 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>ppisljar</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/ralf1307">
                     <img src="https://avatars.githubusercontent.com/u/46164027?v=4" width="50;" alt="ralf1307"/>
@@ -343,8 +336,6 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>flooxo</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/kalwados">
                     <img src="https://avatars.githubusercontent.com/u/11840444?v=4" width="50;" alt="kalwados"/>
@@ -352,6 +343,8 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>kalwados</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/kub3let">
                     <img src="https://avatars.githubusercontent.com/u/95883234?v=4" width="50;" alt="kub3let"/>
@@ -401,8 +394,6 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>rainman110</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/myxor">
                     <img src="https://avatars.githubusercontent.com/u/1397377?v=4" width="50;" alt="myxor"/>
@@ -410,6 +401,8 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>myxor</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/joergrosenkranz">
                     <img src="https://avatars.githubusercontent.com/u/310438?v=4" width="50;" alt="joergrosenkranz"/>
@@ -459,8 +452,6 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>CFenner</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/PLCHome">
                     <img src="https://avatars.githubusercontent.com/u/29116097?v=4" width="50;" alt="PLCHome"/>
@@ -468,6 +459,8 @@ They features are collected in the [issues](https://github.com/jomjol/AI-on-the-
                     <sub><b>PLCHome</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/adarazs">
                     <img src="https://avatars.githubusercontent.com/u/6269603?v=4" width="50;" alt="adarazs"/>
