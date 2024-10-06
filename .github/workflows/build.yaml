@@ -375,6 +375,8 @@ jobs:
 ## Update Contriibutors List in readme
 #########################################################################################
   contrib-readme-job:
+    if: github.event_name == 'release' && github.event.action == 'published' # Only run on release but not on prerelease
+    needs: [release]
     runs-on: ubuntu-latest
     name: A job to automate contrib in readme
     permissions:
