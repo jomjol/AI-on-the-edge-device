@@ -14,8 +14,8 @@ jobs:
             - name: Contribute List
               uses: akhilmhdh/contributors-readme-action@v2.3.10
               with:
-                  image_size: 75  
+                  image_size: 50  
                   use_username: true
-                  columns_per_row: 10
+                  columns_per_row: 8
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
