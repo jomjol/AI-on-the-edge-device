@@ -581,16 +581,16 @@ Intermediate Digits
 -   Implementation of new CNN types to detect intermediate values of digits with rolling numbers
 
     -   By default the old algo (0, 1, ..., 9, "N") is active (due to the limited types of digits trained so far)
-    -   Activation can be done by selection a tflite file with the new trained model in the 'config.ini'
+    -   Activation can be done by selecting a tflite file with the new trained model in the 'config.ini'
     -   **Details can be found in the [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Neural-Network-Types)** (different types, trained image types, naming convention)
 
--   Updated  neural network files (and adaption to new naming convention)
+-   Updated  neural network files (and adaptation to new naming convention)
 
--   Published a tool to download and combine log files - **Thanks to **
+-   Published a tool to download and combine log files - Thanks to [Contributor]
 
     -   Files see ['/tools/logfile-tool'](tbd), How-to see [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader)
 
--   Bug Fix: InfluxDB enabling in grahic configuration
+-   Bug Fix: InfluxDB enabling in graphic configuration
 
 ## [10.6.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.6.2), 2022-07-24
 
@@ -604,7 +604,7 @@ Stability Increase
 
 -   **NEW 10.6.1**: Bug Fix: tflite-filename with ".", HTML spelling error
 
--   IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
+-   InfluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
 
 -   MQTT: implemented "Retain Flag" and extend with absolute Change (in addition to rate)
 
@@ -1119,7 +1119,7 @@ External Illumination
 -   Bug in configuration of analog ROIs corrected
 
 
--   minor bug correction
+-   minor Bug correction
 
 ## [1.0.1](2020-09-05)
 
@@ -1128,7 +1128,7 @@ External Illumination
 -   preValue.ini Bug corrected
 
 
--   minor bug correction
+-   minor Bug correction
 
 ## [1.0.0](2020-09-04)
 
