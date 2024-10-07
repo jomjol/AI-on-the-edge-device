@@ -1,17 +1,17 @@
 # Welcome to the AI-on-the-edge-device
 <img src="images/icon/watermeter.svg" width="100px">
 
-Artificial intelligence based systems have become established in our everyday lives. Just think of speech or image recognition. Most of the systems rely on either powerful processors or a direct connection to the cloud for doing the calculations there. With the increasing power of modern processors, the AI systems are coming closer to the end user – which is usually called **edge computing**.
+Artificial intelligence-based systems have become established in our everyday lives. Just think of speech or image recognition. Most of the systems rely on either powerful processors or a direct connection to the cloud for doing the calculations there. With the increasing power of modern processors, the AI systems are coming closer to the end user, a concept known as **edge computing**.
 In this project, edge computing is demonstrated through a practical example, where an AI network is implemented on an ESP32 device, hence: **AI on the edge**.
 
-This project allows you to digitize your **analog** water, gas, power and other meters using cheap and easily available hardware.
+This project allows you to digitize your **analog** water, gas, power and other meters using cheap and readily available hardware.
 
 All you need is an [ESP32 board with a supported camera](https://jomjol.github.io/AI-on-the-edge-device-docs/Hardware-Compatibility/) and some practical skills.
 
 <img src="images/esp32-cam.png" width="200px">
 
 ## Key features
-- Tensorflow Lite (TFlite) integration – including easy-to-use wrapper
+- Tensorflow Lite (TFLite) integration – including easy-to-use wrapper
 - Inline image processing (feature detection, alignment, ROI extraction)
 - **Small** and **cheap** device (3 x 4.5 x 2 cm³, < 10 EUR)
 - Integrated camera and illumination
@@ -45,7 +45,7 @@ There is growing [documentation](https://jomjol.github.io/AI-on-the-edge-device-
 
 There are also articles in the German Heise magazine "make:" about the setup and technical background (behind a paywall): [DIY - Setup](https://www.heise.de/select/make/2021/2/2103513300897420296)
 
-A lot of people created useful Youtube videos which might help you getting started.
+A lot of people created useful YouTube videos which might help you getting started.
 Here a small selection:
 
 - [youtube.com/watch?v=HKBofb1cnNc](https://www.youtube.com/watch?v=HKBofb1cnNc)
@@ -62,7 +62,7 @@ For further background information, head to [Neural Networks](https://www.heise.
 The latest available version can be found on the [Releases page](https://github.com/jomjol/AI-on-the-edge-device/releases).
 
 ### Flashing the ESP32
-Initially you will have to flash the ESP32 via a USB connection. Later updates are possible directly over the air (OTA using WIFI).
+Initially you will have to flash the ESP32 via a USB connection. Later updates are possible directly over the air (OTA using Wi-Fi).
 
 There are different ways to flash your ESP32:
 - The preferred way is the [Web Installer and Console](https://jomjol.github.io/AI-on-the-edge-device/index.html) which is a browser-based tool to flash the ESP32 and extract the log over USB:
@@ -89,7 +89,7 @@ If you would like to support the developer with a cup of coffee, you can do that
 <a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL"><img border="0" src="images/paypal.png" width="200px" target="_blank"></a>
 
 ## Support
-If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you found a bug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
+If you have any technical problems please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you find a bug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
 In other cases you can contact the developer via email: <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
 
