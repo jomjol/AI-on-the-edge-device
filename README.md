@@ -1,4 +1,4 @@
-# AI on the Edge Device: Digitizing Your Meters with ESP32
+# AI on the Edge Device: Digitizing Your Meters with ESP32-CAM
 <p align="center">
   <img src="images/icon/watermeter.svg" width="150px">
 </p>
