@@ -1,0 +1,21 @@
+# This updates the Contributors list in the README.md
+# it only gets run on:
+#  - Manually triggered
+
+name: Manually update contributors list
+
+on:
+  workflow_dispatch: # Run on manual trigger
+
+jobs:
+  manually-update-contributors-list: 
+    runs-on: ubuntu-latest
+      name: A job to automate contrib in README.md
+      permissions:
+        contents: write
+        pull-requests: write
+      steps:
+          - name: Contribute List
+            uses: akhilmhdh/contributors-readme-action@v2.3.10
+            env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
