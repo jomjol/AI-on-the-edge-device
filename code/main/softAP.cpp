@@ -98,8 +98,8 @@ void wifi_init_softAP(void)
 void SendHTTPResponse(httpd_req_t *req)
 {
     std::string message = "<h1>AI-on-the-edge - BASIC SETUP</h1><p>This is an access point with a minimal server to setup the minimum required files and information on the device and the SD-card. ";
-    message += "This mode is always startet if one of the following files is missing: /wlan.ini or the /config/config.ini.<p>";
-    message += "The setup is done in 3 steps: 1. upload full inital configuration (sd-card content), 2. store WLAN acces information, 3. reboot (and connect to WLANs)<p><p>";
+    message += "This mode is always started if one of the following files is missing: /wlan.ini or the /config/config.ini.<p>";
+    message += "The setup is done in 3 steps: 1. upload full inital configuration (sd-card content), 2. store WLAN access information, 3. reboot (and connect to WLANs)<p><p>";
     message += "Please follow the below instructions.<p>";
     httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
@@ -109,7 +109,7 @@ void SendHTTPResponse(httpd_req_t *req)
     {
         message = "<h3>1. Upload initial configuration to sd-card</h3><p>";
         message += "The configuration file config.ini is missing and most propably the full configuration and html folder on the sd-card. ";
-        message += "This is normal after the first flashing of the firmware and an empty sd-card. Please upload \"remote_setup.zip\", which contains an full inital configuration.<p>";
+        message += "This is normal after the first flashing of the firmware and an empty sd-card. Please upload \"remote_setup.zip\", which contains a full inital configuration.<p>";
         message += "<input id=\"newfile\" type=\"file\"><br>";
         message += "<button class=\"button\" style=\"width:300px\" id=\"doUpdate\" type=\"button\" onclick=\"upload()\">Upload File</button><p>";
         message += "The upload might take up to 60s. After a succesfull upload the page will be updated.";
@@ -135,7 +135,7 @@ void SendHTTPResponse(httpd_req_t *req)
         message += "<tr><td>WLAN-SSID</td><td><input type=\"text\" name=\"ssid\" id=\"ssid\"></td><td>SSID of the WLAN</td></tr>";
         message += "<tr><td>WLAN-Password</td><td><input type=\"text\" name=\"password\" id=\"password\"></td><td>ATTENTION: the password will not be encrypted during the sending.</td><tr>";
         message += "</table><p>";
-        message += "<h4>ATTENTION:<h4>Be sure about the WLAN settings. They cannot be reseted afterwards. If ssid or password is wrong, you need to take out the sd-card and manually change them in \"wlan.ini\"!<p>";
+        message += "<h4>ATTENTION:<h4>Be sure about the WLAN settings. They cannot be reset afterwards. If ssid or password is wrong, you need to take out the sd-card and manually change them in \"wlan.ini\"!<p>";
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
 //        message = "</tr><tr><td> Hostname</td><td><input type=\"text\" name=\"hostname\" id=\"hostname\"></td><td></td>";
