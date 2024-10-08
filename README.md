@@ -28,7 +28,7 @@ All you need is an [ESP32 board with a supported camera](https://jomjol.github.i
 The device captures a photo of your meter at set intervals. It then extracts the Regions of Interest (ROIs) from the image and runs them through artificial intelligence. As a result, you get the digitized value of your meter.
 
 There are several options for what to do with that value:
-- 📤 Send it to an **MQTT broker**.
+- 📤 Send it to a **MQTT broker**.
 - 📝 Write it to an **InfluxDb**.
 - 🔗 Provide access via a **REST API**.
 
