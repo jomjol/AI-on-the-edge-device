@@ -391,27 +391,6 @@ jobs:
 
 
 #########################################################################################
-## Update Contributors List in README.md on a release
-#########################################################################################
-  contrib-readme-job:
-    if: github.event_name == 'release' && github.event.action == 'published' # Only run on release but not on prerelease
-    needs: [prepare-release]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-        - name: Contribute List
-          uses: akhilmhdh/contributors-readme-action@v2.3.10
-          with:
-              image_size: 50  
-              use_username: true
-              columns_per_row: 8
-          env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-#########################################################################################
 ## Update the Web Installer on a release
 #########################################################################################
 # Make sure to also update update-webinstaller.yml!

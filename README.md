@@ -153,4 +153,6 @@ There are some ideas and feature requests which are not currently being pursued�
 ---
 
 ## Our Contributors ❤️
-<!--
+<!-- Do not manually edit this section! It should get updated using the Github action "Manually update contributors list" -->
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
