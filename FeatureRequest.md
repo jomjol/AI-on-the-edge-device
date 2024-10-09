@@ -40,16 +40,16 @@ ____
 Demo mode requires a working camera (if not, one receives a 'Cam bad' error). Would be nice to demo or play around on other ESP32 boards (or on ESP32-CAM boards when you broke the camera cable...).
 
 #### #35 Use the same model, but provide the image from a Smartphone Camera
-as reading the Electricity or Water meter every few minutues only delivers apparent accuracy (DE: "Scheingenauigkeit") you could just as well take a picture with your Smartphone evey so often (e.g. once a week when you are in the Basement anyway), then with some "semi clever" tricks pass this image to the model developed here, and the values then on to who ever needs them e.g. via MQTT.
+as reading the Electricity or Water meter every few minutes only delivers apparent accuracy (DE: "Scheingenauigkeit") you could just as well take a picture with your Smartphone every so often (e.g. once a week when you are in the Basement anyway), then with some "semi clever" tricks pass this image to the model developed here, and the values than on to whoever needs them e.g. via MQTT.
 IMO: It is not needed to have that many readings (datapoints) as our behaviour (Use of electricity or water) doesn't vary that much, say, over a weeks time. The interpolation between weekly readings will give sufficient information on the power and/or water usage. 
 
 
 #### #34 implement state and Roi for water leak detection
-for example see Roi on the next picture..
+for example see Roi in the next picture..
 ![grafik](https://user-images.githubusercontent.com/38385805/207858812-2a6ba41d-1a8c-4fa1-9b6a-53cdd113c106.png)
-in case of position change between the measurments set this state to true, if there is no change set it back to false.
+in case of position change between the measurements set this state to true, if there is no change set it back to false.
 In a defined time window this movement can lead into an alarm state / water leak..
-haveing this state in the mqtt broker can trigger functions like closing the ater pipe walve and so on...
+having this state in the mqtt broker can trigger functions like closing the water pipe valve and so on...
 
 
 
@@ -65,7 +65,7 @@ haveing this state in the mqtt broker can trigger functions like closing the ate
 
 #### #31 Implement InfluxDB v2.x interface
 
-* Currently only InfluxDB v1.x is supportet, extend to v2.x
+* Currently only InfluxDB v1.x is supported, extend to v2.x
 * Remark: interface has changed
 * see [#1160](https://github.com/jomjol/AI-on-the-edge-device/issues/1160)
 
@@ -82,7 +82,7 @@ haveing this state in the mqtt broker can trigger functions like closing the ate
 #### #28 Improved error handling for ROIs
 
 * In case a ROI is out of the image, there is no error message, but a non sense image is used
-* Implement a error message for wrong configuratioin of ROI
+* Implement a error message for wrong configuration of ROI
 
 #### #27 Use Homie Spec for Mqtt binding
 
