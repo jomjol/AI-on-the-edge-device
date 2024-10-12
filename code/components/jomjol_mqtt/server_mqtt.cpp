@@ -184,6 +184,7 @@ bool MQTThomeassistantDiscovery(int qos) {
             group = "";
         }
 
+        /* If "Allow neg. rate" is true, use "measurement" instead of "total_increasing" for the State Class, see https://github.com/jomjol/AI-on-the-edge-device/issues/3331 */
         std::string value_state_class = "total_increasing";
         if ((*NUMBERS)[i]->AllowNegativeRates) {
             value_state_class = "measurement";

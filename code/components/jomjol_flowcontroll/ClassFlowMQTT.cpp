@@ -151,7 +151,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 mqttServer_setMeterType("water", "L", "h", "L/h");
             }
             else if (toUpper(splitted[1]) == "WATER_FT3") {
-                mqttServer_setMeterType("water", "ft³", "m", "ft³/m"); // Minutes
+                mqttServer_setMeterType("water", "ft³", "m", "ft³/m"); // m = Minutes
             }
             else if (toUpper(splitted[1]) == "WATER_GAL") {
                 mqttServer_setMeterType("water", "gal", "h", "gal/h");
@@ -160,7 +160,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 mqttServer_setMeterType("gas", "m³", "h", "m³/h");
             }
             else if (toUpper(splitted[1]) == "GAS_FT3") {
-                mqttServer_setMeterType("gas", "ft³", "m", "ft³/m"); // Minutes
+                mqttServer_setMeterType("gas", "ft³", "m", "ft³/m"); // m = Minutes
             }
             else if (toUpper(splitted[1]) == "ENERGY_WH") {
                 mqttServer_setMeterType("energy", "Wh", "h", "W");
