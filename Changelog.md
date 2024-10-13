@@ -1,3 +1,27 @@
+## [16.0.0-RC5] - 2024-10-xx
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC4 are listed:
+- Updated the Homeassistant Discovery topics (#3332):
+    - `raw` has now set the `State Class` to `measurement`. Before it was always set to `""`. 
+    - `value` has now only set the `State Class` to `total_increasing` if the parameter `Allow Negative Rates` is **not** set. Else it uses `measurement` since the rate could also be negative. Before it was always set to `total_increasing`.
+    - The `rate_per_time_unit` topic of an **Energy** meter needs a `Device Class`=`power`. For `gas` and `water` it should be `volume_flow_rate`. Before it was always set to `""`.
+
+  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
+
+#### Bug Fixes
+Only changes since RC3 are listed:
+ - None
+
+
+
+
 ## [16.0.0-RC4] - 2024-10-06
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
@@ -7,7 +31,7 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
 #### Core Changes
-Only changes since RC2 are listed:
+Only changes since RC3 are listed:
 - Update esp32-camera submodule to `v2.0.13` (#3316)
 - Added contributor list (#3317)
 - Added files for demo mode (#3315)
