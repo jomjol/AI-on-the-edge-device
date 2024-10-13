@@ -193,7 +193,7 @@ bool MQTThomeassistantDiscovery(int qos) {
         /* Energy meters need a different Device Class, see https://github.com/jomjol/AI-on-the-edge-device/issues/3333 */
         std::string rate_device_class = "volume_flow_rate";
         if (meterType == "energy") {
-            value_state_class = "power";
+            rate_device_class = "power";
         }
 
     //                                                       Group | Field                          | User Friendly Name                | Icon                   | Unit                 | Device Class | State Class       | Entity Category
