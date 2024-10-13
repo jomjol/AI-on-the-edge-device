@@ -8,10 +8,10 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Only changes since RC4 are listed:
-- Updated the Homeasistant Discovery topics (#3332)
-    - `raw` has now set the `State Class` to `measurement`. Before the `State Class` was always set to `""`. 
-    - `value` has now only set the `State Class` to `total_increasing` if `Allow Negative Rates` is NOT set. Else it uses `measurement` as it could go down. Before it was always set to `total_increasing`.
-    - The `rate_per_time_unit` topic of an **Energy** meter needs a `Device Class`=`power`. For `gas` and `water` it should be `volume_flow_rate`. Before the `Device Class` was always set to `""`.
+- Updated the Homeassistant Discovery topics (#3332):
+    - `raw` has now set the `State Class` to `measurement`. Before it was always set to `""`. 
+    - `value` has now only set the `State Class` to `total_increasing` if the parameter `Allow Negative Rates` is **not** set. Else it uses `measurement` since the rate could also be negative. Before it was always set to `total_increasing`.
+    - The `rate_per_time_unit` topic of an **Energy** meter needs a `Device Class`=`power`. For `gas` and `water` it should be `volume_flow_rate`. Before it was always set to `""`.
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
