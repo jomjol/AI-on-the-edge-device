@@ -1,7 +1,7 @@
 # AI on the Edge Device: Digitizing Your non-digital meters with an ESP32-CAM
 
-[![made-with-c++](https://img.shields.io/badge/Made%20with-C++-1f425f.svg)]()
-[![Package Control total downloads](https://img.shields.io/packagecontrol/dt/SwitchDictionary.svg)](https://packagecontrol.io/packages/SwitchDictionary)
+[![made-with-c++](https://img.shields.io/badge/Made%20with-C++-1f425f.svg)](https://github.com/jomjol/AI-on-the-edge-device/tree/main/code)
+[![Package Control total downloads](https://img.shields.io/packagecontrol/dt/SwitchDictionary.svg)](https://GitHub.com/jomjol/AI-on-the-edge-device/releases/)
 [![GitHub release](https://img.shields.io/github/release/jomjol/AI-on-the-edge-device.svg)](https://GitHub.com/jomjol/AI-on-the-edge-device/releases/)
 [![GitHub forks](https://img.shields.io/github/forks/jomjol/AI-on-the-edge-device.svg?style=social&label=Fork&maxAge=2592000)](https://GitHub.com/jomjol/AI-on-the-edge-device/network/)
 [![GitHub stars](https://img.shields.io/github/stars/jomjol/AI-on-the-edge-device.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/jomjol/AI-on-the-edge-device/stargazers/)
