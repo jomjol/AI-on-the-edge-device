@@ -1,3 +1,60 @@
+## [16.0.0-RC4] - 2024-10-06
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC2 are listed:
+- Update esp32-camera submodule to `v2.0.13` (#3316)
+- Added contributor list (#3317)
+- Added files for demo mode (#3315)
+
+#### Bug Fixes
+Only changes since RC2 are listed:
+- Added delay in InitCam (#3313) to fix `Camera not detected` issues
+
+
+## [16.0.0-RC3] - 2024-10-05
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC2 are listed:
+- Renamed MQTT topic from `rate_per_digitalization_round` to `rate_per_digitization_round` (change happened already in RC1)
+
+#### Bug Fixes
+Only changes since RC2 are listed:
+- Re-did revertion of TFlite submodule update as certain modules crash with it (#3269) (change was lost)
+
+
+## [16.0.0-RC2] - 2024-10-04
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC1 are listed:
+- Updated parameter documentation pages
+- Rename/remove unused parameters (#3291)
+- Migrate-cam-parameters (#3288)
+
+#### Bug Fixes
+Only changes since RC1 are listed:
+- Reverted TFlite submodule update as certain modules crash with it (#3269)
+- Changed the webhook UploadImg to false (#3279)
+- Changed default value from boolean to numeric value in parameter camDenoise documentation
+- Updated config page
+
 ## [16.0.0-RC1] - 2024-09-24
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
@@ -524,16 +581,16 @@ Intermediate Digits
 -   Implementation of new CNN types to detect intermediate values of digits with rolling numbers
 
     -   By default the old algo (0, 1, ..., 9, "N") is active (due to the limited types of digits trained so far)
-    -   Activation can be done by selection a tflite file with the new trained model in the 'config.ini'
+    -   Activation can be done by selecting a tflite file with the new trained model in the 'config.ini'
     -   **Details can be found in the [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Neural-Network-Types)** (different types, trained image types, naming convention)
 
--   Updated  neural network files (and adaption to new naming convention)
+-   Updated  neural network files (and adaptation to new naming convention)
 
--   Published a tool to download and combine log files - **Thanks to **
+-   Published a tool to download and combine log files - Thanks to [Contributor]
 
     -   Files see ['/tools/logfile-tool'](tbd), How-to see [wiki](https://github.com/jomjol/AI-on-the-edge-device/wiki/Gasmeter-Log-Downloader)
 
--   Bug Fix: InfluxDB enabling in grahic configuration
+-   Bug Fix: InfluxDB enabling in graphic configuration
 
 ## [10.6.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.6.2), 2022-07-24
 
@@ -547,7 +604,7 @@ Stability Increase
 
 -   **NEW 10.6.1**: Bug Fix: tflite-filename with ".", HTML spelling error
 
--   IndluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
+-   InfluxDB: direct injection into InfluxDB - thanks to **[wetneb](https://github.com/wetneb)**
 
 -   MQTT: implemented "Retain Flag" and extend with absolute Change (in addition to rate)
 
@@ -1062,7 +1119,7 @@ External Illumination
 -   Bug in configuration of analog ROIs corrected
 
 
--   minor bug correction
+-   minor Bug correction
 
 ## [1.0.1](2020-09-05)
 
@@ -1071,7 +1128,7 @@ External Illumination
 -   preValue.ini Bug corrected
 
 
--   minor bug correction
+-   minor Bug correction
 
 ## [1.0.0](2020-09-04)
 
