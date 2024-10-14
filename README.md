@@ -151,7 +151,7 @@ See the [Build Instructions](code/README.md) for step-by-step guidance.
 
 ## Tools 🛠️
 * Logfile downloader and combiner (Thanks to [reserve85](https://github.com/reserve85))  
-  * Files can be found at ['/tools/logfile-tool'](tbd), and how-to instructions are in the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/outdated--Gasmeter-Log-Downloader/).
+  * It can be found at ['/tools/logfile-tool'](https://github.com/jomjol/AI-on-the-edge-device/tree/main/tools/logfile-tool).
 
 ---
 
