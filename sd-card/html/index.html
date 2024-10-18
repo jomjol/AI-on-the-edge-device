@@ -136,7 +136,7 @@
     <li id="ManualControl" style="display:none;"><a>Manual Control <i class="arrow down"></i></a> <!-- Workaround: Hide menu if no entry is available -->
         <ul class="submenu">
             <!--<li><a href="#" onclick="flow_start()">Start Round</a></li>--> <!-- Needs to be adapted on code side first to ensure proper user feedback -->
-            <li id="HASendDiscovery" style="display:none;"><a href="#" onclick="HA_send_discovery()">Resend HA Discovery</a></li>
+            <li id="HASendDiscovery" style="display:none;"><a href="#" onclick="HA_send_discovery()">Resend Homeassistant Discovery</a></li>
         </ul>
     </li>
   </ul>
@@ -189,7 +189,7 @@
 		
 		if (category["MQTT"]["enabled"] && param["MQTT"]["HomeassistantDiscovery"].value1 == "true") {
             document.getElementById("ManualControl").style.display="";
-            document.getElementById("HASendDiscovery").style.display="";
+            document.getElementById("HASendDiscovery").style.display="width: 300px;";
         }
 	}
 
