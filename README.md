@@ -7,7 +7,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/jomjol/AI-on-the-edge-device.svg?style=social&label=Fork&maxAge=2592000)](https://GitHub.com/jomjol/AI-on-the-edge-device/network/)
 [![GitHub stars](https://img.shields.io/github/stars/jomjol/AI-on-the-edge-device.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/jomjol/AI-on-the-edge-device/stargazers/)
 
-<p align="center">
+<p align="center" id="top>
   <img src="images/icon/watermeter.svg" width="150px">
 </p>
 
@@ -40,7 +40,7 @@ There are several options for what to do with that value:
 - 📝 Write it to an **InfluxDb**.
 - 🔗 Provide access via a **REST API**.
 
-<p align="center" id="top">
+<p align="center">
   <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/idea.jpg" width="600"> 
 </p>
 
