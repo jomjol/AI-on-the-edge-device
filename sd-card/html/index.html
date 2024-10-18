@@ -194,12 +194,12 @@
 	}
 
     function HA_send_discovery() {
-    console.log("HA Discovery scheduled");
+    console.log("Homeassistant Discovery topic sending scheduled");
     var url = getDomainname() + '/mqtt_publish_discovery'; 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				firework.launch('Sending HA discovery topics scheduled. It will get sent in the step "Publish to MQTT" of the next digitization round', 'success', 5000);
+				firework.launch('Sending Homeassistant discovery topics scheduled. It will get sent in the step "Publish to MQTT" of the next digitization round', 'success', 5000);
 			}
 		}
 		xhttp.open("GET", url, true);
