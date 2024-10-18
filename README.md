@@ -40,7 +40,7 @@ There are several options for what to do with that value:
 - 📝 Write it to an **InfluxDb**.
 - 🔗 Provide access via a **REST API**.
 
-<p align="center">
+<p align="center" id="top">
   <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/idea.jpg" width="600"> 
 </p>
 
@@ -556,4 +556,10 @@ There are some ideas and feature requests which are not currently being pursued�
 		</tr>
 	<tbody>
 </table>
+
+<div align="center">
+    <a href="#top">
+        <img src="https://img.shields.io/badge/Back%20to%20Top-000000?style=for-the-badge&logo=github&logoColor=white" alt="Back to Top">
+    </a>
+</div>
 <!-- readme: contributors -end -->
