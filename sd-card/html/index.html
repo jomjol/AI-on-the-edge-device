@@ -134,9 +134,9 @@
         </ul>
     </li>
     <li id="ManualControl" style="display:none;"><a>Manual Control <i class="arrow down"></i></a> <!-- Workaround: Hide menu if no entry is available -->
-        <ul class="submenu">
+        <ul class="submenu" style="width: 300px">
             <!--<li><a href="#" onclick="flow_start()">Start Round</a></li>--> <!-- Needs to be adapted on code side first to ensure proper user feedback -->
-            <li id="HASendDiscovery" style="display:none;"><a href="#" onclick="HA_send_discovery()">Resend HA Discovery</a></li>
+            <li id="HASendDiscovery" style="width: 300px" style="display:none;"><a href="#" onclick="HA_send_discovery()">Resend Homeassistant Discovery</a></li>
         </ul>
     </li>
   </ul>
@@ -187,19 +187,19 @@
 		category = getConfigCategory();
         param = getConfigParameters();
 		
-		if (category["MQTT"]["enabled"] && param["MQTT"]["HomeassistantDiscovery"].value == "true") {
+		if (category["MQTT"]["enabled"] && param["MQTT"]["HomeassistantDiscovery"].value1 == "true") {
             document.getElementById("ManualControl").style.display="";
             document.getElementById("HASendDiscovery").style.display="";
         }
 	}
 
     function HA_send_discovery() {
-    console.log("HA Discovery scheduled");
+    console.log("Homeassistant Discovery topic sending scheduled");
     var url = getDomainname() + '/mqtt_publish_discovery'; 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				firework.launch('Sending HA discovery topics scheduled. The sending will be processed in state "Publish to MQTT"', 'success', 5000);
+				firework.launch('Sending Homeassistant discovery topics scheduled. It will get sent in the step "Publish to MQTT" of the next digitization round', 'success', 5000);
 			}
 		}
 		xhttp.open("GET", url, true);
