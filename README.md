@@ -558,6 +558,8 @@ There are some ideas and feature requests which are not currently being pursuedâ
 </table>
 <!-- readme: contributors -end -->
 
+---
+
 <div align="center">
     <a href="#top">
         <img src="https://img.shields.io/badge/Back%20to%20Top-000000?style=for-the-badge&logo=github&logoColor=white" alt="Back to Top">
