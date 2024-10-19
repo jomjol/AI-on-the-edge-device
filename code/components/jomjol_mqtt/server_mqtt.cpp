@@ -118,7 +118,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
             payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\",";
         }
         else if (field == "flowstart") { // Special case: Button
-            payload += "\"cmd_t\":\"~" + "/ctrl/flow_start" + "\","; // Add command topic
+            payload += "\"cmd_t\":\"~/ctrl/flow_start\","; // Add command topic
             payload += "\"pl_prs\":\"1\",";
         }
         else {
