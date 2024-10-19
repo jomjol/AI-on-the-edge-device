@@ -7,7 +7,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/jomjol/AI-on-the-edge-device.svg?style=social&label=Fork&maxAge=2592000)](https://GitHub.com/jomjol/AI-on-the-edge-device/network/)
 [![GitHub stars](https://img.shields.io/github/stars/jomjol/AI-on-the-edge-device.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/jomjol/AI-on-the-edge-device/stargazers/)
 
-<p align="center">
+<p align="center" id="top">
   <img src="images/icon/watermeter.svg" width="150px">
 </p>
 
@@ -557,3 +557,11 @@ There are some ideas and feature requests which are not currently being pursuedâ
 	<tbody>
 </table>
 <!-- readme: contributors -end -->
+
+---
+
+<div align="center">
+    <a href="#top">
+        <img src="https://img.shields.io/badge/Back%20to%20Top-000000?style=for-the-badge&logo=github&logoColor=white" alt="Back to Top">
+    </a>
+</div>
