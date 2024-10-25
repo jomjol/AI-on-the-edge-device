@@ -224,7 +224,7 @@ bool ClassFlowMQTT::Start(float AutoInterval)
 
     mqttServer_setParameter(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
 
-    bool MQTTConfigCheck = MQTT_Configure(uri, clientname, user, password, maintopic, LWT_TOPIC, LWT_CONNECTED,
+    bool MQTTConfigCheck = MQTT_Configure(uri, clientname, user, password, maintopic, domoticzintopic, LWT_TOPIC, LWT_CONNECTED,
                                      LWT_DISCONNECTED, caCertFilename, clientCertFilename, clientKeyFilename,
                                      keepAlive, SetRetainFlag, (void *)&GotConnected);
 
