@@ -1133,6 +1133,39 @@
 			<td>$TOOLTIP_MQTT_RetainMessages</td>
 		</tr>
 
+        <tr class="MQTTItem">
+            <td class="indent1" colspan="4" style="padding: 0px"><class id="Numbers_text" style="color:black;">Domoticz Integration:</class></td>
+        </tr>
+		<tr class="MQTTItem">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
+				<label for=MQTT_DomoticzTopicIn_value1><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz in topic</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzTopicIn_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
+		</tr>
+
+		<tr class="MQTTItem" style="margin-top:12px">
+			<td class="indent1" style="padding-top:25px" colspan="3">
+				<b>Idx per number sequence:</b>
+                <select 
+					style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()">
+				</select>
+			</td>
+		</tr>
+		<tr class="MQTTItem">
+			<td class="indent2">
+				<input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
+				<label for=MQTT_DomoticzIDX_value1><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzIDX_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_DomoticzIDX</td>
+		</tr>
+		
 		<tr class="MQTTItem">
 			<td class="indent1" style="padding-top:25px" colspan="2">
 				<b>Homeassistant Discovery (using MQTT)</b><br>
@@ -2120,6 +2153,10 @@ function LoadConfigNeu() {
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
+    var selMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
+    UpdateInputMQTTIdx(selMQTTIdx);
+
+	
     UpdateExpertModus();
     UpdateTooltipModus();	
     document.getElementById("divall").style.display = ''; 
@@ -2162,6 +2199,11 @@ function InitIndivParameter() {
         _indexInfluxv1.remove(0);
     }
 
+    var _indexMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
+    while (_indexMQTTIdx.length) {
+        _indexMQTTIdx.remove(0);
+    }	
+
     for (var i = 0; i < NUMBERS.length; ++i) {
         var option = document.createElement("option");
         option.text = NUMBERS[i]["name"];
@@ -2177,11 +2219,17 @@ function InitIndivParameter() {
         optionInfluxv1.text = NUMBERS[i]["name"];
         optionInfluxv1.value = i;
         _indexInfluxv1.add(optionInfluxv1);
+
+		var optionMQTTIdx = document.createElement("option");
+        optionMQTTIdx.text = NUMBERS[i]["name"];
+        optionMQTTIdx.value = i;
+        _indexMQTTIdx.add(option);
     }
 	
     _index.selectedIndex = 0; 
     _indexInflux.selectedIndex = 0;
     _indexInfluxv1.selectedIndex = 0;
+	_indexMQTTIdx.selectedIndex = 0;
 }
 
 function UpdateInputIndividual(sel) {
@@ -2218,6 +2266,16 @@ function UpdateInputIndividual(sel) {
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+}
+
+function UpdateInputMQTTIdx(sel) {
+    if (NUNBERSAkt != -1) {
+        // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
+        ReadParameter(param, "MQTT", "MQTT_DomoticzIDX_value1", true, NUNBERSAkt);
+    }
+
+    NUNBERSAkt = sel.selectedIndex;
+    WriteParameter(param, category, "MQTT", "MQTT_DomoticzIDX_value1", true, NUNBERSAkt);
 }
 
 function UpdateInput() {
@@ -2306,6 +2364,7 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "CACert", true);
     WriteParameter(param, category, "MQTT", "ClientCert", true);
     WriteParameter(param, category, "MQTT", "ClientKey", true);
+    WriteParameter(param, category, "MQTT", "DomoticzTopicIn", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
     WriteParameter(param, category, "InfluxDB", "Database", true);	
@@ -2473,6 +2532,7 @@ function ReadParameterAll() {
     ReadParameter(param, "MQTT", "CACert", true);
     ReadParameter(param, "MQTT", "ClientCert", true);
     ReadParameter(param, "MQTT", "ClientKey", true);
+    ReadParameter(param, "MQTT", "DomoticzTopicIn", true);
 
     ReadParameter(param, "InfluxDB", "Uri", true);
     ReadParameter(param, "InfluxDB", "Database", true);
@@ -2527,6 +2587,8 @@ function ReadParameterAll() {
 
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
+    var selMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
+    UpdateInputMQTTIdx(selMQTTIdx);
     
     // FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
@@ -2544,6 +2606,8 @@ function UpdateAfterCategoryCheck() {
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
+    var selMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
+    UpdateInputMQTTIdx(selMQTTIdx);
 }
 
 function UpdateExpertModus() {
@@ -2871,6 +2935,12 @@ function numberChanged() {
     if (_selInflux.selectedIndex != _neu) {
         _selInflux.selectedIndex = _neu
     }
+}
+
+function numberMQTTIdxChanged() {
+    var sel = document.getElementById("NumbersMQTTIdx_value1");
+    _neu = sel.selectedIndex;
+    UpdateInputMQTTIdx(sel);
 }
     
 function numberInfluxDBv2Changed() {

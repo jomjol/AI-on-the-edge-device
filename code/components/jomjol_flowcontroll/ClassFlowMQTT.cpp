@@ -51,6 +51,8 @@ void ClassFlowMQTT::SetInitialParameter(void)
     ListFlowControll = NULL; 
     disabled = false;
     keepAlive = 25*60;
+    domoticzIdx = 0;
+    domoticzintopic = "";
 }       
 
 ClassFlowMQTT::ClassFlowMQTT()
@@ -185,6 +187,17 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             maintopic = splitted[1];
         }
+
+        if (((toUpper(splitted[0]) == "DOMOTICZTOPICIN")) && (splitted.size() > 1))
+        {
+            this->domoticzintopic = splitted[1];
+        }
+
+        if (((toUpper(splitted[0]) == "DOMOTICZIDX")) && (splitted.size() > 1))
+        {
+            this->domoticzIdx = stoi(splitted[1]);
+        }
+        
     }
 
     /* Note:
@@ -193,6 +206,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
      * To work around this, we delay the start and trigger it from ClassFlowControll::ReadParameter() */
 
     mqttServer_setMainTopic(maintopic);
+    mqttServer_setDmoticzInTopic(domoticzintopic);
 
     return true;
 }

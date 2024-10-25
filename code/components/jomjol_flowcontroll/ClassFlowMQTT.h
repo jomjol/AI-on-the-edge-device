@@ -23,8 +23,8 @@ protected:
     bool SetRetainFlag;
     int keepAlive; // Seconds
     float roundInterval; // Minutes
-
-    std::string maintopic; 
+    int domoticzIdx;
+    std::string maintopic, domoticzintopic; 
 	void SetInitialParameter(void);        
 
 public:
