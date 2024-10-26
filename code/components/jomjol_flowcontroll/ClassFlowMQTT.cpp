@@ -284,11 +284,11 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             else
                 namenumber = maintopic + "/" + namenumber + "/";
 
-
-            if (result.length() > 0) { 
-                success |= MQTTPublish(namenumber + "value", result, qos, SetRetainFlag);
+            if ((domoticzintopic.length() > 0) && (result.length() > 0)) 
                 success |= MQTTPublish(domoticzintopic, domoticzpayload, qos, SetRetainFlag);
-            }
+
+            if (result.length() > 0)
+                success |= MQTTPublish(namenumber + "value", result, qos, SetRetainFlag);
             if (resulterror.length() > 0)  
                 success |= MQTTPublish(namenumber + "error", resulterror, qos, SetRetainFlag);
 

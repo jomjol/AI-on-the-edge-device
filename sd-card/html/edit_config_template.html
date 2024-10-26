@@ -1133,39 +1133,6 @@
 			<td>$TOOLTIP_MQTT_RetainMessages</td>
 		</tr>
 
-        <tr class="MQTTItem">
-            <td class="indent1" colspan="2" style="padding-top:25px"><b>Domoticz Integration:</b></td>
-        </tr>
-		<tr class="MQTTItem">
-			<td class="indent2">
-				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
-				<label for=MQTT_DomoticzTopicIn_value1><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz in topic</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_DomoticzTopicIn_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
-		</tr>
-
-		<tr class="MQTTItem" >
-			<td class="indent2" colspan="3">
-				Idx per number sequence:
-                <select 
-					style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()">
-				</select>
-			</td>
-		</tr>
-		<tr class="MQTTItem">
-			<td class="indent2">
-				<input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
-				<label for=MQTT_DomoticzIDX_value1><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_DomoticzIDX_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_NUMBER.DomoticzIDX</td>
-		</tr>
-		
 		<tr class="MQTTItem">
 			<td class="indent1" style="padding-top:25px" colspan="2">
 				<b>Homeassistant Discovery (using MQTT)</b><br>
@@ -1209,6 +1176,36 @@
 				</select>
 			</td>
 			<td>$TOOLTIP_MQTT_MeterType</td>
+		</tr>
+
+		<tr class="MQTTItem">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
+				<label for=MQTT_DomoticzTopicIn_value1><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz in topic</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzTopicIn_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
+		</tr>
+
+		<tr class="MQTTItem" style="margin-top:12px">
+			<td class="indent1" style="padding-top:25px" colspan="3">
+				<b>Parameter per number sequence:</b>
+                <select
+					style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()">
+                </select>
+			</td>
+		</tr>
+		<tr class="MQTTItem">
+			<td class="indent2">
+				<input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
+				<label for=MQTT_DomoticzIDX_value1><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzIDX_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_NUMBER.DomoticzIDX</td>
 		</tr>
 
 		
@@ -2249,6 +2246,7 @@ function UpdateInputIndividual(sel) {
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+        ReadParameter(param, "MQTT", "DomoticzIDX", true, NUNBERSMQTTIDxAkt);
     }
 
     // var sel = document.getElementById("Numbers_value1");
@@ -2267,6 +2265,8 @@ function UpdateInputIndividual(sel) {
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+    WriteParameter(param, category, "MQTT", "DomoticzIDX", true, NUNBERSMQTTIDxAkt);
+	
 }
 
 function UpdateInputMQTTIdx(sel) {
@@ -2590,8 +2590,8 @@ function ReadParameterAll() {
 
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
-    var selMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
-    UpdateInputMQTTIdx(selMQTTIdx);
+    //var selMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
+    //UpdateInputMQTTIdx(selMQTTIdx);
     
     // FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
@@ -2938,18 +2938,38 @@ function numberChanged() {
     if (_selInflux.selectedIndex != _neu) {
         _selInflux.selectedIndex = _neu
     }
+
+    var _sel3 = document.getElementById("NumbersInfluxDB_value1");
+    if (_sel3.selectedIndex != _neu) {
+        _sel3.selectedIndex = _neu
+    }
+
+	var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
+    }
+
 }
 
 function numberMQTTIdxChanged() {
     var sel = document.getElementById("NumbersMQTTIdx_value1");
-    //_neu = sel.selectedIndex;
+    _neu = sel.selectedIndex;
     UpdateInputMQTTIdx(sel);
-	console.debug(sel.selectedIndex);
 
-	// var _selInMQTTIdx = document.getElementById("MQTT_DomoticzIDX_value1");
-    // if (_selInMQTTIdx.selectedIndex != _neu) {
-    //     _selInMQTTIdx.selectedIndex = _neu
-    // }
+	var _sel2 = document.getElementById("Numbers_value1");
+    if (_sel2.selectedIndex != _neu) {
+        _sel2.selectedIndex = _neu
+    }
+
+    var _sel3 = document.getElementById("NumbersInfluxDB_value1");
+    if (_sel3.selectedIndex != _neu) {
+        _sel3.selectedIndex = _neu
+    }
+
+    var _sel4 = document.getElementById("NumbersInfluxDBv2_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
+    }
 }
     
 function numberInfluxDBv2Changed() {
@@ -2966,6 +2986,11 @@ function numberInfluxDBv2Changed() {
     if (_sel3.selectedIndex != _neu) {
         _sel3.selectedIndex = _neu
     }
+
+    var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
+    }
 }
 
 function numberInfluxDBChanged() {
@@ -2981,6 +3006,11 @@ function numberInfluxDBChanged() {
     var _sel3 = document.getElementById("NumbersInfluxDBv2_value1");
     if (_sel3.selectedIndex != _neu) {
         _sel3.selectedIndex = _neu
+    }
+
+	var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
     }
 }
 
