@@ -51,7 +51,6 @@ void ClassFlowMQTT::SetInitialParameter(void)
     ListFlowControll = NULL; 
     disabled = false;
     keepAlive = 25*60;
-    domoticzIdx = 0;
     domoticzintopic = "";
 }       
 
