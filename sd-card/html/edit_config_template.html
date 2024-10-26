@@ -1156,7 +1156,7 @@
 			</td>
 		</tr>
 		<tr class="MQTTItem">
-			<td class="indent3">
+			<td class="indent2">
 				<input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
 				<label for=MQTT_DomoticzIDX_value1><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
 			</td>
@@ -2115,6 +2115,7 @@ var canvas = document.getElementById('canvas'),
     param,
     category,
     NUNBERSAkt = -1,
+    NUNBERSMQTTIDxAkt = -1,
     NUMBERS;
 
 function cameraParameterChanged() {
@@ -2269,13 +2270,15 @@ function UpdateInputIndividual(sel) {
 }
 
 function UpdateInputMQTTIdx(sel) {
-    if (NUNBERSAkt != -1) {
+	console.debug("NUNBERSMQTTIDxAkt: " + NUNBERSMQTTIDxAkt)
+    if (NUNBERSMQTTIDxAkt != -1) {
         // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
-        ReadParameter(param, "MQTT", "MQTT_DomoticzIDX_value1", true, NUNBERSAkt);
+        ReadParameter(param, "MQTT", "DomoticzIDX", true, NUNBERSMQTTIDxAkt);
     }
 
-    NUNBERSAkt = sel.selectedIndex;
-    WriteParameter(param, category, "MQTT", "MQTT_DomoticzIDX_value1", true, NUNBERSAkt);
+    NUNBERSMQTTIDxAkt = sel.selectedIndex;
+    WriteParameter(param, category, "MQTT", "DomoticzIDX", true, NUNBERSMQTTIDxAkt);
+	console.debug("NUNBERSMQTTIDxAkt: " + NUNBERSMQTTIDxAkt)
 }
 
 function UpdateInput() {
@@ -2364,7 +2367,7 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "CACert", true);
     WriteParameter(param, category, "MQTT", "ClientCert", true);
     WriteParameter(param, category, "MQTT", "ClientKey", true);
-//    WriteParameter(param, category, "MQTT", "DomoticzTopicIn", true);
+    WriteParameter(param, category, "MQTT", "DomoticzTopicIn", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
     WriteParameter(param, category, "InfluxDB", "Database", true);	
@@ -2939,8 +2942,14 @@ function numberChanged() {
 
 function numberMQTTIdxChanged() {
     var sel = document.getElementById("NumbersMQTTIdx_value1");
-    _neu = sel.selectedIndex;
+    //_neu = sel.selectedIndex;
     UpdateInputMQTTIdx(sel);
+	console.debug(sel.selectedIndex);
+
+	// var _selInMQTTIdx = document.getElementById("MQTT_DomoticzIDX_value1");
+    // if (_selInMQTTIdx.selectedIndex != _neu) {
+    //     _selInMQTTIdx.selectedIndex = _neu
+    // }
 }
     
 function numberInfluxDBv2Changed() {

@@ -107,43 +107,44 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
-        if ((toUpper(splitted[0]) == "CACERT") && (splitted.size() > 1))
+        std::string _param = GetParameterName(splitted[0]);
+        if ((toUpper(_param) == "CACERT") && (splitted.size() > 1))
         {
             this->caCertFilename = splitted[1];
         }  
-        if ((toUpper(splitted[0]) == "CLIENTCERT") && (splitted.size() > 1))
+        if ((toUpper(_param) == "CLIENTCERT") && (splitted.size() > 1))
         {
             this->clientCertFilename = splitted[1];
         }  
-        if ((toUpper(splitted[0]) == "CLIENTKEY") && (splitted.size() > 1))
+        if ((toUpper(_param) == "CLIENTKEY") && (splitted.size() > 1))
         {
             this->clientKeyFilename = splitted[1];
         }  
-        if ((toUpper(splitted[0]) == "USER") && (splitted.size() > 1))
+        if ((toUpper(_param) == "USER") && (splitted.size() > 1))
         {
             this->user = splitted[1];
         }  
-        if ((toUpper(splitted[0]) == "PASSWORD") && (splitted.size() > 1))
+        if ((toUpper(_param) == "PASSWORD") && (splitted.size() > 1))
         {
             this->password = splitted[1];
         }               
-        if ((toUpper(splitted[0]) == "URI") && (splitted.size() > 1))
+        if ((toUpper(_param) == "URI") && (splitted.size() > 1))
         {
             this->uri = splitted[1];
         }
-        if ((toUpper(splitted[0]) == "RETAINMESSAGES") && (splitted.size() > 1))
+        if ((toUpper(_param) == "RETAINMESSAGES") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE") {
                 SetRetainFlag = true;  
                 setMqtt_Server_Retain(SetRetainFlag);
             }
         }
-        if ((toUpper(splitted[0]) == "HOMEASSISTANTDISCOVERY") && (splitted.size() > 1))
+        if ((toUpper(_param) == "HOMEASSISTANTDISCOVERY") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
                 SetHomeassistantDiscoveryEnabled(true);  
         }
-        if ((toUpper(splitted[0]) == "METERTYPE") && (splitted.size() > 1)) {
+        if ((toUpper(_param) == "METERTYPE") && (splitted.size() > 1)) {
         /* Use meter type for the device class 
            Make sure it is a listed one on https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes */
             if (toUpper(splitted[1]) == "WATER_M3") {
@@ -178,24 +179,24 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             }
         }
 
-        if ((toUpper(splitted[0]) == "CLIENTID") && (splitted.size() > 1))
+        if ((toUpper(_param) == "CLIENTID") && (splitted.size() > 1))
         {
             this->clientname = splitted[1];
         }
 
-        if (((toUpper(splitted[0]) == "TOPIC") || (toUpper(splitted[0]) == "MAINTOPIC")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "TOPIC") || (toUpper(splitted[0]) == "MAINTOPIC")) && (splitted.size() > 1))
         {
             maintopic = splitted[1];
         }
 
-        if (((toUpper(splitted[0]) == "DOMOTICZTOPICIN")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "DOMOTICZTOPICIN")) && (splitted.size() > 1))
         {
             this->domoticzintopic = splitted[1];
         }
 
-        if (((toUpper(splitted[0]) == "DOMOTICZIDX")) && (splitted.size() > 1))
+        if (((toUpper(_param) == "DOMOTICZIDX")) && (splitted.size() > 1))
         {
-            this->domoticzIdx = stoi(splitted[1]);
+            handleIdx(splitted[0], splitted[1]);
         }
         
     }
@@ -249,6 +250,8 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     std::string resultchangabs = "";
     string zw = "";
     string namenumber = "";
+    string domoticzpayload = "";
+    string DomoticzIdx = "";
     int qos = 1;
 
     /* Send the the Homeassistant Discovery and the Static Topics in case they where scheduled */
@@ -272,6 +275,9 @@ bool ClassFlowMQTT::doFlow(string zwtime)
             resultchangabs = (*NUMBERS)[i]->ReturnChangeAbsolute; // Units per round
             resulttimestamp = (*NUMBERS)[i]->timeStamp;
 
+            DomoticzIdx = (*NUMBERS)[i]->DomoticzIdx;
+            domoticzpayload = "{\"command\":\"udevice\",\"idx\":" + DomoticzIdx + ",\"svalue\":\""+ result + "\"}";
+
             namenumber = (*NUMBERS)[i]->name;
             if (namenumber == "default")
                 namenumber = maintopic + "/";
@@ -279,9 +285,10 @@ bool ClassFlowMQTT::doFlow(string zwtime)
                 namenumber = maintopic + "/" + namenumber + "/";
 
 
-            if (result.length() > 0)   
+            if (result.length() > 0) { 
                 success |= MQTTPublish(namenumber + "value", result, qos, SetRetainFlag);
-
+                success |= MQTTPublish(domoticzintopic, domoticzpayload, qos, SetRetainFlag);
+            }
             if (resulterror.length() > 0)  
                 success |= MQTTPublish(namenumber + "error", resulterror, qos, SetRetainFlag);
 
@@ -339,6 +346,26 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     
     return true;
 }
-
+void ClassFlowMQTT::handleIdx(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+    for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
+        {
+            flowpostprocessing->NUMBERS[j]->DomoticzIdx = _value;
+        }
+        if (flowpostprocessing->NUMBERS[j]->name == _digit)
+        {
+            flowpostprocessing->NUMBERS[j]->DomoticzIdx = _value;
+        }
+    }
+}
 
 #endif //ENABLE_MQTT

@@ -66,6 +66,8 @@ struct NumberPost {
     float AnalogDigitalTransitionStart; // analogDigitalTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;              // decimalPlaces; usually defined by the number of analog ROIs; affected by DecimalShift
 
+    string DomoticzIdx;             // Domoticz counter Idx
+    
     string FieldV1;             // influxdbFieldName_v1; Name of the Field in InfluxDBv1
     string MeasurementV1;       // influxdbMeasurementName_v1; Name of the Measurement in InfluxDBv1
 
