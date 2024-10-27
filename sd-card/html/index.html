@@ -69,6 +69,30 @@
         return "";
         }        
     </script>
+    <style>
+        /* Add these styles to your existing CSS file or in a <style> tag in the head */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #d8d8d8;
+            margin-top: 20px;
+        }
+        .footer-section {
+            display: flex;
+            align-items: center;
+        }
+        .footer-section img {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        .donation-cards img {
+            height: 20px;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 
 <body>
@@ -145,6 +169,24 @@
 <iframe title="maincontent" name="maincontent" class="iframe" id="maincontent"></iframe>
 
 <span id="Version" style="font-size: 10px; margin-top: -5px;padding-left: 10px;">Loading version...</span>
+
+<div class="footer">
+    <div class="footer-section">
+       <span>Support & Contact Us</span>
+       <a href="https://github.com/jomjol/AI-on-the-edge-device" target="_blank" title="GitHub">
+          <img src="https://github.com/jomjol/AI-on-the-edge-device/images/github-logo.png" alt="GitHub">
+       </a>
+       <a href="mailto:mueller.josef@gmail.com" title="Email Support">
+          <img src="https://github.com/jomjol/AI-on-the-edge-device/images/gmail-logo.png" alt="Email">
+       </a>
+    </div>
+    <div class="footer-section">
+       <span>Donations</span>
+       <a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL" target="_blank" title="Donate via PayPal">
+          <img src="https://github.com/jomjol/AI-on-the-edge-device/images/paypal.png" alt="PayPal" style="width: 60px; height: auto;">
+       </a>
+    </div>
+ </div>
 
 <script type="text/javascript">
     LoadHostname();
