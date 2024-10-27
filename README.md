@@ -1,4 +1,35 @@
-# AI on the Edge Device: Digitizing Your non-digital meters with an ESP32-CAM
+<h1 align="center">AI on the Edge Device: Digitizing Your non-digital meters with an ESP32-CAM</h1>
+<br>
+<br>
+
+## Table of Contents
+- [Key Features 🚀](#key-features-)
+- [Workflow 🔧](#workflow-)
+- [Impressions 📷](#impressions-)
+  - [AI-on-the-edge-device on a Water Meter 💧](#ai-on-the-edge-device-on-a-water-meter-)
+  - [Web Interface (Water Meter) 💻](#web-interface-water-meter-)
+  - [AI-on-the-edge-device on an Electrical Power Meter ⚡](#ai-on-the-edge-device-on-an-electrical-power-meter-)
+- [Setup 🛠️](#setup-%EF%B8%8F)
+- [Download 🔽](#download-)
+- [Flashing the ESP32 💾](#flashing-the-esp32-)
+- [Flashing the SD Card 💾](#flashing-the-sd-card-)
+- [Casing 🛠️](#casing-%EF%B8%8F)
+- [Donate ☕](#donate-)
+- [Support 💬](#support-)
+- [Changes and History 📜](#changes-and-history-)
+- [Build It Yourself 🔨](#build-it-yourself-)
+- [Tools 🛠️](#tools-%EF%B8%8F)
+- [Additional Ideas 💡](#additional-ideas-)
+- [Our Contributors ❤️](#our-contributors-%EF%B8%8F)
+
+<p align="center">
+    <a href="#top">
+        <img src="https://img.shields.io/badge/Back%20to%20Top-000000?style=for-the-badge&logo=github&logoColor=white" alt="Back to Top">
+    </a>
+</p>
+
+
+
 
 [![made-with-c++](https://img.shields.io/badge/Made%20with-C++-1f425f.svg)](https://github.com/jomjol/AI-on-the-edge-device/tree/main/code)
 [![Doc](https://img.shields.io/badge/Doc-MkDocs-526CFE.svg)](https://jomjol.github.io/AI-on-the-edge-device-docs/)
@@ -20,6 +51,8 @@ All you need is an [ESP32 board with a supported camera](https://jomjol.github.i
 
 ---
 
+<br>
+
 ## Key Features 🚀
 - 🔗 **Tensorflow Lite (TFLite) integration** – including an easy-to-use wrapper.
 - 📸 **Inline image processing** (feature detection, alignment, ROI extraction).
@@ -31,6 +64,8 @@ All you need is an [ESP32 board with a supported camera](https://jomjol.github.i
 - 📊 Support for **Influx DB 1** and **2**.
 - 📡 **MQTT protocol** support.
 - 📥 **REST API** available for data access.
+
+<br>
 
 ## Workflow 🔧
 The device captures a photo of your meter at set intervals. It then extracts the Regions of Interest (ROIs) from the image and runs them through artificial intelligence. As a result, you get the digitized value of your meter.
@@ -46,24 +81,30 @@ There are several options for what to do with that value:
 
 ---
 
+<br>
+
 ## Impressions 📷
 
-### AI-on-the-edge-device on a Water Meter 💧
-<p align="center">
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
-</p>
++ ### AI-on-the-edge-device on a Water Meter 💧
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img 
+  src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img 
+  src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
+  </p>
 
-### Web Interface (Water Meter) 💻
-<p align="center">
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
-</p>
++ ### Web Interface (Water Meter) 💻
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
+  </p>
 
-### AI-on-the-edge-device on an Electrical Power Meter ⚡
-<p align="center">
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
-</p>
++ ### AI-on-the-edge-device on an Electrical Power Meter ⚡
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
+  </p>
 
 ---
+
+<br>
 
 ## Setup 🛠️
 There is growing [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/) which provides you with a lot of information. Head there to get started, set it up, and configure it.
@@ -86,10 +127,14 @@ For further background information, head to:
 
 ---
 
+<br>
+
 ## Download 🔽
 The latest available version can be found on the [Releases page](https://github.com/jomjol/AI-on-the-edge-device/releases).
 
 ---
+
+<br>
 
 ## Flashing the ESP32 💾
 Initially, you will have to flash the ESP32 via a USB connection. Later updates are possible directly over the air (OTA using Wi-Fi).
@@ -104,12 +149,16 @@ See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Inst
 
 ---
 
+<br>
+
 ## Flashing the SD Card 💾
 The SD card can be set up automatically after the firmware is installed. See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#remote-setup-using-the-built-in-access-point) for details. For this to work, the SD card must be FAT formatted (which is the default on a new SD card).
 
 Alternatively, the SD card can still be set up manually. See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#3-sd-card) for details.
 
 ---
+
+<br>
 
 ## Casing 🛠️
 Various 3D-printable housings can be found here:
@@ -120,6 +169,8 @@ Various 3D-printable housings can be found here:
 
 ---
 
+<br>
+
 ## Donate ☕
 If you'd like to support the developer with a cup of coffee, you can do so via [PayPal](https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL).
 
@@ -129,25 +180,30 @@ If you'd like to support the developer with a cup of coffee, you can do so via [
 
 ---
 
+<br>
+
 ## Support 💬
 If you have any technical problems, please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you find a bug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
-For any other issues, you can contact the developer via email:  
-<p align="center">
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
-</p>
+For any other issues, you can contact the developer via email: mueller.josef@gmail.com  
 
 ---
+
+<br>
 
 ## Changes and History 📜
 See the [Changelog](Changelog.md) for detailed information.
 
 ---
 
+<br>
+
 ## Build It Yourself 🔨
 See the [Build Instructions](code/README.md) for step-by-step guidance.
 
 ---
+
+<br>
 
 ## Tools 🛠️
 * Logfile downloader and combiner (Thanks to [reserve85](https://github.com/reserve85))  
@@ -155,10 +211,14 @@ See the [Build Instructions](code/README.md) for step-by-step guidance.
 
 ---
 
+<br>
+
 ## Additional Ideas 💡
 There are some ideas and feature requests which are not currently being pursued—mainly due to capacity constraints on the part of the developers. These features are collected in the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and in [FeatureRequest.md](FeatureRequest.md).
 
 ---
+
+<br>
 
 ## Our Contributors ❤️
 <!-- Do not manually edit this section! It should get updated using the Github action "Manually update contributors list" -->
