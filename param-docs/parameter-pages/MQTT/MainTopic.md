@@ -8,7 +8,7 @@ The single value will be published with the following key: `MAINTOPIC/NUMBER/RES
 With:
 
 - `NUMBER`: The name of the value (a meter might have more than one value). 
-  The names get defined in the analog and digital ROI configuration (defaults to `main`).
+  The names get defined in the analog and digit ROI configuration (defaults to `main`).
 - `RESULT_TOPIC`: Automatically filled with the right name, eg. `value`, `rate`, `timestamp`, `error`, ....
 
 The general connection status can be found in `MAINTOPIC/CONNECTION`. 

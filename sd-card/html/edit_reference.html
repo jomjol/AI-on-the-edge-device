@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
+
 <head>
-    <title>Reference Image and Camera Settings</title>
     <meta charset="utf-8"/>
+    <title>Reference Image and Camera Settings</title>
         
     <style>
         h1 {font-size: 2em;}
@@ -111,12 +112,11 @@
     <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
 
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
-    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>  
-    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
-    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
-    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
@@ -174,8 +174,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamZoom_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
 				</select>			
 			</td>
 			<td>$TOOLTIP_TakeImage_CamZoom</td>				
@@ -232,8 +232,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamAec2_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAec2</td>			
@@ -245,8 +245,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamHmirror_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
 				</select>
 			</td>			
 			<td>$TOOLTIP_TakeImage_CamHmirror</td>
@@ -267,8 +267,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamVflip_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
 				</select>
 			</td>			
 			<td>$TOOLTIP_TakeImage_CamVflip</td>
@@ -332,8 +332,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamAec_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAec</td>
@@ -355,8 +355,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamAutoSharpness_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable</option>
-					<option value="false" selected>disable</option>
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAutoSharpness</td>			
@@ -388,8 +388,12 @@
     <hr>
     <b>Reference Image:</b><br>
     <canvas id="canvas"></canvas>
-    
-    <script language="JavaScript">
+
+
+    <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+    <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+
+    <script type="text/javascript">
         var canvas = document.getElementById('canvas'),
             domainname = getDomainname(),
             context = canvas.getContext('2d'),

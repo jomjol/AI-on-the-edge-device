@@ -16,7 +16,7 @@ class UnderTestCNN : public ClassFlowCNNGeneral {
  */
 void test_ZeigerEval() 
 {
-    UnderTestCNN undertest = UnderTestCNN(nullptr, Digital100);
+    UnderTestCNN undertest = UnderTestCNN(nullptr, Digit100);
 
     // the 5.2 is already above 5.0 and the previous digit too (3)
     printf("Test 5.2, 3\n");
@@ -29,11 +29,11 @@ void test_ZeigerEval()
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalAnalogNew(5.2, 9));
 
     printf("Test 4.4, 9\n");
-    // the 4.4 (digital100) is not above 5  and the previous digit (analog) too (9.3)
+    // the 4.4 (Digit100) is not above 5  and the previous digit (analog) too (9.3)
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalAnalogNew(4.4, 9));
 
     printf("Test 4.5, 0\n");
-    // the 4.5 (digital100) is not above 5  and the previous digit (analog) too (9.6)
+    // the 4.5 (Digit100) is not above 5  and the previous digit (analog) too (9.6)
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalAnalogNew(4.5, 0));    
 
 }
@@ -42,7 +42,7 @@ void test_ZeigerEval()
  * @brief test if all combinations of digit 
  * evaluation are running correctly
  * 
- * Desciption on call undertest.PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart)
+ * Desciption on call undertest.PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitAnalogTransitionStart)
  * @param number: is the current ROI as float value from recognition
  * @param number_of_predecessors: is the last (lower) ROI as float from recognition
  * @param eval_predecessors: is the evaluated number. Sometimes a much lower value can change higer values
@@ -50,16 +50,16 @@ void test_ZeigerEval()
  *                          0.1 => 0 (eval_predecessors)
  *                          The 0 makes a 9.9 to 0 (eval_predecessors)
  *                          The 0 makes a 9.8 to 0 
- * @param Analog_Predecessors false/true if the last ROI is an analog or digital ROI (default=false)
+ * @param Analog_Predecessors false/true if the last ROI is an analog or digit ROI (default=false)
  *                              runs in special handling because analog is much less precise
- * @param digitalAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
+ * @param digitAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
  *
  * 
  * 
  * 
  */
 void test_ZeigerEvalHybrid() {
-    UnderTestCNN undertest = UnderTestCNN(nullptr, Digital100);
+    UnderTestCNN undertest = UnderTestCNN(nullptr, Digit100);
 
     // the 5.2 and no previous should round down
     printf("PointerEvalHybridNew(5.2, 0, -1)\n");
@@ -93,17 +93,17 @@ void test_ZeigerEvalHybrid() {
     // the 5.7 with previous and the previous >=9.5 should trunc to 5
     TEST_ASSERT_EQUAL(5, undertest.PointerEvalHybridNew(5.7, 9.6, 9));
 
-    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.6)
+    // the 4.5 (Digit100) is not above 5  and the previous digit (analog) not over Zero (9.6)
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(4.5, 9.6, 0));    
 
-    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.6)
+    // the 4.5 (Digit100) is not above 5  and the previous digit (analog) not over Zero (9.6)
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(4.5, 9.6, 9));    
-    // the 4.5 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
+    // the 4.5 (Digit100) is not above 5  and the previous digit (analog) not over Zero (9.5)
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(4.5, 9.5, 9));    
 
     // 59.96889 - Pre: 58.94888
     // 8.6 : 9.8 : 6.7
-    // the 4.4 (digital100) is not above 5  and the previous digit (analog) not over Zero (9.5)
+    // the 4.4 (Digit100) is not above 5  and the previous digit (analog) not over Zero (9.5)
     TEST_ASSERT_EQUAL(8, undertest.PointerEvalHybridNew(8.6, 9.8, 9));    
 
     // pre = 9.9 (0.0 raw)
@@ -111,7 +111,7 @@ void test_ZeigerEvalHybrid() {
     TEST_ASSERT_EQUAL(2, undertest.PointerEvalHybridNew(1.8, 9.0, 9));    
  
     // if a digit have an early transition and the pointer is < 9.0 
-    // prev (pointer) = 6.2, but on digital readout = 6.0 (prev is int parameter)
+    // prev (pointer) = 6.2, but on digit readout = 6.0 (prev is int parameter)
     // zahl = 4.6
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(4.6, 6.0, 6));    
  

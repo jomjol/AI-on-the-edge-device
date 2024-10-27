@@ -306,7 +306,7 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
             if (resultchangabs.length() > 0) {
                 success |= MQTTPublish(namenumber + "changeabsolut", resultchangabs, qos, SetRetainFlag); // Legacy API
-                success |= MQTTPublish(namenumber + "rate_per_digitalization_round", resultchangabs, qos, SetRetainFlag);
+                success |= MQTTPublish(namenumber + "rate_per_Digitization_round", resultchangabs, qos, SetRetainFlag);
             }
 
             if (resultraw.length() > 0)   

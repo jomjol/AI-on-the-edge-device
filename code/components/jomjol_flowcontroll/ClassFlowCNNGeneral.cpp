@@ -35,7 +35,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float analogDigitalTransitionStart) {
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart) {
     string result = "";    
 
     if (GENERAL[_analog]->ROI.size() == 0) {
@@ -63,7 +63,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     }
 
-    if (CNNType == Digital) {
+    if (CNNType == Digit) {
         for (int i = 0; i < GENERAL[_analog]->ROI.size(); ++i) {
             if (GENERAL[_analog]->ROI[i]->result_klasse >= 10) {
                 result = result + "N";
@@ -75,7 +75,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         return result;
     }
 
-    if ((CNNType == DoubleHyprid10) || (CNNType == Digital100)) {
+    if ((CNNType == DoubleHyprid10) || (CNNType == Digit100)) {
         float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         // NaN?
         if (number >= 0) {
@@ -90,7 +90,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             }
             else {
                 if (_before_narrow_Analog >= 0) {
-                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, analogDigitalTransitionStart);
+                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, AnalogToDigitTransitionStart);
                 }
                 else {
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
@@ -101,7 +101,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         }
         else {
             result = "N";
-            if (_extendedResolution && (CNNType != Digital)) {
+            if (_extendedResolution && (CNNType != Digit)) {
                 result = "NN";
             }
         }
@@ -135,13 +135,13 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
  *                          0.1 => 0 (eval_predecessors)
  *                          The 0 makes a 9.9 to 0 (eval_predecessors)
  *                          The 0 makes a 9.8 to 0 
- * @param Analog_Predecessors false/true if the last ROI is an analog or digital ROI (default=false)
+ * @param Analog_Predecessors false/true if the last ROI is an analog or digit ROI (default=false)
  *                              runs in special handling because analog is much less precise
- * @param digitalAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
+ * @param digitAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
  *
  * @return int the determined number of the current ROI
  */
-int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitalAnalogTransitionStart) {
+int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitAnalogTransitionStart) {
     int result;
     int result_after_decimal_point = ((int) floor(number * 10)) % 10;
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
@@ -153,21 +153,21 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         result = (int) ((int) trunc(round((number+10 % 10)*100)) )  / 100;
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
-                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty));
         return result;
     }
 
     if (Analog_Predecessors) {
-        result = PointerEvalAnalogToDigitNew(number, number_of_predecessors, eval_predecessors, digitalAnalogTransitionStart);
+        result = PointerEvalAnalogToDigitNew(number, number_of_predecessors, eval_predecessors, digitAnalogTransitionStart);
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - Analog predecessor, evaluation over PointerEvalAnalogNew = " + std::to_string(result) +
-                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty));
         return result;
     }
 
-    if ((number_of_predecessors >= Digital_Transition_Area_Predecessor ) && (number_of_predecessors <= (10.0 - Digital_Transition_Area_Predecessor))) {
-        // no digit change, because predecessor is far enough away (0+/-DigitalTransitionRangePredecessor) --> number is rounded
+    if ((number_of_predecessors >= Digit_Transition_Area_Predecessor ) && (number_of_predecessors <= (10.0 - Digit_Transition_Area_Predecessor))) {
+        // no digit change, because predecessor is far enough away (0+/-DigitTransitionRangePredecessor) --> number is rounded
         // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
-        if ((result_after_decimal_point <= DigitalBand) || (result_after_decimal_point >= (10-DigitalBand))) {
+        if ((result_after_decimal_point <= DigitBand) || (result_after_decimal_point >= (10-DigitBand))) {
             result = ((int) round(number) + 10) % 10;
         }
         else {
@@ -175,7 +175,7 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         }
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - NO analogue predecessor, no change of digits, as pre-decimal point far enough away = " + std::to_string(result) +
-                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty));
         return result;
     }  
 
@@ -192,16 +192,16 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
             result =  result_before_decimal_point % 10;
         }
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - NO analogue predecessor, zero crossing has taken placen = " + std::to_string(result) +
-                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty));
+                                                    " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty));
         return result;
     }
 
     // remains only >= 9.x --> no zero crossing yet --> 2.8 --> 2, 
-    // and from 9.7(DigitalTransitionRangeLead) 3.1 --> 2
+    // and from 9.7(DigitTransitionRangeLead) 3.1 --> 2
     // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
     // number can still be x.6 - x.7. 
     // Preceding (else - branch) does not already happen from 9.
-    if (Digital_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4) {
+    if (Digit_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4) {
         // The current digit, like the previous digit, does not yet have a zero crossing. 
         result =  result_before_decimal_point % 10;
     }
@@ -212,39 +212,39 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - O analogue predecessor, >= 9.5 --> no zero crossing yet = " + std::to_string(result) +
-                                                " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digital_Uncertainty = " +  std::to_string(Digital_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
+                                                " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
     return result;
 }
 
-int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float analogDigitalTransitionStart) {
+int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float AnalogToDigitTransitionStart) {
     int result;
     int result_after_decimal_point = ((int) floor(number * 10)) % 10;
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
     bool roundedUp = false;
 
-    // Within the digital inequalities 
-    if ((result_after_decimal_point >= (10-Digital_Uncertainty * 10))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
+    // Within the digit inequalities 
+    if ((result_after_decimal_point >= (10-Digit_Uncertainty * 10))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame
         || (eval_predecessors <= 4 && result_after_decimal_point>=6))  {   // or digit runs after (analogue =0..4, digit >=6)
         result = (int) (round(number) + 10) % 10;
         roundedUp = true;
         // before/ after decimal point, because we adjust the number based on the uncertainty.
         result_after_decimal_point = ((int) floor(result * 10)) % 10;
         result_before_decimal_point = ((int) floor(result) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Digital Uncertainty - Result = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Digit Uncertainty - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " numeral_preceder: " + std::to_string(numeral_preceder) +
                                                     " erg before comma: " + std::to_string(result_before_decimal_point) + 
                                                     " erg after comma: " + std::to_string(result_after_decimal_point));
     } 
     else {
         result = (int) ((int) trunc(number) + 10) % 10;
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digital Uncertainty - Result = " + std::to_string(result) +
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - NO digit Uncertainty - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder));
     }
 
     // No zero crossing has taken place.
     // Only eval_predecessors used because numeral_preceder could be wrong here.
     // numeral_preceder<=0.1 & eval_predecessors=9 corresponds to analogue was reset because of previous analogue that are not yet at 0.
-    if ((eval_predecessors>=6 && (numeral_preceder>analogDigitalTransitionStart || numeral_preceder<=0.2) && roundedUp)) {
+    if ((eval_predecessors>=6 && (numeral_preceder>AnalogToDigitTransitionStart || numeral_preceder<=0.2) && roundedUp)) {
         result =  ((result_before_decimal_point+10) - 1) % 10;
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Nulldurchgang noch nicht stattgefunden = " + std::to_string(result) +
                                     " number: " + std::to_string(number) + 
@@ -593,17 +593,17 @@ bool ClassFlowCNNGeneral::getNetworkParameter() {
                 ESP_LOGD(TAG, "TFlite-Type set to DoubleHyprid10");
                 break;
             case 11:
-                CNNType = Digital;
-                ESP_LOGD(TAG, "TFlite-Type set to Digital");
+                CNNType = Digit;
+                ESP_LOGD(TAG, "TFlite-Type set to Digit");
                 break;
 /*            case 20:
-                CNNType = DigitalHyprid10;
-                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid10");
+                CNNType = DigitHyprid10;
+                ESP_LOGD(TAG, "TFlite-Type set to DigitHyprid10");
                 break;
 */
 //            case 22:
-//                CNNType = DigitalHyprid;
-//                ESP_LOGD(TAG, "TFlite-Type set to DigitalHyprid");
+//                CNNType = DigitHyprid;
+//                ESP_LOGD(TAG, "TFlite-Type set to DigitHyprid");
 //                break;
              case 100:
                 if (modelxsize==32 && modelysize == 32) {
@@ -611,8 +611,8 @@ bool ClassFlowCNNGeneral::getNetworkParameter() {
                     ESP_LOGD(TAG, "TFlite-Type set to Analogue100");
                 } 
                 else {
-                    CNNType = Digital100;
-                    ESP_LOGD(TAG, "TFlite-Type set to Digital");
+                    CNNType = Digit100;
+                    ESP_LOGD(TAG, "TFlite-Type set to Digit");
                 }
                 break;
             default:
@@ -686,8 +686,8 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
                         }
                     } break;
 
-                case Digital:
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital");
+                case Digit:
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digit");
                     {
                         GENERAL[n]->ROI[roi]->result_klasse = 0;
                         GENERAL[n]->ROI[roi]->result_klasse = tflite->GetClassFromImageBasis(GENERAL[n]->ROI[roi]->image);
@@ -778,10 +778,10 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
                             }
                         }
                     } break;
-                case Digital100:
+                case Digit100:
                 case Analogue100:
                     {
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digital100 or Analogue100");
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Digit100 or Analogue100");
                         int _num;
                         float _result_save_file;
                         
@@ -829,7 +829,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
 }
 
 bool ClassFlowCNNGeneral::isExtendedResolution(int _number) {
-    if (CNNType == Digital) {
+    if (CNNType == Digit) {
         return false;
     }
     
@@ -861,7 +861,7 @@ std::vector<HTMLInfo*> ClassFlowCNNGeneral::GetHTMLInfo() {
                 zw->filename_org = GENERAL[_ana]->name + "_" + GENERAL[_ana]->ROI[i]->name + ".jpg";
             }
 
-            if (CNNType == Digital) {
+            if (CNNType == Digit) {
                 zw->val = GENERAL[_ana]->ROI[i]->result_klasse;
             }
             else {
@@ -927,7 +927,7 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
             rt = rt + "," + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
 
-        if (CNNType == Digital) {
+        if (CNNType == Digit) {
             if (GENERAL[_analog]->ROI[i]->result_klasse >= 10) {
                 rt = rt + ",N";
             }
@@ -936,7 +936,7 @@ string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
             }
         }
 
-        if ((CNNType == DoubleHyprid10) || (CNNType == Digital100)) {
+        if ((CNNType == DoubleHyprid10) || (CNNType == Digit100)) {
             rt = rt + "," + RundeOutput(GENERAL[_analog]->ROI[i]->result_float, 1);
         }
     }

@@ -51,9 +51,12 @@ p {font-size: 1em;}
             if (!loadConfig(domainname)) {
                 firework.launch('Setup mode could not be deactivated! Please try again!', 'danger', 30000);
                 return;
-            } 
-            ParseConfig();	
-            param = getConfigParameters();
+            }
+
+            // ParseConfig();	
+            // param = getConfigParameters();
+            param = getCamConfig();
+
             param["System"]["SetupMode"]["enabled"] = true;
             param["System"]["SetupMode"]["value1"] = "false";
 

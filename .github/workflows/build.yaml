@@ -14,7 +14,7 @@ jobs:
       uses: fkirc/skip-duplicate-actions@v5
       with:
         concurrent_skipping: same_content_newer
-    
+
     - uses: actions/checkout@v4
       with:
         submodules: recursive
@@ -37,14 +37,14 @@ jobs:
         path: ~/.platformio
         key: platformio-${{ github.run_id }}
         restore-keys: platformio # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-          
+
     - name: Update Build cache on every commit
       uses: actions/cache@v4
       with:
         path: ./code/.pio/
         key: build-${{ github.run_id }}
         restore-keys: build # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-          
+
     - name: Update generated-files cache on every commit
       uses: actions/cache@v4
       with:
@@ -86,7 +86,7 @@ jobs:
 
         echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
-        
+
 
 #########################################################################################
 ## Pack for Update
@@ -120,7 +120,7 @@ jobs:
         path: update
         key: update-${{ github.run_id }}
         restore-keys: update # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-    
+
     - name: Set Variables
       id: vars
       run: |
@@ -150,7 +150,6 @@ jobs:
         path: ./update/*
 
 
-
 #########################################################################################
 ## Pack for Remote Setup 
 #########################################################################################
@@ -176,7 +175,7 @@ jobs:
           ./html/*
         key: generated-files-${{ github.run_id }}
         restore-keys: generated-files # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-          
+
     - name: Update remote_setup cache on every commit
       uses: actions/cache@v4
       with:
@@ -261,7 +260,7 @@ jobs:
         cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
         cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
-  
+
     - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v4
       with:
@@ -285,21 +284,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Update update cache on every commit
       uses: actions/cache@v4
       with:
         path: update
         key: update-${{ github.run_id }}
         restore-keys: update # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-    
+
     - name: Update remote_setup cache on every commit
       uses: actions/cache@v4
       with:
         path: remote_setup
         key: remote_setup-${{ github.run_id }}
         restore-keys: remote_setup # This matches above key as it is only used as a prefix. it the restores the nearest cache, see https://github.com/restore-keys:/blob/main/tips-and-workarounds.md#update-a-cache
-    
+
     - name: Update manual_setup cache on every commit
       uses: actions/cache@v4
       with:
@@ -342,7 +341,7 @@ jobs:
 #      with:
 #        changelogPath: Changelog.md
 #        version: ${{ steps.get_version.outputs.version-without-v }}
-            
+
 #    # the release notes will be extracted from changelog 
 #    - name: Extract release notes
 #      id: extract-release-notes
@@ -397,7 +396,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Get version of last release
       id: last_release
       uses: mindojo/get-latest-release@0b8ef1434d7468d6bffcc8263baff5c777f72321
@@ -405,7 +404,7 @@ jobs:
         myToken: ${{ github.token }}
         exclude_types: "draft|prerelease"
         view_top: 1     
-      
+
     - name: Add binary to Web Installer and update manifest
       run: |
         echo "Updating Web installer to use firmware from ${{ steps.last_release.outputs.tag_name }}..."

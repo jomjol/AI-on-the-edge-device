@@ -357,7 +357,7 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
     if (filetosend == "raw.jpg")
         return GetRawJPG(req); 
 
-    // Serve alg.jpg, alg_roi.jpg or digital and analog ROIs
+    // Serve alg.jpg, alg_roi.jpg or digit and analog ROIs
     if (ESP_OK == GetJPG(filetosend, req))
         return ESP_OK;
 
