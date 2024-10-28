@@ -1,6 +1,6 @@
 # Parameter `DomoticzTopicIn`
 Default Value: `domoticz/in`
 
-MQTT IN topic for Domoticz integration, under which the counters are published.
+Domoticz "in" topic as configured on "MQTT Client Gateway" setup page. Used to publish counter/s value/s.
 
-Counter Idx is required.
+Parameter <NUMBER>.DomoticzIDX is required.
