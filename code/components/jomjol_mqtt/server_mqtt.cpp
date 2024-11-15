@@ -183,7 +183,7 @@ bool MQTThomeassistantDiscovery(int qos) {
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic", qos);
-    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "flowstart",       "Manual Flow Start", "timer-play-outline",        "",    "update",         "",            "config",     qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "flowstart",       "Manual Flow Start", "timer-play-outline",        "",    "",               "",            "",           qos);
 
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
