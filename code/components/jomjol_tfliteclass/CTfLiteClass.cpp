@@ -246,9 +246,18 @@ void CTfLiteClass::GetInputTensorSize()
 
 long CTfLiteClass::GetFileSize(std::string filename)
 {
-    struct stat stat_buf;
-    long rc = stat(filename.c_str(), &stat_buf);
-    return rc == 0 ? stat_buf.st_size : -1;
+  struct stat stat_buf;
+  long rc = -1;
+
+  FILE *pFile = fopen(filename.c_str(), "rb"); // previously only "rb
+
+  if (pFile != NULL)
+  {
+    rc = stat(filename.c_str(), &stat_buf);
+    fclose(pFile);
+  }
+  
+  return rc == 0 ? stat_buf.st_size : -1;
 }
 
 
@@ -270,25 +279,33 @@ bool CTfLiteClass::ReadFileToModel(std::string _fn)
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Loading Model " + _fn + " /size: " + std::to_string(size) + " bytes...");
 
-
 #ifdef DEBUG_DETAIL_ON      
         LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile start");
 #endif
 
     modelfile = (unsigned char*)psram_get_shared_model_memory();
   
-	  if(modelfile != NULL) 
+    if (modelfile != NULL)
     {
-        FILE* f = fopen(_fn.c_str(), "rb");     // previously only "r
-        fread(modelfile, 1, size, f);
-        fclose(f);        
+        FILE *pFile = fopen(_fn.c_str(), "rb"); // previously only "rb
+    
+        if (pFile != NULL)
+        {
+          fread(modelfile, 1, size, pFile);
+          fclose(pFile);
 
-        #ifdef DEBUG_DETAIL_ON 
-            LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile successful");
-        #endif
+#ifdef DEBUG_DETAIL_ON
+          LogFile.WriteHeapInfo("CTLiteClass::Alloc modelfile successful");
+#endif
 
-        return true;    
-	}    
+          return true;
+        }
+        else
+        {
+          LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CTfLiteClass::ReadFileToModel: Model does not exist");
+          return false;
+        }
+    }   
     else 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CTfLiteClass::ReadFileToModel: Can't allocate enough memory: " + std::to_string(size));
