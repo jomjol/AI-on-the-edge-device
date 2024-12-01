@@ -1487,6 +1487,28 @@ esp_err_t handler_rssi(httpd_req_t *req)
     return ESP_OK;
 }
 
+esp_err_t handler_current_date(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_uptime - Start");
+#endif
+
+    std::string formatedDateAndTime = getCurrentTimeString("%Y-%m-%d %H:%M:%S");
+    // std::string formatedDate = getCurrentTimeString("%Y-%m-%d");
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, formatedDateAndTime.c_str(), formatedDateAndTime.length());
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_sendstr_chunk(req, NULL);
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_uptime - End");
+#endif
+
+    return ESP_OK;
+}
+
 esp_err_t handler_uptime(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON
@@ -1795,6 +1817,11 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
 
     camuri.uri = "/rssi";
     camuri.handler = handler_rssi;
+    camuri.user_ctx = (void *)"Light Off";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri = "/date";
+    camuri.handler = handler_current_date;
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 

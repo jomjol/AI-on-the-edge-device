@@ -118,6 +118,7 @@
 		</tr>	
 		<tr>	
 			<td class="tg-4">
+				<div id="sntp_date" ></div>
 				<div id="timestamp" ></div>	
 				<div id="cputemp" ></div>	
 				<div id="rssi" ></div>
@@ -153,6 +154,7 @@
 			loadValue("prevalue", "prevalue", "border-collapse: collapse; width: 100%");
 			loadValue("error", "error", "border-collapse: collapse; width: 100%");
 			loadStatus();
+			loadSntpDate();
 			loadCPUTemp();
 			loadRSSI();
 			loadUptime();
@@ -232,6 +234,20 @@
 			
 			xhttp.open("GET", url, true);
 			xhttp.send();		
+		}
+
+		function loadSntpDate() {
+			url = domainname + '/date';
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					var _rsp = xhttp.responseText;
+					$('#sntp_date').html("Date/Time on device: " + _rsp);
+				}
+			}
+
+			xhttp.open("GET", url, true);
+			xhttp.send();
 		}
 
 		function loadUptime() {
