@@ -1134,17 +1134,6 @@
 		</tr>
 
 		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
-				<label for=MQTT_DomoticzTopicIn_value1><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz in topic</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_DomoticzTopicIn_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
-		</tr>
-
-		<tr class="MQTTItem">
 			<td class="indent1" style="padding-top:25px" colspan="2">
 				<b>Homeassistant Discovery (using MQTT)</b><br>
 					If activated, the discovery topics gets automatically scheduled to sent once after device startup during state "Publish to MQTT".
@@ -1189,6 +1178,17 @@
 			<td>$TOOLTIP_MQTT_MeterType</td>
 		</tr>
 
+		<tr class="MQTTItem">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
+				<label for=MQTT_DomoticzTopicIn_value1><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz in topic</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzTopicIn_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
+		</tr>
+		
 		<tr class="MQTTItem" style="margin-top:12px">
 			<td class="indent1" style="padding-top:25px" colspan="3">
 				<b>Parameter per number sequence:</b>
