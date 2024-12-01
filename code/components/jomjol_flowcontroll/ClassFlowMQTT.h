@@ -23,9 +23,9 @@ protected:
     bool SetRetainFlag;
     int keepAlive; // Seconds
     float roundInterval; // Minutes
-
-    std::string maintopic; 
+    std::string maintopic, domoticzintopic; 
 	void SetInitialParameter(void);        
+    void handleIdx(string _decsep, string _value);   
 
 public:
     ClassFlowMQTT();

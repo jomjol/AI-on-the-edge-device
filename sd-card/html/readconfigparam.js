@@ -198,6 +198,8 @@ function ParseConfig() {
     ParamAddValue(param, catname, "user");
     ParamAddValue(param, catname, "password");
     ParamAddValue(param, catname, "RetainMessages");
+    ParamAddValue(param, catname, "DomoticzTopicIn");
+    ParamAddValue(param, catname, "DomoticzIDX", 1, true);
     ParamAddValue(param, catname, "HomeassistantDiscovery");
     ParamAddValue(param, catname, "MeterType");
     ParamAddValue(param, catname, "CACert");

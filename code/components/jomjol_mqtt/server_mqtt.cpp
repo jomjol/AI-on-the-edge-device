@@ -32,8 +32,9 @@ std::string rateUnit = "Unit/Minute";
 float roundInterval; // Minutes
 int keepAlive = 0; // Seconds
 bool retainFlag;
-static std::string maintopic;
+static std::string maintopic, domoticzintopic;
 bool sendingOf_DiscoveryAndStaticTopics_scheduled = true; // Set it to true to make sure it gets sent at least once after startup
+
 
 
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval) {
@@ -366,5 +367,10 @@ void mqttServer_setMainTopic( std::string _maintopic) {
 std::string mqttServer_getMainTopic() {
     return maintopic;
 }
+
+void mqttServer_setDmoticzInTopic( std::string _domoticzintopic) {
+    domoticzintopic = _domoticzintopic;
+}
+
 
 #endif //ENABLE_MQTT

@@ -936,8 +936,8 @@
 				<label for=PostProcessing_AnalogToDigitTransitionStart_enabled><class id="PostProcessing_AnalogToDigitTransitionStart_text" style="color:black;">Analog to Digit Transition Start</class></label>
 			</td>
 			<td>
-				<input required type="number" id="PostProcessing_AnalogToDigitTransitionStart_value1" step="0.1" min="3.0" max="9.9" value="9.2"
-					oninput="(!validity.rangeUnderflow||(value=3.0)) && (!validity.rangeOverflow||(value=9.9)) && 
+				<input required type="number" id="PostProcessing_AnalogToDigitTransitionStart_value1" step="0.1" min="5.0" max="9.9" value="9.2"
+					oninput="(!validity.rangeUnderflow||(value=5.0)) && (!validity.rangeOverflow||(value=9.9)) && 
 						(!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogToDigitTransitionStart</td>
@@ -1176,6 +1176,36 @@
 				</select>
 			</td>
 			<td>$TOOLTIP_MQTT_MeterType</td>
+		</tr>
+
+		<tr class="MQTTItem">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
+				<label for=MQTT_DomoticzTopicIn_enabled><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz "in" topic</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzTopicIn_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
+		</tr>
+		
+		<tr class="MQTTItem" style="margin-top:12px">
+			<td class="indent1" style="padding-top:25px" colspan="3">
+				<b>Parameter per number sequence:</b>
+                <select
+					style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()">
+                </select>
+			</td>
+		</tr>
+		<tr class="MQTTItem">
+			<td class="indent2">
+				<input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
+				<label for=MQTT_DomoticzIDX_enabled><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
+			</td>
+			<td>
+				<input type="text" id="MQTT_DomoticzIDX_value1">
+			</td>
+			<td>$TOOLTIP_MQTT_NUMBER.DomoticzIDX</td>
 		</tr>
 
 		
@@ -2120,6 +2150,7 @@ function LoadConfigNeu() {
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
+	
     UpdateExpertModus();
     UpdateTooltipModus();	
     document.getElementById("divall").style.display = ''; 
@@ -2162,6 +2193,11 @@ function InitIndivParameter() {
         _indexInfluxv1.remove(0);
     }
 
+    var _indexMQTTIdx = document.getElementById("NumbersMQTTIdx_value1");
+    while (_indexMQTTIdx.length) {
+        _indexMQTTIdx.remove(0);
+    }	
+
     for (var i = 0; i < NUMBERS.length; ++i) {
         var option = document.createElement("option");
         option.text = NUMBERS[i]["name"];
@@ -2177,11 +2213,17 @@ function InitIndivParameter() {
         optionInfluxv1.text = NUMBERS[i]["name"];
         optionInfluxv1.value = i;
         _indexInfluxv1.add(optionInfluxv1);
+
+		var optionMQTTIdx = document.createElement("option");
+        optionMQTTIdx.text = NUMBERS[i]["name"];
+        optionMQTTIdx.value = i;
+        _indexMQTTIdx.add(optionMQTTIdx);
     }
 	
     _index.selectedIndex = 0; 
     _indexInflux.selectedIndex = 0;
     _indexInfluxv1.selectedIndex = 0;
+	_indexMQTTIdx.selectedIndex = 0;
 }
 
 function UpdateInputIndividual(sel) {
@@ -2200,6 +2242,7 @@ function UpdateInputIndividual(sel) {
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+        ReadParameter(param, "MQTT", "DomoticzIDX", true, NUNBERSAkt);
     }
 
     // var sel = document.getElementById("Numbers_value1");
@@ -2218,6 +2261,8 @@ function UpdateInputIndividual(sel) {
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+    WriteParameter(param, category, "MQTT", "DomoticzIDX", true, NUNBERSAkt);
+	
 }
 
 function UpdateInput() {
@@ -2306,6 +2351,7 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "CACert", true);
     WriteParameter(param, category, "MQTT", "ClientCert", true);
     WriteParameter(param, category, "MQTT", "ClientKey", true);
+    WriteParameter(param, category, "MQTT", "DomoticzTopicIn", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
     WriteParameter(param, category, "InfluxDB", "Database", true);	
@@ -2473,6 +2519,7 @@ function ReadParameterAll() {
     ReadParameter(param, "MQTT", "CACert", true);
     ReadParameter(param, "MQTT", "ClientCert", true);
     ReadParameter(param, "MQTT", "ClientKey", true);
+    ReadParameter(param, "MQTT", "DomoticzTopicIn", true);
 
     ReadParameter(param, "InfluxDB", "Uri", true);
     ReadParameter(param, "InfluxDB", "Database", true);
@@ -2527,7 +2574,7 @@ function ReadParameterAll() {
 
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
-    
+
     // FormatDecimalValue(param, "PostProcessing", "MaxRateValue");
 }
 
@@ -2871,6 +2918,38 @@ function numberChanged() {
     if (_selInflux.selectedIndex != _neu) {
         _selInflux.selectedIndex = _neu
     }
+
+    var _sel3 = document.getElementById("NumbersInfluxDB_value1");
+    if (_sel3.selectedIndex != _neu) {
+        _sel3.selectedIndex = _neu
+    }
+
+	var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
+    }
+
+}
+
+function numberMQTTIdxChanged() {
+    var sel = document.getElementById("NumbersMQTTIdx_value1");
+    _neu = sel.selectedIndex;
+    UpdateInputIndividual(sel);
+
+	var _sel2 = document.getElementById("Numbers_value1");
+    if (_sel2.selectedIndex != _neu) {
+        _sel2.selectedIndex = _neu
+    }
+
+    var _sel3 = document.getElementById("NumbersInfluxDB_value1");
+    if (_sel3.selectedIndex != _neu) {
+        _sel3.selectedIndex = _neu
+    }
+
+    var _sel4 = document.getElementById("NumbersInfluxDBv2_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
+    }
 }
     
 function numberInfluxDBv2Changed() {
@@ -2887,6 +2966,11 @@ function numberInfluxDBv2Changed() {
     if (_sel3.selectedIndex != _neu) {
         _sel3.selectedIndex = _neu
     }
+
+    var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
+    }
 }
 
 function numberInfluxDBChanged() {
@@ -2902,6 +2986,11 @@ function numberInfluxDBChanged() {
     var _sel3 = document.getElementById("NumbersInfluxDBv2_value1");
     if (_sel3.selectedIndex != _neu) {
         _sel3.selectedIndex = _neu
+    }
+
+	var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    if (_sel4.selectedIndex != _neu) {
+        _sel4.selectedIndex = _neu
     }
 }
 
