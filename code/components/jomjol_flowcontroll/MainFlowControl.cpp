@@ -148,31 +148,39 @@ esp_err_t setCCstatusToCFstatus(void)
     CFstatus.CamSensor_id = CCstatus.CamSensor_id;
 
     CFstatus.ImageFrameSize = CCstatus.ImageFrameSize;
-    CFstatus.ImageGainceiling = CCstatus.ImageGainceiling;
+
+    CFstatus.ImageContrast = CCstatus.ImageContrast;
+    CFstatus.ImageBrightness = CCstatus.ImageBrightness;
+    CFstatus.ImageSaturation = CCstatus.ImageSaturation;
 
     CFstatus.ImageQuality = CCstatus.ImageQuality;
-    CFstatus.ImageBrightness = CCstatus.ImageBrightness;
-    CFstatus.ImageContrast = CCstatus.ImageContrast;
-    CFstatus.ImageSaturation = CCstatus.ImageSaturation;
-    CFstatus.ImageSharpness = CCstatus.ImageSharpness;
-    CFstatus.ImageAutoSharpness = CCstatus.ImageAutoSharpness;
-    CFstatus.ImageWbMode = CCstatus.ImageWbMode;
-    CFstatus.ImageAwb = CCstatus.ImageAwb;
-    CFstatus.ImageAwbGain = CCstatus.ImageAwbGain;
-    CFstatus.ImageAec = CCstatus.ImageAec;
-    CFstatus.ImageAec2 = CCstatus.ImageAec2;
-    CFstatus.ImageAeLevel = CCstatus.ImageAeLevel;
-    CFstatus.ImageAecValue = CCstatus.ImageAecValue;
+
+    CFstatus.ImageGainceiling = CCstatus.ImageGainceiling;
+
     CFstatus.ImageAgc = CCstatus.ImageAgc;
-    CFstatus.ImageAgcGain = CCstatus.ImageAgcGain;
-    CFstatus.ImageBpc = CCstatus.ImageBpc;
-    CFstatus.ImageWpc = CCstatus.ImageWpc;
-    CFstatus.ImageRawGma = CCstatus.ImageRawGma;
-    CFstatus.ImageLenc = CCstatus.ImageLenc;
-    CFstatus.ImageSpecialEffect = CCstatus.ImageSpecialEffect;
+    CFstatus.ImageAec = CCstatus.ImageAec;
     CFstatus.ImageHmirror = CCstatus.ImageHmirror;
     CFstatus.ImageVflip = CCstatus.ImageVflip;
+
+    CFstatus.ImageAwb = CCstatus.ImageAwb;
+    CFstatus.ImageAec2 = CCstatus.ImageAec2;
+    CFstatus.ImageAecValue = CCstatus.ImageAecValue;
+    CFstatus.ImageSpecialEffect = CCstatus.ImageSpecialEffect;
+    CFstatus.ImageWbMode = CCstatus.ImageWbMode;
+    CFstatus.ImageAeLevel = CCstatus.ImageAeLevel;
+
     CFstatus.ImageDcw = CCstatus.ImageDcw;
+    CFstatus.ImageBpc = CCstatus.ImageBpc;
+    CFstatus.ImageWpc = CCstatus.ImageWpc;
+    CFstatus.ImageAwbGain = CCstatus.ImageAwbGain;
+    CFstatus.ImageAgcGain = CCstatus.ImageAgcGain;
+
+    CFstatus.ImageRawGma = CCstatus.ImageRawGma;
+    CFstatus.ImageLenc = CCstatus.ImageLenc;
+
+    CFstatus.ImageSharpness = CCstatus.ImageSharpness;
+    CFstatus.ImageAutoSharpness = CCstatus.ImageAutoSharpness;
+
     CFstatus.ImageDenoiseLevel = CCstatus.ImageDenoiseLevel;
 
     CFstatus.ImageLedIntensity = CCstatus.ImageLedIntensity;
@@ -192,31 +200,39 @@ esp_err_t setCFstatusToCCstatus(void)
     // CCstatus.CamSensor_id = CFstatus.CamSensor_id;
 
     CCstatus.ImageFrameSize = CFstatus.ImageFrameSize;
-    CCstatus.ImageGainceiling = CFstatus.ImageGainceiling;
+
+    CCstatus.ImageContrast = CFstatus.ImageContrast;
+    CCstatus.ImageBrightness = CFstatus.ImageBrightness;
+    CCstatus.ImageSaturation = CFstatus.ImageSaturation;
 
     CCstatus.ImageQuality = CFstatus.ImageQuality;
-    CCstatus.ImageBrightness = CFstatus.ImageBrightness;
-    CCstatus.ImageContrast = CFstatus.ImageContrast;
-    CCstatus.ImageSaturation = CFstatus.ImageSaturation;
-    CCstatus.ImageSharpness = CFstatus.ImageSharpness;
-    CCstatus.ImageAutoSharpness = CFstatus.ImageAutoSharpness;
-    CCstatus.ImageWbMode = CFstatus.ImageWbMode;
-    CCstatus.ImageAwb = CFstatus.ImageAwb;
-    CCstatus.ImageAwbGain = CFstatus.ImageAwbGain;
-    CCstatus.ImageAec = CFstatus.ImageAec;
-    CCstatus.ImageAec2 = CFstatus.ImageAec2;
-    CCstatus.ImageAeLevel = CFstatus.ImageAeLevel;
-    CCstatus.ImageAecValue = CFstatus.ImageAecValue;
+
+    CCstatus.ImageGainceiling = CFstatus.ImageGainceiling;
+
     CCstatus.ImageAgc = CFstatus.ImageAgc;
-    CCstatus.ImageAgcGain = CFstatus.ImageAgcGain;
-    CCstatus.ImageBpc = CFstatus.ImageBpc;
-    CCstatus.ImageWpc = CFstatus.ImageWpc;
-    CCstatus.ImageRawGma = CFstatus.ImageRawGma;
-    CCstatus.ImageLenc = CFstatus.ImageLenc;
-    CCstatus.ImageSpecialEffect = CFstatus.ImageSpecialEffect;
+    CCstatus.ImageAec = CFstatus.ImageAec;
     CCstatus.ImageHmirror = CFstatus.ImageHmirror;
     CCstatus.ImageVflip = CFstatus.ImageVflip;
+
+    CCstatus.ImageAwb = CFstatus.ImageAwb;
+    CCstatus.ImageAec2 = CFstatus.ImageAec2;
+    CCstatus.ImageAecValue = CFstatus.ImageAecValue;
+    CCstatus.ImageSpecialEffect = CFstatus.ImageSpecialEffect;
+    CCstatus.ImageWbMode = CFstatus.ImageWbMode;
+    CCstatus.ImageAeLevel = CFstatus.ImageAeLevel;
+
     CCstatus.ImageDcw = CFstatus.ImageDcw;
+    CCstatus.ImageBpc = CFstatus.ImageBpc;
+    CCstatus.ImageWpc = CFstatus.ImageWpc;
+    CCstatus.ImageAwbGain = CFstatus.ImageAwbGain;
+    CCstatus.ImageAgcGain = CFstatus.ImageAgcGain;
+
+    CCstatus.ImageRawGma = CFstatus.ImageRawGma;
+    CCstatus.ImageLenc = CFstatus.ImageLenc;
+
+    CCstatus.ImageSharpness = CFstatus.ImageSharpness;
+    CCstatus.ImageAutoSharpness = CFstatus.ImageAutoSharpness;
+
     CCstatus.ImageDenoiseLevel = CFstatus.ImageDenoiseLevel;
 
     CCstatus.ImageLedIntensity = CFstatus.ImageLedIntensity;
@@ -238,43 +254,43 @@ esp_err_t setCFstatusToCam(void)
     if (s != NULL)
     {
         s->set_framesize(s, CFstatus.ImageFrameSize);
+
+        // s->set_contrast(s, CFstatus.ImageContrast);     // -2 to 2
+        // s->set_brightness(s, CFstatus.ImageBrightness); // -2 to 2
+        Camera.SetCamContrastBrightness(s, CFstatus.ImageContrast, CFstatus.ImageBrightness);
+		
+        s->set_saturation(s, CFstatus.ImageSaturation); // -2 to 2
+
         s->set_quality(s, CFstatus.ImageQuality); // 0 - 63
 
-        s->set_brightness(s, CFstatus.ImageBrightness); // -2 to 2
-        s->set_contrast(s, CFstatus.ImageContrast);     // -2 to 2
-        s->set_saturation(s, CFstatus.ImageSaturation); // -2 to 2
-        // s->set_sharpness(s, CFstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
-        Camera.SetCamSharpness(CFstatus.ImageAutoSharpness, CFstatus.ImageSharpness);
-
-        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
-
-        s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-        s->set_wb_mode(s, CFstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-
-        s->set_ae_level(s, CFstatus.ImageAeLevel);   // -2 to 2
-        s->set_aec_value(s, CFstatus.ImageAecValue); // 0 to 1200
-        s->set_agc_gain(s, CFstatus.ImageAgcGain);   // 0 to 30
-
         // s->set_gainceiling(s, CFstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
-        Camera.ov5640_set_gainceiling(s, CFstatus.ImageGainceiling);
+        Camera.SetCamGainceiling(s, CFstatus.ImageGainceiling);
 
-        s->set_lenc(s, CFstatus.ImageLenc);         // 0 = disable , 1 = enable
         s->set_gain_ctrl(s, CFstatus.ImageAgc);     // 0 = disable , 1 = enable
         s->set_exposure_ctrl(s, CFstatus.ImageAec); // 0 = disable , 1 = enable
+        s->set_hmirror(s, CFstatus.ImageHmirror);   // 0 = disable , 1 = enable
+        s->set_vflip(s, CFstatus.ImageVflip);       // 0 = disable , 1 = enable
 
-        s->set_hmirror(s, CFstatus.ImageHmirror); // 0 = disable , 1 = enable
-        s->set_vflip(s, CFstatus.ImageVflip);     // 0 = disable , 1 = enable
-        s->set_aec2(s, CFstatus.ImageAec2);       // 0 = disable , 1 = enable
+        s->set_whitebal(s, CFstatus.ImageAwb);       // 0 = disable , 1 = enable
+        s->set_aec2(s, CFstatus.ImageAec2);          // 0 = disable , 1 = enable
+        s->set_aec_value(s, CFstatus.ImageAecValue); // 0 to 1200
+        // s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        Camera.SetCamSpecialEffect(s, CFstatus.ImageSpecialEffect);
+        s->set_wb_mode(s, CFstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+        s->set_ae_level(s, CFstatus.ImageAeLevel); // -2 to 2
 
-        s->set_bpc(s, CFstatus.ImageBpc); // 0 = disable , 1 = enable
-        s->set_wpc(s, CFstatus.ImageWpc); // 0 = disable , 1 = enable
+        s->set_dcw(s, CFstatus.ImageDcw);          // 0 = disable , 1 = enable
+        s->set_bpc(s, CFstatus.ImageBpc);          // 0 = disable , 1 = enable
+        s->set_wpc(s, CFstatus.ImageWpc);          // 0 = disable , 1 = enable
+        s->set_awb_gain(s, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
+        s->set_agc_gain(s, CFstatus.ImageAgcGain); // 0 to 30
 
         s->set_raw_gma(s, CFstatus.ImageRawGma); // 0 = disable , 1 = enable
+        s->set_lenc(s, CFstatus.ImageLenc);      // 0 = disable , 1 = enable
 
-        s->set_awb_gain(s, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
-        s->set_whitebal(s, CFstatus.ImageAwb);     // 0 = disable , 1 = enable
-
-        s->set_dcw(s, CFstatus.ImageDcw); // 0 = disable , 1 = enable
+        // s->set_sharpness(s, CFstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
+        Camera.SetCamSharpness(CFstatus.ImageAutoSharpness, CFstatus.ImageSharpness);
+        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
         TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
         vTaskDelay(xDelay2);

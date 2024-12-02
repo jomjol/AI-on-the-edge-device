@@ -89,14 +89,16 @@ public:
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
-    int ov5640_set_gainceiling(sensor_t *s, gainceiling_t level);
+    int SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel);
+    void SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel);
+    void SetCamSpecialEffect(sensor_t *s, int specialEffect);
+    void SetCamContrastBrightness(sensor_t *s, int _contrast, int _brightness);
 
     esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
     esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
 
     void SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
     void SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
-    void SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel);
 
     void SetLEDIntensity(float _intrel);
     bool testCamera(void);
