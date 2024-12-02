@@ -191,6 +191,7 @@ bool MQTThomeassistantDiscovery(int qos) {
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "flowstart",       "Manual Flow Start", "timer-play-outline",        "",    "",               "",            "",           qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "set_prevalue",       "Set Pre-Value", "swap-vertical",        "",    "",               "",            "",           qos);
 
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
