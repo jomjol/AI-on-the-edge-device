@@ -91,6 +91,9 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     else if (field == "flowstart") { // Special case: Button
         topicFull = "homeassistant/button/" + node_id + "/" + configTopic + "/config";
     }
+    else if (field == "set_prevalue") { // Special case: Command with payload
+        topicFull = "homeassistant/number/" + node_id + "/" + configTopic + "/config";
+    }
     else {
         topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
     }
@@ -119,7 +122,11 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         }
         else if (field == "flowstart") { // Special case: Button
             payload += "\"cmd_t\":\"~/ctrl/flow_start\","; // Add command topic
-            payload += "\"pl_prs\":\"1\",";
+ //           payload += "\"pl_prs\":\"1\",";
+        }
+        else if (field == "set_prevalue") { // Special case: Command with value
+            payload += "\"cmd_t\":\"~/ctrl/set_prevalue\","; // Add command topic
+            payload += "\"pl_prs\":\"0\",";
         }
         else {
             payload += "\"state_topic\": \"~/" + field + "\",";
