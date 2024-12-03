@@ -80,6 +80,8 @@ protected:
     void SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, int &imageWidth, int &imageHeight, int &zoomOffsetX, int &zoomOffsetY);
 
 public:
+    int LedIntensity = 4096;
+
     CCamera(void);
     esp_err_t InitCam(void);
 
@@ -98,7 +100,7 @@ public:
     void SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip);
     void SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel);
 
-    void SetLEDIntensity(float _intrel);
+    int SetLEDIntensity(int _intrel);
     bool testCamera(void);
     bool getCameraInitSuccessful(void);
     void useDemoMode(void);

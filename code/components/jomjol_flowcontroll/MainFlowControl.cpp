@@ -1348,9 +1348,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 std::string _ledi = std::string(_valuechar);
                 if (isStringNumeric(_ledi))
                 {
-                    float _ImageLedIntensity = std::stof(_valuechar);
-                    Camera.SetLEDIntensity(_ImageLedIntensity);
-                    CFstatus.ImageLedIntensity = CCstatus.ImageLedIntensity;
+                    int _ImageLedIntensity = std::stoi(_valuechar);
+                    CFstatus.ImageLedIntensity = Camera.SetLEDIntensity(_ImageLedIntensity);
                 }
             }
 

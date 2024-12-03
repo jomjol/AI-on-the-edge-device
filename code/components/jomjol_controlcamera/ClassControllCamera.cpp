@@ -227,13 +227,12 @@ void CCamera::ledc_init(void)
 #endif
 }
 
-void CCamera::SetLEDIntensity(float _intrel)
+int CCamera::SetLEDIntensity(int _intrel)
 {
-    _intrel = min(_intrel, (float)100);
-    _intrel = max(_intrel, (float)0);
-    _intrel = _intrel / 100;
-    CCstatus.ImageLedIntensity = (int)(_intrel * 8191);
-    ESP_LOGD(TAG, "Set led_intensity to %d of 8191", CCstatus.ImageLedIntensity);
+    // CCstatus.ImageLedIntensity = (int)(std::min(std::max((float)0, _intrel), (float)100) / 100 * 8191)
+    Camera.LedIntensity = (int)((float)(std::min(std::max(0, _intrel), 100)) / 100 * 8191);
+    ESP_LOGD(TAG, "Set led_intensity to %i of 8191", Camera.LedIntensity);
+    return Camera.LedIntensity;
 }
 
 bool CCamera::getCameraInitSuccessful(void)
@@ -910,6 +909,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     {
         Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
         Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        Camera.LedIntensity = CCstatus.ImageLedIntensity;
         CFstatus.changedCameraSettings = false;
     }
 
@@ -1000,8 +1000,8 @@ void CCamera::LightOnOff(bool status)
 #ifdef USE_PWM_LEDFLASH
         if (status)
         {
-            ESP_LOGD(TAG, "Internal Flash-LED turn on with PWM %d", CCstatus.ImageLedIntensity);
-            ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, CCstatus.ImageLedIntensity));
+            ESP_LOGD(TAG, "Internal Flash-LED turn on with PWM %d", Camera.LedIntensity);
+            ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, Camera.LedIntensity));
             // Update duty to apply the new value
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
