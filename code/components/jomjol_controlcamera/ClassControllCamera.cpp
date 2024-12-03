@@ -32,6 +32,8 @@
 #include "MainFlowControl.h"
 
 #include "ov2640_sharpness.h"
+#include "ov2640_specialEffect.h"
+#include "ov2640_contrast_brightness.h"
 
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #include "soc/periph_defs.h"
@@ -248,43 +250,43 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
     if (s != NULL)
     {
         s->set_framesize(s, CCstatus.ImageFrameSize);
-        s->set_quality(s, CCstatus.ImageQuality); // 0 - 63
-
-        s->set_brightness(s, CCstatus.ImageBrightness); // -2 to 2
-        s->set_contrast(s, CCstatus.ImageContrast);     // -2 to 2
+		
+        // s->set_contrast(s, CCstatus.ImageContrast);     // -2 to 2
+        // s->set_brightness(s, CCstatus.ImageBrightness); // -2 to 2
+        SetCamContrastBrightness(s, CCstatus.ImageContrast, CCstatus.ImageBrightness);
+		
         s->set_saturation(s, CCstatus.ImageSaturation); // -2 to 2
-        // s->set_sharpness(s, CCstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
-        SetCamSharpness(CCstatus.ImageAutoSharpness, CCstatus.ImageSharpness);
 
-        s->set_denoise(s, CCstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
-
-        s->set_special_effect(s, CCstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-        s->set_wb_mode(s, CCstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-
-        s->set_ae_level(s, CCstatus.ImageAeLevel);   // -2 to 2
-        s->set_aec_value(s, CCstatus.ImageAecValue); // 0 to 1200
-        s->set_agc_gain(s, CCstatus.ImageAgcGain);   // 0 to 30
-
+        s->set_quality(s, CCstatus.ImageQuality); // 0 - 63
+		
         // s->set_gainceiling(s, CCstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
-        ov5640_set_gainceiling(s, CCstatus.ImageGainceiling);
-
-        s->set_lenc(s, CCstatus.ImageLenc);         // 0 = disable , 1 = enable
+        SetCamGainceiling(s, CCstatus.ImageGainceiling);
+		
         s->set_gain_ctrl(s, CCstatus.ImageAgc);     // 0 = disable , 1 = enable
         s->set_exposure_ctrl(s, CCstatus.ImageAec); // 0 = disable , 1 = enable
-
         s->set_hmirror(s, CCstatus.ImageHmirror); // 0 = disable , 1 = enable
         s->set_vflip(s, CCstatus.ImageVflip);     // 0 = disable , 1 = enable
+		
+        s->set_whitebal(s, CCstatus.ImageAwb);     // 0 = disable , 1 = enable
         s->set_aec2(s, CCstatus.ImageAec2);       // 0 = disable , 1 = enable
-
+        s->set_aec_value(s, CCstatus.ImageAecValue); // 0 to 1200
+        // s->set_special_effect(s, CCstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        SetCamSpecialEffect(s, CCstatus.ImageSpecialEffect);
+        s->set_wb_mode(s, CCstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+        s->set_ae_level(s, CCstatus.ImageAeLevel);   // -2 to 2
+		
+        s->set_dcw(s, CCstatus.ImageDcw); // 0 = disable , 1 = enable
         s->set_bpc(s, CCstatus.ImageBpc); // 0 = disable , 1 = enable
         s->set_wpc(s, CCstatus.ImageWpc); // 0 = disable , 1 = enable
-
-        s->set_raw_gma(s, CCstatus.ImageRawGma); // 0 = disable , 1 = enable
-
         s->set_awb_gain(s, CCstatus.ImageAwbGain); // 0 = disable , 1 = enable
-        s->set_whitebal(s, CCstatus.ImageAwb);     // 0 = disable , 1 = enable
+        s->set_agc_gain(s, CCstatus.ImageAgcGain);   // 0 to 30
+		
+        s->set_raw_gma(s, CCstatus.ImageRawGma); // 0 = disable , 1 = enable
+        s->set_lenc(s, CCstatus.ImageLenc);         // 0 = disable , 1 = enable
 
-        s->set_dcw(s, CCstatus.ImageDcw); // 0 = disable , 1 = enable
+        // s->set_sharpness(s, CCstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
+        SetCamSharpness(CCstatus.ImageAutoSharpness, CCstatus.ImageSharpness);
+        s->set_denoise(s, CCstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
         TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
         vTaskDelay(cam_xDelay);
@@ -306,30 +308,37 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
         CCstatus.CamSensor_id = s->id.PID;
 
         CCstatus.ImageFrameSize = (framesize_t)s->status.framesize;
+		
+        CCstatus.ImageContrast = s->status.contrast;
+        CCstatus.ImageBrightness = s->status.brightness;
+        CCstatus.ImageSaturation = s->status.saturation;
+		
+        CCstatus.ImageQuality = s->status.quality;
+		
         CCstatus.ImageGainceiling = (gainceiling_t)s->status.gainceiling;
 
-        CCstatus.ImageQuality = s->status.quality;
-        CCstatus.ImageBrightness = s->status.brightness;
-        CCstatus.ImageContrast = s->status.contrast;
-        CCstatus.ImageSaturation = s->status.saturation;
-        // CCstatus.ImageSharpness = s->status.sharpness; // gibt -1 zurück, da es nicht unterstützt wird
-        CCstatus.ImageWbMode = s->status.wb_mode;
-        CCstatus.ImageAwb = s->status.awb;
-        CCstatus.ImageAwbGain = s->status.awb_gain;
-        CCstatus.ImageAec = s->status.aec;
-        CCstatus.ImageAec2 = s->status.aec2;
-        CCstatus.ImageAeLevel = s->status.ae_level;
-        CCstatus.ImageAecValue = s->status.aec_value;
         CCstatus.ImageAgc = s->status.agc;
-        CCstatus.ImageAgcGain = s->status.agc_gain;
-        CCstatus.ImageBpc = s->status.bpc;
-        CCstatus.ImageWpc = s->status.wpc;
-        CCstatus.ImageRawGma = s->status.raw_gma;
-        CCstatus.ImageLenc = s->status.lenc;
-        CCstatus.ImageSpecialEffect = s->status.special_effect;
+        CCstatus.ImageAec = s->status.aec;
         CCstatus.ImageHmirror = s->status.hmirror;
         CCstatus.ImageVflip = s->status.vflip;
+		
+        CCstatus.ImageAwb = s->status.awb;
+        CCstatus.ImageAec2 = s->status.aec2;
+        CCstatus.ImageAecValue = s->status.aec_value;
+        CCstatus.ImageSpecialEffect = s->status.special_effect;
+        CCstatus.ImageWbMode = s->status.wb_mode;
+        CCstatus.ImageAeLevel = s->status.ae_level;
+		
         CCstatus.ImageDcw = s->status.dcw;
+        CCstatus.ImageBpc = s->status.bpc;
+        CCstatus.ImageWpc = s->status.wpc;
+        CCstatus.ImageAwbGain = s->status.awb_gain;
+        CCstatus.ImageAgcGain = s->status.agc_gain;
+		
+        CCstatus.ImageRawGma = s->status.raw_gma;
+        CCstatus.ImageLenc = s->status.lenc;
+
+        // CCstatus.ImageSharpness = s->status.sharpness; // gibt -1 zurück, da es nicht unterstützt wird
         CCstatus.ImageDenoiseLevel = s->status.denoise;
 
         return ESP_OK;
@@ -340,29 +349,94 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
     }
 }
 
-// on the OV5640, gainceiling must be set with the real value (x2>>>level = 2, .... x128>>>level = 128)
-int CCamera::ov5640_set_gainceiling(sensor_t *s, gainceiling_t level)
+// on the OV5640, gainceiling must be set with the real value (x2>>>gainceilingLevel = 2, .... x128>>>gainceilingLevel = 128)
+int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 {
 	int ret = 0;
 		
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
-        ret = s->set_gainceiling(s, CCstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+        ret = s->set_gainceiling(s, gainceilingLevel); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
     }
     else
     {
-		int _level = (1 << ((int)level + 1));
+        int _level = (1 << ((int)gainceilingLevel + 1));
 
-		ret = s->set_reg(s, 0x3A18, 0xFF, (_level >> 8) & 3) || s->set_reg(s, 0x3A19, 0xFF, _level & 0xFF);
+        ret = s->set_reg(s, 0x3A18, 0xFF, (_level >> 8) & 3) || s->set_reg(s, 0x3A19, 0xFF, _level & 0xFF);
 
-		if (ret == 0)
-		{
-			// ESP_LOGD(TAG, "Set gainceiling to: %d", level);
-			s->status.gainceiling = level;
-		}
+        if (ret == 0)
+        {
+            // ESP_LOGD(TAG, "Set gainceiling to: %d", gainceilingLevel);
+            s->status.gainceiling = gainceilingLevel;
+        }
     }
 
     return ret;
+}
+
+void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
+{
+    sensor_t *s = esp_camera_sensor_get();
+
+    if (s != NULL)
+    {
+        if (CCstatus.CamSensor_id == OV2640_PID)
+        {
+            sharpnessLevel = min(2, max(-2, sharpnessLevel));
+            // The OV2640 does not officially support sharpness, so the detour is made with the ov2640_sharpness.cpp.
+            if (autoSharpnessEnabled)
+            {
+                ov2640_enable_auto_sharpness(s);
+            }
+            else
+            {
+                ov2640_set_sharpness(s, sharpnessLevel);
+            }
+        }
+        else
+        {
+            sharpnessLevel = min(3, max(-3, sharpnessLevel));
+            // for CAMERA_OV5640 and CAMERA_OV3660
+            if (autoSharpnessEnabled)
+            {
+                // autoSharpness is not supported, default to zero
+                s->set_sharpness(s, 0);
+            }
+            else
+            {
+                s->set_sharpness(s, sharpnessLevel);
+            }
+        }
+    }
+    else
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetCamSharpness, Failed to get Cam control structure");
+    }
+}
+
+void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
+{
+    if (CCstatus.CamSensor_id == OV2640_PID)
+    {
+        ov2640_set_special_effect(s, specialEffect);
+    }
+    else
+    {
+        s->set_special_effect(s, specialEffect);
+    }
+}
+
+void CCamera::SetCamContrastBrightness(sensor_t *s, int _contrast, int _brightness)
+{
+    if (CCstatus.CamSensor_id == OV2640_PID)
+    {
+        ov2640_set_contrast_brightness(s, _contrast, _brightness);
+    }
+    else
+    {
+        s->set_contrast(s, _contrast);     // -2 to 2
+        s->set_brightness(s, _brightness); // -2 to 2
+    }
 }
 
 // - It always zooms to the image center when offsets are zero
@@ -515,46 +589,6 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
     else
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetQualityZoomSize, Failed to get Cam control structure");
-    }
-}
-
-void CCamera::SetCamSharpness(bool _autoSharpnessEnabled, int _sharpnessLevel)
-{
-    sensor_t *s = esp_camera_sensor_get();
-
-    if (s != NULL)
-    {
-        if (CCstatus.CamSensor_id == OV2640_PID)
-        {
-            _sharpnessLevel = min(2, max(-2, _sharpnessLevel));
-            // The OV2640 does not officially support sharpness, so the detour is made with the ov2640_sharpness.cpp.
-            if (_autoSharpnessEnabled)
-            {
-                ov2640_enable_auto_sharpness(s);
-            }
-            else
-            {
-                ov2640_set_sharpness(s, _sharpnessLevel);
-            }
-        }
-        else
-        {
-            _sharpnessLevel = min(3, max(-3, _sharpnessLevel));
-            // for CAMERA_OV5640 and CAMERA_OV3660
-            if (_autoSharpnessEnabled)
-            {
-                // autoSharpness is not supported, default to zero
-                s->set_sharpness(s, 0);
-            }
-            else
-            {
-                s->set_sharpness(s, _sharpnessLevel);
-            }
-        }
-    }
-    else
-    {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetCamSharpness, Failed to get Cam control structure");
     }
 }
 
@@ -1055,38 +1089,58 @@ void CCamera::SetImageWidthHeightFromResolution(framesize_t resol)
 {
     if (resol == FRAMESIZE_QVGA)
     {
-        CCstatus.ImageHeight = 240;
         CCstatus.ImageWidth = 320;
+        CCstatus.ImageHeight = 240;
     }
     else if (resol == FRAMESIZE_VGA)
     {
-        CCstatus.ImageHeight = 480;
         CCstatus.ImageWidth = 640;
+        CCstatus.ImageHeight = 480;
     }
     else if (resol == FRAMESIZE_SVGA)
     {
-        CCstatus.ImageHeight = 600;
         CCstatus.ImageWidth = 800;
+        CCstatus.ImageHeight = 600;
     }
     else if (resol == FRAMESIZE_XGA)
     {
-        CCstatus.ImageHeight = 768;
         CCstatus.ImageWidth = 1024;
+        CCstatus.ImageHeight = 768;
     }
     else if (resol == FRAMESIZE_HD)
     {
-        CCstatus.ImageHeight = 720;
         CCstatus.ImageWidth = 1280;
+        CCstatus.ImageHeight = 720;
     }
     else if (resol == FRAMESIZE_SXGA)
     {
-        CCstatus.ImageHeight = 1024;
         CCstatus.ImageWidth = 1280;
+        CCstatus.ImageHeight = 1024;
     }
     else if (resol == FRAMESIZE_UXGA)
     {
-        CCstatus.ImageHeight = 1200;
         CCstatus.ImageWidth = 1600;
+        CCstatus.ImageHeight = 1200;
+    }
+    else if (resol == FRAMESIZE_QXGA)
+    {
+        CCstatus.ImageWidth = 2048;
+        CCstatus.ImageHeight = 1536;
+    }
+    else if (resol == FRAMESIZE_WQXGA)
+    {
+        CCstatus.ImageWidth = 2560;
+        CCstatus.ImageHeight = 1600;
+    }
+    else if (resol == FRAMESIZE_QSXGA)
+    {
+        CCstatus.ImageWidth = 2560;
+        CCstatus.ImageHeight = 1920;
+    }
+    else
+    {
+        CCstatus.ImageWidth = 640;
+        CCstatus.ImageHeight = 480;
     }
 }
 
@@ -1116,8 +1170,24 @@ framesize_t CCamera::TextToFramesize(const char *_size)
     {
         return FRAMESIZE_UXGA; // 1600x1200
     }
+    else if (strcmp(_size, "QXGA") == 0)
+    {
+        return FRAMESIZE_QXGA; // 2048x1536
+    }
+    else if (strcmp(_size, "WQXGA") == 0)
+    {
+        return FRAMESIZE_WQXGA; // 2560x1600
+    }
+    else if (strcmp(_size, "QSXGA") == 0)
+    {
+        return FRAMESIZE_QSXGA; // 2560x1920
+    }
+    else
+    {
+        return FRAMESIZE_VGA; // 640x480
+    }
 
-    return CCstatus.ImageFrameSize;
+    // return CCstatus.ImageFrameSize;
 }
 
 std::vector<std::string> demoFiles;
