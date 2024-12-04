@@ -210,7 +210,8 @@ void ClassFlowControll::SetInitialParameter(void)
 
 bool ClassFlowControll::getIsAutoStart(void)
 {
-    return AutoStart;
+    //return AutoStart;
+    return true; // Flow must always be enabled, else the manual trigger (REST, MQTT) will not work!
 }
 
 
