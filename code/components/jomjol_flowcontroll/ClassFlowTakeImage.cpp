@@ -499,8 +499,8 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         {
             if (isStringNumeric(splitted[1]))
             {
-                float ledintensity = std::stof(splitted[1]);
-                Camera.SetLEDIntensity(ledintensity);
+                int ledintensity = std::stoi(splitted[1]);
+                CCstatus.ImageLedIntensity = Camera.SetLEDIntensity(ledintensity);
             }
         }
 
@@ -559,6 +559,7 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
     {
         Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
         Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        Camera.LedIntensity = CCstatus.ImageLedIntensity;
         CFstatus.changedCameraSettings = false;
     }
 
