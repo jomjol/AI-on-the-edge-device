@@ -389,13 +389,7 @@ bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len)
 {
     ESP_LOGD(TAG, "Handler called: topic %s, data %.*s", _topic.c_str(), _data_len, _data);
 
-    if (_data_len > 0) {
-        MQTTCtrlFlowStart(_topic);
-    }
-    else {
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_flow_start: handler called, but no data");
-    }
-
+    MQTTCtrlFlowStart(_topic);
     return ESP_OK;
 }
 

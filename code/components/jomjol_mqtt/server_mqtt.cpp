@@ -86,8 +86,11 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
      * This means a maintopic "home/test/watermeter" is transformed to the discovery topic "homeassistant/sensor/watermeter/..."
     */
     std::string node_id = createNodeId(maintopic);
-    if (field == "problem") { // Special binary sensor which is based on error topic
+    if (field == "problem") { // Special case: Binary sensor which is based on error topic
         topicFull = "homeassistant/binary_sensor/" + node_id + "/" + configTopic + "/config";
+    }
+    else if (field == "flowstart") { // Special case: Button
+        topicFull = "homeassistant/button/" + node_id + "/" + configTopic + "/config";
     }
     else {
         topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
@@ -102,7 +105,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         "\"icon\": \"mdi:" + icon + "\",";        
 
     if (group != "") {
-        if (field == "problem") { // Special binary sensor which is based on error topic
+        if (field == "problem") { // Special case: Binary sensor which is based on error topic
             payload += "\"state_topic\": \"~/" + group + "/error\",";
             payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\",";
         }
@@ -111,9 +114,12 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         }
     }
     else {
-        if (field == "problem") { // Special binary sensor which is based on error topic
+        if (field == "problem") { // Special case: Binary sensor which is based on error topic
             payload += "\"state_topic\": \"~/error\",";
             payload += "\"value_template\": \"{{ 'OFF' if 'no error' in value else 'ON'}}\",";
+        }
+        else if (field == "flowstart") { // Special case: Button
+            payload += "\"cmd_t\":\"~/ctrl/flow_start\","; // Add command topic
         }
         else {
             payload += "\"state_topic\": \"~/" + field + "\",";
@@ -177,6 +183,7 @@ bool MQTThomeassistantDiscovery(int qos) {
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic", qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "flowstart",       "Manual Flow Start", "timer-play-outline",        "",    "",               "",            "",           qos);
 
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
