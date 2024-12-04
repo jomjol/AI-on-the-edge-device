@@ -741,6 +741,7 @@ void migrateConfiguration(void) {
         else if (section == "[System]") {
             migrated = migrated | replaceString(configLines[i], "RSSIThreashold", "RSSIThreshold");
             migrated = migrated | replaceString(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
+            migrated = migrated | replaceString(configLines[i], "Autostart", ";UNUSED_PARAMETER");  // This parameter is no longer used
 
             migrated = migrated | replaceString(configLines[i], ";SetupMode = true", ";SetupMode = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";SetupMode", "SetupMode");                 // Enable it

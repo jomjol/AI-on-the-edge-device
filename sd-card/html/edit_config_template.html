@@ -1920,6 +1920,7 @@
 
 
 		<!------------- Autotimer ------------------>
+		<!--
 		<tr style="border-bottom: 2px solid lightgray;">
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Auto Timer</h4></td>
 		</tr>
@@ -1936,6 +1937,7 @@
 			</td>
 			<td>$TOOLTIP_AutoTimer_AutoStart</td>
 		</tr>
+		-->
 
 		<tr>
 			<td class="indent1">
@@ -2381,7 +2383,7 @@ function UpdateInput() {
     WriteParameter(param, category, "GPIO", "LEDNumbers", false);
     WriteParameter(param, category, "GPIO", "LEDColor", false);
 
-    WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
+    //WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
     WriteParameter(param, category, "AutoTimer", "Interval", false);
 
     WriteParameter(param, category, "DataLogging", "DataLogActive", false);	
@@ -2556,7 +2558,7 @@ function ReadParameterAll() {
     param["GPIO"]["LEDNumbers"]["found"] = true;
     param["GPIO"]["LEDColor"]["found"] = true;
 
-    ReadParameter(param, "AutoTimer", "AutoStart", false);
+    //ReadParameter(param, "AutoTimer", "AutoStart", false);
     ReadParameter(param, "AutoTimer", "Interval", false);
     
     ReadParameter(param, "DataLogging", "DataLogActive", false);

@@ -267,7 +267,7 @@ function ParseConfig() {
     category[catname]["enabled"] = false;
     category[catname]["found"] = false;
     param[catname] = new Object();
-    ParamAddValue(param, catname, "AutoStart");
+    //ParamAddValue(param, catname, "AutoStart");
     ParamAddValue(param, catname, "Interval");     
 
     var catname = "DataLogging";
