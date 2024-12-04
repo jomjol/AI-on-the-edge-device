@@ -196,7 +196,7 @@ bool ClassFlowControll::StartMQTTService()
 
 void ClassFlowControll::SetInitialParameter(void)
 {
-    AutoStart = True;
+    AutoStart = true;
     SetupModeActive = false;
     AutoInterval = 10; // Minutes
     flowdigit = NULL;
