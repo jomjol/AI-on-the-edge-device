@@ -1,6 +1,6 @@
-## [16.0.0-RC5] - 2024-10-xx
+## [16.0.0-RC5] - 2024-12-05
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -12,14 +12,19 @@ Only changes since RC4 are listed:
     - `raw` has now set the `State Class` to `measurement`. Before it was always set to `""`. 
     - `value` has now only set the `State Class` to `total_increasing` if the parameter `Allow Negative Rates` is **not** set. Else it uses `measurement` since the rate could also be negative. Before it was always set to `total_increasing`.
     - The `rate_per_time_unit` topic of an **Energy** meter needs a `Device Class`=`power`. For `gas` and `water` it should be `volume_flow_rate`. Before it was always set to `""`.
+    - Added button for flow start (#3415)
+    - Added support for Domoticz MQTT integration (#3359)
+    - Added Date and time to overview page
+    - Updated submodules and models
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
 #### Bug Fixes
 Only changes since RC3 are listed:
- - None
-
-
+ - Added fix for ledintensity (#3418)
+ - Added fix for OV2640 brightness contrast saturation (#3417)
+ - Added fix for 'AnalogToDigitTransitionStart' always using 9.2 regardless of the configured value (#3393)
+ - Addef fix for HA menu entry (#3342)
 
 
 ## [16.0.0-RC4] - 2024-10-06
