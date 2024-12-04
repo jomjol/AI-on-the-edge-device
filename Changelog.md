@@ -8,16 +8,16 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Only changes since RC4 are listed:
+- Removed `Autostart` parameter and make it always enabled (#3423)
+- Enable `Flow start` menu entry in UI (#3423)
 - Updated the Homeassistant Discovery topics (#3332):
     - `raw` has now set the `State Class` to `measurement`. Before it was always set to `""`. 
     - `value` has now only set the `State Class` to `total_increasing` if the parameter `Allow Negative Rates` is **not** set. Else it uses `measurement` since the rate could also be negative. Before it was always set to `total_increasing`.
     - The `rate_per_time_unit` topic of an **Energy** meter needs a `Device Class`=`power`. For `gas` and `water` it should be `volume_flow_rate`. Before it was always set to `""`.
-    - Added button for flow start (#3415)
+    - Added button for `flow start` (#3415)
     - Added support for Domoticz MQTT integration (#3359)
     - Added Date and time to overview page
     - Updated submodules and models
--  Remove Autostart parameter and make it always enabled (#3423)
--  Enable Flow start menu entry in UI (#3423)
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
