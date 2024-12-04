@@ -3,6 +3,29 @@
    <link rel="icon" href="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/icon/favicon.ico" type="image/x-icon">
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
    <script type="module" src="https://unpkg.com/esp-web-tools@9.0.3/dist/web/install-button.js?module"></script>
+   <style>
+      .footer {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         padding: 20px;
+         background-color: #d8d8d8;
+         margin-top: 20px;
+      }
+      .footer-section {
+         display: flex;
+         align-items: center;
+      }
+      .footer-section img {
+         width: 24px;
+         height: 24px;
+         margin-left: 10px;
+      }
+      .donation-cards img {
+         height: 20px;
+         margin-right: 5px;
+      }
+   </style>
    <body style="padding: 20px; padding-left: 60px; padding-right: 60px;">
 
    <table>
@@ -34,5 +57,27 @@
       <p><esp-web-install-button manifest="manifest.json"></esp-web-install-button></p>
       <hr>
       <p style="font-size: small;">Installer and Console powered by <a href=https://esphome.github.io/esp-web-tools/ target=_blank>ESP Web Tools</a></p>
+
+   <div class="footer">
+      <div class="footer-section">
+       <span>Support & Contact Us</span>
+       <a href="https://github.com/jomjol/AI-on-the-edge-device" target="_blank" title="GitHub">
+          <img src="https://github.com/jomjol/AI-on-the-edge-device/images/github-logo.png" alt="GitHub">
+       </a>
+          <img src="https://github.com/jomjol/AI-on-the-edge-device/images/gmail-logo.png" alt="Email">
+       </a>
+       <a href="https://github.com/jomjol/AI-on-the-edge-device/discussions" target="_blank" title="GitHub">
+          <img src="https://github.com/jomjol/AI-on-the-edge-device/images/discussion-logo" alt="GitHub">
+       </a>
+	
+    </div>
+      <div class="footer-section">
+         <span>Donations</span>
+         <a href="https://www.paypal.com/donate?hosted_button_id=8TRSVYNYKDSWL" target="_blank" title="Donate via PayPal">
+            <img src="https://github.com/jomjol/AI-on-the-edge-device/images/paypal.png" alt="PayPal" style="width: 60px; height: auto;">
+         </a>
+      </div>
+   </div>
+
    </body>
 </html>
