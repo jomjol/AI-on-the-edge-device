@@ -210,7 +210,8 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				if (xhttp.responseText.substring(0,3) == "001") {
+                firework.launch(xhttp.responseText, 'success', 5000);
+			    /*if (xhttp.responseText.substring(0,3) == "001") {
 					firework.launch('Flow start triggered', 'success', 5000);
                     window.location.reload();
 				}
@@ -219,8 +220,11 @@
 				}
 				else if (xhttp.responseText.substring(0,3) == "099") {
 					firework.launch('Flow start triggered, but start not possible (no flow task available)', 'danger', 5000);
-				}
+                }*/
 			}
+            else {
+                firework.launch(xhttp.responseText, 'danger', 5000);
+            }
 		}
 		xhttp.open("GET", url, true);
 		xhttp.send();
