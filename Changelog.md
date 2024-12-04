@@ -16,6 +16,8 @@ Only changes since RC4 are listed:
     - Added support for Domoticz MQTT integration (#3359)
     - Added Date and time to overview page
     - Updated submodules and models
+-  Remove Autostart parameter and make it always enabled (#3423)
+-  Enable Flow start menu entry in UI (#3423)
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
