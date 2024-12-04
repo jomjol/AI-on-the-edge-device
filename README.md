@@ -390,28 +390,21 @@ There are some ideas and feature requests which are not currently being pursuedâ
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/bilalmirza74">
+                    <img src="https://avatars.githubusercontent.com/u/84387676?v=4" width="100;" alt="bilalmirza74"/>
+                    <br />
+                    <sub><b>Bilal Mirza</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/muggenhor">
                     <img src="https://avatars.githubusercontent.com/u/484066?v=4" width="100;" alt="muggenhor"/>
                     <br />
                     <sub><b>Giel van Schijndel</b></sub>
                 </a>
             </td>
-            <td align="center">
-                <a href="https://github.com/AngryApostrophe">
-                    <img src="https://avatars.githubusercontent.com/u/89547888?v=4" width="100;" alt="AngryApostrophe"/>
-                    <br />
-                    <sub><b>AngryApostrophe</b></sub>
-                </a>
-            </td>
 		</tr>
 		<tr>
-            <td align="center">
-                <a href="https://github.com/toolsfactory">
-                    <img src="https://avatars.githubusercontent.com/u/7744975?v=4" width="100;" alt="toolsfactory"/>
-                    <br />
-                    <sub><b>Michael Geissler</b></sub>
-                </a>
-            </td>
             <td align="center">
                 <a href="https://github.com/ppisljar">
                     <img src="https://avatars.githubusercontent.com/u/13629809?v=4" width="100;" alt="ppisljar"/>
@@ -447,13 +440,20 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <sub><b>Sven Rojek</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/Turbo87">
                     <img src="https://avatars.githubusercontent.com/u/141300?v=4" width="100;" alt="Turbo87"/>
                     <br />
                     <sub><b>Tobias Bieniek</b></sub>
+                </a>
+            </td>
+		</tr>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/tkopczuk">
+                    <img src="https://avatars.githubusercontent.com/u/101632?v=4" width="100;" alt="tkopczuk"/>
+                    <br />
+                    <sub><b>Tomek Kopczuk</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -478,12 +478,21 @@ There are some ideas and feature requests which are not currently being pursuedâ
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/gneluka">
+                    <img src="https://avatars.githubusercontent.com/u/32097881?v=4" width="100;" alt="gneluka"/>
+                    <br />
+                    <sub><b>gneluka</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/kalwados">
                     <img src="https://avatars.githubusercontent.com/u/11840444?v=4" width="100;" alt="kalwados"/>
                     <br />
                     <sub><b>kalwados</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/kub3let">
                     <img src="https://avatars.githubusercontent.com/u/95883234?v=4" width="100;" alt="kub3let"/>
@@ -491,8 +500,6 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <sub><b>kub3let</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/pfeifferch">
                     <img src="https://avatars.githubusercontent.com/u/73090220?v=4" width="100;" alt="pfeifferch"/>
@@ -515,12 +522,21 @@ There are some ideas and feature requests which are not currently being pursuedâ
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/AngryApostrophe">
+                    <img src="https://avatars.githubusercontent.com/u/89547888?v=4" width="100;" alt="AngryApostrophe"/>
+                    <br />
+                    <sub><b>AngryApostrophe</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/wetneb">
                     <img src="https://avatars.githubusercontent.com/u/309908?v=4" width="100;" alt="wetneb"/>
                     <br />
                     <sub><b>Antonin Delpeuch</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/adarazs">
                     <img src="https://avatars.githubusercontent.com/u/6269603?v=4" width="100;" alt="adarazs"/>
@@ -533,15 +549,6 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <img src="https://avatars.githubusercontent.com/u/21338699?v=4" width="100;" alt="austindrenski"/>
                     <br />
                     <sub><b>Austin Drenski</b></sub>
-                </a>
-            </td>
-		</tr>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/bilalmirza74">
-                    <img src="https://avatars.githubusercontent.com/u/84387676?v=4" width="100;" alt="bilalmirza74"/>
-                    <br />
-                    <sub><b>Bilal Mirza</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -572,6 +579,8 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <sub><b>Farookh Zaheer Siddiqui</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/hex7c0">
                     <img src="https://avatars.githubusercontent.com/u/4419146?v=4" width="100;" alt="hex7c0"/>
@@ -579,8 +588,6 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <sub><b>Francesco Carnielli</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/040medien">
                     <img src="https://avatars.githubusercontent.com/u/115072?v=4" width="100;" alt="040medien"/>
@@ -616,6 +623,8 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <sub><b>KrishCode</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/myxor">
                     <img src="https://avatars.githubusercontent.com/u/1397377?v=4" width="100;" alt="myxor"/>
@@ -623,8 +632,6 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <sub><b>Marco H</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/rainman110">
                     <img src="https://avatars.githubusercontent.com/u/3213107?v=4" width="100;" alt="rainman110"/>
@@ -637,6 +644,13 @@ There are some ideas and feature requests which are not currently being pursuedâ
                     <img src="https://avatars.githubusercontent.com/u/5567324?v=4" width="100;" alt="mkelley88"/>
                     <br />
                     <sub><b>Matthew T. Kelley</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/toolsfactory">
+                    <img src="https://avatars.githubusercontent.com/u/7744975?v=4" width="100;" alt="toolsfactory"/>
+                    <br />
+                    <sub><b>Michael Geissler</b></sub>
                 </a>
             </td>
 		</tr>
