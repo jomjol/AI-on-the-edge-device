@@ -170,6 +170,7 @@
 
 <span id="Version" style="font-size: 10px; margin-top: -5px;padding-left: 10px;">Loading version...</span>
 
+<!-- # Disabled footer, since it wastes a lot of space and the images are broken
 <div class="footer">
     <div class="footer-section">
        <span>Support & Contact Us</span>
@@ -189,7 +190,7 @@
           <img src="https://github.com/jomjol/AI-on-the-edge-device/images/paypal.png" alt="PayPal" style="width: 60px; height: auto;">
        </a>
     </div>
- </div>
+ </div> -->
 
 <script type="text/javascript">
     LoadHostname();
@@ -203,7 +204,7 @@
     console.log("Loading page: " + getCookie("page"));
     document.getElementById('maincontent').src = getCookie("page");
 
-    /*
+    
     function flow_start() {
     var url = getDomainname() + '/flow_start'; 
 		var xhttp = new XMLHttpRequest();
@@ -224,7 +225,7 @@
 		xhttp.open("GET", url, true);
 		xhttp.send();
     }
-    */
+    
 
     function HA_send_discovery_visibility()	{
 		loadConfig(domainname); 
