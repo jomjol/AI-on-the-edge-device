@@ -185,7 +185,10 @@ If you'd like to support the developer with a cup of coffee, you can do so via [
 ## Support 💬
 If you have any technical problems, please search the [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions). In case you find a bug or have a feature request, please open an [issue](https://github.com/jomjol/AI-on-the-edge-device/issues).
 
-For any other issues, you can contact the developer via email: mueller.josef@gmail.com  
+For any other issues, you can contact the developer via email:  
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
+</p>
 
 ---
 
