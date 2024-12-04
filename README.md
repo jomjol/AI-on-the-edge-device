@@ -76,7 +76,7 @@ There are several options for what to do with that value:
 - 🔗 Provide access via a **REST API**.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/idea.jpg" width="600"> 
+  <img src="images/idea.jpg" width="600"> 
 </p>
 
 ---
@@ -87,19 +87,19 @@ There are several options for what to do with that value:
 
 + ### AI-on-the-edge-device on a Water Meter 💧
   <p align="center">
-    <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter_all.jpg" width="200"><img 
-  src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/main.jpg" width="200"><img 
-  src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/size.png" width="200"> 
+    <img src="images/watermeter_all.jpg" width="200"><img 
+  src="images/main.jpg" width="200"><img 
+  src="images/size.png" width="200"> 
   </p>
 
 + ### Web Interface (Water Meter) 💻
   <p align="center">
-    <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/watermeter.jpg" width="600"> 
+    <img src="images/watermeter.jpg" width="600"> 
   </p>
 
 + ### AI-on-the-edge-device on an Electrical Power Meter ⚡
   <p align="center">
-    <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/powermeter.jpg" width="600"> 
+    <img src="images/powermeter.jpg" width="600"> 
   </p>
 
 ---
@@ -187,7 +187,7 @@ If you have any technical problems, please search the [discussions](https://gith
 
 For any other issues, you can contact the developer via email:  
 <p align="center">
-  <img src="https://raw.githubusercontent.com/jomjol/AI-on-the-edge-device/master/images/mail.jpg" height="25">
+  <img src="images/mail.jpg" height="25">
 </p>
 
 ---
