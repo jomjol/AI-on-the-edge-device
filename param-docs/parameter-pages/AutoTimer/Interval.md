@@ -10,4 +10,4 @@ If a round takes longer than this interval, the next round gets postponed until 
 If the flow gets started by a MQTT message or the REST API call, the interval automatically gets reset.
 
 !!! Note
-If you want the flow to be disabled, set an interval which is high enough (eg. 1440 = 24h).
+    If you want the flow to be disabled, set an interval which is high enough (eg. 1440 = 24h).
