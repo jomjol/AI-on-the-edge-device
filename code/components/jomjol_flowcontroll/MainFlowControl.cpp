@@ -422,8 +422,7 @@ esp_err_t handler_flow_start(httpd_req_t *req)
     else
     {
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Flow start triggered by REST API, but flow is not active!");
-        const char *resp_str = "WARNING: Flow start triggered by REST API, but flow is not active";
-        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Flow start triggered by REST API, but flow is not active");
     }
 
 #ifdef DEBUG_DETAIL_ON

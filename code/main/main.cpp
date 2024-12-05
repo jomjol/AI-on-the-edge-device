@@ -727,8 +727,7 @@ void migrateConfiguration(void) {
         }
         else if (section == "[AutoTimer]") {
             migrated = migrated | replaceString(configLines[i], "Intervall", "Interval");
-            migrated = migrated | replaceString(configLines[i], ";AutoStart = true", ";AutoStart = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";AutoStart", "AutoStart");                 // Enable it
+            migrated = migrated | replaceString(configLines[i], "Autostart", ";UNUSED_PARAMETER");          // This parameter is no longer used
         }
         else if (section == "[Debug]") {
             migrated = migrated | replaceString(configLines[i], "Logfile ", "LogLevel "); // Whitespace needed so it does not match `LogfileRetentionInDays`
@@ -741,7 +740,7 @@ void migrateConfiguration(void) {
         else if (section == "[System]") {
             migrated = migrated | replaceString(configLines[i], "RSSIThreashold", "RSSIThreshold");
             migrated = migrated | replaceString(configLines[i], "AutoAdjustSummertime", ";UNUSED_PARAMETER"); // This parameter is no longer used
-
+            
             migrated = migrated | replaceString(configLines[i], ";SetupMode = true", ";SetupMode = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";SetupMode", "SetupMode");                 // Enable it
         }

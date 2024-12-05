@@ -196,7 +196,7 @@ bool ClassFlowControll::StartMQTTService()
 
 void ClassFlowControll::SetInitialParameter(void)
 {
-    AutoStart = false;
+    AutoStart = true;
     SetupModeActive = false;
     AutoInterval = 10; // Minutes
     flowdigit = NULL;
@@ -210,7 +210,8 @@ void ClassFlowControll::SetInitialParameter(void)
 
 bool ClassFlowControll::getIsAutoStart(void)
 {
-    return AutoStart;
+    //return AutoStart;
+    return true; // Flow must always be enabled, else the manual trigger (REST, MQTT) will not work!
 }
 
 
@@ -557,10 +558,6 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph, " =");
-	    
-        if ((toUpper(splitted[0]) == "AUTOSTART") && (splitted.size() > 1)) {
-            AutoStart = alphanumericToBoolean(splitted[1]);
-        }
 
         if ((toUpper(splitted[0]) == "INTERVAL") && (splitted.size() > 1)) {
             if (isStringNumeric(splitted[1]))
