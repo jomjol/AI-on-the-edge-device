@@ -8,7 +8,7 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Only changes since RC4 are listed:
-- Removed `Autostart` parameter and make it always enabled (#3423)
+- Removed `Autostart` parameter and make the flow to be always enabled (#3423)
 - Enable `Flow start` menu entry in UI (#3423)
 - Updated the Homeassistant Discovery topics (#3332):
     - `raw` has now set the `State Class` to `measurement`. Before it was always set to `""`. 
