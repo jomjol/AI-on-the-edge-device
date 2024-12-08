@@ -126,6 +126,7 @@ CONFIG_MQTT_USE_CORE_0=y
 CONFIG_MQTT_USE_CUSTOM_CONFIG=y
 #CONFIG_MQTT_OUTBOX_EXPIRED_TIMEOUT_MS=5000
 #CONFIG_MQTT_CUSTOM_OUTBOX=y # -> Use custom outbox in components/jomjol_mqtt/mqtt_outbox.h/cpp. If USE_PSRAM is enabled in there, it will save 10 kBytes of internal RAM. How ever it also leads to memory fragmentation, see https://github.com/jomjol/AI-on-the-edge-device/issues/2200
+CONFIG_MQTT_BUFFER_SIZE= 4096 # See https://github.com/jomjol/AI-on-the-edge-device/issues/3425
 
 CONFIG_FREERTOS_TASK_FUNCTION_WRAPPER=n
 
