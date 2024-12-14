@@ -4,7 +4,7 @@
 #include <esp_log.h>
 
 
-#define HTTPD_401      "401 UNAUTHORIZED"
+#define HTTPD_401 "401 UNAUTHORIZED"
 
 static const char *TAG = "HTTPAUTH";
 
@@ -54,6 +54,8 @@ esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler
     size_t buf_len = 0;
     esp_err_t ret = ESP_OK;
 
+    char unauthorized[] = "You are not authorized to use this website!";
+
     if (basic_auth_info.username == NULL || basic_auth_info.password == NULL) {
         ret = original_handler(req);
     } else {
@@ -81,10 +83,10 @@ esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler
             if (strncmp(auth_credentials, buf, buf_len)) {
                 ESP_LOGE(TAG, "Not authenticated");
                 httpd_resp_set_status(req, HTTPD_401);
-                httpd_resp_set_type(req, "application/json");
+                httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
                 httpd_resp_set_hdr(req, "Connection", "keep-alive");
-                httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"Hello\"");
-                httpd_resp_send(req, NULL, 0);
+                httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"AIOTED\"");
+                httpd_resp_send(req, unauthorized, strlen(unauthorized));
             } else {
                 ESP_LOGI(TAG, "Authenticated calling http handler now!");
                 ret=original_handler(req);
@@ -94,10 +96,10 @@ esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler
         } else {
             ESP_LOGE(TAG, "No auth header received");
             httpd_resp_set_status(req, HTTPD_401);
-            httpd_resp_set_type(req, "application/json");
+            httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
             httpd_resp_set_hdr(req, "Connection", "keep-alive");
-            httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"Hello\"");
-            httpd_resp_send(req, NULL, 0);
+            httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"AIOTED\"");
+            httpd_resp_send(req, unauthorized, strlen(unauthorized));
         }
     }
 
