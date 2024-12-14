@@ -29,6 +29,7 @@
 #include "Helper.h"
 #include "statusled.h"
 #include "server_ota.h"
+#include "basic_auth.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -468,7 +469,7 @@ httpd_handle_t start_webserverAP(void)
     httpd_uri_t reboot_handle = {
         .uri       = "/reboot",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = reboot_handlerAP,
+        .handler = APPLY_BASIC_AUTH_FILTER(reboot_handlerAP),
         .user_ctx  = NULL    // Pass server data as context
     };
     httpd_register_uri_handler(server, &reboot_handle);
@@ -476,7 +477,7 @@ httpd_handle_t start_webserverAP(void)
     httpd_uri_t config_ini_handle = {
         .uri       = "/config",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = config_ini_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(config_ini_handler),
         .user_ctx  = NULL    // Pass server data as context
     };
     httpd_register_uri_handler(server, &config_ini_handle);
@@ -485,7 +486,7 @@ httpd_handle_t start_webserverAP(void)
     httpd_uri_t file_uploadAP = {
         .uri       = "/upload/*",   // Match all URIs of type /upload/path/to/file
         .method    = HTTP_POST,
-        .handler   = upload_post_handlerAP,
+        .handler = APPLY_BASIC_AUTH_FILTER(upload_post_handlerAP),
         .user_ctx  = NULL    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_uploadAP);
@@ -493,7 +494,7 @@ httpd_handle_t start_webserverAP(void)
     httpd_uri_t test_uri = {
         .uri      = "*",
         .method   = HTTP_GET,
-        .handler  = test_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(test_handler),
         .user_ctx = NULL
     };
     httpd_register_uri_handler(server, &test_uri);

@@ -12,6 +12,7 @@
 #include "interface_mqtt.h"
 #include "time_sntp.h"
 #include "../../include/defines.h"
+#include "basic_auth.h"
 
 
 
@@ -347,7 +348,7 @@ void register_server_mqtt_uri(httpd_handle_t server) {
     uri.method    = HTTP_GET;
 
     uri.uri       = "/mqtt_publish_discovery";
-    uri.handler   = scheduleSendingDiscovery_and_static_Topics;
+    uri.handler = APPLY_BASIC_AUTH_FILTER(scheduleSendingDiscovery_and_static_Topics);
     uri.user_ctx  = (void*) "";    
     httpd_register_uri_handler(server, &uri); 
 }

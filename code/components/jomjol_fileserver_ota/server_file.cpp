@@ -46,6 +46,7 @@ extern "C" {
 
 #include "Helper.h"
 #include "miniz.h"
+#include "basic_auth.h"
 
 static const char *TAG = "OTA FILE";
 
@@ -1174,7 +1175,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_download = {
         .uri       = "/fileserver*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = download_get_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(download_get_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_download);
@@ -1183,7 +1184,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_datafileact = {
         .uri       = "/datafileact",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = datafileact_get_full_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(datafileact_get_full_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_datafileact);
@@ -1192,7 +1193,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_datafile_last_part_handle = {
         .uri       = "/data",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = datafileact_get_last_part_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(datafileact_get_last_part_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_datafile_last_part_handle);
@@ -1200,7 +1201,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_logfileact = {
         .uri       = "/logfileact",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = logfileact_get_full_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(logfileact_get_full_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_logfileact);
@@ -1209,7 +1210,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_logfile_last_part_handle = {
         .uri       = "/log",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = logfileact_get_last_part_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(logfileact_get_last_part_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_logfile_last_part_handle);
@@ -1219,7 +1220,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_upload = {
         .uri       = "/upload/*",   // Match all URIs of type /upload/path/to/file
         .method    = HTTP_POST,
-        .handler   = upload_post_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(upload_post_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_upload);
@@ -1228,7 +1229,7 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t file_delete = {
         .uri       = "/delete/*",   // Match all URIs of type /delete/path/to/file
         .method    = HTTP_POST,
-        .handler   = delete_post_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(delete_post_handler),
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_delete);

@@ -145,6 +145,29 @@ int LoadWlanFromFile(std::string fn)
                 wlan_config.dns = tmp;
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DNS: " + wlan_config.dns);
             }
+
+            else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_USERNAME")){
+                tmp = splitted[1];
+                if ((tmp[0] == '"') && (tmp[tmp.length()-1] == '"')){
+                    tmp = tmp.substr(1, tmp.length()-2);
+                }
+                wlan_config.http_username = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_USERNAME: " + wlan_config.http_username);
+            }
+
+            else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_PASSWORD")){
+                tmp = splitted[1];
+                if ((tmp[0] == '"') && (tmp[tmp.length()-1] == '"')){
+                    tmp = tmp.substr(1, tmp.length()-2);
+                }
+                wlan_config.http_password = tmp;
+                #ifndef __HIDE_PASSWORD
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_PASSWORD: " + wlan_config.http_password);
+                #else
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_PASSWORD: XXXXXXXX");
+                #endif
+            }
+
             #if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "RSSITHRESHOLD")){
                 tmp = trim(splitted[1]);

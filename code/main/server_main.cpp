@@ -17,6 +17,7 @@
 
 #include "MainFlowControl.h"
 #include "esp_log.h"
+#include "basic_auth.h"
 #include "esp_chip_info.h"
 
 #include <stdio.h>
@@ -408,7 +409,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t info_get_handle = {
         .uri       = "/info",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = info_get_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(info_get_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &info_get_handle);
@@ -416,7 +417,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t sysinfo_handle = {
         .uri       = "/sysinfo",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = sysinfo_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(sysinfo_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &sysinfo_handle);
@@ -424,7 +425,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t starttime_tmp_handle = {
         .uri       = "/starttime",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = starttime_get_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(starttime_get_handler),
         .user_ctx  = NULL    // Pass server data as context
     };
     httpd_register_uri_handler(server, &starttime_tmp_handle);
@@ -432,7 +433,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t img_tmp_handle = {
         .uri       = "/img_tmp/*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = img_tmp_virtual_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(img_tmp_virtual_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &img_tmp_handle);
@@ -440,7 +441,7 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
     httpd_uri_t main_rest_handle = {
         .uri       = "/*",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
-        .handler   = hello_main_handler,
+        .handler = APPLY_BASIC_AUTH_FILTER(hello_main_handler),
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &main_rest_handle);
