@@ -102,9 +102,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 }
                 else {
                     result = "N";
-                    if (_extendedResolution && (CNNType != Digit)) {
-                        result = "NN";
-                    }
                 }
             }
         }
@@ -126,7 +123,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 prev = -1;
                 result = "N" + result;
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(result_float<0 /'N')  result_float=" + std::to_string(GENERAL[_analog]->ROI[i]->result_float));
-        
             }
         }
         return result;
