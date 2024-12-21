@@ -96,6 +96,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 }
 
+                // is necessary because a number greater than 9.994999 returns a 10! (for further details see lines 159 to 161)
                 if ((prev >= 0) && (prev < 10)) {
                     result = std::to_string(prev);
                     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
@@ -155,7 +156,10 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         // on first digit is no spezial logic for transition needed
         // we use the recognition as given. The result is the int value of the recognition
         // add precisition of 2 digits and round before trunc
-        result = (int) ((int) trunc(round((number+10 % 10)*100)) )  / 100;
+        // a number greater than 9.994999 is returned as 10, this leads to an error during the decimal shift because the NUMBERS[j]->ReturnRawValue is one digit longer.
+        // To avoid this, an additional test must be carried out, see lines 99 to 106
+        // Another alternative would be "result = (int) ((int) trunc(round((number+10 % 10)*1000))) / 1000;", which could, however, lead to other errors?
+        result = (int) ((int) trunc(round((number+10 % 10)*100)))  / 100;
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty));
