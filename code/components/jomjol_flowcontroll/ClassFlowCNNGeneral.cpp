@@ -95,8 +95,17 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 else {
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 }
-                result = std::to_string(prev);
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
+
+                if ((prev >= 0) && (prev < 10)) {
+                    result = std::to_string(prev);
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
+                }
+                else {
+                    result = "N";
+                    if (_extendedResolution && (CNNType != Digit)) {
+                        result = "NN";
+                    }
+                }
             }
         }
         else {
