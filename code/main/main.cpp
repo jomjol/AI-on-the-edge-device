@@ -600,27 +600,57 @@ void migrateConfiguration(void) {
             }
             else if ((isInString(configLines[i], "Zoom")) && (!isInString(configLines[i], "CamZoom")) && (!isInString(configLines[i], "ZoomMode")) && (!isInString(configLines[i], "ZoomOffsetX")) && (!isInString(configLines[i], "ZoomOffsetY"))) {
                 CamZoom_lines = i;
-                CamZoom_value = alphanumericToBoolean(splitted[1]);
+                if (splitted.size() < 2) {
+                    CamZoom_value = false;
+                }
+                else {
+                    ESP_LOGE(TAG, "splitted[1]: %s", splitted[1].c_str());
+                    CamZoom_value = alphanumericToBoolean(splitted[1]);
+                }
                 CamZoom_found = true;
             }
             else if ((isInString(configLines[i], "ZoomMode")) && (!isInString(configLines[i], "CamZoom"))) {
                 CamZoomSize_lines = i;
-                if (isStringNumeric(splitted[1])) {
-                    CamZoomSize_value = std::stof(splitted[1]);
+                if (splitted.size() < 2) {
+                    CamZoomSize_value = 0;
+                }
+                else {
+                    if (isStringNumeric(splitted[1])) {
+                        CamZoomSize_value = std::stof(splitted[1]);
+                    }
+                    else {
+                        CamZoomSize_value = 0;
+                    }
                 }
                 CamZoom_found = true;
             }
             else if ((isInString(configLines[i], "ZoomOffsetX")) && (!isInString(configLines[i], "CamZoom")) && (!isInString(configLines[i], "ZoomOffsetY"))) {
                 CamZoomOffsetX_lines = i;
-                if (isStringNumeric(splitted[1])) {
-                    CamZoomOffsetX_value = std::stof(splitted[1]);
+                if (splitted.size() < 2) {
+                    CamZoomOffsetX_value = 0;
+                }
+                else {
+                    if (isStringNumeric(splitted[1])) {
+                        CamZoomOffsetX_value = std::stof(splitted[1]);
+                    }
+                    else {
+                        CamZoomOffsetX_value = 0;
+                    }
                 }
                 CamZoom_found = true;
             }
             else if ((isInString(configLines[i], "ZoomOffsetY")) && (!isInString(configLines[i], "CamZoom")) && (!isInString(configLines[i], "ZoomOffsetX"))) {
                 CamZoomOffsetY_lines = i;
-                if (isStringNumeric(splitted[1])) {
-                    CamZoomOffsetY_value = std::stof(splitted[1]);
+                if (splitted.size() < 2) {
+                    CamZoomOffsetY_value = 0;
+                }
+                else {
+                    if (isStringNumeric(splitted[1])) {
+                        CamZoomOffsetY_value = std::stof(splitted[1]);
+                    }
+                    else {
+                        CamZoomOffsetY_value = 0;
+                    }
                 }
                 CamZoom_found = true;
             }
@@ -909,7 +939,12 @@ bool setCpuFrequency(void) {
         splitted = ZerlegeZeile(line);
 
         if (toUpper(splitted[0]) == "CPUFREQUENCY") {
-            cpuFrequency = splitted[1];
+            if (splitted.size() < 2) {
+                cpuFrequency = 160;
+            }
+            else {
+                cpuFrequency = splitted[1];
+            }
             break;
         }
     }
