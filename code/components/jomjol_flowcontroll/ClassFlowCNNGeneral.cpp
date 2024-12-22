@@ -96,7 +96,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 }
 
-                // is necessary because a number greater than 9.994999 returns a 10! (for further details see lines 159 to 161)
+                // is necessary because a number greater than 9.994999 returns a 10! (for further details see check in PointerEvalHybridNew)
                 if ((prev >= 0) && (prev < 10)) {
                     result = std::to_string(prev);
                     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
