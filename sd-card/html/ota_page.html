@@ -202,7 +202,7 @@
                                 if (action_runtime > 10) { // After 10 seconds, start to check if we are up again
                                     /* Check if the device is up again and forward to index page if so */
                                     fetch('reboot_page.html?v=$COMMIT_HASH&' + Math.random(), {mode: 'no-cors'}).then(
-                                        r=>{parent.location.href=('index.html?v=' + Math.random());}
+                                        r=>{parent.location.href=('index.html?v=' + Math.random());} // We must use a different HASH to make sure it does not use the cached page
                                     )
                                 }
 
