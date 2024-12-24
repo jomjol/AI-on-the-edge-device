@@ -2366,7 +2366,7 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "CACert", true);
     WriteParameter(param, category, "MQTT", "ClientCert", true);
     WriteParameter(param, category, "MQTT", "ClientKey", true);
-    WriteParameter(param, category, "MQTT", "ValidateServerCert", false);
+    WriteParameter(param, category, "MQTT", "ValidateServerCert", true);
     WriteParameter(param, category, "MQTT", "DomoticzTopicIn", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
@@ -2535,7 +2535,7 @@ function ReadParameterAll() {
     ReadParameter(param, "MQTT", "CACert", true);
     ReadParameter(param, "MQTT", "ClientCert", true);
     ReadParameter(param, "MQTT", "ClientKey", true);
-    ReadParameter(param, "MQTT", "ValidateServerCert", false);
+    ReadParameter(param, "MQTT", "ValidateServerCert", true);
     ReadParameter(param, "MQTT", "DomoticzTopicIn", true);
 
     ReadParameter(param, "InfluxDB", "Uri", true);
