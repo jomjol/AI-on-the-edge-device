@@ -36,6 +36,7 @@ bool mqtt_connected = false;
 esp_mqtt_client_handle_t client = NULL;
 std::string uri, client_id, lwt_topic, lwt_connected, lwt_disconnected, user, password, maintopic, domoticz_in_topic;
 std::string caCert, clientCert, clientKey;
+bool validateServerCert = true;
 int keepalive;
 bool SetRetainFlag;
 void (*callbackOnConnected)(std::string, bool) = NULL;
@@ -206,7 +207,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
         std::string _maintopic, std::string _domoticz_in_topic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
-        std::string _cacertfilename, std::string _clientcertfilename, std::string _clientkeyfilename, 
+        std::string _cacertfilename, bool _validateServerCert, std::string _clientcertfilename, std::string _clientkeyfilename, 
                     int _keepalive, bool _SetRetainFlag, void *_callbackOnConnected) {
     if ((_mqttURI.length() == 0) || (_maintopic.length() == 0) || (_clientid.length() == 0)) 
     {
@@ -243,6 +244,8 @@ bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
         caCert = content;
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using caCert: " + _cacertfilename);
     }
+
+    validateServerCert = _validateServerCert;
 
     if (_user.length() && _password.length()){
         user = _user;
@@ -295,12 +298,12 @@ int MQTT_Init() {
     mqtt_cfg.session.last_will.msg = lwt_disconnected.c_str();
     mqtt_cfg.session.last_will.msg_len = (int)(lwt_disconnected.length());
     mqtt_cfg.session.keepalive = keepalive;
-    mqtt_cfg.buffer.size = 1536;                         // size of MQTT send/receive buffer (Default: 1024)
+    mqtt_cfg.buffer.size = 2048;                         // size of MQTT send/receive buffer
 
     if (caCert.length()){
         mqtt_cfg.broker.verification.certificate = caCert.c_str();
         mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
-        mqtt_cfg.broker.verification.skip_cert_common_name_check = true;
+        mqtt_cfg.broker.verification.skip_cert_common_name_check = validateServerCert;
     }
 
     if (clientCert.length() && clientKey.length()){

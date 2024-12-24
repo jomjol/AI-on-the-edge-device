@@ -40,6 +40,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     caCertFilename = "";
     clientCertFilename = "";
     clientKeyFilename = "";
+    validateServerCert = true;
     clientname = wlan_config.hostname;
 
     OldValue = "";
@@ -110,6 +111,10 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(_param) == "CACERT") && (splitted.size() > 1))
         {
             this->caCertFilename = splitted[1];
+        }
+        if ((toUpper(_param) == "VALIDATESERVERCERT") && (splitted.size() > 1))
+        {
+            validateServerCert = alphanumericToBoolean(splitted[1]);
         }  
         if ((toUpper(_param) == "CLIENTCERT") && (splitted.size() > 1))
         {
@@ -133,10 +138,8 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(_param) == "RETAINMESSAGES") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE") {
-                SetRetainFlag = true;  
-                setMqtt_Server_Retain(SetRetainFlag);
-            }
+            SetRetainFlag = alphanumericToBoolean(splitted[1]);
+            setMqtt_Server_Retain(SetRetainFlag);
         }
         if ((toUpper(_param) == "HOMEASSISTANTDISCOVERY") && (splitted.size() > 1))
         {
@@ -225,7 +228,7 @@ bool ClassFlowMQTT::Start(float AutoInterval)
     mqttServer_setParameter(flowpostprocessing->GetNumbers(), keepAlive, roundInterval);
 
     bool MQTTConfigCheck = MQTT_Configure(uri, clientname, user, password, maintopic, domoticzintopic, LWT_TOPIC, LWT_CONNECTED,
-                                     LWT_DISCONNECTED, caCertFilename, clientCertFilename, clientKeyFilename,
+                                     LWT_DISCONNECTED, caCertFilename, validateServerCert, clientCertFilename, clientKeyFilename,
                                      keepAlive, SetRetainFlag, (void *)&GotConnected);
 
     if (!MQTTConfigCheck) {

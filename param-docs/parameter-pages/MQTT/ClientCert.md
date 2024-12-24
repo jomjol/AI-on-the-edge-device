@@ -12,7 +12,8 @@ This is part of the configuration to enable TLS for MQTT.
 The Client Certificate is used by the client to prove its identity to the server, in conjunction with the Client Key. 
 It is the second part of the MTLS handshake.
 
-Usually there is a one pair of Client Certificate/Key for each client that connects to the MQTT broker
+Usually there is a one pair of Client Certificate/Key for each client that connects to the MQTT broker.
+More information is available [here](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/#mqtt-tls).
 
 !!! Note
     If set, `ClientKey` must be set too
