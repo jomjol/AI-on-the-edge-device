@@ -303,7 +303,7 @@ int MQTT_Init() {
     if (caCert.length()){
         mqtt_cfg.broker.verification.certificate = caCert.c_str();
         mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
-        mqtt_cfg.broker.verification.skip_cert_common_name_check = validateServerCert;
+        mqtt_cfg.broker.verification.skip_cert_common_name_check = !validateServerCert;
     }
 
     if (clientCert.length() && clientKey.length()){

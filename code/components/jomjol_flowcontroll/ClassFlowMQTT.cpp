@@ -114,15 +114,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
         if ((toUpper(_param) == "VALIDATESERVERCERT") && (splitted.size() > 1))
         {
-            bool _validateServerCert = alphanumericToBoolean(splitted[1]);
-            if (_validateServerCert == true)
-            {
-                validateServerCert = false;
-            }
-            else
-            {
-                validateServerCert = true;
-            }
+            validateServerCert = alphanumericToBoolean(splitted[1]);
         }  
         if ((toUpper(_param) == "CLIENTCERT") && (splitted.size() > 1))
         {

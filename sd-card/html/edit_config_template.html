@@ -1122,7 +1122,8 @@
 		
 		<tr class="MQTTItem expert" unused_id="exMqtt">
 			<td class="indent1">
-				<label><class id="MQTT_ValidateServerCert_text" style="color:black;">Validate ServerCert</class></label>
+				<input type="checkbox" id="MQTT_ValidateServerCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ValidateServerCert")' unchecked >
+				<label for=MQTT_ValidateServerCert_enabled><class id="MQTT_ValidateServerCert_text" style="color:black;">Validate ServerCert</class></label>
 			</td>
 			<td>
 				<select id="MQTT_ValidateServerCert_value1">
