@@ -1,3 +1,22 @@
+## [16.0.0-RC6] - 2024-xx-xx
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC5 are listed:
+- Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection/
+- xxx
+
+  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
+
+#### Bug Fixes
+Only changes since RC5 are listed:
+ - xxx
+
 ## [16.0.0-RC5] - 2024-12-05
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
@@ -22,11 +41,11 @@ Only changes since RC4 are listed:
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
 #### Bug Fixes
-Only changes since RC3 are listed:
+Only changes since RC4 are listed:
  - Added fix for ledintensity (#3418)
  - Added fix for OV2640 brightness contrast saturation (#3417)
  - Added fix for 'AnalogToDigitTransitionStart' always using 9.2 regardless of the configured value (#3393)
- - Addef fix for HA menu entry (#3342)
+ - Added fix for HA menu entry (#3342)
 
 
 ## [16.0.0-RC4] - 2024-10-06

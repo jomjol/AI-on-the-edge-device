@@ -26,6 +26,7 @@ extern "C" {
 
 #include "server_help.h"
 #include "MainFlowControl.h"
+#include "basic_auth.h"
 #include "../../include/defines.h"
 
 static const char* TAG = "FLOWCTRL";

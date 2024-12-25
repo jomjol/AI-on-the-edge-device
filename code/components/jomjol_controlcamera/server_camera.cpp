@@ -10,6 +10,8 @@
 #include "ClassLogFile.h"
 #include "esp_log.h"
 
+#include "basic_auth.h"
+
 #include "../../include/defines.h"
 
 static const char *TAG = "server_cam";
@@ -280,27 +282,27 @@ void register_server_camera_uri(httpd_handle_t server)
     camuri.method = HTTP_GET;
 
     camuri.uri = "/lighton";
-    camuri.handler = handler_lightOn;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_lightOn);
     camuri.user_ctx = (void *)"Light On";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/lightoff";
-    camuri.handler = handler_lightOff;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_lightOff);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/capture";
-    camuri.handler = handler_capture;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture);
     camuri.user_ctx = NULL;
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/capture_with_flashlight";
-    camuri.handler = handler_capture_with_light;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture_with_light);
     camuri.user_ctx = NULL;
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/save";
-    camuri.handler = handler_capture_save_to_file;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture_save_to_file);
     camuri.user_ctx = NULL;
     httpd_register_uri_handler(server, &camuri);
 }
