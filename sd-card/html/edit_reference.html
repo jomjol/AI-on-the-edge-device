@@ -373,7 +373,7 @@
         </tr>
         <tr class="expert">
             <td>
-                <label for="TakeImage_WaitBeforeTakingPicture" id="labelTakeImage_WaitBeforeTakingPicture">Wait Before Taking Picture: <b>*)</b></label></td>
+                <label for="TakeImage_WaitBeforeTakingPicture" id="labelTakeImage_WaitBeforeTakingPicture">Wait Before Taking Picture: </label></td>
             <td>
                 <input required type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any"
 					oninput="(!validity.rangeUnderflow||(value=0));">Seconds
@@ -798,6 +798,7 @@
 			WriteParameter(param, category, "TakeImage", "CamSaturation", false, true);
 			WriteParameter(param, category, "TakeImage", "CamSharpness", false, true);
 			WriteParameter(param, category, "TakeImage", "CamAutoSharpness", false);
+			WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
 
 			WriteParameter(param, category, "TakeImage", "CamZoom", false);
 			WriteParameter(param, category, "TakeImage", "CamZoomOffsetX", false);
@@ -820,6 +821,7 @@
 			EnDisableItem(false, param, category, "TakeImage", "CamContrast", false);
 			EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);
 			EnDisableItem(false, param, category, "TakeImage", "CamAutoSharpness", false);
+			EnDisableItem(false, param, category, "TakeImage", "WaitBeforeTakingPicture", false);
 
 			EnDisableItem(false, param, category, "TakeImage", "CamZoom", false);
 			EnDisableItem(false, param, category, "TakeImage", "CamZoomOffsetX", false);
@@ -859,6 +861,7 @@
 			ReadParameter(param, "TakeImage", "CamSaturation", false);
 			ReadParameter(param, "TakeImage", "CamSharpness", false);
 			ReadParameter(param, "TakeImage", "CamAutoSharpness", false);
+			ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
 
 			ReadParameter(param, "TakeImage", "CamZoom", false);
 			ReadParameter(param, "TakeImage", "CamZoomOffsetX", false);
