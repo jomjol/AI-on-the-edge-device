@@ -8,8 +8,8 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Only changes since RC5 are listed:
-- Added basic authentification of the Web Interface and the REST API
-  xxxxx
+- Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection/
+- xxx
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
