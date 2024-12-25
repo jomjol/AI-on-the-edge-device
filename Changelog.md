@@ -15,6 +15,7 @@ Only changes since RC5 are listed:
 - [#3427](https://github.com/jomjol/AI-on-the-edge-device/pull/3427) Fixed MQTT with TSL 
 
 
+
 ## [16.0.0-RC5] - 2024-12-05
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
