@@ -65,11 +65,11 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
     if (CNNType == Digit) {
         for (int i = 0; i < GENERAL[_analog]->ROI.size(); ++i) {
-            if (GENERAL[_analog]->ROI[i]->result_klasse >= 10) {
-                result = result + "N";
+            if ((GENERAL[_analog]->ROI[i]->result_klasse >= 0) && (GENERAL[_analog]->ROI[i]->result_klasse < 10)) {
+                result = result + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
             }
             else {
-                result = result + std::to_string(GENERAL[_analog]->ROI[i]->result_klasse);
+                result = result + "N";
             }
         }
         return result;
@@ -78,7 +78,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
     if ((CNNType == DoubleHyprid10) || (CNNType == Digit100)) {
         float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
         // NaN?
-        if (number >= 0) {
+        if ((number >= 0) && (number < 10)) {
             // is only set if it is the first digit (no analogue before!)
             if (_extendedResolution) {
                 int result_after_decimal_point = ((int) floor(number * 10)) % 10;
@@ -95,8 +95,15 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 else {
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
                 }
-                result = std::to_string(prev);
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
+
+                // is necessary because a number greater than 9.994999 returns a 10! (for further details see check in PointerEvalHybridNew)
+                if ((prev >= 0) && (prev < 10)) {
+                    result = std::to_string(prev);
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(dig100)  prev=" + std::to_string(prev));
+                }
+                else {
+                    result = "N";
+                }
             }
         }
         else {
@@ -107,7 +114,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
         }
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i) {
-            if (GENERAL[_analog]->ROI[i]->result_float >= 0) {
+            if ((GENERAL[_analog]->ROI[i]->result_float >= 0) && (GENERAL[_analog]->ROI[i]->result_float < 10)) {
                 prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#PointerEvalHybridNew()= " + std::to_string(prev));
                 result = std::to_string(prev) + result;
@@ -117,7 +124,6 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                 prev = -1;
                 result = "N" + result;
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout(result_float<0 /'N')  result_float=" + std::to_string(GENERAL[_analog]->ROI[i]->result_float));
-        
             }
         }
         return result;
@@ -150,6 +156,9 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
         // on first digit is no spezial logic for transition needed
         // we use the recognition as given. The result is the int value of the recognition
         // add precisition of 2 digits and round before trunc
+        // a number greater than 9.994999 is returned as 10, this leads to an error during the decimal shift because the NUMBERS[j]->ReturnRawValue is one digit longer.
+        // To avoid this, an additional test must be carried out, see "if ((CNNType == DoubleHyprid10) || (CNNType == Digit100))" check in getReadout()
+        // Another alternative would be "result = (int) ((int) trunc(round((number+10 % 10)*1000))) / 1000;", which could, however, lead to other errors?
         result = (int) ((int) trunc(round((number+10 % 10)*100)) )  / 100;
 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - No predecessor - Result = " + std::to_string(result) +
