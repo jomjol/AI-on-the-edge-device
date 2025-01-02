@@ -38,8 +38,13 @@ int removeFolder(const char* folderPath, const char* logTag);
 string toLower(string in);
 string toUpper(string in);
 
+#ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
+void initTemperatureSensor();
+#endif
+
 float temperatureRead();
 
+std::string intToHexString(int _valueInt);
 time_t addDays(time_t startTime, int days);
 
 void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);
