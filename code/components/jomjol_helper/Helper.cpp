@@ -33,10 +33,6 @@ extern "C"
 #include "esp_vfs_fat.h"
 #include "../sdmmc_common.h"
 
-#ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
-#include "driver/temperature_sensor.h"
-#endif
-
 static const char *TAG = "HELPER";
 
 using namespace std;
@@ -617,62 +613,11 @@ string toLower(string in)
 	return in;
 }
 
-// SOC temperature sensor
-#if defined(CONFIG_SOC_TEMP_SENSOR_SUPPORTED)
-static float socTemperature = -1;
-
-void taskSocTemp(void *pvParameter)
-{
-    temperature_sensor_handle_t socTempSensor = NULL;
-    temperature_sensor_config_t socTempSensorConfig = TEMPERATURE_SENSOR_CONFIG_DEFAULT(20, 100);
-    temperature_sensor_install(&socTempSensorConfig, &socTempSensor);
-    temperature_sensor_enable(socTempSensor);
-
-    while (1) {
-        if (temperature_sensor_get_celsius(socTempSensor, &socTemperature) != ESP_OK) {
-            socTemperature = -1;
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(5000));
-    }
-}
-
-void initTemperatureSensor()
-{
-    // Create a dedicated task to ensure access temperature ressource only from a single source
-    BaseType_t xReturned = xTaskCreate(&taskSocTemp, "taskSocTemp", 2048, NULL, tskIDLE_PRIORITY + 1, NULL);
-
-    if (xReturned != pdPASS) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create taskSocTemp");
-    }
-}
-
-float temperatureRead()
-{
-    return socTemperature;
-}
-
-#elif defined(CONFIG_IDF_TARGET_ESP32) // Inofficial support of vanilla ESP32. Value might be unreliable
+// CPU Temp
 extern "C" uint8_t temprature_sens_read();
-
 float temperatureRead()
 {
-    return (temprature_sens_read() - 32) / 1.8;
-}
-
-#else
-#warning "SOC temperature sensor not supported"
-float temperatureRead()
-{
-    return -1.0;
-}
-#endif
-
-std::string intToHexString(int _valueInt)
-{
-    char valueHex[33];
-    sprintf(valueHex, "0x%02x", _valueInt);
-    return std::string(valueHex);
+	return (temprature_sens_read() - 32) / 1.8;
 }
 
 time_t addDays(time_t startTime, int days)

@@ -38,10 +38,6 @@ int removeFolder(const char* folderPath, const char* logTag);
 string toLower(string in);
 string toUpper(string in);
 
-#ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
-void initTemperatureSensor();
-#endif
-
 float temperatureRead();
 
 std::string intToHexString(int _valueInt);

@@ -374,12 +374,6 @@ extern "C" void app_main(void)
     // ********************************************
     setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
 
-    // Init SOC temperature sensor (if supported by hardware)
-    // ********************************************
-#if defined(CONFIG_SOC_TEMP_SENSOR_SUPPORTED)
-    initTemperatureSensor();
-#endif
-
     // Set CPU Frequency
     // ********************************************
     setCpuFrequency();
