@@ -62,7 +62,9 @@ typedef struct
     bool isImageSize;
 
     bool CameraInitSuccessful;
-    bool changedCameraSettings;
+    bool CameraSettingsChanged;
+    bool CameraDeepSleepEnable;
+	
     bool DemoMode;
     bool SaveAllFiles;
 } camera_controll_config_temp_t;
@@ -88,8 +90,8 @@ public:
     void LightOnOff(bool status);
     void LEDOnOff(bool status);
 
-    esp_err_t setSensorDatenFromCCstatus(void);
-    esp_err_t getSensorDatenToCCstatus(void);
+    void CameraDeepSleep(bool enable);
+    void CheckCameraSettingsChanged(void);
 
     int SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel);
     void SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel);
@@ -108,6 +110,9 @@ public:
     void useDemoMode(void);
 
     framesize_t TextToFramesize(const char *text);
+	
+    esp_err_t setSensorDatenFromCCstatus(void);
+    esp_err_t getSensorDatenToCCstatus(void);
 
     esp_err_t CaptureToFile(std::string nm, int delay = 0);
     esp_err_t CaptureToBasisImage(CImageBasis *_Image, int delay = 0);

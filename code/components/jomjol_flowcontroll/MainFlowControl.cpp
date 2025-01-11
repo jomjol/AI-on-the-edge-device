@@ -1375,7 +1375,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 setCFstatusToCCstatus(); // CFstatus >>> CCstatus
 
                 // Kameraeinstellungen wurden verädert
-                CFstatus.changedCameraSettings = true;
+                CFstatus.CameraSettingsChanged = true;
 
                 ESP_LOGD(TAG, "Cam Settings set");
                 std::string _zw = "CamSettingsSet";
@@ -1392,7 +1392,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
 
                 // Kameraeinstellungen wurden verädert
-                CFstatus.changedCameraSettings = true;
+                CFstatus.CameraSettingsChanged = true;
 
                 ESP_LOGD(TAG, "test_take - vor TakeImage");
                 std::string image_temp = flowctrl.doSingleStep("[TakeImage]", _host);

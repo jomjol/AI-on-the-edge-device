@@ -65,9 +65,7 @@ void ClassFlowTakeImage::SetInitialParameter(void)
 bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 {
     Camera.getSensorDatenToCCstatus(); // Kamera >>> CCstatus
-
     std::vector<string> splitted;
-
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0)
@@ -540,6 +538,12 @@ string ClassFlowTakeImage::getHTMLSingleStep(string host)
 // wird bei jeder Auswertrunde aufgerufen
 bool ClassFlowTakeImage::doFlow(string zwtime)
 {
+    if (Camera.getCameraInitSuccessful())
+    {
+        Camera.CameraDeepSleep(false);
+        // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+        Camera.CheckCameraSettingsChanged();
+	
     psram_init_shared_memory_for_take_image_step();
 
     string logPath = CreateLogFolder(zwtime);
@@ -553,15 +557,6 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 #ifdef WIFITURNOFF
     esp_wifi_stop(); // to save power usage and
 #endif
-
-    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
-    if (CFstatus.changedCameraSettings)
-    {
-        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-        Camera.LedIntensity = CCstatus.ImageLedIntensity;
-        CFstatus.changedCameraSettings = false;
-    }
 
     takePictureWithFlash(flash_duration);
 
@@ -583,7 +578,13 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 
     psram_deinit_shared_memory_for_take_image_step();
 
-    return true;
+        Camera.CameraDeepSleep(true);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 esp_err_t ClassFlowTakeImage::SendRawJPG(httpd_req_t *req)

@@ -58,7 +58,9 @@ typedef struct
     bool isImageSize;
 
     bool CameraInitSuccessful;
-    bool changedCameraSettings;
+    bool CameraSettingsChanged;
+    bool CameraDeepSleepEnable;
+	
     bool DemoMode;
     bool SaveAllFiles;
 } camera_flow_config_temp_t;

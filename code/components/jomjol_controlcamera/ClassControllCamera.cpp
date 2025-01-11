@@ -248,6 +248,11 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 
     if (s != NULL)
     {
+        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+
+        CameraDeepSleep(false);
+        vTaskDelay(cam_xDelay);
+
         s->set_framesize(s, CCstatus.ImageFrameSize);
 		
         // s->set_contrast(s, CCstatus.ImageContrast);     // -2 to 2
@@ -287,7 +292,7 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
         SetCamSharpness(CCstatus.ImageAutoSharpness, CCstatus.ImageSharpness);
         s->set_denoise(s, CCstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
-        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+        CameraDeepSleep(true);
         vTaskDelay(cam_xDelay);
 
         return ESP_OK;
@@ -304,6 +309,11 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
 
     if (s != NULL)
     {
+        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+
+        CameraDeepSleep(false);
+        vTaskDelay(cam_xDelay);
+
         CCstatus.CamSensor_id = s->id.PID;
 
         CCstatus.ImageFrameSize = (framesize_t)s->status.framesize;
@@ -340,11 +350,55 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
         // CCstatus.ImageSharpness = s->status.sharpness; // gibt -1 zurück, da es nicht unterstützt wird
         CCstatus.ImageDenoiseLevel = s->status.denoise;
 
+        Camera.CameraDeepSleep(true);
+        vTaskDelay(cam_xDelay);
+
         return ESP_OK;
     }
     else
     {
         return ESP_FAIL;
+    }
+}
+
+void CCamera::CheckCameraSettingsChanged(void)
+{
+    if (CCstatus.CameraDeepSleepEnable == true)
+    {
+        Camera.CameraDeepSleep(false);
+    }
+
+    // If the camera settings were changed by creating a new reference image, they must be reset
+    if (CCstatus.CameraSettingsChanged)
+    {
+        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        Camera.LedIntensity = CCstatus.ImageLedIntensity;
+        CCstatus.CameraSettingsChanged = false;
+    }
+}
+
+// only available on OV3660 and OV5640
+// https://github.com/espressif/esp32-camera/issues/672
+void CCamera::CameraDeepSleep(bool enable)
+{
+    if (CCstatus.CameraDeepSleepEnable != enable)
+    {
+        CCstatus.CameraDeepSleepEnable = enable;
+
+        if (CCstatus.CamSensor_id == OV2640_PID)
+        {
+            // OV2640 (Normal mode >>> Standby mode = OK), (Standby mode >>> Normal mode = n.OK)
+            // s->set_reg(s, 0x109, 0x10, enable ? 0x10 : 0);
+            // LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DeepSleep is not supported by OV2640");
+        }
+        else
+        {
+            sensor_t *s = esp_camera_sensor_get();
+            s->set_reg(s, 0x3008, 0x42, enable ? 0x42 : 0x02);
+        }
+
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
@@ -638,6 +692,10 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 #endif
+    if (Camera.getCameraInitSuccessful())
+    {
+        Camera.CameraDeepSleep(false);
+        CheckCameraSettingsChanged();
 
     _Image->EmptyImage(); // Delete previous stored raw image -> black image
 
@@ -667,7 +725,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
                                                 "by a hardware problem (instablility, ...). System will reboot.");
         doReboot();
 
-        return ESP_FAIL;
+            CameraDeepSleep(true);
+            return ESP_FAIL;
     }
 
     if (CCstatus.DemoMode)
@@ -710,7 +769,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     if (_zwImage == NULL)
     {
-        return ESP_OK;
+            CameraDeepSleep(true);
+            return ESP_OK;
     }
 
     stbi_uc *p_target;
@@ -745,11 +805,22 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
 #endif
 
-    return ESP_OK;
+        CameraDeepSleep(true);
+        return ESP_OK;
+    }
+    else
+    {
+        return ESP_ERR_NOT_FOUND;
+    }
 }
 
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
+    if (Camera.getCameraInitSuccessful())
+    {
+        CameraDeepSleep(false);
+        CheckCameraSettingsChanged();	
+	
     string ftype;
 
     LEDOnOff(true); // Status-LED on
@@ -773,7 +844,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
                                                 "Check camera module and/or proper electrical connection");
         // doReboot();
 
-        return ESP_FAIL;
+            CameraDeepSleep(true);
+            return ESP_FAIL;
     }
 
     LEDOnOff(false); // Status-LED off
@@ -848,11 +920,22 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LightOnOff(false); // Flash-LED off
     }
 
-    return ESP_OK;
+        CameraDeepSleep(true);
+        return ESP_OK;
+    }
+    else
+    {
+        return ESP_ERR_NOT_FOUND;
+    }
 }
 
 esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 {
+    if (Camera.getCameraInitSuccessful())
+    {
+        CameraDeepSleep(false);
+        CheckCameraSettingsChanged();
+	
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
@@ -879,7 +962,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         httpd_resp_send_500(req);
         //        doReboot();
 
-        return ESP_FAIL;
+            CameraDeepSleep(true);
+            return ESP_FAIL;
     }
 
     LEDOnOff(false); // Status-LED off
@@ -928,24 +1012,28 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         LightOnOff(false); // Flash-LED off
     }
 
-    return res;
+        CameraDeepSleep(true);
+        return res;
+    }
+    else
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: CaptureToStream not available!");
+        return ESP_ERR_NOT_FOUND;
+    }
 }
 
 esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 {
+    if (Camera.getCameraInitSuccessful())
+    {
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start;
     char *part_buf[64];
-
-    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
-    if (CFstatus.changedCameraSettings)
-    {
-        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-        Camera.LedIntensity = CCstatus.ImageLedIntensity;
-        CFstatus.changedCameraSettings = false;
-    }
+	
+        CameraDeepSleep(false);
+        // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+        Camera.CheckCameraSettingsChanged();
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream started");
 
@@ -1017,7 +1105,14 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream stopped");
 
-    return res;
+        CameraDeepSleep(true);
+        return res;
+    }
+    else
+    {
+        httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Camera not initialized: CaptureToStream not available!");
+        return ESP_ERR_NOT_FOUND;
+    }
 }
 
 void CCamera::LightOnOff(bool status)
