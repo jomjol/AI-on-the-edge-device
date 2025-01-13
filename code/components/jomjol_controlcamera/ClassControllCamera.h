@@ -62,6 +62,7 @@ typedef struct
     bool isImageSize;
 
     bool CameraInitSuccessful;
+    bool CameraAFInitSuccessful;
     bool changedCameraSettings;
     bool DemoMode;
     bool SaveAllFiles;

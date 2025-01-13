@@ -34,6 +34,8 @@
 #include "ov2640_sharpness.h"
 #include "ov2640_specialEffect.h"
 #include "ov2640_contrast_brightness.h"
+#include "ov5640_autofocus.h"
+#include "ov5640_autofocus_config.h"
 
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #include "soc/periph_defs.h"
@@ -144,6 +146,7 @@ esp_err_t CCamera::InitCam(void)
     }
 
     CCstatus.CameraInitSuccessful = true;
+    CCstatus.CameraAFInitSuccessful = false;
 
     // Get a reference to the sensor
     sensor_t *s = esp_camera_sensor_get();
@@ -163,6 +166,22 @@ esp_err_t CCamera::InitCam(void)
             break;
         case OV5640_PID:
             ESP_LOGI(TAG, "OV5640 camera module detected");
+            ESP_LOGI(TAG, "Initializing autofocus ...");
+            if (ov5640_autofocus_init(s) == 0) {
+                ESP_LOGI(TAG, "Autofocus init success");
+                CCstatus.CameraAFInitSuccessful = true;
+                // ESP_LOGI(TAG, "Setting continuous autofocus mode ...");
+                // {
+                // int rc = ov5640_autofocus_set_mode(s, AF_TRIG_SINGLE_AUTO_FOCUS);
+                // if (rc == 0) {
+                //     ESP_LOGI(TAG, "Set continuous autofocus mode success");
+                // } else {
+                //     ESP_LOGI(TAG, "Set continuous autofocus mode failed: %d", rc);
+                // }
+                // }
+            } else {
+                ESP_LOGI(TAG, "Autofocus init failed");
+            }
             break;
         default:
             ESP_LOGE(TAG, "Camera module is unknown and not properly supported!");
@@ -654,9 +673,98 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LightOn");
 #endif
 
+    // ESP_LOGI(TAG, "OV5640 set AF");
+    // sensor_t *s = esp_camera_sensor_get();
+    // if (s != NULL) {
+    //     // int vcm_target = 0x15;
+    //     int vcm_target = 0x00;
+    //     s->set_reg(s, 0x3602, 0xf0, vcm_target << 4);
+    //     s->set_reg(s, 0x3603, 0x1f, vcm_target >> 4);
+    //     vTaskDelay(300 / portTICK_PERIOD_MS);
+    // }
+    // ESP_LOGI(TAG, "OV5640 set AF done");
+
+
+
+    if (CCstatus.CamSensor_id == OV5640_PID && CCstatus.CameraAFInitSuccessful) {
+        ESP_LOGI(TAG, "OV5640 and AF inited");
+        sensor_t *s = esp_camera_sensor_get();
+        if (s != NULL) {
+            int rc = ov5640_autofocus_set_mode(s, AF_TRIG_SINGLE_AUTO_FOCUS);
+            if (rc == 0) {
+                ESP_LOGI(TAG, "Set single autofocus mode success");
+            } else {
+                ESP_LOGI(TAG, "Set single autofocus mode failed: %d", rc);
+            }
+            ESP_LOGI(TAG, "adjusting focus");
+            for (int i = 0; i < 10; i++) {
+                camera_fb_t *fb = esp_camera_fb_get();
+                uint8_t S_Zone[5];
+                uint8_t focus_status = ov5640_autofocus_get_status(s, S_Zone, 5);
+                for (int i = 0; i < 5; i++) {
+                    ESP_LOGI(TAG, "Zone[%d]: 0x%02x", i, S_Zone[i]);
+                }
+                esp_camera_fb_return(fb);
+                if (focus_status == FW_STATUS_S_FOCUSING) {
+                    ESP_LOGI(TAG, "Focusing: 0x%02x", focus_status);
+                } else if (focus_status == FW_STATUS_S_FOCUSED) {
+                    ESP_LOGI(TAG, "Focused: 0x%02x", focus_status);
+
+
+                    uint8_t vcm_ctrl_0 = s->get_reg(s, OV5640_VCM_CTRL_0, 0xff);
+                    uint8_t vcm_ctrl_1 = s->get_reg(s, OV5640_VCM_CTRL_1, 0xff);
+                    uint8_t vcm_ctrl_2 = s->get_reg(s, OV5640_VCM_CTRL_2, 0xff);
+                    uint8_t vcm_ctrl_3 = s->get_reg(s, OV5640_VCM_CTRL_3, 0xff);
+                    uint8_t vcm_ctrl_4 = s->get_reg(s, OV5640_VCM_CTRL_4, 0xff);
+
+                    uint8_t pwr_down = vcm_ctrl_1 >> 7;
+                    uint16_t vcm_target = ((uint16_t)(vcm_ctrl_1 & 0x3f) << 4) | ((vcm_ctrl_0 & 0xf0) >> 4);
+                    uint8_t slew_rate = vcm_ctrl_0 & 0x0f;
+                    uint16_t vcm_rdiv = ((uint16_t)(vcm_ctrl_3 & 0x0f) << 8) | (vcm_ctrl_2 & 0xff);
+                    uint8_t vcm_rih = (vcm_ctrl_3 & 0x10) >> 4;
+                    uint8_t vcm_ib = vcm_ctrl_4 & 0x07;
+
+                    ESP_LOGI(TAG, "VCM: pd %x, target 0x%04x, slew 0x%02x, rdiv 0x%04x, rih %x, ib 0x%02x", pwr_down, vcm_target, slew_rate, vcm_rdiv, vcm_rih, vcm_ib);
+
+
+
+                    break;
+                } else {
+                    ESP_LOGI(TAG, "Focus status 0x%02x", focus_status);
+                }
+            }
+            // for (int i = 0; i < 100; i++) {
+            //     camera_fb_t *fb = esp_camera_fb_get();
+            //     uint8_t focus_status = ov5640_autofocus_get_status(s);
+            //     esp_camera_fb_return(fb);
+            //     if (focus_status == FW_STATUS_S_FOCUSING) {
+            //         ESP_LOGI(TAG, "Focusing");
+            //     } else if (focus_status == FW_STATUS_S_FOCUSED) {
+            //         ESP_LOGI(TAG, "Focused");
+            //         break;
+            //     } else {
+            //         ESP_LOGI(TAG, "fs 0x%02x", focus_status);
+            //     }
+            // }
+        }
+    }
+
     camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
+
+    if (CCstatus.CamSensor_id == OV5640_PID && CCstatus.CameraAFInitSuccessful) {
+        ESP_LOGI(TAG, "OV5640 release AF");
+        sensor_t *s = esp_camera_sensor_get();
+        if (s != NULL) {
+            int rc = ov5640_release_autofocus(s);
+            if (rc == 0) {
+                ESP_LOGI(TAG, "Release autofocus success");
+            } else {
+                ESP_LOGI(TAG, "Release autofocus failed: %d", rc);
+            }
+        }
+    }
 
     if (!fb)
     {
