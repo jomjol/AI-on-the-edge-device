@@ -540,45 +540,43 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 {
     if (Camera.getCameraInitSuccessful())
     {
-        Camera.CameraDeepSleep(false);
+        // Camera.CameraDeepSleep(false);
         // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
-        Camera.CheckCameraSettingsChanged();
+        // Camera.CheckCameraSettingsChanged();
 	
-    psram_init_shared_memory_for_take_image_step();
+        psram_init_shared_memory_for_take_image_step();
+        string logPath = CreateLogFolder(zwtime);
 
-    string logPath = CreateLogFolder(zwtime);
-
-    int flash_duration = (int)(CCstatus.WaitBeforePicture * 1000);
+        int flash_duration = (int)(CCstatus.WaitBeforePicture * 1000);
 
 #ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Before takePictureWithFlash");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Before takePictureWithFlash");
 #endif
 
 #ifdef WIFITURNOFF
-    esp_wifi_stop(); // to save power usage and
+        esp_wifi_stop(); // to save power usage and
 #endif
 
-    takePictureWithFlash(flash_duration);
+        takePictureWithFlash(flash_duration);
 
 #ifdef WIFITURNOFF
-    esp_wifi_start();
+        esp_wifi_start();
 #endif
 
 #ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After takePictureWithFlash");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After takePictureWithFlash");
 #endif
 
-    LogImage(logPath, "raw", NULL, NULL, zwtime, rawImage);
-
-    RemoveOldLogs();
+        LogImage(logPath, "raw", NULL, NULL, zwtime, rawImage);
+        RemoveOldLogs();
 
 #ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After RemoveOldLogs");
+        LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - After RemoveOldLogs");
 #endif
 
-    psram_deinit_shared_memory_for_take_image_step();
+        psram_deinit_shared_memory_for_take_image_step();
 
-        Camera.CameraDeepSleep(true);
+        // Camera.CameraDeepSleep(true);
         return true;
     }
     else

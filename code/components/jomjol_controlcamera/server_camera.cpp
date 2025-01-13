@@ -98,9 +98,9 @@ esp_err_t handler_capture(httpd_req_t *req)
 
     if (Camera.getCameraInitSuccessful())
     {
-        Camera.CameraDeepSleep(false);
+        // Camera.CameraDeepSleep(false);
         // If the camera settings were changed by creating a new reference image, they must be reset
-        Camera.CheckCameraSettingsChanged();
+        // Camera.CheckCameraSettingsChanged();
 
 #ifdef DEBUG_DETAIL_ON
         ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
@@ -113,7 +113,7 @@ esp_err_t handler_capture(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_capture - Done");
 #endif
 
-        Camera.CameraDeepSleep(true);
+        // Camera.CameraDeepSleep(true);
         return result;
     }
     else
@@ -135,9 +135,9 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
         char _delay[10];
         int delay = 2500;
 		
-        Camera.CameraDeepSleep(false);
+        // Camera.CameraDeepSleep(false);
         // If the camera settings were changed by creating a new reference image, they must be reset
-        Camera.CheckCameraSettingsChanged();
+        // Camera.CheckCameraSettingsChanged();
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
@@ -174,7 +174,7 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_capture_with_light - Done");
 #endif
 
-        Camera.CameraDeepSleep(true);
+        // Camera.CameraDeepSleep(true);
         return result;
     }
     else
@@ -198,9 +198,9 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
         char filename[100];
         std::string fn = "/sdcard/";
 		
-        Camera.CameraDeepSleep(false);
+        // Camera.CameraDeepSleep(false);
         // If the camera settings were changed by creating a new reference image, they must be reset
-        Camera.CheckCameraSettingsChanged();
+        // Camera.CheckCameraSettingsChanged();
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
@@ -250,7 +250,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
         LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
 #endif
 
-        Camera.CameraDeepSleep(true);
+        // Camera.CameraDeepSleep(true);
         return result;
     }
     else

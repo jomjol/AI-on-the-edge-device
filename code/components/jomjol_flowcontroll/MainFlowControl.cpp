@@ -254,6 +254,14 @@ esp_err_t setCFstatusToCam(void)
 
     if (s != NULL)
     {
+        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+
+        if (CCstatus.CameraDeepSleepEnable == true)
+        {
+            Camera.CameraDeepSleep(false);
+            vTaskDelay(cam_xDelay);
+        }
+		
         s->set_framesize(s, CFstatus.ImageFrameSize);
 
         // s->set_contrast(s, CFstatus.ImageContrast);     // -2 to 2
@@ -293,8 +301,8 @@ esp_err_t setCFstatusToCam(void)
         Camera.SetCamSharpness(CFstatus.ImageAutoSharpness, CFstatus.ImageSharpness);
         s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
-        TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay2);
+        // Camera.CameraDeepSleep(true);
+        vTaskDelay(cam_xDelay);
 
         return ESP_OK;
     }
@@ -926,7 +934,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         std::string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        if ((flowctrl.SetupModeActive || (*flowctrl.getActStatus() == std::string("Flow finished"))) && psram_init_shared_memory_for_take_image_step())
+        std::string *sys_status = flowctrl.getActStatus();
+
+        if ((flowctrl.SetupModeActive || ((sys_status->c_str() != std::string("Take Image")) && (sys_status->c_str() != std::string("Aligning")))) && psram_init_shared_memory_for_take_image_step())
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Taking image for Alignment Mark Update...");
 
@@ -1375,7 +1385,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 setCFstatusToCCstatus(); // CFstatus >>> CCstatus
 
                 // Kameraeinstellungen wurden verädert
-                CFstatus.CameraSettingsChanged = true;
+                CCstatus.CameraSettingsChanged = true;
 
                 ESP_LOGD(TAG, "Cam Settings set");
                 std::string _zw = "CamSettingsSet";
@@ -1392,7 +1402,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
 
                 // Kameraeinstellungen wurden verädert
-                CFstatus.CameraSettingsChanged = true;
+                CCstatus.CameraSettingsChanged = true;
 
                 ESP_LOGD(TAG, "test_take - vor TakeImage");
                 std::string image_temp = flowctrl.doSingleStep("[TakeImage]", _host);
