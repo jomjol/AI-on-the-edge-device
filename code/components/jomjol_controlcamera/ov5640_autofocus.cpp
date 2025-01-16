@@ -48,7 +48,6 @@ int ov5640_autofocus_init(sensor_t *sensor)
         i = 0;
         do {
             state = sensor->get_reg(sensor, OV5640_CMD_FW_STATUS, 0xff);
-            // vTaskDelay(pdMS_TO_TICKS(5));
             vTaskDelay(5 / portTICK_PERIOD_MS);
             i++;
             if (i > 1000) return 1;
@@ -71,15 +70,6 @@ uint8_t ov5640_autofocus_set_mode(sensor_t *sensor, uint8_t mode)
     // Note: The MCU will auto clear CMD_MAIN to zero after the command is receipt, and auto clear
     // CMD_ACK to zero when the command is completed.
 
-    // rc = sensor->set_reg(sensor, OV5640_CMD_MAIN, 0xff, 0x01);
-    // rc = sensor->set_reg(sensor, OV5640_CMD_MAIN, 0xff, 0x08);
-    // do {
-    //     temp = sensor->get_reg(sensor, OV5640_CMD_ACK, 0xff);
-    //     retry++;
-    //     if (retry > 1000) return 1;
-    //     // vTaskDelay(pdMS_TO_TICKS(5));
-    //     vTaskDelay(5 / portTICK_PERIOD_MS);
-    // } while (temp != 0x00);
     rc = sensor->set_reg(sensor, OV5640_CMD_ACK, 0xff, 0x01);
     rc = sensor->set_reg(sensor, OV5640_CMD_MAIN, 0xff, mode);
     retry = 0;
@@ -87,8 +77,6 @@ uint8_t ov5640_autofocus_set_mode(sensor_t *sensor, uint8_t mode)
         temp = sensor->get_reg(sensor, OV5640_CMD_ACK, 0xff);
         retry++;
         if (retry > 1000) return 2;
-        // vTaskDelay(pdMS_TO_TICKS(5));
-        // vTaskDelay(5 / portTICK_PERIOD_MS);
         vTaskDelay(30 / portTICK_PERIOD_MS);
     } while (temp != 0x00);
     return 0;
@@ -107,7 +95,6 @@ uint8_t ov5640_autofocus_get_status(sensor_t *sensor, uint8_t *S_Zone, int S_Zon
         temp = sensor->get_reg(sensor, OV5640_CMD_ACK, 0xff);
         retry++;
         if (retry > 1000) return 2;
-        // vTaskDelay(pdMS_TO_TICKS(5));
         vTaskDelay(5 / portTICK_PERIOD_MS);
     } while (temp != 0x00);
     if (S_Zone_len > 5)
@@ -126,20 +113,11 @@ uint8_t ov5640_autofocus_get_status(sensor_t *sensor, uint8_t *S_Zone, int S_Zon
     return sensor->get_reg(sensor, OV5640_CMD_FW_STATUS, 0xff);
 }
 
-uint8_t ov5640_release_autofocus(sensor_t *sensor)
+uint8_t ov5640_autofocus_release(sensor_t *sensor)
 {
     uint8_t rc = 0;
     uint8_t temp = 0;
     uint16_t retry = 0;
-    // rc = sensor->set_reg(sensor, OV5640_CMD_MAIN, 0xff, 0x01);
-    // rc = sensor->set_reg(sensor, OV5640_CMD_MAIN, 0xff, 0x08);
-    // do {
-    //     temp = sensor->get_reg(sensor, OV5640_CMD_ACK, 0xff);
-    //     retry++;
-    //     if (retry > 1000) return 1;
-    //     // vTaskDelay(pdMS_TO_TICKS(5));
-    //     vTaskDelay(5 / portTICK_PERIOD_MS);
-    // } while (temp != 0x00);
     rc = sensor->set_reg(sensor, OV5640_CMD_ACK, 0xff, 0x01);
     rc = sensor->set_reg(sensor, OV5640_CMD_MAIN, 0xff, AF_RELEASE_FOCUS);
     retry = 0;
@@ -147,9 +125,7 @@ uint8_t ov5640_release_autofocus(sensor_t *sensor)
         temp = sensor->get_reg(sensor, OV5640_CMD_ACK, 0xff);
         retry++;
         if (retry > 1000) return 2;
-        // vTaskDelay(pdMS_TO_TICKS(5));
         vTaskDelay(5 / portTICK_PERIOD_MS);
-        // vTaskDelay(30 / portTICK_PERIOD_MS);
     } while (temp != 0x00);
     return 0;
 }
