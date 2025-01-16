@@ -153,3 +153,46 @@ uint8_t ov5640_release_autofocus(sensor_t *sensor)
     } while (temp != 0x00);
     return 0;
 }
+
+uint8_t ov5640_manual_focus_set(sensor_t *sensor, uint16_t focusLevel)
+{
+    uint8_t rc = 0;
+
+    uint8_t pd = 0;
+    uint8_t slew_rate = 0x04;
+    uint16_t vcm_target = focusLevel & 0x03ff;
+    uint16_t vcm_rdiv = 0x0605;
+    uint8_t vcm_rih = 0;
+    uint8_t vcm_ib = 0x07;
+
+    uint8_t vcm_ctrl_0 = ((vcm_target & 0x0f) << 4) | (slew_rate & 0x0f);
+    uint8_t vcm_ctrl_1 = ((pd & 0x01) << 7) | ((vcm_target >> 4) & 0x3f);
+    uint8_t vcm_ctrl_2 = vcm_rdiv & 0xff;
+    uint8_t vcm_ctrl_3 = ((vcm_rih & 0x01) << 4) | ((vcm_rdiv >> 8) & 0x0f);
+    uint8_t vcm_ctrl_4 = (vcm_ib & 0x07);
+
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_4, 0xff, vcm_ctrl_4);
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_3, 0xff, vcm_ctrl_3);
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_2, 0xff, vcm_ctrl_2);
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_0, 0xff, vcm_ctrl_0);
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_1, 0xff, vcm_ctrl_1);
+
+    // wait duration depends on slew rate.
+    vTaskDelay(450 / portTICK_PERIOD_MS);
+    return 0;
+}
+
+uint8_t ov5640_manual_focus_release(sensor_t *sensor)
+{
+    uint8_t rc = 0;
+
+    // Set focus back to infinity and wait for it to physically move before
+    // turning off the power to prevent clicking sound caused by the focus lens
+    // snapping to the permanent magnet when power is removed.
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_1, 0x3f, 0);
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_0, 0xf0, 0);
+    vTaskDelay(450 / portTICK_PERIOD_MS);
+    rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_1, 0x80, 1 << 7);
+
+    return 0;
+}
