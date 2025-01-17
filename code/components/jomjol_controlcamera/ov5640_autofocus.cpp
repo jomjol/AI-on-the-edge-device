@@ -1,10 +1,12 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <stdint.h>
+#include "esp_log.h"
 #include "esp_camera.h"
 #include "ov5640_autofocus.h"
 #include "ov5640_autofocus_config.h"
 
+static const char *TAG = "CAM";
 
 static bool is_ov5640(sensor_t *sensor)
 {
@@ -102,14 +104,6 @@ uint8_t ov5640_autofocus_get_status(sensor_t *sensor, uint8_t *S_Zone, int S_Zon
     for (int i = 0; i < S_Zone_len; i++) {
         S_Zone[i] = sensor->get_reg(sensor, OV5640_CMD_PARA0 + i, 0xff);
     }
-    // for (int i = 0; i < S_Zone_len; i++) {
-    //     if (S_Zone[i] == 0) {
-    //         // focused
-    //         return FW_STATUS_S_FOCUSED;
-    //     }
-    // }
-    // // focus failed
-    // return FW_STATUS_S_FOCUSING;
     return sensor->get_reg(sensor, OV5640_CMD_FW_STATUS, 0xff);
 }
 
@@ -153,8 +147,9 @@ uint8_t ov5640_manual_focus_set(sensor_t *sensor, uint16_t focusLevel)
     rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_0, 0xff, vcm_ctrl_0);
     rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_1, 0xff, vcm_ctrl_1);
 
-    // wait duration depends on slew rate.
-    vTaskDelay(450 / portTICK_PERIOD_MS);
+    // Wait duration depends on slew rate. Our coil supply could be 2.2V, so
+    // we add another 100ms to make up for the lower voltage.
+    vTaskDelay(500 / portTICK_PERIOD_MS);
     return 0;
 }
 
@@ -167,8 +162,26 @@ uint8_t ov5640_manual_focus_release(sensor_t *sensor)
     // snapping to the permanent magnet when power is removed.
     rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_1, 0x3f, 0);
     rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_0, 0xf0, 0);
-    vTaskDelay(450 / portTICK_PERIOD_MS);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
     rc = sensor->set_reg(sensor, OV5640_VCM_CTRL_1, 0x80, 1 << 7);
 
     return 0;
+}
+
+void ov5640_print_vcm_registers(sensor_t *sensor)
+{
+    uint8_t vcm_ctrl_0 = sensor->get_reg(sensor, OV5640_VCM_CTRL_0, 0xff);
+    uint8_t vcm_ctrl_1 = sensor->get_reg(sensor, OV5640_VCM_CTRL_1, 0xff);
+    uint8_t vcm_ctrl_2 = sensor->get_reg(sensor, OV5640_VCM_CTRL_2, 0xff);
+    uint8_t vcm_ctrl_3 = sensor->get_reg(sensor, OV5640_VCM_CTRL_3, 0xff);
+    uint8_t vcm_ctrl_4 = sensor->get_reg(sensor, OV5640_VCM_CTRL_4, 0xff);
+
+    uint8_t pwr_down = vcm_ctrl_1 >> 7;
+    uint16_t vcm_target = ((uint16_t)(vcm_ctrl_1 & 0x3f) << 4) | ((vcm_ctrl_0 & 0xf0) >> 4);
+    uint8_t slew_rate = vcm_ctrl_0 & 0x0f;
+    uint16_t vcm_rdiv = ((uint16_t)(vcm_ctrl_3 & 0x0f) << 8) | (vcm_ctrl_2 & 0xff);
+    uint8_t vcm_rih = (vcm_ctrl_3 & 0x10) >> 4;
+    uint8_t vcm_ib = vcm_ctrl_4 & 0x07;
+
+    ESP_LOGI(TAG, "VCM: pd %x, target 0x%04x, slew 0x%02x, rdiv 0x%04x, rih %x, ib 0x%02x", pwr_down, vcm_target, slew_rate, vcm_rdiv, vcm_rih, vcm_ib);
 }
