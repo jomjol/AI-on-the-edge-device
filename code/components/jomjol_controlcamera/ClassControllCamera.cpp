@@ -34,6 +34,8 @@
 #include "ov2640_sharpness.h"
 #include "ov2640_specialEffect.h"
 #include "ov2640_contrast_brightness.h"
+#include "ov5640_autofocus.h"
+#include "ov5640_autofocus_config.h"
 
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 #include "soc/periph_defs.h"
@@ -144,6 +146,7 @@ esp_err_t CCamera::InitCam(void)
     }
 
     CCstatus.CameraInitSuccessful = true;
+    CCstatus.CameraAFInitSuccessful = false;
 
     // Get a reference to the sensor
     sensor_t *s = esp_camera_sensor_get();
@@ -163,6 +166,19 @@ esp_err_t CCamera::InitCam(void)
             break;
         case OV5640_PID:
             ESP_LOGI(TAG, "OV5640 camera module detected");
+            ESP_LOGI(TAG, "Initializing autofocus ...");
+            if (ov5640_autofocus_init(s) == 0) {
+                ESP_LOGI(TAG, "Autofocus init success");
+                CCstatus.CameraAFInitSuccessful = true;
+                int rc = ov5640_autofocus_release(s);
+                if (rc == 0) {
+                    ESP_LOGI(TAG, "Release autofocus success");
+                } else {
+                    ESP_LOGI(TAG, "Release autofocus failed: %d", rc);
+                }
+            } else {
+                ESP_LOGI(TAG, "Autofocus init failed");
+            }
             break;
         default:
             ESP_LOGE(TAG, "Camera module is unknown and not properly supported!");
@@ -654,9 +670,81 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LightOn");
 #endif
 
+
+
+    // HACK: testing only
+    bool _focusEnabled = true;
+    bool _manualFocus = true;
+    // uint16_t manualFocusLevel = 0x01e4;
+    uint16_t manualFocusLevel = 0x0014;
+
+
+
+    if (_focusEnabled && CCstatus.CamSensor_id == OV5640_PID && CCstatus.CameraAFInitSuccessful) {
+        ESP_LOGI(TAG, "OV5640 and AF inited");
+        sensor_t *s = esp_camera_sensor_get();
+        if (s != NULL) {
+            if (_manualFocus) {
+                int rc = ov5640_manual_focus_set(s, manualFocusLevel);
+                if (rc == 0) {
+                    ESP_LOGI(TAG, "Set manual focus level success");
+                } else {
+                    ESP_LOGI(TAG, "Set manual focus level failed: %d", rc);
+                }
+            } else {
+                int rc = ov5640_autofocus_set_mode(s, AF_TRIG_SINGLE_AUTO_FOCUS);
+                if (rc == 0) {
+                    ESP_LOGI(TAG, "Set single autofocus mode success");
+                } else {
+                    ESP_LOGI(TAG, "Set single autofocus mode failed: %d", rc);
+                }
+                ESP_LOGI(TAG, "adjusting focus");
+                for (int i = 0; i < 10; i++) {
+                    camera_fb_t *fb = esp_camera_fb_get();
+                    uint8_t S_Zone[5];
+                    uint8_t focus_status = ov5640_autofocus_get_status(s, S_Zone, 5);
+                    for (int i = 0; i < 5; i++) {
+                        ESP_LOGI(TAG, "Zone[%d]: 0x%02x", i, S_Zone[i]);
+                    }
+                    esp_camera_fb_return(fb);
+                    if (focus_status == FW_STATUS_S_FOCUSING) {
+                        ESP_LOGI(TAG, "Focusing: 0x%02x", focus_status);
+                    } else if (focus_status == FW_STATUS_S_FOCUSED) {
+                        ESP_LOGI(TAG, "Focused: 0x%02x", focus_status);
+                        break;
+                    } else {
+                        ESP_LOGI(TAG, "Focus status 0x%02x", focus_status);
+                    }
+                }
+            }
+        }
+    }
+
     camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
+
+    if (_focusEnabled && CCstatus.CamSensor_id == OV5640_PID && CCstatus.CameraAFInitSuccessful) {
+        ESP_LOGI(TAG, "OV5640 release AF");
+        sensor_t *s = esp_camera_sensor_get();
+        if (s != NULL) {
+            if (_manualFocus) {
+                int rc = ov5640_manual_focus_release(s);
+                if (rc == 0) {
+                    ESP_LOGI(TAG, "Release manual focus success");
+                } else {
+                    ESP_LOGI(TAG, "Release manual focus failed: %d", rc);
+                }
+            } else {
+                int rc = ov5640_autofocus_release(s);
+                if (rc == 0) {
+                    ESP_LOGI(TAG, "Release autofocus success");
+                } else {
+                    ESP_LOGI(TAG, "Release autofocus failed: %d", rc);
+                }
+            }
+        }
+    }
 
     if (!fb)
     {
