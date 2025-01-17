@@ -417,9 +417,11 @@ bool ClassFlowControll::doFlow(string time)
             if (i) { i -= 1; }   // vPrevious step must be repeated (probably take pictures)
             result = false;
             if (repeat > 5) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
-                doReboot();
-                //Step was repeated 5x --> reboot
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Repeat 5x unsuccessful");
+                break;
+                // LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Wiederholung 5x nicht erfolgreich --> reboot");
+                // doReboot();
+                // Step was repeated 5x --> reboot
             }
         }
         else {
@@ -431,8 +433,16 @@ bool ClassFlowControll::doFlow(string time)
         #endif
     }
 
+    if (result == true)
+    {
+        aktstatus = "Flow finished";
+    }
+    else
+    {
+        aktstatus = aktstatus + " failed";
+    }
+
     zw_time = getCurrentTimeString("%H:%M:%S");
-    aktstatus = "Flow finished";
     aktstatusWithTime = aktstatus + " (" + zw_time + ")";
     //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT
@@ -441,7 +451,6 @@ bool ClassFlowControll::doFlow(string time)
 
     return result;
 }
-
 
 string ClassFlowControll::getReadoutAll(int _type)
 {

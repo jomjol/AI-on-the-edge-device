@@ -57,8 +57,10 @@ typedef struct
     int WaitBeforePicture;
     bool isImageSize;
 
-    bool CameraInitSuccessful;
-    bool changedCameraSettings;
+    // bool CameraInitSuccessful;
+    // bool CameraSettingsChanged;
+    // bool CameraDeepSleepEnable;
+	
     bool DemoMode;
     bool SaveAllFiles;
 } camera_flow_config_temp_t;
