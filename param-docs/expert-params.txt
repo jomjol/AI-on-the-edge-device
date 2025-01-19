@@ -43,5 +43,6 @@ Hostname
 RSSIThreshold
 TimeServer
 CACert
+ValidateServerCert
 ClientCert
 ClientKey

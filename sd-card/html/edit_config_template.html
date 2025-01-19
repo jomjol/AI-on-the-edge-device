@@ -1119,6 +1119,20 @@
 			</td>
 			<td>$TOOLTIP_MQTT_ClientKey</td>
 		</tr>
+		
+		<tr class="MQTTItem expert" unused_id="exMqtt">
+			<td class="indent1">
+				<input type="checkbox" id="MQTT_ValidateServerCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ValidateServerCert")' unchecked >
+				<label for=MQTT_ValidateServerCert_enabled><class id="MQTT_ValidateServerCert_text" style="color:black;">Validate ServerCert</class></label>
+			</td>
+			<td>
+				<select id="MQTT_ValidateServerCert_value1">
+					<option value="true" selected>enable (true)</option>
+					<option value="false">disable (false)</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_MQTT_ValidateServerCert</td>
+		</tr>
 
 		<tr class="MQTTItem">
 			<td class="indent1">
@@ -2353,6 +2367,7 @@ function UpdateInput() {
     WriteParameter(param, category, "MQTT", "CACert", true);
     WriteParameter(param, category, "MQTT", "ClientCert", true);
     WriteParameter(param, category, "MQTT", "ClientKey", true);
+    WriteParameter(param, category, "MQTT", "ValidateServerCert", true);
     WriteParameter(param, category, "MQTT", "DomoticzTopicIn", true);
     
     WriteParameter(param, category, "InfluxDB", "Uri", true);	
@@ -2521,6 +2536,7 @@ function ReadParameterAll() {
     ReadParameter(param, "MQTT", "CACert", true);
     ReadParameter(param, "MQTT", "ClientCert", true);
     ReadParameter(param, "MQTT", "ClientKey", true);
+    ReadParameter(param, "MQTT", "ValidateServerCert", true);
     ReadParameter(param, "MQTT", "DomoticzTopicIn", true);
 
     ReadParameter(param, "InfluxDB", "Uri", true);
