@@ -16,7 +16,6 @@
 #include "esp_timer.h"
 #endif
 
-
 static const char *TAG = "MQTT IF";
 
 std::map<std::string, std::function<void()>>* connectFunktionMap = NULL;  
@@ -40,7 +39,6 @@ bool validateServerCert = true;
 int keepalive;
 bool SetRetainFlag;
 void (*callbackOnConnected)(std::string, bool) = NULL;
-
 
 bool MQTTPublish(std::string _key, std::string _content, int qos, bool retained_flag) 
 {
@@ -95,7 +93,6 @@ bool MQTTPublish(std::string _key, std::string _content, int qos, bool retained_
         return false;
     }
 }
-
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     std::string topic = "";
@@ -198,12 +195,10 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     return ESP_OK;
 }
 
-
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, (int)event_id);
     mqtt_event_handler_cb((esp_mqtt_event_handle_t) event_data);
 }
-
 
 bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _user, std::string _password,
         std::string _maintopic, std::string _domoticz_in_topic, std::string _lwt, std::string _lwt_connected, std::string _lwt_disconnected,
@@ -264,7 +259,6 @@ bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     return true;
 }
 
-
 int MQTT_Init() { 
     if (mqtt_initialized) {
         return 0;
@@ -300,19 +294,38 @@ int MQTT_Init() {
     mqtt_cfg.session.keepalive = keepalive;
     mqtt_cfg.buffer.size = 2048;                         // size of MQTT send/receive buffer
 
+#if MQTT_ENABLE_SSL
     if (caCert.length()){
         mqtt_cfg.broker.verification.certificate = caCert.c_str();
-        mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
+        // darf nur bei DER_CERTIFICATES gesetzt werden, wenn PEM_CERTIFICATES muß = 0 sein ??????????????????????????
+        // siehe: .platformio\packages\framework-espidf\components\mqtt\esp-mqtt\mqtt_client.c
+        //         static esp_err_t esp_mqtt_set_cert_key_data()
+        // mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
+        mqtt_cfg.broker.verification.certificate_len = 0;
+
+#if defined(MQTT_SUPPORTED_FEATURE_SKIP_CRT_CMN_NAME_CHECK)
+        // Skip any validation of server certificate CN field, this reduces the
+        // security of TLS and makes the *MQTT* client susceptible to MITM attacks
         mqtt_cfg.broker.verification.skip_cert_common_name_check = !validateServerCert;
+#endif // end MQTT_SUPPORTED_FEATURE_SKIP_CRT_CMN_NAME_CHECK
     }
 
     if (clientCert.length() && clientKey.length()){
         mqtt_cfg.credentials.authentication.certificate = clientCert.c_str();
-        mqtt_cfg.credentials.authentication.certificate_len = clientCert.length() + 1;
+        // darf nur bei DER_CERTIFICATES gesetzt werden, wenn PEM_CERTIFICATES muß = 0 sein ??????????????????????????
+        // siehe: .platformio\packages\framework-espidf\components\mqtt\esp-mqtt\mqtt_client.c
+        //         static esp_err_t esp_mqtt_set_cert_key_data()
+        // mqtt_cfg.credentials.authentication.certificate_len = clientCert.length() + 1;
+        mqtt_cfg.credentials.authentication.certificate_len = 0;
         
         mqtt_cfg.credentials.authentication.key = clientKey.c_str();
-        mqtt_cfg.credentials.authentication.key_len = clientKey.length() + 1;
+        // darf nur bei DER_CERTIFICATES gesetzt werden, wenn PEM_CERTIFICATES muß = 0 sein ??????????????????????????
+        // siehe: .platformio\packages\framework-espidf\components\mqtt\esp-mqtt\mqtt_client.c
+        //         static esp_err_t esp_mqtt_set_cert_key_data()
+        // mqtt_cfg.credentials.authentication.key_len = clientKey.length() + 1;
+        mqtt_cfg.credentials.authentication.key_len = 0;
     }
+#endif // end MQTT_ENABLE_SSL
 
     if (user.length() && password.length()){
         mqtt_cfg.credentials.username = user.c_str();
@@ -359,7 +372,6 @@ int MQTT_Init() {
 
 }
 
-
 void MQTTdestroy_client(bool _disable = false) {
     if (client) {
         if (mqtt_connected) {
@@ -377,16 +389,13 @@ void MQTTdestroy_client(bool _disable = false) {
         mqtt_configOK = false;
 }
 
-
 bool getMQTTisEnabled() {
     return mqtt_enabled;
 }
 
-
 bool getMQTTisConnected() {
     return mqtt_connected;
 }
-
 
 bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len) 
 {
@@ -395,7 +404,6 @@ bool mqtt_handler_flow_start(std::string _topic, char* _data, int _data_len)
     MQTTCtrlFlowStart(_topic);
     return ESP_OK;
 }
-
 
 bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len) 
 {
@@ -432,7 +440,6 @@ bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len)
     return ESP_FAIL;
 }
 
-
 void MQTTconnected(){
     if (mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
@@ -467,7 +474,6 @@ void MQTTconnected(){
     }
 }
 
-
 void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
     ESP_LOGD(TAG, "MQTTregisteronnectFunction %s\r\n", name.c_str());
     if (connectFunktionMap == NULL) {
@@ -486,14 +492,12 @@ void MQTTregisterConnectFunction(std::string name, std::function<void()> func){
     }
 }
 
-
 void MQTTunregisterConnectFunction(std::string name){
     ESP_LOGD(TAG, "unregisterConnnectFunction %s\r\n", name.c_str());
     if ((connectFunktionMap != NULL) && (connectFunktionMap->find(name) != connectFunktionMap->end())) {
         connectFunktionMap->erase(name);
     }
 }
-
 
 void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::string, char*, int)> func){
     ESP_LOGD(TAG, "registerSubscribeFunction %s", topic.c_str());
@@ -508,7 +512,6 @@ void MQTTregisterSubscribeFunction(std::string topic, std::function<bool(std::st
 
     (*subscribeFunktionMap)[topic] = func;
 }
-
 
 void MQTTdestroySubscribeFunction(){
     if (subscribeFunktionMap != NULL) {
