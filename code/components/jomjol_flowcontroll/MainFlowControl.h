@@ -54,10 +54,15 @@ typedef struct
     int ImageZoomOffsetY;
     int ImageZoomSize;
 
+    bool CameraFocusEnabled;
+    bool CameraManualFocus;
+    uint16_t CameraManualFocusLevel;
+
     int WaitBeforePicture;
     bool isImageSize;
 
     bool CameraInitSuccessful;
+    bool CameraInitAFSuccessful;
     bool changedCameraSettings;
     bool DemoMode;
     bool SaveAllFiles;

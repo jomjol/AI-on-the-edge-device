@@ -495,6 +495,34 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             }
         }
 
+        else if ((toUpper(splitted[0]) == "CAMFOCUS") && (splitted.size() > 1))
+        {
+            if (CCstatus.CamSensor_id == OV5640_PID)
+            {
+                CCstatus.CameraFocusEnabled = alphanumericToBoolean(splitted[1]);
+            }
+        }
+
+        else if ((toUpper(splitted[0]) == "CAMFOCUSAUTO") && (splitted.size() > 1))
+        {
+            if (CCstatus.CamSensor_id == OV5640_PID)
+            {
+                CCstatus.CameraManualFocus = !alphanumericToBoolean(splitted[1]);
+            }
+        }
+
+        else if ((toUpper(splitted[0]) == "CAMFOCUSMANUALLEVEL") && (splitted.size() > 1))
+        {
+            if (isStringNumeric(splitted[1]))
+            {
+                int _CameraManualFocusLevel = std::stoi(splitted[1]);
+                if (CCstatus.CamSensor_id == OV5640_PID)
+                {
+                    CCstatus.CameraManualFocusLevel = clipInt(_CameraManualFocusLevel, 1023, 0);
+                }
+            }
+        }
+
         else if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
         {
             if (isStringNumeric(splitted[1]))

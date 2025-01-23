@@ -191,6 +191,10 @@ esp_err_t setCCstatusToCFstatus(void)
     CFstatus.ImageZoomOffsetY = CCstatus.ImageZoomOffsetY;
     CFstatus.ImageZoomSize = CCstatus.ImageZoomSize;
 
+    CFstatus.CameraFocusEnabled = CCstatus.CameraFocusEnabled;
+    CFstatus.CameraManualFocus = CCstatus.CameraManualFocus;
+    CFstatus.CameraManualFocusLevel = CCstatus.CameraManualFocusLevel;
+
     CFstatus.WaitBeforePicture = CCstatus.WaitBeforePicture;
 
     return ESP_OK;
@@ -242,6 +246,11 @@ esp_err_t setCFstatusToCCstatus(void)
     CCstatus.ImageZoomOffsetX = CFstatus.ImageZoomOffsetX;
     CCstatus.ImageZoomOffsetY = CFstatus.ImageZoomOffsetY;
     CCstatus.ImageZoomSize = CFstatus.ImageZoomSize;
+
+    CCstatus.CameraFocusEnabled = CFstatus.CameraFocusEnabled;
+    CCstatus.CameraManualFocus = CFstatus.CameraManualFocus;
+    CCstatus.CameraManualFocusLevel = CFstatus.CameraManualFocusLevel;
+    Camera.SetEffectiveCamFocus(CFstatus.CameraFocusEnabled, CFstatus.CameraManualFocus, CFstatus.CameraManualFocusLevel);
 
     CCstatus.WaitBeforePicture = CFstatus.WaitBeforePicture;
 
@@ -1359,6 +1368,37 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
             }
 
+            if (httpd_query_key_value(_query, "fen", _valuechar, 30) == ESP_OK)
+            {
+                if (CCstatus.CamSensor_id == OV5640_PID)
+                {
+                    std::string _focus = std::string(_valuechar);
+                    CFstatus.CameraFocusEnabled = alphanumericToBoolean(_focus);
+                }
+            }
+
+            if (httpd_query_key_value(_query, "af", _valuechar, 30) == ESP_OK)
+            {
+                if (CCstatus.CamSensor_id == OV5640_PID)
+                {
+                    std::string _autofocus = std::string(_valuechar);
+                    CFstatus.CameraManualFocus = !alphanumericToBoolean(_autofocus);
+                }
+            }
+
+            if (httpd_query_key_value(_query, "flvl", _valuechar, 30) == ESP_OK)
+            {
+                std::string _focusLevel = std::string(_valuechar);
+                if (isStringNumeric(_focusLevel))
+                {
+                    int _CameraManualFocusLevel = std::stoi(_valuechar);
+                    if (CCstatus.CamSensor_id == OV5640_PID)
+                    {
+                        CFstatus.CameraManualFocusLevel = clipInt(_CameraManualFocusLevel, 1023, 0);
+                    }
+                }
+            }
+
             if (httpd_query_key_value(_query, "ledi", _valuechar, 30) == ESP_OK)
             {
                 std::string _ledi = std::string(_valuechar);
@@ -1390,6 +1430,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
                 Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
                 // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
+                Camera.SetEffectiveCamFocus(CFstatus.CameraFocusEnabled, CFstatus.CameraManualFocus, CFstatus.CameraManualFocusLevel);
 
                 // Kameraeinstellungen wurden verädert
                 CFstatus.changedCameraSettings = true;

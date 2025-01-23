@@ -58,6 +58,10 @@ typedef struct
     int ImageZoomOffsetY;
     int ImageZoomSize;
 
+    bool CameraFocusEnabled;
+    bool CameraManualFocus;
+    uint16_t CameraManualFocusLevel;
+
     int WaitBeforePicture;
     bool isImageSize;
 
@@ -82,6 +86,9 @@ protected:
 
 public:
     int LedIntensity = 4096;
+    bool EffectiveCameraFocusEnabled;
+    bool EffectiveCameraManualFocus;
+    uint16_t EffectiveCameraManualFocusLevel;
 
     CCamera(void);
     esp_err_t InitCam(void);
@@ -91,6 +98,12 @@ public:
 
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
+
+    int SetCamFocus(void);
+    int ReleaseCamFocus(void);
+
+    void SetEffectiveCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel);
+    void RestoreEffectiveCamFocus(void);
 
     int SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel);
     void SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel);
@@ -106,6 +119,7 @@ public:
     int SetLEDIntensity(int _intrel);
     bool testCamera(void);
     bool getCameraInitSuccessful(void);
+    bool getCameraAFInitSuccessful(void);
     void useDemoMode(void);
 
     framesize_t TextToFramesize(const char *text);
