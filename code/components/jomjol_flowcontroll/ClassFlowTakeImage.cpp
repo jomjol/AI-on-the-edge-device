@@ -544,6 +544,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
     Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
     Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+    Camera.RestoreEffectiveCamFocus();
 
     rawImage = new CImageBasis("rawImage");
     rawImage->CreateEmptyImage(CCstatus.ImageWidth, CCstatus.ImageHeight, 3);
