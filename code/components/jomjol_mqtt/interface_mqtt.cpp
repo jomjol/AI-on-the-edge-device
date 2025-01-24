@@ -221,23 +221,41 @@ bool MQTT_Configure(std::string _mqttURI, std::string _clientid, std::string _us
     domoticz_in_topic = _domoticz_in_topic;
     callbackOnConnected = ( void (*)(std::string, bool) )(_callbackOnConnected);
 
-    if (_clientcertfilename.length() && _clientkeyfilename.length()){
+    if (_clientcertfilename.length() && _clientkeyfilename.length()) {
         std::ifstream cert_ifs(_clientcertfilename);
-        std::string cert_content((std::istreambuf_iterator<char>(cert_ifs)), (std::istreambuf_iterator<char>()));
-        clientCert = cert_content;
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using clientCert: " + _clientcertfilename);
+        if (cert_ifs.is_open()) {
+            std::string cert_content((std::istreambuf_iterator<char>(cert_ifs)), (std::istreambuf_iterator<char>()));
+            clientCert = cert_content;
+            cert_ifs.close();
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using clientCert: " + _clientcertfilename);
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "could not open clientCert: " + _clientcertfilename);
+        }
 
         std::ifstream key_ifs(_clientkeyfilename);
-        std::string key_content((std::istreambuf_iterator<char>(key_ifs)), (std::istreambuf_iterator<char>()));
-        clientKey = key_content;
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using clientKey: " + _clientkeyfilename);
+        if (key_ifs.is_open()) {
+            std::string key_content((std::istreambuf_iterator<char>(key_ifs)), (std::istreambuf_iterator<char>()));
+            clientKey = key_content;
+            key_ifs.close();
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using clientKey: " + _clientkeyfilename);
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "could not open clientKey: " + _clientkeyfilename);
+        }
     }
 
-    if (_cacertfilename.length() ){
-        std::ifstream ifs(_cacertfilename);
-        std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-        caCert = content;
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using caCert: " + _cacertfilename);
+    if (_cacertfilename.length()) {
+        std::ifstream ca_ifs(_cacertfilename);
+        if (ca_ifs.is_open()) {
+            std::string content((std::istreambuf_iterator<char>(ca_ifs)), (std::istreambuf_iterator<char>()));
+            caCert = content;
+            ca_ifs.close();
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "using caCert: " + _cacertfilename);
+        }
+        else {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "could not open caCert: " + _cacertfilename);
+        }
     }
 
     validateServerCert = _validateServerCert;
@@ -294,38 +312,22 @@ int MQTT_Init() {
     mqtt_cfg.session.keepalive = keepalive;
     mqtt_cfg.buffer.size = 2048;                         // size of MQTT send/receive buffer
 
-#if MQTT_ENABLE_SSL
-    if (caCert.length()){
+    if (caCert.length()) {
         mqtt_cfg.broker.verification.certificate = caCert.c_str();
-        // darf nur bei DER_CERTIFICATES gesetzt werden, wenn PEM_CERTIFICATES muß = 0 sein ??????????????????????????
-        // siehe: .platformio\packages\framework-espidf\components\mqtt\esp-mqtt\mqtt_client.c
-        //         static esp_err_t esp_mqtt_set_cert_key_data()
-        // mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
-        mqtt_cfg.broker.verification.certificate_len = 0;
+        mqtt_cfg.broker.verification.certificate_len = caCert.length() + 1;
 
-#if defined(MQTT_SUPPORTED_FEATURE_SKIP_CRT_CMN_NAME_CHECK)
         // Skip any validation of server certificate CN field, this reduces the
         // security of TLS and makes the *MQTT* client susceptible to MITM attacks
         mqtt_cfg.broker.verification.skip_cert_common_name_check = !validateServerCert;
-#endif // end MQTT_SUPPORTED_FEATURE_SKIP_CRT_CMN_NAME_CHECK
     }
 
-    if (clientCert.length() && clientKey.length()){
+    if (clientCert.length() && clientKey.length()) {
         mqtt_cfg.credentials.authentication.certificate = clientCert.c_str();
-        // darf nur bei DER_CERTIFICATES gesetzt werden, wenn PEM_CERTIFICATES muß = 0 sein ??????????????????????????
-        // siehe: .platformio\packages\framework-espidf\components\mqtt\esp-mqtt\mqtt_client.c
-        //         static esp_err_t esp_mqtt_set_cert_key_data()
-        // mqtt_cfg.credentials.authentication.certificate_len = clientCert.length() + 1;
-        mqtt_cfg.credentials.authentication.certificate_len = 0;
-        
+        mqtt_cfg.credentials.authentication.certificate_len = clientCert.length() + 1;
+
         mqtt_cfg.credentials.authentication.key = clientKey.c_str();
-        // darf nur bei DER_CERTIFICATES gesetzt werden, wenn PEM_CERTIFICATES muß = 0 sein ??????????????????????????
-        // siehe: .platformio\packages\framework-espidf\components\mqtt\esp-mqtt\mqtt_client.c
-        //         static esp_err_t esp_mqtt_set_cert_key_data()
-        // mqtt_cfg.credentials.authentication.key_len = clientKey.length() + 1;
-        mqtt_cfg.credentials.authentication.key_len = 0;
+        mqtt_cfg.credentials.authentication.key_len = clientKey.length() + 1;
     }
-#endif // end MQTT_ENABLE_SSL
 
     if (user.length() && password.length()){
         mqtt_cfg.credentials.username = user.c_str();
