@@ -2147,7 +2147,10 @@
 <script type="text/javascript">
 var canvas = document.getElementById('canvas'),
     domainname = getDomainname(),
-    changeCamValue = 0,	
+    changeCamValue = 0,
+    camId,
+    camInit,
+    camFocus,
     param,
     category,
     NUNBERSAkt = -1,
@@ -2190,7 +2193,11 @@ function LoadConfigNeu() {
         firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
         return;
     }
-	
+
+    loadCamId();
+    loadCamInit();
+    loadCamFocus();
+
     param = getCamConfig();
     category = getConfigCategory();
     InitIndivParameter();
@@ -3399,7 +3406,46 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
 
     EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional, _number);
 }
-	
+
+function loadCamId() 
+{
+    url = domainname + '/info?type=CamId';
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            camId = xhttp.response;
+        }
+    }
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+
+function loadCamInit() 
+{
+    url = domainname + '/info?type=CamInit';
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            camInit = xhttp.response;
+        }
+    }
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+
+function loadCamFocus() 
+{
+    url = domainname + '/info?type=CamFocus';
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            camFocus = xhttp.response;
+        }
+    }
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+
 /* hash #description open the details part of the page */
 function openDescription() {
     if(window.location.hash) {

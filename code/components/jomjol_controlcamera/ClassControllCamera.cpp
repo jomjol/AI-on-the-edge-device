@@ -422,11 +422,14 @@ void CCamera::CameraDeepSleep(bool enable)
             // OV2640 (Normal mode >>> Standby mode = OK), (Standby mode >>> Normal mode = n.OK)
             // s->set_reg(s, 0x109, 0x10, enable ? 0x10 : 0);
             // LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DeepSleep is not supported by OV2640");
+            ESP_LOGD(TAG, "DeepSleep is not supported by OV2640");
         }
         else
         {
             sensor_t *s = esp_camera_sensor_get();
             s->set_reg(s, 0x3008, 0x42, enable ? 0x42 : 0x02);
+            // LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep: %d", enable);
+            ESP_LOGD(TAG, "DeepSleep: %d", enable);
         }
 
         vTaskDelay(100 / portTICK_PERIOD_MS);

@@ -372,7 +372,7 @@
 			<td>$TOOLTIP_TakeImage_CamSharpness</td>
         </tr>
 
-		<tr class="expert">
+		<tr class="expert focus_ctrl" hidden>
 			<td class="indent1">
 				<class id="TakeImage_CamFocus_text" style="color:black;">Focus</class>
 			</td>
@@ -396,7 +396,7 @@
 			<td>$TOOLTIP_TakeImage_CamFocusAuto</td>				
 		</tr>
 
-		<tr class="expert">
+		<tr class="expert focus_ctrl" hidden>
 			<td class="indent1">
 				<label id="TakeImage_CamFocusManualLevel_text" style="color:black;">Manual focus level: </label>
 			</td>
@@ -441,9 +441,12 @@
             context = canvas.getContext('2d'),
             imageObj = new Image(),
             isActReference = false,
+            camId,
+            camInit,
+            camFocus,
             CamAutoFocusLevel = 0,
             param,
-			category;
+            category;
 
         function doReboot() {
             if (confirm("Are you sure you want to reboot? Did you save the config?")) {
@@ -956,7 +959,7 @@
 
             WriteParameter(param, category, "TakeImage", "CamFocus", false);
 			WriteParameter(param, category, "TakeImage", "CamFocusAuto", false);
-			WriteParameter(param, category, "TakeImage", "CamFocusManualLevel", false, true);
+			WriteParameter(param, category, "TakeImage", "CamFocusManualLevel", false);
 			
 			WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
 
@@ -1044,20 +1047,24 @@
         }
 
         function init() {
-            openDescription();		
-	
+            openDescription();
+
             if (!loadConfig(domainname)) {
-				firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
-				return;
-            }		
-			
+                firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+                return;
+            }
+
+            loadCamId();
+            loadCamInit();
+            loadCamFocus();
+
             param = getCamConfig();
-			category = getConfigCategory();
-			
-			canvas.addEventListener('mousemove', mouseMove, false);			
+            category = getConfigCategory();
+
+            canvas.addEventListener('mousemove', mouseMove, false);
 
             UpdateExpertModus();
-			UpdateTooltipModus();
+            UpdateTooltipModus();
             showReference();
         }
 
@@ -1573,6 +1580,59 @@
 
 			EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional, _number);
 		}
+
+        function updateFocusVisibility()
+        {
+            if ((camInit == 'ok') && (camId != undefined) && (camFocus != undefined)) {
+                if ((camId == "OV5640") && (camFocus == "available")) {
+                    setVisible('focus_ctrl', true);
+                } else {
+                    setVisible('focus_ctrl', false);
+                }
+            }
+        }
+
+        function loadCamId() 
+        {
+            url = domainname + '/info?type=CamId';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    camId = xhttp.response;
+                    updateFocusVisibility();
+                }
+            }
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+
+        function loadCamInit() 
+        {
+            url = domainname + '/info?type=CamInit';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    camInit = xhttp.response;
+                    updateFocusVisibility();
+                }
+            }
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+
+        function loadCamFocus() 
+        {
+            url = domainname + '/info?type=CamFocus';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    camFocus = xhttp.response;
+                    updateFocusVisibility();
+                }
+            }
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
 
         /* hash #description open the details part of the page */
         function openDescription() {
