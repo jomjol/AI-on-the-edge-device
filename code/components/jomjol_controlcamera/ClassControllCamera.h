@@ -70,6 +70,7 @@ typedef struct
     bool CameraInitSuccessful;
     bool CameraAFInitSuccessful;
     bool CameraSettingsChanged;
+    bool CameraDeepSleepEnable;
     bool DemoMode;
     bool SaveAllFiles;
 } camera_controll_config_temp_t;
@@ -101,6 +102,7 @@ public:
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
+    void CameraDeepSleep(bool enable);
     int CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint16_t *manualFocusLevel);
     int SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel);
     int ReleaseCamFocus(bool focusEnabled, bool manualFocus);

@@ -277,6 +277,8 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 
     if (s != NULL)
     {
+        CameraDeepSleep(false);
+
         s->set_framesize(s, CCstatus.ImageFrameSize);
 		
         // s->set_contrast(s, CCstatus.ImageContrast);     // -2 to 2
@@ -393,6 +395,7 @@ int CCamera::CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint
         // If the camera settings were changed by creating a new reference image, they must be reset
         if (CCstatus.CameraSettingsChanged)
         {
+            CameraDeepSleep(false);
             ret = ret | setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
             SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
             Camera.LedIntensity = CCstatus.ImageLedIntensity;
@@ -406,8 +409,34 @@ int CCamera::CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint
     return ret;
 }
 
+// only available on OV3660 and OV5640
+// https://github.com/espressif/esp32-camera/issues/672
+void CCamera::CameraDeepSleep(bool enable)
+{
+    if (CCstatus.CameraDeepSleepEnable != enable)
+    {
+        CCstatus.CameraDeepSleepEnable = enable;
+
+        if (CCstatus.CamSensor_id == OV2640_PID)
+        {
+            // OV2640 (Normal mode >>> Standby mode = OK), (Standby mode >>> Normal mode = n.OK)
+            // s->set_reg(s, 0x109, 0x10, enable ? 0x10 : 0);
+            // LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DeepSleep is not supported by OV2640");
+        }
+        else
+        {
+            sensor_t *s = esp_camera_sensor_get();
+            s->set_reg(s, 0x3008, 0x42, enable ? 0x42 : 0x02);
+        }
+
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+}
+
 int CCamera::SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel)
 {
+    CameraDeepSleep(false);
+
     int ret = 0;
 
     if (CCstatus.CamSensor_id == OV5640_PID)
@@ -485,6 +514,8 @@ int CCamera::SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFoc
 
 int CCamera::ReleaseCamFocus(bool focusEnabled, bool manualFocus)
 {
+    CameraDeepSleep(false);
+
     int ret = 0;
 
     if (CCstatus.CamSensor_id == OV5640_PID)
@@ -531,6 +562,8 @@ int CCamera::ReleaseCamFocus(bool focusEnabled, bool manualFocus)
 // on the OV5640, gainceiling must be set with the real value (x2>>>gainceilingLevel = 2, .... x128>>>gainceilingLevel = 128)
 int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 {
+    CameraDeepSleep(false);
+
 	int ret = 0;
 		
     if (CCstatus.CamSensor_id == OV2640_PID)
@@ -555,6 +588,8 @@ int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 
 void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
 {
+    CameraDeepSleep(false);
+ 
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
@@ -595,6 +630,8 @@ void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
 
 void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
 {
+    CameraDeepSleep(false);
+
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ov2640_set_special_effect(s, specialEffect);
@@ -607,6 +644,8 @@ void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
 
 void CCamera::SetCamContrastBrightness(sensor_t *s, int _contrast, int _brightness)
 {
+    CameraDeepSleep(false);
+
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ov2640_set_contrast_brightness(s, _contrast, _brightness);
@@ -750,6 +789,8 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
 
 void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip)
 {
+    CameraDeepSleep(false);
+
     sensor_t *s = esp_camera_sensor_get();
 
     // OV2640 has no lower limit on jpeg quality
@@ -773,6 +814,8 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
 
 void CCamera::SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip)
 {
+    CameraDeepSleep(false);
+
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         s->set_res_raw(s, 0, 0, 0, 0, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, false, false);
@@ -837,6 +880,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
+    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -877,6 +921,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     }
 
     esp_camera_fb_return(fb);
+    CameraDeepSleep(true);
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
@@ -950,6 +995,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
+    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -966,6 +1012,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         // doReboot();
+        CameraDeepSleep(true);
 
         return ESP_FAIL;
     }
@@ -1036,6 +1083,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     }
 
     esp_camera_fb_return(fb);
+    CameraDeepSleep(true);
 
     if (delay > 0)
     {
@@ -1063,6 +1111,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
+    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -1080,6 +1129,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
         //        doReboot();
+        CameraDeepSleep(true);
 
         return ESP_FAIL;
     }
@@ -1121,6 +1171,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     }
 
     esp_camera_fb_return(fb);
+    CameraDeepSleep(true);
     int64_t fr_end = esp_timer_get_time();
 
     ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
@@ -1156,6 +1207,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
+    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -1212,6 +1264,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     }
 
     ReleaseCamFocus(_focusEnabled, _manualFocus);
+    CameraDeepSleep(true);
 
     LEDOnOff(false);   // Status-LED off
     LightOnOff(false); // Flash-LED off
