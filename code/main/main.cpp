@@ -358,6 +358,7 @@ extern "C" void app_main(void)
     MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
     MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
     MakeDir("/sdcard/demo");             // mandatory for demo mode
+    MakeDir("/sdcard/config/certs");     // mandatory for mqtt certificates
 
     // Check for updates
     // ********************************************
