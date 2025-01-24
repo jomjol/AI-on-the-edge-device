@@ -385,16 +385,6 @@
 			<td>$TOOLTIP_TakeImage_CamFocus</td>				
 
 			<td class="indent1">
-				<label> </label>
-			</td>
-			<td>
-				<label> </label>
-			</td>
-			<td></td>				
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
 				<class id="TakeImage_CamFocusAuto_text" style="color:black;">Auto focus</class>
 			</td>
 			<td>
@@ -404,7 +394,9 @@
 				</select>			
 			</td>
 			<td>$TOOLTIP_TakeImage_CamFocusAuto</td>				
+		</tr>
 
+		<tr class="expert">
 			<td class="indent1">
 				<label id="TakeImage_CamFocusManualLevel_text" style="color:black;">Manual focus level: </label>
 			</td>
@@ -413,6 +405,14 @@
                     oninput="(!validity.rangeOverflow||(value=1023)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
 			</td>
 			<td>$TOOLTIP_TakeImage_CamFocusManualLevel</td>				
+
+            <td class="indent1">
+				<label id="TakeImage_CamFocusLevel_text" style="color:black;">Focus level: </label>
+			</td>
+			<td>
+				<label id="TakeImage_CamFocusLevelValue_text" style="color:black;"></label>
+			</td>
+			<td></td>				
 		</tr>
     </table>
 
@@ -432,7 +432,6 @@
     <b>Reference Image:</b><br>
     <canvas id="canvas"></canvas>
 
-
     <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
 
@@ -442,6 +441,7 @@
             context = canvas.getContext('2d'),
             imageObj = new Image(),
             isActReference = false,
+            CamAutoFocusLevel = 0,
             param,
 			category;
 
@@ -490,6 +490,49 @@
         function cameraParameterChangedDR() {
             //document.getElementById("savereferenceimage").disabled = true;
             drawRotated();
+        }
+
+        function getAutoFocusValue() {
+            var durchlaufe = 0;
+            var url = domainname + "/editflow?task=get_focus_level";
+
+            if (domainname.length > 0) {
+                url = url + "&host=" + domainname;
+            }
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            async function task() {
+                while (true) {
+                    var xhttp = new XMLHttpRequest();
+
+                    if (durchlaufe > 10) {
+                        return;
+                    }
+
+                    try {
+                        xhttp.open("GET", url, false);
+                        xhttp.send();
+                    } catch (error){}
+
+                    if (xhttp.responseText != "DeviceIsBusy") {
+                        CamAutoFocusLevel = xhttp.responseText;
+                        document.getElementById("TakeImage_CamFocusLevelValue_text").innerText = CamAutoFocusLevel;
+                        return;
+                    }
+                    else {
+                        durchlaufe = durchlaufe + 1;
+                        await sleep(2000);
+                    }
+                }
+            }
+
+            setTimeout(function() { 
+                // Delay so the overlay gets shown
+                task();
+            }, 1);
         }
 
         // Create New Reference, Update Image
@@ -655,11 +698,7 @@
             url = url + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;			
 
             if (_focus_temp != '0') {
-                if (_focusAuto_temp != '0') {
-                    url = url + "&fen=1&af=1";
-                } else {
-                    url = url + "&fen=1&af=0&flvl=" + _focusManualLevel_temp;
-                }
+                url = url + "&fen=" + _focus_temp + "&af=" + _focusAuto_temp + "&flvl=" + _focusManualLevel_temp;
             }
             else {
                 url = url + "&fen=0";
@@ -687,6 +726,7 @@
                     } catch (error){}				
             
                     if (xhttp.responseText != "DeviceIsBusy") {
+                        getAutoFocusValue();
                         var _url = domainname + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);						
                         loadCanvas(_url, true);
                         isActReference = false;
@@ -822,11 +862,7 @@
             url = url + "&mirror=" + _mirror_temp + "&flip=" + _flip_temp;			
 
             if (_focus_temp != '0') {
-                if (_focusAuto_temp != '0') {
-                    url = url + "&fen=1&af=1";
-                } else {
-                    url = url + "&fen=1&af=0&flvl=" + _focusManualLevel_temp;
-                }
+                url = url + "&fen=" + _focus_temp + "&af=" + _focusAuto_temp + "&flvl=" + _focusManualLevel_temp;
             }
             else {
                 url = url + "&fen=0";

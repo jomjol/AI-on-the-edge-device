@@ -61,13 +61,15 @@ typedef struct
     bool CameraFocusEnabled;
     bool CameraManualFocus;
     uint16_t CameraManualFocusLevel;
+    uint16_t CameraFocusLevel;
 
     int WaitBeforePicture;
     bool isImageSize;
+    bool isTempImage;
 
     bool CameraInitSuccessful;
     bool CameraAFInitSuccessful;
-    bool changedCameraSettings;
+    bool CameraSettingsChanged;
     bool DemoMode;
     bool SaveAllFiles;
 } camera_controll_config_temp_t;
@@ -99,11 +101,9 @@ public:
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
-    int SetCamFocus(void);
-    int ReleaseCamFocus(void);
-
-    void SetEffectiveCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel);
-    void RestoreEffectiveCamFocus(void);
+    int CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint16_t *manualFocusLevel);
+    int SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel);
+    int ReleaseCamFocus(bool focusEnabled, bool manualFocus);
 
     int SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel);
     void SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel);

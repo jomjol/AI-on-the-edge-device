@@ -134,7 +134,7 @@ esp_err_t CCamera::InitCam(void)
     CCstatus.CameraFocusEnabled = false;
     CCstatus.CameraManualFocus = false;
     CCstatus.CameraManualFocusLevel = 0;
-    SetEffectiveCamFocus(CCstatus.CameraFocusEnabled, CCstatus.CameraManualFocus, CCstatus.CameraManualFocusLevel);
+    CCstatus.CameraFocusLevel = 0;
 
     // De-init in case it was already initialized
     esp_camera_deinit();
@@ -377,38 +377,54 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
     }
 }
 
-void CCamera::SetEffectiveCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel)
+int CCamera::CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint16_t *manualFocusLevel)
 {
-    EffectiveCameraFocusEnabled = focusEnabled;
-    EffectiveCameraManualFocus = manualFocus;
-    EffectiveCameraManualFocusLevel = manualFocusLevel;
+    int ret = 0;
+
+    if (CCstatus.isTempImage)
+    {
+        CCstatus.isTempImage = false;
+        *focusEnabled = CFstatus.CameraFocusEnabled;
+        *manualFocus = CFstatus.CameraManualFocus;
+        *manualFocusLevel = CFstatus.CameraManualFocusLevel;
+    }
+    else
+    {
+        // If the camera settings were changed by creating a new reference image, they must be reset
+        if (CCstatus.CameraSettingsChanged)
+        {
+            ret = ret | setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+            SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+            Camera.LedIntensity = CCstatus.ImageLedIntensity;
+            CCstatus.CameraSettingsChanged = false;
+        }
+        *focusEnabled = CCstatus.CameraFocusEnabled;
+        *manualFocus = CCstatus.CameraManualFocus;
+        *manualFocusLevel = CCstatus.CameraManualFocusLevel;
+    }
+
+    return ret;
 }
 
-void CCamera::RestoreEffectiveCamFocus(void)
-{
-    EffectiveCameraFocusEnabled = CCstatus.CameraFocusEnabled;
-    EffectiveCameraManualFocus = CCstatus.CameraManualFocus;
-    EffectiveCameraManualFocusLevel = CCstatus.CameraManualFocusLevel;
-}
-
-int CCamera::SetCamFocus(void)
+int CCamera::SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel)
 {
     int ret = 0;
 
     if (CCstatus.CamSensor_id == OV5640_PID)
     {
-        if (EffectiveCameraFocusEnabled && CCstatus.CameraAFInitSuccessful)
+        if (focusEnabled && CCstatus.CameraAFInitSuccessful)
         {
             ESP_LOGI(TAG, "OV5640 and AF inited");
             sensor_t *s = esp_camera_sensor_get();
             if (s != NULL)
             {
-                if (EffectiveCameraManualFocus)
+                if (manualFocus)
                 {
-                    ret = ov5640_manual_focus_set(s, EffectiveCameraManualFocusLevel);
+                    ret = ov5640_manual_focus_set(s, manualFocusLevel);
                     if (ret == 0)
                     {
                         ESP_LOGI(TAG, "Set manual focus level success");
+                        CCstatus.CameraFocusLevel = manualFocusLevel;
                     }
                     else
                     {
@@ -447,8 +463,8 @@ int CCamera::SetCamFocus(void)
                         else if (focus_status == FW_STATUS_S_FOCUSED)
                         {
                             ESP_LOGI(TAG, "Focused: 0x%02x", focus_status);
-                            uint16_t focus_level = ov5640_get_focus_level(s);
-                            ESP_LOGI(TAG, "Focus level: %u", focus_level);
+                            CCstatus.CameraFocusLevel = ov5640_get_focus_level(s);
+                            ESP_LOGI(TAG, "Focus level: %u", CCstatus.CameraFocusLevel);
                             break;
                         }
                         else
@@ -467,18 +483,18 @@ int CCamera::SetCamFocus(void)
     return ret;
 }
 
-int CCamera::ReleaseCamFocus(void)
+int CCamera::ReleaseCamFocus(bool focusEnabled, bool manualFocus)
 {
     int ret = 0;
 
     if (CCstatus.CamSensor_id == OV5640_PID)
     {
-        if (EffectiveCameraFocusEnabled && CCstatus.CameraAFInitSuccessful)
+        if (focusEnabled && CCstatus.CameraAFInitSuccessful)
         {
             sensor_t *s = esp_camera_sensor_get();
             if (s != NULL)
             {
-                if (EffectiveCameraManualFocus)
+                if (manualFocus)
                 {
                     ret = ov5640_manual_focus_release(s);
                     if (ret == 0)
@@ -818,13 +834,17 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LightOn");
 #endif
 
-    SetCamFocus();
+    bool _focusEnabled = false;
+    bool _manualFocus = false;
+    uint16_t _manualFocusLevel = 0;
+    CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
+    SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
     camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
 
-    ReleaseCamFocus();
+    ReleaseCamFocus(_focusEnabled, _manualFocus);
 
     if (!fb)
     {
@@ -918,8 +938,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
-    string ftype;
-
     LEDOnOff(true); // Status-LED on
 
     if (delay > 0)
@@ -929,13 +947,17 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         vTaskDelay(xDelay);
     }
 
-    SetCamFocus();
+    bool _focusEnabled = false;
+    bool _manualFocus = false;
+    uint16_t _manualFocusLevel = 0;
+    CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
+    SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
     camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
 
-    ReleaseCamFocus();
+    ReleaseCamFocus(_focusEnabled, _manualFocus);
 
     if (!fb)
     {
@@ -960,7 +982,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
 #endif
 
-    ftype = toUpper(getFileType(nm));
+    std::string ftype = toUpper(getFileType(nm));
 
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Filetype: %s", ftype.c_str());
@@ -1038,13 +1060,17 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         vTaskDelay(xDelay);
     }
 
-    SetCamFocus();
+    bool _focusEnabled = false;
+    bool _manualFocus = false;
+    uint16_t _manualFocusLevel = 0;
+    CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
+    SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
     camera_fb_t *fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
 
-    ReleaseCamFocus();
+    ReleaseCamFocus(_focusEnabled, _manualFocus);
 
     if (!fb)
     {
@@ -1114,15 +1140,6 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     int64_t fr_start;
     char *part_buf[64];
 
-    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
-    if (CFstatus.changedCameraSettings)
-    {
-        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-        Camera.LedIntensity = CCstatus.ImageLedIntensity;
-        CFstatus.changedCameraSettings = false;
-    }
-
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream started");
 
     if (FlashlightOn)
@@ -1135,6 +1152,12 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 
     httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
     httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
+
+    bool _focusEnabled = false;
+    bool _manualFocus = false;
+    uint16_t _manualFocusLevel = 0;
+    CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
+    SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
     while (1)
     {
@@ -1187,6 +1210,8 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
             vTaskDelay(xDelay);
         }
     }
+
+    ReleaseCamFocus(_focusEnabled, _manualFocus);
 
     LEDOnOff(false);   // Status-LED off
     LightOnOff(false); // Flash-LED off

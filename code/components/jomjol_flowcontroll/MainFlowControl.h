@@ -57,13 +57,15 @@ typedef struct
     bool CameraFocusEnabled;
     bool CameraManualFocus;
     uint16_t CameraManualFocusLevel;
+    uint16_t CameraFocusLevel;
 
     int WaitBeforePicture;
     bool isImageSize;
+    bool isTempImage;
 
     bool CameraInitSuccessful;
     bool CameraInitAFSuccessful;
-    bool changedCameraSettings;
+    bool CameraSettingsChanged;
     bool DemoMode;
     bool SaveAllFiles;
 } camera_flow_config_temp_t;

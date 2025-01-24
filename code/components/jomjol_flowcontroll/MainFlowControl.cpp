@@ -197,6 +197,9 @@ esp_err_t setCCstatusToCFstatus(void)
 
     CFstatus.WaitBeforePicture = CCstatus.WaitBeforePicture;
 
+    CFstatus.CameraSettingsChanged = CCstatus.CameraSettingsChanged;
+    CFstatus.isTempImage = CCstatus.isTempImage;
+
     return ESP_OK;
 }
 
@@ -250,9 +253,11 @@ esp_err_t setCFstatusToCCstatus(void)
     CCstatus.CameraFocusEnabled = CFstatus.CameraFocusEnabled;
     CCstatus.CameraManualFocus = CFstatus.CameraManualFocus;
     CCstatus.CameraManualFocusLevel = CFstatus.CameraManualFocusLevel;
-    Camera.SetEffectiveCamFocus(CFstatus.CameraFocusEnabled, CFstatus.CameraManualFocus, CFstatus.CameraManualFocusLevel);
 
     CCstatus.WaitBeforePicture = CFstatus.WaitBeforePicture;
+
+    CCstatus.CameraSettingsChanged = CFstatus.CameraSettingsChanged;
+    CCstatus.isTempImage = CFstatus.isTempImage;
 
     return ESP_OK;
 }
@@ -1411,11 +1416,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (_task.compare("cam_settings") == 0)
             {
+                // Kameraeinstellungen wurden verädert
+                CCstatus.CameraSettingsChanged = true;
+                CFstatus.CameraSettingsChanged = true;
+                CFstatus.isTempImage = false;
+
                 // wird aufgerufen, wenn das Referenzbild + Kameraeinstellungen gespeichert wurden
                 setCFstatusToCCstatus(); // CFstatus >>> CCstatus
-
-                // Kameraeinstellungen wurden verädert
-                CFstatus.changedCameraSettings = true;
 
                 ESP_LOGD(TAG, "Cam Settings set");
                 std::string _zw = "CamSettingsSet";
@@ -1430,16 +1437,32 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
                 Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
                 // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
-                Camera.SetEffectiveCamFocus(CFstatus.CameraFocusEnabled, CFstatus.CameraManualFocus, CFstatus.CameraManualFocusLevel);
 
                 // Kameraeinstellungen wurden verädert
-                CFstatus.changedCameraSettings = true;
+                CCstatus.CameraSettingsChanged = true;
+                CFstatus.CameraSettingsChanged = true;
+                CCstatus.isTempImage = true;
+                CFstatus.isTempImage = true;
 
                 ESP_LOGD(TAG, "test_take - vor TakeImage");
                 std::string image_temp = flowctrl.doSingleStep("[TakeImage]", _host);
                 httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
                 httpd_resp_send(req, image_temp.c_str(), image_temp.length());
             }
+        }
+
+        if (_task.compare("get_focus_level") == 0)
+        {
+            std::string _host = "";
+
+            if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK)
+            {
+                _host = std::string(_valuechar);
+            }
+
+            std::string zw = to_string(CCstatus.CameraFocusLevel);
+            httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+            httpd_resp_send(req, zw.c_str(), zw.length());
         }
 
         if (_task.compare("test_align") == 0)

@@ -12,6 +12,9 @@ Default Value: `0`
 	After changing this parameter you need to update your reference image and alignment markers!
 
 !!! Note
+    Lower value for further focus, higher value for nearer focus.
+
+!!! Note
     This parameter only applies to OV5640 camera.
 	
 !!! Note

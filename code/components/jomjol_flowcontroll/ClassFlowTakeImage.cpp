@@ -544,7 +544,6 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
     Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
     Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-    Camera.RestoreEffectiveCamFocus();
 
     rawImage = new CImageBasis("rawImage");
     rawImage->CreateEmptyImage(CCstatus.ImageWidth, CCstatus.ImageHeight, 3);
@@ -584,12 +583,12 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 #endif
 
     // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
-    if (CFstatus.changedCameraSettings)
+    if (CFstatus.CameraSettingsChanged)
     {
         Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
         Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
         Camera.LedIntensity = CCstatus.ImageLedIntensity;
-        CFstatus.changedCameraSettings = false;
+        CFstatus.CameraSettingsChanged = false;
     }
 
     takePictureWithFlash(flash_duration);
