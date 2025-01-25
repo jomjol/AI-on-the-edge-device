@@ -34,20 +34,22 @@ enum InfluxDBVersion {
 class InfluxDB {
 private:
     // Information for InfluxDB v1.x
-    std::string influxDBURI;
+    std::string influxDBURI = "";
     // Information for InfluxDB v1.x
-    std::string database;
-    std::string user;
-    std::string password;
+    std::string database = "";
+    std::string user = "";
+    std::string password = "";
 
     // Information for InfluxDB v2.x
-    std::string bucket;
-    std::string org;
-    std::string token;
+    std::string bucket = "";
+    std::string org = "";
+    std::string token = "";
 
     InfluxDBVersion version;
 
-    esp_http_client_handle_t httpClient;
+    esp_http_client_handle_t httpClient = NULL;
+
+    void connectHTTP();
 
 public:
     // Initialize the InfluxDB connection parameters
