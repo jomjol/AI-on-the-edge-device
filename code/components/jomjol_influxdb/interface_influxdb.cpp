@@ -21,6 +21,95 @@ std::string _influxDB_V2_Bucket;
 std::string _influxDB_V2_Token;
 std::string _influxDB_V2_Org;
 
+
+/////////////////////////////////////////////////////////////////////////////////////
+    void InfluxDB::InfluxDBInit(std::string _influxDBURI, std::string _database, std::string _user, std::string _password) {
+        influxDBURI = _influxDBURI;
+        database = _database;
+        user = _user;
+        password = _password;
+
+        esp_http_client_config_t config = {};
+        config.url = influxDBURI.c_str();
+        config.auth_type = HTTP_AUTH_TYPE_BASIC;
+        config.username = user.c_str();
+        config.password = password.c_str();
+
+        httpClient = esp_http_client_init(&config);
+        if (!httpClient) {
+            ESP_LOGE("InfluxDB", "Failed to initialize HTTP client");
+        } else {
+            ESP_LOGI("InfluxDB", "HTTP client initialized successfully");
+        }
+    }
+
+    // Destroy the InfluxDB connection
+    void InfluxDB::InfluxDBdestroy() {
+        if (httpClient) {
+            esp_http_client_cleanup(httpClient);
+            ESP_LOGI("InfluxDB", "HTTP client cleaned up");
+        }
+    }
+
+    // Publish data to the InfluxDB server
+    void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) {
+        if (!httpClient) {
+            ESP_LOGE("InfluxDB", "HTTP client not initialized");
+            return;
+        }
+
+/////////////////
+
+    std::string payload;
+    char nowTimestamp[21];
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", timeUTC: " + std::to_string(_timeUTC));
+
+    if (_timeUTC > 0)
+    {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp (UTC): " + std::to_string(_timeUTC));
+        sprintf(nowTimestamp,"%ld000000000", _timeUTC);           // UTC
+        payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+    }
+    else
+    {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "no timestamp given");
+        payload = _measurement + " " + _key + "=" + _content;
+    }
+
+    payload.shrink_to_fit();
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
+
+
+    // use the default retention policy of the bucket
+    std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
+//    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
+
+    apiURI.shrink_to_fit();
+/////////////////
+
+
+
+        // Construct the InfluxDB line protocol string
+
+        esp_http_client_set_url(httpClient, apiURI.c_str());
+        esp_http_client_set_method(httpClient, HTTP_METHOD_POST);
+        esp_http_client_set_header(httpClient, "Content-Type", "text/plain");
+        esp_http_client_set_post_field(httpClient, payload.c_str(), payload.length());
+
+        esp_err_t err = esp_http_client_perform(httpClient);
+        if (err == ESP_OK) {
+            ESP_LOGI("InfluxDB", "Data published successfully: %s", payload.c_str());
+        } else {
+            ESP_LOGE("InfluxDB", "Failed to publish data: %s", esp_err_to_name(err));
+        }
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
 static esp_err_t http_event_handler(esp_http_client_event_t *evt);
 
 void InfluxDB_V2_Init(std::string _uri, std::string _bucket, std::string _org, std::string _token)
