@@ -123,7 +123,14 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
     { 
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", org: " + dborg + ", token: *****");
 //        printf("vor V2 Init\n");
-        InfluxDB_V2_Init(uri, bucket, dborg, dbtoken); 
+
+
+////////////////////////////////////////// NEW ////////////////////////////////////////////
+//        InfluxDB_V2_Init(uri, bucket, dborg, dbtoken);
+//        InfluxDB_V2_Init(uri, bucket, dborg, dbtoken); 
+        influxdb.InfluxDBInitV2(uri, bucket, dborg, dbtoken);
+////////////////////////////////////////// NEW ////////////////////////////////////////////
+
 //        printf("nach V2 Init\n");
         InfluxDBenable = true;
     } else {
@@ -232,7 +239,8 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
             printf("vor sende Influx_DB_V2 - namenumber. %s, result: %s, timestampt: %s", namenumber.c_str(), result.c_str(), resulttimestamp.c_str());
 
             if (result.length() > 0)   
-                InfluxDB_V2_Publish(measurement, namenumber, result, resulttimeutc);
+                influxdb.InfluxDBPublish(measurement, namenumber, result, resulttimeutc);
+//                InfluxDB_V2_Publish(measurement, namenumber, result, resulttimeutc);
         }
     }
    

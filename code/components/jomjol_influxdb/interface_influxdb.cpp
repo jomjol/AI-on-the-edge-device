@@ -22,8 +22,10 @@ std::string _influxDB_V2_Token;
 std::string _influxDB_V2_Org;
 
 
+/**/
 /////////////////////////////////////////////////////////////////////////////////////
-    void InfluxDB::InfluxDBInit(std::string _influxDBURI, std::string _database, std::string _user, std::string _password) {
+    void InfluxDB::InfluxDBInitV1(std::string _influxDBURI, std::string _database, std::string _user, std::string _password) {
+        version = INFLUXDB_V1;
         influxDBURI = _influxDBURI;
         database = _database;
         user = _user;
@@ -37,11 +39,31 @@ std::string _influxDB_V2_Org;
 
         httpClient = esp_http_client_init(&config);
         if (!httpClient) {
-            ESP_LOGE("InfluxDB", "Failed to initialize HTTP client");
+            ESP_LOGE("InfluxDBV1", "Failed to initialize HTTP client");
         } else {
-            ESP_LOGI("InfluxDB", "HTTP client initialized successfully");
+            ESP_LOGI("InfluxDBV2", "HTTP client initialized successfully");
         }
     }
+
+    void InfluxDB::InfluxDBInitV2(std::string _influxDBURI, std::string _bucket, std::string _org, std::string _token) {
+        version = INFLUXDB_V2;
+        influxDBURI = _influxDBURI;
+        bucket = _bucket;
+        org = _org;
+        token = _token;
+
+        esp_http_client_config_t config = {};
+        config.user_agent = "ESP32 Meter reader",
+        config.method = HTTP_METHOD_POST;
+
+        httpClient = esp_http_client_init(&config);
+        if (!httpClient) {
+            ESP_LOGE("InfluxDBV2", "Failed to initialize HTTP client");
+        } else {
+            ESP_LOGI("InfluxDBV2", "HTTP client initialized successfully");
+        }
+    }
+
 
     // Destroy the InfluxDB connection
     void InfluxDB::InfluxDBdestroy() {
@@ -54,9 +76,26 @@ std::string _influxDB_V2_Org;
     // Publish data to the InfluxDB server
     void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) {
         if (!httpClient) {
-            ESP_LOGE("InfluxDB", "HTTP client not initialized");
-            return;
+            ESP_LOGE("InfluxDB", "HTTP client not initialized, try to initialize it.");
+            switch (version) {
+                case INFLUXDB_V1:
+                    InfluxDBInitV1(influxDBURI, database, user, password);
+                    if (!httpClient) {
+                        ESP_LOGE("InfluxDBV1", "HTTP client couldl not be not initialized");
+                        return;
+                    }
+                    break;
+                case INFLUXDB_V2:
+                    InfluxDBInitV2(influxDBURI, bucket, org, token);
+                    if (!httpClient) {
+                        ESP_LOGE("InfluxDBV2", "HTTP client couldl not be not initialized");
+                        return;
+                    }
+                    break;
+            }
         }
+
+    std::string apiURI;        
 
 /////////////////
 
@@ -81,34 +120,49 @@ std::string _influxDB_V2_Org;
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "sending line to influxdb:" + payload);
 
+    esp_err_t err;
 
-    // use the default retention policy of the bucket
-    std::string apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
-//    std::string apiURI = _influxDBURI + "/api/v2/write?bucket=" + _influxDBDatabase + "/";
+    switch (version) {
+        case INFLUXDB_V1: 
+            apiURI = _influxDBURI + "/write?db=" + _influxDBDatabase;
+            apiURI.shrink_to_fit();
 
-    apiURI.shrink_to_fit();
-/////////////////
+            esp_http_client_set_url(httpClient, apiURI.c_str());
+            esp_http_client_set_method(httpClient, HTTP_METHOD_POST);
+            esp_http_client_set_header(httpClient, "Content-Type", "text/plain");
+            esp_http_client_set_post_field(httpClient, payload.c_str(), payload.length());
 
+            err = esp_http_client_perform(httpClient);
+            if (err == ESP_OK) {
+                ESP_LOGI("InfluxDBV1", "Data published successfully: %s", payload.c_str());
+            } else {
+                ESP_LOGE("InfluxDBV1", "Failed to publish data: %s", esp_err_to_name(err));
+            }
+            break;
+        case INFLUXDB_V2:
+            apiURI = _influxDB_V2_URI + "/api/v2/write?org=" + org + "&bucket=" + bucket;
+            apiURI.shrink_to_fit();
 
+            esp_http_client_set_url(httpClient, apiURI.c_str());
+            esp_http_client_set_method(httpClient, HTTP_METHOD_POST);
+            esp_http_client_set_header(httpClient, "Content-Type", "text/plain");
+            std::string _zw = "Token " + token;
+            esp_http_client_set_header(httpClient, "Authorization", _zw.c_str());
+            esp_http_client_set_post_field(httpClient, payload.c_str(), payload.length());
 
-        // Construct the InfluxDB line protocol string
-
-        esp_http_client_set_url(httpClient, apiURI.c_str());
-        esp_http_client_set_method(httpClient, HTTP_METHOD_POST);
-        esp_http_client_set_header(httpClient, "Content-Type", "text/plain");
-        esp_http_client_set_post_field(httpClient, payload.c_str(), payload.length());
-
-        esp_err_t err = esp_http_client_perform(httpClient);
-        if (err == ESP_OK) {
-            ESP_LOGI("InfluxDB", "Data published successfully: %s", payload.c_str());
-        } else {
-            ESP_LOGE("InfluxDB", "Failed to publish data: %s", esp_err_to_name(err));
-        }
+            err = esp_http_client_perform(httpClient);
+            if (err == ESP_OK) {
+                ESP_LOGI("InfluxDBV2", "Data published successfully: %s", payload.c_str());
+            } else {
+                ESP_LOGE("InfluxDBV2", "Failed to publish data: %s", esp_err_to_name(err));
+            }
+        break;
+    }
     }
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-
+/*
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt);
 
@@ -298,5 +352,7 @@ void InfluxDBInit(std::string _uri, std::string _database, std::string _user, st
 
 void InfluxDBdestroy() {
 }
+
+*/
 
 #endif //ENABLE_INFLUXDB

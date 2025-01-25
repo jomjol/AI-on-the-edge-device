@@ -120,7 +120,7 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
 
 /////////////////////// NEW //////////////////////////
 //        InfluxDBInit(uri, database, user, password);
-        influxDB.InfluxDBInit(uri, database, user, password);
+        influxDB.InfluxDBInitV1(uri, database, user, password);
 /////////////////////// NEW //////////////////////////
 
         InfluxDBenable = true;
