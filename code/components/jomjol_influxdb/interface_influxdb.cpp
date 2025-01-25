@@ -39,9 +39,9 @@ std::string _influxDB_V2_Org;
 
         httpClient = esp_http_client_init(&config);
         if (!httpClient) {
-            ESP_LOGE("InfluxDBV1", "Failed to initialize HTTP client");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize HTTP client (V1)");
         } else {
-            ESP_LOGI("InfluxDBV2", "HTTP client initialized successfully");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP client initialized successfully (V1)");
         }
     }
 
@@ -58,9 +58,9 @@ std::string _influxDB_V2_Org;
 
         httpClient = esp_http_client_init(&config);
         if (!httpClient) {
-            ESP_LOGE("InfluxDBV2", "Failed to initialize HTTP client");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to initialize HTTP client (V2)");
         } else {
-            ESP_LOGI("InfluxDBV2", "HTTP client initialized successfully");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP client initialized successfully (V2)");
         }
     }
 
@@ -69,26 +69,26 @@ std::string _influxDB_V2_Org;
     void InfluxDB::InfluxDBdestroy() {
         if (httpClient) {
             esp_http_client_cleanup(httpClient);
-            ESP_LOGI("InfluxDB", "HTTP client cleaned up");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP client cleaned up");
         }
     }
 
     // Publish data to the InfluxDB server
     void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) {
         if (!httpClient) {
-            ESP_LOGE("InfluxDB", "HTTP client not initialized, try to initialize it.");
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP client not initialized, try to initialize it.");
             switch (version) {
                 case INFLUXDB_V1:
                     InfluxDBInitV1(influxDBURI, database, user, password);
                     if (!httpClient) {
-                        ESP_LOGE("InfluxDBV1", "HTTP client couldl not be not initialized");
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP client couldl not be not initialized");
                         return;
                     }
                     break;
                 case INFLUXDB_V2:
                     InfluxDBInitV2(influxDBURI, bucket, org, token);
                     if (!httpClient) {
-                        ESP_LOGE("InfluxDBV2", "HTTP client couldl not be not initialized");
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "HTTP client couldl not be not initialized");
                         return;
                     }
                     break;
@@ -134,9 +134,9 @@ std::string _influxDB_V2_Org;
 
             err = esp_http_client_perform(httpClient);
             if (err == ESP_OK) {
-                ESP_LOGI("InfluxDBV1", "Data published successfully: %s", payload.c_str());
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Data published successfully: " + payload);
             } else {
-                ESP_LOGE("InfluxDBV1", "Failed to publish data: %s", esp_err_to_name(err));
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to publish data: " + std::string(esp_err_to_name(err)));
             }
             break;
         case INFLUXDB_V2:
@@ -152,9 +152,9 @@ std::string _influxDB_V2_Org;
 
             err = esp_http_client_perform(httpClient);
             if (err == ESP_OK) {
-                ESP_LOGI("InfluxDBV2", "Data published successfully: %s", payload.c_str());
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Data published successfully: " + payload);
             } else {
-                ESP_LOGE("InfluxDBV2", "Failed to publish data: %s", esp_err_to_name(err));
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to publish data: " + std::string(esp_err_to_name(err)));
             }
         break;
     }
