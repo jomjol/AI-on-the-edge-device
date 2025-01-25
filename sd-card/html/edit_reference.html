@@ -372,7 +372,7 @@
 			<td>$TOOLTIP_TakeImage_CamSharpness</td>
         </tr>
 
-		<tr class="expert focus_ctrl" hidden>
+		<tr class="expert focus_ctrl hidden">
 			<td class="indent1">
 				<class id="TakeImage_CamFocus_text" style="color:black;">Focus</class>
 			</td>
@@ -396,7 +396,7 @@
 			<td>$TOOLTIP_TakeImage_CamFocusAuto</td>				
 		</tr>
 
-		<tr class="expert focus_ctrl" hidden>
+		<tr class="expert focus_ctrl hidden">
 			<td class="indent1">
 				<label id="TakeImage_CamFocusManualLevel_text" style="color:black;">Manual focus level: </label>
 			</td>
@@ -1583,11 +1583,11 @@
 
         function updateFocusVisibility()
         {
-            if ((camInit == 'ok') && (camId != undefined) && (camFocus != undefined)) {
+            if ((camInit == "ok") && (camId != undefined) && (camFocus != undefined)) {
                 if ((camId == "OV5640") && (camFocus == "available")) {
-                    setVisible('focus_ctrl', true);
+                    setVisible("focus_ctrl", true);
                 } else {
-                    setVisible('focus_ctrl', false);
+                    setVisible("focus_ctrl", false);
                 }
             }
         }
