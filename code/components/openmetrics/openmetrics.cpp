@@ -20,10 +20,11 @@ typedef struct sequence_metric {
 } sequence_metric_t;
 
 
-sequence_metric_t sequenceMetrics[3] = {
+sequence_metric_t sequenceMetrics[4] = {
     { "flow_value",     "current value of meter readout",     "gauge", [](NumberPost *number)-> std::string {return number->ReturnValue;} },
     { "flow_raw_value", "current raw value of meter readout", "gauge", [](NumberPost *number)-> std::string {return number->ReturnRawValue;} },
     { "flow_pre_value", "previous value of meter readout",    "gauge", [](NumberPost *number)-> std::string {return number->ReturnPreValue;} },
+    { "flow_error",     "Error message text != 'no error'",   "gauge", [](NumberPost *number)-> std::string {return number->ErrorMessageText.compare("no error") == 0 ? "0" : "1";} },
 };
 
 std::string createSequenceMetrics(std::string prefix, const std::vector<NumberPost *> &numbers)
