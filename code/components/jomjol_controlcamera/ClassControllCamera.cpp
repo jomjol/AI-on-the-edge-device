@@ -411,11 +411,11 @@ int CCamera::CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint
 
 // only available on OV3660 and OV5640
 // https://github.com/espressif/esp32-camera/issues/672
-void CCamera::CameraDeepSleep(bool enable)
+void CCamera::CameraDeepSleep(bool sleep)
 {
-    if (CCstatus.CameraDeepSleepEnable != enable)
+    if (CCstatus.CameraDeepSleepEnable != sleep)
     {
-        CCstatus.CameraDeepSleepEnable = enable;
+        CCstatus.CameraDeepSleepEnable = sleep;
 
         if (CCstatus.CamSensor_id == OV2640_PID)
         {
@@ -427,12 +427,17 @@ void CCamera::CameraDeepSleep(bool enable)
         else
         {
             sensor_t *s = esp_camera_sensor_get();
-            s->set_reg(s, 0x3008, 0x42, enable ? 0x42 : 0x02);
+            s->set_reg(s, 0x3008, 0x42, sleep ? 0x42 : 0x02);
             // LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep: %d", enable);
-            ESP_LOGD(TAG, "DeepSleep: %d", enable);
+            ESP_LOGD(TAG, "DeepSleep: %d", sleep);
         }
 
         vTaskDelay(100 / portTICK_PERIOD_MS);
+        if (!sleep)
+        {
+            setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+            SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        }
     }
 }
 
@@ -865,6 +870,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 #endif
 
+    CameraDeepSleep(false);
+
     _Image->EmptyImage(); // Delete previous stored raw image -> black image
 
     LEDOnOff(true); // Status-LED on
@@ -883,7 +890,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
-    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -986,6 +992,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
+    CameraDeepSleep(false);
+
     LEDOnOff(true); // Status-LED on
 
     if (delay > 0)
@@ -998,7 +1006,6 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
-    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -1098,6 +1105,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
 esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 {
+    CameraDeepSleep(false);
+
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
@@ -1114,7 +1123,6 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
-    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 
@@ -1189,6 +1197,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
 esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 {
+    CameraDeepSleep(false);
+
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start;
@@ -1210,7 +1220,6 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     bool _focusEnabled = false;
     bool _manualFocus = false;
     uint16_t _manualFocusLevel = 0;
-    CameraDeepSleep(false);
     CheckCamSettingsChanged(&_focusEnabled, &_manualFocus, &_manualFocusLevel);
     SetCamFocus(_focusEnabled, _manualFocus, _manualFocusLevel);
 

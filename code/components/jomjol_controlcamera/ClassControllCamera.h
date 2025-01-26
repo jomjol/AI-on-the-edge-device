@@ -102,7 +102,7 @@ public:
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
-    void CameraDeepSleep(bool enable);
+    void CameraDeepSleep(bool sleep);
     int CheckCamSettingsChanged(bool *focusEnabled, bool *manualFocus, uint16_t *manualFocusLevel);
     int SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel);
     int ReleaseCamFocus(bool focusEnabled, bool manualFocus);
