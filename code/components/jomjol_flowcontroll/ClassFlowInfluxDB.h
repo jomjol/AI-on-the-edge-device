@@ -8,6 +8,7 @@
 #include "ClassFlow.h"
 
 #include "ClassFlowPostProcessing.h"
+#include "interface_influxdb.h"
 
 #include <string>
 
@@ -20,6 +21,8 @@ protected:
 	ClassFlowPostProcessing* flowpostprocessing;  
     std::string user, password; 
     bool InfluxDBenable;
+
+    InfluxDB influxDB;
 
     void SetInitialParameter(void);    
     

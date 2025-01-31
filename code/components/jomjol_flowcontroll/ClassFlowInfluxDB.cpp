@@ -117,7 +117,12 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
     { 
 //        ESP_LOGD(TAG, "Init InfluxDB with uri: %s, measurement: %s, user: %s, password: %s", uri.c_str(), measurement.c_str(), user.c_str(), password.c_str());
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Init InfluxDB with uri: " + uri + ", user: " + user + ", password: " + password);
-        InfluxDBInit(uri, database, user, password); 
+
+/////////////////////// NEW //////////////////////////
+//        InfluxDBInit(uri, database, user, password);
+        influxDB.InfluxDBInitV1(uri, database, user, password);
+/////////////////////// NEW //////////////////////////
+
         InfluxDBenable = true;
     } else {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB init skipped as we are missing some parameters");
@@ -169,7 +174,12 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
             }
 
             if (result.length() > 0)   
-                InfluxDBPublish(measurement, namenumber, result, timeutc);
+//////////////////////// NEW //////////////////////////            
+//                InfluxDBPublish(measurement, namenumber, result, timeutc);
+                influxDB.InfluxDBPublish(measurement, namenumber, result, timeutc);
+//////////////////////// NEW //////////////////////////
+
+
         }
     }
    
