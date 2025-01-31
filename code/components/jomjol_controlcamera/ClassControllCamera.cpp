@@ -317,9 +317,11 @@ esp_err_t CCamera::configureSensor(cam_config_t *camConfig)
         SetCamSharpness(camConfig->ImageAutoSharpness, camConfig->ImageSharpness);
         s->set_denoise(s, camConfig->ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
+        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
+        vTaskDelay(cam_xDelay);
+
         SetQualityZoomSize(camConfig);
 
-        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
         vTaskDelay(cam_xDelay);
 
         return ESP_OK;
@@ -392,15 +394,8 @@ int CCamera::PrecaptureCamSetup(bool *focusEnabled, bool *manualFocus, bool *nee
 {
     int ret = 0;
 
-    cam_config_t *camConfig;
-    if (CCstatus.isTempImage)
-    {
-        camConfig = &CFstatus.CamConfig;
-    }
-    else
-    {
-        camConfig = &CCstatus.CamConfig;
-    }
+    cam_config_t *camConfig = CCstatus.isTempImage ? &CFstatus.CamConfig : &CCstatus.CamConfig;
+    CCstatus.isTempImage = false;
 
     bool _focusEnabled = camConfig->CameraFocusEnabled;
     bool _manualFocus = camConfig->CameraManualFocus;
@@ -425,8 +420,6 @@ int CCamera::PrecaptureCamSetup(bool *focusEnabled, bool *manualFocus, bool *nee
         SetCamFocus(_focusEnabled, true, CCstatus.CameraFocusLevel);
         SetQualityZoomSize(camConfig);
     }
-
-    CCstatus.isTempImage = false;
 
     return ret;
 }
@@ -454,10 +447,11 @@ void CCamera::CameraDeepSleep(bool sleep)
             ESP_LOGD(TAG, "DeepSleep: %d", sleep);
         }
 
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
         if (!sleep)
         {
-            setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+            cam_config_t *camConfig = CCstatus.isTempImage ? &CFstatus.CamConfig : &CCstatus.CamConfig;
+            configureSensor(camConfig);
         }
     }
 }
