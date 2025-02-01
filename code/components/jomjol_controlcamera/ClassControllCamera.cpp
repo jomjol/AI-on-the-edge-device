@@ -130,6 +130,7 @@ esp_err_t CCamera::InitCam(void)
 
     CCstatus.CamConfig.ImageQuality = camera_config.jpeg_quality;
     CCstatus.CamConfig.ImageFrameSize = camera_config.frame_size;
+    SetImageWidthHeightFromResolution(&CCstatus.CamConfig, CCstatus.CamConfig.ImageFrameSize);
 
     CCstatus.CamConfig.CameraFocusEnabled = false;
     CCstatus.CamConfig.CameraManualFocus = false;
@@ -278,6 +279,8 @@ esp_err_t CCamera::configureSensor(cam_config_t *camConfig)
     {
         CameraDeepSleep(false);
 
+        SetImageWidthHeightFromResolution(camConfig, camConfig->ImageFrameSize);
+
         s->set_framesize(s, camConfig->ImageFrameSize);
 		
         // s->set_contrast(s, camConfig->ImageContrast);     // -2 to 2
@@ -317,11 +320,9 @@ esp_err_t CCamera::configureSensor(cam_config_t *camConfig)
         SetCamSharpness(camConfig->ImageAutoSharpness, camConfig->ImageSharpness);
         s->set_denoise(s, camConfig->ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
-        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
-        vTaskDelay(cam_xDelay);
-
         SetQualityZoomSize(camConfig);
 
+        TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
         vTaskDelay(cam_xDelay);
 
         return ESP_OK;
@@ -447,11 +448,14 @@ void CCamera::CameraDeepSleep(bool sleep)
             ESP_LOGD(TAG, "DeepSleep: %d", sleep);
         }
 
-        vTaskDelay(200 / portTICK_PERIOD_MS);
-        if (!sleep)
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        if (CCstatus.CamSensor_id != OV2640_PID)
         {
-            cam_config_t *camConfig = CCstatus.isTempImage ? &CFstatus.CamConfig : &CCstatus.CamConfig;
-            configureSensor(camConfig);
+            if (!sleep)
+            {
+                cam_config_t *camConfig = CCstatus.isTempImage ? &CFstatus.CamConfig : &CCstatus.CamConfig;
+                configureSensor(camConfig);
+            }
         }
     }
 }
