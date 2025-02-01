@@ -9,6 +9,8 @@
 
 #include "ClassFlowPostProcessing.h"
 
+#include "interface_influxdb.h"
+
 #include <string>
 
 class ClassFlowInfluxDBv2 :
@@ -20,6 +22,8 @@ protected:
     std::string OldValue;
 	ClassFlowPostProcessing* flowpostprocessing;  
     bool InfluxDBenable;
+
+    InfluxDB influxdb;
 
     void SetInitialParameter(void);     
 

@@ -1281,7 +1281,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     int _ImageDenoiseLevel = std::stoi(_valuechar);
                     if (CCstatus.CamSensor_id == OV2640_PID)
                     {
-                        CCstatus.ImageDenoiseLevel = 0;
+                        CFstatus.ImageDenoiseLevel = 0;
                     }
                     else
                     {
