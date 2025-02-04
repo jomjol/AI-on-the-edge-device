@@ -1,0 +1,26 @@
+.ip-input-container {
+	display:inline-block;
+	font-size:0;
+	border:1px solid #ccc;
+	padding:1px 0;
+}
+	
+.ip-input-container .ip-input-item {
+	border:none;
+	outline:0;
+	margin:0;
+	width:40px;
+	text-align:center;
+	vertical-align:bottom;
+	font-size:16px;
+}
+
+.ip-input-container .ip-input-dot {
+	display:inline-block;
+	width:2px;
+	height:2px;
+	margin-bottom:1px;
+	background-color:#333;
+	border-radius:50%;
+	vertical-align:bottom;
+}
