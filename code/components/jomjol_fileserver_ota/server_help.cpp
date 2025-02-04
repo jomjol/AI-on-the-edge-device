@@ -38,14 +38,14 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     struct stat file_stat;
     bool _gz_file_exists = false;
 
-    ESP_LOGI(TAG, "old filename: %s", filename.c_str());
+    ESP_LOGD(TAG, "old filename: %s", filename.c_str());
     std::string _filename_temp = std::string(filename) + ".gz";
 
     // Checks whether the file is available as .gz
     if (stat(_filename_temp.c_str(), &file_stat) == 0) {
         filename = _filename_temp;
 
-        ESP_LOGI(TAG, "new filename: %s", filename.c_str());
+        ESP_LOGD(TAG, "new filename: %s", filename.c_str());
         _gz_file_exists = true;
     }
 
