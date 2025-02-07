@@ -882,19 +882,6 @@
 			<td>$TOOLTIP_PostProcessing_ErrorMessage</td>
 		</tr>
 
-		<tr class="expert" unused_id="ex1dddd">
-			<td class="indent1">
-				<label><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_CheckDigitIncreaseConsistency</td>
-		</tr>
-
 		<tr style="margin-top:12px">
 			<td class="indent1" style="padding-top:25px" colspan="3">
 				<b>Parameter per number sequence:</b>
@@ -1021,6 +1008,19 @@
 			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreAllNaN</td>
 		</tr>		
 		------------------>
+		
+		<tr>
+			<td class="indent2">
+				<label><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
+			</td>
+			<td>
+				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
+					<option value="true">enable (true)</option>
+					<option value="false" selected>disable (false)</option>
+				</select>
+			</td>
+			<td>$TOOLTIP_PostProcessing_NUMBER.CheckDigitIncreaseConsistency</td>
+		</tr>
 
 		<!------------- MQTT ------------------>
 		<tr style="border-bottom: 2px solid lightgray;">
@@ -2240,6 +2240,7 @@ function UpdateInputIndividual(sel) {
         ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
         // ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
@@ -2259,6 +2260,7 @@ function UpdateInputIndividual(sel) {
     WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
     // WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
@@ -2340,7 +2342,7 @@ function UpdateInput() {
     WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
     WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
     WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
-    WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
+    // WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
     WriteParameter(param, category, "MQTT", "Uri", true);	
     WriteParameter(param, category, "MQTT", "MainTopic", true);	
@@ -2508,7 +2510,7 @@ function ReadParameterAll() {
     ReadParameter(param, "PostProcessing", "PreValueUse", false);
     ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);
     ReadParameter(param, "PostProcessing", "ErrorMessage", false);
-    ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);	
+    // ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);	
 
     ReadParameter(param, "MQTT", "Uri", true);
     ReadParameter(param, "MQTT", "MainTopic", true);
