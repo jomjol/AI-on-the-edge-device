@@ -432,8 +432,9 @@ int CCamera::PrecaptureCamSetup(bool *focusEnabled, bool *manualFocus, bool *nee
 
 // only available on OV3660 and OV5640
 // https://github.com/espressif/esp32-camera/issues/672
-void CCamera::CameraDeepSleep(bool sleep)
+int CCamera::CameraDeepSleep(bool sleep)
 {
+    int ret = 0;
     if (CCstatus.CameraDeepSleepEnable != sleep)
     {
         CCstatus.CameraDeepSleepEnable = sleep;
@@ -445,19 +446,28 @@ void CCamera::CameraDeepSleep(bool sleep)
             if (CCstatus.CamSensor_id == OV2640_PID)
             {
                 // OV2640 (Normal mode >>> Standby mode = OK), (Standby mode >>> Normal mode = n.OK)
-                // s->set_reg(s, 0x109, 0x10, enable ? 0x10 : 0);
-                // LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DeepSleep is not supported by OV2640");
-                ESP_LOGD(TAG, "DeepSleep is not supported by OV2640");
+                // ret |= s->set_reg(s, 0x109, 0x10, enable ? 0x10 : 0);
+                // LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep is not supported by OV2640");
+                uint8_t reg = s->get_reg(s, 0x09, 0xff);
+                ret = s->set_reg(s, 0x09, 0xff, sleep ? (reg |= 0x10) : (reg &= ~0x10));
             }
             else
             {
-                s->set_reg(s, 0x3008, 0x42, sleep ? 0x42 : 0x02);
-                // LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep: %d", enable);
-                ESP_LOGD(TAG, "DeepSleep: %d", sleep);
-                vTaskDelay(100 / portTICK_PERIOD_MS);
+                ret = s->set_reg(s, 0x3008, 0x42, sleep ? 0x42 : 0x02);
             }
+
+            std::string state = sleep ? "enabled" : "disabled";
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep: " + state);
+
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+        }
+        else
+        {
+            return -1;
         }
     }
+
+    return ret;
 }
 
 int CCamera::SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFocusLevel)
