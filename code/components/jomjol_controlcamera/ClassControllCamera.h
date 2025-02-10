@@ -60,6 +60,7 @@ protected:
 
     int PrecaptureCamSetup(bool *focusEnabled, bool *manualFocus, bool *needReloadZoomConfig);
 
+    bool initCameraAF(void);
     int CameraDeepSleep(bool sleep);
 
 public:

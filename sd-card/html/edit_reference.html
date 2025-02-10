@@ -1056,7 +1056,6 @@
 
             loadCamId();
             loadCamInit();
-            loadCamFocus();
 
             param = getCamConfig();
             category = getConfigCategory();
@@ -1583,8 +1582,8 @@
 
         function updateFocusVisibility()
         {
-            if ((camInit == "ok") && (camId != undefined) && (camFocus != undefined)) {
-                if ((camId == "OV5640") && (camFocus == "available")) {
+            if ((camInit == "ok") && (camId != undefined)) {
+                if (camId == "OV5640") {
                     setVisible("focus_ctrl", true);
                 } else {
                     setVisible("focus_ctrl", false);
@@ -1613,20 +1612,6 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     camInit = xhttp.response;
-                    updateFocusVisibility();
-                }
-            }
-            xhttp.open("GET", url, true);
-            xhttp.send();
-        }
-
-        function loadCamFocus() 
-        {
-            url = domainname + '/info?type=CamFocus';
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    camFocus = xhttp.response;
                     updateFocusVisibility();
                 }
             }

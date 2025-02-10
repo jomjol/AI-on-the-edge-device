@@ -152,7 +152,7 @@ esp_err_t CCamera::InitCam(void)
     }
 
     CCstatus.CameraInitSuccessful = true;
-    CCstatus.CameraAFInitSuccessful = true;
+    CCstatus.CameraAFInitSuccessful = false;
 
     // Get a reference to the sensor
     sensor_t *s = esp_camera_sensor_get();
@@ -172,21 +172,6 @@ esp_err_t CCamera::InitCam(void)
             break;
         case OV5640_PID:
             ESP_LOGI(TAG, "OV5640 camera module detected");
-            ESP_LOGI(TAG, "Initializing autofocus ...");
-            // Load autofocus microcode into memory so it can be used when creating new reference image
-            if (ov5640_autofocus_init(s) == 0) {
-                ESP_LOGI(TAG, "Autofocus init success");
-                // We want autofocus powered down until we want to capture an image
-                int rc = ov5640_autofocus_release(s);
-                if (rc == 0) {
-                    ESP_LOGI(TAG, "Release autofocus success");
-                } else {
-                    ESP_LOGI(TAG, "Release autofocus failed: %d", rc);
-                }
-            } else {
-                ESP_LOGI(TAG, "Autofocus init failed");
-                CCstatus.CameraAFInitSuccessful = false;
-            }
             break;
         default:
             ESP_LOGE(TAG, "Camera module is unknown and not properly supported!");
@@ -199,8 +184,18 @@ esp_err_t CCamera::InitCam(void)
     {
         if (s != NULL)
         {
+            if (CCstatus.CamSensor_id == OV2640_PID)
+            {
+                uint8_t reg = s->get_reg(s, 0x09, 0xff);
+                s->set_reg(s, 0x09, 0xff, (reg &= ~0x10));
+            }
+            else
+            {
+                s->set_reg(s, 0x3008, 0x42, 0x02);
+            }
+            vTaskDelay(100 / portTICK_PERIOD_MS);
             s->set_framesize(s, CCstatus.CamConfig.ImageFrameSize);
-            vTaskDelay(200 / portTICK_PERIOD_MS);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
         }
         return ESP_OK;
     }
@@ -264,6 +259,35 @@ int CCamera::CalculateLEDIntensity(int _intrel)
     int LedIntensity = (int)((float)(std::min(std::max(0, _intrel), 100)) / 100 * 8191);
     ESP_LOGD(TAG, "Calculated led_intensity: %i of 8191", LedIntensity);
     return LedIntensity;
+}
+
+bool CCamera::initCameraAF(void)
+{
+    sensor_t *s = esp_camera_sensor_get();
+
+    if (s != NULL)
+    {
+        if (CCstatus.CameraAFInitSuccessful == false)
+        {
+            ESP_LOGI(TAG, "Initializing autofocus ...");
+            // Load autofocus microcode into memory so it can be used when creating new reference image
+            if (ov5640_autofocus_init(s) == 0) {
+                ESP_LOGI(TAG, "Autofocus init success");
+                CCstatus.CameraAFInitSuccessful = true;
+                // We want autofocus powered down until we want to capture an image
+                int rc = ov5640_autofocus_release(s);
+                if (rc == 0) {
+                    ESP_LOGI(TAG, "Release autofocus success");
+                } else {
+                    ESP_LOGI(TAG, "Release autofocus failed: %d", rc);
+                }
+            } else {
+                ESP_LOGI(TAG, "Autofocus init failed");
+                CCstatus.CameraAFInitSuccessful = false;
+            }
+        }
+    }
+    return CCstatus.CameraAFInitSuccessful;
 }
 
 bool CCamera::getCameraInitSuccessful(void)
@@ -476,9 +500,9 @@ int CCamera::SetCamFocus(bool focusEnabled, bool manualFocus, uint16_t manualFoc
 
     int ret = 0;
 
-    if (CCstatus.CamSensor_id == OV5640_PID)
+    if (CCstatus.CamSensor_id == OV5640_PID && focusEnabled)
     {
-        if (focusEnabled && CCstatus.CameraAFInitSuccessful)
+        if (initCameraAF())
         {
             ESP_LOGI(TAG, "OV5640 and AF inited");
             sensor_t *s = esp_camera_sensor_get();
@@ -551,9 +575,9 @@ int CCamera::ReleaseCamFocus(bool focusEnabled, bool manualFocus)
 
     int ret = 0;
 
-    if (CCstatus.CamSensor_id == OV5640_PID)
+    if (CCstatus.CamSensor_id == OV5640_PID && focusEnabled)
     {
-        if (focusEnabled && CCstatus.CameraAFInitSuccessful)
+        if (CCstatus.CameraAFInitSuccessful)
         {
             sensor_t *s = esp_camera_sensor_get();
             if (s != NULL)
