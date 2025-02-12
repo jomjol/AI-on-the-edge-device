@@ -949,13 +949,17 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LightOn");
 #endif
 
+    camera_fb_t *fb = NULL;
     bool _focusEnabled = false;
     bool _manualFocus = false;
     bool _reloadZoomConfig = false;
     PrecaptureCamSetup(&_focusEnabled, &_manualFocus, &_reloadZoomConfig);
 
-    camera_fb_t *fb = esp_camera_fb_get();
-    esp_camera_fb_return(fb);
+    for (int i = 0; i < 3; i++)
+    {
+        fb = esp_camera_fb_get();
+        esp_camera_fb_return(fb);
+    }
     fb = esp_camera_fb_get();
 
     ReleaseCamFocus(_focusEnabled, _reloadZoomConfig ? true : _manualFocus);
@@ -1063,13 +1067,17 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         vTaskDelay(xDelay);
     }
 
+    camera_fb_t *fb = NULL;
     bool _focusEnabled = false;
     bool _manualFocus = false;
     bool _reloadZoomConfig = false;
     PrecaptureCamSetup(&_focusEnabled, &_manualFocus, &_reloadZoomConfig);
 
-    camera_fb_t *fb = esp_camera_fb_get();
-    esp_camera_fb_return(fb);
+    for (int i = 0; i < 3; i++)
+    {
+        fb = esp_camera_fb_get();
+        esp_camera_fb_return(fb);
+    }
     fb = esp_camera_fb_get();
 
     ReleaseCamFocus(_focusEnabled, _reloadZoomConfig ? true : _manualFocus);
@@ -1177,13 +1185,17 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         vTaskDelay(xDelay);
     }
 
+    camera_fb_t *fb = NULL;
     bool _focusEnabled = false;
     bool _manualFocus = false;
     bool _reloadZoomConfig = false;
     PrecaptureCamSetup(&_focusEnabled, &_manualFocus, &_reloadZoomConfig);
 
-    camera_fb_t *fb = esp_camera_fb_get();
-    esp_camera_fb_return(fb);
+    for (int i = 0; i < 3; i++)
+    {
+        fb = esp_camera_fb_get();
+        esp_camera_fb_return(fb);
+    }
     fb = esp_camera_fb_get();
 
     ReleaseCamFocus(_focusEnabled, _reloadZoomConfig ? true : _manualFocus);
