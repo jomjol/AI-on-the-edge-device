@@ -968,7 +968,7 @@ bool setCpuFrequency(void) {
 
         if (toUpper(splitted[0]) == "CPUFREQUENCY") {
             if (splitted.size() < 2) {
-                cpuFrequency = 160;
+                cpuFrequency = "160";
             }
             else {
                 cpuFrequency = splitted[1];
