@@ -937,12 +937,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     _Image->EmptyImage(); // Delete previous stored raw image -> black image
 
     LEDOnOff(true); // Status-LED on
-
     if (delay > 0)
     {
         LightOnOff(true); // Flash-LED on
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay);
     }
 
 #ifdef DEBUG_DETAIL_ON
@@ -955,11 +952,14 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     bool _reloadZoomConfig = false;
     PrecaptureCamSetup(&_focusEnabled, &_manualFocus, &_reloadZoomConfig);
 
-    for (int i = 0; i < 3; i++)
+    if (delay > 0)
     {
-        fb = esp_camera_fb_get();
-        esp_camera_fb_return(fb);
+        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
+        vTaskDelay(xDelay);
     }
+
+    fb = esp_camera_fb_get();
+    esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
 
     ReleaseCamFocus(_focusEnabled, _reloadZoomConfig ? true : _manualFocus);
@@ -1063,8 +1063,6 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     if (delay > 0)
     {
         LightOnOff(true); // Flash-LED on
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay);
     }
 
     camera_fb_t *fb = NULL;
@@ -1073,11 +1071,14 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     bool _reloadZoomConfig = false;
     PrecaptureCamSetup(&_focusEnabled, &_manualFocus, &_reloadZoomConfig);
 
-    for (int i = 0; i < 3; i++)
+    if (delay > 0)
     {
-        fb = esp_camera_fb_get();
-        esp_camera_fb_return(fb);
+        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
+        vTaskDelay(xDelay);
     }
+
+    fb = esp_camera_fb_get();
+    esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
 
     ReleaseCamFocus(_focusEnabled, _reloadZoomConfig ? true : _manualFocus);
@@ -1181,8 +1182,6 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     if (delay > 0)
     {
         LightOnOff(true); // Flash-LED on
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay);
     }
 
     camera_fb_t *fb = NULL;
@@ -1191,11 +1190,14 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     bool _reloadZoomConfig = false;
     PrecaptureCamSetup(&_focusEnabled, &_manualFocus, &_reloadZoomConfig);
 
-    for (int i = 0; i < 3; i++)
+    if (delay > 0)
     {
-        fb = esp_camera_fb_get();
-        esp_camera_fb_return(fb);
+        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
+        vTaskDelay(xDelay);
     }
+
+    fb = esp_camera_fb_get();
+    esp_camera_fb_return(fb);
     fb = esp_camera_fb_get();
 
     ReleaseCamFocus(_focusEnabled, _reloadZoomConfig ? true : _manualFocus);
