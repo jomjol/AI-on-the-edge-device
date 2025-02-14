@@ -128,6 +128,12 @@ CONFIG_MQTT_USE_CUSTOM_CONFIG=y
 #CONFIG_MQTT_CUSTOM_OUTBOX=y # -> Use custom outbox in components/jomjol_mqtt/mqtt_outbox.h/cpp. If USE_PSRAM is enabled in there, it will save 10 kBytes of internal RAM. How ever it also leads to memory fragmentation, see https://github.com/jomjol/AI-on-the-edge-device/issues/2200
 
 #
+# mbedTLS
+#
+CONFIG_MBEDTLS_HAVE_TIME=y
+CONFIG_MBEDTLS_HAVE_TIME_DATE=y
+
+#
 # ESP-Driver:LEDC Configurations
 #
 CONFIG_LEDC_CTRL_FUNC_IN_IRAM=y
