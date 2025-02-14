@@ -1,3 +1,22 @@
+## [16.0.0-RC6] - 2024-xx-xx
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
+
+#### Known issues
+Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+#### Core Changes
+Only changes since RC5 are listed:
+- [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
+- xxx
+
+  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
+
+#### Bug Fixes
+Only changes since RC5 are listed:
+ - xxx
+
 ## [16.0.0-RC5] - 2024-12-05
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
@@ -8,25 +27,25 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Only changes since RC4 are listed:
-- Removed `Autostart` parameter and make the flow to be always enabled (#3423)
-- Enable `Flow start` menu entry in UI (#3423)
-- Updated the Homeassistant Discovery topics (#3332):
+- [#3423](https://github.com/jomjol/AI-on-the-edge-device/pull/3423) Removed `Autostart` parameter and make the flow to be always enabled 
+- [#3423](https://github.com/jomjol/AI-on-the-edge-device/pull/3423) Enable `Flow start` menu entry in UI 
+- [#3332](https://github.com/jomjol/AI-on-the-edge-device/pull/3332) Updated the Homeassistant Discovery topics :
     - `raw` has now set the `State Class` to `measurement`. Before it was always set to `""`. 
     - `value` has now only set the `State Class` to `total_increasing` if the parameter `Allow Negative Rates` is **not** set. Else it uses `measurement` since the rate could also be negative. Before it was always set to `total_increasing`.
     - The `rate_per_time_unit` topic of an **Energy** meter needs a `Device Class`=`power`. For `gas` and `water` it should be `volume_flow_rate`. Before it was always set to `""`.
-    - Added button for `flow start` (#3415)
-    - Added support for Domoticz MQTT integration (#3359)
+    - [#3415](https://github.com/jomjol/AI-on-the-edge-device/pull/3415) Added button for `flow start` 
+    - [#3359](https://github.com/jomjol/AI-on-the-edge-device/pull/3359) Added support for Domoticz MQTT integration 
     - Added Date and time to overview page
     - Updated submodules and models
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
 #### Bug Fixes
-Only changes since RC3 are listed:
- - Added fix for ledintensity (#3418)
- - Added fix for OV2640 brightness contrast saturation (#3417)
- - Added fix for 'AnalogToDigitTransitionStart' always using 9.2 regardless of the configured value (#3393)
- - Addef fix for HA menu entry (#3342)
+Only changes since RC4 are listed:
+ - [#3418](https://github.com/jomjol/AI-on-the-edge-device/pull/3418) Added fix for ledintensity 
+ - [#3417](https://github.com/jomjol/AI-on-the-edge-device/pull/3417) Added fix for OV2640 brightness contrast saturation 
+ - [#3393](https://github.com/jomjol/AI-on-the-edge-device/pull/3393) Added fix for 'AnalogToDigitTransitionStart' always using 9.2 regardless of the configured value 
+ - [#3342](https://github.com/jomjol/AI-on-the-edge-device/pull/3342) Added fix for HA menu entry 
 
 
 ## [16.0.0-RC4] - 2024-10-06
@@ -39,13 +58,13 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Only changes since RC3 are listed:
-- Update esp32-camera submodule to `v2.0.13` (#3316)
-- Added contributor list (#3317)
-- Added files for demo mode (#3315)
+- [#3316](https://github.com/jomjol/AI-on-the-edge-device/pull/3316) Update esp32-camera submodule to `v2.0.13` 
+- [#3317](https://github.com/jomjol/AI-on-the-edge-device/pull/3317) Added contributor list 
+- [#3315](https://github.com/jomjol/AI-on-the-edge-device/pull/3315) Added files for demo mode 
 
 #### Bug Fixes
 Only changes since RC2 are listed:
-- Added delay in InitCam (#3313) to fix `Camera not detected` issues
+- [#3313](https://github.com/jomjol/AI-on-the-edge-device/pull/3313) Added delay in InitCam  to fix `Camera not detected` issues
 
 
 ## [16.0.0-RC3] - 2024-10-05
@@ -62,7 +81,7 @@ Only changes since RC2 are listed:
 
 #### Bug Fixes
 Only changes since RC2 are listed:
-- Re-did revertion of TFlite submodule update as certain modules crash with it (#3269) (change was lost)
+- [#3269](https://github.com/jomjol/AI-on-the-edge-device/pull/3269) Re-did revertion of TFlite submodule update as certain modules crash with it  (change was lost)
 
 
 ## [16.0.0-RC2] - 2024-10-04
@@ -76,13 +95,13 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 #### Core Changes
 Only changes since RC1 are listed:
 - Updated parameter documentation pages
-- Rename/remove unused parameters (#3291)
-- Migrate-cam-parameters (#3288)
+- [#3291](https://github.com/jomjol/AI-on-the-edge-device/pull/3291) Rename/remove unused parameters 
+- [#3288](https://github.com/jomjol/AI-on-the-edge-device/pull/3288) Migrate-cam-parameters 
 
 #### Bug Fixes
 Only changes since RC1 are listed:
-- Reverted TFlite submodule update as certain modules crash with it (#3269)
-- Changed the webhook UploadImg to false (#3279)
+- [#3269](https://github.com/jomjol/AI-on-the-edge-device/pull/3269) Reverted TFlite submodule update as certain modules crash with it 
+- [#3279](https://github.com/jomjol/AI-on-the-edge-device/pull/3279) Changed the webhook UploadImg to false 
 - Changed default value from boolean to numeric value in parameter camDenoise documentation
 - Updated config page
 
@@ -96,24 +115,24 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 #### Core Changes
 Those are just the major changes:
-- Add support for OV5640 camera (#3063)
+- [#3063](https://github.com/jomjol/AI-on-the-edge-device/pull/3063) Add support for OV5640 camera 
 - New tflite-Models
-- Homeassistant service discovery: derive node_id when using nested topics (#3088)
-- Added Prometheus/OpenMetrics exporter (#3081)
-- Added Webhook (#3148, #3163, #3174)
-- Add rate threshold parameter (#3195)
-- Added a Delay between the WiFi reconnections (#3068)
+- [#3088](https://github.com/jomjol/AI-on-the-edge-device/pull/3088) Homeassistant service discovery: derive node_id when using nested topics 
+- [#3081](https://github.com/jomjol/AI-on-the-edge-device/pull/3081) Added Prometheus/OpenMetrics exporter 
+- [#3148](https://github.com/jomjol/AI-on-the-edge-device/pull/3148), [#3163](https://github.com/jomjol/AI-on-the-edge-device/pull/3163), [#3174](https://github.com/jomjol/AI-on-the-edge-device/pull/3148), [#3163](https://github.com/jomjol/AI-on-the-edge-device/pull/3163), [#3174](https://github.com/jomjol/AI-on-the-edge-device/pull/3174) Added Webhook 
+- [#3195](https://github.com/jomjol/AI-on-the-edge-device/pull/3195) Add rate threshold parameter 
+- [#3068](https://github.com/jomjol/AI-on-the-edge-device/pull/3068) Added a Delay between the WiFi reconnections 
 - Web UI improvements
 - Various minor changes
 - Update platformIO to 6.9.0 (Contains ESP IDF 5.3.1)
 
 #### Bug Fixes
 Those are just the major changes:
-- Handle crash on corrupted model (#3220)
-- Bugfix for boot loop (#3175)
-- Bugfix for time stamp (#3180)
-- Handle empty prevalue.ini gracefully (#3162)
-- Added note about only TLS 1.2 is supported (#3213)
+- [#3220](https://github.com/jomjol/AI-on-the-edge-device/pull/3220) Handle crash on corrupted model 
+- [#3175](https://github.com/jomjol/AI-on-the-edge-device/pull/3175) Bugfix for boot loop 
+- [#3180](https://github.com/jomjol/AI-on-the-edge-device/pull/3180) Bugfix for time stamp 
+- [#3162](https://github.com/jomjol/AI-on-the-edge-device/pull/3162) Handle empty prevalue.ini gracefully 
+- [#3213](https://github.com/jomjol/AI-on-the-edge-device/pull/3213) Added note about only TLS 1.2 is supported 
 
 ## [15.7.0] - 2024-02-17
 

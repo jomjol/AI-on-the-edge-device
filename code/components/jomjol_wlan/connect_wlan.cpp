@@ -49,6 +49,9 @@
 #define ets_delay_us(a) esp_rom_delay_us(a)
 #endif
 
+#include "../esp-protocols/components/mdns/include/mdns.h" 
+
+
 static const char *TAG = "WIFI";
 
 static bool APWithBetterRSSI = false;
@@ -657,6 +660,14 @@ esp_err_t wifi_init_sta(void)
         else {
 			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set hostname to: " + wlan_config.hostname);
         }
+		//initialize mDNS service
+        retval = mdns_init();
+        if (retval != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "mdns_init failed! Error: "  + std::to_string(retval));
+        } else {
+			//set mdns hostname
+			mdns_hostname_set(wlan_config.hostname.c_str());
+	    }
     }
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init successful");

@@ -133,25 +133,25 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
                 switch (_ImageGainceiling_)
                 {
                 case 1:
-                    CFstatus.ImageGainceiling = GAINCEILING_4X;
+                    CCstatus.ImageGainceiling = GAINCEILING_4X;
                     break;
                 case 2:
-                    CFstatus.ImageGainceiling = GAINCEILING_8X;
+                    CCstatus.ImageGainceiling = GAINCEILING_8X;
                     break;
                 case 3:
-                    CFstatus.ImageGainceiling = GAINCEILING_16X;
+                    CCstatus.ImageGainceiling = GAINCEILING_16X;
                     break;
                 case 4:
-                    CFstatus.ImageGainceiling = GAINCEILING_32X;
+                    CCstatus.ImageGainceiling = GAINCEILING_32X;
                     break;
                 case 5:
-                    CFstatus.ImageGainceiling = GAINCEILING_64X;
+                    CCstatus.ImageGainceiling = GAINCEILING_64X;
                     break;
                 case 6:
-                    CFstatus.ImageGainceiling = GAINCEILING_128X;
+                    CCstatus.ImageGainceiling = GAINCEILING_128X;
                     break;
                 default:
-                    CFstatus.ImageGainceiling = GAINCEILING_2X;
+                    CCstatus.ImageGainceiling = GAINCEILING_2X;
                 }
             }
             else
@@ -251,7 +251,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(_ImageSpecialEffect))
             {
                 int _ImageSpecialEffect_ = std::stoi(_ImageSpecialEffect);
-                CFstatus.ImageSpecialEffect = clipInt(_ImageSpecialEffect_, 6, 0);
+                CCstatus.ImageSpecialEffect = clipInt(_ImageSpecialEffect_, 6, 0);
             }
             else
             {
@@ -293,7 +293,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(_ImageWbMode))
             {
                 int _ImageWbMode_ = std::stoi(_ImageWbMode);
-                CFstatus.ImageWbMode = clipInt(_ImageWbMode_, 4, 0);
+                CCstatus.ImageWbMode = clipInt(_ImageWbMode_, 4, 0);
             }
             else
             {

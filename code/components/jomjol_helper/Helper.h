@@ -40,6 +40,7 @@ string toUpper(string in);
 
 float temperatureRead();
 
+std::string intToHexString(int _valueInt);
 time_t addDays(time_t startTime, int days);
 
 void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);

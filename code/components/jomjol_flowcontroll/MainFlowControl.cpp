@@ -27,6 +27,7 @@
 #include "read_wlanini.h"
 #include "connect_wlan.h"
 #include "psram.h"
+#include "basic_auth.h"
 
 // support IDF 5.x
 #ifndef portTICK_RATE_MS
@@ -1280,7 +1281,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     int _ImageDenoiseLevel = std::stoi(_valuechar);
                     if (CCstatus.CamSensor_id == OV2640_PID)
                     {
-                        CCstatus.ImageDenoiseLevel = 0;
+                        CFstatus.ImageDenoiseLevel = 0;
                     }
                     else
                     {
@@ -1782,108 +1783,108 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.method = HTTP_GET;
 
     camuri.uri = "/doinit";
-    camuri.handler = handler_init;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_init);
     camuri.user_ctx = (void *)"Light On";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/setPreValue"
     camuri.uri = "/setPreValue.html";
-    camuri.handler = handler_prevalue;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_prevalue);
     camuri.user_ctx = (void *)"Prevalue";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/setPreValue";
-    camuri.handler = handler_prevalue;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_prevalue);
     camuri.user_ctx = (void *)"Prevalue";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/flow_start";
-    camuri.handler = handler_flow_start;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_flow_start);
     camuri.user_ctx = (void *)"Flow Start";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/statusflow.html";
-    camuri.handler = handler_statusflow;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_statusflow);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/statusflow";
-    camuri.handler = handler_statusflow;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_statusflow);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/cpu_temperature"
     camuri.uri = "/cputemp.html";
-    camuri.handler = handler_cputemp;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_cputemp);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/cpu_temperature";
-    camuri.handler = handler_cputemp;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_cputemp);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/rssi"
     camuri.uri = "/rssi.html";
-    camuri.handler = handler_rssi;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_rssi);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/rssi";
-    camuri.handler = handler_rssi;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_rssi);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/date";
-    camuri.handler = handler_current_date;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_current_date);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/uptime";
-    camuri.handler = handler_uptime;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_uptime);
     camuri.user_ctx = (void *)"Light Off";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/editflow";
-    camuri.handler = handler_editflow;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_editflow);
     camuri.user_ctx = (void *)"EditFlow";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/value"
     camuri.uri = "/value.html";
-    camuri.handler = handler_wasserzaehler;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_wasserzaehler);
     camuri.user_ctx = (void *)"Value";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/value";
-    camuri.handler = handler_wasserzaehler;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_wasserzaehler);
     camuri.user_ctx = (void *)"Value";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/value"
     camuri.uri = "/wasserzaehler.html";
-    camuri.handler = handler_wasserzaehler;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_wasserzaehler);
     camuri.user_ctx = (void *)"Wasserzaehler";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/json";
-    camuri.handler = handler_json;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_json);
     camuri.user_ctx = (void *)"JSON";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/heap";
-    camuri.handler = handler_get_heap;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_get_heap);
     camuri.user_ctx = (void *)"Heap";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/stream";
-    camuri.handler = handler_stream;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_stream);
     camuri.user_ctx = (void *)"stream";
     httpd_register_uri_handler(server, &camuri);
 
     /** will handle metrics requests */
     camuri.uri = "/metrics";
-    camuri.handler = handler_openmetrics;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_openmetrics);
     camuri.user_ctx = (void *)"metrics";
     httpd_register_uri_handler(server, &camuri);
 
