@@ -955,11 +955,8 @@ bool setCpuFrequency(void) {
     /* Load config from config file */
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || 
             (line.compare("[System]") != 0)) && !eof) {}
-    if (eof) {
-        return false;
-    }
 
-    if (disabledLine) {
+    if (eof || disabledLine) {
         return false;
     }
 
@@ -969,7 +966,7 @@ bool setCpuFrequency(void) {
 
         if (toUpper(splitted[0]) == "CPUFREQUENCY") {
             if (splitted.size() < 2) {
-                cpuFrequency = 160;
+                cpuFrequency = "160";
             }
             else {
                 cpuFrequency = splitted[1];
