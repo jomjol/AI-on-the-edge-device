@@ -384,6 +384,7 @@ extern "C" void app_main(void)
     MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
     MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
     MakeDir("/sdcard/demo");             // mandatory for demo mode
+    MakeDir("/sdcard/config/certs");     // mandatory for mqtt certificates
 
     // Check for updates
     // ********************************************
@@ -954,11 +955,8 @@ bool setCpuFrequency(void) {
     /* Load config from config file */
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || 
             (line.compare("[System]") != 0)) && !eof) {}
-    if (eof) {
-        return false;
-    }
 
-    if (disabledLine) {
+    if (eof || disabledLine) {
         return false;
     }
 
@@ -968,7 +966,7 @@ bool setCpuFrequency(void) {
 
         if (toUpper(splitted[0]) == "CPUFREQUENCY") {
             if (splitted.size() < 2) {
-                cpuFrequency = 160;
+                cpuFrequency = "160";
             }
             else {
                 cpuFrequency = splitted[1];
