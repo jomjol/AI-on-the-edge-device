@@ -414,11 +414,12 @@ jobs:
 
     - name: Get version of last release
       id: last_release
-      uses: mindojo/get-latest-release@0b8ef1434d7468d6bffcc8263baff5c777f72321
+      uses: joutvhu/get-release@v1
       with:
-        myToken: ${{ github.token }}
-        exclude_types: "draft|prerelease"
-        view_top: 1     
+        latest: true
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
 
     - name: Add binary to Web Installer and update manifest
       run: |
