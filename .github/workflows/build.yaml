@@ -89,7 +89,12 @@ jobs:
         cd html
         find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
         echo "compressing all html files..."
-        find . -type f -exec gzip -k {} \;        
+        find . -name "*.html" -type f -exec gzip {} \;
+        find . -name "*.css" -type f -exec gzip {} \;
+        find . -name "*.js" -type f -exec gzip {} \;
+        find . -name "*.map" -type f -exec gzip {} \;
+        find . -name "*.jpg" -type f -exec gzip {} \;
+        find . -name "*.svg" -type f -exec gzip {} \;
 
     - name: Prepare Demo mode files
       run: |
