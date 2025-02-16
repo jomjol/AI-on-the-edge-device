@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
 <head>
-    <title>Backup/Restore Configuration</title>
-    <meta charset="UTF-8" />
+    <title>Data Export(CSV)</title>
+    <meta charset="UTF-8"/>
 
     <style>
         h1 {font-size: 2em;}
@@ -20,32 +20,27 @@
 
         .button {
             padding: 5px 10px;
-            width: 205px;
+            width: 300px;
             font-size: 16px;
         }
     </style>
-
 </head>
 
 <body style="font-family: arial; padding: 0px 10px;">
-    <h2>Backup Configuration</h2>
-    <p>With the following action the <a href="/fileserver/config/" target="_self">config</a> folder on the SD-card gets zipped and provided as a download.</p>
-
-    <button class="button" id="startBackup" type="button" onclick="startBackup()">Create Backup</button>
-    <p id=progress></p>
+    <h2>Data Export(CSV)</h2>
+    <p>With the following action the <a href="/fileserver/log/data/" target="_self">data</a> folder on the SD-card gets zipped and provided as a download.</p>
+    <button class="button" id="startExportData" type="button" onclick="startExportData()">Export Data</button>
+    <p></p>
     <hr>
-    <h2>Restore Configuration</h2>
-    <p>Use the <a href="/fileserver/config/" target="_self">File Server</a> to upload individual files.</p>
-</body>
-
+    <p id=progress></p>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="jszip.min.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="FileSaver.min.js?v=$COMMIT_HASH"></script>
-<script>
 
-function startBackup() {  
-    document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
+<script type="text/javascript">
+function startExportData() {  
+    document.getElementById("progress").innerHTML = "Creating Export Data...<br>\n";
     
     // Get hostname
     try {
@@ -62,18 +57,19 @@ function startBackup() {
     // get date/time
     var dateTime = new Date().toJSON().slice(0,10) + "_" + new Date().toJSON().slice(11,19).replaceAll(":", "-");
     
-    zipFilename = hostname + "_" + dateTime + ".zip";
+    zipFilename = hostname + "_" + dateTime + "_csv" + ".zip";
     console.log(zipFilename);
 
     // Get files list
     setStatus("Fetching File List...");
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", getDomainname() + "/fileserver/config/", false);
+        xhttp.open("GET", getDomainname() + "/fileserver/log/data/", false);
         xhttp.send();
         
         var parser = new DOMParser();
-        var content = parser.parseFromString(xhttp.responseText, 'text/html');    }
+        var content = parser.parseFromString(xhttp.responseText, 'text/html');
+    }
     catch(err) {
         setStatus("Failed to fetch files list: " + err.message);
         return;
@@ -90,7 +86,7 @@ function startBackup() {
     
     // Pack as zip and download
     try {
-        backup(urls, zipFilename);
+        startExportZip(urls, zipFilename);
         }
     catch(err) {
         setStatus("<span style=\"color: red\">Failed to zip files: " + err.message + "!</span>");
@@ -98,11 +94,9 @@ function startBackup() {
     }
 }
 
-
 function fetchFiles(urls, filesData, index, retry, zipFilename) {
     url = urls[index];
 
-//    console.log(url + " started (" + index + "/" + urls.length + ")");
     if (retry == 0) {
         setStatus("&nbsp;- " + getFilenameFromUrl(urls[index]) + " (" + (index+1) + "/" + urls.length + ")...");
     }
@@ -118,16 +112,16 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
         xhr.timeout = 2000; // time in milliseconds
     }
     else if (retry == 1) { // longer timeout
-        xhr.timeout = 5000; // time in milliseconds
+        xhr.timeout = 5000;
     }
     else if (retry == 2) { // longer timeout
-        xhr.timeout = 10000; // time in milliseconds
+        xhr.timeout = 10000;
     }
     else if (retry == 3) { // longer timeout
-        xhr.timeout = 20000; // time in milliseconds
+        xhr.timeout = 20000;
     }
     else { // very long timeout
-        xhr.timeout = 30000; // time in milliseconds
+        xhr.timeout = 30000;
     }
 
     xhr.onload = () => { // Request finished
@@ -152,7 +146,7 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
     xhr.onerror = (e) => { // XMLHttpRequest error loading
         console.log("Error on fetching " + url + "!");
         if (retry > 5) {
-            setStatus("<span style=\"color: red\">Backup failed, please restart the device and try again!</span>");
+            setStatus("<span style=\"color: red\">Data Export failed, please restart the device and try again!</span>");
         }
         else {
             fetchFiles(urls, filesData, index, retry+1, zipFilename);
@@ -162,7 +156,7 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
     xhr.ontimeout = (e) => { // XMLHttpRequest timed out
         console.log("Timeout on fetching " + url + "!");
         if (retry > 5) {
-            setStatus("<span style=\"color: red\">Backup failed, please restart the device and try again!</span>");
+            setStatus("<span style=\"color: red\">Data Export failed, please restart the device and try again!</span>");
         }
         else {
             fetchFiles(urls, filesData, index, retry+1, zipFilename);
@@ -171,7 +165,6 @@ function fetchFiles(urls, filesData, index, retry, zipFilename) {
 
     xhr.send(null);
 }
-
 
 function generateZipFile(urls, filesData, zipFilename) {
     setStatus("Creating Zip File...");
@@ -187,18 +180,11 @@ function generateZipFile(urls, filesData, zipFilename) {
         saveAs(content, zipFilename);
     });
 
-    setStatus("Backup completed");
+    setStatus("Data Export completed");
 }
 
-
-const backup = (urls, zipFilename) => {
-    if(!urls) return;
-
-    /* Testing */
-    /*len = urls.length;
-    for (i = 0; i < len - 3; i++) {
-        urls.pop();
-    }*/
+const startExportZip = (urls, zipFilename) => {
+    if(!urls) { return; }
 
     console.log(urls);
 
@@ -206,7 +192,6 @@ const backup = (urls, zipFilename) => {
     setStatus("Fetching files...");
     fetchFiles(urls, [], 0, 0, zipFilename);
 };
-
 
 function setStatus(status) {
     console.log(status);
@@ -218,5 +203,5 @@ function getFilenameFromUrl(url) {
 }
 
 </script>
-
+</body>
 </html>
