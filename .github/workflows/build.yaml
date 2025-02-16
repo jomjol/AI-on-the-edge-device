@@ -86,7 +86,10 @@ jobs:
         cp -r ./sd-card/html/* ./html/
 
         echo "Replacing variables..."
-        cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+        cd html
+        find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+        echo "compressing all html files..."
+        find . -type f -exec gzip -k {} \;        
 
     - name: Prepare Demo mode files
       run: |
