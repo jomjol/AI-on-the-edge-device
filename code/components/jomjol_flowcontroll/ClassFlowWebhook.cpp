@@ -161,7 +161,7 @@ bool ClassFlowWebhook::doFlow(string zwtime)
 
         #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
             if ((WebhookUploadImg == 1 || (WebhookUploadImg != 0 && numbersWithError)) && flowAlignment && flowAlignment->AlgROI) {
-                WebhookUploadPic(flowAlignment->AlgROI);
+                WebhookUploadPic(flowAlignment->ImageBasis); //AlgROI);
             }
         #endif
     }
