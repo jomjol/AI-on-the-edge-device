@@ -92,9 +92,10 @@ jobs:
         find . -name "*.html" -type f -exec gzip {} \;
         find . -name "*.css" -type f -exec gzip {} \;
         find . -name "*.js" -type f -exec gzip {} \;
-        find . -name "*.map" -type f -exec gzip {} \;
         find . -name "*.jpg" -type f -exec gzip {} \;
+        find . -name "*.png" -type f -exec gzip {} \;
         find . -name "*.svg" -type f -exec gzip {} \;
+        find . -name "*.map" -type f -exec gzip {} \;
 
     - name: Prepare Demo mode files
       run: |
