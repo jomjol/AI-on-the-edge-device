@@ -179,6 +179,15 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             else if (toUpper(splitted[1]) == "ENERGY_GJ") {
                 mqttServer_setMeterType("energy", "GJ", "h", "GJ/h");
             }
+            else if (toUpper(splitted[1]) == "TEMPERATURE_C") {
+                mqttServer_setMeterType("temperature", "°C", "m", "°C/m"); // m = Minutes
+            }
+            else if (toUpper(splitted[1]) == "TEMPERATURE_F") {
+                mqttServer_setMeterType("temperature", "°F", "m", "°F/m"); // m = Minutes
+            }
+            else if (toUpper(splitted[1]) == "TEMPERATURE_K") {
+                mqttServer_setMeterType("temperature", "K", "m", "K/m"); // m = Minutes
+            }
         }
 
         if ((toUpper(_param) == "CLIENTID") && (splitted.size() > 1))
