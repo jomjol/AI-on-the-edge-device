@@ -33,46 +33,52 @@ static const char* TAG = "FLOWCTRL";
 
 //#define DEBUG_DETAIL_ON
 
-std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host){
+std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _host)
+{
     std::string _classname = "";
     std::string result = "";
 
     ESP_LOGD(TAG, "Step %s start", _stepname.c_str());
 
-    if ((_stepname.compare("[TakeImage]") == 0) || (_stepname.compare(";[TakeImage]") == 0)){
+    if ((_stepname.compare("[TakeImage]") == 0) || (_stepname.compare(";[TakeImage]") == 0)) {
         _classname = "ClassFlowTakeImage";
     }
-    if ((_stepname.compare("[Alignment]") == 0) || (_stepname.compare(";[Alignment]") == 0)){
+	
+    if ((_stepname.compare("[Alignment]") == 0) || (_stepname.compare(";[Alignment]") == 0)) {
         _classname = "ClassFlowAlignment";
     }
+	
     if ((_stepname.compare(0, 7, "[Digits") == 0) || (_stepname.compare(0, 8, ";[Digits") == 0)) {
         _classname = "ClassFlowCNNGeneral";
     }
-    if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
+	
+    if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)) {
         _classname = "ClassFlowCNNGeneral";
     }
+	
     #ifdef ENABLE_MQTT
-    if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
-        _classname = "ClassFlowMQTT";
-    }
+        if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)) {
+            _classname = "ClassFlowMQTT";
+        }
     #endif //ENABLE_MQTT
 
     #ifdef ENABLE_INFLUXDB
-    if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)){
-        _classname = "ClassFlowInfluxDB";
-    }
-    if ((_stepname.compare("[InfluxDBv2]") == 0) || (_stepname.compare(";[InfluxDBv2]") == 0)){
-        _classname = "ClassFlowInfluxDBv2";
-    }
+        if ((_stepname.compare("[InfluxDB]") == 0) || (_stepname.compare(";[InfluxDB]") == 0)) {
+            _classname = "ClassFlowInfluxDB";
+        }
+        if ((_stepname.compare("[InfluxDBv2]") == 0) || (_stepname.compare(";[InfluxDBv2]") == 0)) {
+            _classname = "ClassFlowInfluxDBv2";
+        }
     #endif //ENABLE_INFLUXDB
+	
     #ifdef ENABLE_WEBHOOK
-    if ((_stepname.compare("[Webhook]") == 0) || (_stepname.compare(";[Webhook]") == 0)){
-        _classname = "ClassFlowWebhook";
-    }
+        if ((_stepname.compare("[Webhook]") == 0) || (_stepname.compare(";[Webhook]") == 0)) {
+            _classname = "ClassFlowWebhook";
+        }
     #endif //ENABLE_WEBHOOK
 
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare(_classname) == 0){
+    for (int i = 0; i < FlowControll.size(); ++i) {
+        if (FlowControll[i]->name().compare(_classname) == 0) {
             if (!(FlowControll[i]->name().compare("ClassFlowTakeImage") == 0)) {
                 // if it is a TakeImage, the image does not need to be included, this happens automatically with the html query.
                 FlowControll[i]->doFlow("");
@@ -80,6 +86,7 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
 		
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
+    }
 
     ESP_LOGD(TAG, "Step %s end", _stepname.c_str());
 
@@ -115,11 +122,13 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
             return ("Sending InfluxDBv2");
         }
     #endif //ENABLE_INFLUXDB
+	
     #ifdef ENABLE_WEBHOOK
-    if (_input.compare("ClassFlowWebhook") == 0) {
-        return ("Sending Webhook");
-    }
+        if (_input.compare("ClassFlowWebhook") == 0) {
+            return ("Sending Webhook");
+        }
     #endif //ENABLE_WEBHOOK
+	
     if (_input.compare("ClassFlowPostProcessing") == 0) {
         return ("Post-Processing");
     }
@@ -224,7 +233,6 @@ void ClassFlowControll::setAutoStartInterval(long &_interval)
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 {
     ClassFlow* cfc = NULL;
-
     _type = trim(_type);
 
     if (toUpper(_type).compare("[TAKEIMAGE]") == 0) {
@@ -248,23 +256,25 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
 	
     #ifdef ENABLE_MQTT
-    if (toUpper(_type).compare("[MQTT]") == 0) {
-        cfc = new ClassFlowMQTT(&FlowControll);
-    }
+        if (toUpper(_type).compare("[MQTT]") == 0) {
+            cfc = new ClassFlowMQTT(&FlowControll);
+        }
     #endif //ENABLE_MQTT
 	
     #ifdef ENABLE_INFLUXDB
-    if (toUpper(_type).compare("[INFLUXDB]") == 0) {
-        cfc = new ClassFlowInfluxDB(&FlowControll);
-    }
+        if (toUpper(_type).compare("[INFLUXDB]") == 0) {
+            cfc = new ClassFlowInfluxDB(&FlowControll);
+        }
 
-    if (toUpper(_type).compare("[INFLUXDBV2]") == 0) {
-        cfc = new ClassFlowInfluxDBv2(&FlowControll);
-    }
-    #endif //ENABLE_INFLUXDB  
+        if (toUpper(_type).compare("[INFLUXDBV2]") == 0) {
+            cfc = new ClassFlowInfluxDBv2(&FlowControll);
+        }
+    #endif //ENABLE_INFLUXDB
+	
     #ifdef ENABLE_WEBHOOK
-    if (toUpper(_type).compare("[WEBHOOK]") == 0)
-        cfc = new ClassFlowWebhook(&FlowControll);
+        if (toUpper(_type).compare("[WEBHOOK]") == 0) {
+            cfc = new ClassFlowWebhook(&FlowControll);
+        }
     #endif //ENABLE_WEBHOOK
 
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0) {
@@ -411,7 +421,7 @@ bool ClassFlowControll::doFlow(string time)
             LogFile.WriteHeapInfo(zw);
         #endif
 
-        if (!FlowControll[i]->doFlow(time)){
+        if (!FlowControll[i]->doFlow(time)) {
             repeat++;
             LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
             if (i) { i -= 1; }   // vPrevious step must be repeated (probably take pictures)
@@ -461,14 +471,14 @@ string ClassFlowControll::getReadoutAll(int _type)
                     if (flowpostprocessing->PreValueUse) {
                         if ((*numbers)[i]->PreValueOkay) {
                             out = out + (*numbers)[i]->ReturnPreValue;
-			}
+                        }
                         else {
                             out = out + "PreValue too old"; 
-			}
+                        }
                     }
                     else {
                         out = out + "PreValue deactivated";
-		    }
+                    }
                     break;
                 case READOUT_TYPE_RAWVALUE:
                     out = out + (*numbers)[i]->ReturnRawValue;
@@ -480,9 +490,9 @@ string ClassFlowControll::getReadoutAll(int _type)
 		
             if (i < (*numbers).size()-1) {
                 out = out + "\r\n";
-	    }
+            }
         }
-    //    ESP_LOGD(TAG, "OUT: %s", out.c_str());
+    // ESP_LOGD(TAG, "OUT: %s", out.c_str());
     }
 
     return out;
@@ -512,7 +522,7 @@ bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbe
     char* p;
 
     _newvalue = trim(_newvalue);
-    //ESP_LOGD(TAG, "Input UpdatePreValue: %s", _newvalue.c_str());
+    // ESP_LOGD(TAG, "Input UpdatePreValue: %s", _newvalue.c_str());
 
     if (_newvalue.substr(0,8).compare("0.000000") == 0 || _newvalue.compare("0.0") == 0 || _newvalue.compare("0") == 0) {
         newvalueAsDouble = 0;   // preset to value = 0
@@ -528,10 +538,10 @@ bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbe
     if (flowpostprocessing) {
         if (flowpostprocessing->SetPreValue(newvalueAsDouble, _numbers, _extern)) {
             return true;
-	}
+        }
         else {
             return false;
-	}
+        }
     }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "UpdatePrevalue: ERROR - Class Post-Processing not initialized");
@@ -542,13 +552,12 @@ bool ClassFlowControll::UpdatePrevalue(std::string _newvalue, std::string _numbe
 bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> splitted;
-
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0) {
         if (!this->GetNextParagraph(pfile, aktparamgraph)) {
             return false;
-	}
+        }
     }
 
     if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
@@ -561,8 +570,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         splitted = ZerlegeZeile(aktparamgraph, " =");
 
         if ((toUpper(splitted[0]) == "INTERVAL") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1]))
-            {
+            if (isStringNumeric(splitted[1])) {
                 AutoInterval = std::stof(splitted[1]);
             }
         }
@@ -572,8 +580,7 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
         }
 
         if ((toUpper(splitted[0]) == "DATAFILESRETENTION") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1]))
-            {
+            if (isStringNumeric(splitted[1])) {
                 LogFile.SetDataLogRetention(std::stoi(splitted[1]));
             }
         }
@@ -596,12 +603,11 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             /* If system reboot was not triggered by user and reboot was caused by execption -> keep log level to DEBUG */
             if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC)) {
                 LogFile.setLogLevel(ESP_LOG_DEBUG);
-	    }
+            }
         }
 	    
         if ((toUpper(splitted[0]) == "LOGFILESRETENTION") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1]))
-            {
+            if (isStringNumeric(splitted[1])) {
                 LogFile.SetLogFileRetention(std::stoi(splitted[1]));
             }
         }
@@ -654,17 +660,17 @@ int ClassFlowControll::CleanTempFolder() {
 	
     while ((entry = readdir(dir)) != NULL) {
         std::string path = string(folderPath) + "/" + entry->d_name;
-	if (entry->d_type == DT_REG) {
-	    if (unlink(path.c_str()) == 0) {
-		deleted ++;
-	    } 
-	    else {
-		ESP_LOGE(TAG, "can't delete file: %s", path.c_str());
-	    }
+        if (entry->d_type == DT_REG) {
+            if (unlink(path.c_str()) == 0) {
+                deleted ++;
+            } 
+            else {
+                ESP_LOGE(TAG, "can't delete file: %s", path.c_str());
+            }
         } 
-	else if (entry->d_type == DT_DIR) {
-	    deleted += removeFolder(path.c_str(), TAG);
-	}
+        else if (entry->d_type == DT_DIR) {
+            deleted += removeFolder(path.c_str(), TAG);
+        }
     }
 	
     closedir(dir);
@@ -702,6 +708,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     else if (_fn == "alg_roi.jpg") {
         #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG      // no CImageBasis needed to create alg_roi.jpg (ca. 790kB less RAM)
             if (aktstatus.find("Initialization (delayed)") != -1) {
+                std::string filename = "/sdcard/html/Flowstate_initialization_delayed.jpg";
+                result = send_file(req, filename);
+                /*    
                 FILE* file = fopen("/sdcard/html/Flowstate_initialization_delayed.jpg", "rb"); 
 
                 if (!file) {
@@ -710,8 +719,8 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 }
 
                 fseek(file, 0, SEEK_END);
-                long fileSize = ftell(file); /* how long is the file ? */
-                fseek(file, 0, SEEK_SET); /* reset */
+                long fileSize = ftell(file); // how long is the file ?
+                fseek(file, 0, SEEK_SET); // reset
 
                 unsigned char* fileBuffer = (unsigned char*) malloc(fileSize);
 
@@ -727,8 +736,12 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 httpd_resp_set_type(req, "image/jpeg");
                 result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
                 free(fileBuffer);
+                */
             }
             else if (aktstatus.find("Initialization") != -1) {
+                std::string filename = "/sdcard/html/Flowstate_initialization.jpg";
+                result = send_file(req, filename);
+                /*
                 FILE* file = fopen("/sdcard/html/Flowstate_initialization.jpg", "rb"); 
 
                 if (!file) {
@@ -737,8 +750,8 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 }
 
                 fseek(file, 0, SEEK_END);
-                long fileSize = ftell(file); /* how long is the file ? */
-                fseek(file, 0, SEEK_SET); /* reset */
+                long fileSize = ftell(file); // how long is the file ?
+                fseek(file, 0, SEEK_SET); // reset
 
                 unsigned char* fileBuffer = (unsigned char*) malloc(fileSize);
 
@@ -754,9 +767,13 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 httpd_resp_set_type(req, "image/jpeg");
                 result = httpd_resp_send(req, (const char *)fileBuffer, fileSize); 
                 free(fileBuffer);
+                */
             }
             else if (aktstatus.find("Take Image") != -1) {
                 if (flowalignment && flowalignment->AlgROI) {
+                    std::string filename = "/sdcard/html/Flowstate_take_image.jpg";
+                    result = send_file(req, filename);
+                    /*
                     FILE* file = fopen("/sdcard/html/Flowstate_take_image.jpg", "rb");    
 
                     if (!file) {
@@ -765,8 +782,8 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                     }
 
                     fseek(file, 0, SEEK_END);
-                    flowalignment->AlgROI->size = ftell(file); /* how long is the file ? */
-                    fseek(file, 0, SEEK_SET); /* reset */
+                    flowalignment->AlgROI->size = ftell(file); // how long is the file ?
+                    fseek(file, 0, SEEK_SET); // reset
                     
                     if (flowalignment->AlgROI->size > MAX_JPG_SIZE) {
                         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File /sdcard/html/Flowstate_take_image.jpg (" + std::to_string(flowalignment->AlgROI->size) +
@@ -780,6 +797,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
 
                     httpd_resp_set_type(req, "image/jpeg");
                     result = httpd_resp_send(req, (const char *)flowalignment->AlgROI->data, flowalignment->AlgROI->size);
+                    */
                 }
                 else {
                     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControll::GetJPGStream: alg_roi.jpg cannot be served -> alg.jpg is going to be served!");
@@ -818,9 +836,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             _send = new CImageBasis("alg_roi", flowalignment->ImageBasis);
 			
             if (_send->ImageOkay()) {
-                if (flowalignment) flowalignment->DrawRef(_send);
-                if (flowdigit) flowdigit->DrawROI(_send);
-                if (flowanalog) flowanalog->DrawROI(_send);
+                if (flowalignment) { flowalignment->DrawRef(_send); }
+                if (flowdigit) { flowdigit->DrawROI(_send); }
+                if (flowanalog) { flowanalog->DrawROI(_send); }
                 _sendDelete = true; // delete temporary _send element after sending
             }
             else {
@@ -842,62 +860,60 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
         htmlinfo = GetAllDigit();
         ESP_LOGD(TAG, "After getClassFlowControll::GetAllDigit");
 
-        for (int i = 0; i < htmlinfo.size(); ++i)
-        {
-            if (_fn == htmlinfo[i]->filename)
-            {
-                if (htmlinfo[i]->image)
+        for (int i = 0; i < htmlinfo.size(); ++i) {
+            if (_fn == htmlinfo[i]->filename) {
+                if (htmlinfo[i]->image) {
                     _send = htmlinfo[i]->image;
+                }
             }
 
-            if (_fn == htmlinfo[i]->filename_org)
-            {
-                if (htmlinfo[i]->image_org)
+            if (_fn == htmlinfo[i]->filename_org) {
+                if (htmlinfo[i]->image_org) {
                     _send = htmlinfo[i]->image_org;
+                }
             }
             delete htmlinfo[i];
         }
         htmlinfo.clear();
 
-        if (!_send)
-        {
-	        htmlinfo = GetAllAnalog();
-	        ESP_LOGD(TAG, "After getClassFlowControll::GetAllAnalog");
+        if (!_send) {
+            htmlinfo = GetAllAnalog();
+            ESP_LOGD(TAG, "After getClassFlowControll::GetAllAnalog");
 	        
-	        for (int i = 0; i < htmlinfo.size(); ++i)
-	        {
-	            if (_fn == htmlinfo[i]->filename)
-	            {
-	                if (htmlinfo[i]->image)
-	                    _send = htmlinfo[i]->image;
-	            }
+            for (int i = 0; i < htmlinfo.size(); ++i) {
+                if (_fn == htmlinfo[i]->filename) {
+                    if (htmlinfo[i]->image) {
+                        _send = htmlinfo[i]->image;
+                    }
+                }
 
-	            if (_fn == htmlinfo[i]->filename_org)
-	            {
-	                if (htmlinfo[i]->image_org)
-	                    _send = htmlinfo[i]->image_org;
-	            }
-	            delete htmlinfo[i];
-	        }
-	        htmlinfo.clear();
-    	}
+                if (_fn == htmlinfo[i]->filename_org) {
+                    if (htmlinfo[i]->image_org) {
+                        _send = htmlinfo[i]->image_org;
+                    }
+                }
+                delete htmlinfo[i];
+            }
+            htmlinfo.clear();
+        }
     }
 
     #ifdef DEBUG_DETAIL_ON 
         LogFile.WriteHeapInfo("ClassFlowControll::GetJPGStream - before send");
     #endif
 
-    if (_send)
-    {
+    if (_send) {
         ESP_LOGD(TAG, "Sending file: %s ...", _fn.c_str());
         set_content_type_from_file(req, _fn.c_str());
         result = _send->SendJPGtoHTTP(req);
+	
         /* Respond with an empty chunk to signal HTTP response completion */
         httpd_resp_send_chunk(req, NULL, 0);
         ESP_LOGD(TAG, "File sending complete");
 
-        if (_sendDelete)
+        if (_sendDelete) {
             delete _send;
+        }
             
         _send = NULL;  
     }
