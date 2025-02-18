@@ -9,5 +9,6 @@ Set the CPU Frequency.
 
 Possible values: 
 
+- 80
 - 160
 - 240 
