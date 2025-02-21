@@ -321,6 +321,10 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     return ESP_OK;
 }
 
+static esp_err_t logfileact_get_full_handler(httpd_req_t *req) {
+    return send_logfile(req, true);
+}
+
 static esp_err_t logfileact_get_last_part_handler(httpd_req_t *req) {
     return send_logfile(req, false);
 }
