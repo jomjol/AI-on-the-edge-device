@@ -1,0 +1,50 @@
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em; margin-block-start: 0.0em; margin-block-end: 0.2em;}
+h3 {font-size: 1.2em;}
+p {font-size: 1em;}
+
+#files_table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#files_table td, #files_table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#files_table tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+#files_table tr:hover {
+  background-color: #ddd;
+}
+
+#files_table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color:lightgrey;
+  color: black;
+}
+
+input[type=file] {
+  padding: 5px 0px;
+  display: inline-block;
+  font-size: 16px; 
+}
+
+input[type=text] {
+  padding: 5px 10px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  font-size: 16px; 
+}
+
+.button {
+  padding: 4px 10px;
+  width: 100px;
+  font-size: 16px;	
+}
