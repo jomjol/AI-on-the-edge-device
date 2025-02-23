@@ -25,4 +25,4 @@ List of supported options:
 - `temperature_k` (uses `K/min` as rate)
 
 !!! Note
-    Not all options are supported by Homeassistant, see `SensorDeviceClass.VOLUME_FLOW_RATE` in https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes!
+    Not all options are supported by Homeassistant, see `SensorDeviceClass.VOLUME_FLOW_RATE` in [https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes](https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes)!
