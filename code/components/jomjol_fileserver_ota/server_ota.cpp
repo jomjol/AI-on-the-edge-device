@@ -79,12 +79,14 @@ void task_do_Update_ZIP(void *pvParameter)
 
     if (filetype == "ZIP")
     {
-        std::string in, out, outbin, zw, retfirmware;
+        std::string in, out, out2, outbin, zw, retfirmware;
 
         out = "/sdcard/html";
+        out2 = "/sdcard/html2";
         outbin = "/sdcard/firmware";
 
-        delete_all_in_directory(out);
+        delete_all_in_directory(out2);
+        ::rename(out.c_str(), out2.c_str());
 
         retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
