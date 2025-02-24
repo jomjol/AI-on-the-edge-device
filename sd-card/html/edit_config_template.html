@@ -196,7 +196,6 @@
 		text-decoration: none;
 		display: inline-block;
 	}
-
 </style>
 
 <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
@@ -2689,7 +2688,7 @@ function saveTextAsFile() {
 
 	if (changeCamValue == 1) {
 		camSettingsSet();
-		firework.launch('You have changed the camera settings, creating a new reference image and updating the alignment marks is mandatory!', 'success', 10000);
+		firework.launch('You have changed the camera settings, creating a new reference image and updating the alignment marks is mandatory!', 'success', 5000);
 	}
 }
 
@@ -2881,7 +2880,7 @@ function camSettingsSet(){
             
             if (xhttp.responseText == "CamSettingsSet") {
                 document.getElementById("overlay").style.display = "none";
-                firework.launch('Cam Settings saved', 'success', 2000);
+                firework.launch('Cam Settings saved', 'success', 5000);
                 return;
             }
             else {
