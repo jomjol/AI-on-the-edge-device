@@ -76,20 +76,25 @@ void task_do_Update_ZIP(void *pvParameter)
 
   	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
 
-
     if (filetype == "ZIP")
     {
-        std::string in, out, out2, outbin, zw, retfirmware;
+        std::string in, outHtml, outHtmlTmp, outHtmlOld, outbin, zw, retfirmware;
 
-        out = "/sdcard/html";
-        out2 = "/sdcard/html2";
+        outHtml = "/sdcard/html";
+        outHtmlTmp = "/sdcard/html-temp";
+        outHtmlOld = "/sdcard/html-old";
         outbin = "/sdcard/firmware";
 
-        delete_all_in_directory(out2);
-        ::rename(out.c_str(), out2.c_str());
-
-        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
+        /* Extract the ZIP file. The content of the html folder gets extracted to the temporar folder html-temp. */
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extracting ZIP file '" + _file_name_update + "'...");
+        retfirmware = unzip_new(_file_name_update, outHtmlTmp+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
+
+        /* ZIP file got extracted, replace the old html folder with the new one */
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Swapping html folder...");
+        ::rename(outHtml.c_str(), outHtmlOld.c_str());
+        ::rename(outHtmlTmp.c_str(), outHtml.c_str());
+        delete_all_in_directory(outHtmlOld);
 
         if (retfirmware.length() > 0)
         {
