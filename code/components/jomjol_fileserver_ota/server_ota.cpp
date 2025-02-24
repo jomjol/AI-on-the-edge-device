@@ -85,6 +85,10 @@ void task_do_Update_ZIP(void *pvParameter)
         outHtmlOld = "/sdcard/html_old";
         outbin = "/sdcard/firmware";
 
+        /* Remove the old and tmp html folder in case they still exist */
+        removeFolder(outHtmlTmp.c_str(), TAG);
+        removeFolder(outHtmlOld.c_str(), TAG);
+
         /* Extract the ZIP file. The content of the html folder gets extracted to the temporar folder html-temp. */
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extracting ZIP file " + _file_name_update + "...");
         retfirmware = unzip_new(_file_name_update, outHtmlTmp+"/", outHtml+"/", outbin+"/", "/sdcard/", initial_setup);
