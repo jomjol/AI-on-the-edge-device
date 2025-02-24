@@ -86,14 +86,16 @@ void task_do_Update_ZIP(void *pvParameter)
         outbin = "/sdcard/firmware";
 
         /* Extract the ZIP file. The content of the html folder gets extracted to the temporar folder html-temp. */
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extracting ZIP file '" + _file_name_update + "'...");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extracting ZIP file " + _file_name_update + "...");
         retfirmware = unzip_new(_file_name_update, outHtmlTmp+"/", outHtml+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
 
         /* ZIP file got extracted, replace the old html folder with the new one */
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Swapping html folder...");
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtml + " to " + outHtmlOld + "...");
         ::rename(outHtml.c_str(), outHtmlOld.c_str());
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtmlTmp + " to " + outHtml + "...");
         ::rename(outHtmlTmp.c_str(), outHtml.c_str());
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting folder " + outHtmlOld + "...");
         delete_all_in_directory(outHtmlOld);
 
         if (retfirmware.length() > 0)
