@@ -81,7 +81,7 @@ void task_do_Update_ZIP(void *pvParameter)
         std::string in, outHtml, outHtmlTmp, outHtmlOld, outbin, zw, retfirmware;
 
         outHtml = "/sdcard/html";
-        outHtmlTmp = "/sdcard/html-temp";
+        outHtmlTmp = "/sdcard/html-tmp";
         outHtmlOld = "/sdcard/html-old";
         outbin = "/sdcard/firmware";
 
