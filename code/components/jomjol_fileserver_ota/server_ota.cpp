@@ -96,8 +96,7 @@ void task_do_Update_ZIP(void *pvParameter)
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtmlTmp + " to " + outHtml + "...");
         ::rename(outHtmlTmp.c_str(), outHtml.c_str());
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting folder " + outHtmlOld + "...");
-        delete_all_in_directory(outHtmlOld + "/img");
-        delete_all_in_directory(outHtmlOld);
+        removeFolder(outHtmlOld.c_str(), TAG);
 
         if (retfirmware.length() > 0)
         {
