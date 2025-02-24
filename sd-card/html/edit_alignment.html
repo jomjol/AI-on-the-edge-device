@@ -79,6 +79,18 @@
             transform: translate(-50%,-50%);
             -ms-transform: translate(-50%,-50%);
         }
+        
+        #reboot_button {
+            float: none;
+            background-color: #f44336;
+            color: white;
+            padding: 5px;
+            border-radius:
+            5px; font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
     </style>
 
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
@@ -188,13 +200,11 @@
             param;
     
         function doReboot() {
-            if (confirm("Are you sure you want to reboot? Did you save your changes?")) {
-                var stringota = domainname + "/reboot";
-                window.location = stringota;
-                window.location.href = stringota;
-                window.location.assign(stringota);
-                window.location.replace(stringota);
-            }
+            var stringota = domainname + "/reboot";
+            window.location = stringota;
+            window.location.href = stringota;
+            window.location.assign(stringota);
+            window.location.replace(stringota);
         }
     
         function ChangeSelection(){
@@ -215,50 +225,45 @@
             document.getElementById("overlay").style.display = "block";
             document.getElementById("overlaytext").innerHTML = "Save Alignment Marker...";
 
-            if (confirm("Are you sure you want to save the new alignment marker configuration?")) {
-                function sleep(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
 
-                async function task() {
-                    while (true) {
-                        WriteConfigININew();
-		
-                        if (neueref1 == 1 && neueref2 == 1) {
-                            UpdateConfigReferences(domainname);
-                        }
-                        else if (neueref1 == 1) {
-                            var anzneueref = 1;
-                            UpdateConfigReference(anzneueref, domainname);
-                        }
-                        else if (neueref2 == 1) {
-                            var anzneueref = 2;
-                            UpdateConfigReference(anzneueref, domainname);
-                        }
-
-                        SaveConfigToServer(domainname);
-				
-                        document.getElementById("updatemarker").disabled = false;
-                        // document.getElementById("savemarker").disabled = true;
-                        // document.getElementById("enhancecontrast").disabled = true;
-
-                        EnDisableItem(false, "savemarker", true);
-                        EnDisableItem(false, "enhancecontrast", true);
-
-                        document.getElementById("overlay").style.display = "none";
-                        firework.launch('Alignment marker saved. They will get applied after next reboot', 'success', 5000);
-                        return;
+            async function task() {
+                while (true) {
+                    WriteConfigININew();
+    
+                    if (neueref1 == 1 && neueref2 == 1) {
+                        UpdateConfigReferences(domainname);
                     }
-                }
+                    else if (neueref1 == 1) {
+                        var anzneueref = 1;
+                        UpdateConfigReference(anzneueref, domainname);
+                    }
+                    else if (neueref2 == 1) {
+                        var anzneueref = 2;
+                        UpdateConfigReference(anzneueref, domainname);
+                    }
 
-                setTimeout(function () {
-                    // Delay so the overlay gets shown
-                    task();
-                }, 1);
+                    SaveConfigToServer(domainname);
+            
+                    document.getElementById("updatemarker").disabled = false;
+                    // document.getElementById("savemarker").disabled = true;
+                    // document.getElementById("enhancecontrast").disabled = true;
+
+                    EnDisableItem(false, "savemarker", true);
+                    EnDisableItem(false, "enhancecontrast", true);
+
+                    document.getElementById("overlay").style.display = "none";
+                    firework.launch('Alignment marker saved. They will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
+                    return;
+                }
             }
-            else {
-                document.getElementById("overlay").style.display = "none";
-            }
+
+            setTimeout(function () {
+                // Delay so the overlay gets shown
+                task();
+            }, 1);
         }
 
         function EnhanceContrast() {

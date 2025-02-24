@@ -34,13 +34,11 @@ p {font-size: 1em;}
 
 <script>
 function doReboot() {
-	// if (confirm("Are you sure you want to reboot the ESP32?")) {
-		var stringota = getDomainname() + "/reboot";
-		window.location = stringota;
-		window.location.href = stringota;
-		window.location.assign(stringota);
-		window.location.replace(stringota);
-	// }
+	var stringota = getDomainname() + "/reboot";
+	window.location = stringota;
+	window.location.href = stringota;
+	window.location.assign(stringota);
+	window.location.replace(stringota);
 }
 </script>
 

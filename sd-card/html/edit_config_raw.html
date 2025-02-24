@@ -20,6 +20,18 @@
 	textarea {
 		font-size: 15px;
 	}
+
+	#reboot_button {
+		float: none;
+		background-color: #f44336;
+		color: white;
+		padding: 5px;
+		border-radius:
+		5px; font-weight: bold;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+	}
 </style>
 
 <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
@@ -38,15 +50,8 @@
 		</td>
 	</table>
 
-	<table>
-		<td>
-			<button class="button" onclick="saveTextAsFile()">Save Config</button>
-		</td>
-	    <td>
-	        <button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
-		</td>
-	</table>
-
+	<hr>
+	<button class="button" onclick="saveTextAsFile()">Save Config</button>
 
 	<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
 	<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
@@ -64,23 +69,19 @@
 
 	function saveTextAsFile()
 	{
-		if (confirm("Are you sure you want to save the configuration?")) {
-			FileDeleteOnServer("/config/config.ini", domainname);
-			var textToSave = document.getElementById("inputTextToSave").value;
-			FileSendContent(textToSave, "/config/config.ini", domainname);
+		FileDeleteOnServer("/config/config.ini", domainname);
+		var textToSave = document.getElementById("inputTextToSave").value;
+		FileSendContent(textToSave, "/config/config.ini", domainname);
 
-			firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
-		}
+		firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
 	}
 
 	function doReboot() {
-		if (confirm("Are you sure you want to reboot?")) {
-			var stringota = "/reboot";
-			window.location = stringota;
-			window.location.href = stringota;
-			window.location.assign(stringota);
-			window.location.replace(stringota);
-		}
+		var stringota = "/reboot";
+		window.location = stringota;
+		window.location.href = stringota;
+		window.location.assign(stringota);
+		window.location.replace(stringota);
 	}
 	
 	LoadConfigNeu();
