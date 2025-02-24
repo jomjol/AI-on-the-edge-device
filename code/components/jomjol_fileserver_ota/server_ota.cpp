@@ -81,8 +81,8 @@ void task_do_Update_ZIP(void *pvParameter)
         std::string in, outHtml, outHtmlTmp, outHtmlOld, outbin, zw, retfirmware;
 
         outHtml = "/sdcard/html";
-        outHtmlTmp = "/sdcard/html-tmp";
-        outHtmlOld = "/sdcard/html-old";
+        outHtmlTmp = "/sdcard/html_tmp";
+        outHtmlOld = "/sdcard/html_old";
         outbin = "/sdcard/firmware";
 
         /* Extract the ZIP file. The content of the html folder gets extracted to the temporar folder html-temp. */
@@ -96,6 +96,7 @@ void task_do_Update_ZIP(void *pvParameter)
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtmlTmp + " to " + outHtml + "...");
         ::rename(outHtmlTmp.c_str(), outHtml.c_str());
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting folder " + outHtmlOld + "...");
+        delete_all_in_directory(outHtmlOld + "/img");
         delete_all_in_directory(outHtmlOld);
 
         if (retfirmware.length() > 0)
