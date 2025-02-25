@@ -1,6 +1,7 @@
  
-/* The UI can also be run locally, but you have to set the IP of your devide accordingly.
+/* The UI can also be run locally, but you have to set the IP of your device accordingly.
  * And you also might have to disable CORS in your webbrowser!
+ * Eg using https://chromewebstore.google.com/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?utm_source=ext_app_menu on chrome
  * Keep empty to disable using it. Enabling it will break access through a forwared port, see 
  * https://github.com/jomjol/AI-on-the-edge-device/issues/2681 */
 var domainname_for_testing = "";

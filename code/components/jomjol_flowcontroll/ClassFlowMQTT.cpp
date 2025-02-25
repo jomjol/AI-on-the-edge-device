@@ -156,7 +156,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 mqttServer_setMeterType("water", "L", "h", "L/h");
             }
             else if (toUpper(splitted[1]) == "WATER_FT3") {
-                mqttServer_setMeterType("water", "ft³", "m", "ft³/m"); // m = Minutes
+                mqttServer_setMeterType("water", "ft³", "min", "ft³/min"); // min = Minutes
             }
             else if (toUpper(splitted[1]) == "WATER_GAL") {
                 mqttServer_setMeterType("water", "gal", "h", "gal/h");
@@ -165,7 +165,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 mqttServer_setMeterType("gas", "m³", "h", "m³/h");
             }
             else if (toUpper(splitted[1]) == "GAS_FT3") {
-                mqttServer_setMeterType("gas", "ft³", "m", "ft³/m"); // m = Minutes
+                mqttServer_setMeterType("gas", "ft³", "min", "ft³/min"); // min = Minutes
             }
             else if (toUpper(splitted[1]) == "ENERGY_WH") {
                 mqttServer_setMeterType("energy", "Wh", "h", "W");
@@ -180,13 +180,13 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 mqttServer_setMeterType("energy", "GJ", "h", "GJ/h");
             }
             else if (toUpper(splitted[1]) == "TEMPERATURE_C") {
-                mqttServer_setMeterType("temperature", "°C", "m", "°C/m"); // m = Minutes
+                mqttServer_setMeterType("temperature", "°C", "min", "°C/min"); // min = Minutes
             }
             else if (toUpper(splitted[1]) == "TEMPERATURE_F") {
-                mqttServer_setMeterType("temperature", "°F", "m", "°F/m"); // m = Minutes
+                mqttServer_setMeterType("temperature", "°F", "min", "°F/min"); // min = Minutes
             }
             else if (toUpper(splitted[1]) == "TEMPERATURE_K") {
-                mqttServer_setMeterType("temperature", "K", "m", "K/m"); // m = Minutes
+                mqttServer_setMeterType("temperature", "K", "min", "K/m"); // min = Minutes
             }
         }
 
