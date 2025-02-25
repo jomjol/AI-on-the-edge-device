@@ -195,7 +195,10 @@ bool MQTThomeassistantDiscovery(int qos) {
 
         /* If "Allow neg. rate" is true, use "measurement" instead of "total_increasing" for the State Class, see https://github.com/jomjol/AI-on-the-edge-device/issues/3331 */
         std::string value_state_class = "total_increasing";
-        if ((*NUMBERS)[i]->AllowNegativeRates) {
+        if (meterType == "temperature") {
+            value_state_class = "measurement";
+        }
+        else if ((*NUMBERS)[i]->AllowNegativeRates) {
             value_state_class = "total";
         }
 
@@ -206,7 +209,7 @@ bool MQTThomeassistantDiscovery(int qos) {
         }
 
     //                                                       Group   | Field                       | User Friendly Name                    | Icon                       | Unit                 | Device Class     | State Class       | Entity Category | QoS
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",                      "Value",                                "gauge",                     valueUnit,             meterType,         value_state_class,  "",               qos); // State Class = "total_increasing" if <NUMBERS>.AllowNegativeRates = false, else use "measurement".
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "value",                      "Value",                                "gauge",                     valueUnit,             meterType,         value_state_class,  "",               qos); // State Class = "total_increasing" if <NUMBERS>.AllowNegativeRates = false, "measurement" in case of a thermometer, else use "total".
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "raw",                        "Raw Value",                            "raw",                       valueUnit,             meterType,         value_state_class,  "diagnostic",     qos);
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",                      "Error",                                "alert-circle-outline",      "",                    "",                "",                 "diagnostic",     qos);
         /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitization_round */
