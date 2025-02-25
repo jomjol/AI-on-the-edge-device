@@ -208,6 +208,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "CACert");
     ParamAddValue(param, catname, "ClientCert");
     ParamAddValue(param, catname, "ClientKey");
+    ParamAddValue(param, catname, "ValidateServerCert");
 
     var catname = "InfluxDB";
     category[catname] = new Object();

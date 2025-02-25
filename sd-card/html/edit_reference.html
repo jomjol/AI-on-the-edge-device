@@ -174,8 +174,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamZoom_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
+					<option value="true">enabled (true)</option>
+					<option value="false" selected>disabled (false)</option>
 				</select>			
 			</td>
 			<td>$TOOLTIP_TakeImage_CamZoom</td>				
@@ -232,8 +232,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamAec2_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
+					<option value="true">enabled (true)</option>
+					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAec2</td>			
@@ -245,8 +245,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamHmirror_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
+					<option value="true">enabled (true)</option>
+					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>			
 			<td>$TOOLTIP_TakeImage_CamHmirror</td>
@@ -267,8 +267,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamVflip_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
+					<option value="true">enabled (true)</option>
+					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>			
 			<td>$TOOLTIP_TakeImage_CamVflip</td>
@@ -332,8 +332,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamAec_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
+					<option value="true">enabled (true)</option>
+					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAec</td>
@@ -355,8 +355,8 @@
 			</td>
 			<td>
 				<select id="TakeImage_CamAutoSharpness_value1" onchange="cameraParameterChanged()">
-					<option value="true">enable (true)</option>
-					<option value="false" selected>disable (false)</option>
+					<option value="true">enabled (true)</option>
+					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_TakeImage_CamAutoSharpness</td>			
@@ -437,26 +437,16 @@
 
     <script type="text/javascript">
         var canvas = document.getElementById('canvas'),
-            domainname = getDomainname(),
-            context = canvas.getContext('2d'),
-            imageObj = new Image(),
-            isActReference = false,
-            camId,
-            camInit,
-            camFocus,
-            CamAutoFocusLevel = 0,
-            param,
-            category;
-
-        function doReboot() {
-            if (confirm("Are you sure you want to reboot? Did you save the config?")) {
-               var stringota = domainname + "/reboot";
-               window.location = stringota;
-               window.location.href = stringota;
-               window.location.assign(stringota);
-               window.location.replace(stringota);
-            }
-        }
+        domainname = getDomainname(),
+        context = canvas.getContext('2d'),
+        imageObj = new Image(),
+        isActReference = false,
+        camId,
+        camInit,
+        camFocus,
+        CamAutoFocusLevel = 0,
+        param,
+        category;
 
         function cameraParameterChanged() {
             document.getElementById("savereferenceimage").disabled = true;
@@ -894,7 +884,7 @@
             
                     if (xhttp.responseText == "CamSettingsSet") {
 						document.getElementById("overlay").style.display = "none";
-                        firework.launch('Cam Settings saved', 'success', 2000);
+                        firework.launch('Cam Settings saved', 'success', 5000);
                         return;
                     }
                     else {

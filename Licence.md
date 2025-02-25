@@ -1,6 +1,6 @@
 # **Dual Use License for AI-on-the-Edge Device**
 
-Version: 1.0 - Draft Version
+Version: 1.0
 Date: 2025-01-05 (5th January 2025)
 
 ## **Preamble**

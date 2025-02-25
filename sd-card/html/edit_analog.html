@@ -5,6 +5,20 @@
     <meta charset="UTF-8" />
     <title>Analog ROI</title>
 
+    <style>
+        #reboot_button {
+            float: none;
+            background-color: #f44336;
+            color: white;
+            padding: 5px;
+            border-radius:
+            5px; font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+
     <link href="edit_style.css" rel="stylesheet">
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
 
@@ -185,13 +199,11 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         domainname = getDomainname();
 
     function doReboot() {
-        if (confirm("Are you sure you want to reboot? Did you save your changes?")) {
-            var stringota = getDomainname() + "/reboot";
-            window.location = stringota;
-            window.location.href = stringota;
-            window.location.assign(stringota);
-            window.location.replace(stringota);
-        }
+        var stringota = getDomainname() + "/reboot";
+        window.location = stringota;
+        window.location.href = stringota;
+        window.location.assign(stringota);
+        window.location.replace(stringota);
     }
     
     function EnDisableAnalog() {
@@ -331,16 +343,14 @@ The following settings are only used for easier setup, they are <b>not</b> persi
     }
 
     function SaveToConfig() {
-        if (confirm("Are you sure you want to save the new analog ROI configuration?")) {
-            //_zwcat = getConfigCategory();
-            cofcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
-            WriteConfigININew();
-            SaveConfigToServer(domainname);
-            UpdateROIs();
-            document.getElementById("saveroi").disabled = true;
+        //_zwcat = getConfigCategory();
+        cofcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+        WriteConfigININew();
+        SaveConfigToServer(domainname);
+        UpdateROIs();
+        document.getElementById("saveroi").disabled = true;
 
-            firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
-        }
+        firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
     }
 
     function ShowMultiplier() {
