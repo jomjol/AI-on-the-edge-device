@@ -6,6 +6,8 @@
  */
 
 #include "md5.h"
+#include "psram.h"
+
 
 /*
  * Constants defined by the MD5 algorithm
@@ -206,8 +208,10 @@ void md5String(char *input, uint8_t *result){
     memcpy(result, ctx.digest, 16);
 }
 
+
 void md5File(FILE *file, uint8_t *result){
-    char *input_buffer = malloc(1024);
+    //char *input_buffer = malloc(1024);
+    void *input_buffer = heap_caps_malloc(1024, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     size_t input_size = 0;
 
     MD5Context ctx;

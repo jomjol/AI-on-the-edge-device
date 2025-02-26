@@ -1,5 +1,6 @@
 /* Src: https://github.com/Zunawe/md5-c, commit: f3529b6
  * License: Unlicense */
+#pragma once
 
 #ifndef MD5_H
 #define MD5_H
@@ -24,4 +25,4 @@ void md5Step(uint32_t *buffer, uint32_t *input);
 void md5String(char *input, uint8_t *result);
 void md5File(FILE *file, uint8_t *result);
 
-#endif
+#endif // MD5_H
