@@ -183,7 +183,19 @@
         color: white;
         transform: translate(-50%,-50%);
         -ms-transform: translate(-50%,-50%);
-    }	
+    }
+
+	#reboot_button {
+		float: none;
+		background-color: #f44336;
+		color: white;
+		padding: 5px;
+		border-radius:
+		5px; font-weight: bold;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+	}
 </style>
 
 <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
@@ -897,7 +909,7 @@
 
 		<tr style="margin-top:12px">
 			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
+				<b>The following parameters are configurable individually for each number sequence:</b>
                 <select 
 					style="font-weight: bold; margin-left:17px" id="Numbers_value1" onchange="numberChanged()">
 				</select>
@@ -1188,8 +1200,8 @@
 					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
 					<option value="energy_gj">Energymeter (Value: GJ, Rate: GJ/h)</option>
 					<option value="temperature_c">Thermometer (Value: °C, Rate: °C/min)</option>
-					<option value="temperature_c">Thermometer (Value: °F, Rate: °F/min)</option>
-					<option value="temperature_c">Thermometer (Value: K, Rate: K/min)</option>
+					<option value="temperature_f">Thermometer (Value: °F, Rate: °F/min)</option>
+					<option value="temperature_k">Thermometer (Value: K, Rate: K/min)</option>
 				</select>
 			</td>
 			<td>$TOOLTIP_MQTT_MeterType</td>
@@ -1208,7 +1220,7 @@
 		
 		<tr class="MQTTItem" style="margin-top:12px">
 			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
+				<b>The following parameters are configurable individually for each number sequence:</b>
                 <select
 					style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()">
                 </select>
@@ -1937,11 +1949,11 @@
 
 
 		<!------------- Autotimer ------------------>
-		<!--
 		<tr style="border-bottom: 2px solid lightgray;">
 			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Auto Timer</h4></td>
 		</tr>
-
+		
+		<!--
 		<tr class="expert" unused_id="ex13">
 			<td class="indent1">
 			    <class id="AutoTimer_AutoStart_text" style="color:black;">Automatic Round Start</class>
@@ -2110,14 +2122,9 @@
 		</tr>
 	</table>
 
-	<table style="padding-top:10px">
-		<td>
-			<button class="button" onclick="saveTextAsFile()">Save Config</button>
-		</td>
-	    <td>
-	        <button class="button" id="reboot" type="button" onclick="doReboot()">Reboot to activate changes</button>
-		</td>
-	</table>
+	<hr>
+	<button class="button" onclick="saveTextAsFile()">Save Config</button>
+
 </div>
 
 
@@ -2673,18 +2680,16 @@ function saveTextAsFile() {
         return;
     }
 
-    if (confirm("Are you sure you want to save the configuration?")) {
-        ReadParameterAll();
-        WriteConfigININew();
-        SaveConfigToServer(domainname);
+	ReadParameterAll();
+	WriteConfigININew();
+	SaveConfigToServer(domainname);
 
-        firework.launch('Configuration saved. It will get applied after the next reboot!', 'success', 5000);
+	firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
 
-        if (changeCamValue == 1) {
-            camSettingsSet();
-            firework.launch('You have changed the camera settings, so creating a new reference image and updating the alignment marks is mandatory!', 'success', 10000);		
-        }	    
-    }
+	if (changeCamValue == 1) {
+		camSettingsSet();
+		firework.launch('You have changed the camera settings, creating a new reference image and updating the alignment marks is mandatory!', 'success', 5000);
+	}
 }
 
 function camSettingsSet(){
@@ -2875,7 +2880,7 @@ function camSettingsSet(){
             
             if (xhttp.responseText == "CamSettingsSet") {
                 document.getElementById("overlay").style.display = "none";
-                firework.launch('Cam Settings saved', 'success', 2000);
+                firework.launch('Cam Settings saved', 'success', 5000);
                 return;
             }
             else {
@@ -2903,13 +2908,11 @@ function camSettingsSet(){
 }
 	
 function doReboot() {
-    if (confirm("Are you sure you want to reboot?")) {
-        var stringota = domainname + "/reboot";
-        window.location = stringota;
-        window.location.href = stringota;
-        window.location.assign(stringota);
-        window.location.replace(stringota);
-    }
+	var stringota = domainname + "/reboot";
+	window.location = stringota;
+	window.location.href = stringota;
+	window.location.assign(stringota);
+	window.location.replace(stringota);
 }
 
 function FormatDecimalValue(_param, _cat, _name) {
