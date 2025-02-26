@@ -365,19 +365,35 @@ size_t findDelimiterPos(string input, string delimiter)
 
 bool RenameFile(string from, string to)
 {
-	//	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
-	/* Delete file */
+	// ESP_LOGI(logTag, "Renaming File: %s", from.c_str());
 	FILE *fpSourceFile = fopen(from.c_str(), "rb");
 
-	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	// Sourcefile does not exist otherwise there is a mistake when renaming!
 	if (!fpSourceFile)
 	{
-		ESP_LOGE(TAG, "DeleteFile: File %s existiert nicht!", from.c_str());
+		ESP_LOGE(TAG, "RenameFile: File %s does not exist!", from.c_str());
 		return false;
 	}
 
 	fclose(fpSourceFile);
+	rename(from.c_str(), to.c_str());
 
+	return true;
+}
+
+bool RenameFolder(string from, string to)
+{
+	// ESP_LOGI(logTag, "Renaming Folder: %s", from.c_str());
+	DIR *fpSourceFolder = opendir(from.c_str());
+
+	// Sourcefolder does not exist otherwise there is a mistake when renaming!
+	if (!fpSourceFolder)
+	{
+		ESP_LOGE(TAG, "RenameFolder: Folder %s does not exist!", from.c_str());
+		return false;
+	}
+
+	closedir(fpSourceFolder);
 	rename(from.c_str(), to.c_str());
 
 	return true;
@@ -387,7 +403,7 @@ bool FileExists(string filename)
 {
 	FILE *fpSourceFile = fopen(filename.c_str(), "rb");
 
-	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	// Sourcefile does not exist
 	if (!fpSourceFile)
 	{
 		return false;
@@ -398,22 +414,36 @@ bool FileExists(string filename)
 	return true;
 }
 
-bool DeleteFile(string fn)
+bool FolderExists(string foldername)
 {
-	//	ESP_LOGI(logTag, "Deleting file: %s", fn.c_str());
-	/* Delete file */
-	FILE *fpSourceFile = fopen(fn.c_str(), "rb");
+	DIR *fpSourceFolder = opendir(foldername.c_str());
 
-	// Sourcefile existiert nicht sonst gibt es einen Fehler beim Kopierversuch!
+	// Sourcefolder does not exist
+	if (!fpSourceFolder)
+	{
+		return false;
+	}
+
+	closedir(fpSourceFolder);
+
+	return true;
+}
+
+bool DeleteFile(string filename)
+{
+	// ESP_LOGI(logTag, "Deleting file: %s", filename.c_str());
+	/* Delete file */
+	FILE *fpSourceFile = fopen(filename.c_str(), "rb");
+
+	// Sourcefile does not exist otherwise there is a mistake in copying!
 	if (!fpSourceFile)
 	{
-		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", fn.c_str());
+		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", filename.c_str());
 		return false;
 	}
 
 	fclose(fpSourceFile);
-
-	unlink(fn.c_str());
+	unlink(filename.c_str());
 
 	return true;
 }
