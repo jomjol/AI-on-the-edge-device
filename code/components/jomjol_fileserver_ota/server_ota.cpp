@@ -96,9 +96,9 @@ void task_do_Update_ZIP(void *pvParameter)
 
         /* ZIP file got extracted, replace the old html folder with the new one */
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtml + " to " + outHtmlOld + "...");
-        RenameFile(outHtml.c_str(), outHtmlOld.c_str());
+        RenameFile(outHtml, outHtmlOld);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtmlTmp + " to " + outHtml + "...");
-        RenameFile(outHtmlTmp.c_str(), outHtml.c_str());
+        RenameFile(outHtmlTmp, outHtml);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting folder " + outHtmlOld + "...");
         removeFolder(outHtmlOld.c_str(), TAG);
 
