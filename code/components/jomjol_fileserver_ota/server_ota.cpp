@@ -96,15 +96,15 @@ void task_do_Update_ZIP(void *pvParameter)
 
         /* ZIP file got extracted, replace the old html folder with the new one */
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtml + " to " + outHtmlOld + "...");
-        ::rename(outHtml.c_str(), outHtmlOld.c_str());
+        RenameFile(outHtml.c_str(), outHtmlOld.c_str());
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtmlTmp + " to " + outHtml + "...");
-        ::rename(outHtmlTmp.c_str(), outHtml.c_str());
+        RenameFile(outHtmlTmp.c_str(), outHtml.c_str());
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting folder " + outHtmlOld + "...");
         removeFolder(outHtmlOld.c_str(), TAG);
 
         if (retfirmware.length() > 0)
         {
-        	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
             ota_update_task(retfirmware);
         }
 
