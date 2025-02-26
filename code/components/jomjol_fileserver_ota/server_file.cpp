@@ -61,7 +61,7 @@ struct file_server_data {
 
 using namespace std;
 
-string SUFFIX_ZW = "_0xge";
+string SUFFIX_ZW = "_tmp";
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file);
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file);
@@ -911,7 +911,7 @@ void delete_all_in_directory(std::string _directory)
     closedir(dir);
 }
 
-std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main, bool _initial_setup)
+std::string unzip_new(std::string _in_zip_file, std::string _html_tmp, std::string _html_final, std::string _target_bin, std::string _main, bool _initial_setup)
 {
     int i, sort_iter;
     mz_bool status;
@@ -993,9 +993,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                     }
                     else
                     {
-                        zw = _target_zip + zw;
+                        zw = _html_tmp + zw;
                     }
 
+                }
+
+                // files in the html folder shall be redirected to the temporary html folder
+                if (zw.find(_html_final) == 0) {
+                    FindReplace(zw, _html_final, _html_tmp);
                 }
             
                 string filename_zw = zw + SUFFIX_ZW;

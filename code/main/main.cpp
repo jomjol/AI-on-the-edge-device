@@ -254,6 +254,35 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
+    // SD card: basic R/W check
+    // ********************************************
+    int iSDCardStatus = SDCardCheckRW();
+    if (iSDCardStatus < 0) {
+        if (iSDCardStatus <= -1 && iSDCardStatus >= -2) { // write error
+            StatusLED(SDCARD_CHECK, 1, true);
+        }
+        else if (iSDCardStatus <= -3 && iSDCardStatus >= -5) { // read error
+            StatusLED(SDCARD_CHECK, 2, true);
+        }
+        else if (iSDCardStatus == -6) { // delete error
+            StatusLED(SDCARD_CHECK, 3, true);
+        }
+        setSystemStatusFlag(SYSTEM_STATUS_SDCARD_CHECK_BAD); // reduced web interface going to be loaded
+    }
+
+    // SD card: Create further mandatory directories (if not already existing)
+    // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
+    // ********************************************
+    MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
+    MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
+    MakeDir("/sdcard/demo");             // mandatory for demo mode
+    MakeDir("/sdcard/config/certs");     // mandatory for mqtt certificates
+
+    // Check for updates
+    // ********************************************
+    CheckOTAUpdate();
+    CheckUpdate();
+
     // Init external PSRAM
     // ********************************************
     esp_err_t PSRAMStatus = esp_psram_init();
@@ -352,22 +381,6 @@ extern "C" void app_main(void)
         }
     }
 
-    // SD card: basic R/W check
-    // ********************************************
-    int iSDCardStatus = SDCardCheckRW();
-    if (iSDCardStatus < 0) {
-        if (iSDCardStatus <= -1 && iSDCardStatus >= -2) { // write error
-            StatusLED(SDCARD_CHECK, 1, true);
-        }
-        else if (iSDCardStatus <= -3 && iSDCardStatus >= -5) { // read error
-            StatusLED(SDCARD_CHECK, 2, true);
-        }
-        else if (iSDCardStatus == -6) { // delete error
-            StatusLED(SDCARD_CHECK, 3, true);
-        }
-        setSystemStatusFlag(SYSTEM_STATUS_SDCARD_CHECK_BAD); // reduced web interface going to be loaded
-    }
-
     // Migrate parameter in config.ini to new naming (firmware 15.0 and newer)
     // ********************************************
     migrateConfiguration();
@@ -379,19 +392,6 @@ extern "C" void app_main(void)
     // Set CPU Frequency
     // ********************************************
     setCpuFrequency();
-
-    // SD card: Create further mandatory directories (if not already existing)
-    // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
-    // ********************************************
-    MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
-    MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
-    MakeDir("/sdcard/demo");             // mandatory for demo mode
-    MakeDir("/sdcard/config/certs");     // mandatory for mqtt certificates
-
-    // Check for updates
-    // ********************************************
-    CheckOTAUpdate();
-    CheckUpdate();
 
     // Start SoftAP for initial remote setup
     // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD card empty; function does not exit anymore until reboot

@@ -76,20 +76,35 @@ void task_do_Update_ZIP(void *pvParameter)
 
   	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
 
-
     if (filetype == "ZIP")
     {
-        std::string in, out, outbin, zw, retfirmware;
+        std::string in, outHtml, outHtmlTmp, outHtmlOld, outbin, zw, retfirmware;
 
-        out = "/sdcard/html";
+        outHtml = "/sdcard/html";
+        outHtmlTmp = "/sdcard/html_tmp";
+        outHtmlOld = "/sdcard/html_old";
         outbin = "/sdcard/firmware";
 
-        retfirmware = unzip_new(_file_name_update, out+"/", outbin+"/", "/sdcard/", initial_setup);
+        /* Remove the old and tmp html folder in case they still exist */
+        removeFolder(outHtmlTmp.c_str(), TAG);
+        removeFolder(outHtmlOld.c_str(), TAG);
+
+        /* Extract the ZIP file. The content of the html folder gets extracted to the temporar folder html-temp. */
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Extracting ZIP file " + _file_name_update + "...");
+        retfirmware = unzip_new(_file_name_update, outHtmlTmp+"/", outHtml+"/", outbin+"/", "/sdcard/", initial_setup);
     	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
+
+        /* ZIP file got extracted, replace the old html folder with the new one */
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtml + " to " + outHtmlOld + "...");
+        RenameFolder(outHtml, outHtmlOld);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtmlTmp + " to " + outHtml + "...");
+        RenameFolder(outHtmlTmp, outHtml);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting folder " + outHtmlOld + "...");
+        removeFolder(outHtmlOld.c_str(), TAG);
 
         if (retfirmware.length() > 0)
         {
-        	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
             ota_update_task(retfirmware);
         }
 
@@ -433,7 +448,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             httpd_resp_sendstr_chunk(req, NULL);  
             return ESP_OK;        
         }
-
 
         if ((filetype == "TFLITE") || (filetype == "TFL"))
         {
