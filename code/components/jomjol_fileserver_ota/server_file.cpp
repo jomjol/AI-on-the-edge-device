@@ -746,6 +746,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         }
 
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
+        response.append(md5hex);
         response.append("}");
 
         httpd_resp_sendstr(req, response.c_str());
