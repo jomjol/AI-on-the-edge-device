@@ -242,7 +242,7 @@
         function upload() {
             document.getElementById("status").innerText = "Status: Uploading...";
 
-            var upload_path = "/upload/firmware/" + filePath;
+            var upload_path = "/upload/firmware/" + filePath + "?md5";
 
             var file = _("file_selector").files[0];
             var formdata = new FormData();

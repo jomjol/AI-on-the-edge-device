@@ -611,6 +611,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     FILE *fd = NULL;
     struct stat file_stat;
 
+    ESP_LOGE(TAG, "uri: %s", req->uri);
+
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     /* Skip leading "/upload" from URI to get filename */
