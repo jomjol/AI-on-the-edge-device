@@ -611,7 +611,14 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     FILE *fd = NULL;
     struct stat file_stat;
 
+    bool returnMd5Sum = false;
+
     ESP_LOGE(TAG, "uri: %s", req->uri);
+
+    string s = req->uri;
+    if (isInString(s, "?md5")) {
+        returnMd5Sum = true;
+    }
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
@@ -714,31 +721,74 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File saved: " + string(filename));
     ESP_LOGI(TAG, "File reception completed");
 
-    fd = fopen(filepath, "r");
-    if (!fd) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to open file for reading: " + string(filepath));
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to open file for reading");
-        return ESP_FAIL;
+    if (returnMd5Sum == true) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Calculate and return MD5 sum...");
+        
+        fd = fopen(filepath, "r");
+        if (!fd) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to open file for reading: " + string(filepath));
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to open file for reading");
+            return ESP_FAIL;
+        }
+
+        uint8_t result[16];
+        string md5hex = "";
+        string response = "{\"md5\":";
+        char hex[3];
+
+        md5File(fd, result);
+        fclose(fd);
+
+        for (int i = 0; i < sizeof(result); i++) {
+            snprintf(hex, sizeof(hex), "%02x", result[i]);
+            md5hex.append(hex);
+        }
+
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
+        response.append("}");
+
+        httpd_resp_sendstr(req, response.c_str());
     }
+    else {  // Return file server page
+        std::string directory = std::string(filepath);
+        size_t zw = directory.find("/");
+        size_t found = zw;
+        while (zw != std::string::npos)
+        {
+            zw = directory.find("/", found+1);  
+            if (zw != std::string::npos)
+                found = zw;
+        }
 
-    uint8_t result[16];
-    string md5hex = "";
-    string response = "{\"md5\":";
-    char hex[3];
+        int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
+        ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
+        directory = directory.substr(start_fn, found - start_fn + 1);
+        directory = "/fileserver" + directory;
+    //    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
 
-    md5File(fd, result);
-    fclose(fd);
+        /* Redirect onto root to see the updated file list */
+        if (strcmp(filename, "/config/config.ini") == 0 ||
+            strcmp(filename, "/config/ref0.jpg") == 0 ||
+            strcmp(filename, "/config/ref0_org.jpg") == 0 ||
+            strcmp(filename, "/config/ref1.jpg") == 0 ||
+            strcmp(filename, "/config/ref1_org.jpg") == 0 ||
+            strcmp(filename, "/config/reference.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref0.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref0_org.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref1.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref1_org.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/reference.jpg") == 0 ) 
+        { 
+            httpd_resp_set_status(req, HTTPD_200); // Avoid reloading of folder content
+        }
+        else {
+            httpd_resp_set_status(req, "303 See Other"); // Reload folder content after upload
+        }
 
-    for (int i = 0; i < sizeof(result); i++) {
-        snprintf(hex, sizeof(hex), "%02x", result[i]);
-        md5hex.append(hex);
+        httpd_resp_set_hdr(req, "Location", directory.c_str());
+        httpd_resp_sendstr(req, "File uploaded successfully");
     }
-
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
-    response.append("}");
-
-    httpd_resp_sendstr(req, response.c_str());
 
     return ESP_OK;
 }
