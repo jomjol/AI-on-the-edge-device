@@ -7,17 +7,17 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
 #### Core Changes
-Only changes since RC5 are listed:
+Only changes since RC5 are listed (Skipping RC6):
 - [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
 
 - [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
-- 
+
 - [#3521](https://github.com/jomjol/AI-on-the-edge-device/pull/3521) openmetrics endpoint extension
-- 
+ 
 - [#3537](https://github.com/jomjol/AI-on-the-edge-device/pull/3537) Added data export (CSV files) functionality
-- 
+ 
 - [#3499](https://github.com/jomjol/AI-on-the-edge-device/pull/3499) Added and activated espressif mDNS service
-- 
+ 
 - [#3547](https://github.com/jomjol/AI-on-the-edge-device/pull/3547) Enhanced `IgnoreLeadingNaN`. Marked it in the UI as a per-sequence parameter
  
 - [#3580](https://github.com/jomjol/AI-on-the-edge-device/pull/3580) Update Homeassistant discovery to comply with Homeassistant `2025.2.4`
@@ -25,9 +25,9 @@ Only changes since RC5 are listed:
 - [#3538](https://github.com/jomjol/AI-on-the-edge-device/pull/3538), [#3568](https://github.com/jomjol/AI-on-the-edge-device/pull/3568) Compress all Web UI files with gzip
 
 - [#3590](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Validate uploaded OTA update file before installing it
-- 
+ 
 - [#3583](https://github.com/jomjol/AI-on-the-edge-device/pull/3583) Remove HTML directory on update
-- 
+  
 - [#3590](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Consolidated the `reboot` and `save` buttons -> The `reboot` button ois not part of the notification
  corrected enable/disable texts on the configuration page to make it more intuitive
 
