@@ -31,7 +31,6 @@ enum t_RateType {
     RateChange      // time difference is considered and a normalized rate is used for comparison with NumberPost.maxRate
  };
 
-
 /**
  * Holds all properties and settings of a sequence. A sequence is a set of digit and/or analog ROIs that are combined to 
  * provide one meter reading (value).
@@ -45,6 +44,7 @@ struct NumberPost {
     int ChangeRateThreshold;  // threshold parameter for negative rate detection
     bool PreValueOkay;          // previousValueValid; indicates that the reading of the previous round has no errors
     bool AllowNegativeRates;    // allowNegativeRate; defines if the consistency checks allow negative rates between consecutive meter readings.
+    bool IgnoreLeadingNaN;
     bool checkDigitIncreaseConsistency; // extendedConsistencyCheck; performs an additional consistency check to avoid wrong readings
     time_t timeStampLastValue;     // Timestamp for the last read value; is used for the log
     time_t timeStampLastPreValue;  // Timestamp for the last PreValue set; is used for useMaxRateValue
@@ -66,7 +66,7 @@ struct NumberPost {
     float AnalogToDigitTransitionStart; // AnalogToDigitTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;              // decimalPlaces; usually defined by the number of analog ROIs; affected by DecimalShift
 
-    string DomoticzIdx;             // Domoticz counter Idx
+    string DomoticzIdx;         // Domoticz counter Idx
     
     string FieldV1;             // influxdbFieldName_v1; Name of the Field in InfluxDBv1
     string MeasurementV1;       // influxdbMeasurementName_v1; Name of the Measurement in InfluxDBv1
@@ -83,4 +83,3 @@ struct NumberPost {
 };
 
 #endif
-

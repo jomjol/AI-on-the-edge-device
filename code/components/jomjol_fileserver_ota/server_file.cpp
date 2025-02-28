@@ -6,10 +6,7 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
-
-
 #include "server_file.h"
-
 
 #include <stdio.h>
 #include <string.h>
@@ -39,6 +36,7 @@ extern "C" {
 #include "MainFlowControl.h"
 
 #include "server_help.h"
+#include "md5.h"
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
@@ -58,19 +56,16 @@ struct file_server_data {
     char scratch[SERVER_FILER_SCRATCH_BUFSIZE];
 };
 
-
 #include <iostream>
 #include <sys/types.h>
 #include <dirent.h>
 
 using namespace std;
 
-string SUFFIX_ZW = "_0xge";
-
+string SUFFIX_ZW = "_tmp";
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file);
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file);
-
 
 esp_err_t get_numbers_file_handler(httpd_req_t *req)
 {
@@ -86,7 +81,6 @@ esp_err_t get_numbers_file_handler(httpd_req_t *req)
 
     return ESP_OK;
 }
-
 
 esp_err_t get_data_file_handler(httpd_req_t *req)
 {
@@ -131,7 +125,6 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-
 esp_err_t get_tflite_file_handler(httpd_req_t *req)
 {
     struct dirent *entry;
@@ -175,12 +168,11 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-
 /* Send HTTP response with a run-time generated html consisting of
  * a list of all files and folders under the requested path.
  * In case of SPIFFS this returns empty list when path is any
  * string other than '/', since SPIFFS doesn't support directories */
-static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const char* uripath, bool readonly)
+static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const char *uripath, bool readonly)
 {
     char entrypath[FILE_PATH_MAX];
     char entrysize[16];
@@ -192,82 +184,85 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     char dirpath_corrected[FILE_PATH_MAX];
     strcpy(dirpath_corrected, dirpath);
 
-    file_server_data * server_data = (file_server_data *) req->user_ctx;
-    if ((strlen(dirpath_corrected)-1) > strlen(server_data->base_path))      // if dirpath is not mountpoint, the last "\" needs to be removed
-        dirpath_corrected[strlen(dirpath_corrected)-1] = '\0';
+    file_server_data *server_data = (file_server_data *)req->user_ctx;
 
-    DIR *dir = opendir(dirpath_corrected);
+    if ((strlen(dirpath_corrected) - 1) > strlen(server_data->base_path)) {
+        // if dirpath is not mountpoint, the last "\" needs to be removed
+        dirpath_corrected[strlen(dirpath_corrected) - 1] = '\0';
+    }
+
+    DIR *pdir = opendir(dirpath_corrected);
 
     const size_t dirpath_len = strlen(dirpath);
     ESP_LOGD(TAG, "Dirpath: <%s>, Pathlength: %d", dirpath, dirpath_len);
 
-    /* Retrieve the base path of file storage to construct the full path */
+    // Retrieve the base path of file storage to construct the full path
     strlcpy(entrypath, dirpath, sizeof(entrypath));
     ESP_LOGD(TAG, "entrypath: <%s>", entrypath);
 
-    if (!dir) {
+    if (!pdir) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat dir: " + std::string(dirpath) + "!");
-        /* Respond with 404 Not Found */
+        // Respond with 404 Not Found
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, get404());
         return ESP_FAIL;
     }
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    /* Send HTML file header */
-    httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>");
+    // Send HTML file header
+    httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html lang=\"en\" xml:lang=\"en\"><head>");
+    httpd_resp_sendstr_chunk(req, "<link href=\"/file_server.css\" rel=\"stylesheet\">");
+    httpd_resp_sendstr_chunk(req, "<link href=\"/firework.css\" rel=\"stylesheet\">");
+    httpd_resp_sendstr_chunk(req, "<script type=\"text/javascript\" src=\"/jquery-3.6.0.min.js\"></script>");
+    httpd_resp_sendstr_chunk(req, "<script type=\"text/javascript\" src=\"/firework.js\"></script></head>");
 
-/////////////////////////////////////////////////
-    if (!readonly) {
-        FILE *fd = fopen("/sdcard/html/file_server.html", "r");
-        char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
-        size_t chunksize;
-        do {
-            chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
-            //        ESP_LOGD(TAG, "Chunksize %d", chunksize);
-            if (chunksize > 0){
-                if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
-                fclose(fd);
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File sending failed!");
-                return ESP_FAIL;
-                }
-            }
-        } while (chunksize != 0);
-        fclose(fd);
-        //    ESP_LOGI(TAG, "File sending complete");
-    }
-///////////////////////////////
+    httpd_resp_sendstr_chunk(req, "<body>");
+
+    httpd_resp_sendstr_chunk(req, "<table class=\"fixed\" border=\"0\" width=100% style=\"font-family: arial\">");
+    httpd_resp_sendstr_chunk(req, "<tr><td style=\"vertical-align: top;width: 300px;\"><h2>Fileserver</h2></td>"
+                                  "<td rowspan=\"2\"><table border=\"0\" style=\"width:100%\"><tr><td style=\"width:80px\">"
+                                  "<label for=\"newfile\">Source</label></td><td colspan=\"2\">"
+                                  "<input id=\"newfile\" type=\"file\" onchange=\"setpath()\" style=\"width:100%;\"></td></tr>"
+                                  "<tr><td><label for=\"filepath\">Destination</label></td><td>"
+                                  "<input id=\"filepath\" type=\"text\" style=\"width:94%;\"></td><td>"
+                                  "<button id=\"upload\" type=\"button\" class=\"button\" onclick=\"upload()\">Upload</button></td></tr>"
+                                  "</table></td></tr><tr></tr><tr><td colspan=\"2\">"
+                                  "<button style=\"font-size:16px; padding: 5px 10px\" id=\"dirup\" type=\"button\" onclick=\"dirup()\""
+                                  "disabled>&#129145; Directory up</button><span style=\"padding-left:15px\" id=\"currentpath\">"
+                                  "</span></td></tr>");
+    httpd_resp_sendstr_chunk(req, "</table>");
+
+    httpd_resp_sendstr_chunk(req, "<script type=\"text/javascript\" src=\"/file_server.js\"></script>");
+    httpd_resp_sendstr_chunk(req, "<script type=\"text/javascript\">initFileServer();</script>");
 
     std::string _zw = std::string(dirpath);
     _zw = _zw.substr(8, _zw.length() - 8);
-    _zw = "/delete/" + _zw + "?task=deldircontent"; 
+    _zw = "/delete/" + _zw + "?task=deldircontent";
 
+    // Send file-list table definition and column labels
+    httpd_resp_sendstr_chunk(req, "<table id=\"files_table\">"
+                                  "<col width=\"800px\"><col width=\"300px\"><col width=\"300px\"><col width=\"100px\">"
+                                  "<thead><tr><th>Name</th><th>Type</th><th>Size</th>");
 
-    /* Send file-list table definition and column labels */
-    httpd_resp_sendstr_chunk(req,
-        "<table id=\"files_table\">"
-        "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
-        "<thead><tr><th>Name</th><th>Type</th><th>Size</th>");
     if (!readonly) {
-        httpd_resp_sendstr_chunk(req, "<th>"
-            "<form method=\"post\" action=\"");
+        httpd_resp_sendstr_chunk(req, "<th><form method=\"post\" action=\"");
         httpd_resp_sendstr_chunk(req, _zw.c_str());
-        httpd_resp_sendstr_chunk(req,
-            "\"><button type=\"submit\">DELETE ALL!</button></form>"
-            "</th></tr>");
+        httpd_resp_sendstr_chunk(req, "\"><button type=\"submit\">DELETE ALL!</button></form></th></tr>");
     }
+
     httpd_resp_sendstr_chunk(req, "</thead><tbody>\n");
 
-    /* Iterate over all files / folders and fetch their names and sizes */
-    while ((entry = readdir(dir)) != NULL) {
-        if (strcmp("wlan.ini", entry->d_name) != 0 )        // wlan.ini soll nicht angezeigt werden!
-        {
+    // Iterate over all files / folders and fetch their names and sizes
+    while ((entry = readdir(pdir)) != NULL) {
+        // wlan.ini soll nicht angezeigt werden!
+        if (strcmp("wlan.ini", entry->d_name) != 0) {
             entrytype = (entry->d_type == DT_DIR ? "directory" : "file");
 
             strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
             ESP_LOGD(TAG, "Entrypath: %s", entrypath);
+
             if (stat(entrypath, &entry_stat) == -1) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat " + string(entrytype) + ": " + string(entry->d_name));
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat " + std::string(entrytype) + ": " + std::string(entry->d_name));
                 continue;
             }
 
@@ -283,22 +278,25 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
                 }
             }
 
-            ESP_LOGI(TAG, "Found %s: %s (%s bytes)", entrytype, entry->d_name, entrysize);
+            ESP_LOGD(TAG, "Found %s: %s (%s bytes)", entrytype, entry->d_name, entrysize);
 
-            /* Send chunk of HTML file containing table entries with file name and size */
+            // Send chunk of HTML file containing table entries with file name and size
             httpd_resp_sendstr_chunk(req, "<tr><td><a href=\"");
             httpd_resp_sendstr_chunk(req, "/fileserver");
             httpd_resp_sendstr_chunk(req, uripath);
             httpd_resp_sendstr_chunk(req, entry->d_name);
+
             if (entry->d_type == DT_DIR) {
                 httpd_resp_sendstr_chunk(req, "/");
             }
+
             httpd_resp_sendstr_chunk(req, "\">");
             httpd_resp_sendstr_chunk(req, entry->d_name);
             httpd_resp_sendstr_chunk(req, "</a></td><td>");
             httpd_resp_sendstr_chunk(req, entrytype);
             httpd_resp_sendstr_chunk(req, "</td><td>");
             httpd_resp_sendstr_chunk(req, entrysize);
+
             if (!readonly) {
                 httpd_resp_sendstr_chunk(req, "</td><td>");
                 httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/delete");
@@ -306,30 +304,27 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
                 httpd_resp_sendstr_chunk(req, entry->d_name);
                 httpd_resp_sendstr_chunk(req, "\"><button type=\"submit\">Delete</button></form>");
             }
+
             httpd_resp_sendstr_chunk(req, "</td></tr>\n");
         }
     }
-    closedir(dir);
 
-    /* Finish the file list table */
+    closedir(pdir);
+
+    // Finish the file list table
     httpd_resp_sendstr_chunk(req, "</tbody></table>");
 
-    /* Send remaining chunk of HTML file to complete it */
+    // Send remaining chunk of HTML file to complete it
     httpd_resp_sendstr_chunk(req, "</body></html>");
 
-    /* Send empty chunk to signal HTTP response completion */
+    // Send empty chunk to signal HTTP response completion
     httpd_resp_sendstr_chunk(req, NULL);
     return ESP_OK;
 }
-/*
-#define IS_FILE_EXT(filename, ext) \
-    (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
-*/
 
 static esp_err_t logfileact_get_full_handler(httpd_req_t *req) {
     return send_logfile(req, true);
 }
-
 
 static esp_err_t logfileact_get_last_part_handler(httpd_req_t *req) {
     return send_logfile(req, false);
@@ -338,7 +333,6 @@ static esp_err_t logfileact_get_last_part_handler(httpd_req_t *req) {
 static esp_err_t datafileact_get_full_handler(httpd_req_t *req) {
     return send_datafile(req, true);
 }
-
 
 static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
     return send_datafile(req, false);
@@ -423,7 +417,6 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
     httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
-
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
 {
@@ -510,7 +503,6 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
     return ESP_OK;
 }
 
-
 /* Handler to download a file kept on the server */
 static esp_err_t download_get_handler(httpd_req_t *req)
 {
@@ -527,7 +519,6 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 
 //    filename = get_path_from_uri(filepath, ((struct file_server_data *)req->user_ctx)->base_path,
 //                                             req->uri, sizeof(filepath));
-
 
     if (!filename) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Filename is too long");
@@ -619,6 +610,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
+
+    ESP_LOGI(TAG, "uri: %s", req->uri);
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
@@ -721,44 +714,76 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File saved: " + string(filename));
     ESP_LOGI(TAG, "File reception completed");
 
-    std::string directory = std::string(filepath);
-	size_t zw = directory.find("/");
-	size_t found = zw;
-	while (zw != std::string::npos)
-	{
-		zw = directory.find("/", found+1);  
-		if (zw != std::string::npos)
-			found = zw;
-	}
+    string s = req->uri;
+    if (isInString(s, "?md5")) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Calculate and return MD5 sum...");
+        
+        fd = fopen(filepath, "r");
+        if (!fd) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to open file for reading: " + string(filepath));
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to open file for reading");
+            return ESP_FAIL;
+        }
 
-    int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-    ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
-	directory = directory.substr(start_fn, found - start_fn + 1);
-    directory = "/fileserver" + directory;
-//    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
+        uint8_t result[16];
+        string md5hex = "";
+        string response = "{\"md5\":";
+        char hex[3];
 
-    /* Redirect onto root to see the updated file list */
-    if (strcmp(filename, "/config/config.ini") == 0 ||
-        strcmp(filename, "/config/ref0.jpg") == 0 ||
-        strcmp(filename, "/config/ref0_org.jpg") == 0 ||
-        strcmp(filename, "/config/ref1.jpg") == 0 ||
-        strcmp(filename, "/config/ref1_org.jpg") == 0 ||
-        strcmp(filename, "/config/reference.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref0.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref0_org.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref1.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref1_org.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/reference.jpg") == 0 ) 
-    { 
-        httpd_resp_set_status(req, HTTPD_200); // Avoid reloading of folder content
+        md5File(fd, result);
+        fclose(fd);
+
+        for (int i = 0; i < sizeof(result); i++) {
+            snprintf(hex, sizeof(hex), "%02x", result[i]);
+            md5hex.append(hex);
+        }
+
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
+        response.append("\"" + md5hex + "\"");
+        response.append("}");
+
+        httpd_resp_sendstr(req, response.c_str());
     }
-    else {
-        httpd_resp_set_status(req, "303 See Other"); // Reload folder content after upload
+    else {  // Return file server page
+        std::string directory = std::string(filepath);
+        size_t zw = directory.find("/");
+        size_t found = zw;
+        while (zw != std::string::npos)
+        {
+            zw = directory.find("/", found+1);  
+            if (zw != std::string::npos)
+                found = zw;
+        }
+
+        int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
+        ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
+        directory = directory.substr(start_fn, found - start_fn + 1);
+        directory = "/fileserver" + directory;
+    //    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
+
+        /* Redirect onto root to see the updated file list */
+        if (strcmp(filename, "/config/config.ini") == 0 ||
+            strcmp(filename, "/config/ref0.jpg") == 0 ||
+            strcmp(filename, "/config/ref0_org.jpg") == 0 ||
+            strcmp(filename, "/config/ref1.jpg") == 0 ||
+            strcmp(filename, "/config/ref1_org.jpg") == 0 ||
+            strcmp(filename, "/config/reference.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref0.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref0_org.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref1.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref1_org.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/reference.jpg") == 0 ) 
+        { 
+            httpd_resp_set_status(req, HTTPD_200); // Avoid reloading of folder content
+        }
+        else {
+            httpd_resp_set_status(req, "303 See Other"); // Reload folder content after upload
+        }
+
+        httpd_resp_set_hdr(req, "Location", directory.c_str());
+        httpd_resp_sendstr(req, "File uploaded successfully");
     }
-
-    httpd_resp_set_hdr(req, "Location", directory.c_str());
-    httpd_resp_sendstr(req, "File uploaded successfully");
-
 
     return ESP_OK;
 }
@@ -769,7 +794,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "delete_post_handler");
     char filepath[FILE_PATH_MAX];
     struct stat file_stat;
-
 
 //////////////////////////////////////////////////////////////
     char _query[200];
@@ -893,12 +917,10 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         }
     }
 
-
     httpd_resp_set_hdr(req, "Location", directory.c_str());
     httpd_resp_sendstr(req, "File successfully deleted");
     return ESP_OK;
 }
-
 
 void delete_all_in_directory(std::string _directory)
 {
@@ -925,7 +947,7 @@ void delete_all_in_directory(std::string _directory)
     closedir(dir);
 }
 
-std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main, bool _initial_setup)
+std::string unzip_new(std::string _in_zip_file, std::string _html_tmp, std::string _html_final, std::string _target_bin, std::string _main, bool _initial_setup)
 {
     int i, sort_iter;
     mz_bool status;
@@ -1007,9 +1029,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                     }
                     else
                     {
-                        zw = _target_zip + zw;
+                        zw = _html_tmp + zw;
                     }
 
+                }
+
+                // files in the html folder shall be redirected to the temporary html folder
+                if (zw.find(_html_final) == 0) {
+                    FindReplace(zw, _html_final, _html_tmp);
                 }
             
                 string filename_zw = zw + SUFFIX_ZW;
@@ -1137,8 +1164,6 @@ void unzip(std::string _in_zip_file, std::string _target_directory){
     ESP_LOGD(TAG, "Success.");
 }
 
-
-
 void register_server_file_uri(httpd_handle_t server, const char *base_path)
 {
     static struct file_server_data *server_data = NULL;
@@ -1164,8 +1189,6 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     strlcpy(server_data->base_path, base_path,
             sizeof(server_data->base_path));
 
-
-
     /* URI handler for getting uploaded files */
 //    char zw[sizeof(serverprefix)+1];
 //    strcpy(zw, serverprefix);
@@ -1180,7 +1203,6 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     };
     httpd_register_uri_handler(server, &file_download);
 
-
     httpd_uri_t file_datafileact = {
         .uri       = "/datafileact",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
@@ -1188,7 +1210,6 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_datafileact);
-
 
     httpd_uri_t file_datafile_last_part_handle = {
         .uri       = "/data",  // Match all URIs of type /path/to/file
@@ -1206,7 +1227,6 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     };
     httpd_register_uri_handler(server, &file_logfileact);
 
-
     httpd_uri_t file_logfile_last_part_handle = {
         .uri       = "/log",  // Match all URIs of type /path/to/file
         .method    = HTTP_GET,
@@ -1214,7 +1234,6 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_logfile_last_part_handle);
-
 
     /* URI handler for uploading files to server */
     httpd_uri_t file_upload = {
@@ -1233,5 +1252,4 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &file_delete);
-
 }

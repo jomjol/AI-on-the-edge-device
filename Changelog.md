@@ -1,4 +1,4 @@
-## [16.0.0-RC6] - 2024-xx-xx
+## [16.0.0-RC6] - 2024-02-28
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
 
@@ -9,13 +9,25 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 #### Core Changes
 Only changes since RC5 are listed:
 - [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
-- xxx
+
+- [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interfache
+
+- [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500)  Update smartled driver
+
+- [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
+
+- [#3538](https://github.com/jomjol/AI-on-the-edge-device/pull/3538) add .gz
+
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3565) corrected enable/disable texts to make it more intuitive
+
+- [#3568](https://github.com/jomjol/AI-on-the-edge-device/pull/3568) compress all HTML files
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
 #### Bug Fixes
 Only changes since RC5 are listed:
- - xxx
+ - [#3450](https://github.com/jomjol/AI-on-the-edge-device/pull/3450) fix crash fue to empty CAM parameters in migration
+ -  [#3446](https://github.com/jomjol/AI-on-the-edge-device/pull/3446) fix for incorrect decimal shift
 
 ## [16.0.0-RC5] - 2024-12-05
 
