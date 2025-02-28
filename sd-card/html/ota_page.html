@@ -300,17 +300,27 @@
             console.log("Upload completed");
             console.log("Response: " + event.target.responseText);
 
-            validateMd5(JSON.parse(event.target.responseText).md5, (result) => {
-                if (result == true) {
-                    _("status").innerHTML = "Status: The uploaded file is valid, installing it...";
-                    extract();
-                }
-                else {
-                    _("status").innerHTML = "Status: The file got corrupted! Please upload it again!";
-                    firework.launch('Upload failed, the file got corrupted! Please upload it again!', 'danger', 30000);
-                    document.getElementById("start_OTA_button").disabled = false;
-                }
-            });
+            try {
+                md5_on_device = JSON.parse(event.target.responseText).md5;
+                validateMd5(md5_on_device, (result) => {
+                    if (result == true) {
+                        _("status").innerHTML = "Status: The uploaded file is valid, installing it...";
+                        extract();
+                    }
+                    else {
+                        _("status").innerHTML = "Status: The file got corrupted! Please upload it again!";
+                        firework.launch('Upload failed, the file got corrupted! Please upload it again!', 'danger', 30000);
+                        document.getElementById("start_OTA_button").disabled = false;
+                    }
+                });
+            }
+            catch (e) {
+                // If the firmware is to old, it will return the file sever page instead of the JSON object with the MD5 sum.
+                // In juch case just proceed to keep legacy support.
+                console.log("It seems to be a legacy firmware, installing the update without validation!");
+                _("status").innerHTML = "Status: It seems to be a legacy firmware, installing the update without validation...";
+                extract();
+            }
         }
 
 
