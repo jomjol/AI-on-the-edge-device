@@ -16,7 +16,7 @@ Only changes since RC5 are listed:
 
 - [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
 - 
-- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3547) Enhanced `IgnoreLeadingNaN`. It is now a per-sequence parameter.
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3547) Enhanced `IgnoreLeadingNaN`. Marked it in the UI as a per-sequence parameter
 - 
 - [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3580) Update Homeassistant discovery to comply with Homeassistant `2025.2.4`
 
