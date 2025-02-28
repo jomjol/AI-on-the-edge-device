@@ -2,7 +2,7 @@
 <html lang="en" xml:lang="en">
 
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <title>Configuration</title>
 
 <style>
@@ -195,7 +195,7 @@
 		text-align: center;
 		text-decoration: none;
 		display: inline-block;
-	}
+	}	
 </style>
 
 <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
@@ -215,1918 +215,1909 @@
         <div id="overlaytext"></div>
     </div>
 
-	<h2>Configuration</h2>
+    <h2>Configuration</h2>
 
-	<details id="desc_details">
+    <details id="desc_details">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
             <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Parameters" target="_blank">Parameter</a>
         </summary>
-		<p>
-			This page lists all available configuration parameters of the device.<br>
-			The description of each parameter can be shown by hovering over or by clicking the <img src="help.png" width="16px"> icon.
-		</p>
-		<p>	
-			The page gets opened with the default view which should be sufficient for regular configuration tasks. Enabling the <b>"Show Expert Parameters"</b>
-			some expert parameters (light red background color) will be added to the parameter list. Additionally the button <b>"Edit "Config.ini" File"</b>
-			to edit the underlaying configuration file (config.ini) manually is now shown on top of the page. This function should be only used for special cases.
-		</p>
-		<p>
-			Sections (entire functionality) or single parameters having a checkbox can be enabled or disabled.
-			Disabling a complete section results in a disabled functionality. Whenever only a single parameter of a section is disabled
-			the hard-coded default value is used for the disabled parameter.
-		</p>
-		<p>
-			Don't forget to save the changes with the button <b>"Save Config"</b> at the bottom of this page.<br>
-			<label id="reboot_text" name="reboot_text">
-				To apply the new configuration a restart of the device is neccessary: <b>"Reboot to apply changes"</b>
-			</label>
-		</p>
+        <p>
+            This page lists all available configuration parameters of the device.<br>
+            The description of each parameter can be shown by hovering over or by clicking the <img src="help.png" width="16px"> icon.
+        </p>
+        <p>	
+            The page gets opened with the default view which should be sufficient for regular configuration tasks. Enabling the <b>"Show Expert Parameters"</b>
+            some expert parameters (light red background color) will be added to the parameter list. Additionally the button <b>"Edit "Config.ini" File"</b>
+            to edit the underlaying configuration file (config.ini) manually is now shown on top of the page. This function should be only used for special cases.
+        </p>
+        <p>
+            Sections (entire functionality) or single parameters having a checkbox can be enabled or disabled.
+            Disabling a complete section results in a disabled functionality. Whenever only a single parameter of a section is disabled
+            the hard-coded default value is used for the disabled parameter.
+        </p>
+        <p>
+            Don't forget to save the changes with the button <b>"Save Config"</b> at the bottom of this page.<br>
+            <label id="reboot_text" name="reboot_text">
+                To apply the new configuration a restart of the device is neccessary: <b>"Reboot to apply changes"</b>
+            </label>
+        </p>
     </details>
     <hr />
 
 <div id="divall" style="display:none">
-
-	<table class="table">
-		
+    <table class="table">
         <colgroup>
             <col span="1" style="width:290px">
             <col span="1" style="width:300px;">
             <col span="1">
         </colgroup>
 
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Configuration View</h4></td>
-		</tr> 
-		<tr>
-			<td class="indent1">
-				<input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
-					<label for="ExpertModus_enabled">Show Expert Parameters</label> 
-			</td>
-			<td>
-				<button style="display:none;" class="button" id="Button_Edit_Config_Raw" onclick="editConfigRaw()">Edit Config file in raw mode</button>
-			</td>
-		</tr>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Configuration View</h4></td>
+        </tr>
 
-		<!------------- Take Image ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Take Image</h4></td>
-		</tr> 
+        <tr>
+            <td class="indent1">
+                <input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' unchecked>
+                <label for="ExpertModus_enabled">Show Expert Parameters</label> 
+            </td>
+            <td>
+                <button style="display:none;" class="button" id="Button_Edit_Config_Raw" onclick="editConfigRaw()">Edit Config file in raw mode</button>
+            </td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="TakeImage_RawImagesLocation_enabled" value="1" onclick='InvertEnableItem("TakeImage", "RawImagesLocation")' unchecked >
-				<label for=TakeImage_RawImagesLocation_enabled><class id="TakeImage_RawImagesLocation_text" style="color:black;">Raw Images Location</class></label>
-			</td>
-			<td>
-				<input required type="text" name="name" id="TakeImage_RawImagesLocation_value1">
-			</td>
-			<td>$TOOLTIP_TakeImage_RawImagesLocation</td>
-		</tr>
+        <!------------- Take Image ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Take Image</h4></td>
+        </tr> 
 
-		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="TakeImage_RawImagesRetention_enabled" value="1" onclick='InvertEnableItem("TakeImage", "RawImagesRetention")' unchecked >
-				<label for=TakeImage_RawImagesRetention_enabled><class id="TakeImage_RawImagesRetention_text" style="color:black;">Raw Images Retention</class></label>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_RawImagesRetention_value1" size="13" min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
-			</td>
-			<td>$TOOLTIP_TakeImage_RawImagesRetention</td>
-		</tr>
+        <tr>
+            <td class="indent1">
+                <input type="checkbox" id="TakeImage_RawImagesLocation_enabled" value="1" onclick='InvertEnableItem("TakeImage", "RawImagesLocation")' unchecked >
+                <label for=TakeImage_RawImagesLocation_enabled><class id="TakeImage_RawImagesLocation_text" style="color:black;">Raw Images Location</class></label>
+            </td>
+            <td>
+                <input required type="text" name="name" id="TakeImage_RawImagesLocation_value1">
+            </td>
+            <td>$TOOLTIP_TakeImage_RawImagesLocation</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_WaitBeforeTakingPicture_ex3">
-			<td class="indent1">
-				<class id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">Wait Before Taking Picture</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0));">Seconds
-			</td>
-			<td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
-		</tr>
+        <tr>
+            <td class="indent1">
+                <input type="checkbox" id="TakeImage_RawImagesRetention_enabled" value="1" onclick='InvertEnableItem("TakeImage", "RawImagesRetention")' unchecked >
+                <label for=TakeImage_RawImagesRetention_enabled><class id="TakeImage_RawImagesRetention_text" style="color:black;">Raw Images Retention</class></label>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_RawImagesRetention_value1" size="13" min="0" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+            </td>
+            <td>$TOOLTIP_TakeImage_RawImagesRetention</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamGainceiling_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamGainceiling_text" style="color:black;">CamGainceiling</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamGainceiling_value1" onchange="cameraParameterChanged()">
-					<option value="x2" selected>x2</option>
-					<option value="x4" >x4</option>
-					<option value="x8" >x8</option>	
-					<option value="x16" >x16</option>
-					<option value="x32" >x32</option>
-					<option value="x64" >x64</option>
-					<option value="x128" >x128</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamGainceiling</td>
-		</tr>		
+        <tr class="expert" unused_id="TakeImage_WaitBeforeTakingPicture_ex3">
+            <td class="indent1">
+                <class id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">Wait Before Taking Picture</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_WaitBeforeTakingPicture_value1" size="13" min="0" step="any" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=0));">Seconds
+            </td>
+            <td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
+        </tr>
+
+        <tr class="expert" unused_id="TakeImage_CamGainceiling_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamGainceiling_text" style="color:black;">CamGainceiling</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamGainceiling_value1" onchange="cameraParameterChanged()">
+                    <option value="x2" selected>x2</option>
+                    <option value="x4" >x4</option>
+                    <option value="x8" >x8</option>	
+                    <option value="x16" >x16</option>
+                    <option value="x32" >x32</option>
+                    <option value="x64" >x64</option>
+                    <option value="x128" >x128</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamGainceiling</td>
+        </tr>		
 		
-		<tr class="expert" unused_id="TakeImage_CamQuality_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamQuality_text" style="color:black;">Image Quality</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamQuality_value1" size="13" min="5" max="63" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=5)) && (!validity.rangeOverflow||(value=63)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamQuality</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamQuality_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamQuality_text" style="color:black;">Image Quality</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamQuality_value1" size="13" min="5" max="63" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=5)) && (!validity.rangeOverflow||(value=63)) &&
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamQuality</td>
+        </tr>
 
-		<tr unused_id="TakeImage_CamBrightness_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamBrightness_text" style="color:black;">Brightness</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamBrightness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamBrightness</td>
-		</tr>
+        <tr unused_id="TakeImage_CamBrightness_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamBrightness_text" style="color:black;">Brightness</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamBrightness_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamBrightness</td>
+        </tr>
 
-		<tr unused_id="TakeImage_CamContrast_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamContrast_text" style="color:black;">Contrast</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamContrast_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamContrast</td>
-		</tr>
+        <tr unused_id="TakeImage_CamContrast_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamContrast_text" style="color:black;">Contrast</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamContrast_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamContrast</td>
+        </tr>
 
-		<tr unused_id="TakeImage_CamSaturation_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamSaturation_text" style="color:black;">Saturation</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamSaturation_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamSaturation</td>
-		</tr>
+        <tr unused_id="TakeImage_CamSaturation_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamSaturation_text" style="color:black;">Saturation</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamSaturation_value1" size="13" min="-2" max="2" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamSaturation</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAutoSharpness_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamAutoSharpness_text" style="color:black;">AutoSharpness</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamAutoSharpness_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAutoSharpness</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAutoSharpness_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAutoSharpness_text" style="color:black;">AutoSharpness</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamAutoSharpness_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAutoSharpness</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamSharpness_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamSharpness_text" style="color:black;">Sharpness</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-3" max="3" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-3)) && (!validity.rangeOverflow||(value=3)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamSharpness</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamSharpness_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamSharpness_text" style="color:black;">Sharpness</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamSharpness_value1" size="13" min="-3" max="3" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=-3)) && (!validity.rangeOverflow||(value=3)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamSharpness</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamSpecialEffect_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamSpecialEffect_text" style="color:black;">SpecialEffect</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamSpecialEffect_value1" onchange="cameraParameterChanged()">
-					<option value="no_effect" selected>no effect</option>
-					<option value="negative" >negative</option>
-					<option value="grayscale" >grayscale</option>					
-					<option value="red" >red</option>					
-					<option value="green" >green</option>					
-					<option value="blue" >blue</option>					
-					<option value="retro" >retro</option>					
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamSpecialEffect</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamSpecialEffect_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamSpecialEffect_text" style="color:black;">SpecialEffect</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamSpecialEffect_value1" onchange="cameraParameterChanged()">
+                    <option value="no_effect" selected>no effect</option>
+                    <option value="negative" >negative</option>
+                    <option value="grayscale" >grayscale</option>					
+                    <option value="red" >red</option>					
+                    <option value="green" >green</option>					
+                    <option value="blue" >blue</option>					
+                    <option value="retro" >retro</option>					
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamSpecialEffect</td>
+        </tr>
 		
-		<tr class="expert" unused_id="TakeImage_CamWbMode_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamWbMode_text" style="color:black;">White Balance Mode</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamWbMode_value1" onchange="cameraParameterChanged()">
-					<option value="auto" selected>auto</option>
-					<option value="sunny" >sunny</option>
-					<option value="cloudy" >cloudy</option>
-					<option value="office" >office</option>
-					<option value="home" >home</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamWbMode</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamWbMode_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamWbMode_text" style="color:black;">White Balance Mode</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamWbMode_value1" onchange="cameraParameterChanged()">
+                    <option value="auto" selected>auto</option>
+                    <option value="sunny" >sunny</option>
+                    <option value="cloudy" >cloudy</option>
+                    <option value="office" >office</option>
+                    <option value="home" >home</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamWbMode</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAwb_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamAwb_text" style="color:black;">White Balance</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamAwb_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAwb</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAwb_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAwb_text" style="color:black;">White Balance</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamAwb_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAwb</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAwbGain_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamAwbGain_text" style="color:black;">Auto White Balance</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamAwbGain_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAwbGain</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAwbGain_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAwbGain_text" style="color:black;">Auto White Balance</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamAwbGain_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAwbGain</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAec_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamAec_text" style="color:black;">Auto-Exposure Control</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamAec_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAec</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAec_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAec_text" style="color:black;">Auto-Exposure Control</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamAec_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAec</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAec2_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamAec2_text" style="color:black;">Auto-Exposure Control 2</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamAec2_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAec2</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAec2_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAec2_text" style="color:black;">Auto-Exposure Control 2</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamAec2_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAec2</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAeLevel_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamAeLevel_text" style="color:black;">Auto Exposure Level</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-5" max="5" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=-5)) && (!validity.rangeOverflow||(value=5)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAeLevel</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAeLevel_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAeLevel_text" style="color:black;">Auto Exposure Level</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamAeLevel_value1" size="13" min="-5" max="5" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=-5)) && (!validity.rangeOverflow||(value=5)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAeLevel</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAecValue_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamAecValue_text" style="color:black;">Auto Exposure Value</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamAecValue_value1" size="13" min="0" max="1200" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1200)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAecValue</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAecValue_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAecValue_text" style="color:black;">Auto Exposure Value</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamAecValue_value1" size="13" min="0" max="1200" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1200)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAecValue</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamAgc_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamAgc_text" style="color:black;">Auto Gain</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamAgc_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAgc</td>
-		</tr>		
+        <tr class="expert" unused_id="TakeImage_CamAgc_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAgc_text" style="color:black;">Auto Gain</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamAgc_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAgc</td>
+        </tr>		
 
-		<tr class="expert" unused_id="TakeImage_CamAgcGain_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamAgcGain_text" style="color:black;">Gain Manual Value</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamAgcGain_value1" size="13" min="0" max="30" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=30)) &&
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamAgcGain</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamAgcGain_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamAgcGain_text" style="color:black;">Gain Manual Value</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamAgcGain_value1" size="13" min="0" max="30" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=30)) &&
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamAgcGain</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamBpc_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamBpc_text" style="color:black;">Black Pixel Correction</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamBpc_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamBpc</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamBpc_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamBpc_text" style="color:black;">Black Pixel Correction</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamBpc_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamBpc</td>
+        </tr>
 		
-		<tr class="expert" unused_id="TakeImage_CamWpc_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamWpc_text" style="color:black;">White Pixel Correction</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamWpc_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamWpc</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamWpc_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamWpc_text" style="color:black;">White Pixel Correction</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamWpc_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamWpc</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamRawGma_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamRawGma_text" style="color:black;">CamRawGma</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamRawGma_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamRawGma</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamRawGma_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamRawGma_text" style="color:black;">CamRawGma</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamRawGma_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamRawGma</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamLenc_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamLenc_text" style="color:black;">Lens Correction</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamLenc_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamLenc</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamLenc_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamLenc_text" style="color:black;">Lens Correction</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamLenc_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamLenc</td>
+        </tr>
 		
-		<tr unused_id="TakeImage_CamHmirror_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamHmirror_text" style="color:black;">Mirror Image</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamHmirror_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamHmirror</td>
-		</tr>		
+        <tr unused_id="TakeImage_CamHmirror_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamHmirror_text" style="color:black;">Mirror Image</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamHmirror_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamHmirror</td>
+        </tr>		
 		
-		<tr unused_id="TakeImage_CamVflip_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamVflip_text" style="color:black;">Flip Image</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamVflip_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamVflip</td>
-		</tr>
+        <tr unused_id="TakeImage_CamVflip_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamVflip_text" style="color:black;">Flip Image</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamVflip_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamVflip</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamDcw_ex3">
-			<td class="indent1">
-			    <class id="TakeImage_CamDcw_text" style="color:black;">Downsize</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamDcw_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamDcw</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamDcw_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamDcw_text" style="color:black;">Downsize</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamDcw_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamDcw</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamDenoise_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamDenoise_text" style="color:black;">Denoise</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_CamDenoise_value1" value="0" min="0" max="8" step="1" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeOverflow||(value=8)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamDenoise</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamDenoise_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamDenoise_text" style="color:black;">Denoise</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_CamDenoise_value1" value="0" min="0" max="8" step="1" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeOverflow||(value=8)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_CamDenoise</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamZoom_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamZoom_text" style="color:black;">Zoom</class>
-			</td>
-			<td>
-				<select id="TakeImage_CamZoom_value1" onchange="cameraParameterChanged()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CamZoom</td>
-		</tr>
+        <tr class="expert" unused_id="TakeImage_CamZoom_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamZoom_text" style="color:black;">Zoom</class>
+            </td>
+            <td>
+                <select id="TakeImage_CamZoom_value1" onchange="cameraParameterChanged()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamZoom</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamZoomSize_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamZoomSize_text" style="color:black;">Zoom Size</class>
-			</td>
-			<td>
+        <tr class="expert" unused_id="TakeImage_CamZoomSize_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamZoomSize_text" style="color:black;">Zoom Size</class>
+            </td>
+            <td>
                 <input required type="number" id="TakeImage_CamZoomSize_value1" value="0" min="0" max="59" step="1" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=59)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_CamZoomSize</td>			
-		</tr>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamZoomSize</td>			
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamZoomOffsetX_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamZoomOffsetX_text" style="color:black;">Zoom Offset X</class>
-			</td>
-			<td>
+        <tr class="expert" unused_id="TakeImage_CamZoomOffsetX_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamZoomOffsetX_text" style="color:black;">Zoom Offset X</class>
+            </td>
+            <td>
                 <input required type="number" id="TakeImage_CamZoomOffsetX_value1" value="0" min="-960" max="960" step="8" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=-960)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
-			</td>
-			<td>$TOOLTIP_TakeImage_CamZoomOffsetX</td>
-		</tr>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamZoomOffsetX</td>
+        </tr>
 
-		<tr class="expert" unused_id="TakeImage_CamZoomOffsetY_ex3">
-			<td class="indent1">
-				<class id="TakeImage_CamZoomOffsetY_text" style="color:black;">Zoom Offset Y</class>
-			</td>
+        <tr class="expert" unused_id="TakeImage_CamZoomOffsetY_ex3">
+            <td class="indent1">
+                <class id="TakeImage_CamZoomOffsetY_text" style="color:black;">Zoom Offset Y</class>
+            </td>
             <td>
                 <input required type="number" id="TakeImage_CamZoomOffsetY_value1" value="0" min="-720" max="720" step="8" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=720)) && (!validity.rangeUnderflow||(value=-720)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
-			</td>
-			<td>$TOOLTIP_TakeImage_CamZoomOffsetY</td>
-		</tr>
+            </td>
+            <td>$TOOLTIP_TakeImage_CamZoomOffsetY</td>
+        </tr>
 
-		<tr unused_id="TakeImage_LEDIntensity_ex3">
-			<td class="indent1">
-				<class id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</class>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100" onchange="cameraParameterChanged()"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_LEDIntensity</td>
-		</tr>
+        <tr unused_id="TakeImage_LEDIntensity_ex3">
+            <td class="indent1">
+                <class id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</class>
+            </td>
+            <td>
+                <input required type="number" id="TakeImage_LEDIntensity_value1" size="13" min="0" max="100" onchange="cameraParameterChanged()"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_TakeImage_LEDIntensity</td>
+        </tr>
 		
-		<tr class="expert" unused_id="TakeImage_Demo_ex3">
-			<td class="indent1">
-				<label>
-					<class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class>
-				</label>
-			</td>
-			<td>
-				<select id="TakeImage_Demo_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_Demo</td>
-		</tr>
-
-		<!------------- Alignment ------------------>
-		<tr  style="border-bottom: 2px solid lightgray;" id="ex4">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Alignment</h4></td>
-		</tr>
-
-		<tr class="expert" unused_id="Alignment_SearchFieldX_ex6">
-			<td class="indent1">
-			    <class id="Alignment_SearchFieldX_text" style="color:black;">Search Field X</class>
-			</td>
-			<td>
-				<input required type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
-			</td>
-			<td>$TOOLTIP_Alignment_SearchFieldX</td>
-		</tr>
-
-		<tr class="expert" unused_id="Alignment_SearchFieldY_ex8">
-			<td class="indent1">
-				<class id="Alignment_SearchFieldY_text" style="color:black;">Search Field Y</class>
-			</td>
-			<td>
-				<input required type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
-			</td>
-			<td>$TOOLTIP_Alignment_SearchFieldY</td>
-		</tr>
-
-		<tr class="expert" unused_id="Alignment_AlignmentAlgo_ex8">
-			<td class="indent1">
-				<input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
-				<label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">Alignment Algorithm</class></label>
-			</td>
-			<td>
-				<select id="Alignment_AlignmentAlgo_value1">
-					<option value="default" selected>Default</option>
-					<option value="highAccuracy" >HighAccuracy</option>
-					<option value="fast" >Fast</option>
-					<option value="off" >Off</option><!-- add disable aligment algo |01.2023 -->
-				</select>
-			</td>
-			<td>$TOOLTIP_Alignment_AlignmentAlgo</td>
-		</tr>
-
-		<tr unused_id="Alignment_InitialRotate_ex8">
-			<td class="indent1">
-				<class id="Alignment_InitialRotate_text" style="color:black;">Rotation angle</class>
-			</td>
-			<td>
-				<input required type="number" name="name" id="Alignment_InitialRotate_value1" size="13" min="-180" max="+180" step="0.1"
-					oninput="(!validity.rangeOverflow||(value=180)) && (!validity.rangeUnderflow||(value=-180)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
-			</td>
-			<td>$TOOLTIP_Alignment_InitialRotate</td>
-		</tr>
-
-		<!------------- Digit ROIs ------------------>
-		<tr style="border-bottom: 2px solid lightgray;" id="Category_Digits_ex4">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-				<h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick ='UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Digits_enabled>Digit ROI Processing</label></h4>
-			</td>
-		</tr>
-
-		<tr class="DigitItem">
-			<td class="indent1" >
-				<class id="Digits_Model_text" style="color:black;">Model</class>
-			</td>
-			<td>
-				<select required class="select_large" id="Digits_Model_value1">
-				</select>
-			</td>
-			<td>$TOOLTIP_Digits_Model</td>
-		</tr>
-		
-		<tr class="DigitItem expert" unused_id="ex91">
-			<td class="indent1">
-				<input type="checkbox" id="Digits_CNNGoodThreshold_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "CNNGoodThreshold")' unchecked >
-				<label for=Digits_CNNGoodThreshold_enabled><class id="Digits_CNNGoodThreshold_text" style="color:black;">CNN Good Threshold</class></label>
-			</td>
-			<td>
-				<input required type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_Digits_CNNGoodThreshold</td>
-		</tr>
-
-		<tr class="DigitItem">
-			<td class="indent1">
-				<input type="checkbox" id="Digits_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesLocation")' unchecked >
-				<label for=Digits_ROIImagesLocation_enabled><class id="Digits_ROIImagesLocation_text" style="color:black;">ROI Images Location</class></label>
-			</td>
-			<td>
-				<input required type="text" name="name" id="Digits_ROIImagesLocation_value1">
-			</td>
-			<td>$TOOLTIP_Digits_ROIImagesLocation</td>
-		</tr>
-
-		<tr class="DigitItem">
-			<td class="indent1">
-				<input type="checkbox" id="Digits_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesRetention")' unchecked >
-				<label for=Digits_ROIImagesRetention_enabled><class id="Digits_ROIImagesRetention_text" style="color:black;">ROI Images Retention</class></label>
-			</td>
-			<td>
-				<input required type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
-			</td>
-			<td>$TOOLTIP_Digits_ROIImagesRetention</td>
-		</tr>
-
-
-		<!------------- Ananlog ROIs ------------------>
-		<tr style="border-bottom: 2px solid lightgray;" id="Category_Analog_ex4">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-				<h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Analog_enabled>Analog ROI Processing</label></h4>
-			</td>
-		</tr>
-
-		<tr class="AnalogItem">
-			<td class="indent1">
-			    <class id="Analog_Model_text" style="color:black;">Model</class>
-			</td>
-			<td> 
-				<select required class="select_large" id="Analog_Model_value1">
-				</select>
-			</td>
-			<td>$TOOLTIP_Analog_Model</td>
-		</tr>
-
-		<tr class="AnalogItem">
-			<td class="indent1">
-				<input type="checkbox" id="Analog_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesLocation")' unchecked >
-				<label for=Analog_ROIImagesLocation_enabled><class id="Analog_ROIImagesLocation_text" style="color:black;">ROI Images Location</class>
-				</label>
-			</td>
-			<td> <input required type="text" name="name" id="Analog_ROIImagesLocation_value1"> </td>
-			<td>$TOOLTIP_Analog_ROIImagesLocation</td>
-		</tr>
-
-		<tr class="AnalogItem">
-			<td class="indent1">
-				<input type="checkbox" id="Analog_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesRetention")' unchecked >
-				<label for=Analog_ROIImagesRetention_enabled><class id="Analog_ROIImagesRetention_text" style="color:black;">ROI Images Retention</class></label></td>
-			<td> 
-				<input required type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
-			</td>
-			<td>$TOOLTIP_Analog_ROIImagesRetention</td>
-		</tr>
-
-
-		<!------------- Post-Processing ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Post-Processing</h4></td>
-		</tr>
-
-		<tr>
-			<td class="indent1">
-				<label><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_PreValueUse_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_PreValueUse</td>
-		</tr>
-		
-		<tr class="expert" unused_id="ex11">
-			<td class="indent1">
-				<input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
-				<label for=PostProcessing_PreValueAgeStartup_enabled><class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">Maximum Age of Previous Value after Startup</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Minutes
-			</td>
-			<td>$TOOLTIP_PostProcessing_PreValueAgeStartup</td>
-		</tr>
-
-		<tr class="expert" unused_id="ex12">
-			<td class="indent1">
-				<label><class id="PostProcessing_ErrorMessage_text" style="color:black;">Skip Messages on Error</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_ErrorMessage_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_ErrorMessage</td>
-		</tr>
-
-		<tr class="expert" unused_id="ex1dddd">
-			<td class="indent1">
-				<label><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_CheckDigitIncreaseConsistency</td>
-		</tr>
-
-		<tr style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>The following parameters are configurable individually for each number sequence:</b>
-                <select 
-					style="font-weight: bold; margin-left:17px" id="Numbers_value1" onchange="numberChanged()">
-				</select>
-			</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<label><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rate</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.AllowNegativeRates</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
-				<label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">Decimal Shift</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_DecimalShift_value1" value="0" step="1" min="-9" max="9"
-					oninput="(!validity.rangeUnderflow||(value=-9)) && (!validity.rangeOverflow||(value=9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.DecimalShift</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_AnalogToDigitTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogToDigitTransitionStart")' unchecked >
-				<label for=PostProcessing_AnalogToDigitTransitionStart_enabled><class id="PostProcessing_AnalogToDigitTransitionStart_text" style="color:black;">Analog to Digit Transition Start</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_AnalogToDigitTransitionStart_value1" step="0.1" min="5.0" max="9.9" value="9.2"
-					oninput="(!validity.rangeUnderflow||(value=5.0)) && (!validity.rangeOverflow||(value=9.9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogToDigitTransitionStart</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
-				<label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">Maximum Rate Value</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateValue</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
-				<label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">Maximum Rate Type</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_MaxRateType_value1">
-					<option value="AbsoluteChange" >AbsoluteChange</option>
-					<option value="RateChange" selected>RateChange</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateType</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<input type="checkbox" id="PostProcessing_ChangeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ChangeRateThreshold")' unchecked >
-				<label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.ChangeRateThreshold</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<label><class id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_ExtendedResolution_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.ExtendedResolution</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<label><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_IgnoreLeadingNaN_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreLeadingNaN</td>
-		</tr>	
-		<!-------------
-		<tr>
-			<td class="indent2">
-				<label><class id="PostProcessing_IgnoreAllNaN_text" style="color:black;">Ignore All NaNs</class></label>
-			</td>
-			<td>
-				<select id="PostProcessing_IgnoreAllNaN_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreAllNaN</td>
-		</tr>		
-		------------------>
-
-		<!------------- MQTT ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-			    <h4>
-				<input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_MQTT_enabled>MQTT</label>
-			    </h4>
-			</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "Uri")' unchecked >
-				<label for=MQTT_Uri_enabled><class id="MQTT_Uri_text" style="color:black;">URI</class></label>
-			</td>
-			<td>
-				<input required type="text" id="MQTT_Uri_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_Uri</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_MainTopic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopic")' unchecked >
-				<label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">Main Topic</class></label>
-			</td>
-			<td>
-				<input required type="text" id="MQTT_MainTopic_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_MainTopic</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
-				<label for=MQTT_ClientID_enabled><class id="MQTT_ClientID_text" style="color:black;">Client ID</class></label>
-			</td>
-			<td>
-				<input required type="text" id="MQTT_ClientID_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_ClientID</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "user")' unchecked >
-				<label for=MQTT_user_enabled><class id="MQTT_user_text" style="color:black;">Username</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_user_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_user</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "password")' unchecked >
-				<label for=MQTT_password_enabled><class id="MQTT_password_text" style="color:black;">Password</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_password_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_password</td>
-		</tr>
-
-		<tr class="MQTTItem expert" unused_id="exMqtt">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_CACert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "CACert")' unchecked >
-				<label for=MQTT_CACert_enabled><class id="MQTT_CACert_text" style="color:black;">Root CA Certificate file</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_CACert_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_CACert</td>
-		</tr>
-
-		<tr class="MQTTItem expert" unused_id="exMqtt">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_ClientCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientCert")' unchecked >
-				<label for=MQTT_ClientCert_enabled><class id="MQTT_ClientCert_text" style="color:black;">Client Certificate file</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_ClientCert_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_ClientCert</td>
-		</tr>
-
-		<tr class="MQTTItem expert" unused_id="exMqtt">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_ClientKey_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientKey")' unchecked >
-				<label for=MQTT_ClientKey_enabled><class id="MQTT_ClientKey_text" style="color:black;">Client Key file</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_ClientKey_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_ClientKey</td>
-		</tr>
-		
-		<tr class="MQTTItem expert" unused_id="exMqtt">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_ValidateServerCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ValidateServerCert")' unchecked >
-				<label for=MQTT_ValidateServerCert_enabled><class id="MQTT_ValidateServerCert_text" style="color:black;">Validate ServerCert</class></label>
-			</td>
-			<td>
-				<select id="MQTT_ValidateServerCert_value1">
-					<option value="true" selected>enabled (true)</option>
-					<option value="false">disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_MQTT_ValidateServerCert</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<label><class id="MQTT_RetainMessages_text" style="color:black;">Retain Messages</class></label>
-			</td>
-			<td>
-				<select id="MQTT_RetainMessages_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_MQTT_RetainMessages</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1" style="padding-top:25px" colspan="2">
-				<b>Homeassistant Discovery (using MQTT)</b><br>
-					If activated, the discovery topics gets automatically scheduled to sent once after device startup during state "Publish to MQTT".
-					To schedule a retransmission: Use "Manual Control > Resend HA Discovery" or call REST API: 
-					<a href=mqtt_publish_discovery target="_blank">http://&lt;IP&gt;/mqtt_publish_discovery</a>
-			</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent2">
-				<label><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
-			</td>
-			<td>
-				<select id="MQTT_HomeassistantDiscovery_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_MQTT_HomeassistantDiscovery</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent2">
-				<input type="checkbox" id="MQTT_MeterType_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MeterType")' unchecked >
-				<label for=MQTT_MeterType_enabled><class id="MQTT_MeterType_text" style="color:black;">Meter Type</class></label>
-			</td>
-			<td>
-				<select class="select_large" id="MQTT_MeterType_value1"> <!-- See https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes -->
-					<option value="other" selected>Other (no Units)</option>
-					<option value="water_m3">Watermeter (Value: m³, Rate: m³/h)</option>
-					<option value="water_l">Watermeter (Value: l, Rate: l/h)</option>
-					<option value="water_gal">Watermeter (Value: gal, Rate: gal/h)</option>
-					<option value="water_ft3">Watermeter (Value: ft³, Rate: ft³/min)</option>
-					<option value="gas_m3">Gasmeter (Value: m³, Rate: m³/h)</option>
-					<option value="gas_ft3">Gasmeter (Value: ft³, Rate: ft³/min)</option>
-					<option value="energy_wh">Energymeter (Value: Wh, Rate: W)</option>
-					<option value="energy_kwh">Energymeter (Value: kWh, Rate: kW)</option>
-					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
-					<option value="energy_gj">Energymeter (Value: GJ, Rate: GJ/h)</option>
-					<option value="temperature_c">Thermometer (Value: °C, Rate: °C/min)</option>
-					<option value="temperature_f">Thermometer (Value: °F, Rate: °F/min)</option>
-					<option value="temperature_k">Thermometer (Value: K, Rate: K/min)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_MQTT_MeterType</td>
-		</tr>
-
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
-				<label for=MQTT_DomoticzTopicIn_enabled><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz "in" topic</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_DomoticzTopicIn_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
-		</tr>
-		
-		<tr class="MQTTItem" style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>The following parameters are configurable individually for each number sequence:</b>
-                <select
-					style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()">
+        <tr class="expert" unused_id="TakeImage_Demo_ex3">
+            <td class="indent1">
+                <label>
+                    <class id="TakeImage_Demo_text" style="color:black;">Demo Mode</class>
+                </label>
+            </td>
+            <td>
+                <select id="TakeImage_Demo_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
                 </select>
-			</td>
-		</tr>
-		<tr class="MQTTItem">
-			<td class="indent2">
-				<input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
-				<label for=MQTT_DomoticzIDX_enabled><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_DomoticzIDX_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_NUMBER.DomoticzIDX</td>
-		</tr>
+            </td>
+            <td>$TOOLTIP_TakeImage_Demo</td>
+        </tr>
 
+        <!------------- Alignment ------------------>
+        <tr  style="border-bottom: 2px solid lightgray;" id="ex4">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Alignment</h4></td>
+        </tr>
+
+        <tr class="expert" unused_id="Alignment_SearchFieldX_ex6">
+            <td class="indent1">
+                <class id="Alignment_SearchFieldX_text" style="color:black;">Search Field X</class>
+            </td>
+            <td>
+                <input required type="number" name="name" id="Alignment_SearchFieldX_value1" size="13" min="1"  step="1"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+            </td>
+            <td>$TOOLTIP_Alignment_SearchFieldX</td>
+        </tr>
+
+        <tr class="expert" unused_id="Alignment_SearchFieldY_ex8">
+            <td class="indent1">
+                <class id="Alignment_SearchFieldY_text" style="color:black;">Search Field Y</class>
+            </td>
+            <td>
+                <input required type="number" name="name" id="Alignment_SearchFieldY_value1" size="13" min="1"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+            </td>
+            <td>$TOOLTIP_Alignment_SearchFieldY</td>
+        </tr>
+
+        <tr class="expert" unused_id="Alignment_AlignmentAlgo_ex8">
+            <td class="indent1">
+                <input type="checkbox" id="Alignment_AlignmentAlgo_enabled" value="1"  onclick = 'InvertEnableItem("Alignment", "AlignmentAlgo")' unchecked >
+                <label for=Alignment_AlignmentAlgo_enabled><class id="Alignment_AlignmentAlgo_text" style="color:black;">Alignment Algorithm</class></label>
+            </td>
+            <td>
+                <select id="Alignment_AlignmentAlgo_value1">
+                    <option value="default" selected>Default</option>
+                    <option value="highAccuracy" >HighAccuracy</option>
+                    <option value="fast" >Fast</option>
+                    <option value="off" >Off</option><!-- add disable aligment algo |01.2023 -->
+                </select>
+            </td>
+            <td>$TOOLTIP_Alignment_AlignmentAlgo</td>
+        </tr>
+
+        <tr unused_id="Alignment_InitialRotate_ex8">
+            <td class="indent1">
+                <class id="Alignment_InitialRotate_text" style="color:black;">Rotation angle</class>
+            </td>
+            <td>
+                <input required type="number" name="name" id="Alignment_InitialRotate_value1" size="13" min="-180" max="+180" step="0.1"
+                    oninput="(!validity.rangeOverflow||(value=180)) && (!validity.rangeUnderflow||(value=-180)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
+            </td>
+            <td>$TOOLTIP_Alignment_InitialRotate</td>
+        </tr>
+
+        <!------------- Digit ROIs ------------------>
+        <tr style="border-bottom: 2px solid lightgray;" id="Category_Digits_ex4">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4><input type="checkbox" id="Category_Digits_enabled" value="1"  onclick ='UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_Digits_enabled>Digit ROI Processing</label></h4>
+            </td>
+        </tr>
+
+        <tr class="DigitItem">
+            <td class="indent1" >
+                <class id="Digits_Model_text" style="color:black;">Model</class>
+            </td>
+            <td>
+                <select required class="select_large" id="Digits_Model_value1">
+                </select>
+            </td>
+            <td>$TOOLTIP_Digits_Model</td>
+        </tr>
 		
-		<!------------- INFLUXDB v1 ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-			    <h4>
-				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDB_enabled>InfluxDB v1.x</label></h4>
-			</td>
-		</tr>
+        <tr class="DigitItem expert" unused_id="ex91">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_CNNGoodThreshold_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "CNNGoodThreshold")' unchecked >
+                <label for=Digits_CNNGoodThreshold_enabled><class id="Digits_CNNGoodThreshold_text" style="color:black;">CNN Good Threshold</class></label>
+            </td>
+            <td>
+                <input required type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.1"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_Digits_CNNGoodThreshold</td>
+        </tr>
+
+        <tr class="DigitItem">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesLocation")' unchecked >
+                <label for=Digits_ROIImagesLocation_enabled><class id="Digits_ROIImagesLocation_text" style="color:black;">ROI Images Location</class></label>
+            </td>
+            <td>
+                <input required type="text" name="name" id="Digits_ROIImagesLocation_value1">
+            </td>
+            <td>$TOOLTIP_Digits_ROIImagesLocation</td>
+        </tr>
+
+        <tr class="DigitItem">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesRetention")' unchecked >
+                <label for=Digits_ROIImagesRetention_enabled><class id="Digits_ROIImagesRetention_text" style="color:black;">ROI Images Retention</class></label>
+            </td>
+            <td>
+                <input required type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+            </td>
+            <td>$TOOLTIP_Digits_ROIImagesRetention</td>
+        </tr>
+
+        <!------------- Ananlog ROIs ------------------>
+        <tr style="border-bottom: 2px solid lightgray;" id="Category_Analog_ex4">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4><input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_Analog_enabled>Analog ROI Processing</label></h4>
+            </td>
+        </tr>
+
+        <tr class="AnalogItem">
+            <td class="indent1">
+                <class id="Analog_Model_text" style="color:black;">Model</class>
+            </td>
+            <td> 
+                <select required class="select_large" id="Analog_Model_value1"></select>
+            </td>
+            <td>$TOOLTIP_Analog_Model</td>
+        </tr>
+
+        <tr class="AnalogItem">
+            <td class="indent1">
+                <input type="checkbox" id="Analog_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesLocation")' unchecked >
+                <label for=Analog_ROIImagesLocation_enabled><class id="Analog_ROIImagesLocation_text" style="color:black;">ROI Images Location</class></label>
+            </td>
+            <td> <input required type="text" name="name" id="Analog_ROIImagesLocation_value1"> </td>
+            <td>$TOOLTIP_Analog_ROIImagesLocation</td>
+        </tr>
+
+        <tr class="AnalogItem">
+            <td class="indent1">
+                <input type="checkbox" id="Analog_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesRetention")' unchecked >
+                <label for=Analog_ROIImagesRetention_enabled><class id="Analog_ROIImagesRetention_text" style="color:black;">ROI Images Retention</class></label>
+            </td>
+            <td> 
+                <input required type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+            </td>
+            <td>$TOOLTIP_Analog_ROIImagesRetention</td>
+        </tr>
+
+        <!------------- Post-Processing ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Post-Processing</h4></td>
+        </tr>
+
+        <tr>
+            <td class="indent1">
+                <label><class id="PostProcessing_PreValueUse_text" style="color:black;">Previous Value</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_PreValueUse_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_PreValueUse</td>
+        </tr>
 		
-		<tr class="InfluxDBv1Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
-				<label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">URI</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDB_Uri_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_Uri</td>
-		</tr>
+        <tr class="expert" unused_id="ex11">
+            <td class="indent1">
+                <input type="checkbox" id="PostProcessing_PreValueAgeStartup_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "PreValueAgeStartup")' unchecked >
+                <label for=PostProcessing_PreValueAgeStartup_enabled><class id="PostProcessing_PreValueAgeStartup_text" style="color:black;">Maximum Age of Previous Value after Startup</class></label>
+            </td>
+            <td>
+                <input required type="number" id="PostProcessing_PreValueAgeStartup_value1" size="13" min="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Minutes
+            </td>
+            <td>$TOOLTIP_PostProcessing_PreValueAgeStartup</td>
+        </tr>
+
+        <tr class="expert" unused_id="ex12">
+            <td class="indent1">
+                <label><class id="PostProcessing_ErrorMessage_text" style="color:black;">Skip Messages on Error</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_ErrorMessage_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_ErrorMessage</td>
+        </tr>
+
+        <tr style="margin-top:12px">
+            <td class="indent1" style="padding-top:25px" colspan="3">
+                <b>The following parameters are configurable individually for each number sequence:</b>
+                <select style="font-weight: bold; margin-left:17px" id="Numbers_value1" onchange="numberChanged()"></select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <label><class id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rate</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_AllowNegativeRates_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.AllowNegativeRates</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <input type="checkbox" id="PostProcessing_DecimalShift_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DecimalShift")' unchecked >
+                <label for=PostProcessing_DecimalShift_enabled><class id="PostProcessing_DecimalShift_text" style="color:black;">Decimal Shift</class></label>
+            </td>
+            <td>
+                <input required type="number" id="PostProcessing_DecimalShift_value1" value="0" step="1" min="-9" max="9"
+                    oninput="(!validity.rangeUnderflow||(value=-9)) && (!validity.rangeOverflow||(value=9)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.DecimalShift</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <input type="checkbox" id="PostProcessing_AnalogToDigitTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "AnalogToDigitTransitionStart")' unchecked >
+                <label for=PostProcessing_AnalogToDigitTransitionStart_enabled><class id="PostProcessing_AnalogToDigitTransitionStart_text" style="color:black;">Analog to Digit Transition Start</class></label>
+            </td>
+            <td>
+                <input required type="number" id="PostProcessing_AnalogToDigitTransitionStart_value1" step="0.1" min="5.0" max="9.9" value="9.2"
+                    oninput="(!validity.rangeUnderflow||(value=5.0)) && (!validity.rangeOverflow||(value=9.9)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.AnalogToDigitTransitionStart</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
+                <label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">Maximum Rate Value</class></label>
+            </td>
+            <td>
+                <input required type="number" id="PostProcessing_MaxRateValue_value1" size="13" min="0" step="any"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.MaxRateValue</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <input type="checkbox" id="PostProcessing_MaxRateType_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateType")' unchecked >
+                <label for=PostProcessing_MaxRateType_enabled><class id="PostProcessing_MaxRateType_text" style="color:black;">Maximum Rate Type</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_MaxRateType_value1">
+                    <option value="AbsoluteChange" >AbsoluteChange</option>
+                    <option value="RateChange" selected>RateChange</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.MaxRateType</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <input type="checkbox" id="PostProcessing_ChangeRateThreshold_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "ChangeRateThreshold")' unchecked >
+                <label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
+            </td>
+            <td>
+                <input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.ChangeRateThreshold</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <label><class id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_ExtendedResolution_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.ExtendedResolution</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
+                <label><class id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_IgnoreLeadingNaN_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.IgnoreLeadingNaN</td>
+        </tr>	
+        <!-------------
+        <tr>
+            <td class="indent2">
+                <label><class id="PostProcessing_IgnoreAllNaN_text" style="color:black;">Ignore All NaNs</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_IgnoreAllNaN_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.IgnoreAllNaN</td>
+        </tr>		
+        ------------------>
+        <tr class="expert" unused_id="ex1dddd">
+            <td class="indent2">
+                <label><class id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.CheckDigitIncreaseConsistency</td>
+        </tr>
+
+        <!------------- MQTT ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4>
+                <input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_MQTT_enabled>MQTT</label>
+                </h4>
+            </td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_Uri_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "Uri")' unchecked >
+                <label for=MQTT_Uri_enabled><class id="MQTT_Uri_text" style="color:black;">URI</class></label>
+            </td>
+            <td>
+                <input required type="text" id="MQTT_Uri_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_Uri</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_MainTopic_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MainTopic")' unchecked >
+                <label for=MQTT_MainTopic_enabled><class id="MQTT_MainTopic_text" style="color:black;">Main Topic</class></label>
+            </td>
+            <td>
+                <input required type="text" id="MQTT_MainTopic_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_MainTopic</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_ClientID_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientID")' unchecked >
+                <label for=MQTT_ClientID_enabled><class id="MQTT_ClientID_text" style="color:black;">Client ID</class></label>
+            </td>
+            <td>
+                <input required type="text" id="MQTT_ClientID_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_ClientID</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "user")' unchecked >
+                <label for=MQTT_user_enabled><class id="MQTT_user_text" style="color:black;">Username</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_user_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_user</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "password")' unchecked >
+                <label for=MQTT_password_enabled><class id="MQTT_password_text" style="color:black;">Password</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_password_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_password</td>
+        </tr>
+
+        <tr class="MQTTItem expert" unused_id="exMqtt">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_CACert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "CACert")' unchecked >
+                <label for=MQTT_CACert_enabled><class id="MQTT_CACert_text" style="color:black;">Root CA Certificate file</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_CACert_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_CACert</td>
+        </tr>
+
+        <tr class="MQTTItem expert" unused_id="exMqtt">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_ClientCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientCert")' unchecked >
+                <label for=MQTT_ClientCert_enabled><class id="MQTT_ClientCert_text" style="color:black;">Client Certificate file</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_ClientCert_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_ClientCert</td>
+        </tr>
+
+        <tr class="MQTTItem expert" unused_id="exMqtt">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_ClientKey_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ClientKey")' unchecked >
+                <label for=MQTT_ClientKey_enabled><class id="MQTT_ClientKey_text" style="color:black;">Client Key file</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_ClientKey_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_ClientKey</td>
+        </tr>
+		
+        <tr class="MQTTItem expert" unused_id="exMqtt">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_ValidateServerCert_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "ValidateServerCert")' unchecked >
+                <label for=MQTT_ValidateServerCert_enabled><class id="MQTT_ValidateServerCert_text" style="color:black;">Validate ServerCert</class></label>
+            </td>
+            <td>
+                <select id="MQTT_ValidateServerCert_value1">
+                    <option value="true" selected>enabled (true)</option>
+                    <option value="false">disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_MQTT_ValidateServerCert</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <label><class id="MQTT_RetainMessages_text" style="color:black;">Retain Messages</class></label>
+            </td>
+            <td>
+                <select id="MQTT_RetainMessages_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_MQTT_RetainMessages</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1" style="padding-top:25px" colspan="2">
+                <b>Homeassistant Discovery (using MQTT)</b><br>
+                If activated, the discovery topics gets automatically scheduled to sent once after device startup during state "Publish to MQTT".
+                To schedule a retransmission: Use "Manual Control > Resend HA Discovery" or call REST API: 
+                <a href=mqtt_publish_discovery target="_blank">http://&lt;IP&gt;/mqtt_publish_discovery</a>
+            </td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent2">
+                <label><class id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</class></label>
+            </td>
+            <td>
+                <select id="MQTT_HomeassistantDiscovery_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_MQTT_HomeassistantDiscovery</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent2">
+                <input type="checkbox" id="MQTT_MeterType_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "MeterType")' unchecked >
+                <label for=MQTT_MeterType_enabled><class id="MQTT_MeterType_text" style="color:black;">Meter Type</class></label>
+            </td>
+            <td>
+                <select class="select_large" id="MQTT_MeterType_value1"> <!-- See https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes -->
+                    <option value="other" selected>Other (no Units)</option>
+                    <option value="water_m3">Watermeter (Value: m³, Rate: m³/h)</option>
+                    <option value="water_l">Watermeter (Value: l, Rate: l/h)</option>
+                    <option value="water_gal">Watermeter (Value: gal, Rate: gal/h)</option>
+                    <option value="water_ft3">Watermeter (Value: ft³, Rate: ft³/min)</option>
+                    <option value="gas_m3">Gasmeter (Value: m³, Rate: m³/h)</option>
+                    <option value="gas_ft3">Gasmeter (Value: ft³, Rate: ft³/min)</option>
+                    <option value="energy_wh">Energymeter (Value: Wh, Rate: W)</option>
+                    <option value="energy_kwh">Energymeter (Value: kWh, Rate: kW)</option>
+                    <option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
+                    <option value="energy_gj">Energymeter (Value: GJ, Rate: GJ/h)</option>
+                    <option value="temperature_c">Thermometer (Value: °C, Rate: °C/min)</option>
+                    <option value="temperature_c">Thermometer (Value: °F, Rate: °F/min)</option>
+                    <option value="temperature_c">Thermometer (Value: K, Rate: K/min)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_MQTT_MeterType</td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent1">
+                <input type="checkbox" id="MQTT_DomoticzTopicIn_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzTopicIn")' unchecked >
+                <label for=MQTT_DomoticzTopicIn_enabled><class id="MQTT_DomoticzTopicIn_text" style="color:black;">Domoticz "in" topic</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_DomoticzTopicIn_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_DomoticzTopicIn</td>
+        </tr>
+		
+        <tr class="MQTTItem" style="margin-top:12px">
+            <td class="indent1" style="padding-top:25px" colspan="3">
+                <b>The following parameters are configurable individually for each number sequence:</b>
+                <select style="font-weight: bold; margin-left:17px" id="NumbersMQTTIdx_value1" onchange="numberMQTTIdxChanged()"></select>
+            </td>
+        </tr>
+
+        <tr class="MQTTItem">
+            <td class="indent2">
+                <input type="checkbox" id="MQTT_DomoticzIDX_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "DomoticzIDX")' unchecked >
+                <label for=MQTT_DomoticzIDX_enabled><class id="MQTT_DomoticzIDX_text" style="color:black;">Domoticz Counter Idx:</class></label>
+            </td>
+            <td>
+                <input type="text" id="MQTT_DomoticzIDX_value1">
+            </td>
+            <td>$TOOLTIP_MQTT_NUMBER.DomoticzIDX</td>
+        </tr>
+
+        <!------------- INFLUXDB v1 ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4>
+                <input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_InfluxDB_enabled>InfluxDB v1.x</label>
+                </h4>
+            </td>
+        </tr>
+		
+        <tr class="InfluxDBv1Item">
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDB_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Uri")' unchecked >
+                <label for=InfluxDB_Uri_enabled><class id="InfluxDB_Uri_text" style="color:black;">URI</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDB_Uri_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_Uri</td>
+        </tr>
 
         <tr class="InfluxDBv1Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Database")' unchecked >
-				<label for=InfluxDB_Database_enabled><class id="InfluxDB_Database_text" style="color:black;">Database</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDB_Database_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_Database</td>
-		</tr>
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDB_Database_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Database")' unchecked >
+                <label for=InfluxDB_Database_enabled><class id="InfluxDB_Database_text" style="color:black;">Database</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDB_Database_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_Database</td>
+        </tr>
 
-		<tr class="InfluxDBv1Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")' unchecked >
-				<label for=InfluxDB_user_enabled><class id="InfluxDB_user_text" style="color:black;">Username</class></label>
-			</td>
-			<td>
-				<input type="text" id="InfluxDB_user_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_user</td>
-		</tr>
+        <tr class="InfluxDBv1Item">
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")' unchecked >
+                <label for=InfluxDB_user_enabled><class id="InfluxDB_user_text" style="color:black;">Username</class></label>
+            </td>
+            <td>
+                <input type="text" id="InfluxDB_user_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_user</td>
+        </tr>
 
-		<tr class="InfluxDBv1Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_password_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "password")' unchecked >
-				<label for=InfluxDB_password_enabled><class id="InfluxDB_password_text" style="color:black;">Password</class></label>
-			</td>
-			<td>
-				<input type="text" id="InfluxDB_password_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_password</td>
-		</tr>
+        <tr class="InfluxDBv1Item">
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDB_password_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "password")' unchecked >
+                <label for=InfluxDB_password_enabled><class id="InfluxDB_password_text" style="color:black;">Password</class></label>
+            </td>
+            <td>
+                <input type="text" id="InfluxDB_password_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_password</td>
+        </tr>
 
-		<tr class="InfluxDBv1Item" style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
-                <select
-					style="font-weight: bold; margin-left:17px" id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()">
-                </select>
-			</td>
-		</tr>
+        <tr class="InfluxDBv1Item" style="margin-top:12px">
+            <td class="indent1" style="padding-top:25px" colspan="3">
+                <b>Parameter per number sequence:</b>
+                <select style="font-weight: bold; margin-left:17px" id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()"></select>
+            </td>
+        </tr>
 		
-		<tr class="InfluxDBv1Item">
-			<td class="indent2">
-				<input type="checkbox" id="InfluxDB_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Measurement")' unchecked >
-				<label for=InfluxDB_Measurement_enabled><class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDB_Measurement_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_NUMBER.Measurement</td>
-		</tr>
+        <tr class="InfluxDBv1Item">
+            <td class="indent2">
+                <input type="checkbox" id="InfluxDB_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Measurement")' unchecked >
+                <label for=InfluxDB_Measurement_enabled><class id="InfluxDB_Measurement_text" style="color:black;">Measurement</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDB_Measurement_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_NUMBER.Measurement</td>
+        </tr>
 
-		<tr class="InfluxDBv1Item">
-			<td class="indent2">
-				<input type="checkbox" id="InfluxDB_Field_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Field")' unchecked >
-				<label for=InfluxDB_Field_enabled><class id="InfluxDB_Field_text" style="color:black;">Field</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDB_Field_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_NUMBER.Field</td>
-		</tr>
+        <tr class="InfluxDBv1Item">
+            <td class="indent2">
+                <input type="checkbox" id="InfluxDB_Field_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Field")' unchecked >
+                <label for=InfluxDB_Field_enabled><class id="InfluxDB_Field_text" style="color:black;">Field</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDB_Field_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_NUMBER.Field</td>
+        </tr>
 
-
-		<!------------- INFLUXDB v2 ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-			    <h4>
-				<input type="checkbox" id="Category_InfluxDBv2_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_InfluxDBv2_enabled>InfluxDB v2.x</label></h4>		
-			</td>
-		</tr>
-
-		<tr class="InfluxDBv2Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Uri")' unchecked >
-				<label for=InfluxDBv2_Uri_enabled><class id="InfluxDBv2_Uri_text" style="color:black;">URI</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDBv2_Uri_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_Uri</td>
-		</tr>
+        <!------------- INFLUXDB v2 ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4>
+                <input type="checkbox" id="Category_InfluxDBv2_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_InfluxDBv2_enabled>InfluxDB v2.x</label>
+                </h4>		
+            </td>
+        </tr>
 
         <tr class="InfluxDBv2Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Bucket_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Bucket")' unchecked >
-				<label for=InfluxDBv2_Bucket_enabled><class id="InfluxDBv2_Bucket_text" style="color:black;">Bucket</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDBv2_Bucket_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_Bucket</td>
-		</tr>
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDBv2_Uri_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Uri")' unchecked >
+                <label for=InfluxDBv2_Uri_enabled><class id="InfluxDBv2_Uri_text" style="color:black;">URI</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDBv2_Uri_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_Uri</td>
+        </tr>
 
-		<tr class="InfluxDBv2Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")' unchecked >
-				<label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Organization (Org)</class></label>
-			</td>
-			<td>
-				<input type="text" id="InfluxDBv2_Org_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_Org</td>
-		</tr>
+        <tr class="InfluxDBv2Item">
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDBv2_Bucket_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Bucket")' unchecked >
+                <label for=InfluxDBv2_Bucket_enabled><class id="InfluxDBv2_Bucket_text" style="color:black;">Bucket</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDBv2_Bucket_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_Bucket</td>
+        </tr>
 
-		<tr class="InfluxDBv2Item">
-			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Token_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Token")' unchecked >
-				<label for=InfluxDBv2_Token_enabled><class id="InfluxDBv2_Token_text" style="color:black;">Token</class></label>
-			</td>
-			<td>
-				<input type="text" id="InfluxDBv2_Token_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_Token</td>
-		</tr>
+        <tr class="InfluxDBv2Item">
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")' unchecked >
+                <label for=InfluxDBv2_Org_enabled><class id="InfluxDBv2_Org_text" style="color:black;">Organization (Org)</class></label>
+            </td>
+            <td>
+                <input type="text" id="InfluxDBv2_Org_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_Org</td>
+        </tr>
 
-		<tr class="InfluxDBv2Item" style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
-                <select
-					style="font-weight: bold; margin-left:17px" id="NumbersInfluxDBv2_value1" onchange="numberInfluxDBv2Changed()">
-                </select>
-			</td>
-		</tr>
+        <tr class="InfluxDBv2Item">
+            <td class="indent1">
+                <input type="checkbox" id="InfluxDBv2_Token_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Token")' unchecked >
+                <label for=InfluxDBv2_Token_enabled><class id="InfluxDBv2_Token_text" style="color:black;">Token</class></label>
+            </td>
+            <td>
+                <input type="text" id="InfluxDBv2_Token_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_Token</td>
+        </tr>
 
-		<tr class="InfluxDBv2Item">
-			<td class="indent2">
-				<input type="checkbox" id="InfluxDBv2_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Measurement")' unchecked >
-				<label for=InfluxDBv2_Measurement_enabled><class id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDBv2_Measurement_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_NUMBER.Measurement</td>
-		</tr>
+        <tr class="InfluxDBv2Item" style="margin-top:12px">
+            <td class="indent1" style="padding-top:25px" colspan="3">
+                <b>Parameter per number sequence:</b>
+                <select style="font-weight: bold; margin-left:17px" id="NumbersInfluxDBv2_value1" onchange="numberInfluxDBv2Changed()"></select>
+            </td>
+        </tr>
+
+        <tr class="InfluxDBv2Item">
+            <td class="indent2">
+                <input type="checkbox" id="InfluxDBv2_Measurement_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Measurement")' unchecked >
+                <label for=InfluxDBv2_Measurement_enabled><class id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDBv2_Measurement_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_NUMBER.Measurement</td>
+        </tr>
 		
-		<tr class="InfluxDBv2Item">
-			<td class="indent2">
-				<input type="checkbox" id="InfluxDBv2_Field_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Field")' unchecked >
-				<label for=InfluxDBv2_Field_enabled><class id="InfluxDBv2_Field_text" style="color:black;">Field</class></label>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDBv2_Field_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
-		</tr>
+        <tr class="InfluxDBv2Item">
+            <td class="indent2">
+                <input type="checkbox" id="InfluxDBv2_Field_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Field")' unchecked >
+                <label for=InfluxDBv2_Field_enabled><class id="InfluxDBv2_Field_text" style="color:black;">Field</class></label>
+            </td>
+            <td>
+                <input required type="text" id="InfluxDBv2_Field_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
+        </tr>
 
-		<!------------- Webhook ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-			    <h4>
-				<input type="checkbox" id="Category_Webhook_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
-				<label for=Category_Webhook_enabled>Webhook</label>
-				</h4>		
-			</td>
-		</tr>
-
-		<tr class="WebhookItem">
-			<td class="indent1">
-				<input type="checkbox" id="Webhook_Uri_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "Uri")' unchecked >
-				<label for=Webhook_Uri_enabled><class id="Webhook_Uri_text" style="color:black;">URI</class></label>
-			</td>
-			<td>
-				<input required type="text" id="Webhook_Uri_value1">
-			</td>
-			<td>$TOOLTIP_Webhook_Uri</td>
-		</tr>
+        <!------------- Webhook ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4>
+                <input type="checkbox" id="Category_Webhook_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_Webhook_enabled>Webhook</label>
+                </h4>		
+            </td>
+        </tr>
 
         <tr class="WebhookItem">
-			<td class="indent1">
-				<input type="checkbox" id="Webhook_ApiKey_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "ApiKey")' unchecked >
-				<label for=Webhook_ApiKey_enabled><class id="Webhook_ApiKey_text" style="color:black;">ApiKey</class></label>
-			</td>
-			<td>
-				<input required type="text" id="Webhook_ApiKey_value1">
-			</td>
-			<td>$TOOLTIP_Webhook_ApiKey</td>
-		</tr>
+            <td class="indent1">
+                <input type="checkbox" id="Webhook_Uri_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "Uri")' unchecked >
+                <label for=Webhook_Uri_enabled><class id="Webhook_Uri_text" style="color:black;">URI</class></label>
+            </td>
+            <td>
+                <input required type="text" id="Webhook_Uri_value1">
+            </td>
+            <td>$TOOLTIP_Webhook_Uri</td>
+        </tr>
 
-		<tr class="WebhookItem">
-			<td class="indent1">
-				<input type="checkbox" id="Webhook_UploadImg_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "UploadImg")' unchecked>
-				<label for=Webhook_UploadImg_enabled><class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class></label>
-			</td>
-			<td>
-				<select id="Webhook_UploadImg_value1">
-					<option value="0" selected>NEVER</option>
-					<option value="1">ALWAYS</option>
-					<option value="2">ON_ERROR</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_Webhook_UploadImg</td>
-		</tr>
+        <tr class="WebhookItem">
+            <td class="indent1">
+                <input type="checkbox" id="Webhook_ApiKey_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "ApiKey")' unchecked >
+                <label for=Webhook_ApiKey_enabled><class id="Webhook_ApiKey_text" style="color:black;">ApiKey</class></label>
+            </td>
+            <td>
+                <input required type="text" id="Webhook_ApiKey_value1">
+            </td>
+            <td>$TOOLTIP_Webhook_ApiKey</td>
+        </tr>
 
-		<!------------- GPIO ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
-				<h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
-				    <label for=Category_GPIO_enabled>GPIO (General Purpose Input / Output)</label></h4>
-			</td>
-		</tr>
+        <tr class="WebhookItem">
+            <td class="indent1">
+                <input type="checkbox" id="Webhook_UploadImg_enabled" value="1"  onclick = 'InvertEnableItem("Webhook", "UploadImg")' unchecked>
+                <label for=Webhook_UploadImg_enabled><class id="Webhook_UploadImg_text" style="color:black;">Upload Image</class></label>
+            </td>
+            <td>
+                <select id="Webhook_UploadImg_value1">
+                    <option value="0" selected>NEVER</option>
+                    <option value="1">ALWAYS</option>
+                    <option value="2">ON_ERROR</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_Webhook_UploadImg</td>
+        </tr>
 
-		<!------------- GPIO0 begin ------------------>
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' unchecked>
-				<label for=GPIO_IO0_enabled><span id="GPIO_IO0_text">GPIO0 Configuration</span></label>
-			</td>
-			<td>
-					<select id="GPIO_IO0_value1">
-						<option value="input">input</option>
-						<option value="input-pullup">input pullup</option>
-						<option value="input-pulldown">input pulldown</option>
-						<option value="output">output</option>
-					</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO0</td>
-		</tr>
+        <!------------- GPIO ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
+                <label for=Category_GPIO_enabled>GPIO (General Purpose Input / Output)</label></h4>
+            </td>
+        </tr>
 
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span id="GPIO_IO0_text" class="GPIO_IO0 GPIO_item">GPIO0 Use Interrupt</span>
-			</td>
-			<td>
-					<select id="GPIO_IO0_value2">
-						<option value="disabled">disabled</option>
-						<option value="rising-edge">rising edge</option>
-						<option value="falling-edge">falling edge</option>
-						<option value="rising-and-falling">rising and falling</option>
-						<option value="low-level-trigger">low level trigger</option>
-						<option value="high-level-trigger">high level trigger</option>
-					</select>	
-				</td>
-			<td></td>
-		</tr>
+        <!------------- GPIO0 begin ------------------>
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent1">
+                <input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' unchecked>
+                <label for=GPIO_IO0_enabled><span id="GPIO_IO0_text">GPIO0 Configuration</span></label>
+            </td>
+            <td>
+                <select id="GPIO_IO0_value1">
+                    <option value="input">input</option>
+                    <option value="input-pullup">input pullup</option>
+                    <option value="input-pulldown">input pulldown</option>
+                    <option value="output">output</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_IO0</td>
+        </tr>
 
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 PWM Duty Cycle Resolution</span>
-			</td>
-			<td>
-				<input required type="number" id="GPIO_IO0_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO0 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span id="GPIO_IO0_text" class="GPIO_IO0 GPIO_item">GPIO0 Use Interrupt</span>
+            </td>
+            <td>
+                <select id="GPIO_IO0_value2">
+                    <option value="disabled">disabled</option>
+                    <option value="rising-edge">rising edge</option>
+                    <option value="falling-edge">falling edge</option>
+                    <option value="rising-and-falling">rising and falling</option>
+                    <option value="low-level-trigger">low level trigger</option>
+                    <option value="high-level-trigger">high level trigger</option>
+                </select>	
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO0_value4"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 PWM Duty Cycle Resolution</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO0_value3" min="1" max="20"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO0 GPIO_item">Bits</span>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO0_value5"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Enable MQTT</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO0_value4"></td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO0_value6"></td>
-			<td></td>
-		</tr>
-		<!------------- GPIO0 end ------------------>
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Enable REST API</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO0_value5"></td>
+            <td></td>
+        </tr>
 
-		<!------------- GPIO1 begin ------------------>
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
-				<label for=GPIO_IO1_enabled><span id="GPIO_IO1_text">GPIO1 Configuration</span></label>
-			</td>
-			<td>
-					<select id="GPIO_IO1_value1">
-						<option value="input">input</option>
-						<option value="input-pullup">input pullup</option>
-						<option value="input-pulldown">input pulldown</option>
-						<option value="output">output</option>
-					</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO1</td>
-		</tr>
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Name</span>
+            </td>
+            <td><input type="text" id="GPIO_IO0_value6"></td>
+            <td></td>
+        </tr>
+        <!------------- GPIO0 end ------------------>
 
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO1 Use Interrupt</span>
-			</td>
-			<td>
-				<select id="GPIO_IO1_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>
-			</td>
-			<td></td>
-		</tr>
+        <!------------- GPIO1 begin ------------------>
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent1">
+                <input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' unchecked>
+                <label for=GPIO_IO1_enabled><span id="GPIO_IO1_text">GPIO1 Configuration</span></label>
+            </td>
+            <td>
+                <select id="GPIO_IO1_value1">
+                    <option value="input">input</option>
+                    <option value="input-pullup">input pullup</option>
+                    <option value="input-pulldown">input pulldown</option>
+                    <option value="output">output</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_IO1</td>
+        </tr>
 
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO1 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO1_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO1 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item" class="expert">GPIO1 Use Interrupt</span>
+            </td>
+            <td>
+                <select id="GPIO_IO1_value2">
+                    <option value="disabled">disabled</option>
+                    <option value="rising-edge" disabled>rising edge</option>
+                    <option value="falling-edge" disabled>falling edge</option>
+                    <option value="rising-and-falling">rising and falling</option>
+                    <option value="low-level-trigger">low level trigger</option>
+                    <option value="high-level-trigger">high level trigger</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO1 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO1_value4"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 PWM Duty Cycle Resolution</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO1_value3" min="1" max="20"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO1 GPIO_item">Bits</span>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO1 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO1_value5"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Enable MQTT</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO1_value4"></td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item" class="expert">GPIO1 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO1_value6"></td>
-			<td></td>
-		</tr>
-		<!------------- GPIO1 end ------------------>
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Enable REST API</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO1_value5"></td>
+            <td></td>
+        </tr>
 
-		<!------------- GPIO3 begin ------------------>
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
-				<label for=GPIO_IO3_enabled><span id="GPIO_IO3_text">GPIO3 Configuration</span></label>
-			</td>
-			<td>
-				<select id="GPIO_IO3_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO3</td>
-		</tr>
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item" class="expert">GPIO1 Name</span>
+            </td>
+            <td><input type="text" id="GPIO_IO1_value6"></td>
+            <td></td>
+        </tr>
+        <!------------- GPIO1 end ------------------>
 
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Use Interrupt</span>
-			</td>
-			<td>
-				<select id="GPIO_IO3_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>
-			</td>
-			<td></td>
-		</tr>
+        <!------------- GPIO3 begin ------------------>
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent1">
+                <input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' unchecked>
+                <label for=GPIO_IO3_enabled><span id="GPIO_IO3_text">GPIO3 Configuration</span></label>
+            </td>
+            <td>
+                <select id="GPIO_IO3_value1">
+                    <option value="input">input</option>
+                    <option value="input-pullup">input pullup</option>
+                    <option value="input-pulldown">input pulldown</option>
+                    <option value="output">output</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_IO3</td>
+        </tr>
 
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO3_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO3 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Use Interrupt</span>
+            </td>
+            <td>
+                <select id="GPIO_IO3_value2">
+                    <option value="disabled">disabled</option>
+                    <option value="rising-edge" disabled>rising edge</option>
+                    <option value="falling-edge" disabled>falling edge</option>
+                    <option value="rising-and-falling">rising and falling</option>
+                    <option value="low-level-trigger">low level trigger</option>
+                    <option value="high-level-trigger">high level trigger</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO3_value4"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 PWM Duty Cycle Resolution</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO3_value3" min="1" max="20"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO3 GPIO_item">Bits</span>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO3_value5"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Enable MQTT</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO3_value4"></td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO3_value6"></td>
-			<td></td>
-		</tr>
-		<!------------- GPIO3 end ------------------>
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Enable REST API</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO3_value5"></td>
+            <td></td>
+        </tr>
 
-		<!------------- GPIO4 begin ------------------>
-		<tr class="GPIO_item" style="border-bottom: 0px;">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO4")' checked>
-				<label for=GPIO_IO4_enabled><span id="GPIO_IO4_text">GPIO4 Configuration</span></label>
-			</td>
-			<td>
-				<select id="GPIO_IO4_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-					<option value="built-in-led" select>built-in led flash light</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO4</td>
-		</tr>
-		<tr class="GPIO_item" style="border-top: 0px;">
-			<td colspan="2" style="padding-left:28px">
-				<b>IMPORTANT NOTE:</b><br>
-				If you'd like to use the built-in flash LED in parallel with other GPIO functionality,
-				you have to explicitely activate the "built-in LED flash light" option on GPIO4. The light 
-				intensity control (PWM) of the LED flash light is not functional anymore (only 100%).
-			</td>
-		</tr>
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Use Interrupt</span>
-			</td>
-			<td>
-				<select id="GPIO_IO4_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge">rising edge</option>
-					<option value="falling-edge">falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
-			</td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Name</span>
+            </td>
+            <td><input type="text" id="GPIO_IO3_value6"></td>
+            <td></td>
+        </tr>
+        <!------------- GPIO3 end ------------------>
 
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO4_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO4 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
+        <!------------- GPIO4 begin ------------------>
+        <tr class="GPIO_item" style="border-bottom: 0px;">
+            <td class="indent1">
+                <input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO4")' checked>
+                <label for=GPIO_IO4_enabled><span id="GPIO_IO4_text">GPIO4 Configuration</span></label>
+            </td>
+            <td>
+                <select id="GPIO_IO4_value1">
+                    <option value="input">input</option>
+                    <option value="input-pullup">input pullup</option>
+                    <option value="input-pulldown">input pulldown</option>
+                    <option value="output">output</option>
+                    <option value="built-in-led" select>built-in led flash light</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_IO4</td>
+        </tr>
 
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO4_value4"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_item" style="border-top: 0px;">
+            <td colspan="2" style="padding-left:28px">
+                <b>IMPORTANT NOTE:</b><br>
+                If you'd like to use the built-in flash LED in parallel with other GPIO functionality,
+                you have to explicitely activate the "built-in LED flash light" option on GPIO4. The light 
+                intensity control (PWM) of the LED flash light is not functional anymore (only 100%).
+            </td>
+        </tr>
 
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO4_value5"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Use Interrupt</span>
+            </td>
+            <td>
+                <select id="GPIO_IO4_value2">
+                    <option value="disabled">disabled</option>
+                    <option value="rising-edge">rising edge</option>
+                    <option value="falling-edge">falling edge</option>
+                    <option value="rising-and-falling">rising and falling</option>
+                    <option value="low-level-trigger">low level trigger</option>
+                    <option value="high-level-trigger">high level trigger</option>
+                </select>	
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO4_value6"></td>
-			<td></td>
-		</tr>
-		<!------------- GPIO4 end ------------------>
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 PWM Duty Cycle Resolution</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO4_value3" min="1" max="20"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO4 GPIO_item">Bits</span>
+            </td>
+            <td></td>
+        </tr>
 
-		<!------------- GPIO12 begin ------------------>
-		<tr class="GPIO_item">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
-				<label for=GPIO_IO12_enabled><span id="GPIO_IO12_text">GPIO12 Configuration</span></label>
-			</td>
-			<td>
-				<select id="GPIO_IO12_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-					<!-- <option value="output-pwm">output-pwm</option> -->
-					<!-- <option value="external-flash-pwm">external-flash-pwm</option> -->				
-					<option value="external-flash-ws281x">external flash light ws281x controlled</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO12</td>
-		</tr>
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Enable MQTT</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO4_value4"></td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Use Interrupt</span>
-			</td>
-			<td>
-				<select class="GPIO_IO12 GPIO_item" id="GPIO_IO12_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge">rising edge</option>
-					<option value="falling-edge">falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
-			</td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Enable REST API</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO4_value5"></td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO12_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO12 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Name</span>
+            </td>
+            <td><input type="text" id="GPIO_IO4_value6"></td>
+            <td></td>
+        </tr>
+        <!------------- GPIO4 end ------------------>
 
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO12_value4"></td>
-			<td></td>
-		</tr>
+        <!------------- GPIO12 begin ------------------>
+        <tr class="GPIO_item">
+            <td class="indent1">
+                <input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' unchecked>
+                <label for=GPIO_IO12_enabled><span id="GPIO_IO12_text">GPIO12 Configuration</span></label>
+            </td>
+            <td>
+                <select id="GPIO_IO12_value1">
+                    <option value="input">input</option>
+                    <option value="input-pullup">input pullup</option>
+                    <option value="input-pulldown">input pulldown</option>
+                    <option value="output">output</option>
+                    <!-- <option value="output-pwm">output-pwm</option> -->
+                    <!-- <option value="external-flash-pwm">external-flash-pwm</option> -->				
+                    <option value="external-flash-ws281x">external flash light ws281x controlled</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_IO12</td>
+        </tr>
 
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO12_value5"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Use Interrupt</span>
+            </td>
+            <td>
+                <select class="GPIO_IO12 GPIO_item" id="GPIO_IO12_value2">
+                    <option value="disabled">disabled</option>
+                    <option value="rising-edge">rising edge</option>
+                    <option value="falling-edge">falling edge</option>
+                    <option value="rising-and-falling">rising and falling</option>
+                    <option value="low-level-trigger">low level trigger</option>
+                    <option value="high-level-trigger">high level trigger</option>
+                </select>	
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO12_value6"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 PWM Duty Cycle Resolution</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO12_value3" min="1" max="20"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO12 GPIO_item">Bits</span>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_item" unused_id="wstypeex3">
-			<td class="indent1">
-				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED Type (NeoPixel)</span>
-			</td>
-			<td class="GPIO_item">
-				<select class="GPIO_item" id="GPIO_LEDType_value1">
-					<option value="WS2812" selected>WS2812</option>
-					<option value="WS2812B">WS2812B</option>
-					<option value="SK6812">SK6812</option>
-					<option value="WS2813">WS2813 (not tested)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_LEDType</td>
-		</tr>
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Enable MQTT</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO12_value4"></td>
+            <td></td>
+        </tr>
 
-		<tr  class="GPIO_item" unused_id="LEDANZex8" >
-			<td class="indent1">
-				<span class="GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
-			</td>
-			<td>
-				<input required type="number" name="name" id="GPIO_LEDNumbers_value1" size="13" min="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_GPIO_LEDNumbers</td>
-		</tr>
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Enable REST API</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO12_value5"></td>
+            <td></td>
+        </tr>
 
-		<tr class="GPIO_item" unused_id="LEDRGBex9">
-			<td class="indent1">
-				<span class="GPIO_item" id="GPIO_LEDColor_text">LED Color</span>
-			</td>
-			<td>
-				R <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1"
-						min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_GPIO_LEDColor</td>
-		</tr>			
-		<tr class="GPIO_item" unused_id="LEDRGBex9">
-			<td></td>
-			<td>			
-				G <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2"
-						min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-		</tr>			
-		<tr class="GPIO_item" unused_id="LEDRGBex9">
-			<td></td>		
-			<td>				
-				B <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3"
-						min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-		</tr>
-		<!------------- GPIO12 end ------------------>
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Name</span>
+            </td>
+            <td><input type="text" id="GPIO_IO12_value6"></td>
+            <td></td>
+        </tr>
 
-		<!------------- GPIO13 begin ------------------>
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
-				<label for=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO13 Configuration</span></label>
-			</td>
-			<td>
-					<select id="GPIO_IO13_value1">
-						<option value="input">input</option>
-						<option value="input-pullup">input pullup</option>
-						<option value="input-pulldown">input pulldown</option>
-						<option value="output">output</option>
-					</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO13</td>
-		</tr>
+        <tr class="GPIO_item" unused_id="wstypeex3">
+            <td class="indent1">
+                <span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED Type (NeoPixel)</span>
+            </td>
+            <td class="GPIO_item">
+                <select class="GPIO_item" id="GPIO_LEDType_value1">
+                    <option value="WS2812" selected>WS2812</option>
+                    <option value="WS2812B">WS2812B</option>
+                    <option value="SK6812">SK6812</option>
+                    <option value="WS2813">WS2813 (not tested)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_LEDType</td>
+        </tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Use Interrupt</span>
-			</td>
-			<td>
-				<select id="GPIO_IO13_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
-			</td>
-			<td></td>
-		</tr>
+        <tr  class="GPIO_item" unused_id="LEDANZex8" >
+            <td class="indent1">
+                <span class="GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
+            </td>
+            <td>
+                <input required type="number" name="name" id="GPIO_LEDNumbers_value1" size="13" min="1"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_GPIO_LEDNumbers</td>
+        </tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO13_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO13 GPIO_item">Bits</span></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_item" unused_id="LEDRGBex9">
+            <td class="indent1">
+                <span class="GPIO_item" id="GPIO_LEDColor_text">LED Color</span>
+            </td>
+            <td>
+                R <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value1"
+                    min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_GPIO_LEDColor</td>
+        </tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO13_value4"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_item" unused_id="LEDRGBex9">
+            <td></td>
+            <td>			
+                G <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value2"
+                    min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+        </tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO13_value5"></td>
-			<td></td>
-		</tr>
+        <tr class="GPIO_item" unused_id="LEDRGBex9">
+            <td></td>		
+            <td>				
+                B <input required type="number" class="GPIO_IO12 GPIO_item" id="GPIO_LEDColor_value3"
+                    min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+        </tr>
+        <!------------- GPIO12 end ------------------>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO13_value6"></td>
-			<td></td>
-		</tr>
-		<!------------- GPIO13 end ------------------>
+        <!------------- GPIO13 begin ------------------>
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent1">
+                <input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' unchecked>
+                <label for=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO13 Configuration</span></label>
+            </td>
+            <td>
+                <select id="GPIO_IO13_value1">
+                    <option value="input">input</option>
+                    <option value="input-pullup">input pullup</option>
+                    <option value="input-pulldown">input pulldown</option>
+                    <option value="output">output</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_GPIO_IO13</td>
+        </tr>
 
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Use Interrupt</span>
+            </td>
+            <td>
+                <select id="GPIO_IO13_value2">
+                    <option value="disabled">disabled</option>
+                    <option value="rising-edge" disabled>rising edge</option>
+                    <option value="falling-edge" disabled>falling edge</option>
+                    <option value="rising-and-falling">rising and falling</option>
+                    <option value="low-level-trigger">low level trigger</option>
+                    <option value="high-level-trigger">high level trigger</option>
+                </select>	
+            </td>
+            <td></td>
+        </tr>
 
-		<!------------- Autotimer ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Auto Timer</h4></td>
-		</tr>
-		
-		<!--
-		<tr class="expert" unused_id="ex13">
-			<td class="indent1">
-			    <class id="AutoTimer_AutoStart_text" style="color:black;">Automatic Round Start</class>
-			</td>
-			<td>
-				<select id="AutoTimer_AutoStart_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_AutoTimer_AutoStart</td>
-		</tr>
-		-->
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 PWM Duty Cycle Resolution</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO13_value3" min="1" max="20"
+                    oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO13 GPIO_item">Bits</span>
+            </td>
+            <td></td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-			    <class id="AutoTimer_Interval_text" style="color:black;">Round Interval</class>
-			</td>
-			<td>
-				<input required type="number" id="AutoTimer_Interval_value1" size="13" min="1" step="any"
-					oninput="(!validity.rangeUnderflow||(value=1));">Minutes
-			</td>
-			<td>$TOOLTIP_AutoTimer_Interval</td>
-		</tr>
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Enable MQTT</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO13_value4"></td>
+            <td></td>
+        </tr>
 
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Enable REST API</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO13_value5"></td>
+            <td></td>
+        </tr>
 
-		<!------------- Data Logging ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Data Logging</h4></td>
-		</tr>
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Name</span>
+            </td>
+            <td><input type="text" id="GPIO_IO13_value6"></td>
+            <td></td>
+        </tr>
+        <!------------- GPIO13 end ------------------>
 
-		<tr>
-			<td class="indent1">
-				<class id="DataLogging_DataLogActive_text" style="color:black;">Data Logging</class>
-			</td>
-			<td>
-				<select id="DataLogging_DataLogActive_value1">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_DataLogging_DataLogActive</td>
-		</tr>
+        <!------------- Autotimer ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Auto Timer</h4></td>
+        </tr>
+        <!--
+        <tr class="expert" unused_id="ex13">
+            <td class="indent1">
+                <class id="AutoTimer_AutoStart_text" style="color:black;">Automatic Round Start</class>
+            </td>
+            <td>
+                <select id="AutoTimer_AutoStart_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_AutoTimer_AutoStart</td>
+        </tr>
+        -->
+        <tr>
+            <td class="indent1">
+                <class id="AutoTimer_Interval_text" style="color:black;">Round Interval</class>
+            </td>
+            <td>
+                <input required type="number" id="AutoTimer_Interval_value1" size="13" min="1" step="any"
+                    oninput="(!validity.rangeUnderflow||(value=1));">Minutes
+            </td>
+            <td>$TOOLTIP_AutoTimer_Interval</td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-				<class id="DataLogging_DataFilesRetention_text" style="color:black;">Data Files Retention</class>
-			</td>
-			<td>
-				<input required type="number" id="DataLogging_DataFilesRetention_value1" size="13" min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
-			</td>
-			<td>$TOOLTIP_DataLogging_DataFilesRetention</td>
-		</tr>
+        <!------------- Data Logging ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Data Logging</h4></td>
+        </tr>
 
+        <tr>
+            <td class="indent1">
+                <class id="DataLogging_DataLogActive_text" style="color:black;">Data Logging</class>
+            </td>
+            <td>
+                <select id="DataLogging_DataLogActive_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_DataLogging_DataLogActive</td>
+        </tr>
 
-		<!------------- Debug Logging ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Debug</h4></td>
-		</tr>
+        <tr>
+            <td class="indent1">
+                <class id="DataLogging_DataFilesRetention_text" style="color:black;">Data Files Retention</class>
+            </td>
+            <td>
+                <input required type="number" id="DataLogging_DataFilesRetention_value1" size="13" min="0" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+            </td>
+            <td>$TOOLTIP_DataLogging_DataFilesRetention</td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-				<class id="Debug_LogLevel_text" style="color:black;">Logfile Log Level</class>
-			</td>
-			<td>
-				<select id="Debug_LogLevel_value1">
-					<option value="1" selected>ERROR</option> <!-- matches esp_log_level_t -->
-					<option value="2">WARNING</option>
-					<option value="3">INFO</option>
-					<option value="4">DEBUG</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_Debug_LogLevel</td>
-		</tr>
+        <!------------- Debug Logging ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Debug</h4></td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-				<class id="Debug_LogfilesRetention_text" style="color:black;">Logfiles Retention</class>
-			</td>
-			<td>
-				<input required type="number" id="Debug_LogfilesRetention_value1" size="13" min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
-			</td>
-			<td>$TOOLTIP_Debug_LogfilesRetention</td>
-		</tr>
+        <tr>
+            <td class="indent1">
+                <class id="Debug_LogLevel_text" style="color:black;">Logfile Log Level</class>
+            </td>
+            <td>
+                <select id="Debug_LogLevel_value1">
+                    <option value="1" selected>ERROR</option> <!-- matches esp_log_level_t -->
+                    <option value="2">WARNING</option>
+                    <option value="3">INFO</option>
+                    <option value="4">DEBUG</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_Debug_LogLevel</td>
+        </tr>
 
-		<!------------- System ------------------>
-		<tr style="border-bottom: 2px solid lightgray;">
-			<td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>System</h4></td>
-		</tr>
+        <tr>
+            <td class="indent1">
+                <class id="Debug_LogfilesRetention_text" style="color:black;">Logfiles Retention</class>
+            </td>
+            <td>
+                <input required type="number" id="Debug_LogfilesRetention_value1" size="13" min="0" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+            </td>
+            <td>$TOOLTIP_Debug_LogfilesRetention</td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked >
-				<label for=System_TimeZone_enabled><class id="System_TimeZone_text" style="color:black;">Time Zone</class></label>
-				<p></p><p></p>
-			</td>
-			<td>
-				<input type="text" id="System_TimeZone_value1">
-				<p>Use <a href="timezones.html" target="_blank">timezones</a> to find your settings</p>
-			</td>
-			<td>$TOOLTIP_System_TimeZone</td>
-		</tr>
+        <!------------- System ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>System</h4></td>
+        </tr>
 
-		<tr class="expert" unused_id="ex16">
-			<td class="indent1">
-				<input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked >
-				<label for=System_TimeServer_enabled><class id="System_TimeServer_text" style="color:black;">Time Server (NTP)</class></label>
-			</td>
-			<td>
-				<input type="text" id="System_TimeServer_value1">
-			</td>
-			<td>$TOOLTIP_System_TimeServer</td>
-		</tr>
+        <tr>
+            <td class="indent1">
+                <input type="checkbox" id="System_TimeZone_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeZone")' unchecked >
+                <label for=System_TimeZone_enabled><class id="System_TimeZone_text" style="color:black;">Time Zone</class></label>
+                <p></p><p></p>
+            </td>
+            <td>
+                <input type="text" id="System_TimeZone_value1">
+                <p>Use <a href="timezones.html" target="_blank">timezones</a> to find your settings</p>
+            </td>
+            <td>$TOOLTIP_System_TimeZone</td>
+        </tr>
 
-		<tr class="expert" unused_id="System_Hostname">
-			<td class="indent1">
-				<input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked >
-				<label for=System_Hostname_enabled><class id="System_Hostname_text" style="color:black;">Hostname</class></label>
-			</td>
-			<td>
-				<input type="text" id="System_Hostname_value1">
-			</td>
-			<td>$TOOLTIP_System_Hostname</td>
-		</tr>
+        <tr class="expert" unused_id="ex16">
+            <td class="indent1">
+                <input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' unchecked >
+                <label for=System_TimeServer_enabled><class id="System_TimeServer_text" style="color:black;">Time Server (NTP)</class></label>
+            </td>
+            <td>
+                <input type="text" id="System_TimeServer_value1">
+            </td>
+            <td>$TOOLTIP_System_TimeServer</td>
+        </tr>
 
-		<tr class="expert" unused_id="System_RSSIThreshold">
-			<td class="indent1">
-				<input type="checkbox" id="System_RSSIThreshold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreshold")' unchecked >
-				<label for=System_RSSIThreshold_enabled><class id="System_RSSIThreshold_text" style="color:black;">RSSI Threshold</class></label>
-			</td>
-			<td>
-				<input required type="number" name="name" id="System_RSSIThreshold_value1" min="-100" max="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=-100)) && (!validity.rangeOverflow||(value=0)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">dBm
-			</td>
-			<td>$TOOLTIP_System_RSSIThreshold</td>
-		</tr>
+        <tr class="expert" unused_id="System_Hostname">
+            <td class="indent1">
+                <input type="checkbox" id="System_Hostname_enabled" value="1"  onclick = 'InvertEnableItem("System", "Hostname")' unchecked >
+                <label for=System_Hostname_enabled><class id="System_Hostname_text" style="color:black;">Hostname</class></label>
+            </td>
+            <td>
+                <input type="text" id="System_Hostname_value1">
+            </td>
+            <td>$TOOLTIP_System_Hostname</td>
+        </tr>
 
-		<tr class="expert" unused_id="System_CPUFrequency">
-			<td class="indent1">
-				<input type="checkbox" id="System_CPUFrequency_enabled" value="1"  onclick = 'InvertEnableItem("System", "CPUFrequency")' unchecked >
-				<label for=System_CPUFrequency_enabled><class id="System_CPUFrequency_text" style="color:black;">CPU Frequency</class></label>
-			</td>
-			<td>
-				<select id="System_CPUFrequency_value1">
-					<option value="160" selected>160 MHz</option>
-					<option value="240">240 MHz</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_System_CPUFrequency</td>
-		</tr>
+        <tr class="expert" unused_id="System_RSSIThreshold">
+            <td class="indent1">
+                <input type="checkbox" id="System_RSSIThreshold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreshold")' unchecked >
+                <label for=System_RSSIThreshold_enabled><class id="System_RSSIThreshold_text" style="color:black;">RSSI Threshold</class></label>
+            </td>
+            <td>
+                <input required type="number" name="name" id="System_RSSIThreshold_value1" min="-100" max="0" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=-100)) && (!validity.rangeOverflow||(value=0)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">dBm
+            </td>
+            <td>$TOOLTIP_System_RSSIThreshold</td>
+        </tr>
 
-		<tr>
-			<td class="indent1">
-				<class id="System_Tooltip_text" style="color:black;">Tooltip</class>
-			</td>
-			<td>
-				<select id="System_Tooltip_value1" onchange="UpdateTooltipModus()">
-					<option value="true">enabled (true)</option>
-					<option value="false" selected>disabled (false)</option>
-				</select>
-			</td>
-			<td></td>
-		</tr>
-	</table>
+        <tr class="expert" unused_id="System_CPUFrequency">
+            <td class="indent1">
+                <input type="checkbox" id="System_CPUFrequency_enabled" value="1"  onclick = 'InvertEnableItem("System", "CPUFrequency")' unchecked >
+                <label for=System_CPUFrequency_enabled><class id="System_CPUFrequency_text" style="color:black;">CPU Frequency</class></label>
+            </td>
+            <td>
+                <select id="System_CPUFrequency_value1">
+                    <option value="160" selected>160 MHz</option>
+                    <option value="240">240 MHz</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_System_CPUFrequency</td>
+        </tr>
 
-	<hr>
-	<button class="button" onclick="saveTextAsFile()">Save Config</button>
+        <tr>
+            <td class="indent1">
+                <class id="System_Tooltip_text" style="color:black;">Tooltip</class>
+            </td>
+            <td>
+                <select id="System_Tooltip_value1" onchange="UpdateTooltipModus()">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+    </table>
 
+    <hr>
+    <button class="button" onclick="saveTextAsFile()">Save Config</button>
 </div>
-
 
 <script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script> 
@@ -2240,7 +2231,7 @@ function InitIndivParameter() {
         optionInfluxv1.value = i;
         _indexInfluxv1.add(optionInfluxv1);
 
-		var optionMQTTIdx = document.createElement("option");
+        var optionMQTTIdx = document.createElement("option");
         optionMQTTIdx.text = NUMBERS[i]["name"];
         optionMQTTIdx.value = i;
         _indexMQTTIdx.add(optionMQTTIdx);
@@ -2249,7 +2240,7 @@ function InitIndivParameter() {
     _index.selectedIndex = 0; 
     _indexInflux.selectedIndex = 0;
     _indexInfluxv1.selectedIndex = 0;
-	_indexMQTTIdx.selectedIndex = 0;
+    _indexMQTTIdx.selectedIndex = 0;
 }
 
 function UpdateInputIndividual(sel) {
@@ -2264,6 +2255,7 @@ function UpdateInputIndividual(sel) {
         ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
         // ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
@@ -2283,12 +2275,12 @@ function UpdateInputIndividual(sel) {
     WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
     // WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "MQTT", "DomoticzIDX", true, NUNBERSAkt);
-	
 }
 
 function UpdateInput() {
@@ -2310,7 +2302,7 @@ function UpdateInput() {
     document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
     setVisible("InfluxDBv2Item", category["InfluxDBv2"]["enabled"]);
 
-	document.getElementById("Category_Webhook_enabled").checked = category["Webhook"]["enabled"];
+    document.getElementById("Category_Webhook_enabled").checked = category["Webhook"]["enabled"];
     setVisible("WebhookItem", category["Webhook"]["enabled"]);
 
     WriteParameter(param, category, "TakeImage", "RawImagesLocation", true);
@@ -2364,7 +2356,7 @@ function UpdateInput() {
     WriteParameter(param, category, "PostProcessing", "PreValueUse", false);		
     WriteParameter(param, category, "PostProcessing", "PreValueAgeStartup", true);		
     WriteParameter(param, category, "PostProcessing", "ErrorMessage", false);
-    WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
+    // WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
 
     WriteParameter(param, category, "MQTT", "Uri", true);	
     WriteParameter(param, category, "MQTT", "MainTopic", true);	
@@ -2394,9 +2386,9 @@ function UpdateInput() {
     WriteParameter(param, category, "InfluxDBv2", "Token", true);	
     // WriteParameter(param, category, "InfluxDBv2", "Field", true);
 
-	WriteParameter(param, category, "Webhook", "Uri", true);	
+    WriteParameter(param, category, "Webhook", "Uri", true);	
     WriteParameter(param, category, "Webhook", "ApiKey", true);
-	WriteParameter(param, category, "Webhook", "UploadImg", false);
+    WriteParameter(param, category, "Webhook", "UploadImg", false);
 
     WriteParameter(param, category, "GPIO", "IO0", true);
     WriteParameter(param, category, "GPIO", "IO1", true);
@@ -2478,7 +2470,7 @@ function ReadParameterAll() {
     category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
-	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
+    category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
 
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
@@ -2533,7 +2525,7 @@ function ReadParameterAll() {
     ReadParameter(param, "PostProcessing", "PreValueUse", false);
     ReadParameter(param, "PostProcessing", "PreValueAgeStartup", true);
     ReadParameter(param, "PostProcessing", "ErrorMessage", false);
-    ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);	
+    // ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);	
 
     ReadParameter(param, "MQTT", "Uri", true);
     ReadParameter(param, "MQTT", "MainTopic", true);
@@ -2562,9 +2554,9 @@ function ReadParameterAll() {
     ReadParameter(param, "InfluxDBv2", "Token", true);
     // ReadParameter(param, "InfluxDB", "Field", true);	
 
-	ReadParameter(param, "Webhook", "Uri", true);	
+    ReadParameter(param, "Webhook", "Uri", true);	
     ReadParameter(param, "Webhook", "ApiKey", true);
-	ReadParameter(param, "Webhook", "UploadImg", false);
+    ReadParameter(param, "Webhook", "UploadImg", false);
 
     ReadParameter(param, "GPIO", "IO0", true);
     ReadParameter(param, "GPIO", "IO1", true);
@@ -2614,7 +2606,7 @@ function UpdateAfterCategoryCheck() {
     category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
-	category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
+    category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
 
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
@@ -2706,7 +2698,7 @@ function camSettingsSet(){
     var _sat_temp = document.getElementById("TakeImage_CamSaturation_value1").value;
     var _shp_temp = document.getElementById("TakeImage_CamSharpness_value1").value;
 	
-	var _ashp_temp = document.getElementById("TakeImage_CamAutoSharpness_value1").value;
+    var _ashp_temp = document.getElementById("TakeImage_CamAutoSharpness_value1").value;
     if (_ashp_temp == '0') {
         _ashp_temp = '1';
     }
@@ -2819,7 +2811,6 @@ function camSettingsSet(){
     }
 
     var _denoise_temp = document.getElementById("TakeImage_CamDenoise_value1").value;
-
     var _ledi_temp = document.getElementById("TakeImage_LEDIntensity_value1").value;
 
     var _zoom_temp = document.getElementById("TakeImage_CamZoom_value1").selectedIndex;
@@ -2880,7 +2871,7 @@ function camSettingsSet(){
             
             if (xhttp.responseText == "CamSettingsSet") {
                 document.getElementById("overlay").style.display = "none";
-                firework.launch('Cam Settings saved', 'success', 5000);
+                firework.launch('Cam Settings saved', 'success', 2000);
                 return;
             }
             else {
@@ -2908,11 +2899,11 @@ function camSettingsSet(){
 }
 	
 function doReboot() {
-	var stringota = domainname + "/reboot";
-	window.location = stringota;
-	window.location.href = stringota;
-	window.location.assign(stringota);
-	window.location.replace(stringota);
+    var stringota = domainname + "/reboot";
+    window.location = stringota;
+    window.location.href = stringota;
+    window.location.assign(stringota);
+    window.location.replace(stringota);
 }
 
 function FormatDecimalValue(_param, _cat, _name) {
@@ -2948,7 +2939,7 @@ function numberChanged() {
         _sel3.selectedIndex = _neu
     }
 
-	var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
     if (_sel4.selectedIndex != _neu) {
         _sel4.selectedIndex = _neu
     }
@@ -2960,7 +2951,7 @@ function numberMQTTIdxChanged() {
     _neu = sel.selectedIndex;
     UpdateInputIndividual(sel);
 
-	var _sel2 = document.getElementById("Numbers_value1");
+    var _sel2 = document.getElementById("Numbers_value1");
     if (_sel2.selectedIndex != _neu) {
         _sel2.selectedIndex = _neu
     }
@@ -3012,7 +3003,7 @@ function numberInfluxDBChanged() {
         _sel3.selectedIndex = _neu
     }
 
-	var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
+    var _sel4 = document.getElementById("NumbersMQTTIdx_value1");
     if (_sel4.selectedIndex != _neu) {
         _sel4.selectedIndex = _neu
     }
@@ -3099,7 +3090,6 @@ function setVisible(className, visible) {
 
 function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1) {
     // _status = _category[_cat]["enabled"];
-
     _color = "rgb(122, 122, 122)";
 	
     if (_status) {

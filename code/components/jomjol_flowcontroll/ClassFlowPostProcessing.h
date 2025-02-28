@@ -10,7 +10,6 @@
 
 #include <string>
 
-
 class ClassFlowPostProcessing :
     public ClassFlow
 {
@@ -19,8 +18,7 @@ protected:
 
     int PreValueAgeStartup; 
     bool ErrorMessage;
-    bool IgnoreLeadingNaN;          // SPECIAL CASE for User Gustl ???
-
+	
     ClassFlowCNNGeneral* flowAnalog;
     ClassFlowCNNGeneral* flowDigit;    
 
@@ -35,15 +33,16 @@ protected:
     float checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
 
     void InitNUMBERS();
+	
     void handleDecimalSeparator(string _decsep, string _value);
     void handleMaxRateValue(string _decsep, string _value);
     void handleDecimalExtendedResolution(string _decsep, string _value); 
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogToDigitTransitionStart(string _decsep, string _value);
     void handleAllowNegativeRate(string _decsep, string _value);
+    void handleIgnoreLeadingNaN(string _decsep, string _value);
     void handleChangeRateThreshold(string _decsep, string _value);
-    
-    std::string GetStringReadouts(general);
+    void handlecheckDigitIncreaseConsistency(std::string _decsep, std::string _value);
 
     void WriteDataLog(int _index);
 
@@ -74,6 +73,5 @@ public:
 
     string name(){return "ClassFlowPostProcessing";};
 };
-
 
 #endif //CLASSFFLOWPOSTPROCESSING_H
