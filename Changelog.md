@@ -6,6 +6,10 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
 [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
+
+#### Homeassistant copatibility
+  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
+
 #### Core Changes
 Only changes since RC5 are listed (Skipping RC6):
 - [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
@@ -34,8 +38,6 @@ Only changes since RC5 are listed (Skipping RC6):
 - [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interface
 
 - [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500) Update smart-LED driver
-
-  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
 #### Bug Fixes
 Only changes since RC5 are listed:
