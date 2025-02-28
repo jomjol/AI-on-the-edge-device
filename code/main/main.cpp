@@ -993,6 +993,14 @@ bool setCpuFrequency(void) {
             return false;
         }
     }
+    else if (cpuFrequency == "80") {
+        pm_config.max_freq_mhz = 80;
+        pm_config.min_freq_mhz = pm_config.max_freq_mhz;
+        if (esp_pm_configure(&pm_config) != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set new CPU frequency!");
+            return false;
+        }
+    }
     else {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unknown CPU frequency: " + cpuFrequency + "! "
                 "It must be 160 or 240!");
