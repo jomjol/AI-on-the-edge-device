@@ -611,14 +611,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     FILE *fd = NULL;
     struct stat file_stat;
 
-    bool returnMd5Sum = false;
-
-    ESP_LOGE(TAG, "uri: %s", req->uri);
-
-    string s = req->uri;
-    if (isInString(s, "?md5")) {
-        returnMd5Sum = true;
-    }
+    ESP_LOGI(TAG, "uri: %s", req->uri);
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
@@ -721,7 +714,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File saved: " + string(filename));
     ESP_LOGI(TAG, "File reception completed");
 
-    if (returnMd5Sum == true) {
+    string s = req->uri;
+    if (isInString(s, "?md5")) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Calculate and return MD5 sum...");
         
         fd = fopen(filepath, "r");
@@ -746,7 +740,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         }
 
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
-        response.append(md5hex);
+        response.append("\"" + md5hex + "\"");
         response.append("}");
 
         httpd_resp_sendstr(req, response.c_str());
