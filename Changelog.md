@@ -1,6 +1,6 @@
-## [16.0.0-RC7] - 2024-03-xx
+## [16.0.0-RC7] - 2024-03-01
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC7)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -44,7 +44,7 @@ Only changes since RC5 are listed:
 
 ## [16.0.0-RC5] - 2024-12-05
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC5)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -75,7 +75,7 @@ Only changes since RC4 are listed:
 
 ## [16.0.0-RC4] - 2024-10-06
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC4)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -94,7 +94,7 @@ Only changes since RC2 are listed:
 
 ## [16.0.0-RC3] - 2024-10-05
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC3)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -111,7 +111,7 @@ Only changes since RC2 are listed:
 
 ## [16.0.0-RC2] - 2024-10-04
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC2)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
