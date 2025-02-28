@@ -10,24 +10,31 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 Only changes since RC5 are listed:
 - [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
 
-- [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interfache
+- [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interface
 
-- [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500)  Update smartled driver
+- [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500) Update smart-LED driver
 
 - [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
+- 
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3547) Enhanced `IgnoreLeadingNaN`. It is now a per-sequence parameter.
+- 
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3580) Update Homeassistant discovery to comply with Homeassistant `2025.2.4`
 
-- [#3538](https://github.com/jomjol/AI-on-the-edge-device/pull/3538) add .gz
+- [#3538](https://github.com/jomjol/AI-on-the-edge-device/pull/3538), [#3568](https://github.com/jomjol/AI-on-the-edge-device/pull/3568) Compress all Web UI files with gzip
 
-- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3565) corrected enable/disable texts to make it more intuitive
-
-- [#3568](https://github.com/jomjol/AI-on-the-edge-device/pull/3568) compress all HTML files
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Validate uploaded OTA update file before installing it
+- 
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3583) Remove HTML directory on update
+- 
+- [#3565](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Consolidated the `reboot` and `save` buttons -> The `reboot` button ois not part of the notification
+ corrected enable/disable texts on the configuration page to make it more intuitive
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
 #### Bug Fixes
 Only changes since RC5 are listed:
- - [#3450](https://github.com/jomjol/AI-on-the-edge-device/pull/3450) fix crash fue to empty CAM parameters in migration
- -  [#3446](https://github.com/jomjol/AI-on-the-edge-device/pull/3446) fix for incorrect decimal shift
+ - [#3450](https://github.com/jomjol/AI-on-the-edge-device/pull/3450) fix crash due to empty CAM parameters in migration
+ - [#3446](https://github.com/jomjol/AI-on-the-edge-device/pull/3446) fix for incorrect decimal shift
 
 ## [16.0.0-RC5] - 2024-12-05
 
