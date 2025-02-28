@@ -8,7 +8,7 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 
 
 #### Homeassistant copatibility
-  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
+:warning: Please check your Homeassistant instance to make sure it is handled correctly!
 
 #### Core Changes
 Only changes since RC5 are listed (Skipping RC6):
