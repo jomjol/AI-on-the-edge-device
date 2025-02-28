@@ -7,7 +7,7 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
 
-#### Homeassistant copatibility
+#### Homeassistant compatibility
 :warning: Please check your Homeassistant instance to make sure it is handled correctly!
 
 #### Core Changes
