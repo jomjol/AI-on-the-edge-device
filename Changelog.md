@@ -1,4 +1,4 @@
-## [16.0.0-RC6] - 2024-02-28
+## [16.0.0-RC7] - 2024-03-xx
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
 
@@ -9,10 +9,6 @@ Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues
 #### Core Changes
 Only changes since RC5 are listed:
 - [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
-
-- [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interface
-
-- [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500) Update smart-LED driver
 
 - [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
 - 
@@ -34,6 +30,10 @@ Only changes since RC5 are listed:
 - 
 - [#3590](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Consolidated the `reboot` and `save` buttons -> The `reboot` button ois not part of the notification
  corrected enable/disable texts on the configuration page to make it more intuitive
+
+- [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interface
+
+- [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500) Update smart-LED driver
 
   **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
 
