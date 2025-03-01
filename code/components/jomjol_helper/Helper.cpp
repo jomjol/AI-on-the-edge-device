@@ -644,11 +644,19 @@ string toLower(string in)
 }
 
 // CPU Temp
+
+#if defined(BOARD_ESP32_S3_ALEKSEI) // ESP32s3 hat die Funktion nicht
+float temperatureRead()
+{
+	return 0.0;
+}
+#elif
 extern "C" uint8_t temprature_sens_read();
 float temperatureRead()
 {
 	return (temprature_sens_read() - 32) / 1.8;
 }
+#endif
 
 time_t addDays(time_t startTime, int days)
 {

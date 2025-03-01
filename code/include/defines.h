@@ -308,6 +308,56 @@
     #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
     #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
 
+#elif defined(BOARD_ESP32_S3_ALEKSEI) // Sonderversion für Aleksei mit ESP32s3 und Ethernet (PoE)
+    // HIGH=ENABLE
+    // ETH_EN activates power for the Ethernet
+    // PER_EN activates power for camera,leds,and SDcard, Battery measurement voltage divider
+
+    #define ETH_EN GPIO_NUM_45
+    #define PER_EN GPIO_NUM_46
+
+	// SD card (operated with SDMMC peripheral)
+	//-------------------------------------------------
+	#define GPIO_SDCARD_CLK GPIO_NUM_40
+	#define GPIO_SDCARD_CMD GPIO_NUM_42
+	#define GPIO_SDCARD_D0  GPIO_NUM_41
+	#ifndef __SD_USE_ONE_LINE_MODE__
+		#define GPIO_SDCARD_D1 GPIO_NUM_4
+		#define GPIO_SDCARD_D2 GPIO_NUM_12
+		#define GPIO_SDCARD_D3 GPIO_NUM_13
+	#else
+		#define GPIO_SDCARD_D1 GPIO_NUM_NC
+		#define GPIO_SDCARD_D2 GPIO_NUM_NC
+		#define GPIO_SDCARD_D3 GPIO_NUM_13
+	#endif
+
+    #define CAM_PIN_PWDN     GPIO_NUM_NC
+    #define CAM_PIN_RESET    GPIO_NUM_NC  //software reset will be performed
+    #define CAM_PIN_XCLK     GPIO_NUM_15
+    #define CAM_PIN_SIOD     GPIO_NUM_4
+    #define CAM_PIN_SIOC     GPIO_NUM_5
+
+    #define CAM_PIN_D7       GPIO_NUM_16
+    #define CAM_PIN_D6       GPIO_NUM_17
+    #define CAM_PIN_D5       GPIO_NUM_18
+    #define CAM_PIN_D4       GPIO_NUM_12
+    #define CAM_PIN_D3       GPIO_NUM_10
+    #define CAM_PIN_D2       GPIO_NUM_8
+    #define CAM_PIN_D1       GPIO_NUM_9
+    #define CAM_PIN_D0       GPIO_NUM_11
+    #define CAM_PIN_VSYNC    GPIO_NUM_6
+    #define CAM_PIN_HREF     GPIO_NUM_37
+    #define CAM_PIN_PCLK     GPIO_NUM_13
+
+    //Statusled + ClassControllCamera
+    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
+	
+    //ClassControllCamera
+    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
+    #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
+
+
+    
 #else
     #error "Board not selected"
 #endif  //Board PIN Map
