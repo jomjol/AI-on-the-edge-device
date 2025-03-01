@@ -83,6 +83,7 @@ jobs:
         python generate-param-doc-tooltips.py
         cd ../..
 
+        rm -f ./sd-card/html/edit_config_template.html # Remove the config page template, it is no longer needed
         cp -r ./sd-card/html/* ./html/
 
         echo "Replacing variables..."
