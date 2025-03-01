@@ -287,7 +287,7 @@ jobs:
         rm -rf ./sd-card/demo
         cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
         cp -r ./demo ./sd-card/
-        cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
+        cd sd-card; rm -rf html/param-tooltips; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
 
     - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
