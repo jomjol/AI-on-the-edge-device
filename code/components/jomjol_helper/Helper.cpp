@@ -650,7 +650,7 @@ float temperatureRead()
 {
 	return 0.0;
 }
-#elif
+#else
 extern "C" uint8_t temprature_sens_read();
 float temperatureRead()
 {
