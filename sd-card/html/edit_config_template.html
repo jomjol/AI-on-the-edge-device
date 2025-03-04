@@ -704,8 +704,7 @@
                 <class id="TakeImage_CamFocusManualLevel_text" style="color:black;">Manual focus level</class>
             </td>
             <td>
-                <input required type="number" id="TakeImage_CamFocusManualLevel_value1" value="0" min="0" max="1023" step="1"
-                    onchange="cameraParameterChanged()"
+                <input required type="number" id="TakeImage_CamFocusManualLevel_value1" value="0" min="0" max="1023" step="1" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=1023)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
             <td>$TOOLTIP_TakeImage_CamFocusManualLevel</td>
@@ -2195,14 +2194,14 @@ function cameraParameterChanged() {
         EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
     }
 
-	if(!document.getElementById("TakeImage_CamFocus_value1").selectedIndex) {
-		EnDisableItem(true, param, category, "TakeImage", "CamFocusAuto", false);
-		EnDisableItem(true, param, category, "TakeImage", "CamFocusManualLevel", false);
-	}
-	else {
-		EnDisableItem(false, param, category, "TakeImage", "CamFocusAuto", false);
-		EnDisableItem(false, param, category, "TakeImage", "CamFocusManualLevel", false);
-	}
+    if(!document.getElementById("TakeImage_CamFocus_value1").selectedIndex) {
+        EnDisableItem(true, param, category, "TakeImage", "CamFocusAuto", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamFocusManualLevel", false);
+    }
+    else {
+        EnDisableItem(false, param, category, "TakeImage", "CamFocusAuto", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamFocusManualLevel", false);
+    }
 }
 
 function LoadConfigNeu() {
@@ -2246,14 +2245,14 @@ function LoadConfigNeu() {
         EnDisableItem(false, param, category, "TakeImage", "CamSharpness", false);				
     }	
 
-	if(!document.getElementById("TakeImage_CamFocus_value1").selectedIndex) {
-		EnDisableItem(true, param, category, "TakeImage", "CamFocusAuto", false);
-		EnDisableItem(true, param, category, "TakeImage", "CamFocusManualLevel", false);
-	}
-	else {
-		EnDisableItem(false, param, category, "TakeImage", "CamFocusAuto", false);
-		EnDisableItem(false, param, category, "TakeImage", "CamFocusManualLevel", false);
-	}
+    if(!document.getElementById("TakeImage_CamFocus_value1").selectedIndex) {
+        EnDisableItem(true, param, category, "TakeImage", "CamFocusAuto", false);
+        EnDisableItem(true, param, category, "TakeImage", "CamFocusManualLevel", false);
+    }
+    else {
+        EnDisableItem(false, param, category, "TakeImage", "CamFocusAuto", false);
+        EnDisableItem(false, param, category, "TakeImage", "CamFocusManualLevel", false);
+    }
 }
 
 function InitIndivParameter() {
@@ -2895,21 +2894,21 @@ function camSettingsSet(){
     var _zoomy_temp = document.getElementById("TakeImage_CamZoomOffsetY_value1").value;
     var _zooms_temp = document.getElementById("TakeImage_CamZoomSize_value1").value;	
 
-	var _focus_temp = document.getElementById("TakeImage_CamFocus_value1").selectedIndex;
-	if (_focus_temp == '0') {
-		_focus_temp = '1';
-	}
-	else {
-		_focus_temp = '0';
-	}
-	var _focusAuto_temp = document.getElementById("TakeImage_CamFocusAuto_value1").selectedIndex;
-	if (_focusAuto_temp == '0') {
-		_focusAuto_temp = '1';
-	}
-	else {
-		_focusAuto_temp = '0';
-	}			
-	var _focusManualLevel_temp = document.getElementById("TakeImage_CamFocusManualLevel_value1").value;
+    var _focus_temp = document.getElementById("TakeImage_CamFocus_value1").selectedIndex;
+    if (_focus_temp == '0') {
+        _focus_temp = '1';
+    }
+    else {
+        _focus_temp = '0';
+    }
+    var _focusAuto_temp = document.getElementById("TakeImage_CamFocusAuto_value1").selectedIndex;
+    if (_focusAuto_temp == '0') {
+        _focusAuto_temp = '1';
+    }
+    else {
+        _focusAuto_temp = '0';
+    }
+    var _focusManualLevel_temp = document.getElementById("TakeImage_CamFocusManualLevel_value1").value;
 
     var url = domainname + "/editflow?task=cam_settings";
 	
@@ -2934,16 +2933,16 @@ function camSettingsSet(){
         url = url + "&zoom=0" + "&zooms=0" + "&zoomx=0" + "&zoomy=0";
     }
 
-	if (_focus_temp != '0') {
-		if (_focusAuto_temp != '0') {
-			url = url + "&fen=1&af=1";
-		} else {
-			url = url + "&fen=1&af=0&flvl=" + _focusManualLevel_temp;
-		}
-	}
-	else {
-		url = url + "&fen=0";
-	}
+    if (_focus_temp != '0') {
+        if (_focusAuto_temp != '0') {
+            url = url + "&fen=1&af=1";
+        } else {
+            url = url + "&fen=1&af=0&flvl=" + _focusManualLevel_temp;
+        }
+    }
+    else {
+        url = url + "&fen=0";
+    }
 
     var durchlaufe = 0;
 
