@@ -16,10 +16,12 @@ std::size_t file_size(const std::string& file_name);
 void FindReplace(std::string& line, std::string& oldString, std::string& newString);
 
 bool CopyFile(string input, string output);
-bool DeleteFile(string fn);
+bool DeleteFile(string filename);
 bool RenameFile(string from, string to);
+bool RenameFolder(string from, string to);
 bool MakeDir(std::string _what);
 bool FileExists(string filename);
+bool FolderExists(string foldername);
 
 string RundeOutput(double _in, int _anzNachkomma);
 

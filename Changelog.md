@@ -1,25 +1,52 @@
-## [16.0.0-RC6] - 2024-xx-xx
+## [16.0.0-RC7] - 2024-03-01
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC7)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
 [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
-#### Core Changes
-Only changes since RC5 are listed:
-- [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
-- xxx
 
-  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
+#### Homeassistant compatibility
+:warning: Please check your Homeassistant instance to make sure it is handled correctly!
+
+#### Core Changes
+Only changes since RC5 are listed (Skipping RC6):
+- [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
+
+- [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
+
+- [#3521](https://github.com/jomjol/AI-on-the-edge-device/pull/3521) openmetrics endpoint extension
+ 
+- [#3537](https://github.com/jomjol/AI-on-the-edge-device/pull/3537) Added data export (CSV files) functionality
+ 
+- [#3499](https://github.com/jomjol/AI-on-the-edge-device/pull/3499) Added and activated espressif mDNS service
+ 
+- [#3547](https://github.com/jomjol/AI-on-the-edge-device/pull/3547) Enhanced `IgnoreLeadingNaN`. Marked it in the UI as a per-sequence parameter
+ 
+- [#3580](https://github.com/jomjol/AI-on-the-edge-device/pull/3580) Update Homeassistant discovery to comply with Homeassistant `2025.2.4`
+
+- [#3538](https://github.com/jomjol/AI-on-the-edge-device/pull/3538), [#3568](https://github.com/jomjol/AI-on-the-edge-device/pull/3568) Compress all Web UI files with gzip
+
+- [#3590](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Validate uploaded OTA update file before installing it
+ 
+- [#3583](https://github.com/jomjol/AI-on-the-edge-device/pull/3583) Remove HTML directory on update
+  
+- [#3590](https://github.com/jomjol/AI-on-the-edge-device/pull/3590) Consolidated the `reboot` and `save` buttons -> The `reboot` button ois not part of the notification
+ corrected enable/disable texts on the configuration page to make it more intuitive
+
+- [#3520](https://github.com/jomjol/AI-on-the-edge-device/pull/3520) Rewrite InfluxDB Interface
+
+- [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500) Update smart-LED driver
 
 #### Bug Fixes
 Only changes since RC5 are listed:
- - xxx
+ - [#3450](https://github.com/jomjol/AI-on-the-edge-device/pull/3450) fix crash due to empty CAM parameters in migration
+ - [#3446](https://github.com/jomjol/AI-on-the-edge-device/pull/3446) fix for incorrect decimal shift
 
 ## [16.0.0-RC5] - 2024-12-05
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC5)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -50,7 +77,7 @@ Only changes since RC4 are listed:
 
 ## [16.0.0-RC4] - 2024-10-06
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC4)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -69,7 +96,7 @@ Only changes since RC2 are listed:
 
 ## [16.0.0-RC3] - 2024-10-05
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC3)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
@@ -86,7 +113,7 @@ Only changes since RC2 are listed:
 
 ## [16.0.0-RC2] - 2024-10-04
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC2)
 
 #### Known issues
 Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and

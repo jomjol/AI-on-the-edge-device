@@ -25,6 +25,7 @@
     </style>
 
     <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <script src="md5.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
@@ -142,7 +143,7 @@
 
         function doRebootAfterUpdate() {
             var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "/reboot", true);
+            xhttp.open("GET", domainname + "/reboot", true);
             xhttp.send();
         }
 
@@ -169,15 +170,35 @@
                 }
             };
 
-            var _toDo = domainname + "/ota?task=emptyfirmwaredir";
-            xhttp.open("GET", _toDo, true);
+            var url = domainname + "/ota?task=emptyfirmwaredir";
+            xhttp.open("GET", url, true);
             xhttp.send();
         }
 
 
-        function extract() {
-            document.getElementById("status").innerText = "Status: Processing on device...";
+        function validateMd5(md5_on_device, callback) {
+            const reader = new FileReader();
 
+            reader.onload = (event) => {
+                const fileContent = event.target.result;
+                md5_on_webbrowser = md5(fileContent);
+                console.log("MD5 on device: " + md5_on_device + ", MD5 on web browser: " + md5_on_webbrowser);
+                if (md5_on_device == md5_on_webbrowser) {
+                    console.log("MD5 values are equal");
+                    callback(true);
+                }
+                else {
+                    console.log("MD5 values are NOT equal!");
+                    callback(false);
+                }
+            }
+
+            var fileInput = document.getElementById("file_selector").files;
+            reader.readAsArrayBuffer(fileInput[0]);
+        }
+
+
+        function extract() {
             var xhttp = new XMLHttpRequest();
             /* first delete the old firmware */	
             xhttp.onreadystatechange = function() {
@@ -186,9 +207,9 @@
                         document.cookie = "page=overview.html?v=$COMMIT_HASH" + "; path=/"; // Make sure after the reboot we go to the overview page
 
                         if (xhttp.responseText.startsWith("reboot")) { // Reboot required
-                            console.log("Upload completed, the device will now restart and install the update!");
+                            console.log("The device will now reboot and install the update!");
                             document.getElementById("status").innerText = "Status: Installing...";
-                            firework.launch('Upload completed, the device will now restart and install the update', 'success', 5000);
+                            firework.launch('Upload completed and validated. The device will now reboot and install the update', 'success', 5000);
                         
                             /* Tell it to reboot */
                             doRebootAfterUpdate();
@@ -228,8 +249,8 @@
 
             var file_name = document.getElementById("file_selector").value;
             filePath = file_name.split(/[\\\/]/).pop();
-            var _toDo = domainname + "/ota?task=update&file=" + filePath;
-            xhttp.open("GET", _toDo, true);
+            var url = domainname + "/ota?task=update&file=" + filePath;
+            xhttp.open("GET", url, true);
             xhttp.send();
         }
 
@@ -242,7 +263,7 @@
         function upload() {
             document.getElementById("status").innerText = "Status: Uploading...";
 
-            var upload_path = "/upload/firmware/" + filePath;
+            var url = domainname + "/upload/firmware/" + filePath + "?md5";
 
             var file = _("file_selector").files[0];
             var formdata = new FormData();
@@ -253,7 +274,7 @@
             ajax.addEventListener("error", errorHandler, false);
             ajax.addEventListener("abort", abortHandler, false);
 
-            ajax.open("POST", upload_path);
+            ajax.open("POST", url);
             ajax.send(file);
         }
 
@@ -263,16 +284,43 @@
                     " MB of " + (event.total / 1024/ 1024).toFixed(2) + " MB";
             var percent = (event.loaded / event.total) * 100;
             _("progressBar").value = Math.round(percent);
-            _("status").innerHTML = "Status: " + Math.round(percent) + "% uploaded. Please wait...";
+
+            if (Math.round(percent) == 100) {
+                _("progressBar").value = 0; //will clear progress bar after successful upload
+                _("loaded_n_total").innerHTML = "";
+                _("status").innerHTML = "Status: Upload completed. Validating file...";
+            }
+            else {
+                _("status").innerHTML = "Status: " + Math.round(percent) + "% uploaded...";
+            }
         }
 
 
         function completeHandler(event) {
-            _("status").innerHTML = "Status: " + event.target.responseText;
-            _("progressBar").value = 0; //will clear progress bar after successful upload
-            _("loaded_n_total").innerHTML = "";
-        
-            extract();
+            console.log("Upload completed");
+            console.log("Response: " + event.target.responseText);
+
+            try {
+                md5_on_device = JSON.parse(event.target.responseText).md5;
+                validateMd5(md5_on_device, (result) => {
+                    if (result == true) {
+                        _("status").innerHTML = "Status: The uploaded file is valid, installing it...";
+                        extract();
+                    }
+                    else {
+                        _("status").innerHTML = "Status: The file got corrupted! Please upload it again!";
+                        firework.launch('Upload failed, the file got corrupted! Please upload it again!', 'danger', 30000);
+                        document.getElementById("start_OTA_button").disabled = false;
+                    }
+                });
+            }
+            catch (e) {
+                // If the firmware is to old, it will return the file sever page instead of the JSON object with the MD5 sum.
+                // In juch case just proceed to keep legacy support.
+                console.log("It seems to be a legacy firmware, installing the update without validation!");
+                _("status").innerHTML = "Status: It seems to be a legacy firmware, installing the update without validation...";
+                extract();
+            }
         }
 
 

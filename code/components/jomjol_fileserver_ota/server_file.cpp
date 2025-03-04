@@ -36,6 +36,7 @@ extern "C" {
 #include "MainFlowControl.h"
 
 #include "server_help.h"
+#include "md5.h"
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
 #endif //ENABLE_MQTT
@@ -61,7 +62,7 @@ struct file_server_data {
 
 using namespace std;
 
-string SUFFIX_ZW = "_0xge";
+string SUFFIX_ZW = "_tmp";
 
 static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file);
 static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file);
@@ -610,6 +611,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     FILE *fd = NULL;
     struct stat file_stat;
 
+    ESP_LOGI(TAG, "uri: %s", req->uri);
+
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     /* Skip leading "/upload" from URI to get filename */
@@ -711,43 +714,76 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File saved: " + string(filename));
     ESP_LOGI(TAG, "File reception completed");
 
-    std::string directory = std::string(filepath);
-	size_t zw = directory.find("/");
-	size_t found = zw;
-	while (zw != std::string::npos)
-	{
-		zw = directory.find("/", found+1);  
-		if (zw != std::string::npos)
-			found = zw;
-	}
+    string s = req->uri;
+    if (isInString(s, "?md5")) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Calculate and return MD5 sum...");
+        
+        fd = fopen(filepath, "r");
+        if (!fd) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to open file for reading: " + string(filepath));
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to open file for reading");
+            return ESP_FAIL;
+        }
 
-    int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
-    ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
-	directory = directory.substr(start_fn, found - start_fn + 1);
-    directory = "/fileserver" + directory;
-//    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
+        uint8_t result[16];
+        string md5hex = "";
+        string response = "{\"md5\":";
+        char hex[3];
 
-    /* Redirect onto root to see the updated file list */
-    if (strcmp(filename, "/config/config.ini") == 0 ||
-        strcmp(filename, "/config/ref0.jpg") == 0 ||
-        strcmp(filename, "/config/ref0_org.jpg") == 0 ||
-        strcmp(filename, "/config/ref1.jpg") == 0 ||
-        strcmp(filename, "/config/ref1_org.jpg") == 0 ||
-        strcmp(filename, "/config/reference.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref0.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref0_org.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref1.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/ref1_org.jpg") == 0 ||
-        strcmp(filename, "/img_tmp/reference.jpg") == 0 ) 
-    { 
-        httpd_resp_set_status(req, HTTPD_200); // Avoid reloading of folder content
+        md5File(fd, result);
+        fclose(fd);
+
+        for (int i = 0; i < sizeof(result); i++) {
+            snprintf(hex, sizeof(hex), "%02x", result[i]);
+            md5hex.append(hex);
+        }
+
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
+        response.append("\"" + md5hex + "\"");
+        response.append("}");
+
+        httpd_resp_sendstr(req, response.c_str());
     }
-    else {
-        httpd_resp_set_status(req, "303 See Other"); // Reload folder content after upload
-    }
+    else {  // Return file server page
+        std::string directory = std::string(filepath);
+        size_t zw = directory.find("/");
+        size_t found = zw;
+        while (zw != std::string::npos)
+        {
+            zw = directory.find("/", found+1);  
+            if (zw != std::string::npos)
+                found = zw;
+        }
 
-    httpd_resp_set_hdr(req, "Location", directory.c_str());
-    httpd_resp_sendstr(req, "File uploaded successfully");
+        int start_fn = strlen(((struct file_server_data *)req->user_ctx)->base_path);
+        ESP_LOGD(TAG, "Directory: %s, start_fn: %d, found: %d", directory.c_str(), start_fn, found);
+        directory = directory.substr(start_fn, found - start_fn + 1);
+        directory = "/fileserver" + directory;
+    //    ESP_LOGD(TAG, "Directory danach 2: %s", directory.c_str());
+
+        /* Redirect onto root to see the updated file list */
+        if (strcmp(filename, "/config/config.ini") == 0 ||
+            strcmp(filename, "/config/ref0.jpg") == 0 ||
+            strcmp(filename, "/config/ref0_org.jpg") == 0 ||
+            strcmp(filename, "/config/ref1.jpg") == 0 ||
+            strcmp(filename, "/config/ref1_org.jpg") == 0 ||
+            strcmp(filename, "/config/reference.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref0.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref0_org.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref1.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/ref1_org.jpg") == 0 ||
+            strcmp(filename, "/img_tmp/reference.jpg") == 0 ) 
+        { 
+            httpd_resp_set_status(req, HTTPD_200); // Avoid reloading of folder content
+        }
+        else {
+            httpd_resp_set_status(req, "303 See Other"); // Reload folder content after upload
+        }
+
+        httpd_resp_set_hdr(req, "Location", directory.c_str());
+        httpd_resp_sendstr(req, "File uploaded successfully");
+    }
 
     return ESP_OK;
 }
@@ -911,7 +947,7 @@ void delete_all_in_directory(std::string _directory)
     closedir(dir);
 }
 
-std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main, bool _initial_setup)
+std::string unzip_new(std::string _in_zip_file, std::string _html_tmp, std::string _html_final, std::string _target_bin, std::string _main, bool _initial_setup)
 {
     int i, sort_iter;
     mz_bool status;
@@ -993,9 +1029,14 @@ std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::st
                     }
                     else
                     {
-                        zw = _target_zip + zw;
+                        zw = _html_tmp + zw;
                     }
 
+                }
+
+                // files in the html folder shall be redirected to the temporary html folder
+                if (zw.find(_html_final) == 0) {
+                    FindReplace(zw, _html_final, _html_tmp);
                 }
             
                 string filename_zw = zw + SUFFIX_ZW;

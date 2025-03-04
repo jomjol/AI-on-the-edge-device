@@ -320,7 +320,6 @@ ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, C
     ListFlowControll = lfc;
     flowTakeImage = NULL;
     UpdatePreValueINI = false;
-    IgnoreLeadingNaN = false;
     flowAnalog = _analog;
     flowDigit = _digit;
 
@@ -431,6 +430,27 @@ void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _va
     }
 }
 
+void ClassFlowPostProcessing::handleIgnoreLeadingNaN(string _decsep, string _value) {
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+
+    if (_pospunkt > -1) {
+        _digit = _decsep.substr(0, _pospunkt);
+    }
+    else {
+        _digit = "default";
+    }
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        bool _zwdc = alphanumericToBoolean(_value);
+
+        // Set to default first (if nothing else is set)
+        if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
+            NUMBERS[j]->IgnoreLeadingNaN = _zwdc;
+        }
+    }
+}
+
 void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value) {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
@@ -509,7 +529,7 @@ void ClassFlowPostProcessing::handleChangeRateThreshold(string _decsep, string _
         }
     }
 }
-/*
+
 void ClassFlowPostProcessing::handlecheckDigitIncreaseConsistency(std::string _decsep, std::string _value)
 {
     std::string _digit;
@@ -532,7 +552,7 @@ void ClassFlowPostProcessing::handlecheckDigitIncreaseConsistency(std::string _d
         }
     }
 }
-*/
+
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) {
     std::vector<string> splitted;
     int _n;
@@ -585,12 +605,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 	    
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
-            // handlecheckDigitIncreaseConsistency(splitted[0], splitted[1]);
-            if (alphanumericToBoolean(splitted[1])) {
-                for (_n = 0; _n < NUMBERS.size(); ++_n) {
-                    NUMBERS[_n]->checkDigitIncreaseConsistency = true;
-                }
-            }
+            handlecheckDigitIncreaseConsistency(splitted[0], splitted[1]);
         }
 			
         if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1)) {
@@ -602,7 +617,7 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         }
 			
         if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1)) {
-            IgnoreLeadingNaN = alphanumericToBoolean(splitted[1]);
+            handleIgnoreLeadingNaN(splitted[0], splitted[1]);
         }
 
         if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1)) {
@@ -670,6 +685,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->FlowRateAct = 0; // m3 / min
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
+        _number->IgnoreLeadingNaN = false;
         _number->MaxRateValue = 0.1;
         _number->MaxRateType = AbsoluteChange;
         _number->useMaxRateValue = false;
@@ -821,7 +837,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             ESP_LOGD(TAG, "After ShiftDecimal: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
 
-        if (IgnoreLeadingNaN) {
+        if (NUMBERS[j]->IgnoreLeadingNaN) {
             while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N')) {
                 NUMBERS[j]->ReturnRawValue.erase(0, 1);
             }
@@ -868,12 +884,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (NUMBERS[j]->checkDigitIncreaseConsistency) {
             if (flowDigit) {
-                if (flowDigit->getCNNType() != Digit) {
-                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digit Classification)");
-                }
-                else {
-                    NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
-                }
+                NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
             }
             else {
                 #ifdef SERIAL_DEBUG
@@ -887,7 +898,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         #endif
 
         if (PreValueUse && NUMBERS[j]->PreValueOkay) {
-            if (NUMBERS[j]->Nachkomma > 0) {
+            if ((NUMBERS[j]->Nachkomma > 0) && (NUMBERS[j]->ChangeRateThreshold > 0)) {
                 double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
                 double _difference2 = (NUMBERS[j]->PreValue + (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
 
