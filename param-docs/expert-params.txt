@@ -24,6 +24,9 @@ CamZoom
 CamZoomSize
 CamZoomOffsetX
 CamZoomOffsetY
+CamFocus
+CamFocusAuto
+CamFocusManualLevel
 demo
 SearchFieldX
 SearchFieldY
