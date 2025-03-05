@@ -1,17 +1,16 @@
-## [16.0.0-RC7] - 2024-03-01
+# [16.0.0] - 2024-03-xx
 
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC7)
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
 
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+### Known issues
+No software is perfect. We know that our software has some quirks. If you have an issue, please first check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
 [discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
 
+### Homeassistant compatibility
+:warning: Please check your Homeassistant instance to make sure it is handled correctly! Since the last release (`15.7.0`) a lot of changes happened!
 
-#### Homeassistant compatibility
-:warning: Please check your Homeassistant instance to make sure it is handled correctly!
+### Core Changes (ordered by commit date)
 
-#### Core Changes
-Only changes since RC5 are listed (Skipping RC6):
 - [#3436](https://github.com/jomjol/AI-on-the-edge-device/pull/3436) Added basic authentification of the Web Interface and the REST API, see https://jomjol.github.io/AI-on-the-edge-device-docs/Password-Protection
 
 - [#3454](https://github.com/jomjol/AI-on-the-edge-device/pull/3454) Add thermometer
@@ -39,21 +38,6 @@ Only changes since RC5 are listed (Skipping RC6):
 
 - [#3500](https://github.com/jomjol/AI-on-the-edge-device/pull/3500) Update smart-LED driver
 
-#### Bug Fixes
-Only changes since RC5 are listed:
- - [#3450](https://github.com/jomjol/AI-on-the-edge-device/pull/3450) fix crash due to empty CAM parameters in migration
- - [#3446](https://github.com/jomjol/AI-on-the-edge-device/pull/3446) fix for incorrect decimal shift
-
-## [16.0.0-RC5] - 2024-12-05
-
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC5)
-
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
-[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
-
-#### Core Changes
-Only changes since RC4 are listed:
 - [#3423](https://github.com/jomjol/AI-on-the-edge-device/pull/3423) Removed `Autostart` parameter and make the flow to be always enabled 
 - [#3423](https://github.com/jomjol/AI-on-the-edge-device/pull/3423) Enable `Flow start` menu entry in UI 
 - [#3332](https://github.com/jomjol/AI-on-the-edge-device/pull/3332) Updated the Homeassistant Discovery topics :
@@ -65,83 +49,16 @@ Only changes since RC4 are listed:
     - Added Date and time to overview page
     - Updated submodules and models
 
-  **:warning: Please check your Homeassistant instance to make sure it is handled correctly!**
-
-#### Bug Fixes
-Only changes since RC4 are listed:
- - [#3418](https://github.com/jomjol/AI-on-the-edge-device/pull/3418) Added fix for ledintensity 
- - [#3417](https://github.com/jomjol/AI-on-the-edge-device/pull/3417) Added fix for OV2640 brightness contrast saturation 
- - [#3393](https://github.com/jomjol/AI-on-the-edge-device/pull/3393) Added fix for 'AnalogToDigitTransitionStart' always using 9.2 regardless of the configured value 
- - [#3342](https://github.com/jomjol/AI-on-the-edge-device/pull/3342) Added fix for HA menu entry 
-
-
-## [16.0.0-RC4] - 2024-10-06
-
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC4)
-
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
-[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
-
-#### Core Changes
-Only changes since RC3 are listed:
 - [#3316](https://github.com/jomjol/AI-on-the-edge-device/pull/3316) Update esp32-camera submodule to `v2.0.13` 
 - [#3317](https://github.com/jomjol/AI-on-the-edge-device/pull/3317) Added contributor list 
 - [#3315](https://github.com/jomjol/AI-on-the-edge-device/pull/3315) Added files for demo mode 
 
-#### Bug Fixes
-Only changes since RC2 are listed:
-- [#3313](https://github.com/jomjol/AI-on-the-edge-device/pull/3313) Added delay in InitCam  to fix `Camera not detected` issues
+- Renamed MQTT topic from `rate_per_digitalization_round` to `rate_per_digitization_round`
 
-
-## [16.0.0-RC3] - 2024-10-05
-
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC3)
-
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
-[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
-
-#### Core Changes
-Only changes since RC2 are listed:
-- Renamed MQTT topic from `rate_per_digitalization_round` to `rate_per_digitization_round` (change happened already in RC1)
-
-#### Bug Fixes
-Only changes since RC2 are listed:
-- [#3269](https://github.com/jomjol/AI-on-the-edge-device/pull/3269) Re-did revertion of TFlite submodule update as certain modules crash with it  (change was lost)
-
-
-## [16.0.0-RC2] - 2024-10-04
-
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC2)
-
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
-[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
-
-#### Core Changes
-Only changes since RC1 are listed:
 - Updated parameter documentation pages
 - [#3291](https://github.com/jomjol/AI-on-the-edge-device/pull/3291) Rename/remove unused parameters 
 - [#3288](https://github.com/jomjol/AI-on-the-edge-device/pull/3288) Migrate-cam-parameters 
 
-#### Bug Fixes
-Only changes since RC1 are listed:
-- [#3269](https://github.com/jomjol/AI-on-the-edge-device/pull/3269) Reverted TFlite submodule update as certain modules crash with it 
-- [#3279](https://github.com/jomjol/AI-on-the-edge-device/pull/3279) Changed the webhook UploadImg to false 
-- Changed default value from boolean to numeric value in parameter camDenoise documentation
-- Updated config page
-
-## [16.0.0-RC1] - 2024-09-24
-
-For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0-RC1)
-
-#### Known issues
-Please check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
-[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
-
-#### Core Changes
-Those are just the major changes:
 - [#3063](https://github.com/jomjol/AI-on-the-edge-device/pull/3063) Add support for OV5640 camera 
 - New tflite-Models
 - [#3088](https://github.com/jomjol/AI-on-the-edge-device/pull/3088) Homeassistant service discovery: derive node_id when using nested topics 
@@ -153,48 +70,60 @@ Those are just the major changes:
 - Various minor changes
 - Update platformIO to 6.9.0 (Contains ESP IDF 5.3.1)
 
-#### Bug Fixes
-Those are just the major changes:
+### Bug Fixes (ordered by commit date)
+
+ - [#3450](https://github.com/jomjol/AI-on-the-edge-device/pull/3450) fix crash due to empty CAM parameters in migration
+ - [#3446](https://github.com/jomjol/AI-on-the-edge-device/pull/3446) fix for incorrect decimal shift
+ - [#3418](https://github.com/jomjol/AI-on-the-edge-device/pull/3418) Added fix for ledintensity 
+ - [#3417](https://github.com/jomjol/AI-on-the-edge-device/pull/3417) Added fix for OV2640 brightness contrast saturation 
+ - [#3393](https://github.com/jomjol/AI-on-the-edge-device/pull/3393) Added fix for 'AnalogToDigitTransitionStart' always using 9.2 regardless of the configured value 
+ - [#3342](https://github.com/jomjol/AI-on-the-edge-device/pull/3342) Added fix for HA menu entry 
+ - [#3313](https://github.com/jomjol/AI-on-the-edge-device/pull/3313) Added delay in InitCam  to fix `Camera not detected` issues
+- [#3269](https://github.com/jomjol/AI-on-the-edge-device/pull/3269) Re-did revertion of TFlite submodule update as certain modules crash with it  (change was lost)
+- [#3269](https://github.com/jomjol/AI-on-the-edge-device/pull/3269) Reverted TFlite submodule update as certain modules crash with it 
+- [#3279](https://github.com/jomjol/AI-on-the-edge-device/pull/3279) Changed the webhook UploadImg to false 
+- Changed default value from boolean to numeric value in parameter camDenoise documentation
+- Updated config page
 - [#3220](https://github.com/jomjol/AI-on-the-edge-device/pull/3220) Handle crash on corrupted model 
 - [#3175](https://github.com/jomjol/AI-on-the-edge-device/pull/3175) Bugfix for boot loop 
 - [#3180](https://github.com/jomjol/AI-on-the-edge-device/pull/3180) Bugfix for time stamp 
 - [#3162](https://github.com/jomjol/AI-on-the-edge-device/pull/3162) Handle empty prevalue.ini gracefully 
 - [#3213](https://github.com/jomjol/AI-on-the-edge-device/pull/3213) Added note about only TLS 1.2 is supported 
 
-## [15.7.0] - 2024-02-17
+# [15.7.0] - 2024-02-17
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.6.0...v15.7.0)
 
-#### Core Changes
+### Core Changes
 - Added new camera settings (See `Settings > Alignment > Reference Image and Camera Settings`). You might need to re-create the reference image and alignment marks. Note worthy:
   - You can now crop the image
   - Support to configure sharpness, grayscale, negatoive and exposure
 - Enhanced various WebUI pages with better explanations and usability
 - Add Firmware Version to MQTT
 
-#### Bug Fixes
+### Bug Fixes
 - Reverted "Implemented late analog / digit transition [#2778](https://github.com/jomjol/AI-on-the-edge-device/pull/2778) (introduced in `v15.5`) as is seems to cause issues for many users.
 
 
-## [15.6.0] - 2024-02-09
+# [15.6.0] - 2024-02-09
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.5.0...v15.6.0)
 
-#### Fixed
+### Fixed
 
 * Fixed issues with the SD-Card initialization
 
-## [15.5.0] - 2024-02-02
+# [15.5.0] - 2024-02-02
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.4.0...v15.5.0)
 
-#### Changed
+### Changed
 
  - Update PlattformIO to v6.5.0, which means esp-idf to v5.1
  - Enhance busy notification
  - Implemented late analog / digit transition
 
-#### Fixed
+### Fixed
 
 * ATA-TRIM: workaround for old SD-cards with no trim function to work with esp-idf v5.x
 * InfluxDB: Modified the time conversions to be more stable (UTC vs. local time shifts)
@@ -202,11 +131,11 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 * Show chip infos on info page
 * Fix memory leaks in tflite integration
 
-## [15.4.0] - 2023-12-22
+# [15.4.0] - 2023-12-22
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.4.0)
 
-#### Changed
+### Changed
 
  - Updates submodules (esp-nn, tflite-micro-example, esp-camera)
 
@@ -224,7 +153,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Added config entries for MQTT TLS
 
 
-#### Fixed
+### Fixed
 
 * InfluxDB: consider DST setting for UTC time conversion
 
@@ -233,51 +162,51 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
  - Memory leakage (MQTT)
    
 
-## [15.3.0] - 2023-07-22
+# [15.3.0] - 2023-07-22
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.3.0...v15.2.4)
 
-#### Changed
+### Changed
 
  - Updated PlatformIO to `6.3.2`
  - Updated analog tflite files
    - ana-cont_1207_s2_q.tflite
    - dig-cont_0620_s3_q.tflite
 
-## [15.2.4] - 2023-05-02
+# [15.2.4] - 2023-05-02
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.1...v15.2.4)
 
-#### Changed
+### Changed
  - Updated PlatformIO to `6.2.0`
  - [#2376](https://github.com/jomjol/AI-on-the-edge-device/pull/2376) Improve logging if Autostart is not enabled
 
-#### Fixed
+### Fixed
  - [#2373](https://github.com/jomjol/AI-on-the-edge-device/pull/2373) Allow the Alignment Mark step while status is "Initializing" or "Initialization (delayed)" or while in setup mode
  - [#2381](https://github.com/jomjol/AI-on-the-edge-device/pull/2381) Fix broken sysinfo REST API
 
 
-## [15.2.1] - 2023-04-27
+# [15.2.1] - 2023-04-27
 
-### Changes
+## Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.2.0...v15.2.1)
 
-#### Fixed
+### Fixed
  - [#2357](https://github.com/jomjol/AI-on-the-edge-device/pull/2357) Fix Alignment Mark issue
 
 
-## [15.2.0] - 2023-04-23
+# [15.2.0] - 2023-04-23
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.1...v15.2.0)
 
-#### Added
+### Added
 
 -  [#2286](https://github.com/jomjol/AI-on-the-edge-device/pull/2286) Implement a camera livestream handler
 -  [#2252](https://github.com/jomjol/AI-on-the-edge-device/pull/2252) Set prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
 -  [#2319](https://github.com/jomjol/AI-on-the-edge-device/pull/2319) Extend InfluxDBv1 with individual topic names
 
-#### Changed
+### Changed
 
 -  [#2285](https://github.com/jomjol/AI-on-the-edge-device/pull/2285) Re-implemented PSRAM usage
 -  [#2325](https://github.com/jomjol/AI-on-the-edge-device/pull/2325) Keep MainFlowTask alive to handle reboot
@@ -285,44 +214,44 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -  [#2305](https://github.com/jomjol/AI-on-the-edge-device/pull/2305) Migration of PlatformIO `5.2.0` to `6.1.0` (resp. ESP IDF from `4.4.2` to `5.0.1`)
 -  Various cleanup and refactoring
 
-#### Fixed
+### Fixed
 
 -  [#2326](https://github.com/jomjol/AI-on-the-edge-device/pull/2326) Activate save button after Analogue ROI creationSet prevalue using MQTT + set prevalue to RAW value (REST+MQTT)
 -  [#2283](https://github.com/jomjol/AI-on-the-edge-device/pull/2283) Fix Timezone issues on InfluxDB
 -  Various minor fixes
 
-#### Removed
+### Removed
 
 -   n.a.
 
 
-## [15.1.1] - 2023-03-23
+# [15.1.1] - 2023-03-23
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.1.0...v15.1.1)
 
-#### Added
+### Added
 
 - [#2206](https://github.com/jomjol/AI-on-the-edge-device/pull/2206) Log PSRAM usage
 - [#2216](https://github.com/jomjol/AI-on-the-edge-device/pull/2216) Log MQTT connection refused reasons
 
-#### Changed
+### Changed
 
 - n.a.
 
-#### Fixed
+### Fixed
 
 -  [#2224](https://github.com/jomjol/AI-on-the-edge-device/pull/2224), [#2213](https://github.com/jomjol/AI-on-the-edge-device/pull/2213) Reverted some of the PSRAM usage changes due to negative sideffects 
 -  [#2203](https://github.com/jomjol/AI-on-the-edge-device/issues/2203) Correct API for pure InfluxDB v1
 -  [#2180](https://github.com/jomjol/AI-on-the-edge-device/pull/2180) Fixed links in Parameter Documentation
 -  Various minor fixes
 
-#### Removed
+### Removed
 
 -   n.a.
 
-## [15.1.0] - 2023-03-12
+# [15.1.0] - 2023-03-12
 
-### Update Procedure
+## Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
@@ -330,11 +259,11 @@ Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-e
 
 :bangbang: Afterwards you should check your configuration for errors!
 
-### Changes
+## Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.0.3...v15.1.0)
 
-#### Added
+### Added
 - The Configuration page has now tooltips with enhanced documentation
 - MQTT:
     - Added `GJ` (`gigajoule`) as an energy meter unit
@@ -347,7 +276,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 - Support of InfluxDB v2 ([#2004](https://github.com/jomjol/AI-on-the-edge-device/pull/2004))
 
 
-#### Changed
+### Changed
 - Updated models (tflite files), removed old versions (https://github.com/jomjol/AI-on-the-edge-device/pull/2089, https://github.com/jomjol/AI-on-the-edge-device/pull/2133)
   :bangbang: **Attention:** Update your configuration!
     -   Hybrid CNN network to `dig-cont_0611_s3` 
@@ -369,7 +298,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 - Logfile: Print start indication block after time is synced to indicate start in logfile after a cold boot
 - `Image Quality Index`: Limit lower input range to 8 to avoid system instabilities
 
-#### Fixed
+### Fixed
 - Various minor fixes
 - Added State Class "measurement" to rate_per_time_unit
 - GPIO: Avoid MQTT publishing to empty topic when "MQTT enable" flag is not set
@@ -377,21 +306,21 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 - Remote Setup truncated long passwords (https://github.com/jomjol/AI-on-the-edge-device/issues/2167)
 -  Problem with timestamp in InfluxDB interface
 
-#### Removed
+### Removed
 -   n.a.
 
 
-## [15.0.3] - 2023-02-28
+# [15.0.3] - 2023-02-28
 
 **Name: Parameter Migration**
 
-### Update Procedure
+## Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
 :bangbang: Afterwards you should force-reload the Web Interface (usually Ctrl-F5 will do it).
 
-### Changes
+## Changes
 
 This release only migrates some parameters, see #2023 for details and a list of all parameter changes.
 The parameter migration happens automatically on the next startup. No user interaction is required.
@@ -401,41 +330,41 @@ Beside of the parameter change and the bugfix listed below, no changes are conta
 
 If you want to revert back to `v14` or earlier, you will have to revert the migration changes in `config.ini` manually!
 
-#### Added
+### Added
 
 -   n.a.
 
-#### Changed
+### Changed
 
 -   [#2023](https://github.com/jomjol/AI-on-the-edge-device/pull/2023) Migrated Parameters
 -   Removed old `Topic` parameter, it is not used anymore
 
-#### Fixed
+### Fixed
 
 -   [#2036](https://github.com/jomjol/AI-on-the-edge-device/issues/2036) Fix wrong url-encoding
 -   **NEW v15.0.2:**  [#1933](https://github.com/jomjol/AI-on-the-edge-device/issues/1933) Bugfix InfluxDB Timestamp
 -   **NEW v15.0.3:**  Re-added lost dropdownbox filling for Postprocessing Individual Parameters
 
-#### Removed
+### Removed
 
 -   n.a.
 
 
-## [14.0.3] -2023-02-05
+# [14.0.3] -2023-02-05
 
 **Name: Stabilization and Improved User Experience**
 
 Thanks to over 80 Pull Requests from 6 contributors, we can anounce another great release with many many improvements and new features:
 
-### Update Procedure
+## Update Procedure
 
 Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
-### Changes
+## Changes
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v13.0.8...v14.0.0)
 
-#### Added
+### Added
 
 -   [1877](https://github.com/jomjol/AI-on-the-edge-device/pull/1877) Show WIFI signal text labels / Log RSSI value to logfile
 -   [1671](https://github.com/jomjol/AI-on-the-edge-device/pull/1671) Added experimental support for WLAN 802.11k und 802.11v (Mesh-Support)
@@ -448,7 +377,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1648](https://github.com/jomjol/AI-on-the-edge-device/pull/1648) Added trigger to start a flow by [REST](https://jomjol.github.io/AI-on-the-edge-device-docs/REST-API) API or [MQTT](https://jomjol.github.io/AI-on-the-edge-device-docs/MQTT-API/)
 -   Show special images during steps `Initializing` and `Take Image` as the current camera image might be incomplete or outdated
 
-#### Changed
+### Changed
 
 -   Migrated documentation (Wiki) to <https://jomjol.github.io/AI-on-the-edge-device-docs>. Please help us to make it even better.
 -   New OTA Update page with progress indication
@@ -463,7 +392,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   HTML: improved user informations (info boxes, error hints, ...)
 -   [1904](https://github.com/jomjol/AI-on-the-edge-device/pull/1904) Removed newlines in JSON and replaced all whitespaces where there was more than one
 
-#### Fixed
+### Fixed
 
 -   Fixed many many things
 -   [1509](https://github.com/jomjol/AI-on-the-edge-device/pull/1509) Protect `wifi.ini` from beeing deleted.
@@ -471,17 +400,17 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   [1518](https://github.com/jomjol/AI-on-the-edge-device/pull/1518) JSON Strings
 -   [1817](https://github.com/jomjol/AI-on-the-edge-device/pull/1817) DataGraph: datafiles sorted -> newest on top
 
-#### Removed
+### Removed
 
 -   n.a.
 
-## [13.0.8] - 2022-12-19
+# [13.0.8] - 2022-12-19
 
 **Name: Home Assistant MQTT Discovery Support**
 
-### Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
+## Update Procedure see [online documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#update-ota-over-the-air)
 
-### Added
+## Added
 
 -   Implementation of [Home Assistant MQTT Discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery)
 -   Improved ROIs configuration: locked ROI geometry, equidistant delta x
@@ -500,7 +429,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
 -   Version check (Firmware vs. Web UI)
 -   Various minor new features
 
-### Changed
+## Changed
 
 -   Updated tflite (`dig-cont_0600_s3.tflite`)
 -   Updated OTA functionality (more robust, but not fully bullet prove yet)
@@ -523,7 +452,7 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
     -   Show uptime in log
     -   Show uptime and round on overview page
 
-### Fixed
+## Fixed
 
 -   [#1116](https://github.com/jomjol/AI-on-the-edge-device/issues/1116) precision problem at setting prevalue
 -   [#1119](https://github.com/jomjol/AI-on-the-edge-device/issues/1119) renamed `firmware.bin` not working in OTA
@@ -551,11 +480,11 @@ For a full list of changes see [Full list of changes](https://github.com/jomjol/
     -   Block REST API calls till resource is ready
     -   Fixed number renaming ([#1635](https://github.com/jomjol/AI-on-the-edge-device/issues/1635))
 
-### Removed
+## Removed
 
 -   n.a.
 
-## [12.0.1] 2022-09-29
+# [12.0.1] 2022-09-29
 
 Name: Improve **u**ser e**x**perience 
 
@@ -574,7 +503,7 @@ If anything breaks you can try to
 1\. Call `http://<IP>/ota?task=update&file=firmware.bin` resp. `http://<IP>/ota?task=update&file=html.zip` if the upload successed but the extraction failed.
 1\. Use the initial_esp32_setup.zip ( <https://github.com/jomjol/AI-on-the-edge-device/wiki/Installation> ) as alternative.
 
-### Added
+## Added
 
 -   Automatic release creation
 -   Newest firmware of rolling branch now automatically build and provided in [Github Actions Output](https://github.com/jomjol/AI-on-the-edge-device/actions) (developers only)
@@ -585,24 +514,24 @@ If anything breaks you can try to
     -   Automatical detection and suggestion for reboot where needed (Web Interface uupdates only need a page refresh)
     -   :bangbang: Best for OTA use Firefox. Chrome works with warnings. Safari stuck in upload.
 
-### Changed
+## Changed
 
 -   Integrated version info better shown on the Info page and in the log
 -   Updated menu
 -   Update used libraries (`tflite`, `esp32-cam`, `esp-nn`, as of 20220924) 
 
-### Fixed
+## Fixed
 
 -   [#1092](https://github.com/jomjol/AI-on-the-edge-device/issues/1092) censor passwords in log outputs 
 -   [#1029](https://github.com/jomjol/AI-on-the-edge-device/issues/1029) wrong change of `checkDigitConsistency` now working like releases before `11.3.1` 
 -   Spelling corrections (**[cristianmitran](https://github.com/cristianmitran)**) 
 
-### Removed
+## Removed
 
 -   Remove the folder `/firmware` from GitHub repository. 
     If you want to get the latest `firmware.bin` and `html.zip` files, please download from the automated [build action](https://github.com/jomjol/AI-on-the-edge-device/actions) or [release page](https://github.com/jomjol/AI-on-the-edge-device/releases)
 
-## [11.3.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.3.1), 2022-09-17
+# [11.3.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.3.1), 2022-09-17
 
 Intermediate Digits
 
@@ -626,7 +555,7 @@ Intermediate Digits
 -   HTML: Update WebUI (Reboot, Infos, CPU Temp, RSSI)
 -   This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/haverland)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
 
-## [11.2.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.2.0), 2022-08-28
+# [11.2.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.2.0), 2022-08-28
 
 Intermediate Digits
 
@@ -642,14 +571,14 @@ Intermediate Digits
 
 -   HTML: added favicon and system name, Improved reboot dialog  (thanks to @**[caco3](https://github.com/caco3)**)
 
-## [11.1.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.1.1), 2022-08-22
+# [11.1.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.1.1), 2022-08-22
 
 Intermediate Digits
 
 -   New and improved consistency check (especially with analog and digit counters mixed)
 -   Bug Fix: digit counter algorithm
 
-## [11.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.0.1), 2022-08-18
+# [11.0.1](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.0.1), 2022-08-18
 
 Intermediate Digits
 
@@ -669,11 +598,11 @@ Intermediate Digits
 
 -   Bug Fix: InfluxDB enabling in graphic configuration
 
-## [10.6.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.6.2), 2022-07-24
+# [10.6.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.6.2), 2022-07-24
 
 Stability Increase
 
-### Added
+## Added
 
 -   **NEW 10.6.2**: ignore hidden files in model selection (configuration page)
 
@@ -699,11 +628,11 @@ Stability Increase
 
 -   Bug Fix: no time with fixed IP, Postprocessing, MQTT
 
-## [10.5.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.5.2), 2022-02-22
+# [10.5.2](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.5.2), 2022-02-22
 
 Stability Increase
 
-### Changed
+## Changed
 
 -   NEW 10.5.2: Bug Fix: wrong `firmware.bin` (no rate update)
 -   NEW 10.5.1: Bug Fix: wrong return value, rate value & PreValue status, HTML: SSID & IP were not displayed
@@ -712,11 +641,11 @@ Stability Increase
 -   Refactoring of check postprocessing consistency (e.g. max rate, negative rate, ...)
 -   Bug Fix: corrected error in "Check Consistency Increase"
 
-## [10.4.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.4.0), 2022-02-12
+# [10.4.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v10.4.0), 2022-02-12
 
 Stability Increase
 
-### Changed
+## Changed
 
 -   Graphical configuration: select available neural network files (_.tfl,_.tflite) from drop down menu
 -   OTA-update: add option to upload tfl / tflite files to the correct location (`/config/`)
@@ -726,11 +655,11 @@ Stability Increase
 -   Updated digit neural network file (`dig-s1-q-20220102.tflite`)
 -   Updated build environment to `Espressif 3.5.0`
 
-## [10.3.0] - (2022-01-29)
+# [10.3.0] - (2022-01-29)
 
 Stability Increase
 
-### Changed
+## Changed
 
 -   Implemented LED flash dimming (`LEDIntensity`).
     Remark: as auto illumination in the camera is used, this is rather for energy saving. It will not help reducing reflections
@@ -747,11 +676,11 @@ If you have problem with stalled systems you can try the following
 
 -   If this is not helping, you might need to update your hardware or stay with version 9.2
 
-## [10.2.0] - (2022-01-14)
+# [10.2.0] - (2022-01-14)
 
 Stability Increase
 
-### Changed
+## Changed
 
 -   Due to the updated camera driver, the image looks different and a new setup might be needed
 
@@ -762,11 +691,11 @@ Stability Increase
 
 -   Update esp32-camera to new version (master as of 2022-01-09)
 
-## [10.1.1] - (2022-01-12)
+# [10.1.1] - (2022-01-12)
 
  Stability Increase
 
-### Changed
+## Changed
 
 -   Bug Fix MQTT problem
 -   Issue:
@@ -777,11 +706,11 @@ Stability Increase
     -   If old `config.ini` not available: reset the parameter "MainTopic" within the `config.ini` manually
     -   Reboot
 
-## [10.1.0] -  (2022-01-09)
+# [10.1.0] -  (2022-01-09)
 
 Stability Increase
 
-### Changed
+## Changed
 
 -   Reduce ESP32 frequency to 160MHz
 
@@ -795,11 +724,11 @@ Stability Increase
 
 -   bug fix: compiler compatibility
 
-## [10.0.2] - (2022-01-01)
+# [10.0.2] - (2022-01-01)
 
 Stability Increase
 
-### Changed
+## Changed
 
 -   NEW v10.0.2: Corrected JSON error
 
@@ -817,11 +746,11 @@ Stability Increase
 
 -   Corrected error handling: in case of error the old value, rate, timestamp are not transmitted any more
 
-## [9.2.0] -  (2021-12-02)
+# [9.2.0] -  (2021-12-02)
 
 External Illumination
 
-### Changed
+## Changed
 
 -   Direct JSON access: `http://IP-ADRESS/json`
 -   Error message in log file in case camera error during startup
@@ -829,34 +758,34 @@ External Illumination
 -   Upgrade digit CNN to v13.3.0 (added new images)
 -   html: support of different ports
 
-## [9.1.1] - External Illumination (2021-11-16)
+# [9.1.1] - External Illumination (2021-11-16)
 
-### Changed
+## Changed
 
 -   NEW 9.1.1 bug fix: LED implemenetation
 -   External LEDs: change control mode (resolve bug with more than 2 LEDs)
 -   Additional info into log file
 -   Bug fix: decimal shift, html, log file
 
-## [9.0.0] - External Illumination (2021-10-23)
+# [9.0.0] - External Illumination (2021-10-23)
 
-### Changed
+## Changed
 
 -   Implementation of external illumination to adjust positioning, brightness and color of the illumination now set individually
     -   Technical details can be found in the wiki: <https://github.com/jomjol/AI-on-the-edge-device/wiki/External-LED>
         <img src="https://raw.githubusercontent.com/jomjol/ai-on-the-edge-device/master/images/intern_vs_external.jpg" width="500">
 -   New housing published for external LEDs and small clearing: <https://www.thingiverse.com/thing:5028229>
 
-## [8.5.0] - Multi Meter Support (2021-10-07)
+# [8.5.0] - Multi Meter Support (2021-10-07)
 
-### Changed
+## Changed
 
 -   Upgrade digit CNN to v13.1.0 (added new images)
 -   bug fix: wlan password with space, double digit output
 
-## [8.4.0] - Multi Meter Support (2021-09-25)
+# [8.4.0] - Multi Meter Support (2021-09-25)
 
-### Changed
+## Changed
 
 -   License change (remove MIT license, remark see below)
 
@@ -877,18 +806,18 @@ External Illumination
 -   If you are interested in a commercial usage or dedicated versions please contact the developer
     -   no limits to private usage
 
-## [8.3.0] - Multi Meter Support (2021-09-12)
+# [8.3.0] - Multi Meter Support (2021-09-12)
 
-### Changed
+## Changed
 
 -   Upgrade digit CNN to v12.1.0 (added new images)
 -   Dedicated NaN handling, internal refactoring (CNN-Handling)
 -   HTML: confirmation after config.ini update
 -   Bug fixing
 
-## [8.2.0] - Multi Meter Support (2021-08-24)
+# [8.2.0] - Multi Meter Support (2021-08-24)
 
-### Changed
+## Changed
 
 -   Improve server responsiveness
 
@@ -896,9 +825,9 @@ External Illumination
 -   Flow status and prevalue status in overview
 -   Improved prevalue handling
 
-## [8.1.0] - Multi Meter Support (2021-08-12)
+# [8.1.0] - Multi Meter Support (2021-08-12)
 
-### Changed
+## Changed
 
 -   GPIO: using the general mqtt main topic for GPIO
 
@@ -907,9 +836,9 @@ External Illumination
 -   Update tfmicro to new master (2021-08-07)
 -   Bug fix: remove text in mqtt value, remove connect limit in wlan reconnet
 
-## [8.0.5] - Multi Meter Support (2021-08-01)
+# [8.0.5] - Multi Meter Support (2021-08-01)
 
-### Changed
+## Changed
 
 -   NEW 8.0.5: bug fix: saving prevalue
 
@@ -926,9 +855,9 @@ External Illumination
 
 <span style="color: red;">**ATTENTION: the configuration and prevalue files are modified automatically and will not be backward compatible!**</span>
 
-## [7.1.2] MQTT-Update - (2021-06-17)
+# [7.1.2] MQTT-Update - (2021-06-17)
 
-### Changed
+## Changed
 
 -   NEW: 7.1.2: bug fix setting hostname, Flash-LED not off during reboot
 
@@ -943,9 +872,9 @@ External Illumination
 
 -   Bug fix: MQTT, WLAN, LED-Controll, GPIO usage, fixed IP, calculation flow rate
 
-## [7.0.1] MQTT-Update - (2021-05-13)
+# [7.0.1] MQTT-Update - (2021-05-13)
 
-### Changed
+## Changed
 
 -   NEW: 7.0.1: bug fix wlan password with "="
 
@@ -958,9 +887,9 @@ External Illumination
 
 -   Portrait or landscape image orientation in rotated image (avoid cropping)
 
-## [6.7.2] Image Processing in Memory - (2021-05-01)
+# [6.7.2] Image Processing in Memory - (2021-05-01)
 
-### Changed
+## Changed
 
 -   NEW 6.7.2: Updated html for setup modus - remove reboot on edit configuration)
 
@@ -975,18 +904,18 @@ External Illumination
 
 -   Bugfix: WLan-passwords, reset of hostname
 
-## [6.6.1] Image Processing in Memory - (2021-04-05)
+# [6.6.1] Image Processing in Memory - (2021-04-05)
 
-### Changed
+## Changed
 
 -   NEW 6.6.1: failed SD card initialization indicated by fast blinking LED at startup
 
 
 -   Improved SD-card handling (increase compatibility with more type of cards)
 
-## [6.5.0] Image Processing in Memory - (2021-03-25)
+# [6.5.0] Image Processing in Memory - (2021-03-25)
 
-### Changed
+## Changed
 
 -   Upgrade digit CNN to v8.2.0  (added new type of digits)
 
@@ -994,18 +923,18 @@ External Illumination
 -   Supporting alignment structures in ROI definition
 -   Bug fixing: definition of  hostname in `config.ini`
 
-## [6.4.0] Image Processing in Memory - (2021-03-20)
+# [6.4.0] Image Processing in Memory - (2021-03-20)
 
-### Changed
+## Changed
 
 -   Additional alignment marks for settings the ROIs (analog and digit)
 
 
 -   Upgrade analog CNN to v7.0.0 (added new type of pointer)
 
-## [6.3.1] Image Processing in Memory - (2021-03-16)
+# [6.3.1] Image Processing in Memory - (2021-03-16)
 
-### Changed
+## Changed
 
 -   NEW: 6.3.1: bug fixing in initial edit reference image and `config.ini` (Spelling error in `InitialRotate`)
 
@@ -1013,9 +942,9 @@ External Illumination
 -   Initial setup mode: bug fixing, error correction
 -   Bug-fixing
 
-## [6.2.2] Image Processing in Memory - (2021-03-10)
+# [6.2.2] Image Processing in Memory - (2021-03-10)
 
-### Changed
+## Changed
 
 -   NEW 6.2.2: bug fixing
 
@@ -1032,9 +961,9 @@ External Illumination
 
 -   Bug fixing: minor topics
 
-## [6.1.0] Image Processing in Memory - (2021-01-20)
+# [6.1.0] Image Processing in Memory - (2021-01-20)
 
-### Changed
+## Changed
 
 -   Disabling of analog / digit counters in configuration
 
@@ -1045,9 +974,9 @@ External Illumination
 -   Switching of GPIO12/13 via http-interface: `/GPIO?GPIO=12&Status=high/low`
 -   Bug fixing: html configuration page, wlan password ("=" now possible)
 
-## [6.0.0] Image Processing in Memory - (2021-01-02)
+# [6.0.0] Image Processing in Memory - (2021-01-02)
 
-### Changed
+## Changed
 
 -   **Major change**: image processing fully in memory - no need of SD card buffer anymore
 
@@ -1062,24 +991,24 @@ External Illumination
 -   Increased stability (internal image and camera handling)
 -   Bug fixing: edit digits, handling PreValue, html-bugs
 
-## [5.0.0] Setup Modus - (2020-12-06)
+# [5.0.0] Setup Modus - (2020-12-06)
 
-### Changed
+## Changed
 
 -   Implementation of initial setup modus for fresh installation
 
 
 -   Code restructuring (full compatibility between pure ESP-IDF and Platformio w/ espressif)
 
-## [4.1.1] Configuration editor - (2020-12-02)
+# [4.1.1] Configuration editor - (2020-12-02)
 
-### Changed
+## Changed
 
 -   Bug fixing: internal improvement of file handling (reduce not responding)
 
-## [4.1.0] Configuration editor - (2020-11-30)
+# [4.1.0] Configuration editor - (2020-11-30)
 
-### Changed
+## Changed
 
 -   Implementation of configuration editor (including basic and expert mode)
 
@@ -1094,9 +1023,9 @@ External Illumination
 
 -   Bug fixing: truncation error,  CheckDigitConsistency & PreValue implementation
 
-## [4.0.0] Tflite Core - (2020-11-15)
+# [4.0.0] Tflite Core - (2020-11-15)
 
-### Changed
+## Changed
 
 -   Implementation of rolling log-files
 
@@ -1105,9 +1034,9 @@ External Illumination
 
 -   Bug-fixing for reducing reboots
 
-## [3.1.0] MQTT-Client - (2020-10-26)
+# [3.1.0] MQTT-Client - (2020-10-26)
 
-### Changed
+## Changed
 
 -   Update digit CNN to v6.5.0 and HTML (Info to hostname, IP, ssid)
 
@@ -1115,9 +1044,9 @@ External Illumination
 
 -   MQTT-Adapter: user and password for sign in MQTT-Broker
 
-## [3.0.0] MQTT-Client  (2020-10-14)
+# [3.0.0] MQTT-Client  (2020-10-14)
 
-### Changed
+## Changed
 
 -   Implementation of MQTT Client
 
@@ -1125,24 +1054,24 @@ External Illumination
 -   Improved Version Control
 -   bug-fixing
 
-## [2.2.1] Version Control  (2020-09-27)
+# [2.2.1] Version Control  (2020-09-27)
 
-### Changed
+## Changed
 
 -   Bug-Fixing (hostname in wlan.ini and error handling inside flow)
 
 ## \[2.2.0| Version Control  (2020-09-27)
 
-### Changed
+## Changed
 
 -   Integrated automated versioning system (menu: SYSTEM --> INFO)
 
 
 -   Update Build-System to PlatformIO - Espressif 32 v2.0.0 (ESP-IDF 4.1)
 
-## [2.1.0] Decimal Shift, Chrome & Edge  (2020-09-25)
+# [2.1.0] Decimal Shift, Chrome & Edge  (2020-09-25)
 
-### Changed
+## Changed
 
 -   Implementation of Decimal Shift
 
@@ -1159,9 +1088,9 @@ External Illumination
 
 -   Bug fixing, code corrections
 
-## [2.0.0] Layout update  (2020-09-12)
+# [2.0.0] Layout update  (2020-09-12)
 
-### Changed
+## Changed
 
 -   Update to **new and modern layout**
 -   Support for Chrome improved
@@ -1172,9 +1101,9 @@ External Illumination
 -   additional parameter in `wasserzaehler.html?noerror=true`  to suppress an potential error message
 -   bug fixing
 
-## [1.1.3](2020-09-09)
+# [1.1.3](2020-09-09)
 
-### Changed
+## Changed
 
 -   **Bug in configuration of analog ROIs corrected** - correction in v.1.0.2 did not work properly
 
@@ -1182,34 +1111,34 @@ External Illumination
 -   Improved update page for the web server (`/html` can be updated via a zip-file, which is provided in `/firmware/html.zip`)
 -   Improved Chrome support
 
-## [1.1.0](2020-09-06)
+# [1.1.0](2020-09-06)
 
-### Changed
+## Changed
 
 -   Implementation of "delete complete directory"
     **Attention: beside the `firmware.bin`, also the content of `/html` needs to be updated!**
 
-## [1.0.2](2020-09-06)
+# [1.0.2](2020-09-06)
 
-### Changed
+## Changed
 
 -   Bug in configuration of analog ROIs corrected
 
 
 -   minor Bug correction
 
-## [1.0.1](2020-09-05)
+# [1.0.1](2020-09-05)
 
-### Changed
+## Changed
 
 -   preValue.ini Bug corrected
 
 
 -   minor Bug correction
 
-## [1.0.0](2020-09-04)
+# [1.0.0](2020-09-04)
 
-### Changed
+## Changed
 
 -   **First usable version** - compatible to previous project (<https://github.com/jomjol/water-meter-system-complete>)
 
@@ -1218,9 +1147,9 @@ External Illumination
     -   no docker container for CNN calculation necessary
     -   web based configuration editor on board
 
-## [0.1.0](2020-08-07)
+# [0.1.0](2020-08-07)
 
-### Changed
+## Changed
 
 -   Initial Version
 
