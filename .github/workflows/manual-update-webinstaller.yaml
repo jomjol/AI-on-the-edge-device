@@ -1,4 +1,4 @@
-# This updates the Web Installer with the files from the docs folder and the binary of the latest release
+# This updates the Web Installer with the files from the webinstaller folder and the binary of the latest release
 # it only gets run on:
 #  - Manually triggered
 # Make sure to also update the lower part of build.yml!
@@ -11,7 +11,7 @@ on:
 #    branches:
 #    - rolling
 #    paths:
-#    - docs # The path filter somehow does not work, so lets run it on every change to rolling
+#    - webinstaller # The path filter somehow does not work, so lets run it on every change to rolling
 
 jobs:
   manually-update-web-installer:    
@@ -42,13 +42,13 @@ jobs:
     - name: Add binary to Web Installer and update manifest
       run: |
         echo "Updating Web installer to use firmware from ${{ steps.last_release.outputs.tag_name }}..."
-        rm -f docs/binary/firmware.bin
-        wget https://github.com/jomjol/AI-on-the-edge-device/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
+        rm -f webinstaller/binary/firmware.bin
+        wget ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.last_release.outputs.tag_name }}/AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
         unzip AI-on-the-edge-device__update__${{ steps.last_release.outputs.tag_name }}.zip
-        cp -f firmware.bin docs/binary/firmware.bin
+        cp -f firmware.bin webinstaller/binary/firmware.bin
         echo "Updating index and manifest file..."
-        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/index.html
-        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' docs/manifest.json
+        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' webinstaller/index.html
+        sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' webinstaller/manifest.json
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
@@ -56,7 +56,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: 'docs'
+        path: 'webinstaller'
 
     - name: Deploy to GitHub Pages
       id: deployment
