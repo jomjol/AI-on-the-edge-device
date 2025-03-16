@@ -286,6 +286,7 @@ jobs:
         rm -rf ./sd-card/html
         rm -rf ./sd-card/demo
         cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
+        rm -f ./sd-card/Readme.md
         cp -r ./demo ./sd-card/
         cd sd-card; rm -rf html/param-tooltips; zip -r ../manual_setup/sd-card.zip *; cd ..
         cd ./manual_setup
