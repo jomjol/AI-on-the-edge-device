@@ -331,6 +331,27 @@
 		#define GPIO_SDCARD_D3 GPIO_NUM_13
 	#endif
 
+    /*
+    #define PWDN_GPIO_NUM       -1
+    #define RESET_GPIO_NUM      -1
+    #define XCLK_GPIO_NUM       GPIO_NUM_15
+    #define SIOD_GPIO_NUM       GPIO_NUM_4
+    #define SIOC_GPIO_NUM       GPIO_NUM_5
+
+    #define Y9_GPIO_NUM         GPIO_NUM_16
+    #define Y8_GPIO_NUM         GPIO_NUM_17
+    #define Y7_GPIO_NUM         GPIO_NUM_18
+    #define Y6_GPIO_NUM         GPIO_NUM_12
+    #define Y5_GPIO_NUM         GPIO_NUM_10
+    #define Y4_GPIO_NUM         GPIO_NUM_8
+    #define Y3_GPIO_NUM         GPIO_NUM_9
+    #define Y2_GPIO_NUM         GPIO_NUM_11
+    #define VSYNC_GPIO_NUM      GPIO_NUM_6
+    #define HREF_GPIO_NUM       GPIO_NUM_7
+    #define PCLK_GPIO_NUM       GPIO_NUM_13
+    */
+
+
     #define CAM_PIN_PWDN     GPIO_NUM_NC
     #define CAM_PIN_RESET    GPIO_NUM_NC  //software reset will be performed
     #define CAM_PIN_XCLK     GPIO_NUM_15
@@ -346,7 +367,7 @@
     #define CAM_PIN_D1       GPIO_NUM_9
     #define CAM_PIN_D0       GPIO_NUM_11
     #define CAM_PIN_VSYNC    GPIO_NUM_6
-    #define CAM_PIN_HREF     GPIO_NUM_37
+    #define CAM_PIN_HREF     GPIO_NUM_7
     #define CAM_PIN_PCLK     GPIO_NUM_13
 
     //Statusled + ClassControllCamera
