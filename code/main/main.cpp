@@ -219,12 +219,12 @@ extern "C" void app_main(void)
 //        gpio_pad_select_gpio(ETH_EN);
 //        gpio_set_direction(ETH_EN, GPIO_MODE_OUTPUT);
 //        gpio_set_level(ETH_EN, 0);
-        // PER_EN activates power for camera,leds,and SDcard, Battery measurement voltage divider
-        gpio_pad_select_gpio(PER_EN);
-        gpio_set_direction(PER_EN, GPIO_MODE_OUTPUT);
-        gpio_set_level(PER_EN, 1);
+        // PER_ENABLE activates power for camera,leds,and SDcard, Battery measurement voltage divider
+        gpio_pad_select_gpio(PER_ENABLE);
+        gpio_set_direction(PER_ENABLE, GPIO_MODE_OUTPUT);
+        gpio_set_level(PER_ENABLE, 1);
         xDelay = 1000 / portTICK_PERIOD_MS;
-        ESP_LOGD(TAG, "BOARD_ESP32_S3_ALEKSEI - Switch on Power for camera, ... : sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
+        ESP_LOGI(TAG, "BOARD_ESP32_S3_ALEKSEI - Switch on Power for camera, ... : sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
         vTaskDelay( xDelay ); 
     #endif //ETH_EN &&
 
