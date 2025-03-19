@@ -898,7 +898,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         #endif
 
         if (PreValueUse && NUMBERS[j]->PreValueOkay) {
-            if (NUMBERS[j]->Nachkomma > 0) {
+            if ((NUMBERS[j]->Nachkomma > 0) && (NUMBERS[j]->ChangeRateThreshold > 0)) {
                 double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
                 double _difference2 = (NUMBERS[j]->PreValue + (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
 

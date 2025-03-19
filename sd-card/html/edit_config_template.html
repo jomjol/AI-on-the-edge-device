@@ -968,7 +968,7 @@
                 <label for=PostProcessing_ChangeRateThreshold_enabled><class id="PostProcessing_ChangeRateThreshold_text" style="color:black;">Change Rate Threshold</class></label>
             </td>
             <td>
-                <input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="1" max="9" value="2"
+                <input required type="number" id="PostProcessing_ChangeRateThreshold_value1" step="1" min="0" max="9" value="2"
                     oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=9)) && 
                         (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
