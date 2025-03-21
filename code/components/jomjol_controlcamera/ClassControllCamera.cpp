@@ -639,13 +639,23 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 #endif
 
+    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+    if (CFstatus.changedCameraSettings)
+    {
+        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        Camera.LedIntensity = CCstatus.ImageLedIntensity;
+        CFstatus.changedCameraSettings = false;
+    }
+
     _Image->EmptyImage(); // Delete previous stored raw image -> black image
 
-    LEDOnOff(true); // Status-LED on
+    StatusLEDOnOff(true); // Status-LED on
 
     if (delay > 0)
     {
-        LightOnOff(true); // Flash-LED on
+        CaptureToBasisImageLed = true;
+        FlashLightOnOff(true); // Flash-LED on
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
     }
@@ -660,8 +670,16 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     if (!fb)
     {
-        LEDOnOff(false);   // Status-LED off
-        LightOnOff(false); // Flash-LED off
+        StatusLEDOnOff(false);   // Status-LED off
+
+        if (delay > 0) 
+        {
+            CaptureToBasisImageLed = false;
+            if (!CaptureToFileLed && !CaptureToHTTPLed && !CaptureToStreamLed) 
+            {
+                FlashLightOnOff(false); // Flash-LED off
+            }
+        }
 
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
@@ -694,15 +712,16 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
 #endif
 
-    LEDOnOff(false); // Status-LED off
+    StatusLEDOnOff(false); // Status-LED off
 
     if (delay > 0)
     {
-        LightOnOff(false); // Flash-LED off
+        CaptureToBasisImageLed = false;
+        if (!CaptureToFileLed && !CaptureToHTTPLed && !CaptureToStreamLed) 
+        {
+            FlashLightOnOff(false); // Flash-LED off
+        }
     }
-
-    //    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
-    //    vTaskDelay( xDelay );  // wait for power to recover
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
@@ -750,13 +769,21 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
-    string ftype;
+    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+    if (CFstatus.changedCameraSettings)
+    {
+        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        Camera.LedIntensity = CCstatus.ImageLedIntensity;
+        CFstatus.changedCameraSettings = false;
+    }
 
-    LEDOnOff(true); // Status-LED on
+    StatusLEDOnOff(true); // Status-LED on
 
     if (delay > 0)
     {
-        LightOnOff(true); // Flash-LED on
+        CaptureToFileLed = true;
+        FlashLightOnOff(true); // Flash-LED on
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
     }
@@ -767,8 +794,17 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
     if (!fb)
     {
-        LEDOnOff(false);   // Status-LED off
-        LightOnOff(false); // Flash-LED off
+        StatusLEDOnOff(false);   // Status-LED off
+
+        if (delay > 0) 
+        {
+            CaptureToFileLed = false;
+            if (!CaptureToBasisImageLed && !CaptureToHTTPLed && !CaptureToStreamLed) 
+            {
+                FlashLightOnOff(false); // Flash-LED off
+            }
+        }
+
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         // doReboot();
@@ -776,7 +812,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         return ESP_FAIL;
     }
 
-    LEDOnOff(false); // Status-LED off
+    StatusLEDOnOff(false); // Status-LED off
 
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
@@ -788,7 +824,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
 #endif
 
-    ftype = toUpper(getFileType(nm));
+    std::string ftype = toUpper(getFileType(nm));
 
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Filetype: %s", ftype.c_str());
@@ -845,7 +881,11 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
     if (delay > 0)
     {
-        LightOnOff(false); // Flash-LED off
+        CaptureToFileLed = false;
+        if (!CaptureToBasisImageLed && !CaptureToHTTPLed && !CaptureToStreamLed) 
+        {
+            FlashLightOnOff(false); // Flash-LED off
+        }
     }
 
     return ESP_OK;
@@ -857,11 +897,21 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
 
-    LEDOnOff(true); // Status-LED on
+    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
+    if (CFstatus.changedCameraSettings)
+    {
+        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
+        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+        Camera.LedIntensity = CCstatus.ImageLedIntensity;
+        CFstatus.changedCameraSettings = false;
+    }
+
+    StatusLEDOnOff(true); // Status-LED on
 
     if (delay > 0)
     {
-        LightOnOff(true); // Flash-LED on
+        CaptureToHTTPLed = true;
+        FlashLightOnOff(true); // Flash-LED on
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
     }
@@ -872,17 +922,26 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
     if (!fb)
     {
-        LEDOnOff(false);   // Status-LED off
-        LightOnOff(false); // Flash-LED off
+        StatusLEDOnOff(false);   // Status-LED off
+
+        if (delay > 0) 
+        {
+            CaptureToHTTPLed = false;
+            if (!CaptureToBasisImageLed && !CaptureToFileLed && !CaptureToStreamLed) 
+            {
+                FlashLightOnOff(false); // Flash-LED off
+            }
+        }
+
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
-        //        doReboot();
+        // doReboot();
 
         return ESP_FAIL;
     }
 
-    LEDOnOff(false); // Status-LED off
+    StatusLEDOnOff(false); // Status-LED off
     res = httpd_resp_set_type(req, "image/jpeg");
 
     if (res == ESP_OK)
@@ -925,7 +984,11 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
     if (delay > 0)
     {
-        LightOnOff(false); // Flash-LED off
+        CaptureToHTTPLed = false;
+        if (!CaptureToBasisImageLed && !CaptureToFileLed && !CaptureToStreamLed) 
+        {
+            FlashLightOnOff(false); // Flash-LED off
+        }
     }
 
     return res;
@@ -949,10 +1012,12 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream started");
 
+    StatusLEDOnOff(true); // Status-LED on
+
     if (FlashlightOn)
     {
-        LEDOnOff(true);   // Status-LED on
-        LightOnOff(true); // Flash-LED on
+        CaptureToStreamLed = true;
+        FlashLightOnOff(true); // Flash-LED on
     }
 
     // httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //stream is blocking web interface, only serving to local
@@ -1012,15 +1077,23 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
         }
     }
 
-    LEDOnOff(false);   // Status-LED off
-    LightOnOff(false); // Flash-LED off
+    StatusLEDOnOff(false);   // Status-LED off
+
+    if (FlashlightOn) 
+    {
+        CaptureToStreamLed = false;
+        if (!CaptureToBasisImageLed && !CaptureToFileLed && !CaptureToHTTPLed) 
+        {
+            FlashLightOnOff(false); // Flash-LED off
+        }
+    }
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream stopped");
 
     return res;
 }
 
-void CCamera::LightOnOff(bool status)
+void CCamera::FlashLightOnOff(bool status)
 {
     GpioHandler *gpioHandler = gpio_handler_get();
 
@@ -1064,7 +1137,7 @@ void CCamera::LightOnOff(bool status)
     }
 }
 
-void CCamera::LEDOnOff(bool status)
+void CCamera::StatusLEDOnOff(bool status)
 {
     if (xHandle_task_StatusLED == NULL)
     {

@@ -67,7 +67,6 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
     Camera.getSensorDatenToCCstatus(); // Kamera >>> CCstatus
 
     std::vector<string> splitted;
-
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0)
@@ -553,15 +552,6 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 #ifdef WIFITURNOFF
     esp_wifi_stop(); // to save power usage and
 #endif
-
-    // wenn die Kameraeinstellungen durch Erstellen eines neuen Referenzbildes verändert wurden, müssen sie neu gesetzt werden
-    if (CFstatus.changedCameraSettings)
-    {
-        Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-        Camera.LedIntensity = CCstatus.ImageLedIntensity;
-        CFstatus.changedCameraSettings = false;
-    }
 
     takePictureWithFlash(flash_duration);
 

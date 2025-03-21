@@ -82,11 +82,16 @@ protected:
 public:
     int LedIntensity = 4096;
 
+    bool CaptureToBasisImageLed = false;
+    bool CaptureToFileLed = false;
+    bool CaptureToHTTPLed = false;
+    bool CaptureToStreamLed = false;
+
     CCamera(void);
     esp_err_t InitCam(void);
 
-    void LightOnOff(bool status);
-    void LEDOnOff(bool status);
+    void FlashLightOnOff(bool status);
+    void StatusLEDOnOff(bool status);
 
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);

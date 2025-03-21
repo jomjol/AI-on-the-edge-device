@@ -35,14 +35,14 @@
 #include "server_camera.h"
 #include "basic_auth.h"
 
+#include "../../include/defines.h"
+
 #ifdef ENABLE_MQTT
     #include "server_mqtt.h"
 #endif //ENABLE_MQTT
 #include "Helper.h"
 #include "statusled.h"
 #include "sdcard_check.h"
-
-#include "../../include/defines.h"
 
 #ifdef ENABLE_SOFTAP
     #include "softAP.h"
@@ -325,7 +325,7 @@ extern "C" void app_main(void)
                     // ********************************************
                     PowerResetCamera();
                     esp_err_t camStatus = Camera.InitCam();
-                    Camera.LightOnOff(false);
+                    Camera.FlashLightOnOff(false);
 
                     xDelay = 2000 / portTICK_PERIOD_MS;
                     ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
@@ -340,7 +340,7 @@ extern "C" void app_main(void)
 
                         PowerResetCamera();
                         camStatus = Camera.InitCam();
-                        Camera.LightOnOff(false);
+                        Camera.FlashLightOnOff(false);
 
                         xDelay = 2000 / portTICK_PERIOD_MS;
                         ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
@@ -351,7 +351,7 @@ extern "C" void app_main(void)
                             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) +
                                                                     ")! Check camera module and/or proper electrical connection");
                             setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
-                            Camera.LightOnOff(false);   // make sure flashlight is off
+                            Camera.FlashLightOnOff(false); // make sure flashlight is off
                             StatusLED(CAM_INIT, 1, true);
                         }
                     }
@@ -367,7 +367,7 @@ extern "C" void app_main(void)
                             setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
                             StatusLED(CAM_INIT, 2, false);
                         }
-                        Camera.LightOnOff(false);   // make sure flashlight is off before start of flow
+                        Camera.FlashLightOnOff(false); // make sure flashlight is off before start of flow
 
                         // Print camera infos
                         // ********************************************

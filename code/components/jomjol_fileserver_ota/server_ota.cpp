@@ -9,7 +9,6 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/rel
 
 #include <esp_task_wdt.h>
 
-
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -37,7 +36,6 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/rel
 #include "ClassControllCamera.h"
 #include "connect_wlan.h"
 
-
 #include "ClassLogFile.h"
 
 #include "Helper.h"
@@ -56,7 +54,6 @@ static bool ota_update_task(std::string fn);
 std::string _file_name_update;
 bool initial_setup = false;
 
-
 static void infinite_loop(void)
 {
     int i = 0;
@@ -66,7 +63,6 @@ static void infinite_loop(void)
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-
 
 void task_do_Update_ZIP(void *pvParameter)
 {
@@ -123,7 +119,6 @@ void task_do_Update_ZIP(void *pvParameter)
     }
 }
 
-
 void CheckUpdate()
 {
  	FILE *pfile;
@@ -149,13 +144,11 @@ void CheckUpdate()
     DeleteFile("/sdcard/update.txt");   // Prevent Boot Loop!!!
 	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start update process (" + _file_name_update + ")");
 
-
     xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY+1, NULL);
     while(1) { // wait until reboot within task_do_Update_ZIP
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-
 
 static bool ota_update_task(std::string fn)
 {
@@ -176,7 +169,6 @@ static bool ota_update_task(std::string fn)
     }
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
              running->type, running->subtype, (unsigned int)running->address);
-
 
     update_partition = esp_ota_get_next_update_partition(NULL);
     ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
@@ -293,7 +285,6 @@ static bool ota_update_task(std::string fn)
     return true ;
 }
 
-
 static void print_sha256 (const uint8_t *image_hash, const char *label)
 {
     char hash_print[HASH_LEN * 2 + 1];
@@ -304,12 +295,10 @@ static void print_sha256 (const uint8_t *image_hash, const char *label)
     ESP_LOGI(TAG, "%s: %s", label, hash_print);
 }
 
-
 static bool diagnostic(void)
 {
     return true;
 }
-
 
 void CheckOTAUpdate(void)
 {
@@ -381,7 +370,6 @@ void CheckOTAUpdate(void)
         }
     }
 }
-
 
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
@@ -458,10 +446,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
             const char*  resp_str = "Neural Network File copied.";
             httpd_resp_sendstr_chunk(req, resp_str);
-            httpd_resp_sendstr_chunk(req, NULL);  
+            httpd_resp_sendstr_chunk(req, NULL);
             return ESP_OK;
         }
-
 
         if ((filetype == "ZIP") || (filetype == "BIN"))
         {
@@ -473,10 +460,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
             std::string zw = "reboot\n";
             httpd_resp_sendstr_chunk(req, zw.c_str());
-            httpd_resp_sendstr_chunk(req, NULL);  
+            httpd_resp_sendstr_chunk(req, NULL);
             ESP_LOGD(TAG, "Send reboot");
-            return ESP_OK;                
-
+            return ESP_OK;
         }
 
 /*
@@ -511,7 +497,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         httpd_resp_sendstr_chunk(req, NULL);  
         return ESP_OK;        
     }
-
 
     if (_task.compare("unziphtml") == 0)
     {
@@ -584,7 +569,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     return ESP_OK;
 }
 
-
 void hard_restart() 
 {
   esp_task_wdt_config_t twdt_config = {
@@ -597,7 +581,6 @@ void hard_restart()
   esp_task_wdt_add(NULL);
   while(true);
 }
-
 
 void task_reboot(void *DeleteMainFlow)
 {
@@ -613,7 +596,7 @@ void task_reboot(void *DeleteMainFlow)
         DeleteMainFlowTask();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
-    Camera.LightOnOff(false);
+    Camera.FlashLightOnOff(false);
     StatusLEDOff();
 
     /* Stop service tasks */
@@ -634,7 +617,6 @@ void task_reboot(void *DeleteMainFlow)
     vTaskDelete(NULL); //Delete this task if it comes to this point
 }
 
-
 void doReboot()
 {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s)");
@@ -649,12 +631,11 @@ void doReboot()
     vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
-
 void doRebootOTA()
 {
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
-    Camera.LightOnOff(false);
+    Camera.FlashLightOnOff(false);
     StatusLEDOff();
     esp_camera_deinit();
 
@@ -664,7 +645,6 @@ void doRebootOTA()
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     hard_restart();     // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 }
-
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
@@ -697,7 +677,6 @@ esp_err_t handler_reboot(httpd_req_t *req)
     return ESP_OK;
 }
 
-
 void register_server_ota_sdcard_uri(httpd_handle_t server)
 {
     ESP_LOGI(TAG, "Registering URI handlers");
@@ -714,5 +693,4 @@ void register_server_ota_sdcard_uri(httpd_handle_t server)
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_reboot);
     camuri.user_ctx  = (void*) "Reboot";    
     httpd_register_uri_handler(server, &camuri);
-
 }
