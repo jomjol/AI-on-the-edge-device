@@ -1,7 +1,7 @@
 # Parameter `ChangeRateThreshold`
 Default Value: `2`
 
-Range: `1` .. `9`.
+Range: `0` .. `9`.
 
 Threshold parameter for change rate detection.<br>
 This parameter is intended to compensate for small reading fluctuations that occur when the meter does not change its value for a long time (e.g. at night) or slightly turns backwards. This can eg. happen on watermeters.
