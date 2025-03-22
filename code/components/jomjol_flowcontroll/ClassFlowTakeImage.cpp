@@ -25,8 +25,9 @@ static const char *TAG = "TAKEIMAGE";
 
 esp_err_t ClassFlowTakeImage::camera_capture(void)
 {
-    string nm = namerawimage;
-    Camera.CaptureToFile(nm);
+    string image_name = namerawimage;
+    Camera.CaptureToFile(image_name);
+	
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
@@ -35,9 +36,17 @@ esp_err_t ClassFlowTakeImage::camera_capture(void)
 
 void ClassFlowTakeImage::takePictureWithFlash(int flash_duration)
 {
-    // in case the image is flipped, it must be reset here //
-    rawImage->width = CCstatus.ImageWidth;
-    rawImage->height = CCstatus.ImageHeight;
+    // in case the image is flipped, it must be reset here
+    if (Camera.CamTempImage)
+    {
+        rawImage->width = CFstatus.ImageWidth;
+        rawImage->height = CFstatus.ImageHeight;
+    }
+    else
+    {
+        rawImage->width = CCstatus.ImageWidth;
+        rawImage->height = CCstatus.ImageHeight;
+    }
 
     ESP_LOGD(TAG, "flash_duration: %d", flash_duration);
 
@@ -46,7 +55,11 @@ void ClassFlowTakeImage::takePictureWithFlash(int flash_duration)
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
-    if (CCstatus.SaveAllFiles)
+    if (Camera.CamTempImage && CFstatus.SaveAllFiles)
+    {
+        rawImage->SaveToFile(namerawimage);
+    }
+    else if (CCstatus.SaveAllFiles)
     {
         rawImage->SaveToFile(namerawimage);
     }
@@ -227,7 +240,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageSharpness = std::stoi(splitted[1]);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageSharpness = clipInt(_ImageSharpness, 2, -2);
                 }
@@ -344,7 +357,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageAeLevel = std::stoi(splitted[1]);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 2, -2);
                 }
@@ -418,7 +431,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageDenoiseLevel = std::stoi(splitted[1]);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageDenoiseLevel = 0;
                 }
@@ -439,15 +452,15 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageZoomOffsetX = std::stoi(splitted[1]);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
                 }
-                else if (CCstatus.CamSensor_id == OV3660_PID)
+                else if (Camera.CamSensor_id == OV3660_PID)
                 {
                     CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
                 }
-                else if (CCstatus.CamSensor_id == OV5640_PID)
+                else if (Camera.CamSensor_id == OV5640_PID)
                 {
                     CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
                 }
@@ -459,15 +472,15 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageZoomOffsetY = std::stoi(splitted[1]);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
                 }
-                else if (CCstatus.CamSensor_id == OV3660_PID)
+                else if (Camera.CamSensor_id == OV3660_PID)
                 {
                     CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
                 }
-                else if (CCstatus.CamSensor_id == OV5640_PID)
+                else if (Camera.CamSensor_id == OV5640_PID)
                 {
                     CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
                 }
@@ -479,15 +492,15 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageZoomSize = std::stoi(splitted[1]);
-                if (CCstatus.CamSensor_id == OV2640_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
                 }
-                else if (CCstatus.CamSensor_id == OV3660_PID)
+                else if (Camera.CamSensor_id == OV3660_PID)
                 {
                     CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
                 }
-                else if (CCstatus.CamSensor_id == OV5640_PID)
+                else if (Camera.CamSensor_id == OV5640_PID)
                 {
                     CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
                 }
@@ -544,6 +557,10 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
     string logPath = CreateLogFolder(zwtime);
 
     int flash_duration = (int)(CCstatus.WaitBeforePicture * 1000);
+    if (Camera.CamTempImage)
+    {
+        flash_duration = (int)(CFstatus.WaitBeforePicture * 1000);
+    }
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Before takePictureWithFlash");
@@ -579,6 +596,11 @@ bool ClassFlowTakeImage::doFlow(string zwtime)
 esp_err_t ClassFlowTakeImage::SendRawJPG(httpd_req_t *req)
 {
     int flash_duration = (int)(CCstatus.WaitBeforePicture * 1000);
+    if (Camera.CamTempImage)
+    {
+        flash_duration = (int)(CFstatus.WaitBeforePicture * 1000);
+    }
+	
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
@@ -587,16 +609,23 @@ esp_err_t ClassFlowTakeImage::SendRawJPG(httpd_req_t *req)
 
 ImageData *ClassFlowTakeImage::SendRawImage(void)
 {
-    CImageBasis *zw = new CImageBasis("SendRawImage", rawImage);
-    ImageData *id;
+    CImageBasis *image = new CImageBasis("SendRawImage", rawImage);
+	
     int flash_duration = (int)(CCstatus.WaitBeforePicture * 1000);
-    Camera.CaptureToBasisImage(zw, flash_duration);
+    if (Camera.CamTempImage)
+    {
+        flash_duration = (int)(CFstatus.WaitBeforePicture * 1000);
+    }
+	
+    Camera.CaptureToBasisImage(image, flash_duration);
+	
     time(&TimeImageTaken);
     localtime(&TimeImageTaken);
 
-    id = zw->writeToMemoryAsJPG();
-    delete zw;
-    return id;
+    ImageData *image_data = image->writeToMemoryAsJPG();
+    delete image;
+	
+    return image_data;
 }
 
 time_t ClassFlowTakeImage::getTimeImageTaken(void)

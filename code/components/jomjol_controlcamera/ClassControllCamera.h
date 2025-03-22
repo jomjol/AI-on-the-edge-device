@@ -17,8 +17,6 @@
 
 typedef struct
 {
-    uint16_t CamSensor_id;
-
     framesize_t ImageFrameSize = FRAMESIZE_VGA; // 0 - 10
     gainceiling_t ImageGainceiling;             // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
 
@@ -59,10 +57,7 @@ typedef struct
     int ImageZoomSize;
 
     int WaitBeforePicture;
-    bool isImageSize;
 
-    bool CameraInitSuccessful;
-    bool changedCameraSettings;
     bool DemoMode;
     bool SaveAllFiles;
 } camera_controll_config_temp_t;
@@ -73,6 +68,7 @@ class CCamera
 {
 protected:
     void ledc_init(void);
+    void CheckCamSettingsChanged(void);
     bool loadNextDemoImage(camera_fb_t *fb);
     long GetFileSize(std::string filename);
     void SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip);
@@ -86,6 +82,11 @@ public:
     bool CaptureToFileLed = false;
     bool CaptureToHTTPLed = false;
     bool CaptureToStreamLed = false;
+	
+    uint16_t CamSensor_id;
+    bool CamInitSuccessful = false;
+    bool CamSettingsChanged = false;
+    bool CamTempImage = false;
 
     CCamera(void);
     esp_err_t InitCam(void);

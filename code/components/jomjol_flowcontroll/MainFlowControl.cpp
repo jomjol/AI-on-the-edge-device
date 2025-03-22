@@ -146,8 +146,6 @@ bool doflow(void)
 
 esp_err_t setCCstatusToCFstatus(void)
 {
-    CFstatus.CamSensor_id = CCstatus.CamSensor_id;
-
     CFstatus.ImageFrameSize = CCstatus.ImageFrameSize;
 
     CFstatus.ImageContrast = CCstatus.ImageContrast;
@@ -198,8 +196,6 @@ esp_err_t setCCstatusToCFstatus(void)
 
 esp_err_t setCFstatusToCCstatus(void)
 {
-    // CCstatus.CamSensor_id = CFstatus.CamSensor_id;
-
     CCstatus.ImageFrameSize = CFstatus.ImageFrameSize;
 
     CCstatus.ImageContrast = CFstatus.ImageContrast;
@@ -1085,7 +1081,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_shp))
                 {
                     int _shp_ = std::stoi(_valuechar);
-                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageSharpness = clipInt(_shp_, 2, -2);
                     }
@@ -1194,7 +1190,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_ael))
                 {
                     int _ael_ = std::stoi(_valuechar);
-                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
                     }
@@ -1279,7 +1275,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_idlv))
                 {
                     int _ImageDenoiseLevel = std::stoi(_valuechar);
-                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageDenoiseLevel = 0;
                     }
@@ -1302,15 +1298,15 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomx))
                 {
                     int _ImageZoomOffsetX = std::stoi(_valuechar);
-                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
                     }
-                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    else if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
                     }
-                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
                     }
@@ -1323,15 +1319,15 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomy))
                 {
                     int _ImageZoomOffsetY = std::stoi(_valuechar);
-                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
                     }
-                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    else if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
                     }
-                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
                     }
@@ -1344,15 +1340,15 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zooms))
                 {
                     int _ImageZoomSize = std::stoi(_valuechar);
-                    if (CCstatus.CamSensor_id == OV2640_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
                     }
-                    else if (CCstatus.CamSensor_id == OV3660_PID)
+                    else if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
                     }
-                    else if (CCstatus.CamSensor_id == OV5640_PID)
+                    else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
                     }
@@ -1375,7 +1371,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 setCFstatusToCCstatus(); // CFstatus >>> CCstatus
 
                 // Kameraeinstellungen wurden verädert
-                CFstatus.changedCameraSettings = true;
+                Camera.CamSettingsChanged = true;
+                Camera.CamTempImage = false;
 
                 ESP_LOGD(TAG, "Cam Settings set");
                 std::string _zw = "CamSettingsSet";
@@ -1385,14 +1382,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
             else
             {
                 // wird aufgerufen, wenn ein neues Referenzbild erstellt oder aktualisiert wurde
-                // CFstatus >>> Kamera
-                setCFstatusToCam();
-
-                Camera.SetQualityZoomSize(CFstatus.ImageQuality, CFstatus.ImageFrameSize, CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
-                // Camera.SetZoomSize(CFstatus.ImageZoomEnabled, CFstatus.ImageZoomOffsetX, CFstatus.ImageZoomOffsetY, CFstatus.ImageZoomSize, CFstatus.ImageVflip);
-
                 // Kameraeinstellungen wurden verädert
-                CFstatus.changedCameraSettings = true;
+                Camera.CamSettingsChanged = true;
+                Camera.CamTempImage = true;
 
                 ESP_LOGD(TAG, "test_take - vor TakeImage");
                 std::string image_temp = flowctrl.doSingleStep("[TakeImage]", _host);
