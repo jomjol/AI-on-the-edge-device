@@ -656,8 +656,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 #endif
-    StatusLEDOnOff(true); // Status-LED on
+
     int64_t fr_start = esp_timer_get_time();
+    StatusLEDOnOff(true); // Status-LED on
 
     int width = CCstatus.ImageWidth;
     int height = CCstatus.ImageHeight;
@@ -704,9 +705,12 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
         doReboot();
-
         return ESP_FAIL;
     }
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
+#endif
 
     if (CCstatus.DemoMode)
     {
@@ -725,14 +729,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
     }
 
-    esp_camera_fb_return(fb);
-
-    int64_t fr_end = esp_timer_get_time();
-    ESP_LOGD(TAG, "CaptureToBasisImage: %dms", (int)((fr_end - fr_start) / 1000));
-
 #ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
+    LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
 #endif
+
+    esp_camera_fb_return(fb);
 
     if (delay > 0)
     {
@@ -742,10 +743,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
             FlashLightOnOff(false); // Flash-LED off
         }
     }
-
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
-#endif
 
     if (_zwImage == NULL)
     {
@@ -779,6 +776,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     delete _zwImage;
 
     StatusLEDOnOff(false); // Status-LED off
+    int64_t fr_end = esp_timer_get_time();
+    ESP_LOGD(TAG, "CaptureToBasisImage: %dms", (int)((fr_end - fr_start) / 1000));
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
@@ -793,8 +792,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     LogFile.WriteHeapInfo("CaptureToFile - Start");
 #endif
 
-    StatusLEDOnOff(true); // Status-LED on
     int64_t fr_start = esp_timer_get_time();
+    StatusLEDOnOff(true); // Status-LED on
 
     int _ImageQuality = CCstatus.ImageQuality;
     if (Camera.CamTempImage) {
@@ -832,7 +831,6 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         // doReboot();
-
         return ESP_FAIL;
     }
 
@@ -841,14 +839,10 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 #endif
 
     nm = FormatFileName(nm);
-
-#ifdef DEBUG_DETAIL_ON
-    ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
-#endif
-
     std::string ftype = toUpper(getFileType(nm));
 
 #ifdef DEBUG_DETAIL_ON
+    ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
     ESP_LOGD(TAG, "Filetype: %s", ftype.c_str());
 #endif
 
@@ -861,8 +855,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         frame2bmp(fb, &buf, &buf_len);
         converted = true;
     }
-
-    if (ftype.compare("JPG") == 0)
+    else if (ftype.compare("JPG") == 0)
     {
         if (fb->format != PIXFORMAT_JPEG)
         {
@@ -883,6 +876,17 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         }
     }
 
+    esp_camera_fb_return(fb);
+
+    if (delay > 0)
+    {
+        CaptureToFileLed = false;
+        if (!CaptureToBasisImageLed && !CaptureToHTTPLed && !CaptureToStreamLed) 
+        {
+            FlashLightOnOff(false); // Flash-LED off
+        }
+    }
+
     FILE *fp = fopen(nm.c_str(), "wb");
     if (fp == NULL)
     {
@@ -900,21 +904,9 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         free(buf);
     }
 
-    esp_camera_fb_return(fb);
-	
+    StatusLEDOnOff(false); // Status-LED off
     int64_t fr_end = esp_timer_get_time();
     ESP_LOGD(TAG, "CaptureToFile: %dms", (int)((fr_end - fr_start) / 1000));
-
-    if (delay > 0)
-    {
-        CaptureToFileLed = false;
-        if (!CaptureToBasisImageLed && !CaptureToHTTPLed && !CaptureToStreamLed) 
-        {
-            FlashLightOnOff(false); // Flash-LED off
-        }
-    }
-	
-    StatusLEDOnOff(false); // Status-LED off
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToFile - Done");
@@ -929,8 +921,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     LogFile.WriteHeapInfo("CaptureToHTTP - Start");
 #endif
 
-    StatusLEDOnOff(true); // Status-LED on
     int64_t fr_start = esp_timer_get_time();
+    StatusLEDOnOff(true); // Status-LED on
 
     CheckCamSettingsChanged();
 
@@ -964,7 +956,6 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
         // doReboot();
-
         return ESP_FAIL;
     }
 
@@ -1005,9 +996,6 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     }
 
     esp_camera_fb_return(fb);
-	
-    int64_t fr_end = esp_timer_get_time();
-    ESP_LOGD(TAG, "CaptureToHTTP: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
 
     if (delay > 0)
     {
@@ -1019,6 +1007,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     }
 
     StatusLEDOnOff(false); // Status-LED off
+    int64_t fr_end = esp_timer_get_time();
+    ESP_LOGD(TAG, "CaptureToHTTP: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToHTTP - Done");
