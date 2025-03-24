@@ -182,6 +182,9 @@ esp_err_t CCamera::InitCam(void)
 bool CCamera::testCamera(void)
 {
     bool success;
+
+    Camera.FlashLightOnOff(true);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
     camera_fb_t *fb = esp_camera_fb_get();
 
     if (fb)
@@ -194,6 +197,7 @@ bool CCamera::testCamera(void)
     }
 
     esp_camera_fb_return(fb);
+    Camera.FlashLightOnOff(false);
 
     return success;
 }
