@@ -15,7 +15,7 @@ git checkout VERSION (e.g. HASH of latest tflite-micro-example build)
 cd ../../ (auf Ebene von code)
 git submodule update --init
 ```
-Evt. muss man vorher noch einige Verzeichnisse in compenents von Hand löschen, da sie beim checkout nicht gelöscht wurden (vor update -- init)
+You may need to manually delete some directories in the 'components' folder beforehand, as they were not deleted during checkout (before update -- init)
 
 ## Build and Flash within terminal
 See further down to build it within an IDE.
