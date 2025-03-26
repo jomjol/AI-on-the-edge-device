@@ -51,7 +51,7 @@ pio device monitor -p /dev/ttyUSB0
     ```
     git clone https://github.com/jomjol/AI-on-the-edge-device.git
     cd AI-on-the-edge-device
-    git checkout rolling
+    git checkout main
     git submodule update --init
     ```
 
