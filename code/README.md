@@ -4,7 +4,7 @@
 ```
 git clone https://github.com/jomjol/AI-on-the-edge-device.git
 cd AI-on-the-edge-device
-git checkout rolling
+git checkout main
 git submodule update --init
 ```
 
@@ -12,7 +12,7 @@ git submodule update --init
 ```
 cd /components/submodule-name (e.g. tflite-micro-example)
 git checkout VERSION (e.g. HASH of latest tflite-micro-example build)
-cd ../../ (auf Ebene von code)
+cd ../../ (at the code level)
 git submodule update --init
 ```
 You may need to manually delete some directories in the 'components' folder beforehand, as they were not deleted during checkout (before update -- init)
