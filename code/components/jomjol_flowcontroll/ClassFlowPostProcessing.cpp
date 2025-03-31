@@ -149,18 +149,13 @@ bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, boo
 bool ClassFlowPostProcessing::LoadPreValue(void) {
     UpdatePreValueINI = false;       // Conversion to the new format
 
-    if (!getTimeIsSet()) {
-        ESP_LOGE(TAG, "Time is not set!");
-        return false;
-    }
-
-    char zw[1024];
-
     FILE* pFile = fopen(FilePreValue.c_str(), "r");
     if (pFile == NULL) {
         ESP_LOGE(TAG, "/sdcard/config/prevalue.ini does not exist!");
         return false;
     }
+
+    char zw[1024];
 
     if (!fgets(zw, 1024, pFile)) {
         fclose(pFile);
@@ -179,25 +174,22 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
     time_t tStart;
     time(&tStart);
-    localtime(&tStart);
     int yy, month, dd, hh, mm, ss;
     struct tm whenStart;
-
-    string zwtime, zwvalue, name;
-    bool _done = false;
+    string zwtime, zwvalue, zwname;
 
     std::vector<string> splitted;
     splitted = HelperZerlegeZeile(line, "\t");
 	
     //  Conversion to the new format
     if (splitted.size() > 1) {
-        while ((splitted.size() > 1) && !_done) {
-            name = trim(splitted[0]);
+        while ((splitted.size() > 1) && !(feof(pFile))) {
+            zwname = trim(splitted[0]);
             zwtime = trim(splitted[1]);
             zwvalue = trim(splitted[2]);
 
             for (int j = 0; j < NUMBERS.size(); ++j) {
-                if (NUMBERS[j]->name == name) {
+                if (NUMBERS[j]->name == zwname) {
                     NUMBERS[j]->PreValue = std::stod(zwvalue.c_str());
                     NUMBERS[j]->ReturnPreValue = zwvalue;
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -212,9 +204,18 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                     whenStart.tm_min = mm;
                     whenStart.tm_sec = ss;
                     whenStart.tm_isdst = -1;
+                    ESP_LOGD(TAG, "TIME: %d, %d, %d, %d, %d, %d", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
 
                     NUMBERS[j]->timeStampLastPreValue = mktime(&whenStart);
 
+                    if (!getTimeIsSet()) {
+                        struct timeval set_time;
+                        set_time.tv_sec = NUMBERS[j]->timeStampLastPreValue;
+                        set_time.tv_usec = 0;
+                        settimeofday(&set_time, 0);
+                    }
+
+                    localtime(&tStart);
                     double difference = difftime(tStart, NUMBERS[j]->timeStampLastPreValue);
                     difference /= 60;
 			
@@ -227,15 +228,12 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                 }
             }
 
-            if (!fgets(zw, 1024, pFile)) {
-                _done = true;
-            }
-            else {
+            if (fgets(zw, 1024, pFile) && !feof(pFile)) {
                 ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
                 splitted = HelperZerlegeZeile(trim(std::string(zw)), "\t");
 		    
                 if (splitted.size() > 1) {
-                    name = trim(splitted[0]);
+                    zwname = trim(splitted[0]);
                     zwtime = trim(splitted[1]);
                     zwvalue = trim(splitted[2]);
                 }
@@ -269,11 +267,18 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
         whenStart.tm_min = mm;
         whenStart.tm_sec = ss;
         whenStart.tm_isdst = -1;
-
         ESP_LOGD(TAG, "TIME: %d, %d, %d, %d, %d, %d", whenStart.tm_year, whenStart.tm_mon, whenStart.tm_wday, whenStart.tm_hour, whenStart.tm_min, whenStart.tm_sec);
 
         NUMBERS[0]->timeStampLastPreValue = mktime(&whenStart);
 
+        if (!getTimeIsSet()) {
+            struct timeval set_time;
+            set_time.tv_sec = NUMBERS[0]->timeStampLastPreValue;
+            set_time.tv_usec = 0;
+            settimeofday(&set_time, 0);
+        }
+
+        localtime(&tStart);
         double difference = difftime(tStart, NUMBERS[0]->timeStampLastPreValue);
         difference /= 60;
 			
@@ -292,15 +297,12 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 }
 
 void ClassFlowPostProcessing::SavePreValue() {
-    FILE* pFile;
-    string _zw;
-
     // PreValues unchanged --> File does not have to be rewritten
     if (!UpdatePreValueINI) {
         return;
     }
 
-    pFile = fopen(FilePreValue.c_str(), "w");
+    FILE* pFile = fopen(FilePreValue.c_str(), "w");
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
         char buffer[80];
@@ -310,7 +312,7 @@ void ClassFlowPostProcessing::SavePreValue() {
         NUMBERS[j]->timeStampTimeUTC = NUMBERS[j]->timeStampLastPreValue;
         // ESP_LOGD(TAG, "SaverPreValue %d, Value: %f, Nachkomma %d", j, NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
-        _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
+        string _zw = NUMBERS[j]->name + "\t" + NUMBERS[j]->timeStamp + "\t" + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + "\n";
         ESP_LOGD(TAG, "Write PreValue line: %s", _zw.c_str());
 			
         if (pFile) {
