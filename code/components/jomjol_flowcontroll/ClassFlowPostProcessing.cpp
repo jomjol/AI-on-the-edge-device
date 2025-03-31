@@ -200,6 +200,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                 if (NUMBERS[j]->name == name) {
                     NUMBERS[j]->PreValue = std::stod(zwvalue.c_str());
                     NUMBERS[j]->ReturnPreValue = zwvalue;
+                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                    NUMBERS[j]->ReturnValue = std::to_string(NUMBERS[j]->Value);
+                    NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnValue;
 
                     sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
                     whenStart.tm_year = yy - 1900;
@@ -219,9 +222,6 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                         NUMBERS[j]->PreValueOkay = false;
                     }
                     else {
-                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                        NUMBERS[j]->ReturnValue = std::to_string(NUMBERS[j]->Value);
-                        NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnValue;
                         NUMBERS[j]->PreValueOkay = true;
                     }
                 }
@@ -257,6 +257,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
         zwvalue = trim(std::string(zw));
         NUMBERS[0]->PreValue = std::stod(zwvalue.c_str());
+        NUMBERS[0]->Value = NUMBERS[0]->PreValue;
+        NUMBERS[0]->ReturnValue = to_string(NUMBERS[0]->Value);
+        NUMBERS[0]->ReturnRawValue = NUMBERS[0]->ReturnValue;
 
         sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
         whenStart.tm_year = yy - 1900;
@@ -276,13 +279,10 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 			
         if (difference > PreValueAgeStartup) {
             NUMBERS[0]->PreValueOkay = false;
-            return false;
         }
-
-        NUMBERS[0]->Value = NUMBERS[0]->PreValue;
-        NUMBERS[0]->ReturnValue = to_string(NUMBERS[0]->Value);
-        NUMBERS[0]->ReturnRawValue = NUMBERS[0]->ReturnValue;
-        NUMBERS[j]->PreValueOkay = true;
+        else {
+            NUMBERS[0]->PreValueOkay = true;
+        }
 
         UpdatePreValueINI = true;       // Conversion to the new format
         SavePreValue();
