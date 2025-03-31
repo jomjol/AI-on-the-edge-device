@@ -147,32 +147,47 @@ bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, boo
 }
 
 bool ClassFlowPostProcessing::LoadPreValue(void) {
-    std::vector<string> splitted;
-    FILE* pFile;
+    UpdatePreValueINI = false;       // Conversion to the new format
+
+    if (!getTimeIsSet()) {
+        ESP_LOGE(TAG, "Time is not set!");
+        return false;
+    }
+
     char zw[1024];
+
+    FILE* pFile = fopen(FilePreValue.c_str(), "r");
+    if (pFile == NULL) {
+        ESP_LOGE(TAG, "/sdcard/config/prevalue.ini does not exist!");
+        return false;
+    }
+
+    if (!fgets(zw, 1024, pFile)) {
+        fclose(pFile);
+        ESP_LOGE(TAG, "/sdcard/config/prevalue.ini empty!");
+        return false;
+    }
+
+    ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
+    std::string line = trim(std::string(zw));
+	
+    if (line.length() == 0) {
+        fclose(pFile);
+        ESP_LOGE(TAG, "/sdcard/config/prevalue.ini empty!");
+        return false;
+    }
+
+    time_t tStart;
+    time(&tStart);
+    localtime(&tStart);
+    int yy, month, dd, hh, mm, ss;
+    struct tm whenStart;
+
     string zwtime, zwvalue, name;
     bool _done = false;
 
-    UpdatePreValueINI = false;       // Conversion to the new format
-
-    pFile = fopen(FilePreValue.c_str(), "r");
-	
-    if (pFile == NULL) {
-        return false;
-    }
-
-    // Makes sure that an empty file is treated as such.
-    zw[0] = '\0';
-
-    fgets(zw, 1024, pFile);
-    ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
-    zwtime = trim(std::string(zw));
-	
-    if (zwtime.length() == 0) {
-        return false;
-    }
-
-    splitted = HelperZerlegeZeile(zwtime, "\t");
+    std::vector<string> splitted;
+    splitted = HelperZerlegeZeile(line, "\t");
 	
     //  Conversion to the new format
     if (splitted.size() > 1) {
@@ -183,12 +198,8 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
             for (int j = 0; j < NUMBERS.size(); ++j) {
                 if (NUMBERS[j]->name == name) {
-                    NUMBERS[j]->PreValue = stod(zwvalue.c_str());
-                    NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // To be on the safe side, 1 digit more, as Exgtended Resolution may be on (will only be set during the first run).
-
-                    time_t tStart;
-                    int yy, month, dd, hh, mm, ss;
-                    struct tm whenStart;
+                    NUMBERS[j]->PreValue = std::stod(zwvalue.c_str());
+                    NUMBERS[j]->ReturnPreValue = zwvalue;
 
                     sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
                     whenStart.tm_year = yy - 1900;
@@ -201,8 +212,6 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
                     NUMBERS[j]->timeStampLastPreValue = mktime(&whenStart);
 
-                    time(&tStart);
-                    localtime(&tStart);
                     double difference = difftime(tStart, NUMBERS[j]->timeStampLastPreValue);
                     difference /= 60;
 			
@@ -210,6 +219,9 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
                         NUMBERS[j]->PreValueOkay = false;
                     }
                     else {
+                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                        NUMBERS[j]->ReturnValue = std::to_string(NUMBERS[j]->Value);
+                        NUMBERS[j]->ReturnRawValue = NUMBERS[j]->ReturnValue;
                         NUMBERS[j]->PreValueOkay = true;
                     }
                 }
@@ -233,15 +245,18 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
     }   
     else {
         // Old Format
-        fgets(zw, 1024, pFile);
+        zwtime = trim(splitted[0]);
+
+        if (!fgets(zw, 1024, pFile)) {
+            fclose(pFile);
+            ESP_LOGE(TAG, "/sdcard/config/prevalue.ini value empty!");
+            return false;
+        }
         fclose(pFile);
         ESP_LOGD(TAG, "%s", zw);
-        zwvalue = trim(std::string(zw));
-        NUMBERS[0]->PreValue = stod(zwvalue.c_str());
 
-        time_t tStart;
-        int yy, month, dd, hh, mm, ss;
-        struct tm whenStart;
+        zwvalue = trim(std::string(zw));
+        NUMBERS[0]->PreValue = std::stod(zwvalue.c_str());
 
         sscanf(zwtime.c_str(), PREVALUE_TIME_FORMAT_INPUT, &yy, &month, &dd, &hh, &mm, &ss);
         whenStart.tm_year = yy - 1900;
@@ -256,21 +271,18 @@ bool ClassFlowPostProcessing::LoadPreValue(void) {
 
         NUMBERS[0]->timeStampLastPreValue = mktime(&whenStart);
 
-        time(&tStart);
-        localtime(&tStart);
         double difference = difftime(tStart, NUMBERS[0]->timeStampLastPreValue);
         difference /= 60;
 			
         if (difference > PreValueAgeStartup) {
+            NUMBERS[0]->PreValueOkay = false;
             return false;
         }
 
         NUMBERS[0]->Value = NUMBERS[0]->PreValue;
         NUMBERS[0]->ReturnValue = to_string(NUMBERS[0]->Value);
-
-        if (NUMBERS[0]->digit_roi || NUMBERS[0]->analog_roi) {
-            NUMBERS[0]->ReturnValue = RundeOutput(NUMBERS[0]->Value, NUMBERS[0]->Nachkomma);
-        }
+        NUMBERS[0]->ReturnRawValue = NUMBERS[0]->ReturnValue;
+        NUMBERS[j]->PreValueOkay = true;
 
         UpdatePreValueINI = true;       // Conversion to the new format
         SavePreValue();
