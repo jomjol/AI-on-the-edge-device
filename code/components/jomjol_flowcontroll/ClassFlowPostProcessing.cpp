@@ -504,7 +504,7 @@ void ClassFlowPostProcessing::handleMaxRateValue(string _decsep, string _value) 
     }
 	
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        float _zwdc = 1;
+        float _zwdc = 0.1;
 	    
         if (isStringNumeric(_value)) {
             _zwdc = std::stof(_value);
@@ -696,7 +696,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
             _number->AnzahlAnalog = 0;
         }
 
-        _number->FlowRateAct = 0; // m3 / min
+        _number->FlowRateAct = 0.0; // m3 / min
         _number->PreValueOkay = false;
         _number->AllowNegativeRates = false;
         _number->IgnoreLeadingNaN = false;
@@ -772,15 +772,8 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift) {
 }
 
 bool ClassFlowPostProcessing::doFlow(string zwtime) {
-    string result = "";
-    string digit = "";
-    string analog = "";
-    string zwvalue;
-    string zw;
+    string zwvalue = "";
     time_t imagetime = 0;
-    string rohwert;
-
-    // Update decimal point, as the decimal places can also change when changing from CNNType Auto --> xyz:
 
     imagetime = flowTakeImage->getTimeImageTaken();
 	
@@ -797,9 +790,9 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
     ESP_LOGD(TAG, "Quantity NUMBERS: %d", NUMBERS.size());
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
-        NUMBERS[j]->ReturnRawValue = "";
-        NUMBERS[j]->ReturnRateValue = "";
         NUMBERS[j]->ReturnValue = "";
+        NUMBERS[j]->ReturnRawValue = "";
+        NUMBERS[j]->ReturnRateValue = RundeOutput(0.0, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(0.0, NUMBERS[j]->Nachkomma); // always reset change absolute
         NUMBERS[j]->ErrorMessageText = "";
         NUMBERS[j]->Value = -1;
@@ -808,6 +801,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         // double LastValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastValue);         // in seconds
         double LastPreValueTimeDifference = difftime(imagetime, NUMBERS[j]->timeStampLastPreValue);   // in seconds
 
+        // Update decimal point, as the decimal places can also change when changing from CNNType Auto --> xyz:
         UpdateNachkommaDecimalShift();
 
         int previous_value = -1;
@@ -852,7 +846,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         #endif
 
         if (NUMBERS[j]->IgnoreLeadingNaN) {
-            while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N')) {
+            while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N') && (NUMBERS[j]->ReturnRawValue[1] != '.')) {
                 NUMBERS[j]->ReturnRawValue.erase(0, 1);
             }
         }
@@ -882,7 +876,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
         #endif
 			
         // Delete leading zeros (unless there is only one 0 left)
-        while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0')) {
+        while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0') && (NUMBERS[j]->ReturnValue[1] != '.')) {
             NUMBERS[j]->ReturnValue.erase(0, 1);
         }
 			
@@ -911,6 +905,12 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             ESP_LOGD(TAG, "After checkDigitIncreaseConsistency: Value %f", NUMBERS[j]->Value);
         #endif
 
+        // LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
+        LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
+        NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
+        NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
+        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+
         if (PreValueUse && NUMBERS[j]->PreValueOkay) {
             if ((NUMBERS[j]->Nachkomma > 0) && (NUMBERS[j]->ChangeRateThreshold > 0)) {
                 double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
@@ -925,36 +925,22 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
 					
-                if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
-                    // more debug if extended resolution is on, see #2447
-                    if (NUMBERS[j]->isExtendedResolution) {
-                        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
-                                                    + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) 
-                                                    + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
-                    } 
+                // more debug if extended resolution is on, see #2447
+                if (NUMBERS[j]->isExtendedResolution) {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
+                } 
 
-                    NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
-                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                    NUMBERS[j]->ReturnValue = "";
-                    NUMBERS[j]->timeStampLastValue = imagetime;
+                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
+                NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                NUMBERS[j]->ReturnValue = "";
+                NUMBERS[j]->timeStampLastValue = imagetime;
 
-                    string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
-                    WriteDataLog(j);
-                    continue;
-                }
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
+                WriteDataLog(j);
+                continue;
             }
-
-            #ifdef SERIAL_DEBUG
-                ESP_LOGD(TAG, "After AllowNegativeRates: Value %f", NUMBERS[j]->Value);
-            #endif
-
-            // LastValueTimeDifference = LastValueTimeDifference / 60;       // in minutes
-            LastPreValueTimeDifference = LastPreValueTimeDifference / 60; // in minutes
-            NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
-            NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
-
-            if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue)) {
+            else if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue)) {
                 double _ratedifference;
 					
                 if (NUMBERS[j]->MaxRateType == RateChange) {
@@ -972,7 +958,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " - Rate: " + RundeOutput(_ratedifference, NUMBERS[j]->Nachkomma);
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                     NUMBERS[j]->ReturnValue = "";
-                    NUMBERS[j]->ReturnRateValue = "";
                     NUMBERS[j]->timeStampLastValue = imagetime;
 
                     string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
@@ -981,13 +966,12 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                     continue;
                 }
             }
+        }
 
         #ifdef SERIAL_DEBUG
-           ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
+            ESP_LOGD(TAG, "After PreValueUse: Value %f", NUMBERS[j]->Value);
         #endif
-        }
-        
-        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
 
