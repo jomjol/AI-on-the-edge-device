@@ -47,7 +47,7 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow *> *lfc)
     }
 
     // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
-    if (!ImageBasis)  {
+    if (!ImageBasis) {
         ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis("ImageBasis", namerawimage);
     }
@@ -55,85 +55,84 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow *> *lfc)
 
 bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
 {
-    std::vector<string> splitted;
     int suchex = 40;
     int suchey = 40;
     int alg_algo = 0; // default=0; 1 =HIGHACCURACY; 2= FAST; 3= OFF //add disable aligment algo |01.2023
 
     aktparamgraph = trim(aktparamgraph);
 
-    if (aktparamgraph.size() == 0)
-    {
+    if (aktparamgraph.size() == 0) {
         if (!this->GetNextParagraph(pfile, aktparamgraph)) {
             return false;
         }
     }
 
-    if (aktparamgraph.compare("[Alignment]") != 0)
-    {
+    if (aktparamgraph.compare("[Alignment]") != 0) {
         // Paragraph does not fit Alignment
         return false;
     }
 
-    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
-    {
+    std::vector<string> splitted;
+
+    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph);
 
-        if ((toUpper(splitted[0]) == "FLIPIMAGESIZE") && (splitted.size() > 1)) {
-            initialflip = alphanumericToBoolean(splitted[1]);
-        }
-        else if (((toUpper(splitted[0]) == "initialrotate") || (toUpper(splitted[0]) == "INITIALROTATE")) && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1])) {
-                this->initialrotate = std::stod(splitted[1]);
-            }
-        }
-        else if ((toUpper(splitted[0]) == "SEARCHFIELDX") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1])) {
-                suchex = std::stod(splitted[1]);
-            }
-        }
-        else if ((toUpper(splitted[0]) == "SEARCHFIELDY") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1])) {
-                suchey = std::stod(splitted[1]);
-            }
-        }
-        else if ((toUpper(splitted[0]) == "ANTIALIASING") && (splitted.size() > 1)) {
-            use_antialiasing = alphanumericToBoolean(splitted[1]);
-        }
-        else if ((splitted.size() == 3) && (anz_ref < 2)) {
-            if ((isStringNumeric(splitted[1])) && (isStringNumeric(splitted[2])))
-            {
-                References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
-                References[anz_ref].target_x = std::stod(splitted[1]);
-                References[anz_ref].target_y = std::stod(splitted[2]);
-                anz_ref++;
-            }
-            else
-            {
-                References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
-                References[anz_ref].target_x = 10;
-                References[anz_ref].target_y = 10;
-                anz_ref++;
-            }
-        }
+        if (splitted.size() > 1) {
+            std::string _param = toUpper(splitted[0]);
 
-        else if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1)) {
-            SaveAllFiles = alphanumericToBoolean(splitted[1]);
-        }
-        else if ((toUpper(splitted[0]) == "ALIGNMENTALGO") && (splitted.size() > 1)) {
+            if (_param == "FLIPIMAGESIZE") {
+                initialflip = alphanumericToBoolean(splitted[1]);
+            }
+            else if (_param == "INITIALROTATE") {
+                if (isStringNumeric(splitted[1])) {
+                    this->initialrotate = std::stod(splitted[1]);
+                }
+            }
+            else if (_param == "SEARCHFIELDX") {
+                if (isStringNumeric(splitted[1])) {
+                    suchex = std::stod(splitted[1]);
+                }
+            }
+            else if (_param == "SEARCHFIELDY") {
+                if (isStringNumeric(splitted[1])) {
+                    suchey = std::stod(splitted[1]);
+                }
+            }
+            else if (_param == "ANTIALIASING") {
+                use_antialiasing = alphanumericToBoolean(splitted[1]);
+            }
+            else if (_param == "SAVEALLFILES") {
+                SaveAllFiles = alphanumericToBoolean(splitted[1]);
+            }
+            else if (_param == "ALIGNMENTALGO") {
 #ifdef DEBUG_DETAIL_ON
-            std::string zw2 = "Alignment mode selected: " + splitted[1];
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
+                std::string zw2 = "Alignment mode selected: " + splitted[1];
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
 #endif
-            if (toUpper(splitted[1]) == "HIGHACCURACY") {
-                alg_algo = 1;
+                if (toUpper(splitted[1]) == "HIGHACCURACY") {
+                    alg_algo = 1;
+                }
+                if (toUpper(splitted[1]) == "FAST") {
+                    alg_algo = 2;
+                }
+                if (toUpper(splitted[1]) == "OFF") {
+                    // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
+                    alg_algo = 3;
+                }
             }
-            if (toUpper(splitted[1]) == "FAST") {
-                alg_algo = 2;
-            }
-            if (toUpper(splitted[1]) == "OFF") {
-                // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
-                alg_algo = 3;
+            else if ((splitted.size() == 3) && (anz_ref < 2)) {
+                if ((isStringNumeric(splitted[1])) && (isStringNumeric(splitted[2]))) {
+                    References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
+                    References[anz_ref].target_x = std::stod(splitted[1]);
+                    References[anz_ref].target_y = std::stod(splitted[2]);
+                    anz_ref++;
+                }
+                else {
+                    References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
+                    References[anz_ref].target_x = 10;
+                    References[anz_ref].target_y = 10;
+                    anz_ref++;
+                }
             }
         }
     }
@@ -171,7 +170,7 @@ bool ClassFlowAlignment::doFlow(string time)
 {
 #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
     // AlgROI needs to be allocated before ImageTMP to avoid heap fragmentation
-    if (!AlgROI)  {
+    if (!AlgROI) {
         AlgROI = (ImageData *)heap_caps_realloc(AlgROI, sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
 
         if (!AlgROI) {
