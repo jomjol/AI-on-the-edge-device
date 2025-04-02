@@ -962,7 +962,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     if ((sys_status->c_str() != std::string("Take Image")) && (sys_status->c_str() != std::string("Aligning")))
     {
-        if ((_task.compare("test_take") == 0) || (_task.compare("cam_settings") == 0))
+        if ((toUpper(_task).compare("TEST_TAKE") == 0) || (toUpper(_task).compare("CAM_SETTINGS") == 0))
         {
             std::string _host = "";
 
@@ -985,7 +985,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "aecgc", _valuechar, 30) == ESP_OK)
             {
-                std::string _aecgc = std::string(_valuechar);
+                std::string _aecgc = std::string(toUpper(_valuechar));
                 if (isStringNumeric(_aecgc))
                 {
                     int _aecgc_ = std::stoi(_valuechar);
@@ -1104,7 +1104,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "spe", _valuechar, 30) == ESP_OK)
             {
-                std::string _spe = std::string(_valuechar);
+                std::string _spe = std::string(toUpper(_valuechar));
                 if (isStringNumeric(_spe))
                 {
                     int _spe_ = std::stoi(_valuechar);
@@ -1112,22 +1112,22 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_spe == "negative") {
+                    if (_spe == "NEGATIVE") {
                         CFstatus.ImageSpecialEffect = 1;
                     }
-                    else if (_spe == "grayscale") {
+                    else if (_spe == "GRAYSCALE") {
                         CFstatus.ImageSpecialEffect = 2;
                     }
-                    else if (_spe == "red") {
+                    else if (_spe == "RED") {
                         CFstatus.ImageSpecialEffect = 3;
                     }
-                    else if (_spe == "green") {
+                    else if (_spe == "GREEN") {
                         CFstatus.ImageSpecialEffect = 4;
                     }
-                    else if (_spe == "blue") {
+                    else if (_spe == "BLUE") {
                         CFstatus.ImageSpecialEffect = 5;
                     }
-                    else if (_spe == "retro") {
+                    else if (_spe == "RETRO") {
                         CFstatus.ImageSpecialEffect = 6;
                     }
                     else {
@@ -1138,7 +1138,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "wbm", _valuechar, 30) == ESP_OK)
             {
-                std::string _wbm = std::string(_valuechar);
+                std::string _wbm = std::string(toUpper(_valuechar));
                 if (isStringNumeric(_wbm))
                 {
                     int _wbm_ = std::stoi(_valuechar);
@@ -1146,16 +1146,16 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_wbm == "sunny") {
+                    if (_wbm == "SUNNY") {
                         CFstatus.ImageWbMode = 1;
                     }
-                    else if (_wbm == "cloudy") {
+                    else if (_wbm == "CLOUDY") {
                         CFstatus.ImageWbMode = 2;
                     }
-                    else if (_wbm == "office") {
+                    else if (_wbm == "OFFICE") {
                         CFstatus.ImageWbMode = 3;
                     }
-                    else if (_wbm == "home") {
+                    else if (_wbm == "HOME") {
                         CFstatus.ImageWbMode = 4;
                     }
                     else {
