@@ -449,13 +449,14 @@ jobs:
         sed -i 's/$VERSION/${{ steps.last_release.outputs.tag_name }}/g' webinstaller/manifest.json
 
     - name: Setup Pages
-      uses: actions/configure-pages@v4
+      uses: actions/configure-pages@v5
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: 'webinstaller'
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v3  # Note: v4 does not work!
+    #  uses: actions/deploy-pages@v3  # Note: v4 does not work!
+      uses: actions/deploy-pages@v4.0.5  # Note: v4 does not work!
