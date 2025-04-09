@@ -458,5 +458,4 @@ jobs:
 
     - name: Deploy to GitHub Pages
       id: deployment
-    #  uses: actions/deploy-pages@v3  # Note: v4 does not work!
       uses: actions/deploy-pages@v4.0.5  # Note: v4 does not work!
