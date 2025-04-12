@@ -981,7 +981,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "aecgc", _valuechar, 30) == ESP_OK)
             {
-                std::string _aecgc = std::string(_valuechar);
+                std::string _aecgc = std::string(toUpper(_valuechar));
                 if (isStringNumeric(_aecgc))
                 {
                     int _aecgc_ = std::stoi(_valuechar);
@@ -1081,13 +1081,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_shp))
                 {
                     int _shp_ = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV2640_PID)
+                    if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
                     {
-                        CFstatus.ImageSharpness = clipInt(_shp_, 2, -2);
+                        CFstatus.ImageSharpness = clipInt(_shp_, 3, -3);
                     }
                     else
                     {
-                        CFstatus.ImageSharpness = clipInt(_shp_, 3, -3);
+                        CFstatus.ImageSharpness = clipInt(_shp_, 2, -2);
                     }
                 }
             }
@@ -1100,7 +1100,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "spe", _valuechar, 30) == ESP_OK)
             {
-                std::string _spe = std::string(_valuechar);
+                std::string _spe = std::string(toUpper(_valuechar));
                 if (isStringNumeric(_spe))
                 {
                     int _spe_ = std::stoi(_valuechar);
@@ -1108,22 +1108,22 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_spe == "negative") {
+                    if (_spe == "NEGATIVE") {
                         CFstatus.ImageSpecialEffect = 1;
                     }
-                    else if (_spe == "grayscale") {
+                    else if (_spe == "GRAYSCALE") {
                         CFstatus.ImageSpecialEffect = 2;
                     }
-                    else if (_spe == "red") {
+                    else if (_spe == "RED") {
                         CFstatus.ImageSpecialEffect = 3;
                     }
-                    else if (_spe == "green") {
+                    else if (_spe == "GREEN") {
                         CFstatus.ImageSpecialEffect = 4;
                     }
-                    else if (_spe == "blue") {
+                    else if (_spe == "BLUE") {
                         CFstatus.ImageSpecialEffect = 5;
                     }
-                    else if (_spe == "retro") {
+                    else if (_spe == "RETRO") {
                         CFstatus.ImageSpecialEffect = 6;
                     }
                     else {
@@ -1134,7 +1134,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "wbm", _valuechar, 30) == ESP_OK)
             {
-                std::string _wbm = std::string(_valuechar);
+                std::string _wbm = std::string(toUpper(_valuechar));
                 if (isStringNumeric(_wbm))
                 {
                     int _wbm_ = std::stoi(_valuechar);
@@ -1142,16 +1142,16 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_wbm == "sunny") {
+                    if (_wbm == "SUNNY") {
                         CFstatus.ImageWbMode = 1;
                     }
-                    else if (_wbm == "cloudy") {
+                    else if (_wbm == "CLOUDY") {
                         CFstatus.ImageWbMode = 2;
                     }
-                    else if (_wbm == "office") {
+                    else if (_wbm == "OFFICE") {
                         CFstatus.ImageWbMode = 3;
                     }
-                    else if (_wbm == "home") {
+                    else if (_wbm == "HOME") {
                         CFstatus.ImageWbMode = 4;
                     }
                     else {
@@ -1190,13 +1190,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_ael))
                 {
                     int _ael_ = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV2640_PID)
+                    if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
                     {
-                        CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 5, -5);
                     }
                     else
                     {
-                        CFstatus.ImageAeLevel = clipInt(_ael_, 5, -5);
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
                     }
                 }
             }
@@ -1275,13 +1275,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_idlv))
                 {
                     int _ImageDenoiseLevel = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV2640_PID)
+                    if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
                     {
-                        CFstatus.ImageDenoiseLevel = 0;
+                        CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
                     }
                     else
                     {
-                        CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
+                        CFstatus.ImageDenoiseLevel = 0;
                     }
                 }
             }
@@ -1298,17 +1298,17 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomx))
                 {
                     int _ImageZoomOffsetX = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV2640_PID)
-                    {
-                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
-                    }
-                    else if (Camera.CamSensor_id == OV3660_PID)
+                    if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
                     }
                     else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
+                    }
+                    else
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
                     }
                 }
             }
@@ -1319,17 +1319,17 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomy))
                 {
                     int _ImageZoomOffsetY = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV2640_PID)
-                    {
-                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
-                    }
-                    else if (Camera.CamSensor_id == OV3660_PID)
+                    if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
                     }
                     else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
+                    }
+                    else
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
                     }
                 }
             }
@@ -1340,17 +1340,17 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zooms))
                 {
                     int _ImageZoomSize = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV2640_PID)
-                    {
-                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
-                    }
-                    else if (Camera.CamSensor_id == OV3660_PID)
+                    if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
                     }
                     else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
+                    }
+                    else
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
                     }
                 }
             }
