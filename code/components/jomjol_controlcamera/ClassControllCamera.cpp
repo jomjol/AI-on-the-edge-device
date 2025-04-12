@@ -373,7 +373,7 @@ void CCamera::CheckCamSettingsChanged(void)
 // on the OV5640, gainceiling must be set with the real value (x2>>>gainceilingLevel = 2, .... x128>>>gainceilingLevel = 128)
 int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 {
-	int ret = 0;
+    int ret = 0;
 		
     if (Camera.CamSensor_id == OV2640_PID)
     {
@@ -737,8 +737,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
 #endif
 
-    esp_camera_fb_return(fb);
-
     if (delay > 0)
     {
         CaptureToBasisImageLed = false;
@@ -747,6 +745,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
             FlashLightOnOff(false); // Flash-LED off
         }
     }
+
+    esp_camera_fb_return(fb);
 
     if (_zwImage == NULL)
     {
@@ -796,13 +796,13 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     LogFile.WriteHeapInfo("CaptureToFile - Start");
 #endif
 
-    int64_t fr_start = esp_timer_get_time();
-    StatusLEDOnOff(true); // Status-LED on
-
     int _ImageQuality = CCstatus.ImageQuality;
     if (Camera.CamTempImage) {
         _ImageQuality = CFstatus.ImageQuality;
     }
+	
+    int64_t fr_start = esp_timer_get_time();
+    StatusLEDOnOff(true); // Status-LED on
 
     CheckCamSettingsChanged();
 
@@ -880,8 +880,6 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         }
     }
 
-    esp_camera_fb_return(fb);
-
     if (delay > 0)
     {
         CaptureToFileLed = false;
@@ -890,6 +888,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
             FlashLightOnOff(false); // Flash-LED off
         }
     }
+
+    esp_camera_fb_return(fb);
 
     FILE *fp = fopen(nm.c_str(), "wb");
     if (fp == NULL)
@@ -924,6 +924,11 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToHTTP - Start");
 #endif
+
+    int _ImageQuality = CCstatus.ImageQuality;
+    if (Camera.CamTempImage) {
+        _ImageQuality = CFstatus.ImageQuality;
+    }
 
     int64_t fr_start = esp_timer_get_time();
     StatusLEDOnOff(true); // Status-LED on
@@ -992,14 +997,12 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
             else
             {
                 jpg_chunking_t jchunk = {req, 0};
-                res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk) ? ESP_OK : ESP_FAIL;
+                res = frame2jpg_cb(fb, _ImageQuality, jpg_encode_stream, &jchunk) ? ESP_OK : ESP_FAIL;
                 httpd_resp_send_chunk(req, NULL, 0);
                 fb_len = jchunk.len;
             }
         }
     }
-
-    esp_camera_fb_return(fb);
 
     if (delay > 0)
     {
@@ -1010,6 +1013,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         }
     }
 
+    esp_camera_fb_return(fb);
+	
     StatusLEDOnOff(false); // Status-LED off
     int64_t fr_end = esp_timer_get_time();
     ESP_LOGD(TAG, "CaptureToHTTP: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
