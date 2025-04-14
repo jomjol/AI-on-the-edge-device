@@ -17,49 +17,49 @@
 
 typedef struct
 {
-    framesize_t ImageFrameSize = FRAMESIZE_VGA; // 0 - 10
-    gainceiling_t ImageGainceiling;             // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+    framesize_t ImageFrameSize = FRAMESIZE_VGA;       // 0 - 10
+    int ImageGainceiling = 1;         // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
 
-    int ImageQuality;    // 0 - 63
-    int ImageBrightness; // (-2 to 2) - set brightness
-    int ImageContrast;   //-2 - 2
-    int ImageSaturation; //-2 - 2
-    int ImageSharpness;  //-2 - 2
-    bool ImageAutoSharpness;
-    int ImageSpecialEffect; // 0 - 6
-    int ImageWbMode;        // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-    int ImageAwb;           // white balance enable (0 or 1)
-    int ImageAwbGain;       // Auto White Balance enable (0 or 1)
-    int ImageAec;           // auto exposure off (1 or 0)
-    int ImageAec2;          // automatic exposure sensor  (0 or 1)
-    int ImageAeLevel;       // auto exposure levels (-2 to 2)
-    int ImageAecValue;      // set exposure manually  (0-1200)
-    int ImageAgc;           // auto gain off (1 or 0)
-    int ImageAgcGain;       // set gain manually (0 - 30)
-    int ImageBpc;           // black pixel correction
-    int ImageWpc;           // white pixel correction
-    int ImageRawGma;        // (1 or 0)
-    int ImageLenc;          // lens correction (1 or 0)
-    int ImageHmirror;       // (0 or 1) flip horizontally
-    int ImageVflip;         // Invert image (0 or 1)
-    int ImageDcw;           // downsize enable (1 or 0)
+    int ImageQuality = 12;            // 0 - 63
+    int ImageBrightness = 0;          // (-2 to 2) - set brightness
+    int ImageContrast = 0;            //-2 - 2
+    int ImageSaturation = 0;          //-2 - 2
+    int ImageSharpness = 0;           //-2 - 2
+    bool ImageAutoSharpness = false;
+    int ImageSpecialEffect = 0;       // 0 - 6
+    int ImageWbMode = 0;              // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+    int ImageAwb = 1;                 // white balance enable (0 or 1)
+    int ImageAwbGain = 1;             // Auto White Balance enable (0 or 1)
+    int ImageAec = 1;                 // auto exposure off (1 or 0)
+    int ImageAec2 = 1;                // automatic exposure sensor  (0 or 1)
+    int ImageAeLevel = 0;             // auto exposure levels (-2 to 2)
+    int ImageAecValue = 160;          // set exposure manually  (0-1200)
+    int ImageAgc = 1;                 // auto gain off (1 or 0)
+    int ImageAgcGain = 15;            // set gain manually (0 - 30)
+    int ImageBpc = 1;                 // black pixel correction
+    int ImageWpc = 1;                 // white pixel correction
+    int ImageRawGma = 1;              // (1 or 0)
+    int ImageLenc = 1;                // lens correction (1 or 0)
+    int ImageHmirror = 0;             // (0 or 1) flip horizontally
+    int ImageVflip = 0;               // Invert image (0 or 1)
+    int ImageDcw = 1;                 // downsize enable (1 or 0)
 
-    int ImageDenoiseLevel; // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+    int ImageDenoiseLevel = 0;        // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
-    int ImageWidth;
-    int ImageHeight;
+    int ImageWidth = 640;
+    int ImageHeight = 480;
 
-    int ImageLedIntensity;
+    int ImageLedIntensity = 50;
 
-    bool ImageZoomEnabled;
-    int ImageZoomOffsetX;
-    int ImageZoomOffsetY;
-    int ImageZoomSize;
+    bool ImageZoomEnabled = false;
+    int ImageZoomOffsetX = 0;
+    int ImageZoomOffsetY = 0;
+    int ImageZoomSize = 0;
 
-    int WaitBeforePicture;
+    int WaitBeforePicture = 5;
 
-    bool DemoMode;
-    bool SaveAllFiles;
+    bool DemoMode = false;
+    bool SaveAllFiles = false;
 } camera_controll_config_temp_t;
 
 extern camera_controll_config_temp_t CCstatus;
@@ -71,7 +71,7 @@ protected:
     void CheckCamSettingsChanged(void);
     bool loadNextDemoImage(camera_fb_t *fb);
     long GetFileSize(std::string filename);
-    void SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip);
+    void SetCamWindow(sensor_t *sensor, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip);
     void SetImageWidthHeightFromResolution(framesize_t resol);
     void SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, int &imageWidth, int &imageHeight, int &zoomOffsetX, int &zoomOffsetY);
 
@@ -97,10 +97,10 @@ public:
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
 
-    int SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel);
+    int SetCamGainceiling(sensor_t *sensor, int gainceilingLevel);
     void SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel);
-    void SetCamSpecialEffect(sensor_t *s, int specialEffect);
-    void SetCamContrastBrightness(sensor_t *s, int _contrast, int _brightness);
+    void SetCamSpecialEffect(sensor_t *sensor, int specialEffect);
+    void SetCamContrastBrightness(sensor_t *sensor, int _contrast, int _brightness);
 
     esp_err_t CaptureToHTTP(httpd_req_t *req, int delay = 0);
     esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);

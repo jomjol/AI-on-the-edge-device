@@ -246,51 +246,49 @@ esp_err_t setCFstatusToCCstatus(void)
 
 esp_err_t setCFstatusToCam(void)
 {
-    sensor_t *s = esp_camera_sensor_get();
+    sensor_t *sensor = esp_camera_sensor_get();
 
-    if (s != NULL)
+    if (sensor != NULL)
     {
-        s->set_framesize(s, CFstatus.ImageFrameSize);
+        sensor->set_framesize(sensor, CFstatus.ImageFrameSize);
 
-        // s->set_contrast(s, CFstatus.ImageContrast);     // -2 to 2
-        // s->set_brightness(s, CFstatus.ImageBrightness); // -2 to 2
-        Camera.SetCamContrastBrightness(s, CFstatus.ImageContrast, CFstatus.ImageBrightness);
+        // sensor->set_contrast(sensor, CFstatus.ImageContrast);     // -2 to 2
+        // sensor->set_brightness(sensor, CFstatus.ImageBrightness); // -2 to 2
+        Camera.SetCamContrastBrightness(sensor, CFstatus.ImageContrast, CFstatus.ImageBrightness);
 		
-        s->set_saturation(s, CFstatus.ImageSaturation); // -2 to 2
+        sensor->set_saturation(sensor, CFstatus.ImageSaturation); // -2 to 2
 
-        s->set_quality(s, CFstatus.ImageQuality); // 0 - 63
+        // sensor->set_gainceiling(sensor, (gainceiling_t)CFstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+        Camera.SetCamGainceiling(sensor, CFstatus.ImageGainceiling);
+        sensor->set_quality(sensor, CFstatus.ImageQuality); // 0 - 63
 
-        // s->set_gainceiling(s, CFstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
-        Camera.SetCamGainceiling(s, CFstatus.ImageGainceiling);
+        sensor->set_gain_ctrl(sensor, CFstatus.ImageAgc);     // 0 = disable , 1 = enable
+        sensor->set_exposure_ctrl(sensor, CFstatus.ImageAec); // 0 = disable , 1 = enable
+        sensor->set_hmirror(sensor, CFstatus.ImageHmirror);   // 0 = disable , 1 = enable
+        sensor->set_vflip(sensor, CFstatus.ImageVflip);       // 0 = disable , 1 = enable
 
-        s->set_gain_ctrl(s, CFstatus.ImageAgc);     // 0 = disable , 1 = enable
-        s->set_exposure_ctrl(s, CFstatus.ImageAec); // 0 = disable , 1 = enable
-        s->set_hmirror(s, CFstatus.ImageHmirror);   // 0 = disable , 1 = enable
-        s->set_vflip(s, CFstatus.ImageVflip);       // 0 = disable , 1 = enable
+        sensor->set_whitebal(sensor, CFstatus.ImageAwb);       // 0 = disable , 1 = enable
+        sensor->set_aec2(sensor, CFstatus.ImageAec2);          // 0 = disable , 1 = enable
+        sensor->set_aec_value(sensor, CFstatus.ImageAecValue); // 0 to 1200
+        // sensor->set_special_effect(sensor, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+        Camera.SetCamSpecialEffect(sensor, CFstatus.ImageSpecialEffect);
+        sensor->set_wb_mode(sensor, CFstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+        sensor->set_ae_level(sensor, CFstatus.ImageAeLevel); // -2 to 2
 
-        s->set_whitebal(s, CFstatus.ImageAwb);       // 0 = disable , 1 = enable
-        s->set_aec2(s, CFstatus.ImageAec2);          // 0 = disable , 1 = enable
-        s->set_aec_value(s, CFstatus.ImageAecValue); // 0 to 1200
-        // s->set_special_effect(s, CFstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-        Camera.SetCamSpecialEffect(s, CFstatus.ImageSpecialEffect);
-        s->set_wb_mode(s, CFstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-        s->set_ae_level(s, CFstatus.ImageAeLevel); // -2 to 2
+        sensor->set_dcw(sensor, CFstatus.ImageDcw);          // 0 = disable , 1 = enable
+        sensor->set_bpc(sensor, CFstatus.ImageBpc);          // 0 = disable , 1 = enable
+        sensor->set_wpc(sensor, CFstatus.ImageWpc);          // 0 = disable , 1 = enable
+        sensor->set_awb_gain(sensor, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
+        sensor->set_agc_gain(sensor, CFstatus.ImageAgcGain); // 0 to 30
 
-        s->set_dcw(s, CFstatus.ImageDcw);          // 0 = disable , 1 = enable
-        s->set_bpc(s, CFstatus.ImageBpc);          // 0 = disable , 1 = enable
-        s->set_wpc(s, CFstatus.ImageWpc);          // 0 = disable , 1 = enable
-        s->set_awb_gain(s, CFstatus.ImageAwbGain); // 0 = disable , 1 = enable
-        s->set_agc_gain(s, CFstatus.ImageAgcGain); // 0 to 30
+        sensor->set_raw_gma(sensor, CFstatus.ImageRawGma); // 0 = disable , 1 = enable
+        sensor->set_lenc(sensor, CFstatus.ImageLenc);      // 0 = disable , 1 = enable
 
-        s->set_raw_gma(s, CFstatus.ImageRawGma); // 0 = disable , 1 = enable
-        s->set_lenc(s, CFstatus.ImageLenc);      // 0 = disable , 1 = enable
-
-        // s->set_sharpness(s, CFstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
+        // sensor->set_sharpness(sensor, CFstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
         Camera.SetCamSharpness(CFstatus.ImageAutoSharpness, CFstatus.ImageSharpness);
-        s->set_denoise(s, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
+        sensor->set_denoise(sensor, CFstatus.ImageDenoiseLevel); // The OV2640 does not support it, OV3660 and OV5640 (0 to 8)
 
-        TickType_t xDelay2 = 100 / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay2);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
 
         return ESP_OK;
     }
@@ -985,52 +983,30 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_aecgc))
                 {
                     int _aecgc_ = std::stoi(_valuechar);
-                    switch (_aecgc_)
-                    {
-                        case 1:
-                            CFstatus.ImageGainceiling = GAINCEILING_4X; 
-                            break;
-                        case 2:
-                            CFstatus.ImageGainceiling = GAINCEILING_8X; 
-                            break;
-                        case 3:
-                            CFstatus.ImageGainceiling = GAINCEILING_16X; 
-                            break;
-                        case 4:
-                            CFstatus.ImageGainceiling = GAINCEILING_32X; 
-                            break;
-                        case 5:
-                            CFstatus.ImageGainceiling = GAINCEILING_64X; 
-                            break;
-                        case 6:
-                            CFstatus.ImageGainceiling = GAINCEILING_128X; 
-                            break;
-                        default:
-                            CFstatus.ImageGainceiling = GAINCEILING_2X;
-                    }
+                    CFstatus.ImageGainceiling = clipInt(_aecgc_, 6, 0);
                 }
                 else
                 {
-                    if (_aecgc == "X4") {
-                        CFstatus.ImageGainceiling = GAINCEILING_4X;
+                    if (_aecgc == "X2") {
+                        CFstatus.ImageGainceiling = 0;
+                    }
+                    else if (_aecgc == "X4") {
+                        CFstatus.ImageGainceiling = 1;
                     }
                     else if (_aecgc == "X8") {
-                        CFstatus.ImageGainceiling = GAINCEILING_8X;
+                        CFstatus.ImageGainceiling = 2;
                     }
                     else if (_aecgc == "X16") {
-                        CFstatus.ImageGainceiling = GAINCEILING_16X;
+                        CFstatus.ImageGainceiling = 3;
                     }
                     else if (_aecgc == "X32") {
-                        CFstatus.ImageGainceiling = GAINCEILING_32X;
+                        CFstatus.ImageGainceiling = 4;
                     }
                     else if (_aecgc == "X64") {
-                        CFstatus.ImageGainceiling = GAINCEILING_64X;
+                        CFstatus.ImageGainceiling = 5;
                     }
                     else if (_aecgc == "X128") {
-                        CFstatus.ImageGainceiling = GAINCEILING_128X;
-                    }
-                    else {
-                        CFstatus.ImageGainceiling = GAINCEILING_2X;
+                        CFstatus.ImageGainceiling = 6;
                     }
                 }
             }
@@ -1041,7 +1017,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_qual))
                 {
                     int _qual_ = std::stoi(_valuechar);
-                    CFstatus.ImageQuality = clipInt(_qual_, 63, 6);
+                    CFstatus.ImageQuality = clipInt(_qual_, 63, 8);
                 }
             }
 
@@ -1081,13 +1057,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_shp))
                 {
                     int _shp_ = std::stoi(_valuechar);
-                    if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
-                    {
-                        CFstatus.ImageSharpness = clipInt(_shp_, 3, -3);
-                    }
-                    else
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageSharpness = clipInt(_shp_, 2, -2);
+                    }
+                    else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
+                    {
+                        CFstatus.ImageSharpness = clipInt(_shp_, 3, -3);
                     }
                 }
             }
@@ -1108,7 +1084,10 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_spe == "NEGATIVE") {
+                    if (_spe == "NO_EFFECT") {
+                        CFstatus.ImageSpecialEffect = 0;
+                    }
+                    else if (_spe == "NEGATIVE") {
                         CFstatus.ImageSpecialEffect = 1;
                     }
                     else if (_spe == "GRAYSCALE") {
@@ -1126,9 +1105,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     else if (_spe == "RETRO") {
                         CFstatus.ImageSpecialEffect = 6;
                     }
-                    else {
-                        CFstatus.ImageSpecialEffect = 0;
-                    }
                 }
             }
 
@@ -1142,7 +1118,10 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_wbm == "SUNNY") {
+                    if (_wbm == "AUTO") {
+                        CFstatus.ImageWbMode = 0;
+                    }
+                    else if (_wbm == "SUNNY") {
                         CFstatus.ImageWbMode = 1;
                     }
                     else if (_wbm == "CLOUDY") {
@@ -1153,9 +1132,6 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     }
                     else if (_wbm == "HOME") {
                         CFstatus.ImageWbMode = 4;
-                    }
-                    else {
-                        CFstatus.ImageWbMode = 0;
                     }
                 }
             }
@@ -1190,13 +1166,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_ael))
                 {
                     int _ael_ = std::stoi(_valuechar);
-                    if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
-                    {
-                        CFstatus.ImageAeLevel = clipInt(_ael_, 5, -5);
-                    }
-                    else
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageAeLevel = clipInt(_ael_, 2, -2);
+                    }
+                    else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
+                    {
+                        CFstatus.ImageAeLevel = clipInt(_ael_, 5, -5);
                     }
                 }
             }
@@ -1275,13 +1251,13 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_idlv))
                 {
                     int _ImageDenoiseLevel = std::stoi(_valuechar);
-                    if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
-                    {
-                        CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
-                    }
-                    else
+                    if (Camera.CamSensor_id == OV2640_PID)
                     {
                         CFstatus.ImageDenoiseLevel = 0;
+                    }
+                    else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
+                    {
+                        CFstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
                     }
                 }
             }
@@ -1298,17 +1274,17 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomx))
                 {
                     int _ImageZoomOffsetX = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV3660_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
+                    }
+                    else if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
                     }
                     else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
-                    }
-                    else
-                    {
-                        CFstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
                     }
                 }
             }
@@ -1319,17 +1295,17 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zoomy))
                 {
                     int _ImageZoomOffsetY = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV3660_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
+                    }
+                    else if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
                     }
                     else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
-                    }
-                    else
-                    {
-                        CFstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
                     }
                 }
             }
@@ -1340,17 +1316,17 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 if (isStringNumeric(_zooms))
                 {
                     int _ImageZoomSize = std::stoi(_valuechar);
-                    if (Camera.CamSensor_id == OV3660_PID)
+                    if (Camera.CamSensor_id == OV2640_PID)
+                    {
+                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+                    }
+                    else if (Camera.CamSensor_id == OV3660_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
                     }
                     else if (Camera.CamSensor_id == OV5640_PID)
                     {
                         CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
-                    }
-                    else
-                    {
-                        CFstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
                     }
                 }
             }

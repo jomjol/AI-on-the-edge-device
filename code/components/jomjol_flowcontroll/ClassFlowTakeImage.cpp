@@ -128,10 +128,6 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
                 {
                     CCstatus.WaitBeforePicture = _WaitBeforePicture;
                 }
-                else
-                {
-                    CCstatus.WaitBeforePicture = 2;
-                }
             }
         }
 
@@ -142,59 +138,37 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(_ImageGainceiling))
             {
                 int _ImageGainceiling_ = std::stoi(_ImageGainceiling);
-                switch (_ImageGainceiling_)
-                {
-                case 1:
-                    CCstatus.ImageGainceiling = GAINCEILING_4X;
-                    break;
-                case 2:
-                    CCstatus.ImageGainceiling = GAINCEILING_8X;
-                    break;
-                case 3:
-                    CCstatus.ImageGainceiling = GAINCEILING_16X;
-                    break;
-                case 4:
-                    CCstatus.ImageGainceiling = GAINCEILING_32X;
-                    break;
-                case 5:
-                    CCstatus.ImageGainceiling = GAINCEILING_64X;
-                    break;
-                case 6:
-                    CCstatus.ImageGainceiling = GAINCEILING_128X;
-                    break;
-                default:
-                    CCstatus.ImageGainceiling = GAINCEILING_2X;
-                }
+                CCstatus.ImageGainceiling = clipInt(_ImageGainceiling_, 6, 0);
             }
             else
             {
-                if (_ImageGainceiling == "X4")
+                if (_ImageGainceiling == "X2")
                 {
-                    CCstatus.ImageGainceiling = GAINCEILING_4X;
+                    CCstatus.ImageGainceiling = 0;
+                }
+                else if (_ImageGainceiling == "X4")
+                {
+                    CCstatus.ImageGainceiling = 1;
                 }
                 else if (_ImageGainceiling == "X8")
                 {
-                    CCstatus.ImageGainceiling = GAINCEILING_8X;
+                    CCstatus.ImageGainceiling = 2;
                 }
                 else if (_ImageGainceiling == "X16")
                 {
-                    CCstatus.ImageGainceiling = GAINCEILING_16X;
+                    CCstatus.ImageGainceiling = 3;
                 }
                 else if (_ImageGainceiling == "X32")
                 {
-                    CCstatus.ImageGainceiling = GAINCEILING_32X;
+                    CCstatus.ImageGainceiling = 4;
                 }
                 else if (_ImageGainceiling == "X64")
                 {
-                    CCstatus.ImageGainceiling = GAINCEILING_64X;
+                    CCstatus.ImageGainceiling = 5;
                 }
                 else if (_ImageGainceiling == "X128")
                 {
-                    CCstatus.ImageGainceiling = GAINCEILING_128X;
-                }
-                else
-                {
-                    CCstatus.ImageGainceiling = GAINCEILING_2X;
+                    CCstatus.ImageGainceiling = 6;
                 }
             }
         }
@@ -240,13 +214,13 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageSharpness = std::stoi(splitted[1]);
-                if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
-                {
-                    CCstatus.ImageSharpness = clipInt(_ImageSharpness, 3, -3);
-                }
-                else
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageSharpness = clipInt(_ImageSharpness, 2, -2);
+                }
+                else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
+                {
+                    CCstatus.ImageSharpness = clipInt(_ImageSharpness, 3, -3);
                 }
             }
         }
@@ -267,7 +241,11 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             }
             else
             {
-                if (_ImageSpecialEffect == "NEGATIVE")
+                if (_ImageSpecialEffect == "NO_EFFECT")
+                {
+                    CCstatus.ImageSpecialEffect = 0;
+                }
+                else if (_ImageSpecialEffect == "NEGATIVE")
                 {
                     CCstatus.ImageSpecialEffect = 1;
                 }
@@ -291,10 +269,6 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
                 {
                     CCstatus.ImageSpecialEffect = 6;
                 }
-                else
-                {
-                    CCstatus.ImageSpecialEffect = 0;
-                }
             }
         }
 
@@ -309,6 +283,10 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             }
             else
             {
+                if (_ImageWbMode == "AUTO")
+                {
+                    CCstatus.ImageWbMode = 0;
+                }
                 if (_ImageWbMode == "SUNNY")
                 {
                     CCstatus.ImageWbMode = 1;
@@ -324,10 +302,6 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
                 else if (_ImageWbMode == "HOME")
                 {
                     CCstatus.ImageWbMode = 4;
-                }
-                else
-                {
-                    CCstatus.ImageWbMode = 0;
                 }
             }
         }
@@ -357,13 +331,13 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageAeLevel = std::stoi(splitted[1]);
-                if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
-                {
-                    CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 5, -5);
-                }
-                else
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 2, -2);
+                }
+                else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
+                {
+                    CCstatus.ImageAeLevel = clipInt(_ImageAeLevel, 5, -5);
                 }
             }
         }
@@ -431,13 +405,13 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageDenoiseLevel = std::stoi(splitted[1]);
-                if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
-                {
-                    CCstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
-                }
-                else
+                if (Camera.CamSensor_id == OV2640_PID)
                 {
                     CCstatus.ImageDenoiseLevel = 0;
+                }
+                else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID))
+                {
+                    CCstatus.ImageDenoiseLevel = clipInt(_ImageDenoiseLevel, 8, 0);
                 }
             }
         }
@@ -452,17 +426,17 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageZoomOffsetX = std::stoi(splitted[1]);
-                if (Camera.CamSensor_id == OV3660_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
+                {
+                    CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
+                }
+                else if (Camera.CamSensor_id == OV3660_PID)
                 {
                     CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 704, -704);
                 }
                 else if (Camera.CamSensor_id == OV5640_PID)
                 {
                     CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 960, -960);
-                }
-                else
-                {
-                    CCstatus.ImageZoomOffsetX = clipInt(_ImageZoomOffsetX, 480, -480);
                 }
             }
         }
@@ -472,17 +446,17 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageZoomOffsetY = std::stoi(splitted[1]);
-                if (Camera.CamSensor_id == OV3660_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
+                {
+                    CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
+                }
+                else if (Camera.CamSensor_id == OV3660_PID)
                 {
                     CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 528, -528);
                 }
                 else if (Camera.CamSensor_id == OV5640_PID)
                 {
                     CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 720, -720);
-                }
-                else
-                {
-                    CCstatus.ImageZoomOffsetY = clipInt(_ImageZoomOffsetY, 360, -360);
                 }
             }
         }
@@ -492,17 +466,17 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 int _ImageZoomSize = std::stoi(splitted[1]);
-                if (Camera.CamSensor_id == OV3660_PID)
+                if (Camera.CamSensor_id == OV2640_PID)
+                {
+                    CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
+                }
+                else if (Camera.CamSensor_id == OV3660_PID)
                 {
                     CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 43, 0);
                 }
                 else if (Camera.CamSensor_id == OV5640_PID)
                 {
                     CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 59, 0);
-                }
-                else
-                {
-                    CCstatus.ImageZoomSize = clipInt(_ImageZoomSize, 29, 0);
                 }
             }
         }
