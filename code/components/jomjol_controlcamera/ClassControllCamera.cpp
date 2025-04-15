@@ -91,15 +91,15 @@ static camera_config_t camera_config = {
     .pin_pclk = CAM_PIN_PCLK,
 
     .xclk_freq_hz = (xclk * 1000000),
-    .ledc_timer = LEDC_TIMER_0,     // LEDC timer to be used for generating XCLK
-    .ledc_channel = LEDC_CHANNEL_0, // LEDC channel to be used for generating XCLK
+    .ledc_timer = CAM_XCLK_TIMER,       // LEDC timer to be used for generating XCLK
+    .ledc_channel = CAM_XCLK_CHANNEL,   // LEDC channel to be used for generating XCLK
 
-    .pixel_format = PIXFORMAT_JPEG, // YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_VGA,    // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .pixel_format = PIXFORMAT_JPEG,     // YUV422,GRAYSCALE,RGB565,JPEG
+    .frame_size = FRAMESIZE_VGA,        // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
     .jpeg_quality = 12,                 // 0-63 lower number means higher quality
-    .fb_count = 1,                     // if more than one, i2s runs in continuous mode. Use only with JPEG
-    .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
-    .grab_mode = CAMERA_GRAB_LATEST,   // only from new esp32cam version
+    .fb_count = 1,                      // if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_location = CAMERA_FB_IN_PSRAM,  // The location where the frame buffer will be allocated
+    .grab_mode = CAMERA_GRAB_LATEST,    // only from new esp32cam version
 };
 
 typedef struct
@@ -225,7 +225,7 @@ void CCamera::ledc_init(void)
     ledc_channel.gpio_num = LEDC_OUTPUT_IO;
     ledc_channel.duty = 0; // Set duty to 0%
     ledc_channel.hpoint = 0;
-    // ledc_channel.flags.output_invert = LEDC_OUTPUT_INVERT;
+    ledc_channel.flags.output_invert = LEDC_OUTPUT_INVERT;
 
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 #endif
