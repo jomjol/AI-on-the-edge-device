@@ -17,11 +17,11 @@ If the read value is within PreValue +/- Threshold, no further calculation is ca
 - Smallest ROI provides value for `0.000'x` (Eg. a water meter with 4 pointers behind the decimal point)
 - ChangeRateThreshold = 2
   
-#### With `Extended Resolution` **disabled**
+#### With `ExtendedResolution` **disabled**
 PreValue: `123.456'7` -> Threshold = `+/-0.000'2`.<br>
 All changes between `123.456'5` and `123.456'9` get ignored
 	
-#### With `Extended Resolution` **enabled**
+#### With `ExtendedResolution` **enabled**
 PreValue: `123.456'78` -> Threshold = `+/-0.000'02`.<br>
 All changes between `123.456'76` and `123.456'80` get ignored.
 
