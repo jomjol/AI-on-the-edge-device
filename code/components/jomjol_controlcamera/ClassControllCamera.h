@@ -68,6 +68,7 @@ class CCamera
 {
 protected:
     void ledc_init(void);
+    int SetCamDeepSleep(bool enable);
     void CheckCamSettingsChanged(void);
     bool loadNextDemoImage(camera_fb_t *fb);
     long GetFileSize(std::string filename);
@@ -84,6 +85,7 @@ public:
     bool CaptureToStreamLed = false;
 	
     uint16_t CamSensor_id;
+    bool CameraDeepSleepEnable = false;
     bool CamInitSuccessful = false;
     bool CamSettingsChanged = false;
     bool CamTempImage = false;
