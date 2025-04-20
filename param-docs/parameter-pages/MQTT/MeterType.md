@@ -10,11 +10,11 @@ Alternatively you can set the parameter `DecimalShift` to `3` so the value is co
 List of supported options:
 
 - `other`
-- `water_m3` (uses `m^3/min` as rate)
+- `water_m3` (uses `m^3/h` as rate)
 - `water_l`  (uses `l/h` as rate, not officially supported by Homeassistant!)
 - `water_gal`  (uses `gal/h` as rate, not officially supported by Homeassistant!)
 - `water_ft3` (uses `ft^3/min` as rate)
-- `gas_m3` (uses `m^3/min` as rate)
+- `gas_m3` (uses `m^3/h` as rate)
 - `gas_ft3` (uses `ft^3/min` as rate)
 - `energy_wh` (uses `W` as rate)
 - `energy_kwh` (uses `KW` as rate)
