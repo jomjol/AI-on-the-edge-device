@@ -6,4 +6,4 @@ Maximum allowed change between two readings, if exceeded the last reading will b
 If negative rate is disallowed and no maximum rate value is set, one false high reading will lead to a period of missing measurements until the measurement reaches the previous false high reading. E.g. if the counter is at `600,00` and it's read incorrectly as` 610,00`, all measurements will be skipped until the counter reaches `610,00`. Setting the MaxRateValue to `0,05` leads to a rejection of all readings with a difference `> 0,05`, in this case `610,00`. The rejection also applies to correct readings with a difference `> 0,05`!
 
 !!! Note
-    This parameter must be prefixed with `<NUMBER>` followed by a dot (eg. `main.MaxRateValue`). `<NUMBER>` is the name of the number sequence  defined in the ROI's.
+    If you edit the config file manually, you must prefix this parameter with `<NUMBER>` followed by a dot (eg. `main.MaxRateValue`). The reason is that this parameter is specific for each `<NUMBER>` (`<NUMBER>` is the name of the number sequence defined in the ROI's).
