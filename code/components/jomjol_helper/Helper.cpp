@@ -808,8 +808,18 @@ struct SDCard_Manufacturer_database sd_database[] = {
 	},
 	{
 		.type = "sd",
+		.id = 0x05,
+		.manufacturer = "Lenovo",
+	},
+	{
+		.type = "sd",
 		.id = 0x08,
 		.manufacturer = "Silicon Power",
+	},
+	{
+		.type = "sd",
+		.id = 0x09,
+		.manufacturer = "ATP",
 	},
 	{
 		.type = "sd",
@@ -894,7 +904,27 @@ struct SDCard_Manufacturer_database sd_database[] = {
 	{
 		.type = "sd",
 		.id = 0x89,
-		.manufacturer = "Unknown",
+		.manufacturer = "Netac",
+	},
+	{
+		.type = "sd",
+		.id = 0x9f,
+		.manufacturer = "Kingston/Kodak/Silicon Power",
+	},
+	{
+		.type = "sd",
+		.id = 0xad,
+		.manufacturer = "Amazon Basics/Lexar/OV",
+	},
+	{
+		.type = "sd",
+		.id = 0xdf,
+		.manufacturer = "Lenovo",
+	},
+	{
+		.type = "sd",
+		.id = 0xfe,
+		.manufacturer = "Bekit/Cloudisk/HP/Reletech",
 	},
 };
 
