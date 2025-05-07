@@ -14,6 +14,8 @@ std::string* getHostname();
 bool getWIFIisConnected();
 void WIFIDestroy();
 
+extern bool WIFIConnected;
+
 #if (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES)
 void wifiRoamingQuery(void);
 #endif

@@ -79,6 +79,8 @@
     //ClassFlowControll + Main + SoftAP
     #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
 
+    #define LAN_CONFIG_FILE "/sdcard/lan.ini"
+
 
     //main
     #define __SD_USE_ONE_LINE_MODE__
@@ -93,8 +95,8 @@
          
     #define LOGFILE_LAST_PART_BYTES 80 * 1024 // 80 kBytes  // Size of partial log file to return 
 
-    #define SERVER_FILER_SCRATCH_BUFSIZE  4096 
-    #define SERVER_HELPER_SCRATCH_BUFSIZE  4096
+    #define SERVER_FILER_SCRATCH_BUFSIZE  1024 
+    #define SERVER_HELPER_SCRATCH_BUFSIZE  1024
     #define SERVER_OTA_SCRATCH_BUFSIZE  1024 
 
 
@@ -171,7 +173,7 @@
     //#define WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES  // Client can send query to AP requesting to roam (if RSSI lower than RSSI threshold)
 
     /* WIFI roaming only client triggered by scanning the channels after each round (only if RSSI < RSSIThreshold) and trigger a disconnect to switch AP */
-    #define WLAN_USE_ROAMING_BY_SCANNING
+    // #define WLAN_USE_ROAMING_BY_SCANNING
 
 
     //ClassFlowCNNGeneral
@@ -308,7 +310,7 @@
     #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
     #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
 
-#elif defined(BOARD_ESP32_S3_ALEKSEI) // Sonderversion für Aleksei mit ESP32s3 und Ethernet (PoE)
+    #elif defined(BOARD_ESP32_S3_ALEKSEI) // Sonderversion für Aleksei mit ESP32s3 und Ethernet (PoE)
     // HIGH=ENABLE
     // ETH_EN activates power for the Ethernet
     // PER_EN activates power for camera,leds,and SDcard, Battery measurement voltage divider
@@ -316,6 +318,13 @@
     #define ETH_ENABLE GPIO_NUM_45
     #define PER_ENABLE GPIO_NUM_46
 
+    // Ethernet (operated with SPI peripheral)
+    #define W5500_SPI_HOST     SPI2_HOST
+    #define ETH_MOSI GPIO_NUM_1
+    #define ETH_MISO GPIO_NUM_14
+    #define ETH_CLK GPIO_NUM_21
+    #define ETH_CS GPIO_NUM_39
+    #define ETH_INT GPIO_NUM_38
 	// SD card (operated with SDMMC peripheral)
 	//-------------------------------------------------
 	#define GPIO_SDCARD_CLK GPIO_NUM_40
@@ -350,10 +359,10 @@
     #define CAM_PIN_PCLK     GPIO_NUM_13
 
     //Statusled + ClassControllCamera
-    #define BLINK_GPIO GPIO_NUM_33              // PIN for red board LED
+    #define BLINK_GPIO GPIO_NUM_48              // PIN for red board LED
 	
     //ClassControllCamera
-    #define FLASH_GPIO GPIO_NUM_4               // PIN for flashlight LED
+    #define FLASH_GPIO GPIO_NUM_48               // PIN for flashlight LED
     #define USE_PWM_LEDFLASH                    // if __LEDGLOBAL is defined, a global variable is used for LED control, otherwise locally and each time a new
 
 
