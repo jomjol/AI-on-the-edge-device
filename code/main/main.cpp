@@ -25,6 +25,9 @@
 #include "connect_wlan.h"
 #include "read_wlanini.h"
 
+#include "connect_lan.h"
+#include "read_lanini.h"
+
 #include "server_main.h"
 #include "MainFlowControl.h"
 #include "server_file.h"
@@ -463,26 +466,50 @@ extern "C" void app_main(void)
         ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
     #endif
 
-    // Read WLAN parameter and start WIFI
-    // ********************************************
-    int iWLANStatus = LoadWlanFromFile(WLAN_CONFIG_FILE);
-    if (iWLANStatus == 0) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, init WIFI...");
-        if (wifi_init_sta() != ESP_OK) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Device init aborted!");
+    int iLanStatus = LoadLanFromFile(LAN_CONFIG_FILE);
+    bool lanEnabled = false;
+    if (iLanStatus == 0) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LAN config loaded, init Lan...");
+        if (lan_init() != ESP_OK) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LAN init failed. Device init aborted!");
             StatusLED(WLAN_INIT, 3, true);
             return;
         }
+        else {
+            lanEnabled = true;
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LAN init completed successfully");
+        }
+    }
+    else if(iLanStatus == -1) {  // lan.ini not available, potentially empty or content not readable
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "lan.ini not found, proceeding to wlan.ini");
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Lan init failed. Unknown error!");
+        return; // No way to continue without reading the lan.ini
+    }
+    if(!lanEnabled){
 
-        init_basic_auth();
-    }
-    else if (iWLANStatus == -1) {  // wlan.ini not available, potentially empty or content not readable
-        StatusLED(WLAN_INIT, 1, true);
-        return; // No way to continue without reading the wlan.ini
-    }
-    else if (iWLANStatus == -2) { // SSID or password not configured
-        StatusLED(WLAN_INIT, 2, true);
-        return; // No way to continue with empty SSID or password!
+        // Read WLAN parameter and start WIFI
+        // ********************************************
+        int iWLANStatus = LoadWlanFromFile(WLAN_CONFIG_FILE);
+        if (iWLANStatus == 0) {
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WLAN config loaded, init WIFI...");
+            if (wifi_init_sta() != ESP_OK) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WIFI init failed. Device init aborted!");
+                StatusLED(WLAN_INIT, 3, true);
+                return;
+            }
+
+            init_basic_auth();
+        }
+        else if (iWLANStatus == -1) {  // wlan.ini not available, potentially empty or content not readable
+            StatusLED(WLAN_INIT, 1, true);
+            return; // No way to continue without reading the wlan.ini
+        }
+        else if (iWLANStatus == -2) { // SSID or password not configured
+            StatusLED(WLAN_INIT, 2, true);
+            return; // No way to continue with empty SSID or password!
+        }
     }
 
     xDelay = 2000 / portTICK_PERIOD_MS;
@@ -495,7 +522,6 @@ extern "C" void app_main(void)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Manual Time Sync failed during startup" );
     }
-
     // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
     // ********************************************
     esp_log_level_set("wifi", ESP_LOG_WARN);

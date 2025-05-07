@@ -41,6 +41,7 @@
 
 bool isConfigINI = false;
 bool isWlanINI = false;
+bool isLanINI = false;
 
 static const char *TAG = "WIFI AP";
 
@@ -99,12 +100,13 @@ void wifi_init_softAP(void)
 void SendHTTPResponse(httpd_req_t *req)
 {
     std::string message = "<h1>AI-on-the-edge - BASIC SETUP</h1><p>This is an access point with a minimal server to setup the minimum required files and information on the device and the SD-card. ";
-    message += "This mode is always started if one of the following files is missing: /wlan.ini or the /config/config.ini.<p>";
-    message += "The setup is done in 3 steps: 1. upload full inital configuration (sd-card content), 2. store WLAN access information, 3. reboot (and connect to WLANs)<p><p>";
+    message += "This mode is always started if neither /wlan.ini nor /lan.ini is preset or the /config/config.ini. is missing<p>";
+    message += "The setup is done in 3 steps: 1. upload full inital configuration (sd-card content), 2. store WLAN/LAN access information, 3. reboot (and connect to WLANs/LANs)<p><p>";
     message += "Please follow the below instructions.<p>";
     httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
     isWlanINI = FileExists(WLAN_CONFIG_FILE);
+    isLanINI = FileExists(LAN_CONFIG_FILE);
 
     if (!isConfigINI)
     {
@@ -129,33 +131,53 @@ void SendHTTPResponse(httpd_req_t *req)
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
         return;
     }
-    if (!isWlanINI)
+    if (!isWlanINI && !isLanINI)
     {
-        message = "<h3>2. WLAN access credentials</h3><p>";
+        message  = "<h3>2. WLAN access credentials</h3><p>";
+        message += "Interface: <select id=\"iface\" onchange=\"toggle()\">";
+        message +=              "<option value=\"wifi\" selected>Wi-Fi</option>";
+        message +=              "<option value=\"eth\">Ethernet</option></select><p>";
+        
+        /* Wi-Fi-only fields wrapped in a <div id="wifi"> for easy hide/show */
+        message += "<div id=\"wifi\">";
         message += "<table>";
-        message += "<tr><td>WLAN-SSID</td><td><input type=\"text\" name=\"ssid\" id=\"ssid\"></td><td>SSID of the WLAN</td></tr>";
-        message += "<tr><td>WLAN-Password</td><td><input type=\"text\" name=\"password\" id=\"password\"></td><td>ATTENTION: the password will not be encrypted during the sending.</td><tr>";
-        message += "</table><p>";
-        message += "<h4>ATTENTION:<h4>Be sure about the WLAN settings. They cannot be reset afterwards. If ssid or password is wrong, you need to take out the sd-card and manually change them in \"wlan.ini\"!<p>";
-        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-
-//        message = "</tr><tr><td> Hostname</td><td><input type=\"text\" name=\"hostname\" id=\"hostname\"></td><td></td>";
-//        message += "</tr><tr><td>Fixed IP</td><td><input type=\"text\" name=\"ip\" id=\"ip\"></td><td>Leave emtpy if set by router (DHCP)</td></tr>";
-//        message += "<tr><td>Gateway</td><td><input type=\"text\" name=\"gateway\" id=\"gateway\"></td><td>Leave emtpy if set by router (DHCP)</td></tr>";
-//        message += "<tr><td>Netmask</td><td><input type=\"text\" name=\"netmask\" id=\"netmask\"></td><td>Leave emtpy if set by router (DHCP)</td>";
-//        message += "</tr><tr><td>DNS</td><td><input type=\"text\" name=\"dns\" id=\"dns\"></td><td>Leave emtpy if set by router (DHCP)</td></tr>";
-//        message += "<tr><td>RSSI Threshold</td><td><input type=\"number\" name=\"name\" id=\"threshold\" min=\"-100\"  max=\"0\" step=\"1\" value = \"0\"></td><td>WLAN Mesh Parameter: Threshold for RSSI value to check for start switching access point in a mesh system (if actual RSSI is lower). Possible values: -100 to 0, 0 = disabled - Value will be transfered to wlan.ini at next startup)</td></tr>";
-//        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-
-
-        message = "<button class=\"button\" type=\"button\" onclick=\"wr()\">Write wlan.ini</button>";
-        message += "<script language=\"JavaScript\">async function wr(){";
-        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value;";
-//        message += "api = \"/config?\"+\"ssid=\"+document.getElementById(\"ssid\").value+\"&pwd=\"+document.getElementById(\"password\").value+\"&hn=\"+document.getElementById(\"hostname\").value+\"&ip=\"+document.getElementById(\"ip\").value+\"&gw=\"+document.getElementById(\"gateway\").value+\"&nm=\"+document.getElementById(\"netmask\").value+\"&dns=\"+document.getElementById(\"dns\").value+\"&rssithreshold=\"+document.getElementById(\"threshold\").value;";
-        message += "fetch(api);await new Promise(resolve => setTimeout(resolve, 1000));location.reload();}</script>";
-        httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
-        return;
-    }
+        message += "<tr><td>WLAN-SSID</td><td><input id=\"ssid\"></td><td>SSID of the WLAN</td></tr>";
+        message += "<tr><td>WLAN-Password</td><td><input id=\"password\"></td><td><b>ATTENTION:</b> sent unencrypted</td></tr>";
+        message += "</table></div><p>";
+        
+        message += "<h4>ATTENTION:</h4>Be sure about the WLAN/LAN settings. They cannot be reset afterwards. "
+                   "If SSID or password are wrong you must edit <i>wlan.ini</i> on the SD-card!<p>";
+        
+        httpd_resp_send_chunk(req, message.c_str(), message.length());
+        
+        /* ---- Button + JS ---------------------------------------------------- */
+        message.clear();
+        message  = "<button class=\"button\" id=\"saveBtn\" onclick=\"wr()\">Write wlan.ini</button>";
+        message += R"JS(
+        <script>
+        function toggle(){
+            const wifiSelected = (iface.value === 'wifi');
+            wifi.style.display = wifiSelected ? 'block' : 'none';
+            /* change button label */
+            saveBtn.textContent = wifiSelected ? 'Write wlan.ini' : 'Write lan.ini';
+        }
+        async function wr(){
+          let url = '/config?type=' + iface.value;
+          if(iface.value==='wifi'){
+            url += '&ssid=' + encodeURIComponent(ssid.value) +
+                   '&pwd='  + encodeURIComponent(password.value);
+          }
+          await fetch(url);
+          await new Promise(r=>setTimeout(r,500));
+          location.reload();
+        }
+        </script>)JS";
+        
+        httpd_resp_send_chunk(req, message.c_str(), message.length());
+        /* finish response */
+        httpd_resp_send_chunk(req, nullptr, 0);
+        return; // done
+        }
 
     message = "<h3>3. Reboot</h3><p>";
     message += "After triggering the reboot, the zip-files gets extracted and written to the sd-card.<br>The ESP32 will restart two times and then connect to your access point. Please find the IP in your router settings and access it with the new ip-address.<p>";
@@ -207,6 +229,8 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     std::string dns = "";
     std::string rssithreshold = ""; //rssi threshold for WIFI roaming
     std::string text = "";
+    std::string type = "";
+
 
 
     if (httpd_req_get_url_query_str(req, _query, 400) == ESP_OK)
@@ -266,27 +290,49 @@ esp_err_t config_ini_handler(httpd_req_t *req)
             ESP_LOGD(TAG, "rssithreshold is found: %s", _valuechar);
             rssithreshold = UrlDecode(std::string(_valuechar));
         }
+
+        if (httpd_query_key_value(_query, "type", _valuechar, 100) == ESP_OK)
+        {
+            ESP_LOGD(TAG, "type is found: %s", _valuechar);
+            type = UrlDecode(std::string(_valuechar));
+        }
     }
 
-    FILE* configfilehandle = fopen(WLAN_CONFIG_FILE, "w");
+    FILE* configfilehandle = nullptr;
+    if(type == "wifi"){  
+        configfilehandle = fopen(WLAN_CONFIG_FILE, "w");
 
-    text  = ";++++++++++++++++++++++++++++++++++\n";
-    text += "; AI on the edge - WLAN configuration\n";
-    text += "; ssid: Name of WLAN network (mandatory), e.g. \"WLAN-SSID\"\n";
-    text += "; password: Password of WLAN network (mandatory), e.g. \"PASSWORD\"\n\n";
-    fputs(text.c_str(), configfilehandle);
-    
-    if (ssid.length())
-        ssid = "ssid = \"" + ssid + "\"\n";
-    else
+        text  = ";++++++++++++++++++++++++++++++++++\n";
+        text += "; AI on the edge - WLAN configuration\n";
+        text += "; ssid: Name of WLAN network (mandatory), e.g. \"WLAN-SSID\"\n";
+        text += "; password: Password of WLAN network (mandatory), e.g. \"PASSWORD\"\n\n";
+        fputs(text.c_str(), configfilehandle);
+        
+        if (ssid.length())
+            ssid = "ssid = \"" + ssid + "\"\n";
+        else
+            ssid = "ssid = \"\"\n";
+        fputs(ssid.c_str(), configfilehandle);
+
+        if (pwd.length())
+            pwd = "password = \"" + pwd + "\"\n";
+        else
+            pwd = "password = \"\"\n";
+        fputs(pwd.c_str(), configfilehandle);
+    }
+    else{
+        configfilehandle = fopen(LAN_CONFIG_FILE, "w");
+
+        text  = ";++++++++++++++++++++++++++++++++++\n";
+        text += "; AI on the edge - WLAN configuration\n";
+        text += "; ssid: Name of WLAN network (mandatory), e.g. \"WLAN-SSID\"\n";
+        text += "; password: Password of WLAN network (mandatory), e.g. \"PASSWORD\"\n\n";
+        fputs(text.c_str(), configfilehandle);
         ssid = "ssid = \"\"\n";
-    fputs(ssid.c_str(), configfilehandle);
-
-    if (pwd.length())
-        pwd = "password = \"" + pwd + "\"\n";
-    else
+        fputs(ssid.c_str(), configfilehandle);
         pwd = "password = \"\"\n";
-    fputs(pwd.c_str(), configfilehandle);
+        fputs(pwd.c_str(), configfilehandle);
+    }
 
     text  = "\n;++++++++++++++++++++++++++++++++++\n";
     text += "; Hostname: Name of device in network\n";
@@ -333,22 +379,24 @@ esp_err_t config_ini_handler(httpd_req_t *req)
         dns = ";dns = \"xxx.xxx.xxx.xxx\"\n";
     fputs(dns.c_str(), configfilehandle);
 
-    text  = "\n;++++++++++++++++++++++++++++++++++\n";
-    text += "; WIFI Roaming:\n";
-    text += "; Network assisted roaming protocol is activated by default\n";
-    text += "; AP / mesh system needs to support roaming protocol 802.11k/v\n";
-    text += ";\n";
-    text += "; Optional feature (usually not neccessary):\n";
-    text += "; RSSI Threshold for client requested roaming query (RSSI < RSSIThreshold)\n";
-    text += "; Note: This parameter can be configured via WebUI configuration\n";
-    text += "; Default: 0 = Disable client requested roaming query\n\n";
-    fputs(text.c_str(), configfilehandle);
+    if(type == "wifi"){  
+        text  = "\n;++++++++++++++++++++++++++++++++++\n";
+        text += "; WIFI Roaming:\n";
+        text += "; Network assisted roaming protocol is activated by default\n";
+        text += "; AP / mesh system needs to support roaming protocol 802.11k/v\n";
+        text += ";\n";
+        text += "; Optional feature (usually not neccessary):\n";
+        text += "; RSSI Threshold for client requested roaming query (RSSI < RSSIThreshold)\n";
+        text += "; Note: This parameter can be configured via WebUI configuration\n";
+        text += "; Default: 0 = Disable client requested roaming query\n\n";
+        fputs(text.c_str(), configfilehandle);
 
-    if (rssithreshold.length())
-        rssithreshold = "RSSIThreshold = " + rssithreshold + "\n";
-    else
-        rssithreshold = "RSSIThreshold = 0\n";
-    fputs(rssithreshold.c_str(), configfilehandle);
+        if (rssithreshold.length())
+            rssithreshold = "RSSIThreshold = " + rssithreshold + "\n";
+        else
+            rssithreshold = "RSSIThreshold = 0\n";
+        fputs(rssithreshold.c_str(), configfilehandle);
+    }
 
     fflush(configfilehandle);
     fclose(configfilehandle);
@@ -507,14 +555,15 @@ void CheckStartAPMode()
 {
     isConfigINI = FileExists(CONFIG_FILE);
     isWlanINI = FileExists(WLAN_CONFIG_FILE);
+    isLanINI = FileExists(LAN_CONFIG_FILE);
 
     if (!isConfigINI)
         ESP_LOGW(TAG, "config.ini not found!");
 
-    if (!isWlanINI)
-        ESP_LOGW(TAG, "wlan.ini not found!");
+    if (!isWlanINI && !isLanINI)
+        ESP_LOGW(TAG, "wlan.ini and lan.ini not found!");
 
-    if (!isConfigINI || !isWlanINI)
+    if (!isConfigINI || (!isWlanINI && !isLanINI))
     {
         ESP_LOGI(TAG, "Starting access point for remote configuration");
         StatusLED(AP_OR_OTA, 2, true);

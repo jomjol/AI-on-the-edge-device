@@ -112,8 +112,8 @@ bool SDCardCheckFolderFilePresence()
     }
 
     /* check if file exists: wlan.ini */
-    if (stat("/sdcard/wlan.ini", &sb) != 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Folder/file check: File /wlan.ini not found");
+    if (stat("/sdcard/wlan.ini", &sb) != 0 and stat("/sdcard/lan.ini", &sb) != 0) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Folder/file check: File /wlan.ini and /lan.ini not found");
         bRetval = false;
     }
 

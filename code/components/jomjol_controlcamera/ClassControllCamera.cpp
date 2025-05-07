@@ -244,6 +244,8 @@ bool CCamera::getCameraInitSuccessful(void)
 
 esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 {
+    esp_camera_deinit();
+    ESP_ERROR_CHECK( esp_camera_init(&camera_config) );
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
