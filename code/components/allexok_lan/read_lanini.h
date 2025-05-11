@@ -1,3 +1,4 @@
+#if defined(BOARD_ESP32_S3_ALEKSEI)
 #pragma once
 
 #ifndef READ_LANINI_H
@@ -15,3 +16,4 @@ bool ChangeLanHostName(std::string fn, std::string _newhostname);
 
 
 #endif //READ_WLANINI_H
+#endif

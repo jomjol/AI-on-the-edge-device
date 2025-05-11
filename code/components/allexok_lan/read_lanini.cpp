@@ -1,3 +1,5 @@
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+
 #include "read_lanini.h"
 
 #include "Helper.h"
@@ -243,3 +245,4 @@ bool ChangeLanHostName(std::string fn, std::string _newhostname)
 
     return true;
 }
+#endif

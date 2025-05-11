@@ -466,8 +466,9 @@ extern "C" void app_main(void)
         ESP_ERROR_CHECK( heap_trace_start(HEAP_TRACE_LEAKS) );
     #endif
 
-    int iLanStatus = LoadLanFromFile(LAN_CONFIG_FILE);
     bool lanEnabled = false;
+    #if defined(BOARD_ESP32_S3_ALEKSEI)
+    int iLanStatus = LoadLanFromFile(LAN_CONFIG_FILE);
     if (iLanStatus == 0) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "LAN config loaded, init Lan...");
         if (lan_init() != ESP_OK) {
@@ -487,6 +488,7 @@ extern "C" void app_main(void)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Lan init failed. Unknown error!");
         return; // No way to continue without reading the lan.ini
     }
+    #endif
     if(!lanEnabled){
 
         // Read WLAN parameter and start WIFI

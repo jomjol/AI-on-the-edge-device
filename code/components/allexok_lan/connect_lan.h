@@ -1,3 +1,4 @@
+#if defined(BOARD_ESP32_S3_ALEKSEI)
 #pragma once
 
 #ifndef CONNECT_LAN_H
@@ -16,3 +17,4 @@ void LanDestroy();
 int lan_init();
 
 #endif //CONNECT_WLAN_H
+#endif
