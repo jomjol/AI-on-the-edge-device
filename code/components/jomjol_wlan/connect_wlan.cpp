@@ -55,7 +55,7 @@
 static const char *TAG = "WIFI";
 
 static bool APWithBetterRSSI = false;
-static bool WIFIConnected = false;
+bool WIFIConnected = false;
 static int WIFIReconnectCnt = 0;
 
 esp_netif_t *my_sta;

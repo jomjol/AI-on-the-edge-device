@@ -244,6 +244,10 @@ bool CCamera::getCameraInitSuccessful(void)
 
 esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 {
+    #if defined(BOARD_ESP32_S3_ALEKSEI)    
+    esp_camera_deinit();
+    ESP_ERROR_CHECK( esp_camera_init(&camera_config) );
+    #endif
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
@@ -1011,7 +1015,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
             vTaskDelay(xDelay);
         }
     }
-
+    // httpd_resp_send_chunk(req, NULL, 0);      // 
     LEDOnOff(false);   // Status-LED off
     LightOnOff(false); // Flash-LED off
 
