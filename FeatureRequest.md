@@ -11,6 +11,10 @@
 ____
 
 
+#### #41 Support ESP32-S3-ETH hardware with Ethernet
+
+* Add support for the waveshare board (<https://www.waveshare.com/esp32-s3-eth.htm?sku=28772>) including Ethernet functionality
+
 #### #40 Trigger with cron like exact time slot
 
 * https://github.com/jomjol/AI-on-the-edge-device/issues/2470
