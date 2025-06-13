@@ -230,6 +230,10 @@ void ClassFlowControll::setAutoStartInterval(long &_interval)
     _interval = AutoInterval * 60 * 1000; // AutoInterval: minutes -> ms
 }
 
+void ClassFlowControll::setSleepWhileIdle(bool& _sleepwhileidle){
+    _sleepwhileidle = SleepWhileIdle;
+}
+
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 {
     ClassFlow* cfc = NULL;
@@ -573,6 +577,10 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (isStringNumeric(splitted[1])) {
                 AutoInterval = std::stof(splitted[1]);
             }
+        }
+
+        if ((toUpper(splitted[0]) == "SLEEPWHILEIDLE") && (splitted.size() > 1)) {
+            SleepWhileIdle = alphanumericToBoolean(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1)) {

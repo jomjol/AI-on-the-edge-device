@@ -173,7 +173,7 @@
     //#define WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES  // Client can send query to AP requesting to roam (if RSSI lower than RSSI threshold)
 
     /* WIFI roaming only client triggered by scanning the channels after each round (only if RSSI < RSSIThreshold) and trigger a disconnect to switch AP */
-    // #define WLAN_USE_ROAMING_BY_SCANNING
+    #define WLAN_USE_ROAMING_BY_SCANNING
 
 
     //ClassFlowCNNGeneral
@@ -349,7 +349,7 @@
     #define CAM_PIN_D7       GPIO_NUM_16
     #define CAM_PIN_D6       GPIO_NUM_17
     #define CAM_PIN_D5       GPIO_NUM_18
-    #define CAM_PIN_D4       GPIO_NUM_12
+    #define CAM_PIN_D4       GPIO_NUM_47
     #define CAM_PIN_D3       GPIO_NUM_10
     #define CAM_PIN_D2       GPIO_NUM_8
     #define CAM_PIN_D1       GPIO_NUM_9
