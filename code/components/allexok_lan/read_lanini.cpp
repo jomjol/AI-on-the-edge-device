@@ -158,7 +158,7 @@ int LoadLanFromFile(std::string fn)
         }
     }
     fclose(pFile);
-    
+
     return 0;
 }
 
