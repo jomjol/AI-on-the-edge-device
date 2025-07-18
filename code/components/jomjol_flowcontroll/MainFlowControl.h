@@ -66,6 +66,12 @@ typedef struct
 extern camera_flow_config_temp_t CFstatus;
 extern ClassFlowControll flowctrl;
 
+bool get_deep_sleep_state(void);
+void set_deep_sleep_state(bool _deep_sleep_state);
+
+long get_auto_interval(void);
+void set_auto_interval(long _auto_interval);
+
 esp_err_t setCCstatusToCFstatus(void); // CCstatus >>> CFstatus
 esp_err_t setCFstatusToCCstatus(void); // CFstatus >>> CCstatus
 esp_err_t setCFstatusToCam(void);      // CFstatus >>> Kamera
