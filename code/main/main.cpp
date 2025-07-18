@@ -9,6 +9,7 @@
 #include "psram.h"
 
 #include "esp_chip_info.h"
+#include "driver/rtc_io.h"
 
 // SD-Card ////////////////////
 #include "esp_vfs_fat.h"
@@ -283,6 +284,9 @@ extern "C" void app_main(void)
     CheckOTAUpdate();
     CheckUpdate();
 
+    rtc_gpio_hold_dis(GPIO_NUM_12);
+    rtc_gpio_hold_dis(GPIO_NUM_4);
+	
     // Init external PSRAM
     // ********************************************
     esp_err_t PSRAMStatus = esp_psram_init();
