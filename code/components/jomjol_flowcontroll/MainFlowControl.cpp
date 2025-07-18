@@ -1810,8 +1810,8 @@ void task_autodoFlow(void *pvParameter)
                 // Isolate GPIO12 pin from external circuits. This is needed for modules
                 // which have an external pull-up resistor on GPIO12 (such as ESP32-WROVER)
                 // to minimize current consumption.
-                // rtc_gpio_isolate(GPIO_NUM_12);
-                // rtc_gpio_isolate(GPIO_NUM_4);
+                rtc_gpio_isolate(GPIO_NUM_12);
+                rtc_gpio_isolate(GPIO_NUM_4);
 #endif
                 esp_deep_sleep_start();
             }
