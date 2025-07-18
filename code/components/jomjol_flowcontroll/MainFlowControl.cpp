@@ -51,6 +51,7 @@ bool autostartIsEnabled = false;
 
 bool isPlannedReboot = false;
 
+bool deep_sleep_state = true;
 #if SOC_RTC_FAST_MEM_SUPPORTED
 // countRounds stored in RTC memory
 static RTC_DATA_ATTR int countRounds = 0;
