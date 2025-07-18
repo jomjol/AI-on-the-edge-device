@@ -32,6 +32,8 @@ static const char *TAG = "MAIN SERVER";
 /* An HTTP GET handler */
 esp_err_t info_get_handler(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+    
 #ifdef DEBUG_DETAIL_ON      
     LogFile.WriteHeapInfo("info_get_handler - Start");    
 #endif
@@ -206,8 +208,9 @@ esp_err_t info_get_handler(httpd_req_t *req)
 
 esp_err_t starttime_get_handler(httpd_req_t *req)
 {
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    set_deep_sleep_state(false);
     
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, starttime.c_str(), starttime.length()); 
 
     return ESP_OK;
@@ -216,6 +219,8 @@ esp_err_t starttime_get_handler(httpd_req_t *req)
 
 esp_err_t hello_main_handler(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+    
 #ifdef DEBUG_DETAIL_ON      
     LogFile.WriteHeapInfo("hello_main_handler - Start");
 #endif
@@ -309,6 +314,8 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 
 esp_err_t img_tmp_handler(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+    
     char filepath[50];
     ESP_LOGD(TAG, "uri: %s", req->uri);
 
@@ -333,6 +340,8 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
 
 esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+    
     #ifdef DEBUG_DETAIL_ON      
         LogFile.WriteHeapInfo("img_tmp_virtual_handler - Start");  
     #endif
@@ -370,6 +379,8 @@ esp_err_t img_tmp_virtual_handler(httpd_req_t *req)
 
 esp_err_t sysinfo_handler(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+    
     std::string zw;
     std::string cputemp = std::to_string((int)temperatureRead());
     std::string gitversion = libfive_git_version();
