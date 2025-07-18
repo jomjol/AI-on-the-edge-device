@@ -238,7 +238,6 @@ esp_err_t hello_main_handler(httpd_req_t *req)
 
     if ((strcmp(req->uri, "/") == 0))
     {
-        set_deep_sleep_state(false);
         filetosend = filetosend + "/html/index.html";
     }
     else
