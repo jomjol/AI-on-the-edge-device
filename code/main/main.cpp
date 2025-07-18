@@ -428,12 +428,16 @@ extern "C" void app_main(void)
     // Check reboot reason
     // ********************************************
     CheckIsPlannedReboot();
-    if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC)) {  // If system reboot was not triggered by user and reboot was caused by execption 
+    if (!getIsPlannedReboot() && (esp_reset_reason() == ESP_RST_PANIC) && (esp_reset_reason() != ESP_RST_DEEPSLEEP)) {  
+	// If system reboot was not triggered by user and reboot was caused by execption 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reset reason: " + getResetReason());
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Device was rebooted due to a software exception! Log level is set to DEBUG until the next reboot. "
                                                "Flow init is delayed by 5 minutes to check the logs or do an OTA update"); 
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Keep device running until crash occurs again and check logs after device is up again");
         LogFile.setLogLevel(ESP_LOG_DEBUG);
+    }
+    else if (esp_reset_reason() == ESP_RST_DEEPSLEEP) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "System Reboot was triggered by deep sleep");
     }
     else {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reset reason: " + getResetReason());
