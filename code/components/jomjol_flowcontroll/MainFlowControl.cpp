@@ -9,6 +9,10 @@
 #include <iomanip>
 #include <sstream>
 
+#include "esp_sleep.h"
+#include "esp_wake_stub.h"
+#include "driver/rtc_io.h"
+
 #include "../../include/defines.h"
 #include "Helper.h"
 #include "statusled.h"
@@ -45,12 +49,38 @@ bool flowisrunning = false;
 long auto_interval = 0;
 bool autostartIsEnabled = false;
 
-int countRounds = 0;
 bool isPlannedReboot = false;
+
+#if SOC_RTC_FAST_MEM_SUPPORTED
+// countRounds stored in RTC memory
+static RTC_DATA_ATTR int countRounds = 0;
+#else
+int countRounds = 0;
+#endif
 
 static const char *TAG = "MAINCTRL";
 
 // #define DEBUG_DETAIL_ON
+
+bool get_deep_sleep_state(void)
+{
+    return deep_sleep_state;
+}
+
+void set_deep_sleep_state(bool _deep_sleep_state)
+{
+    deep_sleep_state = _deep_sleep_state;
+}
+
+long get_auto_interval(void)
+{
+    return auto_interval;
+}
+
+void set_auto_interval(long _auto_interval)
+{
+    auto_interval = _auto_interval;
+}
 
 void CheckIsPlannedReboot(void)
 {
@@ -1681,7 +1711,7 @@ void task_autodoFlow(void *pvParameter)
 
     while (autostartIsEnabled)
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "================================================="); // Clear separation between runs
         time_t roundStartTime = getUpTime();
 
         std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
@@ -1739,9 +1769,27 @@ void task_autodoFlow(void *pvParameter)
 
         if (auto_interval > fr_delta_ms)
         {
-            const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
-            ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long)xDelay);
-            vTaskDelay(xDelay);
+            if (deep_sleep_state) {
+                const TickType_t xDelay = (10000 / portTICK_PERIOD_MS);
+                vTaskDelay(xDelay);
+
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Deep sleep for " + std::to_string(auto_interval - (long)fr_delta_ms - (long)xDelay) + "ms");
+                esp_sleep_enable_timer_wakeup((auto_interval - (long)fr_delta_ms - (long)xDelay) * 1000);
+#if CONFIG_IDF_TARGET_ESP32
+                // Isolate GPIO12 pin from external circuits. This is needed for modules
+                // which have an external pull-up resistor on GPIO12 (such as ESP32-WROVER)
+                // to minimize current consumption.
+                rtc_gpio_isolate(GPIO_NUM_12);
+                rtc_gpio_isolate(GPIO_NUM_4);
+#endif
+                esp_deep_sleep_start();
+            }
+            else {
+                deep_sleep_state = true;
+                const TickType_t xDelay = (auto_interval - (long)fr_delta_ms) / portTICK_PERIOD_MS;
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Autoflow: sleep for: " + std::to_string((long)xDelay) + "ms");
+                vTaskDelay(xDelay);
+            }
         }
     }
 
@@ -1775,6 +1823,16 @@ void InitializeFlowTask(void)
     ESP_LOGD(TAG, "getESPHeapInfo: %s", getESPHeapInfo().c_str());
 }
 
+esp_err_t handler_stay_online(httpd_req_t *req)
+{
+    set_deep_sleep_state(false);
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);
+
+    return ESP_OK;
+}
+
 void register_server_main_flow_task_uri(httpd_handle_t server)
 {
     ESP_LOGI(TAG, "server_main_flow_task - Registering URI handlers");
@@ -1782,9 +1840,15 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     httpd_uri_t camuri = {};
     camuri.method = HTTP_GET;
 
+    camuri.uri = "/stay_online";
+    camuri.method = HTTP_GET;
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_stay_online);
+    camuri.user_ctx = (void *)"StayOnline";
+    httpd_register_uri_handler(server, &camuri);
+	
     camuri.uri = "/doinit";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_init);
-    camuri.user_ctx = (void *)"Light On";
+    camuri.user_ctx = (void *)"Doinit";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/setPreValue"
@@ -1805,44 +1869,44 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
 
     camuri.uri = "/statusflow.html";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_statusflow);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"StatusFlow";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/statusflow";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_statusflow);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"StatusFlow";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/cpu_temperature"
     camuri.uri = "/cputemp.html";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_cputemp);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"Temperature";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/cpu_temperature";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_cputemp);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"Temperature";
     httpd_register_uri_handler(server, &camuri);
 
     // Legacy API => New: "/rssi"
     camuri.uri = "/rssi.html";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_rssi);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"RSSI";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/rssi";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_rssi);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"RSSI";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/date";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_current_date);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"Date";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/uptime";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_uptime);
-    camuri.user_ctx = (void *)"Light Off";
+    camuri.user_ctx = (void *)"Uptime";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/editflow";
@@ -1879,13 +1943,13 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
 
     camuri.uri = "/stream";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_stream);
-    camuri.user_ctx = (void *)"stream";
+    camuri.user_ctx = (void *)"Stream";
     httpd_register_uri_handler(server, &camuri);
 
     /** will handle metrics requests */
     camuri.uri = "/metrics";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_openmetrics);
-    camuri.user_ctx = (void *)"metrics";
+    camuri.user_ctx = (void *)"Metrics";
     httpd_register_uri_handler(server, &camuri);
 
     /** when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
