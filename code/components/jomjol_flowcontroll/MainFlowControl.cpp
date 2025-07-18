@@ -337,6 +337,8 @@ esp_err_t setCFstatusToCam(void)
 
 esp_err_t handler_get_heap(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_get_heap - Start");
     ESP_LOGD(TAG, "handler_get_heap uri: %s", req->uri);
@@ -378,6 +380,8 @@ esp_err_t handler_get_heap(httpd_req_t *req)
 
 esp_err_t handler_init(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_init - Start");
     ESP_LOGD(TAG, "handler_doinit uri: %s", req->uri);
@@ -401,6 +405,8 @@ esp_err_t handler_init(httpd_req_t *req)
 
 esp_err_t handler_stream(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_stream - Start");
     ESP_LOGD(TAG, "handler_stream uri: %s", req->uri);
@@ -436,6 +442,8 @@ esp_err_t handler_stream(httpd_req_t *req)
 
 esp_err_t handler_flow_start(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_flow_start - Start");
 #endif
@@ -467,6 +475,8 @@ esp_err_t handler_flow_start(httpd_req_t *req)
 #ifdef ENABLE_MQTT
 esp_err_t MQTTCtrlFlowStart(std::string _topic)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Start");
 #endif
@@ -493,6 +503,8 @@ esp_err_t MQTTCtrlFlowStart(std::string _topic)
 
 esp_err_t handler_json(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_json - Start");
 #endif
@@ -545,6 +557,8 @@ esp_err_t handler_json(httpd_req_t *req)
 */
 esp_err_t handler_openmetrics(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_openmetrics - Start");
 #endif
@@ -594,6 +608,8 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
 
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler water counter - Start");
 #endif
@@ -831,6 +847,8 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
 esp_err_t handler_editflow(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_editflow - Start");
 #endif
@@ -1462,6 +1480,8 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
 esp_err_t handler_statusflow(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_statusflow - Start");
 #endif
@@ -1495,6 +1515,8 @@ esp_err_t handler_statusflow(httpd_req_t *req)
 
 esp_err_t handler_cputemp(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_cputemp - Start");
 #endif
@@ -1511,6 +1533,8 @@ esp_err_t handler_cputemp(httpd_req_t *req)
 
 esp_err_t handler_rssi(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_rssi - Start");
 #endif
@@ -1535,6 +1559,8 @@ esp_err_t handler_rssi(httpd_req_t *req)
 
 esp_err_t handler_current_date(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_uptime - Start");
 #endif
@@ -1557,6 +1583,8 @@ esp_err_t handler_current_date(httpd_req_t *req)
 
 esp_err_t handler_uptime(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_uptime - Start");
 #endif
@@ -1575,6 +1603,8 @@ esp_err_t handler_uptime(httpd_req_t *req)
 
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
+    set_deep_sleep_state(false);
+	
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_prevalue - Start");
     ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
@@ -1780,8 +1810,8 @@ void task_autodoFlow(void *pvParameter)
                 // Isolate GPIO12 pin from external circuits. This is needed for modules
                 // which have an external pull-up resistor on GPIO12 (such as ESP32-WROVER)
                 // to minimize current consumption.
-                rtc_gpio_isolate(GPIO_NUM_12);
-                rtc_gpio_isolate(GPIO_NUM_4);
+                // rtc_gpio_isolate(GPIO_NUM_12);
+                // rtc_gpio_isolate(GPIO_NUM_4);
 #endif
                 esp_deep_sleep_start();
             }
