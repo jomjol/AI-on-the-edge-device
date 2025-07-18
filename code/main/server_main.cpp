@@ -228,15 +228,13 @@ esp_err_t hello_main_handler(httpd_req_t *req)
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
-    const char *filename = get_path_from_uri(filepath, base_path,
-                                             req->uri - 1, sizeof(filepath));    
+    const char *filename = get_path_from_uri(filepath, base_path, req->uri - 1, sizeof(filepath));    
     ESP_LOGD(TAG, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     if ((strcmp(req->uri, "/") == 0))
     {
-        {
-            filetosend = filetosend + "/html/index.html";
-        }
+        set_deep_sleep_state(false);
+        filetosend = filetosend + "/html/index.html";
     }
     else
     {
@@ -317,8 +315,7 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     char *base_path = (char*) req->user_ctx;
     std::string filetosend(base_path);
 
-    const char *filename = get_path_from_uri(filepath, base_path,
-                                             req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
+    const char *filename = get_path_from_uri(filepath, base_path, req->uri  + sizeof("/img_tmp/") - 1, sizeof(filepath));    
     ESP_LOGD(TAG, "1 uri: %s, filename: %s, filepath: %s", req->uri, filename, filepath);
 
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
@@ -445,7 +442,6 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &main_rest_handle);
-
 }
 
 
@@ -460,7 +456,7 @@ httpd_handle_t start_webserver(void)
     config.server_port = 80;
     config.ctrl_port = 32768;
     config.max_open_sockets = 5; //20210921 --> previously 7   
-    config.max_uri_handlers = 41; // Make sure this fits all URI handlers. Memory usage in bytes: 6*max_uri_handlers
+    config.max_uri_handlers = 42; // Make sure this fits all URI handlers. Memory usage in bytes: 6*max_uri_handlers
     config.max_resp_headers = 8;                        
     config.backlog_conn = 5;                        
     config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               
@@ -496,8 +492,7 @@ void stop_webserver(httpd_handle_t server)
 }
 
 
-void disconnect_handler(void* arg, esp_event_base_t event_base, 
-                               int32_t event_id, void* event_data)
+void disconnect_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
@@ -508,8 +503,7 @@ void disconnect_handler(void* arg, esp_event_base_t event_base,
 }
 
 
-void connect_handler(void* arg, esp_event_base_t event_base, 
-                            int32_t event_id, void* event_data)
+void connect_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {
