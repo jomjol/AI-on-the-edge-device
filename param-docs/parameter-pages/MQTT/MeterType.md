@@ -13,6 +13,7 @@ List of supported options:
 - `water_m3` (uses `m^3/h` as rate)
 - `water_l`  (uses `l/h` as rate, not officially supported by Homeassistant!)
 - `water_gal`  (uses `gal/h` as rate, not officially supported by Homeassistant!)
+- `water_gal_min`  (uses `gal/min` as rate)
 - `water_ft3` (uses `ft^3/min` as rate)
 - `gas_m3` (uses `m^3/h` as rate)
 - `gas_ft3` (uses `ft^3/min` as rate)
