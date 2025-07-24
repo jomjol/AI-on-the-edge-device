@@ -162,7 +162,7 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
                 mqttServer_setMeterType("water", "gal", "h", "gal/h");
             }
             else if (toUpper(splitted[1]) == "WATER_GAL_MIN") {
-                mqttServer_setMeterType("water", "gal", "min", "gal/min");
+                mqttServer_setMeterType("water", "gal", "min", "gal/min"); // min = Minutes
             }
             else if (toUpper(splitted[1]) == "GAS_M3") {
                 mqttServer_setMeterType("gas", "m³", "h", "m³/h");
