@@ -291,10 +291,12 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
         TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
         vTaskDelay(cam_xDelay);
 
+        SetCamDeepSleep(true);
         return ESP_OK;
     }
     else
     {
+        SetCamDeepSleep(true);
         return ESP_FAIL;
     }
 }
@@ -341,11 +343,13 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
 
         // CCstatus.ImageSharpness = s->status.sharpness; // gibt -1 zurück, da es nicht unterstützt wird
         CCstatus.ImageDenoiseLevel = s->status.denoise;
-
+	    
+        SetCamDeepSleep(true);
         return ESP_OK;
     }
     else
     {
+        SetCamDeepSleep(true);
         return ESP_FAIL;
     }
 }
@@ -411,7 +415,6 @@ int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
 {
     SetCamDeepSleep(false);
-	
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
