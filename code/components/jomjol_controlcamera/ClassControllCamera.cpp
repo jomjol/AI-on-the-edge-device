@@ -361,14 +361,14 @@ int CCamera::SetCamDeepSleep(bool enable)
         sensor_t *sensor = esp_camera_sensor_get();
         if (sensor != NULL) {
             std::string state = "unsupported";
-            if (Camera.CamSensor_id == OV2640_PID) {
+            if (CCstatus.CamSensor_id == OV2640_PID) {
                 // OV2640 Standby mode
                 uint8_t reg = sensor->get_reg(sensor, 0x09, 0xFF);
                 ret = sensor->set_reg(sensor, 0x09, 0xFF, enable ? (reg |= 0x10) : (reg &= ~0x10));
                 state = enable ? "enabled" : "disabled";
             }
 #if CONFIG_OV3660_SUPPORT || CONFIG_OV5640_SUPPORT
-            else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID)) {
+            else if ((CCstatus.CamSensor_id == OV3660_PID) || (CCstatus.CamSensor_id == OV5640_PID)) {
                 // OV3660/OV5640 DeepSleep mode
                 ret = sensor->set_reg(sensor, 0x3008, 0x42, enable ? 0x42 : 0x02);
                 state = enable ? "enabled" : "disabled";
