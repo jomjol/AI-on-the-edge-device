@@ -81,6 +81,7 @@ protected:
 
 public:
     int LedIntensity = 4096;
+    bool CameraDeepSleepEnable = false;
 
     CCamera(void);
     esp_err_t InitCam(void);
@@ -90,6 +91,8 @@ public:
 
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);
+
+    int SetCamDeepSleep(bool enable);
 
     int SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel);
     void SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel);
