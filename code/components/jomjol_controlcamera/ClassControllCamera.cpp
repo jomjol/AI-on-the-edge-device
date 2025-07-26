@@ -244,6 +244,7 @@ bool CCamera::getCameraInitSuccessful(void)
 
 esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 {
+    SetCamDeepSleep(false);
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
@@ -300,6 +301,7 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
 
 esp_err_t CCamera::getSensorDatenToCCstatus(void)
 {
+    SetCamDeepSleep(false);
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
@@ -348,11 +350,46 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
     }
 }
 
+// only available on OV3660 and OV5640
+// https://github.com/espressif/esp32-camera/issues/672
+int CCamera::SetCamDeepSleep(bool enable)
+{
+    int ret = 0;
+    if (Camera.CameraDeepSleepEnable != enable) {
+        Camera.CameraDeepSleepEnable = enable;
+
+        sensor_t *sensor = esp_camera_sensor_get();
+        if (sensor != NULL) {
+            std::string state = "unsupported";
+            if (Camera.CamSensor_id == OV2640_PID) {
+                // OV2640 Standby mode
+                uint8_t reg = sensor->get_reg(sensor, 0x09, 0xFF);
+                ret = sensor->set_reg(sensor, 0x09, 0xFF, enable ? (reg |= 0x10) : (reg &= ~0x10));
+                state = enable ? "enabled" : "disabled";
+            }
+#if CONFIG_OV3660_SUPPORT || CONFIG_OV5640_SUPPORT
+            else if ((Camera.CamSensor_id == OV3660_PID) || (Camera.CamSensor_id == OV5640_PID)) {
+                // OV3660/OV5640 DeepSleep mode
+                ret = sensor->set_reg(sensor, 0x3008, 0x42, enable ? 0x42 : 0x02);
+                state = enable ? "enabled" : "disabled";
+            }
+#endif
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep: " + state);
+            vTaskDelay(200 / portTICK_PERIOD_MS);
+        }
+        else {
+            return -1;
+        }
+    }
+
+    return ret;
+}
+
 // on the OV5640, gainceiling must be set with the real value (x2>>>gainceilingLevel = 2, .... x128>>>gainceilingLevel = 128)
 int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 {
-	int ret = 0;
-		
+    int ret = 0;
+    SetCamDeepSleep(false);
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ret = s->set_gainceiling(s, gainceilingLevel); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
@@ -360,9 +397,7 @@ int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
     else
     {
         int _level = (1 << ((int)gainceilingLevel + 1));
-
         ret = s->set_reg(s, 0x3A18, 0xFF, (_level >> 8) & 3) || s->set_reg(s, 0x3A19, 0xFF, _level & 0xFF);
-
         if (ret == 0)
         {
             // ESP_LOGD(TAG, "Set gainceiling to: %d", gainceilingLevel);
@@ -375,6 +410,8 @@ int CCamera::SetCamGainceiling(sensor_t *s, gainceiling_t gainceilingLevel)
 
 void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
 {
+    SetCamDeepSleep(false);
+	
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
@@ -415,6 +452,8 @@ void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
 
 void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
 {
+    SetCamDeepSleep(false);
+	
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ov2640_set_special_effect(s, specialEffect);
@@ -427,6 +466,8 @@ void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
 
 void CCamera::SetCamContrastBrightness(sensor_t *s, int _contrast, int _brightness)
 {
+    SetCamDeepSleep(false);
+	
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ov2640_set_contrast_brightness(s, _contrast, _brightness);
@@ -501,6 +542,7 @@ void CCamera::SanitizeZoomParams(int imageSize, int frameSizeX, int frameSizeY, 
 
 void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip)
 {
+    SetCamDeepSleep(false);
     sensor_t *s = esp_camera_sensor_get();
 
     if (s != NULL)
@@ -570,6 +612,7 @@ void CCamera::SetZoomSize(bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, in
 
 void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, int zoomOffsetX, int zoomOffsetY, int imageSize, int imageVflip)
 {
+    SetCamDeepSleep(false);
     sensor_t *s = esp_camera_sensor_get();
 
     // OV2640 has no lower limit on jpeg quality
@@ -593,6 +636,7 @@ void CCamera::SetQualityZoomSize(int qual, framesize_t resol, bool zoomEnabled, 
 
 void CCamera::SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip)
 {
+    SetCamDeepSleep(false);
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         s->set_res_raw(s, 0, 0, 0, 0, xOffset, yOffset, xTotal, yTotal, xOutput, yOutput, false, false);
@@ -638,7 +682,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - Start");
 #endif
-
+    SetCamDeepSleep(false);
     _Image->EmptyImage(); // Delete previous stored raw image -> black image
 
     LEDOnOff(true); // Status-LED on
@@ -666,7 +710,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
         doReboot();
-
+        SetCamDeepSleep(true);
         return ESP_FAIL;
     }
 
@@ -689,6 +733,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     }
 
     esp_camera_fb_return(fb);
+    SetCamDeepSleep(true);
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
@@ -750,6 +795,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
+    SetCamDeepSleep(false);
     string ftype;
 
     LEDOnOff(true); // Status-LED on
@@ -772,7 +818,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         // doReboot();
-
+        SetCamDeepSleep(true);
         return ESP_FAIL;
     }
 
@@ -842,6 +888,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     }
 
     esp_camera_fb_return(fb);
+    SetCamDeepSleep(true);
 
     if (delay > 0)
     {
@@ -853,6 +900,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
 esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 {
+    SetCamDeepSleep(false);
+	
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
@@ -878,7 +927,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
         //        doReboot();
-
+        SetCamDeepSleep(true);
         return ESP_FAIL;
     }
 
@@ -919,6 +968,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     }
 
     esp_camera_fb_return(fb);
+    SetCamDeepSleep(true);
     int64_t fr_end = esp_timer_get_time();
 
     ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
@@ -933,6 +983,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
 esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 {
+    SetCamDeepSleep(false);
+	
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start;
@@ -1012,6 +1064,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
         }
     }
 
+    SetCamDeepSleep(true);
     LEDOnOff(false);   // Status-LED off
     LightOnOff(false); // Flash-LED off
 
