@@ -227,3 +227,99 @@ esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filename)
     /* For any other type always set as plain text */
     return httpd_resp_set_type(req, "text/plain");
 }
+
+void delete_all_in_directory_alt(std::string _directory)
+{
+    struct dirent *entry;
+    DIR *dir = opendir(_directory.c_str());
+    std::string filename;
+
+    if (!dir)
+    {
+        ESP_LOGE(TAG, "Failed to stat dir: %s", _directory.c_str());
+        return;
+    }
+
+    /* Iterate over all files / folders and fetch their names and sizes */
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (!(entry->d_type == DT_DIR))
+        {
+            if (strcmp("wlan.ini", entry->d_name) != 0)
+            {
+                // auf wlan.ini soll nicht zugegriffen werden !!!
+                filename = _directory + "/" + std::string(entry->d_name);
+                ESP_LOGE(TAG, "Deleting file: %s", filename.c_str());
+                /* Delete file */
+                unlink(filename.c_str());
+            }
+        };
+    }
+    closedir(dir);
+}
+
+void delete_all_in_directory(std::string _directory)
+{
+    struct dirent *entry;
+    DIR *pdir = opendir(_directory.c_str());
+    std::string filename;
+
+    if (!pdir)
+    {
+        ESP_LOGE(TAG, "Failed to stat dir: %s", _directory.c_str());
+        return;
+    }
+
+    // Iterate over all files / folders and fetch their names and sizes
+    while ((entry = readdir(pdir)) != NULL)
+    {
+        filename = _directory + "/" + std::string(entry->d_name);
+
+        if (entry->d_type == DT_DIR)
+        {
+            ESP_LOGD(TAG, "Deleting Folder: %s", filename.c_str());
+            removeFolder(filename.c_str(), TAG);
+        }
+        else
+        {
+            if (strcmp("wlan.ini", entry->d_name) != 0)
+            {
+                // wlan.ini should not be accessed !!!
+                ESP_LOGD(TAG, "Deleting File: %s", filename.c_str());
+                unlink(filename.c_str()); // Delete file
+            }
+        }
+    }
+
+    closedir(pdir);
+}
+
+void delete_all_file_in_directory(std::string _directory)
+{
+    struct dirent *entry;
+    DIR *pdir = opendir(_directory.c_str());
+    std::string filename;
+
+    if (!pdir)
+    {
+        ESP_LOGD(TAG, "Failed to stat dir: %s", _directory.c_str());
+        return;
+    }
+
+    // Iterate over all files / folders and fetch their names and sizes
+    while ((entry = readdir(pdir)) != NULL)
+    {
+        if (!(entry->d_type == DT_DIR))
+        {
+            if (strcmp("wlan.ini", entry->d_name) != 0)
+            {
+                // wlan.ini should not be accessed !!!
+                filename = _directory + "/" + std::string(entry->d_name);
+                unlink(filename.c_str()); // Delete file
+                ESP_LOGD(TAG, "Deleting file: %s", filename.c_str());
+            }
+        };
+    }
+
+    closedir(pdir);
+}

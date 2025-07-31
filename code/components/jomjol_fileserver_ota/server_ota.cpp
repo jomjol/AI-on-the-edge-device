@@ -28,6 +28,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/rel
 
 #include "MainFlowControl.h"
 #include "server_file.h"
+#include "server_help.h"
 #include "server_GPIO.h"
 #ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
@@ -67,9 +68,7 @@ static void infinite_loop(void)
 void task_do_Update_ZIP(void *pvParameter)
 {
     StatusLED(AP_OR_OTA, 1, true); // Signaling an OTA update
-
     std::string filetype = toUpper(getFileType(_file_name_update));
-
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
 
     if (filetype == "ZIP")
@@ -147,7 +146,8 @@ void CheckUpdate()
 
     xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY + 1, NULL);
     while (1)
-    { // wait until reboot within task_do_Update_ZIP
+    {
+        // wait until reboot within task_do_Update_ZIP
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -169,13 +169,10 @@ static bool ota_update_task(std::string fn)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Configured OTA boot partition at offset " + to_string(configured->address) + ", but running from offset " + to_string(running->address));
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "(This can happen if either the OTA boot data or preferred boot image become somehow corrupted.)");
     }
-    ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-             running->type, running->subtype, (unsigned int)running->address);
+    ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)", running->type, running->subtype, (unsigned int)running->address);
 
     update_partition = esp_ota_get_next_update_partition(NULL);
-    ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
-             update_partition->subtype, (unsigned int)update_partition->address);
-    //    assert(update_partition != NULL);
+    ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x", update_partition->subtype, (unsigned int)update_partition->address);
 
     int binary_file_length = 0;
 
@@ -187,7 +184,8 @@ static bool ota_update_task(std::string fn)
     FILE *f = fopen(fn.c_str(), "rb"); // previously only "r
 
     if (f == NULL)
-    { // File does not exist
+    {
+        // File does not exist
         return false;
     }
 
@@ -236,12 +234,6 @@ static bool ota_update_task(std::string fn)
                         }
                     }
 
-                    /*
-                                        if (memcmp(new_app_info.version, running_app_info.version, sizeof(new_app_info.version)) == 0) {
-                                            LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Current running version is the same as a new. We will not continue the update");
-                                            infinite_loop();
-                                        }
-                    */
                     image_header_was_checked = true;
 
                     err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &update_handle);
@@ -268,10 +260,8 @@ static bool ota_update_task(std::string fn)
         }
         else if (data_read == 0)
         {
-            //
             // * As esp_http_client_read never returns negative error code, we rely on
             // * `errno` to check for underlying transport connectivity closure if any
-            //
             if (errno == ECONNRESET || errno == ENOTCONN)
             {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Connection closed, errno = " + to_string(errno));
@@ -300,8 +290,6 @@ static bool ota_update_task(std::string fn)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_set_boot_partition failed (" + string(esp_err_to_name(err)) + ")!");
     }
-    //    ESP_LOGI(TAG, "Prepare to restart system!");
-    //    esp_restart();
 
     return true;
 }
@@ -496,33 +484,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
             return ESP_OK;
         }
 
-        /*
-                if (filetype == "BIN")
-                {
-                    const char* resp_str;
-
-                    DeleteMainFlowTask();
-                    gpio_handler_deinit();
-                    if (ota_update_task(fn))
-                    {
-                        std::string zw = "reboot\n";
-                        httpd_resp_sendstr_chunk(req, zw.c_str());
-                        httpd_resp_sendstr_chunk(req, NULL);
-                        ESP_LOGD(TAG, "Send reboot");
-                        return ESP_OK;
-                    }
-
-                    resp_str = "Error during Firmware Update!!!\nPlease check output of console.";
-                    httpd_resp_send(req, resp_str, strlen(resp_str));
-
-                    #ifdef DEBUG_DETAIL_ON
-                        LogFile.WriteHeapInfo("handler_ota_update - Done");
-                    #endif
-
-                    return ESP_OK;
-                }
-        */
-
         std::string zw = "Update failed - no valid file specified (zip, bin, tfl, tlite)!";
         httpd_resp_sendstr_chunk(req, zw.c_str());
         httpd_resp_sendstr_chunk(req, NULL);
@@ -576,23 +537,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
     httpd_resp_send_chunk(req, NULL, 0);
 
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ota without parameter - should not be the case!");
-
-    /*
-        const char* resp_str;
-
-        DeleteMainFlowTask();
-        gpio_handler_deinit();
-        if (ota_update_task(fn))
-        {
-            resp_str = "Firmware Update Successfull! You can restart now.";
-        }
-        else
-        {
-            resp_str = "Error during Firmware Update!!! Please check console output.";
-        }
-
-        httpd_resp_send(req, resp_str, strlen(resp_str));
-    */
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_ota_update - Done");

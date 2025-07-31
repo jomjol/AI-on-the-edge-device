@@ -240,8 +240,8 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     httpd_resp_sendstr_chunk(req, "<script type=\"text/javascript\">initFileServer();</script>");
 
     std::string temp_dirpath = std::string(dirpath);
-    temp_dirpath = temp_dirpath.substr(8, temp_dirpath.length() - 8);
-    temp_dirpath = "/delete/" + temp_dirpath + "?task=deldircontent";
+    temp_dirpath = temp_dirpath.substr(7, temp_dirpath.length() - 7);
+    temp_dirpath = "/delete" + temp_dirpath + "?task=deldircontent";
 
     // Send file-list table definition and column labels
     httpd_resp_sendstr_chunk(req, "<table id=\"files_table\">"
@@ -929,10 +929,17 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File does not exist: " + string(filename));
         }
 
-        /* Delete file */
-        unlink(filepath);
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File deleted: " + string(filename));
-        ESP_LOGI(TAG, "File deletion completed");
+        // Delete file or folder
+        if (removeFolder(filepath, TAG) != -1)
+        {
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Folder deleted: " + std::string(filename));
+        }
+        else
+        {
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File deleted: " + std::string(filename));
+            unlink(filepath);
+        }
+        ESP_LOGD(TAG, "File/Folder deletion completed");
 
         directory = std::string(filepath);
         size_t temp_size = directory.find("/");
@@ -979,36 +986,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     httpd_resp_sendstr(req, "File successfully deleted");
 
     return ESP_OK;
-}
-
-void delete_all_in_directory(std::string _directory)
-{
-    struct dirent *entry;
-    DIR *dir = opendir(_directory.c_str());
-    std::string filename;
-
-    if (!dir)
-    {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to stat dir: " + _directory);
-        return;
-    }
-
-    /* Iterate over all files / folders and fetch their names and sizes */
-    while ((entry = readdir(dir)) != NULL)
-    {
-        if (!(entry->d_type == DT_DIR))
-        {
-            if (strcmp("wlan.ini", entry->d_name) != 0)
-            {
-                // auf wlan.ini soll nicht zugegriffen werden !!!
-                filename = _directory + "/" + std::string(entry->d_name);
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deleting file: " + filename);
-                /* Delete file */
-                unlink(filename.c_str());
-            }
-        };
-    }
-    closedir(dir);
 }
 
 std::string unzip_new(std::string _in_zip_file, std::string _html_tmp, std::string _html_final, std::string _target_bin, std::string _main, bool _initial_setup)
