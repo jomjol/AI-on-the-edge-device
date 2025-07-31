@@ -2101,6 +2101,19 @@
             <td>$TOOLTIP_System_CPUFrequency</td>
         </tr>
 
+        <tr class="expert" unused_id="System_EspDeepSleep">
+            <td class="indent1">
+                <class id="System_EspDeepSleep_text" style="color:black;">DeepSleep</class>
+            </td>
+            <td>
+                <select id="System_EspDeepSleep_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
         <tr>
             <td class="indent1">
                 <class id="System_Tooltip_text" style="color:black;">Tooltip</class>
@@ -2409,12 +2422,13 @@ function UpdateInput() {
     WriteParameter(param, category, "Debug", "LogLevel", false);
     WriteParameter(param, category, "Debug", "LogfilesRetention", false);
 
-    WriteParameter(param, category, "System", "Tooltip", false);
     WriteParameter(param, category, "System", "TimeZone", true);
     WriteParameter(param, category, "System", "Hostname", true);
     WriteParameter(param, category, "System", "TimeServer", true);
     WriteParameter(param, category, "System", "RSSIThreshold", true);
     WriteParameter(param, category, "System", "CPUFrequency", true);
+    WriteParameter(param, category, "System", "EspDeepSleep", false);
+    WriteParameter(param, category, "System", "Tooltip", false);
 
     WriteModelFiles();
 }
@@ -2585,12 +2599,13 @@ function ReadParameterAll() {
     ReadParameter(param, "Debug", "LogLevel", false);
     ReadParameter(param, "Debug", "LogfilesRetention", false);
 
-    ReadParameter(param, "System", "Tooltip", false);
     ReadParameter(param, "System", "TimeZone", true);
     ReadParameter(param, "System", "Hostname", true);
     ReadParameter(param, "System", "TimeServer", true);
     ReadParameter(param, "System", "RSSIThreshold", true);
     ReadParameter(param, "System", "CPUFrequency", true);
+    ReadParameter(param, "System", "EspDeepSleep", false);
+    ReadParameter(param, "System", "Tooltip", false);
 
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);

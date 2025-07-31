@@ -45,3 +45,4 @@ CACert
 ValidateServerCert
 ClientCert
 ClientKey
+EspDeepSleep

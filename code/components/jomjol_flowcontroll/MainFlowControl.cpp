@@ -290,7 +290,7 @@ esp_err_t setCFstatusToCam(void)
         // s->set_contrast(s, CFstatus.ImageContrast);     // -2 to 2
         // s->set_brightness(s, CFstatus.ImageBrightness); // -2 to 2
         Camera.SetCamContrastBrightness(s, CFstatus.ImageContrast, CFstatus.ImageBrightness);
-		
+
         s->set_saturation(s, CFstatus.ImageSaturation); // -2 to 2
 
         s->set_quality(s, CFstatus.ImageQuality); // 0 - 63
@@ -338,7 +338,7 @@ esp_err_t setCFstatusToCam(void)
 esp_err_t handler_get_heap(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_get_heap - Start");
     ESP_LOGD(TAG, "handler_get_heap uri: %s", req->uri);
@@ -381,7 +381,7 @@ esp_err_t handler_get_heap(httpd_req_t *req)
 esp_err_t handler_init(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_init - Start");
     ESP_LOGD(TAG, "handler_doinit uri: %s", req->uri);
@@ -406,7 +406,7 @@ esp_err_t handler_init(httpd_req_t *req)
 esp_err_t handler_stream(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_stream - Start");
     ESP_LOGD(TAG, "handler_stream uri: %s", req->uri);
@@ -443,7 +443,7 @@ esp_err_t handler_stream(httpd_req_t *req)
 esp_err_t handler_flow_start(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_flow_start - Start");
 #endif
@@ -476,7 +476,7 @@ esp_err_t handler_flow_start(httpd_req_t *req)
 esp_err_t MQTTCtrlFlowStart(std::string _topic)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("MQTTCtrlFlowStart - Start");
 #endif
@@ -504,7 +504,7 @@ esp_err_t MQTTCtrlFlowStart(std::string _topic)
 esp_err_t handler_json(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_json - Start");
 #endif
@@ -540,25 +540,25 @@ esp_err_t handler_json(httpd_req_t *req)
 }
 
 /**
- * Generates a http response containing the OpenMetrics (https://openmetrics.io/) text wire format 
+ * Generates a http response containing the OpenMetrics (https://openmetrics.io/) text wire format
  * according to https://github.com/OpenObservability/OpenMetrics/blob/main/specification/OpenMetrics.md#text-format.
- * 
+ *
  * A MetricFamily with a Metric for each Sequence is provided. If no valid value is available, the metric is not provided.
  * MetricPoints are provided without a timestamp. Additional metrics with some device information is also provided.
- * 
+ *
  * The metric name prefix is 'ai_on_the_edge_device_'.
- * 
+ *
  * example configuration for Prometheus (`prometheus.yml`):
- * 
+ *
  *    - job_name: watermeter
  *      static_configs:
  *        - targets: ['watermeter.fritz.box']
- * 
-*/
+ *
+ */
 esp_err_t handler_openmetrics(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_openmetrics - Start");
 #endif
@@ -576,16 +576,16 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
         string response = createSequenceMetrics(metricNamePrefix, flowctrl.getNumbers());
 
         // CPU Temperature
-        response += createMetric(metricNamePrefix + "_cpu_temperature_celsius", "current cpu temperature in celsius", "gauge", std::to_string((int)temperatureRead())); 
+        response += createMetric(metricNamePrefix + "_cpu_temperature_celsius", "current cpu temperature in celsius", "gauge", std::to_string((int)temperatureRead()));
 
         // WiFi signal strength
-        response += createMetric(metricNamePrefix + "_rssi_dbm", "current WiFi signal strength in dBm", "gauge", std::to_string(get_WIFI_RSSI())); 
+        response += createMetric(metricNamePrefix + "_rssi_dbm", "current WiFi signal strength in dBm", "gauge", std::to_string(get_WIFI_RSSI()));
 
         // memory info
-        response += createMetric(metricNamePrefix + "_memory_heap_free_bytes", "available heap memory", "gauge", std::to_string(getESPHeapSize())); 
+        response += createMetric(metricNamePrefix + "_memory_heap_free_bytes", "available heap memory", "gauge", std::to_string(getESPHeapSize()));
 
         // device uptime
-        response += createMetric(metricNamePrefix + "_uptime_seconds", "device uptime in seconds", "gauge", std::to_string((long)getUpTime())); 
+        response += createMetric(metricNamePrefix + "_uptime_seconds", "device uptime in seconds", "gauge", std::to_string((long)getUpTime()));
 
         // data aquisition round
         response += createMetric(metricNamePrefix + "_rounds_total", "data aquisition rounds since device startup", "counter", std::to_string(countRounds));
@@ -609,7 +609,7 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler water counter - Start");
 #endif
@@ -795,7 +795,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                     std::stringstream stream;
                     stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
                     zw = stream.str();
-                    
+
                     // Numbers greater than 10 and less than 0 indicate NaN, since a Roi can only have values ​​from 0 to 9.
                     if ((std::stod(zw) >= 10) || (std::stod(zw) < 0))
                     {
@@ -848,7 +848,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 esp_err_t handler_editflow(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_editflow - Start");
 #endif
@@ -1040,49 +1040,56 @@ esp_err_t handler_editflow(httpd_req_t *req)
                     int _aecgc_ = std::stoi(_valuechar);
                     switch (_aecgc_)
                     {
-                        case 1:
-                            CFstatus.ImageGainceiling = GAINCEILING_4X; 
-                            break;
-                        case 2:
-                            CFstatus.ImageGainceiling = GAINCEILING_8X; 
-                            break;
-                        case 3:
-                            CFstatus.ImageGainceiling = GAINCEILING_16X; 
-                            break;
-                        case 4:
-                            CFstatus.ImageGainceiling = GAINCEILING_32X; 
-                            break;
-                        case 5:
-                            CFstatus.ImageGainceiling = GAINCEILING_64X; 
-                            break;
-                        case 6:
-                            CFstatus.ImageGainceiling = GAINCEILING_128X; 
-                            break;
-                        default:
-                            CFstatus.ImageGainceiling = GAINCEILING_2X;
+                    case 1:
+                        CFstatus.ImageGainceiling = GAINCEILING_4X;
+                        break;
+                    case 2:
+                        CFstatus.ImageGainceiling = GAINCEILING_8X;
+                        break;
+                    case 3:
+                        CFstatus.ImageGainceiling = GAINCEILING_16X;
+                        break;
+                    case 4:
+                        CFstatus.ImageGainceiling = GAINCEILING_32X;
+                        break;
+                    case 5:
+                        CFstatus.ImageGainceiling = GAINCEILING_64X;
+                        break;
+                    case 6:
+                        CFstatus.ImageGainceiling = GAINCEILING_128X;
+                        break;
+                    default:
+                        CFstatus.ImageGainceiling = GAINCEILING_2X;
                     }
                 }
                 else
                 {
-                    if (_aecgc == "X4") {
+                    if (_aecgc == "X4")
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_4X;
                     }
-                    else if (_aecgc == "X8") {
+                    else if (_aecgc == "X8")
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_8X;
                     }
-                    else if (_aecgc == "X16") {
+                    else if (_aecgc == "X16")
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_16X;
                     }
-                    else if (_aecgc == "X32") {
+                    else if (_aecgc == "X32")
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_32X;
                     }
-                    else if (_aecgc == "X64") {
+                    else if (_aecgc == "X64")
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_64X;
                     }
-                    else if (_aecgc == "X128") {
+                    else if (_aecgc == "X128")
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_128X;
                     }
-                    else {
+                    else
+                    {
                         CFstatus.ImageGainceiling = GAINCEILING_2X;
                     }
                 }
@@ -1161,25 +1168,32 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_spe == "negative") {
+                    if (_spe == "negative")
+                    {
                         CFstatus.ImageSpecialEffect = 1;
                     }
-                    else if (_spe == "grayscale") {
+                    else if (_spe == "grayscale")
+                    {
                         CFstatus.ImageSpecialEffect = 2;
                     }
-                    else if (_spe == "red") {
+                    else if (_spe == "red")
+                    {
                         CFstatus.ImageSpecialEffect = 3;
                     }
-                    else if (_spe == "green") {
+                    else if (_spe == "green")
+                    {
                         CFstatus.ImageSpecialEffect = 4;
                     }
-                    else if (_spe == "blue") {
+                    else if (_spe == "blue")
+                    {
                         CFstatus.ImageSpecialEffect = 5;
                     }
-                    else if (_spe == "retro") {
+                    else if (_spe == "retro")
+                    {
                         CFstatus.ImageSpecialEffect = 6;
                     }
-                    else {
+                    else
+                    {
                         CFstatus.ImageSpecialEffect = 0;
                     }
                 }
@@ -1195,19 +1209,24 @@ esp_err_t handler_editflow(httpd_req_t *req)
                 }
                 else
                 {
-                    if (_wbm == "sunny") {
+                    if (_wbm == "sunny")
+                    {
                         CFstatus.ImageWbMode = 1;
                     }
-                    else if (_wbm == "cloudy") {
+                    else if (_wbm == "cloudy")
+                    {
                         CFstatus.ImageWbMode = 2;
                     }
-                    else if (_wbm == "office") {
+                    else if (_wbm == "office")
+                    {
                         CFstatus.ImageWbMode = 3;
                     }
-                    else if (_wbm == "home") {
+                    else if (_wbm == "home")
+                    {
                         CFstatus.ImageWbMode = 4;
                     }
-                    else {
+                    else
+                    {
                         CFstatus.ImageWbMode = 0;
                     }
                 }
@@ -1481,7 +1500,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 esp_err_t handler_statusflow(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_statusflow - Start");
 #endif
@@ -1516,7 +1535,7 @@ esp_err_t handler_statusflow(httpd_req_t *req)
 esp_err_t handler_cputemp(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_cputemp - Start");
 #endif
@@ -1534,7 +1553,7 @@ esp_err_t handler_cputemp(httpd_req_t *req)
 esp_err_t handler_rssi(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_rssi - Start");
 #endif
@@ -1560,7 +1579,7 @@ esp_err_t handler_rssi(httpd_req_t *req)
 esp_err_t handler_current_date(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_uptime - Start");
 #endif
@@ -1584,7 +1603,7 @@ esp_err_t handler_current_date(httpd_req_t *req)
 esp_err_t handler_uptime(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_uptime - Start");
 #endif
@@ -1604,7 +1623,7 @@ esp_err_t handler_uptime(httpd_req_t *req)
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-	
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_prevalue - Start");
     ESP_LOGD(TAG, "handler_prevalue: %s", req->uri);
@@ -1800,7 +1819,8 @@ void task_autodoFlow(void *pvParameter)
 
         if (auto_interval > fr_delta_ms)
         {
-            if (deep_sleep_state) {
+            if (deep_sleep_state && flowctrl.EspDeepSleepEnabled)
+            {
                 const TickType_t xDelay = (10000 / portTICK_PERIOD_MS);
                 vTaskDelay(xDelay);
 
@@ -1815,7 +1835,8 @@ void task_autodoFlow(void *pvParameter)
 #endif
                 esp_deep_sleep_start();
             }
-            else {
+            else
+            {
                 deep_sleep_state = true;
                 const TickType_t xDelay = (auto_interval - (long)fr_delta_ms) / portTICK_PERIOD_MS;
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Autoflow: sleep for: " + std::to_string((long)xDelay) + "ms");
@@ -1876,7 +1897,7 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_stay_online);
     camuri.user_ctx = (void *)"StayOnline";
     httpd_register_uri_handler(server, &camuri);
-	
+
     camuri.uri = "/doinit";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_init);
     camuri.user_ctx = (void *)"Doinit";

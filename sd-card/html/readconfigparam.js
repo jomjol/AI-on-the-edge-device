@@ -287,13 +287,14 @@ function ParseConfig() {
     category[catname] = new Object();
     category[catname]["enabled"] = false;
     category[catname]["found"] = false;
-    param[catname] = new Object();
-    ParamAddValue(param, catname, "Tooltip");	
+    param[catname] = new Object();	
     ParamAddValue(param, catname, "TimeZone");
     ParamAddValue(param, catname, "TimeServer");         
     ParamAddValue(param, catname, "Hostname");   
     ParamAddValue(param, catname, "RSSIThreshold");   
     ParamAddValue(param, catname, "CPUFrequency");
+    ParamAddValue(param, catname, "EspDeepSleep");
+    ParamAddValue(param, catname, "Tooltip");
     ParamAddValue(param, catname, "SetupMode"); 
      
     while (aktline < config_split.length){
@@ -470,6 +471,7 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom) {
 function getCamConfig() {			
     ParseConfig();		
 
+    param["System"]["EspDeepSleep"]["enabled"] = false;
     param["System"]["Tooltip"]["enabled"] = true;
     param["Alignment"]["InitialRotate"]["enabled"] = true;
 			
@@ -504,6 +506,11 @@ function getCamConfig() {
     param["TakeImage"]["CamZoomOffsetY"]["enabled"] = true;
     param["TakeImage"]["CamZoomSize"]["enabled"] = true;
     param["TakeImage"]["LEDIntensity"]["enabled"] = true;
+
+    if (!param["System"]["EspDeepSleep"]["found"]) {
+        param["System"]["EspDeepSleep"]["found"] = true;
+        param["System"]["EspDeepSleep"].value1 = 'false';
+    }
 
     if (!param["System"]["Tooltip"]["found"]) {
         param["System"]["Tooltip"]["found"] = true;
