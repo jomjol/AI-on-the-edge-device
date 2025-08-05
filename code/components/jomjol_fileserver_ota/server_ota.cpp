@@ -30,9 +30,11 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/rel
 #include "server_file.h"
 #include "server_help.h"
 #include "server_GPIO.h"
+
 #ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
 #endif // ENABLE_MQTT
+
 #include "ClassControllCamera.h"
 #include "connect_wlan.h"
 
@@ -577,12 +579,17 @@ void task_reboot(void *DeleteMainFlow)
     Camera.LightOnOff(false);
     StatusLEDOff();
 
-/* Stop service tasks */
+    /* Stop service tasks */
 #ifdef ENABLE_MQTT
     MQTTdestroy_client(true);
 #endif // ENABLE_MQTT
+    
     gpio_handler_destroy();
+
+    Camera.SetCamDeepSleep(false);
+    esp_camera_return_all();
     esp_camera_deinit();
+    
     WIFIDestroy();
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
@@ -606,6 +613,7 @@ void doReboot()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void *)false);
     }
+    
     vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
@@ -615,6 +623,9 @@ void doRebootOTA()
 
     Camera.LightOnOff(false);
     StatusLEDOff();
+
+    Camera.SetCamDeepSleep(false);
+    esp_camera_return_all();
     esp_camera_deinit();
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
