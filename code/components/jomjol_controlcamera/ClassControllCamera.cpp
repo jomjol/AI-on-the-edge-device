@@ -67,7 +67,7 @@ uint8_t *demoImage = NULL;    // Buffer holding the demo image in bytes
 // See https://github.com/espressif/esp32-camera/issues/150#issuecomment-726473652 et al.
 #if !defined(XCLK_FREQ_MHZ)
 // int xclk = 8;
-int xclk = 20; // Orginal value
+int xclk = 10; // Orginal value
 #else
 int xclk = XCLK_FREQ_MHZ;
 #endif
@@ -97,11 +97,11 @@ static camera_config_t camera_config = {
 
     .pixel_format = PIXFORMAT_JPEG, // YUV422,GRAYSCALE,RGB565,JPEG
     .frame_size = FRAMESIZE_VGA,    // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    // .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
     .jpeg_quality = 12,                 // 0-63 lower number means higher quality
     .fb_count = 1,                     // if more than one, i2s runs in continuous mode. Use only with JPEG
     .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
-    .grab_mode = CAMERA_GRAB_LATEST,   // only from new esp32cam version
+    .grab_mode = CAMERA_GRAB_WHEN_EMPTY, // CAMERA_GRAB_LATEST. Sets when buffers should be filled
+    .sccb_i2c_port = 0,
 };
 
 typedef struct
@@ -712,8 +712,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
-        doReboot();
+        
+	esp_camera_fb_return(fb);
         SetCamDeepSleep(true);
+
+	doReboot();
         return ESP_FAIL;
     }
 
@@ -799,8 +802,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
     SetCamDeepSleep(false);
-    string ftype;
-
     LEDOnOff(true); // Status-LED on
 
     if (delay > 0)
@@ -820,8 +821,11 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LightOnOff(false); // Flash-LED off
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
-        // doReboot();
+        
+	esp_camera_fb_return(fb);
         SetCamDeepSleep(true);
+
+	 // doReboot();
         return ESP_FAIL;
     }
 
@@ -837,7 +841,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     ESP_LOGD(TAG, "Save Camera to: %s", nm.c_str());
 #endif
 
-    ftype = toUpper(getFileType(nm));
+    std::string ftype = toUpper(getFileType(nm));
 
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Filetype: %s", ftype.c_str());
@@ -873,7 +877,6 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
     }
 
     FILE *fp = fopen(nm.c_str(), "wb");
-
     if (fp == NULL)
     {
         // If an error occurs during the file creation
@@ -929,8 +932,11 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
-        //        doReboot();
+        
+	esp_camera_fb_return(fb);
         SetCamDeepSleep(true);
+
+	// doReboot();
         return ESP_FAIL;
     }
 
@@ -972,8 +978,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
     esp_camera_fb_return(fb);
     SetCamDeepSleep(true);
+	
     int64_t fr_end = esp_timer_get_time();
-
     ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
 
     if (delay > 0)
@@ -1025,6 +1031,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
         if (!fb)
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToStream: Camera framebuffer not available");
+	    esp_camera_fb_return(fb);
             break;
         }
 
@@ -1068,6 +1075,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     }
 
     SetCamDeepSleep(true);
+	
     LEDOnOff(false);   // Status-LED off
     LightOnOff(false); // Flash-LED off
 
