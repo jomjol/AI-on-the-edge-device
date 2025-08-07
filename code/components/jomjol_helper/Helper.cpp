@@ -308,10 +308,11 @@ bool MakeDir(std::string path)
 {
 	std::string parent;
 
-	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Creating folder " + path + "...");
+	// LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Creating folder " + path + "...");
+	ESP_LOGD(TAG, "Creating folder %s...", path.c_str());
 
 	bool bSuccess = false;
-	int nRC = ::mkdir(path.c_str(), 0775);
+	int nRC = mkdir(path.c_str(), 0775);
 
 	if (nRC == -1)
 	{
@@ -320,16 +321,18 @@ bool MakeDir(std::string path)
 		case ENOENT:
 			// parent didn't exist, try to create it
 			parent = path.substr(0, path.find_last_of('/'));
-			LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Need to create parent folder first: " + parent);
+			// LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Need to create parent folder first: " + parent);
+			ESP_LOGD(TAG, "Need to create parent folder first: %s", parent.c_str());
 
 			if (MakeDir(parent))
 			{
 				// Now, try to create again.
-				bSuccess = 0 == ::mkdir(path.c_str(), 0775);
+				bSuccess = 0 == mkdir(path.c_str(), 0775);
 			}
 			else
 			{
-				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create parent folder: " + parent);
+				// LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create parent folder: " + parent);
+				ESP_LOGE(TAG, "Failed to create parent folder: %s", parent.c_str());
 				bSuccess = false;
 			}
 			break;
@@ -340,7 +343,8 @@ bool MakeDir(std::string path)
 			break;
 
 		default:
-			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path + " (errno: " + std::to_string(errno) + ")");
+			// LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create folder: " + path + " (errno: " + std::to_string(errno) + ")");
+			ESP_LOGE(TAG, "Failed to create folder: %s (errno: %s)", path.c_str(), std::to_string(errno).c_str());
 			bSuccess = false;
 			break;
 		}

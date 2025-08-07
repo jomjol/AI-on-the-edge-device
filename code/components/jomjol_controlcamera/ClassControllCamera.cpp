@@ -13,7 +13,7 @@
 #include "server_ota.h"
 #include "server_GPIO.h"
 
-#include "../../include/defines.h"
+#include "defines.h"
 
 #include <esp_event.h>
 #include <esp_log.h>
@@ -95,11 +95,11 @@ static camera_config_t camera_config = {
     .ledc_timer = LEDC_TIMER_0,     // LEDC timer to be used for generating XCLK
     .ledc_channel = LEDC_CHANNEL_0, // LEDC channel to be used for generating XCLK
 
-    .pixel_format = PIXFORMAT_JPEG, // YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_VGA,    // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    .jpeg_quality = 12,                 // 0-63 lower number means higher quality
-    .fb_count = 1,                     // if more than one, i2s runs in continuous mode. Use only with JPEG
-    .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
+    .pixel_format = PIXFORMAT_JPEG,      // YUV422,GRAYSCALE,RGB565,JPEG
+    .frame_size = FRAMESIZE_VGA,         // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .jpeg_quality = 12,                  // 0-63 lower number means higher quality
+    .fb_count = 1,                       // if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_location = CAMERA_FB_IN_PSRAM,   /*!< The location where the frame buffer will be allocated */
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY, // CAMERA_GRAB_LATEST. Sets when buffers should be filled
     .sccb_i2c_port = 0,
 };
@@ -117,7 +117,11 @@ CCamera::CCamera(void)
 #endif
     CCstatus.WaitBeforePicture = 2;
 
-    ledc_init();
+    //if (FLASH_MODE == GPIO_PIN_MODE_OUTPUT_PWM)
+    //{
+        GpioHandler *gpioHandler = gpio_handler_get();
+        gpioHandler->ledc_init(FLASH_GPIO, LEDC_CHANNEL, LEDC_FREQUENCY);
+    //}
 }
 
 esp_err_t CCamera::InitCam(void)
@@ -199,36 +203,6 @@ bool CCamera::testCamera(void)
     return success;
 }
 
-void CCamera::ledc_init(void)
-{
-#ifdef USE_PWM_LEDFLASH
-    // Prepare and then apply the LEDC PWM timer configuration
-    ledc_timer_config_t ledc_timer = {};
-
-    ledc_timer.speed_mode = LEDC_MODE;
-    ledc_timer.timer_num = LEDC_TIMER;
-    ledc_timer.duty_resolution = LEDC_DUTY_RES;
-    ledc_timer.freq_hz = LEDC_FREQUENCY; // Set output frequency at 5 kHz
-    ledc_timer.clk_cfg = LEDC_AUTO_CLK;
-
-    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
-
-    // Prepare and then apply the LEDC PWM channel configuration
-    ledc_channel_config_t ledc_channel = {};
-
-    ledc_channel.speed_mode = LEDC_MODE;
-    ledc_channel.channel = LEDC_CHANNEL;
-    ledc_channel.timer_sel = LEDC_TIMER;
-    ledc_channel.intr_type = LEDC_INTR_DISABLE;
-    ledc_channel.gpio_num = LEDC_OUTPUT_IO;
-    ledc_channel.duty = 0; // Set duty to 0%
-    ledc_channel.hpoint = 0;
-    // ledc_channel.flags.output_invert = LEDC_OUTPUT_INVERT;
-
-    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
-#endif
-}
-
 int CCamera::SetLEDIntensity(int _intrel)
 {
     // CCstatus.ImageLedIntensity = (int)(std::min(std::max((float)0, _intrel), (float)100) / 100 * 8191)
@@ -250,39 +224,39 @@ esp_err_t CCamera::setSensorDatenFromCCstatus(void)
     if (s != NULL)
     {
         s->set_framesize(s, CCstatus.ImageFrameSize);
-		
+
         // s->set_contrast(s, CCstatus.ImageContrast);     // -2 to 2
         // s->set_brightness(s, CCstatus.ImageBrightness); // -2 to 2
         SetCamContrastBrightness(s, CCstatus.ImageContrast, CCstatus.ImageBrightness);
-		
+
         s->set_saturation(s, CCstatus.ImageSaturation); // -2 to 2
 
         s->set_quality(s, CCstatus.ImageQuality); // 0 - 63
-		
+
         // s->set_gainceiling(s, CCstatus.ImageGainceiling); // Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
         SetCamGainceiling(s, CCstatus.ImageGainceiling);
-		
+
         s->set_gain_ctrl(s, CCstatus.ImageAgc);     // 0 = disable , 1 = enable
         s->set_exposure_ctrl(s, CCstatus.ImageAec); // 0 = disable , 1 = enable
-        s->set_hmirror(s, CCstatus.ImageHmirror); // 0 = disable , 1 = enable
-        s->set_vflip(s, CCstatus.ImageVflip);     // 0 = disable , 1 = enable
-		
-        s->set_whitebal(s, CCstatus.ImageAwb);     // 0 = disable , 1 = enable
-        s->set_aec2(s, CCstatus.ImageAec2);       // 0 = disable , 1 = enable
+        s->set_hmirror(s, CCstatus.ImageHmirror);   // 0 = disable , 1 = enable
+        s->set_vflip(s, CCstatus.ImageVflip);       // 0 = disable , 1 = enable
+
+        s->set_whitebal(s, CCstatus.ImageAwb);       // 0 = disable , 1 = enable
+        s->set_aec2(s, CCstatus.ImageAec2);          // 0 = disable , 1 = enable
         s->set_aec_value(s, CCstatus.ImageAecValue); // 0 to 1200
         // s->set_special_effect(s, CCstatus.ImageSpecialEffect); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
         SetCamSpecialEffect(s, CCstatus.ImageSpecialEffect);
-        s->set_wb_mode(s, CCstatus.ImageWbMode);               // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-        s->set_ae_level(s, CCstatus.ImageAeLevel);   // -2 to 2
-		
-        s->set_dcw(s, CCstatus.ImageDcw); // 0 = disable , 1 = enable
-        s->set_bpc(s, CCstatus.ImageBpc); // 0 = disable , 1 = enable
-        s->set_wpc(s, CCstatus.ImageWpc); // 0 = disable , 1 = enable
+        s->set_wb_mode(s, CCstatus.ImageWbMode);   // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+        s->set_ae_level(s, CCstatus.ImageAeLevel); // -2 to 2
+
+        s->set_dcw(s, CCstatus.ImageDcw);          // 0 = disable , 1 = enable
+        s->set_bpc(s, CCstatus.ImageBpc);          // 0 = disable , 1 = enable
+        s->set_wpc(s, CCstatus.ImageWpc);          // 0 = disable , 1 = enable
         s->set_awb_gain(s, CCstatus.ImageAwbGain); // 0 = disable , 1 = enable
-        s->set_agc_gain(s, CCstatus.ImageAgcGain);   // 0 to 30
-		
+        s->set_agc_gain(s, CCstatus.ImageAgcGain); // 0 to 30
+
         s->set_raw_gma(s, CCstatus.ImageRawGma); // 0 = disable , 1 = enable
-        s->set_lenc(s, CCstatus.ImageLenc);         // 0 = disable , 1 = enable
+        s->set_lenc(s, CCstatus.ImageLenc);      // 0 = disable , 1 = enable
 
         // s->set_sharpness(s, CCstatus.ImageSharpness);   // auto-sharpness is not officially supported, default to 0
         SetCamSharpness(CCstatus.ImageAutoSharpness, CCstatus.ImageSharpness);
@@ -311,39 +285,39 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
         CCstatus.CamSensor_id = s->id.PID;
 
         CCstatus.ImageFrameSize = (framesize_t)s->status.framesize;
-		
+
         CCstatus.ImageContrast = s->status.contrast;
         CCstatus.ImageBrightness = s->status.brightness;
         CCstatus.ImageSaturation = s->status.saturation;
-		
+
         CCstatus.ImageQuality = s->status.quality;
-		
+
         CCstatus.ImageGainceiling = (gainceiling_t)s->status.gainceiling;
 
         CCstatus.ImageAgc = s->status.agc;
         CCstatus.ImageAec = s->status.aec;
         CCstatus.ImageHmirror = s->status.hmirror;
         CCstatus.ImageVflip = s->status.vflip;
-		
+
         CCstatus.ImageAwb = s->status.awb;
         CCstatus.ImageAec2 = s->status.aec2;
         CCstatus.ImageAecValue = s->status.aec_value;
         CCstatus.ImageSpecialEffect = s->status.special_effect;
         CCstatus.ImageWbMode = s->status.wb_mode;
         CCstatus.ImageAeLevel = s->status.ae_level;
-		
+
         CCstatus.ImageDcw = s->status.dcw;
         CCstatus.ImageBpc = s->status.bpc;
         CCstatus.ImageWpc = s->status.wpc;
         CCstatus.ImageAwbGain = s->status.awb_gain;
         CCstatus.ImageAgcGain = s->status.agc_gain;
-		
+
         CCstatus.ImageRawGma = s->status.raw_gma;
         CCstatus.ImageLenc = s->status.lenc;
 
         // CCstatus.ImageSharpness = s->status.sharpness; // gibt -1 zurück, da es nicht unterstützt wird
         CCstatus.ImageDenoiseLevel = s->status.denoise;
-	    
+
         SetCamDeepSleep(true);
         return ESP_OK;
     }
@@ -359,20 +333,24 @@ esp_err_t CCamera::getSensorDatenToCCstatus(void)
 int CCamera::SetCamDeepSleep(bool enable)
 {
     int ret = 0;
-    if (Camera.CameraDeepSleepEnable != enable) {
+    if (Camera.CameraDeepSleepEnable != enable)
+    {
         Camera.CameraDeepSleepEnable = enable;
 
         sensor_t *sensor = esp_camera_sensor_get();
-        if (sensor != NULL) {
+        if (sensor != NULL)
+        {
             std::string state = "unsupported";
-            if (CCstatus.CamSensor_id == OV2640_PID) {
+            if (CCstatus.CamSensor_id == OV2640_PID)
+            {
                 // OV2640 Standby mode
                 uint8_t reg = sensor->get_reg(sensor, 0x09, 0xFF);
                 ret = sensor->set_reg(sensor, 0x09, 0xFF, enable ? (reg |= 0x10) : (reg &= ~0x10));
                 state = enable ? "enabled" : "disabled";
             }
 #if CONFIG_OV3660_SUPPORT || CONFIG_OV5640_SUPPORT
-            else if ((CCstatus.CamSensor_id == OV3660_PID) || (CCstatus.CamSensor_id == OV5640_PID)) {
+            else if ((CCstatus.CamSensor_id == OV3660_PID) || (CCstatus.CamSensor_id == OV5640_PID))
+            {
                 // OV3660/OV5640 DeepSleep mode
                 ret = sensor->set_reg(sensor, 0x3008, 0x42, enable ? 0x42 : 0x02);
                 state = enable ? "enabled" : "disabled";
@@ -381,7 +359,8 @@ int CCamera::SetCamDeepSleep(bool enable)
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "DeepSleep: " + state);
             vTaskDelay(200 / portTICK_PERIOD_MS);
         }
-        else {
+        else
+        {
             return -1;
         }
     }
@@ -456,7 +435,7 @@ void CCamera::SetCamSharpness(bool autoSharpnessEnabled, int sharpnessLevel)
 void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
 {
     SetCamDeepSleep(false);
-	
+
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ov2640_set_special_effect(s, specialEffect);
@@ -470,7 +449,7 @@ void CCamera::SetCamSpecialEffect(sensor_t *s, int specialEffect)
 void CCamera::SetCamContrastBrightness(sensor_t *s, int _contrast, int _brightness)
 {
     SetCamDeepSleep(false);
-	
+
     if (CCstatus.CamSensor_id == OV2640_PID)
     {
         ov2640_set_contrast_brightness(s, _contrast, _brightness);
@@ -712,11 +691,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
-        
-	esp_camera_fb_return(fb);
+
+        esp_camera_fb_return(fb);
         SetCamDeepSleep(true);
 
-	doReboot();
+        doReboot();
         return ESP_FAIL;
     }
 
@@ -821,11 +800,11 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         LightOnOff(false); // Flash-LED off
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
-        
-	esp_camera_fb_return(fb);
+
+        esp_camera_fb_return(fb);
         SetCamDeepSleep(true);
 
-	 // doReboot();
+        // doReboot();
         return ESP_FAIL;
     }
 
@@ -907,7 +886,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 {
     SetCamDeepSleep(false);
-	
+
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
@@ -932,11 +911,11 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
-        
-	esp_camera_fb_return(fb);
+
+        esp_camera_fb_return(fb);
         SetCamDeepSleep(true);
 
-	// doReboot();
+        // doReboot();
         return ESP_FAIL;
     }
 
@@ -978,7 +957,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
     esp_camera_fb_return(fb);
     SetCamDeepSleep(true);
-	
+
     int64_t fr_end = esp_timer_get_time();
     ESP_LOGI(TAG, "JPG: %dKB %dms", (int)(fb_len / 1024), (int)((fr_end - fr_start) / 1000));
 
@@ -993,7 +972,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 {
     SetCamDeepSleep(false);
-	
+
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start;
@@ -1031,7 +1010,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
         if (!fb)
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToStream: Camera framebuffer not available");
-	    esp_camera_fb_return(fb);
+            esp_camera_fb_return(fb);
             break;
         }
 
@@ -1075,7 +1054,7 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
     }
 
     SetCamDeepSleep(true);
-	
+
     LEDOnOff(false);   // Status-LED off
     LightOnOff(false); // Flash-LED off
 
