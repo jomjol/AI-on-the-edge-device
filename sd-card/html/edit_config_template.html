@@ -3494,9 +3494,13 @@ function openDescription() {
     }
 }
 
-openDescription();
-LoadConfigNeu();
- 
+        function Init() {
+            loadBoardType();
+            openDescription();
+            LoadConfigNeu();
+        }
+
+        Init();
 </script>
 </body>
 </html>
