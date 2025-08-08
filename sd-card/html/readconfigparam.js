@@ -505,7 +505,7 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom) {
 function getCamConfig() {			
     ParseConfig();		
 
-    param["System"]["EspDeepSleep"]["enabled"] = false;
+    param["System"]["EspDeepSleep"]["enabled"] = true;
     param["System"]["Tooltip"]["enabled"] = true;
     param["Alignment"]["InitialRotate"]["enabled"] = true;
 			
