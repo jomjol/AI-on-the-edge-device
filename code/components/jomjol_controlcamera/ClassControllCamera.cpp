@@ -11,7 +11,8 @@
 #include "CImageBasis.h"
 
 #include "server_ota.h"
-#include "server_GPIO.h"
+#include "server_GpioPin.h"
+#include "server_GpioHandler.h"
 
 #include "defines.h"
 
@@ -115,13 +116,6 @@ CCamera::CCamera(void)
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "CreateClassCamera");
 #endif
-    CCstatus.WaitBeforePicture = 2;
-
-    //if (FLASH_MODE == GPIO_PIN_MODE_OUTPUT_PWM)
-    //{
-        GpioHandler *gpioHandler = gpio_handler_get();
-        gpioHandler->ledc_init(FLASH_GPIO, LEDC_CHANNEL, LEDC_FREQUENCY);
-    //}
 }
 
 esp_err_t CCamera::InitCam(void)
@@ -205,7 +199,6 @@ bool CCamera::testCamera(void)
 
 int CCamera::SetLEDIntensity(int _intrel)
 {
-    // CCstatus.ImageLedIntensity = (int)(std::min(std::max((float)0, _intrel), (float)100) / 100 * 8191)
     Camera.LedIntensity = (int)((float)(std::min(std::max(0, _intrel), 100)) / 100 * 8191);
     ESP_LOGD(TAG, "Set led_intensity to %i of 8191", Camera.LedIntensity);
     return Camera.LedIntensity;
@@ -667,11 +660,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     SetCamDeepSleep(false);
     _Image->EmptyImage(); // Delete previous stored raw image -> black image
 
-    LEDOnOff(true); // Status-LED on
+    StatusLEDOnOff(true); // Status-LED on
 
     if (delay > 0)
     {
-        LightOnOff(true); // Flash-LED on
+        Camera.FlashLightOnOff(true, Camera.LedIntensity); // Flash-LED on
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
     }
@@ -686,8 +679,8 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
     if (!fb)
     {
-        LEDOnOff(false);   // Status-LED off
-        LightOnOff(false); // Flash-LED off
+        StatusLEDOnOff(false);                              // Status-LED off
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
 
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "is not working anymore (CaptureToBasisImage) - most probably caused "
                                                 "by a hardware problem (instablility, ...). System will reboot.");
@@ -724,11 +717,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After fb_get");
 #endif
 
-    LEDOnOff(false); // Status-LED off
+    StatusLEDOnOff(false); // Status-LED off
 
     if (delay > 0)
     {
-        LightOnOff(false); // Flash-LED off
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
     }
 
     //    TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
@@ -781,11 +774,11 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 {
     SetCamDeepSleep(false);
-    LEDOnOff(true); // Status-LED on
+    StatusLEDOnOff(true); // Status-LED on
 
     if (delay > 0)
     {
-        LightOnOff(true); // Flash-LED on
+        Camera.FlashLightOnOff(true, Camera.LedIntensity); // Flash-LED on
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
     }
@@ -796,8 +789,8 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
     if (!fb)
     {
-        LEDOnOff(false);   // Status-LED off
-        LightOnOff(false); // Flash-LED off
+        StatusLEDOnOff(false);                              // Status-LED off
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
 
@@ -808,7 +801,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
         return ESP_FAIL;
     }
 
-    LEDOnOff(false); // Status-LED off
+    StatusLEDOnOff(false); // Status-LED off
 
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "w %d, h %d, size %d", fb->width, fb->height, fb->len);
@@ -877,7 +870,7 @@ esp_err_t CCamera::CaptureToFile(std::string nm, int delay)
 
     if (delay > 0)
     {
-        LightOnOff(false); // Flash-LED off
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
     }
 
     return ESP_OK;
@@ -891,11 +884,11 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
 
-    LEDOnOff(true); // Status-LED on
+    StatusLEDOnOff(true); // Status-LED on
 
     if (delay > 0)
     {
-        LightOnOff(true); // Flash-LED on
+        Camera.FlashLightOnOff(true, Camera.LedIntensity); // Flash-LED on
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
     }
@@ -906,8 +899,8 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
     if (!fb)
     {
-        LEDOnOff(false);   // Status-LED off
-        LightOnOff(false); // Flash-LED off
+        StatusLEDOnOff(false);                              // Status-LED off
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToFile: Capture Failed. "
                                                 "Check camera module and/or proper electrical connection");
         httpd_resp_send_500(req);
@@ -919,7 +912,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
         return ESP_FAIL;
     }
 
-    LEDOnOff(false); // Status-LED off
+    StatusLEDOnOff(false); // Status-LED off
     res = httpd_resp_set_type(req, "image/jpeg");
 
     if (res == ESP_OK)
@@ -963,7 +956,7 @@ esp_err_t CCamera::CaptureToHTTP(httpd_req_t *req, int delay)
 
     if (delay > 0)
     {
-        LightOnOff(false); // Flash-LED off
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
     }
 
     return res;
@@ -991,8 +984,8 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 
     if (FlashlightOn)
     {
-        LEDOnOff(true);   // Status-LED on
-        LightOnOff(true); // Flash-LED on
+        StatusLEDOnOff(true);                              // Status-LED on
+        Camera.FlashLightOnOff(true, Camera.LedIntensity); // Flash-LED on
     }
 
     // httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //stream is blocking web interface, only serving to local
@@ -1055,75 +1048,56 @@ esp_err_t CCamera::CaptureToStream(httpd_req_t *req, bool FlashlightOn)
 
     SetCamDeepSleep(true);
 
-    LEDOnOff(false);   // Status-LED off
-    LightOnOff(false); // Flash-LED off
+    StatusLEDOnOff(false);                              // Status-LED off
+    Camera.FlashLightOnOff(false, Camera.LedIntensity); // Flash-LED off
 
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Live stream stopped");
 
     return res;
 }
 
-void CCamera::LightOnOff(bool status)
+void CCamera::FlashLightOnOff(bool status, int intensity)
 {
     GpioHandler *gpioHandler = gpio_handler_get();
 
-    if ((gpioHandler != NULL) && (gpioHandler->isEnabled()))
+    if (gpioHandler != NULL)
     {
         ESP_LOGD(TAG, "Use gpioHandler to trigger flashlight");
-        gpioHandler->flashLightEnable(status);
-    }
-    else
-    {
-#ifdef USE_PWM_LEDFLASH
-        if (status)
-        {
-            ESP_LOGD(TAG, "Internal Flash-LED turn on with PWM %d", Camera.LedIntensity);
-            ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, Camera.LedIntensity));
-            // Update duty to apply the new value
-            ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
-        }
-        else
-        {
-            ESP_LOGD(TAG, "Internal Flash-LED turn off PWM");
-            ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0));
-            ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
-        }
-#else
-        // Init the GPIO
-        gpio_pad_select_gpio(FLASH_GPIO);
-
-        // Set the GPIO as a push/pull output
-        gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);
-
-        if (status)
-        {
-            gpio_set_level(FLASH_GPIO, 1);
-        }
-        else
-        {
-            gpio_set_level(FLASH_GPIO, 0);
-        }
-#endif
+        gpioHandler->flashLightControl(status, intensity);
     }
 }
 
-void CCamera::LEDOnOff(bool status)
+void CCamera::StatusLEDOnOff(bool status)
 {
-    if (xHandle_task_StatusLED == NULL)
+    if (BLINK_GPIO != GPIO_NUM_NC)
     {
-        // Init the GPIO
-        gpio_pad_select_gpio(BLINK_GPIO);
-
-        /* Set the GPIO as a push/pull output */
-        gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
-
-        if (!status)
+        if (xHandle_task_StatusLED == NULL)
         {
-            gpio_set_level(BLINK_GPIO, 1);
-        }
-        else
-        {
-            gpio_set_level(BLINK_GPIO, 0);
+            // Init the GPIO
+            gpio_pad_select_gpio(BLINK_GPIO);
+
+            /* Set the GPIO as a push/pull output */
+            gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+
+#ifdef BLINK_GPIO_INVERT
+            if (!status)
+            {
+                gpio_set_level(BLINK_GPIO, 1);
+            }
+            else
+            {
+                gpio_set_level(BLINK_GPIO, 0);
+            }
+#else
+            if (status)
+            {
+                gpio_set_level(BLINK_GPIO, 1);
+            }
+            else
+            {
+                gpio_set_level(BLINK_GPIO, 0);
+            }
+#endif
         }
     }
 }

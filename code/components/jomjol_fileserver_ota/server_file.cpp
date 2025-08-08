@@ -41,7 +41,8 @@ extern "C"
 #ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
 #endif // ENABLE_MQTT
-#include "server_GPIO.h"
+#include "server_GpioPin.h"
+#include "server_GpioHandler.h"
 
 #include "Helper.h"
 #include "minizip.h"

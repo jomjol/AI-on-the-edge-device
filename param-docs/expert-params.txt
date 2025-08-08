@@ -31,12 +31,10 @@ AlignmentAlgo
 CNNGoodThreshold
 PreValueAgeStartup
 ErrorMessage
-IO0
 IO1
+IO2
 IO3
 IO4
-IO12
-IO13
 AutoStart
 Hostname
 RSSIThreshold

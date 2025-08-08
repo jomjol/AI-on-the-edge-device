@@ -49,7 +49,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
 
     if (Camera.getCameraInitSuccessful())
     {
-        Camera.LightOnOff(true);
+        Camera.FlashLightOnOff(true, Camera.LedIntensity);
         const char *resp_str = (const char *)req->user_ctx;
         httpd_resp_send(req, resp_str, strlen(resp_str));
     }
@@ -77,7 +77,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
 
     if (Camera.getCameraInitSuccessful())
     {
-        Camera.LightOnOff(false);
+        Camera.FlashLightOnOff(false, Camera.LedIntensity);
         const char *resp_str = (const char *)req->user_ctx;
         httpd_resp_send(req, resp_str, strlen(resp_str));
     }
@@ -176,16 +176,16 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
 
 #ifdef DEBUG_DETAIL_ON
         ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
-#endif        
+#endif
 
-        Camera.LightOnOff(true);
+        Camera.FlashLightOnOff(true, Camera.LedIntensity);
         const TickType_t xDelay = delay / portTICK_PERIOD_MS;
         vTaskDelay(xDelay);
 
         esp_err_t result;
         result = Camera.CaptureToHTTP(req);
 
-        Camera.LightOnOff(false);
+        Camera.FlashLightOnOff(false, Camera.LedIntensity);
 
 #ifdef DEBUG_DETAIL_ON
         LogFile.WriteHeapInfo("handler_capture_with_light - Done");

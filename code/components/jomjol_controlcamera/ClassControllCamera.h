@@ -72,7 +72,6 @@ extern camera_controll_config_temp_t CCstatus;
 class CCamera
 {
 protected:
-    void ledc_init(void);
     bool loadNextDemoImage(camera_fb_t *fb);
     long GetFileSize(std::string filename);
     void SetCamWindow(sensor_t *s, int frameSizeX, int frameSizeY, int xOffset, int yOffset, int xTotal, int yTotal, int xOutput, int yOutput, int imageVflip);
@@ -86,8 +85,8 @@ public:
     CCamera(void);
     esp_err_t InitCam(void);
 
-    void LightOnOff(bool status);
-    void LEDOnOff(bool status);
+    void FlashLightOnOff(bool status, int intensity);
+    void StatusLEDOnOff(bool status);
 
     esp_err_t setSensorDatenFromCCstatus(void);
     esp_err_t getSensorDatenToCCstatus(void);

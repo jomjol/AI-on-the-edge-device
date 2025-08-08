@@ -29,7 +29,8 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/migration-guides/rel
 #include "MainFlowControl.h"
 #include "server_file.h"
 #include "server_help.h"
-#include "server_GPIO.h"
+#include "server_GpioPin.h"
+#include "server_GpioHandler.h"
 
 #ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
@@ -576,20 +577,20 @@ void task_reboot(void *DeleteMainFlow)
         DeleteMainFlowTask(); // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
-    Camera.LightOnOff(false);
+    Camera.FlashLightOnOff(false, Camera.LedIntensity);
     StatusLEDOff();
 
     /* Stop service tasks */
 #ifdef ENABLE_MQTT
     MQTTdestroy_client(true);
 #endif // ENABLE_MQTT
-    
+
     gpio_handler_destroy();
 
     Camera.SetCamDeepSleep(false);
     esp_camera_return_all();
     esp_camera_deinit();
-    
+
     WIFIDestroy();
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
@@ -613,7 +614,7 @@ void doReboot()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void *)false);
     }
-    
+
     vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
@@ -621,7 +622,7 @@ void doRebootOTA()
 {
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
-    Camera.LightOnOff(false);
+    Camera.FlashLightOnOff(false, Camera.LedIntensity);
     StatusLEDOff();
 
     Camera.SetCamDeepSleep(false);

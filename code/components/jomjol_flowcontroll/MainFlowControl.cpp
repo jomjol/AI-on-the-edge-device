@@ -24,7 +24,8 @@
 #include "ClassFlowControll.h"
 
 #include "ClassLogFile.h"
-#include "server_GPIO.h"
+#include "server_GpioPin.h"
+#include "server_GpioHandler.h"
 
 #include "server_file.h"
 

@@ -47,6 +47,8 @@ sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
 bool SDCardIsMMC;
 
+bool all_pw_encrypted = true;
+
 // #define DEBUG_DETAIL_ON
 
 #if CONFIG_SOC_TEMP_SENSOR_SUPPORTED
@@ -395,6 +397,72 @@ string trim(string istring, string adddelimiter)
 	else
 	{
 		return trim(istring, adddelimiter);
+	}
+}
+
+std::string trim_string_left_right(std::string istring, std::string adddelimiter)
+{
+	bool trimmed = false;
+
+	if (ctype_space(istring[istring.length() - 1], adddelimiter))
+	{
+		istring.erase(istring.length() - 1);
+		trimmed = true;
+	}
+
+	if (ctype_space(istring[0], adddelimiter))
+	{
+		istring.erase(0, 1);
+		trimmed = true;
+	}
+
+	if ((trimmed == false) || (istring.size() == 0))
+	{
+		return istring;
+	}
+	else
+	{
+		return trim_string_left_right(istring, adddelimiter);
+	}
+}
+
+std::string trim_string_left(std::string istring, std::string adddelimiter)
+{
+	bool trimmed = false;
+
+	if (ctype_space(istring[0], adddelimiter))
+	{
+		istring.erase(0, 1);
+		trimmed = true;
+	}
+
+	if ((trimmed == false) || (istring.size() == 0))
+	{
+		return istring;
+	}
+	else
+	{
+		return trim_string_left(istring, adddelimiter);
+	}
+}
+
+std::string trim_string_right(std::string istring, std::string adddelimiter)
+{
+	bool trimmed = false;
+
+	if (ctype_space(istring[istring.length() - 1], adddelimiter))
+	{
+		istring.erase(istring.length() - 1);
+		trimmed = true;
+	}
+
+	if ((trimmed == false) || (istring.size() == 0))
+	{
+		return istring;
+	}
+	else
+	{
+		return trim_string_right(istring, adddelimiter);
 	}
 }
 
@@ -815,6 +883,180 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 			pos = findDelimiterPos(input, delimiter);
 		}
 
+		Output.push_back(input);
+	}
+
+	return Output;
+}
+
+std::vector<std::string> splitLine(std::string input, std::string _delimiter)
+{
+	std::vector<std::string> Output;
+
+	// wenn input nicht leer ist
+	if (input.length() > 1)
+	{
+		if ((toUpper(input).find("PASSWORD") != std::string::npos) || (input.find("SSID") != std::string::npos) || (toUpper(input).find("TOKEN") != std::string::npos) || (toUpper(input).find("APIKEY") != std::string::npos) ||
+			(input.find("**##**") != std::string::npos))
+		{
+			size_t pos1 = input.find(_delimiter);
+			size_t pos2 = input.find(" ");
+
+			// wenn _delimiter im string gefunden wird
+			if (pos1 != std::string::npos)
+			{
+				Output.push_back(trim_string_left_right(input.substr(0, pos1), ""));
+
+				// wenn der string einen Wert enthält
+				if ((input.size() - 1) > pos1)
+				{
+					// überprüfe die erste Stelle
+					std::string value = input.substr(pos1, std::string::npos);
+					value.erase(0, 1);
+					value = trim_string_left_right(value, "");
+
+					if ((value.substr(0, 1) == "\"") && (value.substr(value.size() - 1, std::string::npos) == "\""))
+					{
+						value = value.substr(1, value.size() - 2);
+					}
+
+					std::string is_pw_encrypted = value.substr(0, 6);
+
+					if (is_pw_encrypted == "**##**")
+					{
+						Output.push_back(EncryptDecryptString(value.substr(6, std::string::npos)));
+					}
+					else
+					{
+						Output.push_back(value.substr(0, std::string::npos));
+					}
+				}
+				else
+				{
+					Output.push_back("");
+				}
+			}
+			// wenn Leerzeichen im string gefunden wird
+			else if (pos2 != std::string::npos)
+			{
+				Output.push_back(trim_string_left_right(input.substr(0, pos2), ""));
+
+				// wenn der string einen Wert enthält
+				if ((input.size() - 1) > pos2)
+				{
+					// überprüfe die erste Stelle
+					std::string value = input.substr(pos2, std::string::npos);
+					value.erase(0, 1);
+					value = trim_string_left_right(value, "");
+
+					if ((value.substr(0, 1) == "\"") && (value.substr(value.size() - 1, std::string::npos) == "\""))
+					{
+						value = value.substr(1, value.size() - 2);
+					}
+
+					std::string is_pw_encrypted = value.substr(0, 6);
+
+					if (is_pw_encrypted == "**##**")
+					{
+						Output.push_back(EncryptDecryptString(value.substr(6, std::string::npos)));
+					}
+					else
+					{
+						Output.push_back(value.substr(0, std::string::npos));
+					}
+				}
+				else
+				{
+					Output.push_back("");
+				}
+			}
+			else
+			{
+				Output.push_back(input);
+			}
+		}
+		else
+		{
+			// Legacy Mode
+			std::string token;
+			size_t pos1 = std::string::npos;
+
+			if (findDelimiterPos(input, _delimiter) != std::string::npos)
+			{
+				pos1 = findDelimiterPos(input, _delimiter);
+			}
+			else
+			{
+				pos1 = findDelimiterPos(input, " ");
+			}
+
+			if (pos1 != std::string::npos)
+			{
+				Output.push_back(trim_string_left_right(input.substr(0, pos1), " "));
+
+				if ((input.size() - 1) > pos1)
+				{
+					// überprüfe die erste Stelle
+					std::string value = input.substr(pos1, std::string::npos);
+					value.erase(0, 1);
+					value = trim_string_left_right(value, " ");
+
+					if (findDelimiterPos(value, _delimiter) != std::string::npos)
+					{
+						pos1 = findDelimiterPos(value, _delimiter);
+					}
+					else
+					{
+						pos1 = findDelimiterPos(value, " ");
+					}
+
+					if ((value.substr(0, 1) == "\"") && (value.substr(value.size() - 1, std::string::npos) == "\""))
+					{
+						value = value.substr(1, value.size() - 2);
+					}
+
+					while (pos1 != std::string::npos)
+					{
+						token = value.substr(0, pos1);
+						token = trim_string_left_right(token, " ");
+						if ((token.substr(0, 1) == "\"") && (token.substr(token.size() - 1, std::string::npos) == "\""))
+						{
+							token = token.substr(1, token.size() - 2);
+						}
+						Output.push_back(token);
+
+						value.erase(0, pos1 + 1);
+						value = trim_string_left_right(value, " ");
+
+						if (findDelimiterPos(value, _delimiter) != std::string::npos)
+						{
+							pos1 = findDelimiterPos(value, _delimiter);
+						}
+						else
+						{
+							pos1 = findDelimiterPos(value, " ");
+						}
+					}
+
+					if ((value.substr(0, 1) == "\"") && (value.substr(value.size() - 1, std::string::npos) == "\""))
+					{
+						value = value.substr(1, value.size() - 2);
+					}
+					Output.push_back(value);
+				}
+				else
+				{
+					Output.push_back("");
+				}
+			}
+			else
+			{
+				Output.push_back(input);
+			}
+		}
+	}
+	else
+	{
 		Output.push_back(input);
 	}
 
@@ -1281,6 +1523,210 @@ std::string UrlDecode(const std::string &value)
 	}
 
 	return result;
+}
+
+// Encrypt/Decrypt a string
+std::string EncryptDecryptString(std::string toEncrypt)
+{
+	char key[3] = {'K', 'C', 'Q'}; // Any chars will work, in an array of any size
+	std::string output = toEncrypt;
+
+	for (int i = 0; i < toEncrypt.size(); i++)
+	{
+		output[i] = toEncrypt[i] ^ key[i % (sizeof(key) / sizeof(char))];
+	}
+
+	return output;
+}
+
+// Checks whether a password is decrypted
+std::string EncryptPwString(std::string toEncrypt)
+{
+	std::string string_result = "";
+
+	if (isInString(toEncrypt, (std::string)STRING_ENCRYPTED_LABEL))
+	{
+		string_result = toEncrypt;
+		all_pw_encrypted = true;
+	}
+	else
+	{
+		string_result = (std::string)STRING_ENCRYPTED_LABEL + EncryptDecryptString(toEncrypt);
+		all_pw_encrypted = false;
+	}
+
+	return string_result;
+}
+
+std::string DecryptPwString(std::string toDecrypt)
+{
+	std::string string_result = "";
+
+	if (isInString(toDecrypt, (std::string)STRING_ENCRYPTED_LABEL))
+	{
+		replaceString(toDecrypt, (std::string)STRING_ENCRYPTED_LABEL, "", false);
+		string_result = EncryptDecryptString(toDecrypt);
+		all_pw_encrypted = true;
+	}
+	else
+	{
+		string_result = toDecrypt;
+		all_pw_encrypted = false;
+	}
+
+	return string_result;
+}
+
+// Checks if all passwords on the SD are encrypted and if they are not encrypted, it encrypts them.
+esp_err_t EncryptDecryptPwOnSD(bool _encrypt, std::string filename)
+{
+	std::string line = "";
+	std::vector<std::string> splitted;
+	std::vector<std::string> neuesfile;
+	all_pw_encrypted = true;
+
+	std::string fn = FormatFileName(filename);
+	FILE *pFile = fopen(fn.c_str(), "r");
+
+	if (pFile == NULL)
+	{
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EncryptDecryptConfigPwOnSD: Unable to open file config.ini (read)");
+		fclose(pFile);
+		return ESP_FAIL;
+	}
+
+	ESP_LOGD(TAG, "EncryptDecryptConfigPwOnSD: config.ini opened");
+
+	char zw[256];
+
+	if (fgets(zw, sizeof(zw), pFile) == NULL)
+	{
+		line = "";
+		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EncryptDecryptConfigPwOnSD: File opened, but empty or content not readable");
+		fclose(pFile);
+		return ESP_FAIL;
+	}
+	else
+	{
+		line = std::string(zw);
+	}
+
+	if (_encrypt)
+	{
+		while ((line.size() > 0) || !(feof(pFile)))
+		{
+			splitted = splitLine(line);
+
+			if (filename == CONFIG_FILE)
+			{
+				if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD"))
+				{
+					line = "password = " + EncryptPwString(splitted[1]) + "\n";
+				}
+				else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "TOKEN"))
+				{
+					line = "Token = " + EncryptPwString(splitted[1]) + "\n";
+				}
+				else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "APIKEY"))
+				{
+					line = "apikey = " + EncryptPwString(splitted[1]) + "\n";
+				}
+			}
+			else if (filename == NETWORK_CONFIG_FILE)
+			{
+				if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD"))
+				{
+					line = "password = \"" + EncryptPwString(splitted[1]) + "\"\n";
+				}
+				else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_PASSWORD"))
+				{
+					line = "http_password = \"" + EncryptPwString(splitted[1]) + "\"\n";
+				}
+			}
+
+			neuesfile.push_back(line);
+
+			if (fgets(zw, sizeof(zw), pFile) == NULL)
+			{
+				line = "";
+			}
+			else
+			{
+				line = std::string(zw);
+			}
+		}
+	}
+	else
+	{
+		while ((line.size() > 0) || !(feof(pFile)))
+		{
+			splitted = splitLine(line);
+
+			if (filename == CONFIG_FILE)
+			{
+				if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD"))
+				{
+					line = "password = " + DecryptPwString(splitted[1]) + "\n";
+				}
+				else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "TOKEN"))
+				{
+					line = "Token = " + DecryptPwString(splitted[1]) + "\n";
+				}
+				else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "APIKEY"))
+				{
+					line = "apikey = " + DecryptPwString(splitted[1]) + "\n";
+				}
+			}
+			else if (filename == NETWORK_CONFIG_FILE)
+			{
+				if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD"))
+				{
+					line = "password = \"" + DecryptPwString(splitted[1]) + "\"\n";
+				}
+				else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_PASSWORD"))
+				{
+					line = "http_password = \"" + DecryptPwString(splitted[1]) + "\"\n";
+				}
+			}
+
+			neuesfile.push_back(line);
+
+			if (fgets(zw, sizeof(zw), pFile) == NULL)
+			{
+				line = "";
+			}
+			else
+			{
+				line = std::string(zw);
+			}
+		}
+	}
+
+	fclose(pFile);
+
+	// Only write to the SD if not all passwords are encrypted
+	if ((all_pw_encrypted == false && _encrypt == true) || (all_pw_encrypted == true && _encrypt == false))
+	{
+		pFile = fopen(fn.c_str(), "w+");
+
+		if (pFile == NULL)
+		{
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "EncryptDecryptConfigPwOnSD: Unable to open file config.ini (write)");
+			fclose(pFile);
+			return ESP_FAIL;
+		}
+
+		for (int i = 0; i < neuesfile.size(); ++i)
+		{
+			fputs(neuesfile[i].c_str(), pFile);
+		}
+
+		fclose(pFile);
+	}
+
+	ESP_LOGD(TAG, "EncryptDecryptConfigPwOnSD done");
+
+	return ESP_OK;
 }
 
 bool replaceString(std::string &s, std::string const &toReplace, std::string const &replaceWith)

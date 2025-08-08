@@ -9,6 +9,8 @@
 
 #include "sdmmc_cmd.h"
 
+#include "../../include/defines.h"
+
 #ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
 #include <driver/temperature_sensor.h>
 #endif
@@ -30,8 +32,10 @@ bool FolderExists(string foldername);
 string RundeOutput(double _in, int _anzNachkomma);
 
 size_t findDelimiterPos(string input, string delimiter);
-// string trim(string istring);
 string trim(string istring, string adddelimiter = "");
+std::string trim_string_left_right(std::string istring, std::string adddelimiter = "");
+std::string trim_string_left(std::string istring, std::string adddelimiter = "");
+std::string trim_string_right(std::string istring, std::string adddelimiter = "");
 bool ctype_space(const char c, string adddelimiter);
 
 string getFileType(string filename);
@@ -50,13 +54,13 @@ void initTempsensor(void);
 #endif
 float temperatureRead(void);
 
-std::string intToHexString(int _valueInt);
 time_t addDays(time_t startTime, int days);
 
 void memCopyGen(uint8_t *_source, uint8_t *_target, int _size);
 
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter);
 std::vector<std::string> ZerlegeZeile(std::string input, std::string delimiter = " =, \t");
+std::vector<std::string> splitLine(std::string input, std::string _delimiter = "=");
 
 ///////////////////////////
 size_t getInternalESPHeapSize();
@@ -81,17 +85,17 @@ string getMac(void);
    One bit per error
    Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
 enum SystemStatusFlag_t
-{                                          // One bit per error
-                                           // First Byte
-  SYSTEM_STATUS_PSRAM_BAD = 1 << 0,        //  1, Critical Error
-  SYSTEM_STATUS_HEAP_TOO_SMALL = 1 << 1,   //  2, Critical Error
-  SYSTEM_STATUS_CAM_BAD = 1 << 2,          //  4, Critical Error
-  SYSTEM_STATUS_SDCARD_CHECK_BAD = 1 << 3, //  8, Critical Error
-  SYSTEM_STATUS_FOLDER_CHECK_BAD = 1 << 4, //  16, Critical Error
+{                                           // One bit per error
+                                            // First Byte
+   SYSTEM_STATUS_PSRAM_BAD = 1 << 0,        //  1, Critical Error
+   SYSTEM_STATUS_HEAP_TOO_SMALL = 1 << 1,   //  2, Critical Error
+   SYSTEM_STATUS_CAM_BAD = 1 << 2,          //  4, Critical Error
+   SYSTEM_STATUS_SDCARD_CHECK_BAD = 1 << 3, //  8, Critical Error
+   SYSTEM_STATUS_FOLDER_CHECK_BAD = 1 << 4, //  16, Critical Error
 
-  // Second Byte
-  SYSTEM_STATUS_CAM_FB_BAD = 1 << (0 + 8), //  8, Flow still might work
-  SYSTEM_STATUS_NTP_BAD = 1 << (1 + 8),    //  9, Flow will work but time will be wrong
+   // Second Byte
+   SYSTEM_STATUS_CAM_FB_BAD = 1 << (0 + 8), //  8, Flow still might work
+   SYSTEM_STATUS_NTP_BAD = 1 << (1 + 8),    //  9, Flow will work but time will be wrong
 };
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);
@@ -106,6 +110,10 @@ std::string getFormatedUptime(bool compact);
 const char *get404(void);
 
 std::string UrlDecode(const std::string &value);
+std::string EncryptPwString(std::string toEncrypt);
+std::string DecryptPwString(std::string toDecrypt);
+std::string EncryptDecryptString(std::string toEncrypt);
+esp_err_t EncryptDecryptPwOnSD(bool _encrypt = true, std::string filename = CONFIG_FILE);
 
 void replaceAll(std::string &s, const std::string &toReplace, const std::string &replaceWith);
 bool replaceString(std::string &s, std::string const &toReplace, std::string const &replaceWith);

@@ -356,7 +356,7 @@ esp_err_t Init_Camera(void)
     PowerResetCamera();
 
     esp_err_t ret = Camera.InitCam();
-    Camera.LightOnOff(false);
+    Camera.FlashLightOnOff(false, Camera.LedIntensity);
 
     TickType_t xDelay = 2000 / portTICK_PERIOD_MS;
     ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long)xDelay * CONFIG_FREERTOS_HZ / portTICK_PERIOD_MS);
@@ -374,7 +374,7 @@ esp_err_t Init_Camera(void)
 
         PowerResetCamera();
         ret = Camera.InitCam();
-        Camera.LightOnOff(false);
+        Camera.FlashLightOnOff(false, Camera.LedIntensity);
 
         xDelay = 2000 / portTICK_PERIOD_MS;
         ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long)xDelay * CONFIG_FREERTOS_HZ / portTICK_PERIOD_MS);
@@ -387,7 +387,7 @@ esp_err_t Init_Camera(void)
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) + ")! Check camera module and/or proper electrical connection");
             // ESP_LOGE(TAG, "Camera init failed (%s)! Check camera module and/or proper electrical connection", std::string(camStatusHex).c_str());
             setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
-            Camera.LightOnOff(false); // make sure flashlight is off
+            Camera.FlashLightOnOff(false, Camera.LedIntensity); // make sure flashlight is off
             StatusLED(CAM_INIT, 1, true);
         }
     }
@@ -407,7 +407,7 @@ esp_err_t Init_Camera(void)
             setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
             StatusLED(CAM_INIT, 2, false);
         }
-        Camera.LightOnOff(false); // make sure flashlight is off before start of flow
+        Camera.FlashLightOnOff(false, Camera.LedIntensity); // make sure flashlight is off before start of flow
 
         // Print camera infos
         // ********************************************
@@ -675,7 +675,7 @@ extern "C" void app_main(void)
     register_server_mqtt_uri(server);
 #endif // ENABLE_MQTT
 
-    gpio_handler_create(server);
+    // gpio_handler_create(server);
 
     ESP_LOGD(TAG, "Before reg server main");
     register_server_main_uri(server, "/sdcard");
