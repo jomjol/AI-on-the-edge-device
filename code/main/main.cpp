@@ -273,14 +273,18 @@ esp_err_t Check_SDCardRW(void)
 
 esp_err_t Init_PSRAM(void)
 {
+    ESP_LOGD(TAG, "Init PSRAM");
+
     // Init external PSRAM
     // ********************************************
-    esp_err_t ret = esp_psram_init();
+    esp_err_t ret = ESP_OK;
+    ret = esp_psram_init();
 
     if (ret == ESP_FAIL)
     {
         // ESP_FAIL -> Failed to init PSRAM
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM init failed (" + std::to_string(ret) + ")! PSRAM not found or defective");
+        // ESP_LOGE(TAG, "PSRAM init failed (%s)! PSRAM not found or defective", std::to_string(ret).c_str());
         setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
         StatusLED(PSRAM_INIT, 1, true);
     }
@@ -289,6 +293,7 @@ esp_err_t Init_PSRAM(void)
         // ESP_OK -> PSRAM init OK --> continue to check PSRAM size
         size_t psram_size = esp_psram_get_size(); // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "PSRAM size: " + std::to_string(psram_size) + " byte (" + std::to_string(psram_size / 1024 / 1024) + "MB / " + std::to_string(psram_size / 1024 / 1024 * 8) + "MBit)");
+        // ESP_LOGI(TAG, "PSRAM size: %s byte (%sMB / %sMBit)", std::to_string(psram_size).c_str(), std::to_string(psram_size / 1024 / 1024).c_str(), std::to_string(psram_size / 1024 / 1024 * 8).c_str());
 
         // Check PSRAM size
         // ********************************************
@@ -296,6 +301,7 @@ esp_err_t Init_PSRAM(void)
         {
             // PSRAM is below 4 MBytes (32Mbit)
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "PSRAM size >= 4MB (32Mbit) is mandatory to run this application");
+            // ESP_LOGE(TAG, "PSRAM size >= 4MB (32Mbit) is mandatory to run this application");
             setSystemStatusFlag(SYSTEM_STATUS_PSRAM_BAD);
             StatusLED(PSRAM_INIT, 2, true);
             ret = ESP_FAIL;
@@ -305,6 +311,7 @@ esp_err_t Init_PSRAM(void)
             // PSRAM size OK --> continue to check heap size
             size_t _hsize = getESPHeapSize();
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Total heap: " + std::to_string(_hsize) + " byte");
+            // ESP_LOGI(TAG, "Total heap: %s byte", std::to_string(_hsize).c_str());
 
             // Check heap memory
             // ********************************************
@@ -312,6 +319,7 @@ esp_err_t Init_PSRAM(void)
             {
                 // Check available Heap memory for a bit less than 4 MB (a test on a good device showed 4187558 bytes to be available)
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Total heap >= 4000000 byte is mandatory to run this application");
+                // ESP_LOGE(TAG, "Total heap >= 4000000 byte is mandatory to run this application");
                 setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
                 StatusLED(PSRAM_INIT, 3, true);
                 ret = ESP_FAIL;
@@ -320,11 +328,19 @@ esp_err_t Init_PSRAM(void)
             {
                 // HEAP size OK --> continue to reserve shared memory block and check camera init
                 /* Allocate static PSRAM memory regions */
-                if (!reserve_psram_shared_region())
+                if (reserve_psram_shared_region() == false)
                 {
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Allocate static PSRAM memory regions failed!");
+                    // ESP_LOGE(TAG, "Allocate static PSRAM memory regions failed!");
                     setSystemStatusFlag(SYSTEM_STATUS_HEAP_TOO_SMALL);
                     StatusLED(PSRAM_INIT, 3, true);
                     ret = ESP_FAIL;
+                }
+                else
+                {
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Allocate static PSRAM memory regions ok.");
+                    // ESP_LOGI(TAG, "Allocate static PSRAM memory regions ok.");
+                    ret = ESP_OK;
                 }
             }
         }
@@ -354,6 +370,7 @@ esp_err_t Init_Camera(void)
         char camStatusHex[33];
         sprintf(camStatusHex, "0x%02x", ret);
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Camera init failed (" + std::string(camStatusHex) + "), retrying...");
+        // ESP_LOGE(TAG, "Camera init failed (%s), retrying...", std::string(camStatusHex).c_str());
 
         PowerResetCamera();
         ret = Camera.InitCam();
@@ -368,6 +385,7 @@ esp_err_t Init_Camera(void)
             // Camera init failed again
             sprintf(camStatusHex, "0x%02x", ret);
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) + ")! Check camera module and/or proper electrical connection");
+            // ESP_LOGE(TAG, "Camera init failed (%s)! Check camera module and/or proper electrical connection", std::string(camStatusHex).c_str());
             setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
             Camera.LightOnOff(false); // make sure flashlight is off
             StatusLED(CAM_INIT, 1, true);
@@ -382,6 +400,7 @@ esp_err_t Init_Camera(void)
         if (!Camera.testCamera())
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera framebuffer check failed");
+            // ESP_LOGE(TAG, "Camera framebuffer check failed");
             // Easiest would be to simply restart here and try again,
             // how ever there seem to be systems where it fails at startup but still work correctly later.
             // Therefore we treat it still as successed! */
@@ -396,6 +415,7 @@ esp_err_t Init_Camera(void)
         sensor_t *s = esp_camera_sensor_get();
         sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera info: " + std::string(caminfo));
+        // ESP_LOGE(TAG, "Camera info: %s", std::string(caminfo).c_str());
     }
 
     return ret;
@@ -446,13 +466,6 @@ extern "C" void app_main(void)
         return; // No way to continue without working SD card!
     }
 
-#ifdef ENABLE_SOFTAP
-    // Start SoftAP for initial remote setup
-    // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD card empty; function does not exit anymore until reboot
-    // ********************************************
-    CheckStartAPMode();
-#endif
-
     // ********************************************
     // Highlight start of logfile logging
     // Default Log Level: INFO -> Everything which needs to be logged during boot should be have level INFO, WARN OR ERROR
@@ -461,6 +474,33 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
 
+    // Migrate parameter in config.ini to new naming (firmware 15.0 and newer)
+    // ********************************************
+    migrateConfiguration();
+
+    // SD card: Check presence of some mandatory folders / files
+    // ********************************************
+    if (!SDCardCheckFolderFilePresence())
+    {
+        StatusLED(SDCARD_CHECK, 4, true);
+        setSystemStatusFlag(SYSTEM_STATUS_FOLDER_CHECK_BAD); // reduced web interface going to be loaded
+    }
+
+    // Init external PSRAM
+    // ********************************************
+    if (Init_PSRAM() != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Device init aborted in step Init_PSRAM()!");
+        return; // No way to continue without working SD card!
+    }
+
+#ifdef ENABLE_SOFTAP
+    // Start SoftAP for initial remote setup
+    // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD card empty; function does not exit anymore until reboot
+    // ********************************************
+    CheckStartAPMode();
+#endif
+
     // Check for updates
     // ********************************************
     CheckOTAUpdate();
@@ -468,18 +508,6 @@ extern "C" void app_main(void)
 
     rtc_gpio_hold_dis(GPIO_NUM_12);
     rtc_gpio_hold_dis(GPIO_NUM_4);
-
-    // Migrate parameter in config.ini to new naming (firmware 15.0 and newer)
-    // ********************************************
-    migrateConfiguration();
-
-    // Init external PSRAM and Camera
-    // ********************************************
-    if (Init_PSRAM() == ESP_OK)
-    {
-        // PSRAM OK
-        Init_Camera();
-    }
 
     // Set CPU Frequency
     // ********************************************
@@ -491,17 +519,17 @@ extern "C" void app_main(void)
     initTempsensor();
 #endif
 
+    // Init external PSRAM
+    // ********************************************
+    if (Init_Camera() != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Device init aborted in step Init_Camera()!");
+        return; // No way to continue without working SD card!
+    }
+
     // Init time (as early as possible, but SD card needs to be initialized)
     // ********************************************
     setupTime(); // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
-
-    // SD card: Check presence of some mandatory folders / files
-    // ********************************************
-    if (!SDCardCheckFolderFilePresence())
-    {
-        StatusLED(SDCARD_CHECK, 4, true);
-        setSystemStatusFlag(SYSTEM_STATUS_FOLDER_CHECK_BAD); // reduced web interface going to be loaded
-    }
 
     // Check version information
     // ********************************************

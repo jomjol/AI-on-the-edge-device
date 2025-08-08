@@ -1,6 +1,7 @@
+#include "../../include/defines.h"
+
 #ifdef ENABLE_SOFTAP
 // if ENABLE_SOFTAP = disabled, set CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n in sdkconfig.defaults to save 28k of flash
-#include "../../include/defines.h"
 
 #include "softAP.h"
 
@@ -77,13 +78,13 @@ void wifi_init_softAP(void)
 
     wifi_config_t wifi_config = {};
 
-    strcpy((char *)wifi_config.ap.ssid, (const char *)EXAMPLE_ESP_WIFI_SSID);
-    strcpy((char *)wifi_config.ap.password, (const char *)EXAMPLE_ESP_WIFI_PASS);
-    wifi_config.ap.channel = EXAMPLE_ESP_WIFI_CHANNEL;
-    wifi_config.ap.max_connection = EXAMPLE_MAX_STA_CONN;
+    strcpy((char *)wifi_config.ap.ssid, (const char *)ESP_WIFI_AP_SSID);
+    strcpy((char *)wifi_config.ap.password, (const char *)ESP_WIFI_AP_PASS);
+    wifi_config.ap.channel = ESP_WIFI_AP_CHANNEL;
+    wifi_config.ap.max_connection = ESP_WIFI_AP_MAX_STA_CONN;
     wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 
-    if (strlen(EXAMPLE_ESP_WIFI_PASS) == 0)
+    if (strlen(ESP_WIFI_AP_PASS) == 0)
     {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
@@ -93,7 +94,7 @@ void wifi_init_softAP(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "started with SSID \"%s\", password: \"%s\", channel: %d. Connect to AP and open http://192.168.4.1",
-             EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
+             ESP_WIFI_AP_SSID, ESP_WIFI_AP_PASS, ESP_WIFI_AP_CHANNEL);
 }
 
 void SendHTTPResponse(httpd_req_t *req)

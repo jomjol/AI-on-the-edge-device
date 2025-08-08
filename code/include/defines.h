@@ -56,6 +56,8 @@
 #define STRING_ENCRYPTED_LABEL "**##**"
 
 // ClassFlowControll + Main + connect_wifi_ap
+#define ENABLE_SOFTAP
+
 #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
 #define NETWORK_CONFIG_FILE "/sdcard/network.ini"
 
@@ -571,7 +573,7 @@ CONFIG_WPA_11R_SUPPORT=n
 #define ESP_WIFI_AP_SSID         "AI-on-the-Edge"
 #define ESP_WIFI_AP_IP           "192.168.4.1"
 #define ESP_WIFI_AP_PASS         ""
-#define ESP_WIFI_AP_CHANNEL      11
+#define ESP_WIFI_AP_CHANNEL      1
 #define ESP_WIFI_AP_MAX_STA_CONN 1
 
 #endif // ifndef defines_h

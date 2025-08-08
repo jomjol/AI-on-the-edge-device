@@ -99,7 +99,7 @@ static camera_config_t camera_config = {
     .frame_size = FRAMESIZE_VGA,         // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
     .jpeg_quality = 12,                  // 0-63 lower number means higher quality
     .fb_count = 1,                       // if more than one, i2s runs in continuous mode. Use only with JPEG
-    .fb_location = CAMERA_FB_IN_PSRAM,   /*!< The location where the frame buffer will be allocated */
+    .fb_location = CAMERA_FB_IN_PSRAM,   // The location where the frame buffer will be allocated
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY, // CAMERA_GRAB_LATEST. Sets when buffers should be filled
     .sccb_i2c_port = 0,
 };

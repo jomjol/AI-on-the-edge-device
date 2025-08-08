@@ -64,8 +64,6 @@ void ClassFlowTakeImage::SetInitialParameter(void)
 // wird beim Start aufgerufen
 bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 {
-    Camera.getSensorDatenToCCstatus(); // Kamera >>> CCstatus
-
     std::vector<string> splitted;
 
     aktparamgraph = trim(aktparamgraph);
@@ -84,6 +82,13 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
+    // Kamera >>> CCstatus
+    bool read_camera_settings_ok = false;
+    if (Camera.getSensorDatenToCCstatus() == ESP_OK)
+    {
+        read_camera_settings_ok = true;
+    }
+
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
@@ -99,7 +104,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             if (isStringNumeric(splitted[1]))
             {
                 this->imagesRetention = std::stod(splitted[1]);
-            }          
+            }
         }
 
         else if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1))
@@ -514,11 +519,14 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         }
     }
 
-    Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-    Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
+    // CCstatus >>> Kamera
+    if (read_camera_settings_ok && Camera.setSensorDatenFromCCstatus() == ESP_OK)
+    {
+        Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
 
-    rawImage = new CImageBasis("rawImage");
-    rawImage->CreateEmptyImage(CCstatus.ImageWidth, CCstatus.ImageHeight, 3);
+        rawImage = new CImageBasis("rawImage");
+        rawImage->CreateEmptyImage(CCstatus.ImageWidth, CCstatus.ImageHeight, 3);
+    }
 
     return true;
 }
