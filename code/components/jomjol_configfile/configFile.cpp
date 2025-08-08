@@ -12,13 +12,13 @@ static const char *TAG = "CONFIG";
 
 ConfigFile::ConfigFile(std::string filePath)
 {
-    std::string config = FormatFileName(filePath);
-    pFile = fopen(config.c_str(), "r");
+	std::string config = FormatFileName(filePath);
+	pFile = fopen(config.c_str(), "r");
 }
 
 ConfigFile::~ConfigFile()
 {
-    fclose(pFile);
+	fclose(pFile);
 }
 
 bool ConfigFile::isNewParagraph(std::string input)
@@ -30,18 +30,23 @@ bool ConfigFile::isNewParagraph(std::string input)
 	return false;
 }
 
-bool ConfigFile::GetNextParagraph(std::string& aktparamgraph, bool &disabled, bool &eof)
+bool ConfigFile::GetNextParagraph(std::string &aktparamgraph, bool &disabled, bool &eof)
 {
-	while (getNextLine(&aktparamgraph, disabled, eof) && !isNewParagraph(aktparamgraph));
+	while (getNextLine(&aktparamgraph, disabled, eof) && !isNewParagraph(aktparamgraph))
+	{
+	}
 
 	if (isNewParagraph(aktparamgraph))
+	{
 		return true;
+	}
+
 	return false;
 }
 
 bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 {
-    eof = false;
+	eof = false;
 	char zw[1024] = "";
 	if (pFile == NULL)
 	{
@@ -74,13 +79,13 @@ bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 		if (feof(pFile))
 		{
 			*rt = "";
-            eof = true;
+			eof = true;
 			return false;
 		}
 		*rt = zw;
 		*rt = trim(*rt);
 	}
 
-    disabled = ((*rt)[0] == ';');
+	disabled = ((*rt)[0] == ';');
 	return true;
 }

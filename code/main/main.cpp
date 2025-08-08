@@ -29,6 +29,7 @@
 #include "server_main.h"
 #include "server_camera.h"
 #include "basic_auth.h"
+#include "server_GpioHandler.h"
 
 #ifdef ENABLE_MQTT
 #include "server_mqtt.h"
@@ -675,7 +676,7 @@ extern "C" void app_main(void)
     register_server_mqtt_uri(server);
 #endif // ENABLE_MQTT
 
-    // gpio_handler_create(server);
+    gpio_handler_create(server);
 
     ESP_LOGD(TAG, "Before reg server main");
     register_server_main_uri(server, "/sdcard");

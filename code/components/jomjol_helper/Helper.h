@@ -17,6 +17,23 @@
 
 using namespace std;
 
+/* Error bit fields
+   One bit per error
+   Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
+enum SystemStatusFlag_t
+{                                           // One bit per error
+                                            // First Byte
+   SYSTEM_STATUS_PSRAM_BAD = 1 << 0,        //  1, Critical Error
+   SYSTEM_STATUS_HEAP_TOO_SMALL = 1 << 1,   //  2, Critical Error
+   SYSTEM_STATUS_CAM_BAD = 1 << 2,          //  4, Critical Error
+   SYSTEM_STATUS_SDCARD_CHECK_BAD = 1 << 3, //  8, Critical Error
+   SYSTEM_STATUS_FOLDER_CHECK_BAD = 1 << 4, //  16, Critical Error
+
+   // Second Byte
+   SYSTEM_STATUS_CAM_FB_BAD = 1 << (0 + 8), //  8, Flow still might work
+   SYSTEM_STATUS_NTP_BAD = 1 << (1 + 8),    //  9, Flow will work but time will be wrong
+};
+
 std::string FormatFileName(std::string input);
 std::size_t file_size(const std::string &file_name);
 void FindReplace(std::string &line, std::string &oldString, std::string &newString);
@@ -80,23 +97,6 @@ string getSDCardCapacity();
 string getSDCardSectorSize();
 
 string getMac(void);
-
-/* Error bit fields
-   One bit per error
-   Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
-enum SystemStatusFlag_t
-{                                           // One bit per error
-                                            // First Byte
-   SYSTEM_STATUS_PSRAM_BAD = 1 << 0,        //  1, Critical Error
-   SYSTEM_STATUS_HEAP_TOO_SMALL = 1 << 1,   //  2, Critical Error
-   SYSTEM_STATUS_CAM_BAD = 1 << 2,          //  4, Critical Error
-   SYSTEM_STATUS_SDCARD_CHECK_BAD = 1 << 3, //  8, Critical Error
-   SYSTEM_STATUS_FOLDER_CHECK_BAD = 1 << 4, //  16, Critical Error
-
-   // Second Byte
-   SYSTEM_STATUS_CAM_FB_BAD = 1 << (0 + 8), //  8, Flow still might work
-   SYSTEM_STATUS_NTP_BAD = 1 << (1 + 8),    //  9, Flow will work but time will be wrong
-};
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);
 void clearSystemStatusFlag(SystemStatusFlag_t flag);

@@ -588,6 +588,7 @@ void task_reboot(void *DeleteMainFlow)
     gpio_handler_destroy();
 
     Camera.SetCamDeepSleep(false);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
     esp_camera_return_all();
     esp_camera_deinit();
 
@@ -626,6 +627,7 @@ void doRebootOTA()
     StatusLEDOff();
 
     Camera.SetCamDeepSleep(false);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
     esp_camera_return_all();
     esp_camera_deinit();
 

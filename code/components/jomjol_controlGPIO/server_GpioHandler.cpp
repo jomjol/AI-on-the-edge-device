@@ -290,6 +290,8 @@ void GpioHandler::setGpioState(GpioResult *gpioResult)
 
 bool GpioHandler::ReadParameter(void)
 {
+    ESP_LOGD(TAG, "ReadParameter [GPIO]");
+
     if (!gpioMap->empty())
     {
         clear();
@@ -310,6 +312,7 @@ bool GpioHandler::ReadParameter(void)
     {
         GpioPin *gpioPin = new GpioPin(FLASH_GPIO, "On_Board_LED", FLASH_MODE, default_interruptType, default_LedcFrequency, default_SmartLedType, default_SmartLedQuantity, default_SmartLedColor, default_mqttTopic, default_httpEnable);
         (*gpioMap)[FLASH_GPIO] = gpioPin;
+        ESP_LOGD(TAG, "[GPIO] disabled");
         return false;
     }
 
