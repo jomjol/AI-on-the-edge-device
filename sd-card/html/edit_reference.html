@@ -107,15 +107,15 @@
         }
     </style>
 
-    <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
-    <link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" />
-    <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
-
-    <link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+    <link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" type="text/css"/>
+    <link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" type="text/css"/>
+    <link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" type="text/css"/>
+    <link rel="stylesheet" href="firework.css?v=$COMMIT_HASH" type="text/css"/>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
     <script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+	<script type="text/javascript">var domainname = getDomainname();</script>
 
 </head>
 
@@ -313,7 +313,7 @@
                 <input required type="number" id="FineRotate_value1" value=0.0 min="-1" max="1" step="0.1" onchange="cameraParameterChangedDR()"
                     oninput="(!validity.rangeOverflow||(value=1)) && (!validity.rangeUnderflow||(value=-1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
             </td>
-			<td></td>
+			<td class="tooltip" style="display:none;"></td>
 			
             <td class="indent1">
                 <class id="TakeImage_CamSaturation_text" style="color:black;">Saturation: </class>
@@ -1053,21 +1053,21 @@
             }
         }
 		
-		function UpdateTooltipModus() {
-			var _style_pur = 'none';
-			var _hidden = true;
+        function UpdateTooltipModus() {
+            var _style_pur = 'none';
+            var _hidden = true;
 
-			if (param["System"]["Tooltip"].value1 == 'true') {
-				_style_pur = '';
-				_hidden = false;
-			}
+            if (param["System"]["Tooltip"].value1 == 'true') {
+                _style_pur = '';
+                _hidden = false;
+            }
 
-			const tooltip = document.querySelectorAll(".tooltip");
-	
-			for (var i = 0; i < tooltip.length; i++) {
-				tooltip[i].style.display = _style_pur;
-			}
-		}		
+            const tooltip = document.querySelectorAll(".tooltip");
+
+            for (var i = 0; i < tooltip.length; i++) {
+                tooltip[i].style.display = _style_pur;
+            }
+        }		
 
         function getCoords(elem) { 
             // crossbrowser version

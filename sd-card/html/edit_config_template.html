@@ -198,11 +198,10 @@
 	}	
 </style>
 
-<link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" />
-<link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" />
-<link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" />
-
-<link href="firework.css?v=$COMMIT_HASH" rel="stylesheet">
+<link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH" type="text/css"/>
+<link rel="stylesheet" href="mkdocs_theme_extra.css?v=$COMMIT_HASH" type="text/css"/>
+<link rel="stylesheet" href="github.min.css?v=$COMMIT_HASH" type="text/css"/>
+<link rel="stylesheet" href="firework.css?v=$COMMIT_HASH" type="text/css"/>
 
 <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
 <script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
@@ -2143,7 +2142,7 @@
                     <option value="false" selected>disabled (false)</option>
                 </select>
             </td>
-            <td></td>
+            <td class="tooltip" style="display:none;"></td>
         </tr>
 
         <tr>
@@ -2156,7 +2155,7 @@
                     <option value="false" selected>disabled (false)</option>
                 </select>
             </td>
-            <td></td>
+            <td class="tooltip" style="display:none;"></td>
         </tr>
     </table>
 
@@ -2805,22 +2804,22 @@ function UpdateExpertModus() {
     }
 }
 
-function UpdateTooltipModus() {
-    var _style_pur = 'none';
-    var _hidden = true;
-	
-    if (!document.getElementById("System_Tooltip_value1").selectedIndex) {
-        _style_pur = '';
-        _hidden = false;
-        //firework.launch("Tooltip view activated.", 'warning', 5000);
-    }
+        function UpdateTooltipModus() {
+            var _style_pur = 'none';
+            var _hidden = true;
 
-    const tooltip = document.querySelectorAll(".tooltip");
-	
-    for (var i = 0; i < tooltip.length; i++) {
-        tooltip[i].style.display = _style_pur;
-    }
-}
+            if (!document.getElementById("System_Tooltip_value1").selectedIndex) {
+                _style_pur = '';
+                _hidden = false;
+                //firework.launch("Tooltip view activated.", 'warning', 5000);
+            }
+
+            const tooltip = document.querySelectorAll(".tooltip");
+
+            for (var i = 0; i < tooltip.length; i++) {
+                tooltip[i].style.display = _style_pur;
+            }
+        }
 
 function saveTextAsFile() {
     ReadParameterAll();
