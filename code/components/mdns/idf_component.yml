@@ -1,0 +1,9 @@
+version: "1.7.0"
+description: "Multicast UDP service used to provide local network service and host discovery."
+url: "https://github.com/espressif/esp-protocols/tree/master/components/mdns"
+issues: "https://github.com/espressif/esp-protocols/issues"
+documentation: "https://docs.espressif.com/projects/esp-protocols/mdns/docs/latest/en/index.html"
+repository: "https://github.com/espressif/esp-protocols.git"
+dependencies:
+  idf:
+    version: ">=5.0"

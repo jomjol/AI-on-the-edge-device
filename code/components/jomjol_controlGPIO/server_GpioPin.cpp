@@ -32,7 +32,6 @@ GpioPin::GpioPin(gpio_num_t gpio, const char *gpioName, gpio_pin_mode_t gpioMode
     _gpioMode = gpioMode;
 
     _interruptType = interruptType;
-
     _LedcFrequency = LedcFrequency;
 
     _mqttTopic = mqttTopic;
@@ -46,7 +45,8 @@ GpioPin::GpioPin(gpio_num_t gpio, const char *gpioName, gpio_pin_mode_t gpioMode
 GpioPin::~GpioPin(void)
 {
     ESP_LOGD(TAG, "reset GPIO pin %d", _gpio);
-    if (_interruptType != GPIO_INTR_DISABLE) {
+    if (_interruptType != GPIO_INTR_DISABLE)
+    {
         // hook isr handler for specific gpio pin
         gpio_isr_handler_remove(_gpio);
     }
@@ -63,7 +63,8 @@ static void IRAM_ATTR gpio_isr_handler(void *arg)
 
     xQueueSendToBackFromISR(gpio_queue_handle, (void *)&gpioResult, &ContextSwitchRequest);
 
-    if (ContextSwitchRequest) {
+    if (ContextSwitchRequest)
+    {
         taskYIELD();
     }
 }
@@ -71,7 +72,8 @@ static void IRAM_ATTR gpio_isr_handler(void *arg)
 void GpioPin::setGpioState(int status)
 {
 #ifdef ENABLE_MQTT
-    if (_mqttTopic.compare("") != 0) {
+    if (_mqttTopic.compare("") != 0)
+    {
         ESP_LOGD(TAG, "setGpioState %s %d", _mqttTopic.c_str(), status);
 
         MQTTPublish(_mqttTopic, status ? "true" : "false", 1);
@@ -102,14 +104,16 @@ void GpioPin::init(void)
     // configure GPIO with the given settings
     gpio_config(&io_conf);
 
-    if (_interruptType != GPIO_INTR_DISABLE) {
+    if (_interruptType != GPIO_INTR_DISABLE)
+    {
         // hook isr handler for specific gpio pin
         ESP_LOGD(TAG, "GpioPin::init add isr handler for GPIO %d", _gpio);
         gpio_isr_handler_add(_gpio, gpio_isr_handler, (void *)&_gpio);
     }
 
 #ifdef ENABLE_MQTT
-    if ((_mqttTopic.compare("") != 0) && ((_gpioMode == GPIO_PIN_MODE_OUTPUT) || (_gpioMode == GPIO_PIN_MODE_OUTPUT_PWM))) {
+    if ((_mqttTopic.compare("") != 0) && ((_gpioMode == GPIO_PIN_MODE_OUTPUT) || (_gpioMode == GPIO_PIN_MODE_OUTPUT_PWM)))
+    {
         std::function<bool(std::string, char *, int)> f = std::bind(&GpioPin::handleMQTT, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
         MQTTregisterSubscribeFunction(_mqttTopic, f);
     }
@@ -118,7 +122,8 @@ void GpioPin::init(void)
 
 bool GpioPin::getGpioState(std::string *errorText)
 {
-    if ((_gpioMode != GPIO_PIN_MODE_INPUT) && (_gpioMode != GPIO_PIN_MODE_INPUT_PULLUP) && (_gpioMode != GPIO_PIN_MODE_INPUT_PULLDOWN)) {
+    if ((_gpioMode != GPIO_PIN_MODE_INPUT) && (_gpioMode != GPIO_PIN_MODE_INPUT_PULLUP) && (_gpioMode != GPIO_PIN_MODE_INPUT_PULLDOWN))
+    {
         (*errorText) = "GPIO is not in input mode";
     }
 
@@ -129,14 +134,17 @@ void GpioPin::setGpioState(bool status, gpio_set_source setSource, std::string *
 {
     ESP_LOGD(TAG, "GpioPin::setState %d", status);
 
-    if ((_gpioMode != GPIO_PIN_MODE_OUTPUT) && (_gpioMode != GPIO_PIN_MODE_OUTPUT_PWM)) {
+    if ((_gpioMode != GPIO_PIN_MODE_OUTPUT) && (_gpioMode != GPIO_PIN_MODE_OUTPUT_PWM))
+    {
         (*errorText) = "GPIO is not in output mode";
     }
-    else {
+    else
+    {
         gpio_set_level(_gpio, status);
 
 #ifdef ENABLE_MQTT
-        if ((_mqttTopic.compare("") != 0) && (setSource != GPIO_SET_SOURCE_MQTT)) {
+        if ((_mqttTopic.compare("") != 0) && (setSource != GPIO_SET_SOURCE_MQTT))
+        {
             MQTTPublish(_mqttTopic, status ? "true" : "false", 1);
         }
 #endif // ENABLE_MQTT
@@ -146,10 +154,12 @@ void GpioPin::setGpioState(bool status, gpio_set_source setSource, std::string *
 void GpioPin::publishGpioState(void)
 {
     int newState = gpio_get_level(_gpio);
-    if (newState != currentGpioState) {
+    if (newState != currentGpioState)
+    {
         ESP_LOGD(TAG, "publish state of GPIO %d new state %d", _gpio, newState);
 #ifdef ENABLE_MQTT
-        if (_mqttTopic.compare("") != 0) {
+        if (_mqttTopic.compare("") != 0)
+        {
             MQTTPublish(_mqttTopic, newState ? "true" : "false", 1);
         }
 #endif // ENABLE_MQTT
@@ -166,18 +176,22 @@ bool GpioPin::handleMQTT(std::string, char *data, int data_len)
     dataStr = toLower(dataStr);
     std::string errorText = "";
 
-    if ((dataStr == "true") || (dataStr == "1")) {
+    if ((dataStr == "true") || (dataStr == "1"))
+    {
         setGpioState(true, GPIO_SET_SOURCE_MQTT, &errorText);
     }
-    else if ((dataStr == "false") || (dataStr == "0")) {
+    else if ((dataStr == "false") || (dataStr == "0"))
+    {
         setGpioState(false, GPIO_SET_SOURCE_MQTT, &errorText);
     }
-    else {
+    else
+    {
         errorText = "wrong value ";
         errorText.append(data, data_len);
     }
 
-    if (errorText != "") {
+    if (errorText != "")
+    {
         ESP_LOGE(TAG, "%s", errorText.c_str());
     }
 

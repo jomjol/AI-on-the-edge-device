@@ -1,0 +1,21 @@
+menu "Test Configuration"
+
+    config TEST_HOSTNAME
+        string "mDNS Hostname"
+        default "esp32-mdns"
+        help
+            mDNS Hostname for example to use
+
+    config TEST_NETIF_NAME
+        string "Network interface name"
+        default "eth2"
+        help
+            Name/ID if the network interface on which we run the mDNS host test
+
+    config TEST_CONSOLE
+        bool "Start console"
+        default n
+        help
+            Test uses esp_console for interactive testing.
+
+endmenu

@@ -12,36 +12,33 @@
 
 #include <string>
 
-class ClassFlowInfluxDB :
-    public ClassFlow
+class ClassFlowInfluxDB : public ClassFlow
 {
 protected:
     std::string uri, database, measurement;
     std::string OldValue;
-	ClassFlowPostProcessing* flowpostprocessing;  
-    std::string user, password; 
+    ClassFlowPostProcessing *flowpostprocessing;
+    std::string user, password;
     bool InfluxDBenable;
 
     InfluxDB influxDB;
 
-    void SetInitialParameter(void);    
-    
-    void handleFieldname(string _decsep, string _value);   
-    void handleMeasurement(string _decsep, string _value);
+    void SetInitialParameter(void);
 
-    
+    void handleFieldname(string _decsep, string _value);
+    void handleMeasurement(string _decsep, string _value);
 
 public:
     ClassFlowInfluxDB();
-    ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc);
-    ClassFlowInfluxDB(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
+    ClassFlowInfluxDB(std::vector<ClassFlow *> *lfc);
+    ClassFlowInfluxDB(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
 
-//    string GetInfluxDBMeasurement();
+    //    string GetInfluxDBMeasurement();
 
-    bool ReadParameter(FILE* pfile, string& aktparamgraph);
+    bool ReadParameter(FILE *pfile, string &aktparamgraph);
     bool doFlow(string time);
-    string name(){return "ClassFlowInfluxDB";};
+    string name() { return "ClassFlowInfluxDB"; };
 };
 
-#endif //CLASSFINFLUXDB_H
-#endif //ENABLE_INFLUXDB
+#endif // CLASSFINFLUXDB_H
+#endif // ENABLE_INFLUXDB

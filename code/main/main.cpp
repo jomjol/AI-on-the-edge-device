@@ -3,17 +3,17 @@
 #include <vector>
 #include <regex>
 
-#include "esp_psram.h"
-#include "esp_pm.h"
+#include <esp_psram.h>
+#include <esp_pm.h>
 
-#include "psram.h"
+#include <psram.h>
 
-#include "esp_chip_info.h"
-#include "driver/rtc_io.h"
+#include <esp_chip_info.h>
+#include <driver/rtc_io.h>
 
-#include "esp_vfs_fat.h"
-#include "ffconf.h"
-#include "driver/sdmmc_host.h"
+#include <esp_vfs_fat.h>
+#include <ffconf.h>
+#include <driver/sdmmc_host.h>
 
 #include "ClassLogFile.h"
 
@@ -32,40 +32,40 @@
 #include "server_GpioHandler.h"
 
 #ifdef ENABLE_MQTT
-#include "server_mqtt.h"
+#include <server_mqtt.h>
 #endif // ENABLE_MQTT
 
-#include "Helper.h"
 #include "statusled.h"
 #include "sdcard_check.h"
 
-#include "../../include/defines.h"
+#include "defines.h"
+#include "Helper.h"
 
 #ifdef ENABLE_SOFTAP
 #include "softAP.h"
 #endif // ENABLE_SOFTAP
 
 #ifdef DISABLE_BROWNOUT_DETECTOR
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
+#include <soc/soc.h>
+#include <soc/rtc_cntl_reg.h>
 #endif
 
 #ifdef DEBUG_ENABLE_SYSINFO
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 0, 0)
-#include "esp_sys.h"
+#include <esp_sys.h>
 #endif
 #endif // DEBUG_ENABLE_SYSINFO
 
 // define `gpio_pad_select_gpip` for newer versions of IDF
 #if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 3, 0))
-#include "esp_rom_gpio.h"
+#include <esp_rom_gpio.h>
 #define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
 #endif
 
 #ifdef USE_HIMEM_IF_AVAILABLE
-#include "esp32/himem.h"
+#include <esp32/himem.h>
 #ifdef DEBUG_HIMEM_MEMORY_CHECK
-#include "himem_memory_check.h"
+#include <himem_memory_check.h>
 #endif
 #endif
 

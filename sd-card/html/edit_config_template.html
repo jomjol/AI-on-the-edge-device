@@ -2231,7 +2231,7 @@
             setVisible('GPIO4_input', false);
             setVisible('GPIO4_pwm', false);
             setVisible('GPIO4_WS281x', false);
-        }
+		}
 
         function gpioParameterChanged() {
             // input
@@ -2799,12 +2799,12 @@ function UpdateAfterCategoryCheck() {
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
 	
-    if (!category["GPIO"]["enabled"]) {
+	if (!category["GPIO"]["enabled"]) {
         gpioParameterHide();
-    }
-    else {
+	}
+	else {
         gpioParameterChanged();
-    }
+	}
 }
 
 function UpdateExpertModus() {
@@ -3518,11 +3518,11 @@ function openDescription() {
 }
 
         function Init() {
-            gpioParameterHide();
+		    gpioParameterHide();
             loadBoardType();
             openDescription();
             LoadConfigNeu();
-            gpioParameterChanged();
+			gpioParameterChanged();
         }
 
         Init();

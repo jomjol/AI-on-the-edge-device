@@ -9,7 +9,7 @@
 
 #include "sdmmc_cmd.h"
 
-#include "../../include/defines.h"
+#include "defines.h"
 
 #ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
 #include <driver/temperature_sensor.h>

@@ -1,0 +1,190 @@
+menu "mDNS"
+
+    config MDNS_MAX_INTERFACES
+        int "Max number of interfaces"
+        range 1 9
+        default 3
+        help
+            Number of network interfaces to be served by the mDNS library.
+            Lowering this number helps to reduce some static RAM usage.
+
+    config MDNS_MAX_SERVICES
+        int "Max number of services"
+        default 10
+        help
+            Services take up a certain amount of memory, and allowing fewer
+            services to be open at the same time conserves memory. Specify
+            the maximum amount of services here.
+
+    config MDNS_TASK_PRIORITY
+        int "mDNS task priority"
+        range 1 255
+        default 1
+        help
+            Allows setting mDNS task priority. Please do not set the task priority
+            higher than priorities of system tasks. Compile time warning/error
+            would be emitted if the chosen task priority were too high.
+
+    config MDNS_ACTION_QUEUE_LEN
+        int "Maximum actions pending to the server"
+        range 8 64
+        default 16
+        help
+            Allows setting the length of mDNS action queue.
+
+    config MDNS_TASK_STACK_SIZE
+        int "mDNS task stack size"
+        default 4096
+        help
+            Allows setting mDNS task stacksize.
+
+    choice MDNS_TASK_AFFINITY
+        prompt "mDNS task affinity"
+        default MDNS_TASK_AFFINITY_CPU0
+        help
+            Allows setting mDNS tasks affinity, i.e. whether the task is pinned to
+            CPU0, pinned to CPU1, or allowed to run on any CPU.
+
+        config MDNS_TASK_AFFINITY_NO_AFFINITY
+            bool "No affinity"
+        config MDNS_TASK_AFFINITY_CPU0
+            bool "CPU0"
+        config MDNS_TASK_AFFINITY_CPU1
+            bool "CPU1"
+            depends on !FREERTOS_UNICORE
+
+    endchoice
+
+    config MDNS_TASK_AFFINITY
+        hex
+        default FREERTOS_NO_AFFINITY if MDNS_TASK_AFFINITY_NO_AFFINITY
+        default 0x0 if MDNS_TASK_AFFINITY_CPU0
+        default 0x1 if MDNS_TASK_AFFINITY_CPU1
+
+    menu "MDNS Memory Configuration"
+
+        choice MDNS_TASK_MEMORY_ALLOC_FROM
+            prompt "Select mDNS task create on which type of memory"
+            default MDNS_TASK_CREATE_FROM_INTERNAL
+            config MDNS_TASK_CREATE_FROM_SPIRAM
+                bool "mDNS task creates on the SPIRAM (READ HELP)"
+                depends on (SPIRAM_USE_CAPS_ALLOC || SPIRAM_USE_MALLOC)
+                help
+                    mDNS task creates on the SPIRAM.
+                    This option requires FreeRTOS component to allow creating
+                    tasks on the external memory.
+                    Please read the documentation about FREERTOS_TASK_CREATE_ALLOW_EXT_MEM
+
+            config MDNS_TASK_CREATE_FROM_INTERNAL
+                bool "mDNS task creates on the internal RAM"
+
+        endchoice
+
+        choice MDNS_MEMORY_ALLOC_FROM
+            prompt "Select mDNS memory allocation type"
+            default MDNS_MEMORY_ALLOC_INTERNAL
+
+            config MDNS_MEMORY_ALLOC_SPIRAM
+                bool "Allocate mDNS memory from SPIRAM"
+                depends on (SPIRAM_USE_CAPS_ALLOC || SPIRAM_USE_MALLOC)
+
+            config MDNS_MEMORY_ALLOC_INTERNAL
+                bool "Allocate mDNS memory from internal RAM"
+
+        endchoice
+
+        config MDNS_MEMORY_CUSTOM_IMPL
+            bool "Implement custom memory functions"
+            default n
+            help
+                Enable to implement custom memory functions for mDNS library.
+                This option is useful when the application wants to use custom
+                memory allocation functions for mDNS library.
+
+    endmenu # MDNS Memory Configuration
+
+    config MDNS_SERVICE_ADD_TIMEOUT_MS
+        int "mDNS adding service timeout (ms)"
+        range 10 30000
+        default 2000
+        help
+            Configures timeout for adding a new mDNS service. Adding a service
+            fails if could not be completed within this time.
+
+    config MDNS_TIMER_PERIOD_MS
+        int "mDNS timer period (ms)"
+        range 10 10000
+        default 100
+        help
+            Configures period of mDNS timer, which periodically transmits packets
+            and schedules mDNS searches.
+
+    config MDNS_NETWORKING_SOCKET
+        bool "Use BSD sockets for mDNS networking"
+        default n
+        help
+            Enables optional mDNS networking implementation using BSD sockets
+            in UDP multicast mode.
+            This option creates a new thread to serve receiving packets (TODO).
+            This option uses additional N sockets, where N is number of interfaces.
+
+    config MDNS_SKIP_SUPPRESSING_OWN_QUERIES
+        bool "Skip suppressing our own packets"
+        default n
+        help
+            Enable only if the querier and the responder share the same IP address.
+            This usually happens in test mode, where we may run multiple instances of
+            responders/queriers on the same interface.
+
+    config MDNS_ENABLE_DEBUG_PRINTS
+        bool "Enable debug prints of mDNS packets"
+        default n
+        help
+            Enable for the library to log received and sent mDNS packets to stdout.
+
+    config MDNS_ENABLE_CONSOLE_CLI
+        bool "Enable Command Line Interface on device console"
+        default y
+        help
+            Enable for the console cli to be available on the device.
+
+    config MDNS_RESPOND_REVERSE_QUERIES
+        bool "Enable responding to IPv4 reverse queries"
+        default n
+        help
+            Enables support for IPv4 reverse lookup. If enabled, the mDNS library
+            response to PTR queries of "A.B.C.D.in-addr.arpa" type.
+
+    config MDNS_MULTIPLE_INSTANCE
+        bool "Multiple instances under the same service type"
+        default y
+        help
+            Enables adding multiple service instances under the same service type.
+
+    menu "MDNS Predefined interfaces"
+
+        config MDNS_PREDEF_NETIF_STA
+            bool "Use predefined interface for WiFi Station"
+            default y
+            help
+                Set up mDNS for the default WiFi station.
+                Disable this option if you do not need mDNS on default WiFi STA.
+
+        config MDNS_PREDEF_NETIF_AP
+            bool "Use predefined interface for WiFi Access Point"
+            default y
+            help
+                Set up mDNS for the default WiFi Access Point.
+                Disable this option if you do not need mDNS on default WiFi AP.
+
+        config MDNS_PREDEF_NETIF_ETH
+            bool "Use predefined interface for Ethernet"
+            depends on ETH_ENABLED
+            default y
+            help
+                Set up mDNS for the default Ethernet interface.
+                Disable this option if you do not need mDNS on default Ethernet.
+
+    endmenu # MDNS Predefined interfaces
+
+endmenu

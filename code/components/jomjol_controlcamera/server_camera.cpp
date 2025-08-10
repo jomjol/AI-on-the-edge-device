@@ -41,7 +41,7 @@ void PowerResetCamera()
 esp_err_t handler_lightOn(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-    
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_lightOn - Start");
     ESP_LOGD(TAG, "handler_lightOn uri: %s", req->uri);
@@ -69,7 +69,7 @@ esp_err_t handler_lightOn(httpd_req_t *req)
 esp_err_t handler_lightOff(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-    
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_lightOff - Start");
     ESP_LOGD(TAG, "handler_lightOff uri: %s", req->uri);
@@ -97,7 +97,7 @@ esp_err_t handler_lightOff(httpd_req_t *req)
 esp_err_t handler_capture(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-    
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_capture - Start");
 #endif
@@ -115,7 +115,7 @@ esp_err_t handler_capture(httpd_req_t *req)
 
 #ifdef DEBUG_DETAIL_ON
         ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
-#endif        
+#endif
 
         esp_err_t result;
         result = Camera.CaptureToHTTP(req);
@@ -136,7 +136,7 @@ esp_err_t handler_capture(httpd_req_t *req)
 esp_err_t handler_capture_with_light(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-    
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_capture_with_light - Start");
 #endif
@@ -203,7 +203,7 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
 esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 {
     set_deep_sleep_state(false);
-    
+
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
 #endif
@@ -261,7 +261,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
 #ifdef DEBUG_DETAIL_ON
         ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
-#endif        
+#endif
 
         esp_err_t result;
         result = Camera.CaptureToFile(fn, delay);

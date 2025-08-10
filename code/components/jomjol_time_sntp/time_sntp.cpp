@@ -12,7 +12,7 @@
 #include "esp_sleep.h"
 #include "esp_netif_sntp.h"
 
-#include "../../include/defines.h"
+#include "defines.h"
 
 #include "ClassLogFile.h"
 

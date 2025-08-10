@@ -14,43 +14,43 @@
 #include "SmartLeds.h"
 
 #include "Helper.h"
-#include "../../include/defines.h"
+#include "defines.h"
 
 class GpioHandler
 {
-  private:
-    std::string _configFile;
-    httpd_handle_t _httpServer;
-    std::map<gpio_num_t, GpioPin *> *gpioMap = NULL;
-    TaskHandle_t xHandleTaskGpio = NULL;
-    bool _isEnabled = false;
+private:
+  std::string _configFile;
+  httpd_handle_t _httpServer;
+  std::map<gpio_num_t, GpioPin *> *gpioMap = NULL;
+  TaskHandle_t xHandleTaskGpio = NULL;
+  bool _isEnabled = false;
 
-    bool ReadParameter(void);
-    void clear(void);
+  bool ReadParameter(void);
+  void clear(void);
 
-    gpio_num_t resolvePinNum(uint8_t gpioNum);
-    gpio_pin_mode_t resolvePinMode(std::string input);
-    gpio_int_type_t resolveIntType(std::string input);
-    LedType resolveLedType(std::string input);
+  gpio_num_t resolvePinNum(uint8_t gpioNum);
+  gpio_pin_mode_t resolvePinMode(std::string input);
+  gpio_int_type_t resolveIntType(std::string input);
+  LedType resolveLedType(std::string input);
 
-  public:
-    GpioHandler(std::string configFile, httpd_handle_t httpServer);
-    ~GpioHandler(void);
+public:
+  GpioHandler(std::string configFile, httpd_handle_t httpServer);
+  ~GpioHandler(void);
 
-    void init(void);
-    void deinit(void);
-    void registerGpioUri(void);
-    esp_err_t handleHttpRequest(httpd_req_t *req);
-    void taskHandler(void);
-    void setGpioState(GpioResult *gpioResult);
-    void ledc_init(int gpioNum, ledc_channel_t channel, int frequency);
-    void flashLightControl(bool status, int intensity);
-    void getDs18b20Temperature(int gpioNum, int quantity);
+  void init(void);
+  void deinit(void);
+  void registerGpioUri(void);
+  esp_err_t handleHttpRequest(httpd_req_t *req);
+  void taskHandler(void);
+  void setGpioState(GpioResult *gpioResult);
+  void ledc_init(int gpioNum, ledc_channel_t channel, int frequency);
+  void flashLightControl(bool status, int intensity);
+  void getDs18b20Temperature(int gpioNum, int quantity);
 
-    bool isEnabled(void) { return _isEnabled; }
+  bool isEnabled(void) { return _isEnabled; }
 
 #ifdef ENABLE_MQTT
-    void handleMQTTconnect();
+  void handleMQTTconnect();
 #endif // ENABLE_MQTT
 };
 

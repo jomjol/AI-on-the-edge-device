@@ -69,7 +69,6 @@ esp_err_t onewire_rom_search_context_create(onewire_bus_handle_t handle, onewire
 esp_err_t onewire_rom_search_context_delete(onewire_rom_search_context_handler_t context)
 {
     ESP_RETURN_ON_FALSE(context, ESP_ERR_INVALID_ARG, TAG, "invalid context handler pointer");
-
     free(context);
 
     return ESP_OK;
@@ -82,13 +81,13 @@ esp_err_t onewire_rom_search(onewire_rom_search_context_handler_t context)
     uint8_t last_zero = 0;
 
     if (!context->last_device_flag) {
-        if (onewire_bus_reset(context->bus_handle) != ESP_OK) { // no device present
+        if (onewire_bus_reset(context->bus_handle) != ESP_OK) { 
+            // no device present
             return ESP_ERR_NOT_FOUND;
         }
 
         // send rom search command and start search algorithm
-        ESP_RETURN_ON_ERROR(onewire_bus_write_bytes(context->bus_handle, (uint8_t[]){ONEWIRE_CMD_SEARCH_ROM}, 1),
-                            TAG, "error while sending search rom command");
+        ESP_RETURN_ON_ERROR(onewire_bus_write_bytes(context->bus_handle, (uint8_t[]){ONEWIRE_CMD_SEARCH_ROM}, 1), TAG, "error while sending search rom command");
 
         for (uint16_t rom_bit_index = 0; rom_bit_index < 64; rom_bit_index ++) {
             uint8_t rom_byte_index = rom_bit_index / 8;
@@ -100,46 +99,58 @@ esp_err_t onewire_rom_search(onewire_rom_search_context_handler_t context)
                                 TAG, "error while reading rom bit"); // read a bit and its complement
 
             uint8_t search_direction;
-            if (rom_bit && rom_bit_complement) { // No devices participating in search.
+            if (rom_bit && rom_bit_complement) { 
+                // No devices participating in search.
                 ESP_LOGE(TAG, "no devices participating in search");
                 return ESP_ERR_NOT_FOUND;
-            } else {
-                if (rom_bit != rom_bit_complement) { // There are only 0s or 1s in the bit of the participating ROM numbers.
+            } 
+			else {
+                if (rom_bit != rom_bit_complement) { 
+                    // There are only 0s or 1s in the bit of the participating ROM numbers.
                     search_direction = rom_bit;  // just go ahead
-                } else { // There are both 0s and 1s in the current bit position of the participating ROM numbers. This is a discrepancy.
-                    if (rom_bit_index < context->last_discrepancy) { // current id bit is before the last discrepancy bit
+                } 
+				else { 
+                    // There are both 0s and 1s in the current bit position of the participating ROM numbers. This is a discrepancy.
+                    if (rom_bit_index < context->last_discrepancy) { 
+                        // current id bit is before the last discrepancy bit
                         search_direction = (context->rom_number[rom_byte_index] & rom_bit_mask) ? 0x01 : 0x00; // follow previous way
-                    } else {
+                    } 
+					else {
                         search_direction = (rom_bit_index == context->last_discrepancy) ? 0x01 : 0x00; // search for 0 bit first
                     }
 
-                    if (search_direction == 0) { // record zero's position in last zero
+                    if (search_direction == 0) { 
+                        // record zero's position in last zero
                         last_zero = rom_bit_index;
                     }
                 }
 
-                if (search_direction == 1) { // set corrsponding rom bit by serach direction
+                if (search_direction == 1) { 
+                    // set corrsponding rom bit by serach direction
                     context->rom_number[rom_byte_index] |= rom_bit_mask;
-                } else {
+                } 
+				else {
                     context->rom_number[rom_byte_index] &= ~rom_bit_mask;
                 }
 
-                ESP_RETURN_ON_ERROR(onewire_bus_write_bit(context->bus_handle, search_direction),
-                                    TAG, "error while writing direction bit"); // set search direction
+                ESP_RETURN_ON_ERROR(onewire_bus_write_bit(context->bus_handle, search_direction), TAG, "error while writing direction bit"); // set search direction
             }
         }
-    } else {
+    } 
+	else {
         ESP_LOGD(TAG, "1-wire rom search finished");
         return ESP_FAIL;
     }
 
     // if the search was successful
     context->last_discrepancy = last_zero;
-    if (context->last_discrepancy == 0) { // last zero loops back to the first bit
+    if (context->last_discrepancy == 0) { 
+        // last zero loops back to the first bit
         context->last_device_flag = true;
     }
 
-    if (onewire_check_crc8(context->rom_number, 7) != context->rom_number[7]) { // check crc
+    if (onewire_check_crc8(context->rom_number, 7) != context->rom_number[7]) { 
+        // check crc
         ESP_LOGE(TAG, "bad crc checksum of device with id " ONEWIRE_ROM_ID_STR, ONEWIRE_ROM_ID(context->rom_number));
         return ESP_ERR_INVALID_CRC;
     }

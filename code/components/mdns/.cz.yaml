@@ -1,0 +1,8 @@
+---
+commitizen:
+  bump_message: 'bump(mdns): $current_version -> $new_version'
+  pre_bump_hooks: python ../../ci/changelog.py mdns
+  tag_format: mdns-v$version
+  version: 1.7.0
+  version_files:
+  - idf_component.yml

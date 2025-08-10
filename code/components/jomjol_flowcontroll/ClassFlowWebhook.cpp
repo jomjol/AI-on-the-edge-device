@@ -16,7 +16,7 @@
 
 #include <time.h>
 
-static const char* TAG = "WEBHOOK";
+static const char *TAG = "WEBHOOK";
 
 void ClassFlowWebhook::SetInitialParameter(void)
 {
@@ -24,18 +24,18 @@ void ClassFlowWebhook::SetInitialParameter(void)
     flowpostprocessing = NULL;
     flowAlignment = NULL;
     previousElement = NULL;
-    ListFlowControll = NULL; 
+    ListFlowControll = NULL;
     disabled = false;
     WebhookEnable = false;
     WebhookUploadImg = 0;
-}       
+}
 
 ClassFlowWebhook::ClassFlowWebhook()
 {
     SetInitialParameter();
 }
 
-ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow*>* lfc)
+ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow *> *lfc)
 {
     SetInitialParameter();
 
@@ -44,17 +44,16 @@ ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow*>* lfc)
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
-            flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+            flowpostprocessing = (ClassFlowPostProcessing *)(*ListFlowControll)[i];
         }
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
         {
-            flowAlignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
+            flowAlignment = (ClassFlowAlignment *)(*ListFlowControll)[i];
         }
-
     }
 }
 
-ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow*>* lfc, ClassFlow *_prev)
+ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow *> *lfc, ClassFlow *_prev)
 {
     SetInitialParameter();
 
@@ -65,17 +64,16 @@ ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow*>* lfc, ClassFlow *_pre
     {
         if (((*ListFlowControll)[i])->name().compare("ClassFlowPostProcessing") == 0)
         {
-            flowpostprocessing = (ClassFlowPostProcessing*) (*ListFlowControll)[i];
+            flowpostprocessing = (ClassFlowPostProcessing *)(*ListFlowControll)[i];
         }
         if (((*ListFlowControll)[i])->name().compare("ClassFlowAlignment") == 0)
         {
-            flowAlignment = (ClassFlowAlignment*) (*ListFlowControll)[i];
+            flowAlignment = (ClassFlowAlignment *)(*ListFlowControll)[i];
         }
     }
 }
 
-
-bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
+bool ClassFlowWebhook::ReadParameter(FILE *pfile, string &aktparamgraph)
 {
     std::vector<string> splitted;
 
@@ -86,17 +84,15 @@ bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
         if (!this->GetNextParagraph(pfile, aktparamgraph))
             return false;
 
-    if (toUpper(aktparamgraph).compare("[WEBHOOK]") != 0) 
+    if (toUpper(aktparamgraph).compare("[WEBHOOK]") != 0)
         return false;
-
-    
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         ESP_LOGD(TAG, "while loop reading line: %s", aktparamgraph.c_str());
         splitted = ZerlegeZeile(aktparamgraph);
         std::string _param = GetParameterName(splitted[0]);
-            
+
         if ((toUpper(_param) == "URI") && (splitted.size() > 1))
         {
             this->uri = splitted[1];
@@ -110,34 +106,34 @@ bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (toUpper(splitted[1]) == "1")
             {
                 this->WebhookUploadImg = 1;
-            } else if (toUpper(splitted[1]) == "2")
+            }
+            else if (toUpper(splitted[1]) == "2")
             {
                 this->WebhookUploadImg = 2;
             }
         }
     }
-    
-    WebhookInit(uri,apikey);
+
+    WebhookInit(uri, apikey);
     WebhookEnable = true;
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Webhook Enabled for Uri " + uri);
 
-    printf("uri:         %s\n", uri.c_str());   
+    printf("uri:         %s\n", uri.c_str());
     return true;
 }
-
 
 void ClassFlowWebhook::handleMeasurement(string _decsep, string _value)
 {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
-//    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
+    //    ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
     if (_pospunkt > -1)
         _digit = _decsep.substr(0, _pospunkt);
     else
         _digit = "default";
     for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
     {
-        if (_digit == "default")                        //  Set to default first (if nothing else is set)
+        if (_digit == "default") //  Set to default first (if nothing else is set)
         {
             flowpostprocessing->NUMBERS[j]->MeasurementV2 = _value;
         }
@@ -147,7 +143,6 @@ void ClassFlowWebhook::handleMeasurement(string _decsep, string _value)
         }
     }
 }
-
 
 bool ClassFlowWebhook::doFlow(string zwtime)
 {
@@ -159,13 +154,14 @@ bool ClassFlowWebhook::doFlow(string zwtime)
         printf("vor sende WebHook");
         bool numbersWithError = WebhookPublish(flowpostprocessing->GetNumbers());
 
-        #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
-            if ((WebhookUploadImg == 1 || (WebhookUploadImg != 0 && numbersWithError)) && flowAlignment && flowAlignment->AlgROI) {
-                WebhookUploadPic(flowAlignment->AlgROI);
-            }
-        #endif
+#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+        if ((WebhookUploadImg == 1 || (WebhookUploadImg != 0 && numbersWithError)) && flowAlignment && flowAlignment->AlgROI)
+        {
+            WebhookUploadPic(flowAlignment->AlgROI);
+        }
+#endif
     }
-       
+
     return true;
 }
-#endif //ENABLE_WEBHOOK
+#endif // ENABLE_WEBHOOK

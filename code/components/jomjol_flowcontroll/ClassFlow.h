@@ -18,18 +18,17 @@ struct HTMLInfo
 	CImageBasis *image = NULL;
 	CImageBasis *image_org = NULL;
 	std::string filename;
-	std::string filename_org;	
+	std::string filename_org;
 };
-
 
 class ClassFlow
 {
 protected:
 	bool isNewParagraph(string input);
-	bool GetNextParagraph(FILE* pfile, string& aktparamgraph);
-	bool getNextLine(FILE* pfile, string* rt);
+	bool GetNextParagraph(FILE *pfile, string &aktparamgraph);
+	bool getNextLine(FILE *pfile, string *rt);
 
-	std::vector<ClassFlow*>* ListFlowControll;
+	std::vector<ClassFlow *> *ListFlowControll;
 	ClassFlow *previousElement;
 
 	virtual void SetInitialParameter(void);
@@ -40,14 +39,13 @@ protected:
 
 public:
 	ClassFlow(void);
-	ClassFlow(std::vector<ClassFlow*> * lfc);
-	ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev);	
-	
-	virtual bool ReadParameter(FILE* pfile, string &aktparamgraph);
+	ClassFlow(std::vector<ClassFlow *> *lfc);
+	ClassFlow(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
+
+	virtual bool ReadParameter(FILE *pfile, string &aktparamgraph);
 	virtual bool doFlow(string time);
 	virtual string getHTMLSingleStep(string host);
-	virtual string name(){return "ClassFlow";};
-
+	virtual string name() { return "ClassFlow"; };
 };
 
-#endif //CLASSFLOW_H
+#endif // CLASSFLOW_H

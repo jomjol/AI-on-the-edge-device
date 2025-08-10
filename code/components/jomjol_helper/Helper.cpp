@@ -26,7 +26,7 @@ extern "C"
 #include <esp_log.h>
 #include <esp_mac.h>
 #include <esp_timer.h>
-#include "../../include/defines.h"
+#include "defines.h"
 
 #include "ClassLogFile.h"
 

@@ -6,7 +6,7 @@
 #include "ClassLogFile.h"
 #include "esp_http_client.h"
 #include "time_sntp.h"
-#include "../../include/defines.h"
+#include "defines.h"
 #include <cJSON.h>
 #include <ClassFlowDefineTypes.h>
 

@@ -16,7 +16,8 @@
 #include "Helper.h"
 #include "../../include/defines.h"
 
-typedef enum {
+typedef enum
+{
     GPIO_PIN_MODE_DISABLED = 0x0,
     GPIO_PIN_MODE_INPUT = 0x1,
     GPIO_PIN_MODE_INPUT_PULLUP = 0x2,
@@ -27,12 +28,14 @@ typedef enum {
     GPIO_PIN_MODE_DS18B20 = 0x7,
 } gpio_pin_mode_t;
 
-struct GpioResult {
+struct GpioResult
+{
     gpio_num_t gpio;
     int state;
 };
 
-typedef enum {
+typedef enum
+{
     GPIO_SET_SOURCE_INTERNAL = 0,
     GPIO_SET_SOURCE_MQTT = 1,
     GPIO_SET_SOURCE_HTTP = 2,
@@ -40,7 +43,7 @@ typedef enum {
 
 class GpioPin
 {
-  private:
+private:
     gpio_num_t _gpio;
     const char *_gpioName;
     gpio_pin_mode_t _gpioMode;
@@ -59,7 +62,7 @@ class GpioPin
 
     int currentGpioState = -1;
 
-  public:
+public:
     GpioPin(gpio_num_t gpio, const char *gpioName, gpio_pin_mode_t gpioMode, gpio_int_type_t interruptType, int LedcFrequency, LedType SmartLedType, int SmartLedQuantity, Rgb SmartLedColor, std::string mqttTopic, bool httpEnable);
     ~GpioPin(void);
 
