@@ -1,4 +1,4 @@
-#include "read_wlanini.h"
+#include "read_network_config.h"
 
 #include <fstream>
 #include <string>
@@ -9,14 +9,14 @@
 #include <esp_log.h>
 
 #include "ClassLogFile.h"
-#include "connect_wlan.h"
+#include "connect_wifi_sta.h"
 
 #include "defines.h"
 #include "Helper.h"
 
 static const char *TAG = "WLANINI";
 
-struct wlan_config wlan_config = {};
+struct network_config network_config = {};
 
 std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
 {
@@ -76,8 +76,8 @@ int LoadWlanFromFile(std::string fn)
     {
         // ESP_LOGD(TAG, "line: %s", line.c_str());
         if (line[0] != ';')
-        { // Skip lines which starts with ';'
-
+        {
+            // Skip lines which starts with ';'
             splitted = ZerlegeZeileWLAN(line, "=");
             splitted[0] = trim(splitted[0], " ");
 
@@ -88,8 +88,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.ssid = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "SSID: " + wlan_config.ssid);
+                network_config.ssid = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "SSID: " + network_config.ssid);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "PASSWORD"))
@@ -99,9 +99,9 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.password = tmp;
+                network_config.password = tmp;
 #ifndef __HIDE_PASSWORD
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Password: " + wlan_config.password);
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Password: " + network_config.password);
 #else
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Password: XXXXXXXX");
 #endif
@@ -114,8 +114,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.hostname = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Hostname: " + wlan_config.hostname);
+                network_config.hostname = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Hostname: " + network_config.hostname);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "IP"))
@@ -125,8 +125,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.ipaddress = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "IP-Address: " + wlan_config.ipaddress);
+                network_config.ipaddress = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "IP-Address: " + network_config.ipaddress);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "GATEWAY"))
@@ -136,8 +136,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.gateway = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Gateway: " + wlan_config.gateway);
+                network_config.gateway = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Gateway: " + network_config.gateway);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "NETMASK"))
@@ -147,8 +147,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.netmask = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Netmask: " + wlan_config.netmask);
+                network_config.netmask = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Netmask: " + network_config.netmask);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "DNS"))
@@ -158,8 +158,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.dns = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DNS: " + wlan_config.dns);
+                network_config.dns = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "DNS: " + network_config.dns);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_USERNAME"))
@@ -169,8 +169,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.http_username = tmp;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_USERNAME: " + wlan_config.http_username);
+                network_config.http_username = tmp;
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_USERNAME: " + network_config.http_username);
             }
 
             else if ((splitted.size() > 1) && (toUpper(splitted[0]) == "HTTP_PASSWORD"))
@@ -180,9 +180,9 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.http_password = tmp;
+                network_config.http_password = tmp;
 #ifndef __HIDE_PASSWORD
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_PASSWORD: " + wlan_config.http_password);
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_PASSWORD: " + network_config.http_password);
 #else
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTTP_PASSWORD: XXXXXXXX");
 #endif
@@ -196,8 +196,8 @@ int LoadWlanFromFile(std::string fn)
                 {
                     tmp = tmp.substr(1, tmp.length() - 2);
                 }
-                wlan_config.rssi_threshold = atoi(tmp.c_str());
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "RSSIThreshold: " + std::to_string(wlan_config.rssi_threshold));
+                network_config.rssi_threshold = atoi(tmp.c_str());
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "RSSIThreshold: " + std::to_string(network_config.rssi_threshold));
             }
 #endif
         }
@@ -215,7 +215,7 @@ int LoadWlanFromFile(std::string fn)
     fclose(pFile);
 
     /* Check if SSID is empty (mandatory parameter) */
-    if (wlan_config.ssid.empty())
+    if (network_config.ssid.empty())
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SSID empty. Device init aborted!");
         return -2;
@@ -223,7 +223,7 @@ int LoadWlanFromFile(std::string fn)
 
     /* Check if password is empty (mandatory parameter) */
     /* Disabled see issue #2393
-    if (wlan_config.password.empty()) {
+    if (network_config.password.empty()) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Password empty. Device init aborted!");
         return -2;
     }
@@ -234,8 +234,10 @@ int LoadWlanFromFile(std::string fn)
 
 bool ChangeHostName(std::string fn, std::string _newhostname)
 {
-    if (_newhostname == wlan_config.hostname)
+    if (_newhostname == network_config.hostname)
+    {
         return false;
+    }
 
     std::string line = "";
     std::vector<string> splitted;
@@ -323,8 +325,10 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
 #if (defined WLAN_USE_ROAMING_BY_SCANNING || (defined WLAN_USE_MESH_ROAMING && defined WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES))
 bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
 {
-    if (wlan_config.rssi_threshold == _newrssithreshold)
+    if (network_config.rssi_threshold == _newrssithreshold)
+    {
         return false;
+    }
 
     std::string line = "";
     std::vector<string> splitted;

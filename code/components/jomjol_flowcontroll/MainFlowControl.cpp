@@ -13,7 +13,7 @@
 #include "esp_wake_stub.h"
 #include "driver/rtc_io.h"
 
-#include "../../include/defines.h"
+#include "defines.h"
 #include "Helper.h"
 #include "statusled.h"
 
@@ -29,8 +29,8 @@
 
 #include "server_file.h"
 
-#include "read_wlanini.h"
-#include "connect_wlan.h"
+#include "read_network_config.h"
+#include "connect_wifi_sta.h"
 #include "psram.h"
 #include "basic_auth.h"
 
@@ -1833,6 +1833,9 @@ void task_autodoFlow(void *pvParameter)
                 // to minimize current consumption.
                 rtc_gpio_isolate(GPIO_NUM_12);
                 rtc_gpio_isolate(GPIO_NUM_4);
+#endif
+#if (defined(BOARD_ESP32_S3_ETH_V1) || defined(BOARD_ESP32_S3_ETH_V2))
+                gpio_set_level(PER_ENABLE, 0);
 #endif
                 esp_deep_sleep_start();
             }

@@ -1,5 +1,5 @@
 #include "basic_auth.h"
-#include "read_wlanini.h"
+#include "read_network_config.h"
 #include <esp_tls_crypto.h>
 #include <esp_log.h>
 
@@ -17,10 +17,10 @@ basic_auth_info_t basic_auth_info = {NULL, NULL};
 
 void init_basic_auth()
 {
-    if (!wlan_config.http_username.empty() && !wlan_config.http_password.empty())
+    if (!network_config.http_username.empty() && !network_config.http_password.empty())
     {
-        basic_auth_info.username = wlan_config.http_username.c_str();
-        basic_auth_info.password = wlan_config.http_password.c_str();
+        basic_auth_info.username = network_config.http_username.c_str();
+        basic_auth_info.password = network_config.http_password.c_str();
     }
 }
 

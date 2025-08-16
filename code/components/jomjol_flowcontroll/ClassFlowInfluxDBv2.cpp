@@ -2,7 +2,7 @@
 #include <sstream>
 #include "ClassFlowInfluxDBv2.h"
 #include "Helper.h"
-#include "connect_wlan.h"
+#include "connect_wifi_sta.h"
 
 #include "time_sntp.h"
 #include "interface_influxdb.h"

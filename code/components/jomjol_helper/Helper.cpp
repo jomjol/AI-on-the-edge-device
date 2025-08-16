@@ -1360,6 +1360,21 @@ string RundeOutput(double _in, int _anzNachkomma)
 	return stream.str();
 }
 
+void strinttoip4(const char *ip, int &a, int &b, int &c, int &d)
+{
+	std::string zw = std::string(ip);
+	std::stringstream s(zw);
+	char ch; // to temporarily store the '.'
+	s >> a >> ch >> b >> ch >> c >> ch >> d;
+}
+
+std::string BssidToString(const char *c)
+{
+	char cBssid[25];
+	sprintf(cBssid, "%02x:%02x:%02x:%02x:%02x:%02x", c[0], c[1], c[2], c[3], c[4], c[5]);
+	return std::string(cBssid);
+}
+
 string getMac(void)
 {
 	uint8_t macInt[6];

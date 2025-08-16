@@ -2,8 +2,8 @@
 
 #ifdef ENABLE_SOFTAP
 
-#ifndef SOFTAP_H
-#define SOFTAP_H
+#ifndef START_WIFI_AP_H
+#define START_WIFI_AP_H
 
 #include <esp_wifi.h>
 #include <esp_event.h>
@@ -19,6 +19,6 @@
 
 void CheckStartAPMode();
 
-#endif // SOFTAP_H
+#endif // START_WIFI_AP_H
 
 #endif // #ifdef ENABLE_SOFTAP

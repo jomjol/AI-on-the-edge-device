@@ -96,6 +96,8 @@ string getSDCardName();
 string getSDCardCapacity();
 string getSDCardSectorSize();
 
+void strinttoip4(const char *ip, int &a, int &b, int &c, int &d);
+std::string BssidToString(const char *c);
 string getMac(void);
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);

@@ -4,8 +4,8 @@
 #include <iomanip>
 #include "ClassFlowMQTT.h"
 #include "Helper.h"
-#include "connect_wlan.h"
-#include "read_wlanini.h"
+#include "connect_wifi_sta.h"
+#include "read_network_config.h"
 #include "ClassLogFile.h"
 
 #include "time_sntp.h"
@@ -31,7 +31,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     topicError = "";
     topicRate = "";
     topicTimeStamp = "";
-    maintopic = wlan_config.hostname;
+    maintopic = network_config.hostname;
 
     topicUptime = "";
     topicFreeMem = "";
@@ -40,7 +40,7 @@ void ClassFlowMQTT::SetInitialParameter(void)
     clientCertFilename = "";
     clientKeyFilename = "";
     validateServerCert = true;
-    clientname = wlan_config.hostname;
+    clientname = network_config.hostname;
 
     OldValue = "";
     flowpostprocessing = NULL;

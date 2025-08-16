@@ -1,11 +1,13 @@
 #pragma once
 
-#ifndef CONNECT_WLAN_H
-#define CONNECT_WLAN_H
+#ifndef CONNECT_WIFI_STA_H
+#define CONNECT_WIFI_STA_H
 
 #include <string>
+#include <esp_err.h>
+#include <esp_log.h>
 
-int wifi_init_sta(void);
+esp_err_t wifi_init_sta(void);
 std::string *getIPAddress();
 std::string *getSSID();
 int get_WIFI_RSSI();
@@ -22,4 +24,4 @@ void wifiRoamingQuery(void);
 void wifiRoamByScanning(void);
 #endif
 
-#endif // CONNECT_WLAN_H
+#endif // CONNECT_WIFI_STA_H

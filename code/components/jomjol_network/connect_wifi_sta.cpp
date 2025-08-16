@@ -1,4 +1,4 @@
-#include "connect_wlan.h"
+#include "connect_wifi_sta.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@
 #endif // ENABLE_MQTT
 
 #include "ClassLogFile.h"
-#include "read_wlanini.h"
+#include "read_network_config.h"
 #include "Helper.h"
 #include "statusled.h"
 
@@ -59,21 +59,6 @@ static bool WIFIConnected = false;
 static int WIFIReconnectCnt = 0;
 
 esp_netif_t *my_sta;
-
-void strinttoip4(const char *ip, int &a, int &b, int &c, int &d)
-{
-	std::string zw = std::string(ip);
-	std::stringstream s(zw);
-	char ch; // to temporarily store the '.'
-	s >> a >> ch >> b >> ch >> c >> ch >> d;
-}
-
-std::string BssidToString(const char *c)
-{
-	char cBssid[25];
-	sprintf(cBssid, "%02x:%02x:%02x:%02x:%02x:%02x", c[0], c[1], c[2], c[3], c[4], c[5]);
-	return std::string(cBssid);
-}
 
 #ifdef WLAN_USE_MESH_ROAMING
 /* rrm ctx */
@@ -290,7 +275,7 @@ static void esp_bss_rssi_low_handler(void *arg, esp_event_base_t event_base, int
 	int retval = -1;
 	wifi_event_bss_rssi_low_t *event = (wifi_event_bss_rssi_low_t *)event_data;
 
-	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming Event: RSSI " + std::to_string(event->rssi) + " < RSSI_Threshold " + std::to_string(wlan_config.rssi_threshold));
+	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming Event: RSSI " + std::to_string(event->rssi) + " < RSSI_Threshold " + std::to_string(network_config.rssi_threshold));
 
 	/* If RRM is supported, call RRM and then send BTM query to AP */
 	if (esp_rrm_is_rrm_supported_connection() && esp_wnm_is_btm_supported_connection())
@@ -343,8 +328,8 @@ void wifiRoamingQuery(void)
 		/* Note 2: Additional querys will be sent after flow round is finshed --> server_tflite.cpp - function "task_autodoFlow" */
 		/* Note 3: RSSI_Threshold = 0 --> Disable client query by application (WebUI parameter) */
 
-		if (wlan_config.rssi_threshold != 0 && get_WIFI_RSSI() != -127 && (get_WIFI_RSSI() < wlan_config.rssi_threshold))
-			esp_wifi_set_rssi_threshold(wlan_config.rssi_threshold);
+		if (network_config.rssi_threshold != 0 && get_WIFI_RSSI() != -127 && (get_WIFI_RSSI() < network_config.rssi_threshold))
+			esp_wifi_set_rssi_threshold(network_config.rssi_threshold);
 	}
 }
 #endif // WLAN_USE_MESH_ROAMING_ACTIVATE_CLIENT_TRIGGERED_QUERIES
@@ -363,7 +348,7 @@ void wifi_scan(void)
 	wifi_scan_config_t wifi_scan_config;
 	memset(&wifi_scan_config, 0, sizeof(wifi_scan_config));
 
-	wifi_scan_config.ssid = (uint8_t *)wlan_config.ssid.c_str(); // only scan for configured SSID
+	wifi_scan_config.ssid = (uint8_t *)network_config.ssid.c_str(); // only scan for configured SSID
 	wifi_scan_config.show_hidden = true;						 // scan also hidden SSIDs
 	wifi_scan_config.channel = 0;								 // scan all channels
 
@@ -409,9 +394,9 @@ void wifi_scan(void)
 
 void wifiRoamByScanning(void)
 {
-	if (wlan_config.rssi_threshold != 0 && get_WIFI_RSSI() != -127 && (get_WIFI_RSSI() < wlan_config.rssi_threshold))
+	if (network_config.rssi_threshold != 0 && get_WIFI_RSSI() != -127 && (get_WIFI_RSSI() < network_config.rssi_threshold))
 	{
-		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: Start scan of all channels for SSID " + wlan_config.ssid);
+		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Roaming: Start scan of all channels for SSID " + network_config.ssid);
 		wifi_scan();
 
 		if (APWithBetterRSSI)
@@ -430,12 +415,12 @@ void wifiRoamByScanning(void)
 
 std::string *getIPAddress()
 {
-	return &wlan_config.ipaddress;
+	return &network_config.ipaddress;
 }
 
 std::string *getSSID()
 {
-	return &wlan_config.ssid;
+	return &network_config.ssid;
 }
 
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
@@ -494,7 +479,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 	}
 	else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED)
 	{
-		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to: " + wlan_config.ssid + ", RSSI: " + std::to_string(get_WIFI_RSSI()));
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to: " + network_config.ssid + ", RSSI: " + std::to_string(get_WIFI_RSSI()));
 
 #ifdef WLAN_USE_MESH_ROAMING
 		printRoamingFeatureSupport();
@@ -511,8 +496,8 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 		WIFIReconnectCnt = 0;
 
 		ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-		wlan_config.ipaddress = std::string(ip4addr_ntoa((const ip4_addr *)&event->ip_info.ip));
-		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Assigned IP: " + wlan_config.ipaddress);
+		network_config.ipaddress = std::string(ip4addr_ntoa((const ip4_addr *)&event->ip_info.ip));
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Assigned IP: " + network_config.ipaddress);
 
 #ifdef ENABLE_MQTT
 		if (getMQTTisEnabled())
@@ -526,6 +511,13 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 
 esp_err_t wifi_init_sta(void)
 {
+	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WiFi STA init...");
+
+	// Set log level for netif/wifi component to WARN level (default: INFO; only relevant for serial console)
+	// ********************************************
+	esp_log_level_set("netif", ESP_LOG_WARN);
+	esp_log_level_set("wifi", ESP_LOG_WARN);
+
 	esp_err_t retval = esp_netif_init();
 	if (retval != ESP_OK)
 	{
@@ -542,20 +534,20 @@ esp_err_t wifi_init_sta(void)
 
 	my_sta = esp_netif_create_default_wifi_sta();
 
-	if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
+	if (!network_config.ipaddress.empty() && !network_config.gateway.empty() && !network_config.netmask.empty())
 	{
-		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> IP: " + wlan_config.ipaddress + ", Gateway: " + std::string(wlan_config.gateway) + ", Netmask: " + std::string(wlan_config.netmask));
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> IP: " + network_config.ipaddress + ", Gateway: " + std::string(network_config.gateway) + ", Netmask: " + std::string(network_config.netmask));
 		esp_netif_dhcpc_stop(my_sta); // Stop DHCP service
 
 		esp_netif_ip_info_t ip_info;
 		int a, b, c, d;
-		strinttoip4(wlan_config.ipaddress.c_str(), a, b, c, d);
+		strinttoip4(network_config.ipaddress.c_str(), a, b, c, d);
 		IP4_ADDR(&ip_info.ip, a, b, c, d); // Set static IP address
 
-		strinttoip4(wlan_config.gateway.c_str(), a, b, c, d);
+		strinttoip4(network_config.gateway.c_str(), a, b, c, d);
 		IP4_ADDR(&ip_info.gw, a, b, c, d); // Set gateway
 
-		strinttoip4(wlan_config.netmask.c_str(), a, b, c, d);
+		strinttoip4(network_config.netmask.c_str(), a, b, c, d);
 		IP4_ADDR(&ip_info.netmask, a, b, c, d); // Set netmask
 
 		esp_netif_set_ip_info(my_sta, &ip_info); // Set static IP configuration
@@ -573,21 +565,21 @@ esp_err_t wifi_init_sta(void)
 		return retval;
 	}
 
-	if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
+	if (!network_config.ipaddress.empty() && !network_config.gateway.empty() && !network_config.netmask.empty())
 	{
-		if (wlan_config.dns.empty())
+		if (network_config.dns.empty())
 		{
 			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "No DNS server, use gateway");
-			wlan_config.dns = wlan_config.gateway;
+			network_config.dns = network_config.gateway;
 		}
 		else
 		{
-			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> DNS: " + wlan_config.dns);
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> DNS: " + network_config.dns);
 		}
 
 		esp_netif_dns_info_t dns_info;
 		ip4_addr_t ip;
-		ip.addr = esp_ip4addr_aton(wlan_config.dns.c_str());
+		ip.addr = esp_ip4addr_aton(network_config.dns.c_str());
 		ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
 
 		retval = esp_netif_set_dns_info(my_sta, ESP_NETIF_DNS_MAIN, &dns_info);
@@ -598,16 +590,14 @@ esp_err_t wifi_init_sta(void)
 		}
 	}
 
-	retval = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
-												 &event_handler, NULL, NULL);
+	retval = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL, NULL);
 	if (retval != ESP_OK)
 	{
 		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - WIFI_ANY: Error: " + std::to_string(retval));
 		return retval;
 	}
 
-	retval = esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
-												 &event_handler, NULL, NULL);
+	retval = esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL, NULL);
 	if (retval != ESP_OK)
 	{
 		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - GOT_IP: Error: " + std::to_string(retval));
@@ -615,8 +605,7 @@ esp_err_t wifi_init_sta(void)
 	}
 
 #ifdef WLAN_USE_MESH_ROAMING
-	retval = esp_event_handler_instance_register(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW,
-												 &esp_bss_rssi_low_handler, NULL, NULL);
+	retval = esp_event_handler_instance_register(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW, &esp_bss_rssi_low_handler, NULL, NULL);
 	if (retval != ESP_OK)
 	{
 		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - BSS_RSSI_LOW: Error: " + std::to_string(retval));
@@ -638,8 +627,8 @@ esp_err_t wifi_init_sta(void)
 // wifi_config.sta.ft_enabled = 1;	 // 802.11r (BSS Fast Transition) -> Upcoming IDF version 5.0 will support 11r
 #endif
 
-	strcpy((char *)wifi_config.sta.ssid, (const char *)wlan_config.ssid.c_str());
-	strcpy((char *)wifi_config.sta.password, (const char *)wlan_config.password.c_str());
+	strcpy((char *)wifi_config.sta.ssid, (const char *)network_config.ssid.c_str());
+	strcpy((char *)wifi_config.sta.password, (const char *)network_config.password.c_str());
 
 	retval = esp_wifi_set_mode(WIFI_MODE_STA);
 	if (retval != ESP_OK)
@@ -669,16 +658,16 @@ esp_err_t wifi_init_sta(void)
 		return retval;
 	}
 
-	if (!wlan_config.hostname.empty())
+	if (!network_config.hostname.empty())
 	{
-		retval = esp_netif_set_hostname(my_sta, wlan_config.hostname.c_str());
+		retval = esp_netif_set_hostname(my_sta, network_config.hostname.c_str());
 		if (retval != ESP_OK)
 		{
 			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set hostname! Error: " + std::to_string(retval));
 		}
 		else
 		{
-			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set hostname to: " + wlan_config.hostname);
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Set hostname to: " + network_config.hostname);
 		}
 		// initialize mDNS service
 		retval = mdns_init();
@@ -689,11 +678,11 @@ esp_err_t wifi_init_sta(void)
 		else
 		{
 			// set mdns hostname
-			mdns_hostname_set(wlan_config.hostname.c_str());
+			mdns_hostname_set(network_config.hostname.c_str());
 		}
 	}
 
-	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init successful");
+	LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WiFi STA init successful done");
 	return ESP_OK;
 }
 
@@ -701,9 +690,13 @@ int get_WIFI_RSSI()
 {
 	wifi_ap_record_t ap;
 	if (esp_wifi_sta_get_ap_info(&ap) == ESP_OK)
+	{
 		return ap.rssi;
+	}
 	else
+	{
 		return -127; // Return -127 if no info available e.g. not connected
+	}
 }
 
 /*std::string getIp() {
@@ -716,7 +709,7 @@ int get_WIFI_RSSI()
 
 std::string *getHostname()
 {
-	return &wlan_config.hostname;
+	return &network_config.hostname;
 }
 
 bool getWIFIisConnected()

@@ -6,8 +6,8 @@
 
 #include "esp_log.h"
 #include "ClassLogFile.h"
-#include "connect_wlan.h"
-#include "read_wlanini.h"
+#include "connect_wifi_sta.h"
+#include "read_network_config.h"
 #include "server_mqtt.h"
 #include "interface_mqtt.h"
 #include "time_sntp.h"
@@ -309,7 +309,7 @@ bool publishStaticData(int qos)
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "fwVersion", getFwVersion().c_str(), qos, retainFlag);
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "MAC", getMac(), qos, retainFlag);
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), qos, retainFlag);
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, qos, retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "hostname", network_config.hostname, qos, retainFlag);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << roundInterval; // minutes

@@ -13,7 +13,7 @@
 
 #include "esp_wifi.h"
 #include "esp_log.h"
-#include "../../include/defines.h"
+#include "defines.h"
 #include "psram.h"
 
 #include <time.h>

@@ -17,8 +17,8 @@
 
 #include "ClassLogFile.h"
 
-#include "connect_wlan.h"
-#include "read_wlanini.h"
+#include "connect_wifi_sta.h"
+#include "read_network_config.h"
 
 #include "server_main.h"
 #include "MainFlowControl.h"
@@ -42,7 +42,7 @@
 #include "Helper.h"
 
 #ifdef ENABLE_SOFTAP
-#include "softAP.h"
+#include "start_wifi_ap.h"
 #endif // ENABLE_SOFTAP
 
 #ifdef DISABLE_BROWNOUT_DETECTOR
@@ -440,6 +440,19 @@ extern "C" void app_main(void)
     ESP_ERROR_CHECK(heap_trace_start(HEAP_TRACE_LEAKS));
 #endif
 
+#if (defined(BOARD_ESP32_S3_ETH_V1) || defined(BOARD_ESP32_S3_ETH_V2))
+    // Configure IO Pad as General Purpose IO,
+    // so that it can be connected to internal Matrix,
+    // then combined with one or more peripheral signals.
+    gpio_pad_select_gpio(PER_ENABLE);
+
+    gpio_set_direction(PER_ENABLE, GPIO_MODE_OUTPUT);
+    gpio_set_level(PER_ENABLE, 1);
+#endif
+
+    rtc_gpio_hold_dis(GPIO_NUM_12);
+    rtc_gpio_hold_dis(GPIO_NUM_4);
+
     // ********************************************
     // Highlight start of app_main
     // ********************************************
@@ -506,9 +519,6 @@ extern "C" void app_main(void)
     // ********************************************
     CheckOTAUpdate();
     CheckUpdate();
-
-    rtc_gpio_hold_dis(GPIO_NUM_12);
-    rtc_gpio_hold_dis(GPIO_NUM_4);
 
     // Set CPU Frequency
     // ********************************************
@@ -623,10 +633,6 @@ extern "C" void app_main(void)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Manual Time Sync failed during startup");
     }
-
-    // Set log level for wifi component to WARN level (default: INFO; only relevant for serial console)
-    // ********************************************
-    esp_log_level_set("wifi", ESP_LOG_WARN);
 
 #ifdef HEAP_TRACING_MAIN_WIFI
     ESP_ERROR_CHECK(heap_trace_stop());

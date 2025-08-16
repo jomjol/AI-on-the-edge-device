@@ -3,7 +3,7 @@
 #ifdef ENABLE_SOFTAP
 // if ENABLE_SOFTAP = disabled, set CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n in sdkconfig.defaults to save 28k of flash
 
-#include "softAP.h"
+#include "start_wifi_ap.h"
 
 /*  WiFi softAP Example
    This example code is in the Public Domain (or CC0 licensed, at your option.)
@@ -35,6 +35,8 @@
 
 #include "Helper.h"
 
+static const char *TAG = "WIFI AP";
+
 /* The examples use WiFi configuration that you can set via project configuration menu.
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
@@ -43,39 +45,61 @@
 bool isConfigINI = false;
 bool isWlanINI = false;
 
-static const char *TAG = "WIFI AP";
+esp_netif_t *my_ap;
 
-static void wifi_event_handler(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data)
+static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED)
     {
         wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
-        ESP_LOGI(TAG, "station " MACSTR " join, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+        ESP_LOGI(TAG, "station " MACSTR " join, AID=%d", MAC2STR(event->mac), event->aid);
     }
     else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
     {
         wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
-        ESP_LOGI(TAG, "station " MACSTR " leave, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+        ESP_LOGI(TAG, "station " MACSTR " leave, AID=%d", MAC2STR(event->mac), event->aid);
     }
 }
 
-void wifi_init_softAP(void)
+esp_err_t wifi_init_softAP(void)
 {
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_ap();
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WiFi AP init...");
+
+    // Set log level for netif/wifi component to WARN level (default: INFO; only relevant for serial console)
+    // ********************************************
+    esp_log_level_set("netif", ESP_LOG_WARN);
+    esp_log_level_set("wifi", ESP_LOG_WARN);
+
+    esp_err_t retval = esp_netif_init();
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_netif_init: Error: " + std::to_string(retval));
+        return retval;
+    }
+
+    retval = esp_event_loop_create_default();
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_loop_create_default: Error: " + std::to_string(retval));
+        return retval;
+    }
+
+    my_ap = esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    retval = esp_wifi_init(&cfg);
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_init: Error: " + std::to_string(retval));
+        return retval;
+    }
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        NULL));
+    retval = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL);
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_event_handler_instance_register - WIFI_ANY: Error: " + std::to_string(retval));
+        return retval;
+    }
 
     wifi_config_t wifi_config = {};
 
@@ -90,12 +114,31 @@ void wifi_init_softAP(void)
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
-    ESP_ERROR_CHECK(esp_wifi_start());
+    retval = esp_wifi_set_mode(WIFI_MODE_AP);
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_set_mode: Error: " + std::to_string(retval));
+        return retval;
+    }
 
-    ESP_LOGI(TAG, "started with SSID \"%s\", password: \"%s\", channel: %d. Connect to AP and open http://192.168.4.1",
-             ESP_WIFI_AP_SSID, ESP_WIFI_AP_PASS, ESP_WIFI_AP_CHANNEL);
+    retval = esp_wifi_set_config(WIFI_IF_AP, &wifi_config);
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_set_config: Error: " + std::to_string(retval));
+        return retval;
+    }
+
+    retval = esp_wifi_start();
+    if (retval != ESP_OK)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_wifi_start: Error: " + std::to_string(retval));
+        return retval;
+    }
+
+    ESP_LOGI(TAG, "started with SSID \"%s\", password: \"%s\", channel: %d. Connect to AP and open http://192.168.4.1", ESP_WIFI_AP_SSID, ESP_WIFI_AP_PASS, ESP_WIFI_AP_CHANNEL);
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "WiFi AP init successful done");
+    return ESP_OK;
 }
 
 void SendHTTPResponse(httpd_req_t *req)
@@ -274,15 +317,23 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     fputs(text.c_str(), configfilehandle);
 
     if (ssid.length())
+    {
         ssid = "ssid = \"" + ssid + "\"\n";
+    }
     else
+    {
         ssid = "ssid = \"\"\n";
+    }
     fputs(ssid.c_str(), configfilehandle);
 
     if (pwd.length())
+    {
         pwd = "password = \"" + pwd + "\"\n";
+    }
     else
+    {
         pwd = "password = \"\"\n";
+    }
     fputs(pwd.c_str(), configfilehandle);
 
     text = "\n;++++++++++++++++++++++++++++++++++\n";
@@ -292,9 +343,13 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     fputs(text.c_str(), configfilehandle);
 
     if (hn.length())
+    {
         hn = "hostname = \"" + hn + "\"\n";
+    }
     else
+    {
         hn = ";hostname = \"watermeter\"\n";
+    }
     fputs(hn.c_str(), configfilehandle);
 
     text = "\n;++++++++++++++++++++++++++++++++++\n";
@@ -303,21 +358,33 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     fputs(text.c_str(), configfilehandle);
 
     if (ip.length())
+    {
         ip = "ip = \"" + ip + "\"\n";
+    }
     else
+    {
         ip = ";ip = \"xxx.xxx.xxx.xxx\"\n";
+    }
     fputs(ip.c_str(), configfilehandle);
 
     if (gw.length())
+    {
         gw = "gateway = \"" + gw + "\"\n";
+    }
     else
+    {
         gw = ";gateway = \"xxx.xxx.xxx.xxx\"\n";
+    }
     fputs(gw.c_str(), configfilehandle);
 
     if (nm.length())
+    {
         nm = "netmask = \"" + nm + "\"\n";
+    }
     else
+    {
         nm = ";netmask = \"xxx.xxx.xxx.xxx\"\n";
+    }
     fputs(nm.c_str(), configfilehandle);
 
     text = "\n;++++++++++++++++++++++++++++++++++\n";
@@ -325,9 +392,13 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     fputs(text.c_str(), configfilehandle);
 
     if (dns.length())
+    {
         dns = "dns = \"" + dns + "\"\n";
+    }
     else
+    {
         dns = ";dns = \"xxx.xxx.xxx.xxx\"\n";
+    }
     fputs(dns.c_str(), configfilehandle);
 
     text = "\n;++++++++++++++++++++++++++++++++++\n";
@@ -342,9 +413,13 @@ esp_err_t config_ini_handler(httpd_req_t *req)
     fputs(text.c_str(), configfilehandle);
 
     if (rssithreshold.length())
+    {
         rssithreshold = "RSSIThreshold = " + rssithreshold + "\n";
+    }
     else
+    {
         rssithreshold = "RSSIThreshold = 0\n";
+    }
     fputs(rssithreshold.c_str(), configfilehandle);
 
     fflush(configfilehandle);
@@ -374,8 +449,7 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
 
-    const char *filename = get_path_from_uri(filepath, "/sdcard",
-                                             req->uri + sizeof("/upload") - 1, sizeof(filepath));
+    const char *filename = get_path_from_uri(filepath, "/sdcard", req->uri + sizeof("/upload") - 1, sizeof(filepath));
     if (!filename)
     {
         httpd_resp_send_err(req, HTTPD_414_URI_TOO_LONG, "Filename too long");
@@ -383,7 +457,6 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
     }
 
     printf("filepath: %s, filename: %s\n", filepath, filename);
-
     DeleteFile(std::string(filepath));
 
     fd = fopen(filepath, "w");
@@ -398,14 +471,11 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
 
     char buf[1024];
     int received;
-
     int remaining = req->content_len;
-
     printf("remaining: %d\n", remaining);
 
     while (remaining > 0)
     {
-
         ESP_LOGI(TAG, "Remaining size: %d", remaining);
         if ((received = httpd_req_recv(req, buf, MIN(remaining, 1024))) <= 0)
         {
@@ -434,6 +504,7 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
 
         remaining -= received;
     }
+
     fclose(fd);
     isConfigINI = true;
 
@@ -504,10 +575,14 @@ void CheckStartAPMode()
     isWlanINI = FileExists(WLAN_CONFIG_FILE);
 
     if (!isConfigINI)
+    {
         ESP_LOGW(TAG, "config.ini not found!");
+    }
 
     if (!isWlanINI)
+    {
         ESP_LOGW(TAG, "wlan.ini not found!");
+    }
 
     if (!isConfigINI || !isWlanINI)
     {
