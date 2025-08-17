@@ -29,4 +29,4 @@ List of supported options:
     Not all options are supported by Homeassistant, see `SensorDeviceClass.VOLUME_FLOW_RATE` in [https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes](https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes)!
     
 !!! Warning
-    Since Homeassistant 2025.7, the unsupported values no longer will work, see change in Homeassistant: [Ensure MQTT sensor has a valid native unit of measurement](https://github.com/home-assistant/core/pull/146722).
+    Since Homeassistant 2025.7, the unsupported options will no longer work, see change in Homeassistant: [Ensure MQTT sensor has a valid native unit of measurement](https://github.com/home-assistant/core/pull/146722).
