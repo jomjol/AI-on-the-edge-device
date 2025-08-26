@@ -349,7 +349,7 @@
     #define CAM_PIN_D7       GPIO_NUM_16
     #define CAM_PIN_D6       GPIO_NUM_17
     #define CAM_PIN_D5       GPIO_NUM_18
-    #define CAM_PIN_D4       GPIO_NUM_12
+    #define CAM_PIN_D4       GPIO_NUM_47
     #define CAM_PIN_D3       GPIO_NUM_10
     #define CAM_PIN_D2       GPIO_NUM_8
     #define CAM_PIN_D1       GPIO_NUM_9

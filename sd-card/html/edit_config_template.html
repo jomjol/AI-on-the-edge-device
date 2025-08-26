@@ -1974,6 +1974,19 @@
             <td>$TOOLTIP_AutoTimer_Interval</td>
         </tr>
 
+        <tr>
+            <td class="indent1">
+                <class id="AutoTimer_SleepWhileIdle_text" style="color:black;">Sleep While Idle</class>
+            </td>
+            <td>
+                <select id="AutoTimer_SleepWhileIdle_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_AutoTimer_SleepWhileIdle</td>
+        </tr>
+
         <!------------- Data Logging ------------------>
         <tr style="border-bottom: 2px solid lightgray;">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Data Logging</h4></td>
@@ -2402,6 +2415,7 @@ function UpdateInput() {
 
     //WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
     WriteParameter(param, category, "AutoTimer", "Interval", false);
+    WriteParameter(param, category, "AutoTimer", "SleepWhileIdle", false);
 
     WriteParameter(param, category, "DataLogging", "DataLogActive", false);	
     WriteParameter(param, category, "DataLogging", "DataFilesRetention", false);	
@@ -2578,6 +2592,7 @@ function ReadParameterAll() {
 
     //ReadParameter(param, "AutoTimer", "AutoStart", false);
     ReadParameter(param, "AutoTimer", "Interval", false);
+    ReadParameter(param, "AutoTimer", "SleepWhileIdle", false);
     
     ReadParameter(param, "DataLogging", "DataLogActive", false);
     ReadParameter(param, "DataLogging", "DataFilesRetention", false);
