@@ -635,7 +635,7 @@ void migrateConfiguration(void) {
                     CamZoom_value = false;
                 }
                 else {
-                    ESP_LOGE(TAG, "splitted[1]: %s", splitted[1].c_str());
+                    // ESP_LOGI(TAG, "splitted[1]: %s", splitted[1].c_str());
                     CamZoom_value = alphanumericToBoolean(splitted[1]);
                 }
                 CamZoom_found = true;
