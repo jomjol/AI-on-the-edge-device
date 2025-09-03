@@ -123,6 +123,43 @@ esp_err_t info_get_handler(httpd_req_t *req)
         httpd_resp_sendstr(req, formated);
         return ESP_OK;        
     }
+    else if (_task.compare("CamId") == 0)
+    {
+        switch (CCstatus.CamSensor_id) {
+            case OV2640_PID:
+                httpd_resp_sendstr(req, "OV2640");
+                break;
+            case OV3660_PID:
+                httpd_resp_sendstr(req, "OV3660");
+                break;
+            case OV5640_PID:
+                httpd_resp_sendstr(req, "OV5640");
+                break;
+            default:
+                httpd_resp_sendstr(req, "unknown");
+        }
+        return ESP_OK;
+    }
+    else if (_task.compare("CamInit") == 0)
+    {
+        if (CCstatus.CameraInitSuccessful) {
+            httpd_resp_sendstr(req, "ok");
+        }
+        else {
+            httpd_resp_sendstr(req, "Nok");
+        }
+        return ESP_OK;
+    }
+    else if (_task.compare("CamFocus") == 0)
+    {
+        if (CCstatus.CameraAFInitSuccessful) {
+            httpd_resp_sendstr(req, "available");
+        }
+        else {
+            httpd_resp_sendstr(req, "unavailable");
+        }
+        return ESP_OK;
+    }
     else if (_task.compare("SDCardPartitionSize") == 0)
     {
         std::string zw;

@@ -131,6 +131,9 @@ function ParseConfig() {
     ParamAddValue(param, catname, "CamZoomOffsetX");
     ParamAddValue(param, catname, "CamZoomOffsetY");
     ParamAddValue(param, catname, "CamZoomSize");
+    ParamAddValue(param, catname, "CamFocus");
+    ParamAddValue(param, catname, "CamFocusAuto");
+    ParamAddValue(param, catname, "CamFocusManualLevel");
     ParamAddValue(param, catname, "LEDIntensity");
     ParamAddValue(param, catname, "Demo");
 
@@ -503,6 +506,9 @@ function getCamConfig() {
     param["TakeImage"]["CamZoomOffsetX"]["enabled"] = true;
     param["TakeImage"]["CamZoomOffsetY"]["enabled"] = true;
     param["TakeImage"]["CamZoomSize"]["enabled"] = true;
+    param["TakeImage"]["CamFocus"]["enabled"] = true;
+    param["TakeImage"]["CamFocusAuto"]["enabled"] = true;
+    param["TakeImage"]["CamFocusManualLevel"]["enabled"] = true;
     param["TakeImage"]["LEDIntensity"]["enabled"] = true;
 
     if (!param["System"]["Tooltip"]["found"]) {
@@ -635,6 +641,18 @@ function getCamConfig() {
     if (!param["TakeImage"]["CamZoomSize"]["found"]) {
         param["TakeImage"]["CamZoomSize"]["found"] = true;
         param["TakeImage"]["CamZoomSize"].value1 = '0';
+    }
+    if (!param["TakeImage"]["CamFocus"]["found"]) {
+        param["TakeImage"]["CamFocus"]["found"] = true;
+        param["TakeImage"]["CamFocus"].value1 = 'false';
+    }
+    if (!param["TakeImage"]["CamFocusAuto"]["found"]) {
+        param["TakeImage"]["CamFocusAuto"]["found"] = true;
+        param["TakeImage"]["CamFocusAuto"].value1 = 'false';
+    }
+    if (!param["TakeImage"]["CamFocusManualLevel"]["found"]) {
+        param["TakeImage"]["CamFocusManualLevel"]["found"] = true;
+        param["TakeImage"]["CamFocusManualLevel"].value1 = '0';
     }
     if (!param["TakeImage"]["LEDIntensity"]["found"]) {
         param["TakeImage"]["LEDIntensity"]["found"] = true;
