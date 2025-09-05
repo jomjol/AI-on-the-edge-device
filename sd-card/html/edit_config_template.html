@@ -2677,7 +2677,16 @@ function saveTextAsFile() {
 	WriteConfigININew();
 	SaveConfigToServer(domainname);
 
-	firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
+    if(window.location.hash) {
+        var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+		
+        if(hash == 'description') {
+            firework.launch('Configuration saved.', 'success', 2000);
+        }
+		else {
+	        firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
+	    }
+    }
 
 	if (changeCamValue == 1) {
 		camSettingsSet();
@@ -3332,7 +3341,7 @@ function openDescription() {
 		
         if(hash == 'description') {
             document.getElementById("desc_details").open = true;
-            document.getElementById("reboot").style.display = "none";
+            // document.getElementById("reboot").style.display = "none";
             document.getElementById("reboot_text").style.display = "none";
         }
     }
