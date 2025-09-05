@@ -1248,7 +1248,7 @@ bool replaceString(std::string &s, std::string const &toReplace, std::string con
 
 	if (logIt)
 	{
-		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
+		LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line '" + old + "' to '" + s + "'");
 	}
 
 	return true;

@@ -635,7 +635,7 @@ void migrateConfiguration(void) {
                     CamZoom_value = false;
                 }
                 else {
-                    ESP_LOGE(TAG, "splitted[1]: %s", splitted[1].c_str());
+                    // ESP_LOGI(TAG, "splitted[1]: %s", splitted[1].c_str());
                     CamZoom_value = alphanumericToBoolean(splitted[1]);
                 }
                 CamZoom_found = true;
@@ -858,22 +858,22 @@ void migrateConfiguration(void) {
             else {
                 configLines[CamZoom_lines] = ("CamZoom = false");
             }
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line 'Zoom' to 'CamZoom'");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line 'Zoom' to 'CamZoom'");
             migrated = true;
         }
         if (CamZoomSize_lines > 0) {
             configLines[CamZoomSize_lines] = ("CamZoomSize = " + std::to_string(CamZoomSize_value));
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line 'ZoomMode' to 'CamZoomSize'");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line 'ZoomMode' to 'CamZoomSize'");
             migrated = true;
         }
         if (CamZoomOffsetX_lines > 0) {
             configLines[CamZoomOffsetX_lines] = ("CamZoomOffsetX = " + std::to_string(CamZoomOffsetX_value));
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line 'ZoomOffsetX' to 'CamZoomOffsetX'");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line 'ZoomOffsetX' to 'CamZoomOffsetX'");
             migrated = true;
         }
         if (CamZoomOffsetY_lines > 0) {
             configLines[CamZoomOffsetY_lines] = ("CamZoomOffsetY = " + std::to_string(CamZoomOffsetY_value));
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Migrated Configfile line 'ZoomOffsetY' to 'CamZoomOffsetY'");
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Migrated Configfile line 'ZoomOffsetY' to 'CamZoomOffsetY'");
             migrated = true;
         }
     }
