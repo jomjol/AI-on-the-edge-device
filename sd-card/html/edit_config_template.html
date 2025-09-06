@@ -2687,6 +2687,9 @@ function saveTextAsFile() {
 	        firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
 	    }
     }
+	else {
+	    firework.launch('Configuration saved. It will get applied after the next reboot!<br><br>\n<a id="reboot_button" onclick="doReboot()">reboot now</a>', 'success', 5000);
+	}
 
 	if (changeCamValue == 1) {
 		camSettingsSet();
