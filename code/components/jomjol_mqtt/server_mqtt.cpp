@@ -105,7 +105,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         "\"~\": \"" + maintopic + "\","  +
         "\"unique_id\": \"" + maintopic + "-" + configTopic + "\","  +
         "\"object_id\": \"" + maintopic + "_" + configTopic + "\","  + // Default entity ID; required for HA <= 2025.10
-	    "\"default_entity_id\": \"" + component + "." + maintopic + "_" + configTopic + "\"," + // Default entity ID; required in HA >=2026.4
+        "\"default_entity_id\": \"" + component + "." + maintopic + "_" + configTopic + "\"," + // Default entity ID; required in HA >=2026.4
         "\"name\": \"" + name + "\","  +
         "\"icon\": \"mdi:" + icon + "\",";        
 
