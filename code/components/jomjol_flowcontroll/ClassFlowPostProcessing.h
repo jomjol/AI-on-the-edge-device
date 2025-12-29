@@ -63,6 +63,7 @@ public:
     string getJsonFromNumber(int i, std::string _lineend);
     string GetPreValue(std::string _number = "");
     bool SetPreValue(double zw, string _numbers, bool _extern = false);
+    bool incrementValueByReedContact(int digitIndex);
 
     std::string GetJSON(std::string _lineend = "\n");
     std::string getNumbersName();
