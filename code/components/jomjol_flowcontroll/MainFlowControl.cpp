@@ -124,6 +124,19 @@ void doInit(void)
     /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
     gpio_handler_init();
 
+    // Set up reed contact callback
+    auto reedContactCallback = [](int gpio, int digitIndex) {
+        ESP_LOGD(TAG, "Reed contact triggered on GPIO %d for digit index %d", gpio, digitIndex);
+        
+        ClassFlowPostProcessing* postproc = flowctrl.getPostProcessing();
+        if (postproc != nullptr && digitIndex >= 0 && digitIndex < postproc->NUMBERS.size()) {
+            if (postproc->incrementValueByReedContact(digitIndex)) {
+                ESP_LOGI(TAG, "Successfully incremented value by reed contact for digit %d", digitIndex);
+            }
+        }
+    };
+    gpio_handler_set_reed_contact_callback(reedContactCallback);
+
 #ifdef ENABLE_MQTT
     flowctrl.StartMQTTService();
 #endif // ENABLE_MQTT

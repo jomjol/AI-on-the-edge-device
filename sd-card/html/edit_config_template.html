@@ -1520,6 +1520,60 @@
             <td><input type="text" id="GPIO_IO0_value6"></td>
             <td></td>
         </tr>
+
+        <!-- Reed Contact Configuration for GPIO0 -->
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO0_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO0_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO0_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO0_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO0_ReedPublish" checked></td>
+            <td></td>
+        </tr>
         <!------------- GPIO0 end ------------------>
 
         <!------------- GPIO1 begin ------------------>

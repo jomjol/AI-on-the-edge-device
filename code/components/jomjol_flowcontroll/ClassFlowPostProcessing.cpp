@@ -146,6 +146,50 @@ bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, boo
     return false;   // No new value was set (e.g. wrong numbersname, no numbers at all)
 }
 
+bool ClassFlowPostProcessing::incrementValueByReedContact(int digitIndex) {
+    // Find the NUMBER entry with the matching digitIndex
+    if (digitIndex < 0 || digitIndex >= NUMBERS.size()) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "incrementValueByReedContact: Invalid digitIndex %d", digitIndex);
+        return false;
+    }
+
+    NumberPost* number = NUMBERS[digitIndex];
+    if (number == NULL) {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "incrementValueByReedContact: NumberPost at index %d is NULL", digitIndex);
+        return false;
+    }
+
+    // Get the current value and calculate the next value (increment by the smallest unit for this digit)
+    double currentValue = number->PreValue;
+    double increment = 1.0 / pow(10, number->DecimalShift + number->Nachkomma);
+    double newValue = currentValue + increment;
+
+    // Update the PreValue
+    number->PreValue = newValue;
+    number->Value = newValue;
+    number->ReturnPreValue = std::to_string(newValue);
+    number->ReturnValue = std::to_string(newValue);
+    number->PreValueOkay = true;
+
+    // Update timestamp
+    time(&(number->timeStampLastPreValue));
+    localtime(&(number->timeStampLastPreValue));
+
+    // Mark the values file for update
+    UpdatePreValueINI = true;
+    SavePreValue();
+
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reed contact increment: Number '%s' incremented to %.8f", 
+                        number->name.c_str(), newValue);
+    
+    #ifdef ENABLE_MQTT
+    // Publish the new value via MQTT if available
+    // This will be handled by the main flow control
+    #endif
+
+    return true;
+}
+
 bool ClassFlowPostProcessing::LoadPreValue(void) {
     std::vector<string> splitted;
     FILE* pFile;

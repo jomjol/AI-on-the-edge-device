@@ -81,6 +81,11 @@ static void gpioHandlerTask(void *arg) {
 }
 
 void GpioPin::gpioInterrupt(int value) {
+    // Handle reed contact trigger first (with debouncing)
+    if (_reedContactEnabled) {
+        handleReedTrigger();
+    }
+    
 #ifdef ENABLE_MQTT    
     if (_mqttTopic.compare("") != 0) {
         ESP_LOGD(TAG, "gpioInterrupt %s %d", _mqttTopic.c_str(), value);
@@ -157,6 +162,54 @@ void GpioPin::publishState() {
         MQTTPublish(_mqttTopic, newState ? "true" : "false", 1);
 #endif //ENABLE_MQTT
         currentState = newState;
+    }
+}
+
+void GpioPin::setReedContactConfig(bool enabled, reed_trigger_type_t triggerType, uint16_t debounceMs, int digitIndex, bool publish) {
+    _reedContactEnabled = enabled;
+    _reedTriggerType = triggerType;
+    _reedDebounceMs = debounceMs;
+    _reedDigitIndex = digitIndex;
+    _reedPublishOnIncrement = publish;
+    _lastReedTriggerTime = 0;
+    _lastReedState = -1;
+    
+    ESP_LOGI(TAG, "Reed contact configured for GPIO %d: enabled=%d, trigger=%d, debounce=%dms, digit=%d, publish=%d",
+             _gpio, enabled, triggerType, debounceMs, digitIndex, publish);
+}
+
+void GpioPin::handleReedTrigger() {
+    if (!_reedContactEnabled || (_reedTriggerType == REED_TRIGGER_DISABLED)) {
+        return;
+    }
+    
+    int currentState = gpio_get_level(_gpio);
+    uint32_t now = (uint32_t)(esp_timer_get_time() / 1000);  // Convert to milliseconds
+    
+    // Debouncing: ignore if same state or debounce period not elapsed
+    if (currentState == _lastReedState) {
+        return;
+    }
+    
+    if ((now - _lastReedTriggerTime) < _reedDebounceMs) {
+        ESP_LOGD(TAG, "Reed contact debounce active for GPIO %d", _gpio);
+        return;
+    }
+    
+    _lastReedTriggerTime = now;
+    _lastReedState = currentState;
+    
+    // Check if trigger condition is met
+    bool shouldTrigger = false;
+    if ((_reedTriggerType == REED_TRIGGER_ON_CLOSE) && (currentState == 1)) {
+        shouldTrigger = true;
+    } else if ((_reedTriggerType == REED_TRIGGER_ON_OPEN) && (currentState == 0)) {
+        shouldTrigger = true;
+    }
+    
+    if (shouldTrigger) {
+        ESP_LOGI(TAG, "Reed contact triggered for GPIO %d, digit index %d", _gpio, _reedDigitIndex);
+        // The digit increment will be handled by the GpioHandler
     }
 }
 
@@ -296,7 +349,13 @@ void GpioHandler::deinit() {
 
 void GpioHandler::gpioInterrupt(GpioResult* gpioResult) {
     if ((gpioMap != NULL) && (gpioMap->find(gpioResult->gpio) != gpioMap->end())) {
-        (*gpioMap)[gpioResult->gpio]->gpioInterrupt(gpioResult->value);
+        GpioPin* pin = (*gpioMap)[gpioResult->gpio];
+        pin->gpioInterrupt(gpioResult->value);
+        
+        // Call reed contact callback if enabled
+        if (pin->isReedContactEnabled() && _reedContactCallback) {
+            _reedContactCallback(gpioResult->gpio, pin->getReedContactDigitIndex());
+        }
     }
 }
 
@@ -385,6 +444,39 @@ bool GpioHandler::readConfig()
 
             if (intType != GPIO_INTR_DISABLE) {
                 registerISR = true;
+            }
+        }
+        // Parse reed contact configuration (format: ReedContact<IO>  = enabled triggerType debounceMs digitIndex publishOnIncrement)
+        if ((splitted[0].rfind("ReedContact", 0) == 0) && (splitted.size() >= 6))
+        {
+            std::string gpioStr = splitted[0].substr(11, 2);  // Extract IO number from "ReedContactIO"
+            gpio_num_t gpioNr = (gpio_num_t)atoi(gpioStr.c_str());
+            
+            if (gpioMap->find(gpioNr) != gpioMap->end()) {
+                bool enabled = (toLower(splitted[1]) == "true");
+                std::string triggerTypeStr = toLower(splitted[2]);
+                uint16_t debounceMs = (uint16_t)atoi(splitted[3].c_str());
+                int digitIndex = atoi(splitted[4].c_str());
+                bool publishOnIncrement = (toLower(splitted[5]) == "true");
+                
+                reed_trigger_type_t triggerType = REED_TRIGGER_DISABLED;
+                if (triggerTypeStr == "on-close") {
+                    triggerType = REED_TRIGGER_ON_CLOSE;
+                } else if (triggerTypeStr == "on-open") {
+                    triggerType = REED_TRIGGER_ON_OPEN;
+                }
+                
+                // Validate debounce time
+                if (debounceMs > 10000) {
+                    debounceMs = 10000;
+                } else if (debounceMs < 0) {
+                    debounceMs = 0;
+                }
+                
+                (*gpioMap)[gpioNr]->setReedContactConfig(enabled, triggerType, debounceMs, digitIndex, publishOnIncrement);
+                ESP_LOGI(TAG, "Reed contact configured for GPIO%d", gpioNr);
+            } else {
+                ESP_LOGW(TAG, "Reed contact configuration found for non-existent GPIO%d", gpioNr);
             }
         }
         if (toUpper(splitted[0]) == "LEDNUMBERS")
@@ -704,3 +796,9 @@ GpioHandler* gpio_handler_get()
     return gpioHandler;
 }
 
+void gpio_handler_set_reed_contact_callback(std::function<void(int, int)> callback)
+{
+    if (gpioHandler != NULL) {
+        gpioHandler->setReedContactCallback(callback);
+    }
+}
