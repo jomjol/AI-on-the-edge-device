@@ -156,6 +156,7 @@ The following settings are only used for easier setup, they are <b>not</b> persi
 <input type="checkbox" id="showall" name="showall" value="1" onclick="draw()" checked tabindex=9><label for="showall"> Show all ROIs</label><br>
 <input type="checkbox" id="lockAspectRatio" name="lockAspectRatio" value="1" onclick="changelockAspectRatio()" checked tabindex=6><label for="lockAspectRatio"> Lock aspect ratio </label><br>
 <input type="checkbox" id="lockSizes" name="lockSizes" value="1" onclick="changelockSizes()" checked tabindex=7><label for="lockSizes"> Synchronize y, Δx and Δy between ROIs</label><br>
+<input type="checkbox" id="drawFromCenter" name="drawFromCenter" value="1" onclick="changeDrawFromCenter()" checked tabindex=8><label for="drawFromCenter"> Draw from center</label><br>
 <hr>
 
     <table>
@@ -196,6 +197,7 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         enhanceCon = false,
         lockAspectRatio = true,
         lockSizes = false,
+        drawFromCenter = true,
         domainname = getDomainname();
 
     function doReboot() {
@@ -316,7 +318,11 @@ The following settings are only used for easier setup, they are <b>not</b> persi
 
     function changelockSizes() {
         lockSizes = document.getElementById("lockSizes").checked;
-        UpdateROIs(); 
+        UpdateROIs();
+    }
+
+    function changeDrawFromCenter() {
+        drawFromCenter = document.getElementById("drawFromCenter").checked;
     }
 
     function changeCCW() {
@@ -800,8 +806,12 @@ The following settings are only used for easier setup, they are <b>not</b> persi
         zw = getCoords(this)
         rect.startX = e.pageX - zw.left;
         rect.startY = e.pageY - zw.top;
+        if (drawFromCenter) {
+            rect.centerX = rect.startX;
+            rect.centerY = rect.startY;
+        }
         document.getElementById("refx").value =  rect.startX;
-        document.getElementById("refy").value =  rect.startY;    
+        document.getElementById("refy").value =  rect.startY;
         drag = true;
     }
 
@@ -822,16 +832,33 @@ The following settings are only used for easier setup, they are <b>not</b> persi
     }
 
     function mouseMove(e) {
-        if (drag) {
-            zw = getCoords(this)        
+        const mouseX = e.pageX - zw.left;
+        const mouseY = e.pageY - zw.top;
 
-            if (lockAspectRatio) {
-                rect.h = (e.pageY - zw.top) - rect.startY;
-                rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);            
-            }
-            else {
-                rect.w = (e.pageX - zw.left) - rect.startX;
-                rect.h = (e.pageY - zw.top) - rect.startY;
+        if (drag) {
+            zw = getCoords(this)
+
+            if (drawFromCenter) {
+                if (lockAspectRatio) {
+                    rect.h = Math.abs(mouseY - rect.centerY) * 2;
+                    rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);
+                } else {
+                    rect.w = Math.abs(mouseX - rect.centerX) * 2;
+                    rect.h = Math.abs(mouseY - rect.centerY) * 2;
+                }
+
+                rect.startX = rect.centerX - rect.w / 2;
+                rect.startY = rect.centerY - rect.h / 2;
+                document.getElementById("refx").value = Math.round(rect.startX);
+                document.getElementById("refy").value = Math.round(rect.startY);
+            } else {
+                if (lockAspectRatio) {
+                    rect.h = mouseY - rect.startY;
+                    rect.w = Math.round(rect.h * ROIInfo[aktindex]["ar"]);
+                } else {
+                    rect.w = mouseX - rect.startX;
+                    rect.h = mouseY - rect.startY;
+                }
             }
             document.getElementById("refdx").value = rect.w;
             document.getElementById("refdy").value = rect.h;
@@ -843,8 +870,8 @@ The following settings are only used for easier setup, they are <b>not</b> persi
             var context = canvas.getContext('2d');
 
             zw = getCoords(this);
-            x = e.pageX - zw.left;
-            y = e.pageY - zw.top;
+            x = mouseX;
+            y = mouseY;
             
             context.lineWidth = 2;
             context.strokeStyle = "#00FF00";
