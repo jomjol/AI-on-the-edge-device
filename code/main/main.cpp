@@ -105,16 +105,23 @@ bool Init_NVS_SDCard()
         ret = nvs_flash_init();
     }
 
+#ifdef __SD_USE_SPI_MODE__
+    ESP_LOGD(TAG, "Using SDSPI peripheral");
+    // By default, SD card frequency is initialized to SDMMC_FREQ_DEFAULT (20MHz)
+    // For setting a specific frequency, use host.max_freq_khz (range 400kHz - 20MHz for SDSPI)
+    // Example: for fixed frequency of 10MHz, use host.max_freq_khz = 10000;
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+#else
     ESP_LOGD(TAG, "Using SDMMC peripheral");
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
-    host.max_freq_khz = SDMMC_FREQ_HIGHSPEED;
+#endif // __SD_USE_SPI_MODE__
 
     // For SoCs where the SD power can be supplied both via an internal or external (e.g. on-board LDO) power supply.
     // When using specific IO pins (which can be used for ultra high-speed SDMMC) to connect to the SD card
     // and the internal LDO power supply, we need to initialize the power supply first.
 #if SD_PWR_CTRL_LDO_INTERNAL_IO
     sd_pwr_ctrl_ldo_config_t ldo_config = {
-        .ldo_chan_id = CONFIG_EXAMPLE_SD_PWR_CTRL_LDO_IO_ID,
+        .ldo_chan_id = SD_PWR_CTRL_LDO_IO_ID,
     };
     sd_pwr_ctrl_handle_t pwr_ctrl_handle = NULL;
 
@@ -127,6 +134,32 @@ bool Init_NVS_SDCard()
     host.pwr_ctrl_handle = pwr_ctrl_handle;
 #endif
 
+#ifdef __SD_USE_SPI_MODE__
+    spi_bus_config_t bus_cfg =
+    {
+        .mosi_io_num = GPIO_SDCARD_CMD,
+        .miso_io_num = GPIO_SDCARD_D0,
+        .sclk_io_num = GPIO_SDCARD_CLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = 4000,
+    };
+
+    ret = spi_bus_initialize((spi_host_device_t)host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to initialize SPI bus.");
+        return false;
+    }
+
+    // This initializes the slot without card detect (CD) and write protect (WP) signals.
+    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
+    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    slot_config.gpio_cs = GPIO_SDCARD_D3;
+    slot_config.host_id = (spi_host_device_t)host.slot;
+
+#else
+
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
 #ifdef CONFIG_SOC_SDMMC_USE_GPIO_MATRIX
@@ -138,14 +171,14 @@ bool Init_NVS_SDCard()
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 #endif
 
-    // Set bus width to use:
-#ifdef __SD_USE_ONE_LINE_MODE__
-    slot_config.width = 1;
 #ifdef CONFIG_SOC_SDMMC_USE_GPIO_MATRIX
     slot_config.clk = GPIO_SDCARD_CLK;
     slot_config.cmd = GPIO_SDCARD_CMD;
     slot_config.d0 = GPIO_SDCARD_D0;
 #endif // end CONFIG_SOC_SDMMC_USE_GPIO_MATRIX
+    // Set bus width to use:
+#ifdef __SD_USE_ONE_LINE_MODE__
+    slot_config.width = 1;
 #else  // else __SD_USE_ONE_LINE_MODE__
     slot_config.width = 4;
 #ifdef CONFIG_SOC_SDMMC_USE_GPIO_MATRIX
@@ -167,6 +200,8 @@ bool Init_NVS_SDCard()
     // Um diese Probleme zu kompensieren, wird der PullUp manuel gesetzt.
     gpio_set_pull_mode(GPIO_SDCARD_D3, GPIO_PULLUP_ONLY); // HS2_D3	
 
+#endif // __SD_USE_SPI_MODE__
+
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
     // formatted in case when mounting fails.
@@ -175,11 +210,15 @@ bool Init_NVS_SDCard()
         .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
         .allocation_unit_size = 0,               // 0 = auto
         .disk_status_check_enable = 0,
+        .use_one_fat = false, // Whether to use only one FAT table (reduce memory usage), but decrease reliability of file system in case of power failure.
     };
 
     sdmmc_card_t* card;
     const char mount_point[] = MOUNT_POINT;
 
+#ifdef __SD_USE_SPI_MODE__
+    ret = esp_vfs_fat_sdspi_mount(mount_point, &host, &slot_config, &mount_config, &card);
+#else
     // Use settings defined above to initialize SD card and mount FAT filesystem.
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
@@ -189,6 +228,7 @@ bool Init_NVS_SDCard()
 #else
     ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
 #endif
+#endif // __SD_USE_SPI_MODE__
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
