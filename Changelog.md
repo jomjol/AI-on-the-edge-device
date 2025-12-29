@@ -1,4 +1,28 @@
-# [16.0.0] - 2024-03-15
+# [16.1.0-RC1] - 2025-12-29
+
+For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v16.0.0...v16.1.0)
+
+### Known issues
+No software is perfect. We know that our software has some quirks. If you have an issue, please first check the [issues](https://github.com/jomjol/AI-on-the-edge-device/issues) and
+[discussions](https://github.com/jomjol/AI-on-the-edge-device/discussions) before reporting a new issue.
+
+
+### Core Changes and Bug fixes
+- Various minor improvements and changes
+- Various documentation corrections/improvements
+- Parameter `ChangeRateThreshold` can now also be zero [#3668](https://github.com/jomjol/AI-on-the-edge-device/pull/3668)
+- MQTT: Added a proper `device_class` (duration) to "uptime" [#3659](https://github.com/jomjol/AI-on-the-edge-device/pull/3659)
+- MQTT: Added `default_entity_id` to MQTT HA autodiscovery payload [#3970](https://github.com/jomjol/AI-on-the-edge-device/pull/3970)
+- Added new models
+- Updated SDCard Manufacturer List [#3730](https://github.com/jomjol/AI-on-the-edge-device/pull/3730)
+- Added option for gal/min rate for Home Assistant MQTT Autodiscovery[#3868](https://github.com/jomjol/AI-on-the-edge-device/pull/3868)
+- Fixed Setup Wizard [#3906](https://github.com/jomjol/AI-on-the-edge-device/pull/3906)
+- `checkDigitConsistency`: added ESP_LOG_DEBUG output [#3962](https://github.com/jomjol/AI-on-the-edge-device/pull/3962)
+- Added "Draw from center" option to Analog ROI editor [#3975](https://github.com/jomjol/AI-on-the-edge-device/pull/3975)
+- Enabled OV3660 support in sdkconfig.defaults [#3996](https://github.com/jomjol/AI-on-the-edge-device/pull/3996)
+
+
+# [16.0.0] - 2025-03-15
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
 
