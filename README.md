@@ -166,6 +166,7 @@ Various 3D-printable housings can be found here:
 - ⚡ [Power Meter](https://www.thingiverse.com/thing:5028229)
 - 🔥 [Gas Meter](https://www.thingiverse.com/thing:5224101)
 - 📷 [ESP32-cam housing only](https://www.thingiverse.com/thing:4571627)
+- 📡 [Top cover and Antenna Holder](https://www.printables.com/model/452139-cover-for-esp32-cam-water-meter)
 
 ---
 
