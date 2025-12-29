@@ -72,13 +72,24 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     std::string topicFull;
     std::string configTopic;
     std::string payload;
+    std::string component;
 
     configTopic = field;
 
     if (group != "" && (*NUMBERS).size() > 1) { // There is more than one meter, prepend the group so we can differentiate them
         configTopic = group + "_" + field;
         name = group + " " + name;
-    }    
+    }
+
+    if (field == "problem") { // Special case: Binary sensor which is based on error topic
+        component = "binary_sensor";
+    }
+    else if (field == "flowstart") { // Special case: Button
+        component = "button";
+    }
+    else {
+        component = "sensor";
+    }
 
     /** 
      * homeassistant needs the MQTT discovery topic according to the following structure:
@@ -87,21 +98,14 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
      * This means a maintopic "home/test/watermeter" is transformed to the discovery topic "homeassistant/sensor/watermeter/..."
     */
     std::string node_id = createNodeId(maintopic);
-    if (field == "problem") { // Special case: Binary sensor which is based on error topic
-        topicFull = "homeassistant/binary_sensor/" + node_id + "/" + configTopic + "/config";
-    }
-    else if (field == "flowstart") { // Special case: Button
-        topicFull = "homeassistant/button/" + node_id + "/" + configTopic + "/config";
-    }
-    else {
-        topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
-    }
-
+    topicFull = "homeassistant/" + component + "/" + node_id + "/" + configTopic + "/config";
+    
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
     payload = string("{")  +
         "\"~\": \"" + maintopic + "\","  +
         "\"unique_id\": \"" + maintopic + "-" + configTopic + "\","  +
-        "\"object_id\": \"" + maintopic + "_" + configTopic + "\","  + // This used to generate the Entity ID
+        "\"object_id\": \"" + maintopic + "_" + configTopic + "\","  + // Default entity ID; required for HA <= 2025.10
+        "\"default_entity_id\": \"" + component + "." + maintopic + "_" + configTopic + "\"," + // Default entity ID; required in HA >=2026.4
         "\"name\": \"" + name + "\","  +
         "\"icon\": \"mdi:" + icon + "\",";        
 
