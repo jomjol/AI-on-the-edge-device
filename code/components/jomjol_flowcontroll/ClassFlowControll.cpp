@@ -77,6 +77,11 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
         }
     #endif //ENABLE_WEBHOOK
 
+    if ((_stepname.compare("[SHT3x]") == 0) || (_stepname.compare(";[SHT3x]") == 0) ||
+        (_stepname.compare("[DS18B20]") == 0) || (_stepname.compare(";[DS18B20]") == 0)) {
+        _classname = "ClassFlowSensors";
+    }
+
     for (int i = 0; i < FlowControll.size(); ++i) {
         if (FlowControll[i]->name().compare(_classname) == 0) {
             if (!(FlowControll[i]->name().compare("ClassFlowTakeImage") == 0)) {
@@ -128,6 +133,10 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
             return ("Sending Webhook");
         }
     #endif //ENABLE_WEBHOOK
+	
+    if (_input.compare("ClassFlowSensors") == 0) {
+        return ("Reading Sensors");
+    }
 	
     if (_input.compare("ClassFlowPostProcessing") == 0) {
         return ("Post-Processing");
@@ -212,6 +221,7 @@ void ClassFlowControll::SetInitialParameter(void)
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
+    flowsensors = NULL;
     disabled = false;
     aktRunNr = 0;
     aktstatus = "Flow task not yet created";
@@ -277,6 +287,16 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         }
     #endif //ENABLE_WEBHOOK
 
+    if (toUpper(_type).compare("[SHT3X]") == 0 || toUpper(_type).compare("[DS18B20]") == 0) {
+        // Reuse existing sensor flow instance if it already exists
+        // This prevents duplicate sensor initialization when config has multiple sensor sections
+        if (!flowsensors) {
+            flowsensors = new ClassFlowSensors(&FlowControll);
+            flowsensors->setFlowControll(this);  // Pass controller reference for accessing AutoInterval
+        }
+        cfc = flowsensors;
+    }
+
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0) {
         cfc = new ClassFlowPostProcessing(&FlowControll, flowanalog, flowdigit); 
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
@@ -284,7 +304,17 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
     if (cfc) {                           
         // Attached only if it is not [AutoTimer], because this is for FlowControll
-        FlowControll.push_back(cfc);
+        // Also check if this instance is already in the list (e.g., sensor flow reused for multiple sections)
+        bool alreadyInList = false;
+        for (const auto& flow : FlowControll) {
+            if (flow == cfc) {
+                alreadyInList = true;
+                break;
+            }
+        }
+        if (!alreadyInList) {
+            FlowControll.push_back(cfc);
+        }
     }
 
     if (toUpper(_type).compare("[AUTOTIMER]") == 0) {

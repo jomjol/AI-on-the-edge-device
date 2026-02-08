@@ -18,9 +18,15 @@
 #include "ClassControllCamera.h"
 
 #include "ClassFlowControll.h"
+#include "ClassFlowSensors.h"
+#include "sensor_manager.h"
 
 #include "ClassLogFile.h"
 #include "server_GPIO.h"
+
+#ifdef ENABLE_MQTT
+#include "server_mqtt.h"
+#endif
 
 #include "server_file.h"
 
@@ -127,6 +133,30 @@ void doInit(void)
 #ifdef ENABLE_MQTT
     flowctrl.StartMQTTService();
 #endif // ENABLE_MQTT
+
+    /* Initialize sensors early - after GPIO, MQTT, InfluxDB are ready but before first flow run */
+    // Find the ClassFlowSensors instance and initialize it early
+    std::vector<ClassFlow*>* flows = flowctrl.GetFlowControll();
+    if (flows) {
+        for (auto* flow : *flows) {
+            if (flow && flow->name() == "ClassFlowSensors") {
+                ClassFlowSensors* sensorFlow = static_cast<ClassFlowSensors*>(flow);
+                sensorFlow->initializeEarly();
+                
+                #ifdef ENABLE_MQTT
+                // Set the sensor manager reference for MQTT HomeAssistant Discovery
+                if (sensorFlow->getSensorManager()) {
+                    mqttServer_setSensorManager(sensorFlow->getSensorManager());
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Sensor manager set for MQTT HomeAssistant Discovery");
+                }
+                #endif
+                
+                break;
+            }
+        }
+    }
+    
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Initialization complete - ready for flow runs");
 }
 
 bool doflow(void)
@@ -1542,6 +1572,42 @@ esp_err_t handler_uptime(httpd_req_t *req)
     return ESP_OK;
 }
 
+esp_err_t handler_sensors(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_sensors - Start");
+#endif
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "application/json");
+    
+    // Find the ClassFlowSensors instance
+    ClassFlowSensors* sensorFlow = nullptr;
+    if (flowctrl.GetFlowControll()) {
+        for (auto* flow : *flowctrl.GetFlowControll()) {
+            if (flow && flow->name() == "ClassFlowSensors") {
+                sensorFlow = static_cast<ClassFlowSensors*>(flow);
+                break;
+            }
+        }
+    }
+    
+    std::string jsonResponse;
+    if (sensorFlow && sensorFlow->getSensorManager()) {
+        jsonResponse = sensorFlow->getSensorManager()->getJSON();
+    } else {
+        jsonResponse = "{\"error\":\"No sensors configured\"}";
+    }
+    
+    httpd_resp_send(req, jsonResponse.c_str(), jsonResponse.length());
+
+#ifdef DEBUG_DETAIL_ON
+    LogFile.WriteHeapInfo("handler_sensors - End");
+#endif
+
+    return ESP_OK;
+}
+
 esp_err_t handler_prevalue(httpd_req_t *req)
 {
 #ifdef DEBUG_DETAIL_ON
@@ -1843,6 +1909,11 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.uri = "/uptime";
     camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_uptime);
     camuri.user_ctx = (void *)"Light Off";
+    httpd_register_uri_handler(server, &camuri);
+
+    camuri.uri = "/sensors";
+    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_sensors);
+    camuri.user_ctx = (void *)"Sensors";
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri = "/editflow";

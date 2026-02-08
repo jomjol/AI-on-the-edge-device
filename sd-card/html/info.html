@@ -240,6 +240,16 @@ table {
 		</tr>
 	</table>
 
+	<table id="sensorTable" style="display:none;">
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>			
+			<h3>External Sensors</h3>
+		</tr>
+	</table>
+
 
 <h3>Copyright</h3>
 Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edge-device" target=_blank>Jomjol</a> and others.
@@ -516,6 +526,82 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 		xhttp.send();
 	}
 
+	function loadSensors() {
+		url = getDomainname() + '/sensors';
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4) {
+				if (this.status == 200) {
+					try {
+						var data = JSON.parse(xhttp.responseText);
+						var table = document.getElementById('sensorTable');
+						
+						// Show table if we have sensors or errors
+						if ((data.sensors && data.sensors.length > 0) || (data.errors && data.errors.length > 0)) {
+							table.style.display = 'table';
+							
+							// Display errors first
+							if (data.errors && data.errors.length > 0) {
+								var row = table.insertRow(-1);
+								row.innerHTML = '<td colspan="2" style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 8px;"><strong>⚠️ Sensor Errors</strong></td>';
+								
+								data.errors.forEach(function(error) {
+									var errorMsg = '';
+									if (error.status === 'bus_init_failed') {
+										errorMsg = error.name + ': Failed to initialize I2C bus';
+									} else if (error.status === 'no_device') {
+										errorMsg = error.name + ': Sensor not detected';
+									} else if (error.status === 'config_error') {
+										errorMsg = error.name + ': Configuration error';
+									} else {
+										errorMsg = error.name + ': Unknown error';
+									}
+									
+									row = table.insertRow(-1);
+									row.innerHTML = '<td style="padding-left: 20px;">' + errorMsg + ':</td><td><output>' + error.message + '</output></td>';
+								});
+							}
+							
+							// Display working sensors - each sensor is now its own object
+							if (data.sensors && data.sensors.length > 0) {
+								data.sensors.forEach(function(sensor) {
+									var timeStr = '';
+									if (sensor.last_read && sensor.last_read > 0) {
+										var timestamp = new Date(sensor.last_read * 1000);
+										timeStr = timestamp.toLocaleString();
+									} else {
+										timeStr = 'Not yet read';
+									}
+									
+									if (sensor.name === 'SHT3x') {
+										var row = table.insertRow(-1);
+										row.innerHTML = '<td>SHT3x Temperature:</td><td><output>' + sensor.temperature.toFixed(1) + ' ' + sensor.unit_temp + '</output></td>';
+										
+										row = table.insertRow(-1);
+										row.innerHTML = '<td>SHT3x Humidity:</td><td><output>' + sensor.humidity.toFixed(1) + ' ' + sensor.unit_humidity + '</output></td>';
+										
+										row = table.insertRow(-1);
+										row.innerHTML = '<td>SHT3x Last Read:</td><td><output>' + timeStr + '</output></td>';
+									} else if (sensor.name === 'DS18B20') {
+										var row = table.insertRow(-1);
+										row.innerHTML = '<td>DS18B20 ' + sensor.id + ':</td><td><output>' + sensor.temperature.toFixed(1) + ' ' + sensor.unit + '</output></td>';
+										
+										row = table.insertRow(-1);
+										row.innerHTML = '<td>DS18B20 Last Read:</td><td><output>' + timeStr + '</output></td>';
+									}
+								});
+							}
+						}
+					} catch (e) {
+						// Sensors not available, table stays hidden
+					}
+				}
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
 	function init()
 	{
 		loadMemoryInfo();
@@ -537,6 +623,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 		loadChipCores();
 		loadChipRevision();
 		loadChipFeatures();
+		loadSensors();
 	}
 
 	init();

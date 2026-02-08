@@ -11,6 +11,13 @@
 static const char *TAG = "INFLUXDB";
 
 /**
+ * @brief Global InfluxDB instance for sensor publishing.
+ * 
+ * This global instance is used by sensor components to publish data to InfluxDB.
+ */
+InfluxDB influxDB;
+
+/**
  * @brief Buffer to store the HTTP response.
  * 
  * This character array is used to store the output of an HTTP response.
@@ -180,6 +187,12 @@ void InfluxDB::InfluxDBdestroy() {
  * using an HTTP POST request.
  */
 void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) {
+    // Skip publishing if InfluxDB is not configured (URI is empty)
+    if (influxDBURI.empty()) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDB URI not configured, skipping publish");
+        return;
+    }
+    
     std::string apiURI;        
     std::string payload;
     char nowTimestamp[21];

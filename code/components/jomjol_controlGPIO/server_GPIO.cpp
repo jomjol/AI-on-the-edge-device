@@ -652,6 +652,9 @@ gpio_pin_mode_t GpioHandler::resolvePinMode(std::string input)
     if( input == "output-pwm" ) return GPIO_PIN_MODE_OUTPUT_PWM;
     if( input == "external-flash-pwm" ) return GPIO_PIN_MODE_EXTERNAL_FLASH_PWM;
     if( input == "external-flash-ws281x" ) return GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X;
+    if( input == "i2c-sda" ) return GPIO_PIN_MODE_I2C_SDA;
+    if( input == "i2c-scl" ) return GPIO_PIN_MODE_I2C_SCL;
+    if( input == "onewire" ) return GPIO_PIN_MODE_ONEWIRE;
 
     return GPIO_PIN_MODE_DISABLED;
 }

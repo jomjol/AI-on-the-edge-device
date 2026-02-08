@@ -21,6 +21,7 @@
 	#include "ClassFlowWebhook.h"
 #endif //ENABLE_WEBHOOK
 #include "ClassFlowCNNGeneral.h"
+#include "ClassFlowSensors.h"
 
 class ClassFlowControll :
     public ClassFlow
@@ -33,6 +34,7 @@ protected:
 	ClassFlowCNNGeneral* flowdigit;
 //	ClassFlowDigit* flowdigit;
 	ClassFlowTakeImage* flowtakeimage;
+	ClassFlowSensors* flowsensors;
 	ClassFlow* CreateClassFlow(std::string _type);
 
 	bool AutoStart;
@@ -72,6 +74,7 @@ public:
 
 	bool getIsAutoStart();
 	void setAutoStartInterval(long &_interval);
+	float getAutoInterval() { return AutoInterval; }  // Get flow interval in minutes
 
 	std::string* getActStatusWithTime();
 	std::string* getActStatus();
@@ -88,6 +91,8 @@ public:
 	#endif //ENABLE_MQTT
 
 	int CleanTempFolder();
+
+	std::vector<ClassFlow*>* GetFlowControll() { return &FlowControll; }
 
 	string name(){return "ClassFlowControll";};
 };

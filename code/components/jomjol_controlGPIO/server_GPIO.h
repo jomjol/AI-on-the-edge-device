@@ -21,6 +21,9 @@ typedef enum {
     GPIO_PIN_MODE_OUTPUT_PWM            = 0x6,
     GPIO_PIN_MODE_EXTERNAL_FLASH_PWM    = 0x7,
     GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X = 0x8,
+    GPIO_PIN_MODE_I2C_SDA               = 0x9,
+    GPIO_PIN_MODE_I2C_SCL               = 0xA,
+    GPIO_PIN_MODE_ONEWIRE               = 0xB,
 } gpio_pin_mode_t;
 
 struct GpioResult {

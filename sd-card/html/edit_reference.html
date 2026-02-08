@@ -178,7 +178,31 @@
 					<option value="false" selected>disabled (false)</option>
 				</select>			
 			</td>
-			<td>$TOOLTIP_TakeImage_CamZoom</td>				
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamZoom</code></h3>
+<p><strong>Digital-Zoom</strong></p>
+<ul>
+<li>Enable/Disable digital zoom.</li>
+</ul>
+<p>Default Value: <code>false</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is always zoomed into the center of the image, if <strong>CamZoomOffsetX</strong> and <strong>CamZoomOffsetY</strong> are zero.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>				
 			
             <td class="indent1">
                 <label id="TakeImage_CamZoomOffsetX_text" style="color:black;">Zoom Offset X: </label>
@@ -187,7 +211,33 @@
                 <input required type="number" id="TakeImage_CamZoomOffsetX_value1" value="0" min="-960" max="960" step="8" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=960)) && (!validity.rangeUnderflow||(value=-960)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-			<td>$TOOLTIP_TakeImage_CamZoomOffsetX</td>				
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamZoomOffsetX</code></h3>
+<p><strong>Digital-Zoom-OffsetX</strong></p>
+<p>range on OV2640 (<code>-480</code> .. <code>480</code>)<br>
+range on OV3660 (<code>-704</code> .. <code>704</code>)<br>
+range on OV5640 (<code>-960</code> .. <code>960</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>X displacement of the image from the center.<br>
+Positive values ​​shift the image to the right, negative values ​​to the left.<br>
+The maximum possible offset depends on the value of the <strong>CamZoomSize</strong>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>				
         </tr>
 		
         <tr class="expert">
@@ -198,7 +248,31 @@
                 <input required type="number" id="TakeImage_CamZoomSize_value1" value="0" min="0" max="59" step="1" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=59)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-			<td>$TOOLTIP_TakeImage_CamZoomSize</td>			
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamZoomSize</code></h3>
+<p><strong>Digital-Zoom-Size</strong></p>
+<p>range on OV2640 (<code>0</code> .. <code>29</code>)<br>
+range on OV3660 (<code>0</code> .. <code>43</code>)<br>
+range on OV5640 (<code>0</code> .. <code>59</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Zoom factor/level of the digital zoom, the larger the value, the more it zooms in.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>			
 		
             <td class="indent1">
                 <label id="TakeImage_CamZoomOffsetY_text" style="color:black;">Zoom Offset Y: </label>
@@ -207,7 +281,33 @@
                 <input required type="number" id="TakeImage_CamZoomOffsetY_value1" value="0" min="-720" max="720" step="8" onchange="cameraParameterChanged()"
                     oninput="(!validity.rangeOverflow||(value=720)) && (!validity.rangeUnderflow||(value=-720)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-			<td>$TOOLTIP_TakeImage_CamZoomOffsetY</td>		
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamZoomOffsetY</code></h3>
+<p><strong>Digital-Zoom-OffsetY</strong></p>
+<p>range on OV2640 (<code>-360</code> .. <code>360</code>)<br>
+range on OV3660 (<code>-528</code> .. <code>528</code>)<br>
+range on OV5640 (<code>-720</code> .. <code>720</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Y displacement of the image from the center.<br>
+Positive values ​​move the image up, negative values ​​move the image down.<br>
+The maximum possible offset depends on the value of the <strong>CamZoomSize</strong>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>		
         </tr>
 		
         <tr class="expert">
@@ -225,7 +325,34 @@
 					<option value="retro" >retro</option>					
 				</select>
 			</td>
-			<td>$TOOLTIP_TakeImage_CamSpecialEffect</td>			
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamSpecialEffect</code></h3>
+<p><strong>Image-Special-Effect</strong></p>
+<p>Available options:</p>
+<ul>
+<li><code>no_effect</code></li>
+<li><code>negative</code></li>
+<li><code>grayscale</code></li>
+<li><code>red</code></li>
+<li><code>green</code></li>
+<li><code>blue</code></li>
+<li><code>retro</code></li>
+</ul>
+<p>Default Value: <code>no_effect</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>			
 			
 			<td class="indent1">
 				<class id="TakeImage_CamAec2_text" style="color:black;">Auto-exposure Control 2</class>
@@ -236,7 +363,32 @@
 					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>
-			<td>$TOOLTIP_TakeImage_CamAec2</td>			
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamAec2</code></h3>
+<p><strong>Auto-Exposure-Control2</strong></p>
+<ul>
+<li>When <strong>true</strong>, the sensor’s "night mode" is enabled, extending the range of automatic gain control.</li>
+<li>When <strong>false</strong>, the sensor’s "night mode" is disabled.</li>
+</ul>
+<p>Default Value: <code>true</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This may resolve some over-exposure and under-exposure issues.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>			
         </tr>
 		
         <tr>
@@ -249,7 +401,26 @@
 					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>			
-			<td>$TOOLTIP_TakeImage_CamHmirror</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamHmirror</code></h3>
+<p><strong>Mirror-Image</strong></p>
+<ul>
+<li>When <strong>true</strong>, the camera image is mirrored left-to-right.</li>
+</ul>
+<p>Default Value: <code>false</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
 			
             <td class="indent1">
                 <class id="TakeImage_LEDIntensity_text" style="color:black;">LED intensity: </class>
@@ -258,7 +429,21 @@
                 <input required style="clear: both" type="number" id="TakeImage_LEDIntensity_value1" size="13" value="0"  min="0" max="100" onchange="cameraParameterChanged()" 
                     oninput="(!validity.rangeOverflow||(value=100)) && (!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
             </td>
-			<td>$TOOLTIP_TakeImage_LEDIntensity</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>LEDIntensity</code></h3>
+<p>Set the Flash LED Intensity: (<code>0</code> .. <code>100</code>)</p>
+<p>Default Value: <code>50</code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
         </tr>
 		
         <tr>
@@ -271,7 +456,30 @@
 					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>			
-			<td>$TOOLTIP_TakeImage_CamVflip</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamVflip</code></h3>
+<p><strong>Flip-Image</strong></p>
+<ul>
+<li>When <strong>true</strong>, the camera image is flipped top-to-bottom.</li>
+</ul>
+<p>Default Value: <code>false</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On some OV5640 Cameras, the image becomes reddish when Vflip is used in conjunction with the zoom function!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
 			
             <td class="indent1">
                 <class id="TakeImage_CamBrightness_text" style="color:black;">Brightness: </class>
@@ -281,7 +489,24 @@
 					oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_CamBrightness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-			<td>$TOOLTIP_TakeImage_CamBrightness</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamBrightness</code></h3>
+<p><strong>Image-Brightness</strong></p>
+<p>Range (<code>-2</code> .. <code>2</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
         </tr>
 		
         <tr>
@@ -292,7 +517,22 @@
                 <input required type="number" id="PreRotateAngle_value1" value="0" min="-180" max="180" onchange="cameraParameterChangedDR()"
                     oninput="(!validity.rangeOverflow||(value=180)) && (!validity.rangeUnderflow||(value=-180)) && (!validity.stepMismatch||(value=parseInt(this.value)));">degree
             </td>
-			<td>$TOOLTIP_Alignment_InitialRotate</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>InitialRotate</code></h3>
+<p>Default Value: <code>0</code></p>
+<p>Unit: Degrees</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<p>Initial rotation of image before alignment in degree (<code>-360</code> .. <code>+360</code>)</p>
+    </span></div></div>
+</td>
 			
             <td class="indent1">
                 <class id="TakeImage_CamContrast_text" style="color:black;">Contrast: </class>
@@ -302,7 +542,24 @@
 					oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_CamContrast_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-			<td>$TOOLTIP_TakeImage_CamContrast</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamContrast</code></h3>
+<p><strong>Image-Contrast</strong></p>
+<p>Range (<code>-2</code> .. <code>2</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
         </tr>
 		
         <tr>
@@ -323,7 +580,28 @@
 					oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_CamSaturation_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-			<td>$TOOLTIP_TakeImage_CamSaturation</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamSaturation</code></h3>
+<p><strong>Image-Saturation</strong></p>
+<p>Range (<code>-2</code> .. <code>2</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Positive values increase saturation (more vibrant colors), negative values lower it (more muted colors).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
         </tr>
 		
         <tr class="expert">
@@ -336,7 +614,28 @@
 					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>
-			<td>$TOOLTIP_TakeImage_CamAec</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamAec</code></h3>
+<p><strong>Auto-Exposure-Control</strong></p>
+<ul>
+<li>When <strong>true</strong>, the camera attempts to automatically control the exposure.</li>
+<li>When <strong>false</strong>, the <strong>CamAecValue</strong> setting is used instead.</li>
+</ul>
+<p>Default Value: <code>true</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
 			
             <td class="indent1">
                 <class id="TakeImage_CamAeLevel_text" style="color:black;">Auto Exposure Level: </class>
@@ -346,7 +645,30 @@
 					oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_CamAeLevel_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-			<td>$TOOLTIP_TakeImage_CamAeLevel</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamAeLevel</code></h3>
+<p><strong>Auto-Exposure-Level</strong></p>
+<p>range on OV2640 (<code>-2</code> .. <code>2</code>)<br>
+range on OV3660 and OV5640 (<code>-5</code> .. <code>5</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The exposure offset for automatic exposure, lower values produce darker image.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
         </tr>
 		
         <tr class="expert">
@@ -359,7 +681,32 @@
 					<option value="false" selected>disabled (false)</option>
 				</select>
 			</td>
-			<td>$TOOLTIP_TakeImage_CamAutoSharpness</td>			
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamAutoSharpness</code></h3>
+<p><strong>Auto-Sharpness</strong></p>
+<ul>
+<li>When <strong>true</strong>, the camera attempts to automatically adjusts the sharpness.</li>
+<li>When <strong>false</strong>, the <strong>CamSharpness</strong> setting is used instead.</li>
+</ul>
+<p>Default Value: <code>false</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The OV2640 does not officially support auto sharpness, this is an experimental parameter!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>			
 			
             <td class="indent1">
                 <class id="TakeImage_CamSharpness_text" style="color:black;">Sharpness: </class>
@@ -369,7 +716,34 @@
 					oninput="this.nextElementSibling.value = this.value">
                 <output id="TakeImage_CamSharpness_value1_output" style="vertical-align:middle; min-width:15px; padding-right:5px; text-align:right; float:left">0</output>
             </td>
-			<td>$TOOLTIP_TakeImage_CamSharpness</td>
+			<td>
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="32px"><span class="tooltiptext">
+<h3 style="margin: 0">Parameter <code>CamSharpness</code></h3>
+<p><strong>Image-Sharpness</strong></p>
+<p>Range (<code>-2</code> .. <code>2</code>)</p>
+<p>Default Value: <code>0</code></p>
+<p>See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/Camera.ov2640_ds_1.8_.pdf">here</a> for the ov2640 camera datasheet.<br>
+See <a target=_blank href="https://jomjol.github.io/AI-on-the-edge-device-docs/datasheets/OV5640_datasheet.pdf">here</a> for the ov5640 camera datasheet.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is an <strong>Expert Parameter</strong>! Only change it if you understand what it does!</p>
+<p>After changing this parameter you need to update your reference image and alignment markers!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The OV2640 does not officially support sharpness, this is an experimental parameter!</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Positive values increase sharpness (more defined edges), negative values lower it (softer edges).</p>
+<p>This is used when <strong>CamAutoSharpness</strong> is off.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter can also be set on the Reference Image configuration page!</p>
+</div>
+    </span></div></div>
+</td>
         </tr>
     </table>
 

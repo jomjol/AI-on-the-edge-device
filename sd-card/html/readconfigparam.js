@@ -238,6 +238,46 @@ function ParseConfig() {
     ParamAddValue(param, catname, "ApiKey");
     ParamAddValue(param, catname, "UploadImg");
 
+    var catname = "SHT3x";
+    category[catname] = new Object();
+    category[catname]["enabled"] = false;
+    category[catname]["found"] = false;
+    param[catname] = new Object();
+    ParamAddValue(param, catname, "Address");
+    ParamAddValue(param, catname, "Interval");
+    ParamAddValue(param, catname, "I2C_Frequency");
+    ParamAddValue(param, catname, "MQTT_Enable");
+    ParamAddValue(param, catname, "MQTT_Topic");
+    ParamAddValue(param, catname, "InfluxDB_Enable");
+    ParamAddValue(param, catname, "InfluxDB_Measurement");
+    // Default values for SHT3x sensor
+    param[catname]["Address"]["value1"] = "0x44";
+    param[catname]["Interval"]["value1"] = "-1";
+    param[catname]["I2C_Frequency"]["value1"] = "100000";
+    param[catname]["MQTT_Enable"]["value1"] = "true";
+    param[catname]["MQTT_Topic"]["value1"] = "sensors/climate";
+    param[catname]["InfluxDB_Enable"]["value1"] = "false";
+    param[catname]["InfluxDB_Measurement"]["value1"] = "environment";
+    
+    var catname = "DS18B20";
+    category[catname] = new Object();
+    category[catname]["enabled"] = false;
+    category[catname]["found"] = false;
+    param[catname] = new Object();
+    ParamAddValue(param, catname, "ExpectedSensors");
+    ParamAddValue(param, catname, "Interval");
+    ParamAddValue(param, catname, "MQTT_Enable");
+    ParamAddValue(param, catname, "MQTT_Topic");
+    ParamAddValue(param, catname, "InfluxDB_Enable");
+    ParamAddValue(param, catname, "InfluxDB_Measurement");
+    // Default values for DS18B20 sensor
+    param[catname]["ExpectedSensors"]["value1"] = "-1";
+    param[catname]["Interval"]["value1"] = "-1";
+    param[catname]["MQTT_Enable"]["value1"] = "true";
+    param[catname]["MQTT_Topic"]["value1"] = "sensors/temperature";
+    param[catname]["InfluxDB_Enable"]["value1"] = "false";
+    param[catname]["InfluxDB_Measurement"]["value1"] = "environment";
+
     var catname = "GPIO";
     category[catname] = new Object();
     category[catname]["enabled"] = false;
@@ -352,6 +392,29 @@ function ParseConfig() {
         param["System"]["RSSIThreshold"]["found"] = true;
         param["System"]["RSSIThreshold"]["enabled"] = false;
         param["System"]["RSSIThreshold"]["value1"] = "0";
+    }
+
+    // Fix for sensor sections: If a section header is commented (;[SHT3x]) then 
+    // category[catname]["enabled"] will be false. If all parameters are also commented/missing,
+    // treat the section as "not found" to avoid validation warnings.
+    // However, if the section header is uncommented ([SHT3x]), keep it as "found" so defaults are used.
+    var sensorCategories = ["SHT3x", "DS18B20"];
+    for (var i = 0; i < sensorCategories.length; i++) {
+        var catname = sensorCategories[i];
+        if (category[catname]["found"] == true && category[catname]["enabled"] == false) {
+            // Section header is commented (;[SHT3x]), check if any parameter is enabled
+            var hasEnabledParam = false;
+            for (var paramname in param[catname]) {
+                if (param[catname][paramname]["enabled"] == true) {
+                    hasEnabledParam = true;
+                    break;
+                }
+            }
+            // If no parameters are enabled, treat section as not found
+            if (!hasEnabledParam) {
+                category[catname]["found"] = false;
+            }
+        }
     }
 }
 

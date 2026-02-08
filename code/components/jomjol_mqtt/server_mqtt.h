@@ -7,8 +7,12 @@
 
 #include "ClassFlowDefineTypes.h"
 
+// Forward declaration
+class SensorManager;
+
 void SetHomeassistantDiscoveryEnabled(bool enabled);
 void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int interval, float roundInterval);
+void mqttServer_setSensorManager(SensorManager* sensorManager);
 void mqttServer_setMeterType(std::string meterType, std::string valueUnit, std::string timeUnit,std::string rateUnit);
 void setMqtt_Server_Retain(bool SetRetainFlag);
 void mqttServer_setMainTopic( std::string maintopic);

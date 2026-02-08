@@ -1443,11 +1443,196 @@
             <td>$TOOLTIP_Webhook_UploadImg</td>
         </tr>
 
+        <!------------- SHT3x Sensor ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4>
+                <input type="checkbox" id="Category_SHT3x_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_SHT3x_enabled>SHT3x (Temperature & Humidity Sensor)</label>
+                </h4>
+            </td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td colspan="3">
+                <div style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 10px; margin: 5px 0; font-size: 0.9em;">
+                    <strong>⚠️ GPIO Configuration Required:</strong> Before enabling this sensor, you must configure GPIO pins for I²C communication.
+                    <br><br>
+                    <strong>Steps:</strong>
+                    <ol style="margin: 5px 0; padding-left: 20px;">
+                        <li>Scroll down to the <strong>GPIO</strong> section below</li>
+                        <li>Click <strong>"Show Expert Parameters"</strong> checkbox to reveal GPIO settings</li>
+                        <li>Set one GPIO pin to <strong>i2c-sda</strong> (e.g., IO3) *</li>
+                        <li>Set another GPIO pin to <strong>i2c-scl</strong> (e.g., IO1) *</li>
+                        <li>Save configuration and restart device</li>
+                        <li>Then return here to enable and configure the SHT3x sensor</li>
+                    </ol>
+                    * Using GPIO1/GPIO3 will disable USB serial logging
+                    <br>See <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/parameter-pages/Sensors-Overview/" target="_blank">Sensors Overview Documentation</a> for detailed wiring and setup instructions.
+                </div>
+            </td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">I²C Address</td>
+            <td>
+                <select id="SHT3x_Address_value1">
+                    <option value="0x44">0x44 (default)</option>
+                    <option value="0x45">0x45</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_SHT3x_Address</td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">Read Interval (seconds)</td>
+            <td>
+                <input type="number" id="SHT3x_Interval_value1" min="-1" step="1" value="-1">
+                <span style="font-size: 0.9em; color: #666;">(-1 = follow flow cycle)</span>
+            </td>
+            <td>$TOOLTIP_SHT3x_Interval</td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">I²C Frequency (Hz)</td>
+            <td>
+                <select id="SHT3x_I2C_Frequency_value1">
+                    <option value="100000">100000 (Standard - 100 kHz, recommended)</option>
+                    <option value="400000">400000 (Fast - 400 kHz, advanced)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_SHT3x_I2C_Frequency</td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">Enable MQTT</td>
+            <td>
+                <input type="checkbox" id="SHT3x_MQTT_Enable_value1" checked>
+            </td>
+            <td>$TOOLTIP_SHT3x_MQTT_Enable</td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">MQTT Topic</td>
+            <td>
+                <input type="text" id="SHT3x_MQTT_Topic_value1" value="" placeholder="$MAIN_TOPIC/sht3x (if empty)">
+            </td>
+            <td>$TOOLTIP_SHT3x_MQTT_Topic</td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">Enable InfluxDB</td>
+            <td>
+                <input type="checkbox" id="SHT3x_InfluxDB_Enable_value1">
+            </td>
+            <td>$TOOLTIP_SHT3x_InfluxDB_Enable</td>
+        </tr>
+
+        <tr class="SHT3xItem">
+            <td class="indent1">InfluxDB Measurement</td>
+            <td>
+                <input type="text" id="SHT3x_InfluxDB_Measurement_value1" value="environment">
+            </td>
+            <td>$TOOLTIP_SHT3x_InfluxDB_Measurement</td>
+        </tr>
+
+        <!------------- DS18B20 Sensor ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
+                <h4>
+                <input type="checkbox" id="Category_DS18B20_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()' unchecked >
+                <label for=Category_DS18B20_enabled>DS18B20 (Temperature Sensor - Chainable)</label>
+                </h4>
+            </td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td colspan="3">
+                <p style="font-size: 0.9em; color: #666; margin: 5px 0;">Multiple DS18B20 sensors can be chained on same wire. Each sensor is identified by unique ROM ID.</p>
+                <div style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 10px; margin: 5px 0; font-size: 0.9em;">
+                    <strong>⚠️ GPIO Configuration Required:</strong> Before enabling this sensor, you must configure GPIO pins for 1-Wire communication.
+                    <br><br>
+                    <strong>Steps:</strong>
+                    <ol style="margin: 5px 0; padding-left: 20px;">
+                        <li>Scroll down to the <strong>GPIO</strong> section below</li>
+                        <li>Click <strong>"Show Expert Parameters"</strong> checkbox to reveal GPIO settings</li>
+                        <li>Set one GPIO pin to <strong>onewire</strong> (e.g., IO3) *</li>
+                        <li>Save configuration and restart device</li>
+                        <li>Then return here to enable and configure the DS18B20 sensor</li>
+                    </ol>
+                    * Using GPIO3/GPIO1 will disable USB serial logging
+                    <br>See <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/parameter-pages/Sensors-Overview/" target="_blank">Sensors Overview Documentation</a> for detailed wiring and setup instructions.
+                </div>
+            </td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td class="indent1">Expected Sensor Count</td>
+            <td>
+                <input type="number" id="DS18B20_ExpectedSensors_value1" min="-1" step="1" value="-1">
+                <span style="font-size: 0.9em; color: #666;">(-1 = auto-detect, >0 = validate count with retry)</span>
+            </td>
+            <td>$TOOLTIP_DS18B20_ExpectedSensors</td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td class="indent1">Read Interval (seconds)</td>
+            <td>
+                <input type="number" id="DS18B20_Interval_value1" min="-1" step="1" value="-1">
+                <span style="font-size: 0.9em; color: #666;">(-1 = follow flow cycle)</span>
+            </td>
+            <td>$TOOLTIP_DS18B20_Interval</td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td class="indent1">Enable MQTT</td>
+            <td>
+                <input type="checkbox" id="DS18B20_MQTT_Enable_value1" checked>
+            </td>
+            <td>$TOOLTIP_DS18B20_MQTT_Enable</td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td class="indent1">MQTT Topic</td>
+            <td>
+                <input type="text" id="DS18B20_MQTT_Topic_value1" value="" placeholder="$MAIN_TOPIC/ds18b20/{ROM_ID}/temperature (if empty)">
+            </td>
+            <td>$TOOLTIP_DS18B20_MQTT_Topic</td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td class="indent1">Enable InfluxDB</td>
+            <td>
+                <input type="checkbox" id="DS18B20_InfluxDB_Enable_value1">
+            </td>
+            <td>$TOOLTIP_DS18B20_InfluxDB_Enable</td>
+        </tr>
+
+        <tr class="DS18B20Item">
+            <td class="indent1">InfluxDB Measurement</td>
+            <td>
+                <input type="text" id="DS18B20_InfluxDB_Measurement_value1" value="environment">
+            </td>
+            <td>$TOOLTIP_DS18B20_InfluxDB_Measurement</td>
+        </tr>
+
         <!------------- GPIO ------------------>
         <tr style="border-bottom: 2px solid lightgray;">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
                 <h4><input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()' unchecked > 
                 <label for=Category_GPIO_enabled>GPIO (General Purpose Input / Output)</label></h4>
+            </td>
+        </tr>
+
+        <!------------- GPIO12 INFO ------------------>
+        <tr class="GPIO_item expert">
+            <td colspan="3">
+                <div style="background-color: #e3f2fd; border-left: 4px solid #2196F3; padding: 10px; margin: 10px 0;">
+                    <strong>ℹ️ GPIO Pin Notes:</strong><br>
+                    <strong>GPIO12:</strong> I²C and 1-Wire options not available (boot strapping pin conflict with pull-up resistors). WS2812 LEDs work fine on GPIO12.<br>
+                    <strong>Recommended for sensors:</strong> GPIO1/GPIO3/GPIO13 (GPIO1/GPIO3 will disable USB serial logging).
+                    <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/parameter-pages/GPIO/IO12" target="_blank">Details</a>
+                </div>
             </td>
         </tr>
 
@@ -1530,10 +1715,14 @@
             </td>
             <td>
                 <select id="GPIO_IO1_value1">
+                    <option value="disabled">disabled</option>
                     <option value="input">input</option>
                     <option value="input-pullup">input pullup</option>
                     <option value="input-pulldown">input pulldown</option>
                     <option value="output">output</option>
+                    <option value="i2c-sda">I²C SDA (SHT3x)</option>
+                    <option value="i2c-scl">I²C SCL (SHT3x)</option>
+                    <option value="onewire">1-Wire (DS18B20)</option>
                 </select>
             </td>
             <td>$TOOLTIP_GPIO_IO1</td>
@@ -1601,10 +1790,14 @@
             </td>
             <td>
                 <select id="GPIO_IO3_value1">
+                    <option value="disabled">disabled</option>
                     <option value="input">input</option>
                     <option value="input-pullup">input pullup</option>
                     <option value="input-pulldown">input pulldown</option>
                     <option value="output">output</option>
+                    <option value="i2c-sda">I²C SDA (SHT3x)</option>
+                    <option value="i2c-scl">I²C SCL (SHT3x)</option>
+                    <option value="onewire">1-Wire (DS18B20)</option>
                 </select>
             </td>
             <td>$TOOLTIP_GPIO_IO3</td>
@@ -1753,6 +1946,7 @@
             </td>
             <td>
                 <select id="GPIO_IO12_value1">
+                    <option value="disabled">disabled</option>
                     <option value="input">input</option>
                     <option value="input-pullup">input pullup</option>
                     <option value="input-pulldown">input pulldown</option>
@@ -1760,6 +1954,10 @@
                     <!-- <option value="output-pwm">output-pwm</option> -->
                     <!-- <option value="external-flash-pwm">external-flash-pwm</option> -->				
                     <option value="external-flash-ws281x">external flash light ws281x controlled</option>
+                    <!-- I2C and 1-Wire options removed from GPIO12 - boot strapping pin conflict with pull-up resistors -->
+                    <!-- <option value="i2c-sda">I²C SDA (SHT3x)</option> -->
+                    <!-- <option value="i2c-scl">I²C SCL (SHT3x)</option> -->
+                    <!-- <option value="onewire">1-Wire (DS18B20)</option> -->
                 </select>
             </td>
             <td>$TOOLTIP_GPIO_IO12</td>
@@ -1883,10 +2081,14 @@
             </td>
             <td>
                 <select id="GPIO_IO13_value1">
+                    <option value="disabled">disabled</option>
                     <option value="input">input</option>
                     <option value="input-pullup">input pullup</option>
                     <option value="input-pulldown">input pulldown</option>
                     <option value="output">output</option>
+                    <option value="i2c-sda">I²C SDA (SHT3x)</option>
+                    <option value="i2c-scl">I²C SCL (SHT3x)</option>
+                    <option value="onewire">1-Wire (DS18B20)</option>
                 </select>
             </td>
             <td>$TOOLTIP_GPIO_IO13</td>
@@ -2306,6 +2508,12 @@ function UpdateInput() {
     document.getElementById("Category_Webhook_enabled").checked = category["Webhook"]["enabled"];
     setVisible("WebhookItem", category["Webhook"]["enabled"]);
 
+    document.getElementById("Category_SHT3x_enabled").checked = category["SHT3x"]["enabled"];
+    setVisible("SHT3xItem", category["SHT3x"]["enabled"]);
+
+    document.getElementById("Category_DS18B20_enabled").checked = category["DS18B20"]["enabled"];
+    setVisible("DS18B20Item", category["DS18B20"]["enabled"]);
+
     WriteParameter(param, category, "TakeImage", "RawImagesLocation", true);
     WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
 
@@ -2417,6 +2625,22 @@ function UpdateInput() {
     WriteParameter(param, category, "System", "RSSIThreshold", true);
     WriteParameter(param, category, "System", "CPUFrequency", true);
 
+    // Sensor parameters
+    WriteParameter(param, category, "SHT3x", "Address", false);
+    WriteParameter(param, category, "SHT3x", "Interval", false);
+    WriteParameter(param, category, "SHT3x", "I2C_Frequency", false);
+    WriteParameter(param, category, "SHT3x", "MQTT_Enable", false);
+    WriteParameter(param, category, "SHT3x", "MQTT_Topic", false);
+    WriteParameter(param, category, "SHT3x", "InfluxDB_Enable", false);
+    WriteParameter(param, category, "SHT3x", "InfluxDB_Measurement", false);
+
+    WriteParameter(param, category, "DS18B20", "ExpectedSensors", false);
+    WriteParameter(param, category, "DS18B20", "Interval", false);
+    WriteParameter(param, category, "DS18B20", "MQTT_Enable", false);
+    WriteParameter(param, category, "DS18B20", "MQTT_Topic", false);
+    WriteParameter(param, category, "DS18B20", "InfluxDB_Enable", false);
+    WriteParameter(param, category, "DS18B20", "InfluxDB_Measurement", false);
+
     WriteModelFiles();
 }
 
@@ -2473,6 +2697,8 @@ function ReadParameterAll() {
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
     category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
+    category["SHT3x"]["enabled"] = document.getElementById("Category_SHT3x_enabled").checked;
+    category["DS18B20"]["enabled"] = document.getElementById("Category_DS18B20_enabled").checked;
 
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
@@ -2593,6 +2819,22 @@ function ReadParameterAll() {
     ReadParameter(param, "System", "RSSIThreshold", true);
     ReadParameter(param, "System", "CPUFrequency", true);
 
+    // Sensor parameters (Note: Enable parameter is handled via category checkbox, not ReadParameter)
+    ReadParameter(param, "SHT3x", "Address", false);
+    ReadParameter(param, "SHT3x", "Interval", false);
+    ReadParameter(param, "SHT3x", "I2C_Frequency", false);
+    ReadParameter(param, "SHT3x", "MQTT_Enable", false);
+    ReadParameter(param, "SHT3x", "MQTT_Topic", false);
+    ReadParameter(param, "SHT3x", "InfluxDB_Enable", false);
+    ReadParameter(param, "SHT3x", "InfluxDB_Measurement", false);
+
+    ReadParameter(param, "DS18B20", "ExpectedSensors", false);
+    ReadParameter(param, "DS18B20", "Interval", false);
+    ReadParameter(param, "DS18B20", "MQTT_Enable", false);
+    ReadParameter(param, "DS18B20", "MQTT_Topic", false);
+    ReadParameter(param, "DS18B20", "InfluxDB_Enable", false);
+    ReadParameter(param, "DS18B20", "InfluxDB_Measurement", false);
+
     var sel = document.getElementById("Numbers_value1");
     UpdateInputIndividual(sel);
 
@@ -2608,6 +2850,8 @@ function UpdateAfterCategoryCheck() {
     category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
     category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
     category["Webhook"]["enabled"] = document.getElementById("Category_Webhook_enabled").checked;
+    category["SHT3x"]["enabled"] = document.getElementById("Category_SHT3x_enabled").checked;
+    category["DS18B20"]["enabled"] = document.getElementById("Category_DS18B20_enabled").checked;
 
     UpdateInput();
     var sel = document.getElementById("Numbers_value1");
@@ -3127,8 +3371,11 @@ function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _numb
         }
     }
 
-    document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
-    document.getElementById(_cat+"_"+_name+"_text").style.color = _color;
+    let textElement = document.getElementById(_cat+"_"+_name+"_text");
+    if (textElement) {
+        textElement.disabled = !_status;
+        textElement.style.color = _color;
+    }
 
     setEnabled(_cat+"_"+_name, _status);
 
@@ -3154,6 +3401,8 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
 
         if (_optional) {
             NUMBERS[_number][_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+        } else {
+            NUMBERS[_number][_cat][_name]["enabled"] = true;  // Non-optional parameters are always enabled
         }
 
         for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
@@ -3163,7 +3412,7 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
                 NUMBERS[_number][_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
             }
             else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-                NUMBERS[_number][_cat][_name]["value"+j] = element.checked;
+                NUMBERS[_number][_cat][_name]["value"+j] = element.checked ? "true" : "false";
             }
             else {
                 if ((NUMBERS[_number][_cat][_name].checkRegExList != null) && (NUMBERS[_number][_cat][_name].checkRegExList[j-1] != null)) {
@@ -3183,6 +3432,8 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
     {
         if (_optional) {
             _param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
+        } else {
+            _param[_cat][_name]["enabled"] = true;  // Non-optional parameters are always enabled
         }
 
         for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
@@ -3192,7 +3443,7 @@ function ReadParameter(_param, _cat, _name, _optional, _number = -1) {
                 _param[_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
             }
             else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-                _param[_cat][_name]["value"+j] = element.checked;
+                _param[_cat][_name]["value"+j] = element.checked ? "true" : "false";
             }
             else {
                 if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j-1] != null)) {
@@ -3233,7 +3484,10 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             }		
         }
 	    
-        document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
+        let textElement = document.getElementById(_cat+"_"+_name+"_text");
+        if (textElement) {
+            textElement.style.color = "black";
+        }
         setEnabled(_cat+"_"+_name, true);
 
         for (var j = 1; j <= anzpara; ++j) {
@@ -3242,7 +3496,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             if (element.tagName.toLowerCase() == "select") {
                 var textToFind = NUMBERS[_number][_cat][_name]["value"+j];
 				
-                if (textToFind == undefined) {
+                if (textToFind == undefined || textToFind === "") {
                     continue;
                 }
 
@@ -3280,7 +3534,10 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             }		
         }
 		
-        document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
+        let textElement = document.getElementById(_cat+"_"+_name+"_text");
+        if (textElement) {
+            textElement.style.color = "black";
+        }
         setEnabled(_cat+"_"+_name, true);
 
         for (var j = 1; j <= anzpara; ++j) {
@@ -3289,7 +3546,7 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             if (element.tagName.toLowerCase() == "select") {
                 var textToFind = _param[_cat][_name]["value"+j];
 				
-                if (textToFind == undefined) {
+                if (textToFind == undefined || textToFind === "") {
                     continue;
                 }
                 
@@ -3330,7 +3587,10 @@ function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1)
             }	
         }
 		
-        document.getElementById(_cat+"_"+_name+"_text").style="color: gray;"
+        let textElement = document.getElementById(_cat+"_"+_name+"_text");
+        if (textElement) {
+            textElement.style = "color: gray;";
+        }
         setEnabled(_cat+"_"+_name, false);
     }
 

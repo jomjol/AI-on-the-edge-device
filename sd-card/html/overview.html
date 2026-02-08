@@ -72,7 +72,7 @@
 	<table class="tg">
 		<tr>
 			<th class="th">Value</th>
-			<td class="tg-1" rowspan="13">
+			<td class="tg-1" rowspan="15">
 				<img style="padding-left: 5px; padding-top: 0px; max-width:100%; width:100%; height:auto;" id="img" src="">
 			</td>
 		</tr>	 
@@ -128,6 +128,14 @@
 				</div>
 			</td>
 		</tr>
+		<tr>
+			<th class="th">Sensors</th>
+		</tr>	
+		<tr>	
+			<td class="tg-4">
+				<div id="sensors"></div>
+			</td>
+		</tr>
 	</table>
 
 	<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
@@ -159,6 +167,7 @@
 			loadRSSI();
 			loadUptime();
 			loadRoundCounter();
+			loadSensors();
 		}
 
 		function LoadROIImage(){
@@ -271,6 +280,126 @@
 				if (this.readyState == 4 && this.status == 200) {
 					var _rsp = xhttp.responseText;
 					$('#round').html("(Round: " + _rsp + ")");
+				}
+			}
+			
+			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
+
+		function loadSensors() {
+			url = domainname + '/sensors';     
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4) {
+					if (this.status == 200) {
+						// Validate response is not empty and starts with valid JSON character
+						var responseText = xhttp.responseText;
+						if (responseText && responseText.length > 0 && (responseText[0] === '{' || responseText[0] === '[')) {
+							var data = JSON.parse(responseText);
+							var html = '';
+							
+							// Display sensor errors first (if any)
+							if (data.errors && data.errors.length > 0) {
+								html += '<div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 8px; margin: 5px 0; border-radius: 4px;">';
+								html += '<strong>⚠️ Sensor Errors:</strong><br>';
+								
+								data.errors.forEach(function(error) {
+									var errorMsg = '';
+									
+									if (error.status === 'bus_init_failed') {
+										errorMsg = error.name + ': Failed to initialize I2C bus - ' + error.message;
+									} else if (error.status === 'no_device') {
+										errorMsg = error.name + ': Sensor not detected - ' + error.message;
+									} else if (error.status === 'config_error') {
+										errorMsg = error.name + ': Configuration error - ' + error.message;
+									} else {
+										errorMsg = error.name + ': ' + error.message;
+									}
+									
+									html += '<div style="margin: 3px 0;">' + errorMsg + '</div>';
+								});
+								
+								html += '</div>';
+							}
+							
+							// Group sensors by type
+							if (data.sensors && data.sensors.length > 0) {
+								var sht3xSensors = [];
+								var ds18b20Sensors = [];
+								
+								// Separate sensors by type
+								data.sensors.forEach(function(sensor) {
+									if (sensor.name === 'SHT3x') {
+										sht3xSensors.push(sensor);
+									} else if (sensor.name === 'DS18B20') {
+										ds18b20Sensors.push(sensor);
+									}
+								});
+								
+								// Display SHT3x sensors
+								if (sht3xSensors.length > 0) {
+									html += '<div style="margin: 10px 0; padding: 8px; background-color: #f8f9fa; border-left: 3px solid #17a2b8; border-radius: 3px;">';
+									html += '<strong>🌡️💧 SHT3x (Temperature & Humidity Sensor)</strong><br>';
+									
+									sht3xSensors.forEach(function(sensor) {
+										var timeStr = '';
+										if (sensor.last_read && sensor.last_read > 0) {
+											var timestamp = new Date(sensor.last_read * 1000);
+											timeStr = timestamp.toLocaleString();
+										} else {
+											timeStr = 'Not yet read';
+										}
+										
+										html += '<div style="margin: 5px 0; padding-left: 10px;">';
+										html += '<span style="display: inline-block; margin-right: 15px;">Temperature: ' + sensor.temperature.toFixed(1) + sensor.unit_temp + '</span>';
+										html += '<span style="display: inline-block; margin-right: 15px;">Humidity: ' + sensor.humidity.toFixed(1) + sensor.unit_humidity + '</span>';
+										html += '<br><span style="font-size: 0.85em; color: #666; padding-left: 0;">Last read: ' + timeStr + '</span>';
+										html += '</div>';
+									});
+									
+									html += '</div>';
+								}
+								
+								// Display DS18B20 sensors
+								if (ds18b20Sensors.length > 0) {
+									html += '<div style="margin: 10px 0; padding: 8px; background-color: #f8f9fa; border-left: 3px solid #28a745; border-radius: 3px;">';
+									html += '<strong>🌡️ DS18B20 (Temperature Sensor - Chainable)</strong><br>';
+									
+									ds18b20Sensors.forEach(function(sensor) {
+										var timeStr = '';
+										if (sensor.last_read && sensor.last_read > 0) {
+											var timestamp = new Date(sensor.last_read * 1000);
+											timeStr = timestamp.toLocaleString();
+										} else {
+											timeStr = 'Not yet read';
+										}
+										
+										html += '<div style="margin: 5px 0; padding-left: 10px;">';
+										html += '<span style="display: inline-block; margin-right: 15px;">ID: ' + sensor.id + '</span>';
+										html += '<span style="display: inline-block; margin-right: 15px;">Temperature: ' + sensor.temperature.toFixed(1) + sensor.unit + '</span>';
+										html += '<br><span style="font-size: 0.85em; color: #666; padding-left: 0;">Last read: ' + timeStr + '</span>';
+										html += '</div>';
+									});
+									
+									html += '</div>';
+								}
+							}
+							
+							// Display message if no sensors configured
+							if (html === '') {
+								html = '<div style="color: #666; font-style: italic;">No sensors configured</div>';
+							}
+							
+							$('#sensors').html(html);
+						} else {
+							// Response is not valid JSON - sensors not available
+							$('#sensors').html('<div style="color: #666; font-style: italic;">No sensors configured</div>');
+						}
+					} else {
+						// No sensors or endpoint not available
+						$('#sensors').html('<div style="color: #666; font-style: italic;">No sensors configured</div>');
+					}
 				}
 			}
 			

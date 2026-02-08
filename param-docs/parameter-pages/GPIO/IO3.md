@@ -7,7 +7,9 @@ Default Value: `input disabled 10 false false`
 This parameter can be used to configure the GPIO `IO3` pin.
 
 !!! Warning
-    This pin is by default used for the serial communication as RX pin (USB logging)!
+    This pin is by default used for serial communication as RX pin (USB logging)!
+    
+    **Using this pin for other purposes (I²C, 1-Wire, etc.) will automatically disable USB serial logging**, as the pin cannot serve both functions simultaneously. This is a hardware limitation, not a configuration option.
 
 Parameters:
 
