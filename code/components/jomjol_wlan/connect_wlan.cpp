@@ -61,7 +61,7 @@ static int WIFIReconnectCnt = 0;
 esp_netif_t *my_sta;
 
 
-void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
+static void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
     std::string zw = std::string(ip);
     std::stringstream s(zw);
     char ch; //to temporarily store the '.'

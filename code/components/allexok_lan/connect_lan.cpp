@@ -66,6 +66,13 @@ std::string* getLanIPAddress()
     return &wlan_config.ipaddress;
 }
 
+static void strinttoip4(const char *ip, int &a, int &b, int &c, int &d) {
+    std::string zw(ip);
+    std::stringstream s(zw);
+    char ch;
+    s >> a >> ch >> b >> ch >> c >> ch >> d;
+}
+
 
 static void eth_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
@@ -191,6 +198,51 @@ int lan_init(void)
     // 5) Attach netif + start
     esp_netif_config_t netif_cfg = ESP_NETIF_DEFAULT_ETH();
     eth_netif = esp_netif_new(&netif_cfg);
+
+    if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty()) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> IP: " + wlan_config.ipaddress + ", Gateway: " + 
+												std::string(wlan_config.gateway) + ", Netmask: " + std::string(wlan_config.netmask));
+        esp_netif_dhcpc_stop(eth_netif); // Stop DHCP service
+
+        esp_netif_ip_info_t ip_info;
+        memset(&ip_info, 0, sizeof(ip_info));
+        int a,b,c,d;
+
+        strinttoip4(wlan_config.ipaddress.c_str(), a,b,c,d);
+        IP4_ADDR(&ip_info.ip, a,b,c,d); // Set static IP address
+
+        strinttoip4(wlan_config.gateway.c_str(), a,b,c,d);
+        IP4_ADDR(&ip_info.gw, a,b,c,d); // Set gateway
+
+        strinttoip4(wlan_config.netmask.c_str(), a,b,c,d);
+        IP4_ADDR(&ip_info.netmask, a,b,c,d); // Set netmask
+
+        ESP_ERROR_CHECK(esp_netif_set_ip_info(eth_netif, &ip_info)); // Set static IP configuration
+    } else {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Automatic interface config --> Use DHCP service");
+    }
+
+    if (!wlan_config.ipaddress.empty() && !wlan_config.gateway.empty() && !wlan_config.netmask.empty())
+    {
+        if (wlan_config.dns.empty()) {
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "No DNS server, use gateway");
+			 wlan_config.dns = wlan_config.gateway;
+		} 
+		else {
+			LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual interface config -> DNS: " + wlan_config.dns);
+		}
+     
+        esp_netif_dns_info_t dns_info;
+        ip4_addr_t ip;
+        ip.addr = esp_ip4addr_aton(wlan_config.dns.c_str());
+        ip_addr_set_ip4_u32(&dns_info.ip, ip.addr);
+
+        retval = esp_netif_set_dns_info(eth_netif, ESP_NETIF_DNS_MAIN, &dns_info);
+		if (retval != ESP_OK) {
+			LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_netif_set_dns_info: Error: "  + std::to_string(retval));
+			return retval;
+		}
+	}
 
         // Register event handlers
     ESP_ERROR_CHECK(esp_event_handler_register(
