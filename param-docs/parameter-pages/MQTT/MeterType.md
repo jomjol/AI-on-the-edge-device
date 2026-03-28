@@ -24,6 +24,9 @@ List of supported options:
 - `temperature_c` (uses `+C/min` as rate)
 - `temperature_f` (uses `°F/min` as rate)
 - `temperature_k` (uses `K/min` as rate)
+- `pressure_bar` (uses `bar/min` as rate)
+- `pressure_mbar` (uses `mbar/min` as rate)
+- `pressure_psi` (uses `psi/min` as rate)
 
 !!! Note
     Not all options are supported by Homeassistant, see `SensorDeviceClass.VOLUME_FLOW_RATE` in [https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes](https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes)!
