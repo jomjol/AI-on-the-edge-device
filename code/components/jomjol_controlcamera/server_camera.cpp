@@ -19,7 +19,7 @@ static const char *TAG = "server_cam";
 void PowerResetCamera()
 {
     // Use reset only if pin is available
-    if CAM_PIN_PWDN == GPIO_NUM_NC
+    if (CAM_PIN_PWDN == GPIO_NUM_NC)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No power down pin availbale to reset camera");
     }
