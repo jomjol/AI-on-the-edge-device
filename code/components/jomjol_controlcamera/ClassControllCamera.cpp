@@ -26,6 +26,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "server_camera.h"
 #include "esp_camera.h"
 
 #include "driver/ledc.h"
