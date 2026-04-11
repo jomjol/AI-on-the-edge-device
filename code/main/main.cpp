@@ -323,59 +323,52 @@ extern "C" void app_main(void)
                 else { // PSRAM OK
                     // Init camera
                     // ********************************************
-                    PowerResetCamera();
-                    esp_err_t camStatus = Camera.InitCam();
-                    Camera.LightOnOff(false);
+                    esp_err_t camStatus = ESP_OK;
+                    Camera.LightOnOff(true);
 
-                    xDelay = 2000 / portTICK_PERIOD_MS;
-                    ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
-                    vTaskDelay( xDelay );
-
-                    // Check camera init
-                    // ********************************************
-                    if (camStatus != ESP_OK) { // Camera init failed, retry to init
-                        char camStatusHex[33];
-                        sprintf(camStatusHex,"0x%02x", camStatus);
-                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Camera init failed (" + std::string(camStatusHex) + "), retrying...");
-
-                        PowerResetCamera();
+                    for (int i = 0; i < 3; i++)
+                    {
                         camStatus = Camera.InitCam();
-                        Camera.LightOnOff(false);
-
-                        xDelay = 2000 / portTICK_PERIOD_MS;
-                        ESP_LOGD(TAG, "After camera initialization: sleep for: %ldms", (long) xDelay * CONFIG_FREERTOS_HZ/portTICK_PERIOD_MS);
-                        vTaskDelay( xDelay ); 
-
-                        if (camStatus != ESP_OK) { // Camera init failed again
-                            sprintf(camStatusHex,"0x%02x", camStatus);
-                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) +
-                                                                    ")! Check camera module and/or proper electrical connection");
-                            setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
-                            Camera.LightOnOff(false);   // make sure flashlight is off
-                            StatusLED(CAM_INIT, 1, true);
+                        if (camStatus == ESP_OK)
+                        {
+                            break;
                         }
+                        // De-init in case it was already initialized
+                        esp_camera_deinit();
+                        vTaskDelay(pdMS_TO_TICKS(200));
                     }
 
-                    if (camStatus == ESP_OK) { // ESP_OK -> Camera init OK --> continue to perform camera framebuffer check
-                        // Camera framebuffer check
-                        // ********************************************
-                        if (!Camera.testCamera()) {
-                            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera framebuffer check failed");
-                            // Easiest would be to simply restart here and try again,
-                            // how ever there seem to be systems where it fails at startup but still work correctly later.
-                            // Therefore we treat it still as successed! */
-                            setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
-                            StatusLED(CAM_INIT, 2, false);
-                        }
-                        Camera.LightOnOff(false);   // make sure flashlight is off before start of flow
-
+                    if (camStatus != ESP_OK)
+                    {
+                        // Camera init failed, retry to init
+                        char camStatusHex[33];
+                        sprintf(camStatusHex, "0x%02x", camStatus);
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init failed (" + std::string(camStatusHex) + ")! Check camera module and/or proper electrical connection");
+						setSystemStatusFlag(SYSTEM_STATUS_CAM_BAD);
+                        StatusLED(CAM_INIT, 1, true);
+                    }
+                    // Camera framebuffer check
+                    // ********************************************
+                    else if (!Camera.testCamera())
+                    {
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera framebuffer check failed");
+                        // Easiest would be to simply restart here and try again,
+                        // how ever there seem to be systems where it fails at startup but still work correctly later.
+                        // Therefore we treat it still as successed! */
+                        setSystemStatusFlag(SYSTEM_STATUS_CAM_FB_BAD);
+                        StatusLED(CAM_INIT, 2, false);
+                    }
+                    else
+					{
                         // Print camera infos
                         // ********************************************
                         char caminfo[50];
-                        sensor_t * s = esp_camera_sensor_get();
-                        sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL);
+                        sensor_t *sensor = esp_camera_sensor_get();
+                        sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", sensor->id.PID, sensor->id.VER, sensor->id.MIDH, sensor->id.MIDL);
                         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera info: " + std::string(caminfo));
-                    }
+					}
+
+					Camera.LightOnOff(false); // make sure flashlight is off before start of flow
                 }
             }
         }
