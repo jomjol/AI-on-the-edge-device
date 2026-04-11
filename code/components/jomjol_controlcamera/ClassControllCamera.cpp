@@ -129,7 +129,7 @@ esp_err_t CCamera::InitCam(void)
     ESP_LOGD(TAG, "Init Camera");
 
     // De-init in case it was already initialized
-    power_reset_camera();
+    PowerResetCamera();
     vTaskDelay(pdMS_TO_TICKS(200));
 	
     // initialize the camera
