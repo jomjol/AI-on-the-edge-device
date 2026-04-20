@@ -577,7 +577,7 @@ Intermediate Digits
 -   HTML: Backup Option for Configuration
 -   HTML: Improved Reboot
 -   HTML: Update WebUI (Reboot, Infos, CPU Temp, RSSI)
--   This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/haverland)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
+-   This version is largely also based on the work of **[caco3](https://github.com/caco3)**,  **[adellafave](https://github.com/adellafave)**,  **[haverland](https://github.com/fspapaping)**,  **[stefanbode](https://github.com/stefanbode)**, **[PLCHome](https://github.com/PLCHome)**
 
 # [11.2.0](https://github.com/jomjol/AI-on-the-edge-device/releases/tag/v11.2.0), 2022-08-28
 
@@ -1191,6 +1191,6 @@ External Illumination
 [13.0.4]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.4
 [13.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v12.0.1...v13.0.1
 [12.0.1]: https://github.com/jomjol/AI-on-the-edge-device/compare/v11.3.1...v12.0.1
-[11.4.3]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.3
-[11.4.2]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
-[11.3.9]: https://github.com/haverland/AI-on-the-edge-device/compare/v10.6.2...v11.3.9
+[11.4.3]: https://github.com/jomjol/AI-on-the-edge-device/compare/v10.6.2...v11.4.3
+[11.4.2]: https://github.com/jomjol/AI-on-the-edge-device/compare/v10.6.2...v11.4.2
+[11.3.9]: https://github.com/jomjol/AI-on-the-edge-device/compare/v10.6.2...v11.3.9

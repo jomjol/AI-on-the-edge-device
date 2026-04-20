@@ -3,24 +3,22 @@
 <br>
 
 ## Table of Contents
+- [Table of Contents](#table-of-contents)
 - [Key Features 🚀](#key-features-)
 - [Workflow 🔧](#workflow-)
 - [Impressions 📷](#impressions-)
-  - [AI-on-the-edge-device on a Water Meter 💧](#ai-on-the-edge-device-on-a-water-meter-)
-  - [Web Interface (Water Meter) 💻](#web-interface-water-meter-)
-  - [AI-on-the-edge-device on an Electrical Power Meter ⚡](#ai-on-the-edge-device-on-an-electrical-power-meter-)
-- [Setup 🛠️](#setup-%EF%B8%8F)
+- [Setup 🛠️](#setup-️)
 - [Download 🔽](#download-)
 - [Flashing the ESP32 💾](#flashing-the-esp32-)
 - [Flashing the SD Card 💾](#flashing-the-sd-card-)
-- [Casing 🛠️](#casing-%EF%B8%8F)
+- [Casing 🛠️](#casing-️)
 - [Donate ☕](#donate-)
 - [Support 💬](#support-)
 - [Changes and History 📜](#changes-and-history-)
 - [Build It Yourself 🔨](#build-it-yourself-)
-- [Tools 🛠️](#tools-%EF%B8%8F)
+- [Tools 🛠️](#tools-️)
 - [Additional Ideas 💡](#additional-ideas-)
-- [Our Contributors ❤️](#our-contributors-%EF%B8%8F)
+- [Our Contributors ❤️](#our-contributors-️)
 
 <p align="center">
     <a href="#top">
@@ -245,7 +243,7 @@ There are some ideas and feature requests which are not currently being pursued�
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/haverland">
+                <a href="https://github.com/fspapaping">
                     <img src="https://avatars.githubusercontent.com/u/412645?v=4" width="100;" alt="haverland"/>
                     <br />
                     <sub><b>Frank Haverland</b></sub>
