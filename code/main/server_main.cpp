@@ -19,6 +19,9 @@
 #include "esp_log.h"
 #include "basic_auth.h"
 #include "esp_chip_info.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "battery_adc.h"
+#endif
 
 #include <stdio.h>
 
@@ -158,6 +161,82 @@ esp_err_t info_get_handler(httpd_req_t *req)
         else {
             httpd_resp_sendstr(req, "unavailable");
         }
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryEnabled") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        httpd_resp_sendstr(req, Battery_IsReady() ? "true" : "false");
+#else
+        httpd_resp_sendstr(req, "false");
+#endif
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryVoltage") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            float v = Battery_ReadVoltage();
+            if (v >= 0.0f) {
+                char buf[16];
+                snprintf(buf, sizeof(buf), "%.3f", v);
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryPercent") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            float v = Battery_ReadVoltage();
+            if (v >= 0.0f) {
+                char buf[8];
+                snprintf(buf, sizeof(buf), "%d", Battery_PercentFromVoltage(v));
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryRawAdc") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            // Trigger a fresh read so the cached raw matches the cached voltage.
+            (void)Battery_ReadVoltage();
+            int raw = Battery_LastRawAdc();
+            if (raw >= 0) {
+                char buf[8];
+                snprintf(buf, sizeof(buf), "%d", raw);
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryAdcVoltage") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            (void)Battery_ReadVoltage();
+            float v = Battery_LastAdcVoltage();
+            if (v >= 0.0f) {
+                char buf[16];
+                snprintf(buf, sizeof(buf), "%.3f", v);
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
         return ESP_OK;
     }
     else if (_task.compare("SDCardPartitionSize") == 0)
