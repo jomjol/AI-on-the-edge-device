@@ -14,6 +14,9 @@
 #include "../../include/defines.h"
 #include "Helper.h"
 #include "statusled.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "battery_adc.h"
+#endif
 
 #include "esp_camera.h"
 #include "time_sntp.h"
@@ -1564,6 +1567,12 @@ void task_autodoFlow(void *pvParameter)
     flowctrl.setAutoStartInterval(auto_interval);
     flowctrl.setSleepWhileIdle(sleep_while_idle);
     autostartIsEnabled = flowctrl.getIsAutoStart();
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    if (flowctrl.getBatteryEnabled()) {
+        Battery_Init();
+    }
+#endif
 
     if (isSetupModusActive())
     {
