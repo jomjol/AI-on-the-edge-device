@@ -5,6 +5,7 @@
 #include "string.h"
 #include "esp_log.h"
 #include <esp_timer.h>
+#include <esp_sleep.h>
 
 #include <iomanip>
 #include <sstream>
@@ -43,6 +44,7 @@ bool bTaskAutoFlowCreated = false;
 bool flowisrunning = false;
 
 long auto_interval = 0;
+bool sleep_while_idle = false;
 bool autostartIsEnabled = false;
 
 int countRounds = 0;
@@ -1559,6 +1561,7 @@ void task_autodoFlow(void *pvParameter)
     doInit();
 
     flowctrl.setAutoStartInterval(auto_interval);
+    flowctrl.setSleepWhileIdle(sleep_while_idle);
     autostartIsEnabled = flowctrl.getIsAutoStart();
 
     if (isSetupModusActive())
@@ -1639,9 +1642,19 @@ void task_autodoFlow(void *pvParameter)
 
         if (auto_interval > fr_delta_ms)
         {
-            const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
-            ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long)xDelay);
-            vTaskDelay(xDelay);
+            if (sleep_while_idle) {
+                vTaskDelay(10000 / portTICK_PERIOD_MS); // Grace window so the user can connect to reconfigure before deep sleep
+                fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+                if (auto_interval > fr_delta_ms) {
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
+                    esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
+                    esp_deep_sleep_start();
+                }
+            } else {
+                const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
+                ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long)xDelay);
+                vTaskDelay(xDelay);
+            }
         }
     }
 
