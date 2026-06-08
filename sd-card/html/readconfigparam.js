@@ -337,6 +337,22 @@ function ParseConfig() {
         aktline++;
     }
 
+    // Downward compatibility: synthesize [Battery] section for devices whose
+    // existing config.ini predates it. Without this the dropdown stays
+    // disabled even though the firmware accepts the setting.
+    if (category["Battery"]["found"] == false) {
+        category["Battery"]["found"] = true;
+        category["Battery"]["enabled"] = true;
+
+        param["Battery"]["Enabled"]["found"] = true;
+        param["Battery"]["Enabled"]["enabled"] = true;
+        param["Battery"]["Enabled"]["value1"] = "false";
+    }
+
+    if (category["Battery"]["enabled"] == false) {
+        category["Battery"]["enabled"] = true;
+    }
+
     // Make the downward compatiblity with DataLogging
     if (category["DataLogging"]["found"] == false) {
         category["DataLogging"]["found"] = true;
