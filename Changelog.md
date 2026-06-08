@@ -1,3 +1,24 @@
+# [Unreleased - esp32s3-test branch]
+
+These additions target the `esp32s3-test` branch (AI-on-the-edge-cam hardware, `BOARD_ESP32_S3_ALEKSEI`). Other board variants are unaffected.
+
+### Battery monitoring (AI-on-the-edge-cam)
+
+- New `[Battery]` config section with single `Enabled` flag (default `false`). Acts as the master switch for everything below; PoE/USB users pay zero cost when left disabled.
+- Battery voltage read from GPIO2 (ADC1_CH1) via the on-board 10k/10k divider on the Li-ion `Vbatt` rail. Robust 7-block / 41-sample median-of-medians filter (inherited from allexoK's original `allexok_battery_adc` draft, now properly split into `.h` + `.cpp` with graceful calibration fallback).
+- Piecewise Li-ion percent curve with USB-backfeed clamp (Schottky D7 pushes Vbatt above 4.2V when USB is plugged in -> clamps to 100%).
+- New MQTT system topics `<maintopic>/battery_voltage` and `<maintopic>/battery_percent`, with Home Assistant autodiscovery so the sensors appear automatically.
+- New `/info?type=BatteryEnabled|BatteryVoltage|BatteryPercent|BatteryRawAdc|BatteryAdcVoltage` dispatcher cases used by:
+  - **Dashboard (overview.html):** battery icon + "Battery: NN% (V.VVV V)" row, hidden entirely when not enabled. Icon turns orange below 30%, red below 15%.
+  - **System info (info.html):** new "Battery" section with raw ADC, pre-divider voltage, scaled voltage, percent — useful for verifying calibration against a multimeter.
+
+### Deep sleep improvements
+
+- **Restored `SleepWhileIdle` option** (regressed in PR #20 / commit `9a36fec` which inadvertently dropped it while rewriting `MainFlowControl.cpp`). The dropdown is back in the AutoTimer section of the config UI.
+- When deep-sleeping with `Battery.Enabled = true`, the device now drops `ETH_ENABLE` (W5500 PHY, ~100 mA) and `PER_ENABLE` (camera/SD/LED rail) low and holds them through the sleep window. True deep-sleep current drops from ~100-150 mA to ~10-30 µA (ESP-S3 + always-on battery divider only). PoE/USB users (`Battery.Enabled = false`) keep the existing behaviour.
+
+---
+
 # [16.0.0] - 2024-03-15
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v15.7.0...v16.0.0)
