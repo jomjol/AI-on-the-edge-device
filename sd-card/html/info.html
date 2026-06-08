@@ -233,10 +233,40 @@ table {
 			</td>
 		</tr>
 		<tr>
-			<td>Int. RAM - Min Free:</td>	
+			<td>Int. RAM - Min Free:</td>
 			<td>
 				<output id="IntRAMMinFree"></output>
 			</td>
+		</tr>
+	</table>
+
+	<table id="BatteryTable" style="display:none;">
+		<colgroup>
+			<col span="1" style="width: 35%;">
+			<col span="1" style="width: 65%;">
+		</colgroup>
+		<tr>
+			<h3>Battery</h3>
+		</tr>
+		<tr>
+			<td>Monitoring enabled:</td>
+			<td><output id="BatteryEnabled"></output></td>
+		</tr>
+		<tr>
+			<td>Battery voltage:</td>
+			<td><output id="BatteryVoltage"></output></td>
+		</tr>
+		<tr>
+			<td>Estimated percent:</td>
+			<td><output id="BatteryPercent"></output></td>
+		</tr>
+		<tr>
+			<td>Raw ADC (0-4095):</td>
+			<td><output id="BatteryRawAdc"></output></td>
+		</tr>
+		<tr>
+			<td>ADC voltage (pre-divider):</td>
+			<td><output id="BatteryAdcVoltage"></output></td>
 		</tr>
 	</table>
 
@@ -516,6 +546,41 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 		xhttp.send();
 	}
 
+	function loadBatteryInfoField(type, elementId, suffix)
+	{
+		var url = getDomainname() + '/info?type=' + type;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var v = xhttp.response.trim();
+				document.getElementById(elementId).value = (v === "") ? "n/a" : (v + (suffix || ""));
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
+	function loadBatteryInfo()
+	{
+		// Probe enable state; only show the table on aleksei + Battery.Enabled.
+		var url = getDomainname() + '/info?type=BatteryEnabled';
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var enabled = (xhttp.response.trim() === "true");
+				document.getElementById("BatteryTable").style.display = enabled ? "" : "none";
+				if (!enabled) return;
+				document.getElementById("BatteryEnabled").value = "yes";
+				loadBatteryInfoField("BatteryVoltage",    "BatteryVoltage",    " V");
+				loadBatteryInfoField("BatteryPercent",    "BatteryPercent",    " %");
+				loadBatteryInfoField("BatteryRawAdc",     "BatteryRawAdc",     "");
+				loadBatteryInfoField("BatteryAdcVoltage", "BatteryAdcVoltage", " V");
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	}
+
 	function init()
 	{
 		loadMemoryInfo();
@@ -537,6 +602,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 		loadChipCores();
 		loadChipRevision();
 		loadChipFeatures();
+		loadBatteryInfo();
 	}
 
 	init();
