@@ -240,35 +240,37 @@ table {
 		</tr>
 	</table>
 
-	<table id="BatteryTable" style="display:none;">
-		<colgroup>
-			<col span="1" style="width: 35%;">
-			<col span="1" style="width: 65%;">
-		</colgroup>
-		<tr>
-			<h3>Battery</h3>
-		</tr>
-		<tr>
-			<td>Monitoring enabled:</td>
-			<td><output id="BatteryEnabled"></output></td>
-		</tr>
-		<tr>
-			<td>Battery voltage:</td>
-			<td><output id="BatteryVoltage"></output></td>
-		</tr>
-		<tr>
-			<td>Estimated percent:</td>
-			<td><output id="BatteryPercent"></output></td>
-		</tr>
-		<tr>
-			<td>Raw ADC (0-4095):</td>
-			<td><output id="BatteryRawAdc"></output></td>
-		</tr>
-		<tr>
-			<td>ADC voltage (pre-divider):</td>
-			<td><output id="BatteryAdcVoltage"></output></td>
-		</tr>
-	</table>
+	<div id="BatterySection" style="display:none;">
+		<table>
+			<colgroup>
+				<col span="1" style="width: 35%;">
+				<col span="1" style="width: 65%;">
+			</colgroup>
+			<tr>
+				<td colspan="2"><h3>Battery</h3></td>
+			</tr>
+			<tr>
+				<td>Monitoring enabled:</td>
+				<td><output id="BatteryEnabled"></output></td>
+			</tr>
+			<tr>
+				<td>Battery voltage:</td>
+				<td><output id="BatteryVoltage"></output></td>
+			</tr>
+			<tr>
+				<td>Estimated percent:</td>
+				<td><output id="BatteryPercent"></output></td>
+			</tr>
+			<tr>
+				<td>Raw ADC (0-4095):</td>
+				<td><output id="BatteryRawAdc"></output></td>
+			</tr>
+			<tr>
+				<td>ADC voltage (pre-divider):</td>
+				<td><output id="BatteryAdcVoltage"></output></td>
+			</tr>
+		</table>
+	</div>
 
 
 <h3>Copyright</h3>
@@ -568,7 +570,7 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var enabled = (xhttp.response.trim() === "true");
-				document.getElementById("BatteryTable").style.display = enabled ? "" : "none";
+				document.getElementById("BatterySection").style.display = enabled ? "" : "none";
 				if (!enabled) return;
 				document.getElementById("BatteryEnabled").value = "yes";
 				loadBatteryInfoField("BatteryVoltage",    "BatteryVoltage",    " V");

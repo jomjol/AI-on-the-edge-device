@@ -315,6 +315,10 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
         cfc = this;
     }
 
+    if (toUpper(_type).compare("[BATTERY]") == 0) {
+        cfc = this;
+    }
+
     return cfc;
 }
 
