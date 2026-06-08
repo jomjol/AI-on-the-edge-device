@@ -13,6 +13,9 @@
 #include "time_sntp.h"
 #include "../../include/defines.h"
 #include "basic_auth.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "battery_adc.h"
+#endif
 
 
 
@@ -181,6 +184,12 @@ bool MQTThomeassistantDiscovery(int qos) {
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "freeMem",         "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "wifiRSSI",        "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "CPUtemp",         "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic", qos);
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    if (Battery_IsReady()) {
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("", "battery_voltage", "Battery Voltage",   "car-battery",              "V",   "voltage",         "measurement", "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("", "battery_percent", "Battery",           "battery",                  "%",   "battery",         "measurement", "diagnostic", qos);
+    }
+#endif
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic", qos);
@@ -260,6 +269,21 @@ bool publishSystemData(int qos) {
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), qos, retainFlag);
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    // Battery monitoring is only initialised when Battery.Enabled = true in config.
+    // Battery_IsReady() returns false otherwise, so this block silently skips for PoE/USB users.
+    if (Battery_IsReady()) {
+        float bat_v = Battery_ReadVoltage();
+        if (bat_v >= 0.0f) {
+            int bat_pct = Battery_PercentFromVoltage(bat_v);
+            sprintf(tmp_char, "%.3f", bat_v);
+            allSendsSuccessed |= MQTTPublish(maintopic + "/" + "battery_voltage", std::string(tmp_char), qos, retainFlag);
+            sprintf(tmp_char, "%d", bat_pct);
+            allSendsSuccessed |= MQTTPublish(maintopic + "/" + "battery_percent", std::string(tmp_char), qos, retainFlag);
+        }
+    }
+#endif
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all System MQTT topics");
 
