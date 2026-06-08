@@ -41,4 +41,10 @@ float Battery_LastAdcVoltage();
 // on external power and 100 is returned.
 int Battery_PercentFromVoltage(float v);
 
+// Legacy entry point used by ClassFlowLorawan. Returns Vbatt in
+// millivolts (post-divider, i.e. the actual battery voltage). Lazy-inits
+// on first call so it works regardless of whether Battery.Enabled is set.
+// Returns -1 on failure.
+int readBattery();
+
 #endif // BOARD_ESP32_S3_ALEKSEI

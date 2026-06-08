@@ -175,4 +175,15 @@ int Battery_PercentFromVoltage(float v)
     return 0;
 }
 
+
+int readBattery()
+{
+    // Lazy-init so callers that don't go through Battery_Init() (e.g. the
+    // LoRaWAN flow) still work. Matches the original header-only behaviour.
+    if (!s_ready && !Battery_Init()) return -1;
+    float v = Battery_ReadVoltage();
+    if (v < 0.0f) return -1;
+    return (int)(v * 1000.0f + 0.5f);
+}
+
 #endif // BOARD_ESP32_S3_ALEKSEI
