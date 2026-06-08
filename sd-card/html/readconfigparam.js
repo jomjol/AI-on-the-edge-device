@@ -277,8 +277,15 @@ function ParseConfig() {
     category[catname]["found"] = false;
     param[catname] = new Object();
     //ParamAddValue(param, catname, "AutoStart");
-    ParamAddValue(param, catname, "Interval");     
-    ParamAddValue(param, catname, "SleepWhileIdle");     
+    ParamAddValue(param, catname, "Interval");
+    ParamAddValue(param, catname, "SleepWhileIdle");
+
+    var catname = "Battery";
+    category[catname] = new Object();
+    category[catname]["enabled"] = false;
+    category[catname]["found"] = false;
+    param[catname] = new Object();
+    ParamAddValue(param, catname, "Enabled");
 
     var catname = "DataLogging";
     category[catname] = new Object();

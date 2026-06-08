@@ -210,6 +210,7 @@ void ClassFlowControll::SetInitialParameter(void)
     SetupModeActive = false;
     AutoInterval = 10; // Minutes
     SleepWhileIdle = false;
+    BatteryEnabled = false;
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
@@ -234,6 +235,11 @@ void ClassFlowControll::setAutoStartInterval(long &_interval)
 void ClassFlowControll::setSleepWhileIdle(bool& _sleepwhileidle)
 {
     _sleepwhileidle = SleepWhileIdle;
+}
+
+bool ClassFlowControll::getBatteryEnabled()
+{
+    return BatteryEnabled;
 }
 
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
@@ -567,7 +573,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
     if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
-        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0))) {     
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0) && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0) &&
+        (toUpper(aktparamgraph).compare("[BATTERY]") != 0)) {
         // Paragraph passt nicht zu Debug oder DataLogging
         return false;
     }
@@ -583,6 +590,10 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
         if ((toUpper(splitted[0]) == "SLEEPWHILEIDLE") && (splitted.size() > 1)) {
             SleepWhileIdle = alphanumericToBoolean(splitted[1]);
+        }
+
+        if ((toUpper(splitted[0]) == "ENABLED") && (splitted.size() > 1)) {
+            BatteryEnabled = alphanumericToBoolean(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1)) {
