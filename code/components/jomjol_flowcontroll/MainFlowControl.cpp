@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include <esp_timer.h>
 #include <esp_sleep.h>
+#include "driver/gpio.h"
 
 #include <iomanip>
 #include <sstream>
@@ -1647,6 +1648,20 @@ void task_autodoFlow(void *pvParameter)
                 fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
                 if (auto_interval > fr_delta_ms) {
                     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+                    // Battery-powered AI-on-the-edge-cam: kill the W5500 ethernet PHY
+                    // (~100 mA) and camera/SD/LED rail before sleeping; hold both pins
+                    // low through deep sleep so the regulators stay off.
+                    if (flowctrl.getBatteryEnabled()) {
+                        gpio_set_level(ETH_ENABLE, 0);
+                        gpio_set_level(PER_ENABLE, 0);
+                        gpio_hold_en(ETH_ENABLE);
+                        gpio_hold_en(PER_ENABLE);
+                        gpio_deep_sleep_hold_en();
+                    }
+#endif
+
                     esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
                     esp_deep_sleep_start();
                 }

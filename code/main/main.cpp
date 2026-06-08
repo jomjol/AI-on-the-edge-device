@@ -219,10 +219,16 @@ extern "C" void app_main(void)
     TickType_t xDelay;
 
     #if defined (BOARD_ESP32_S3_ALEKSEI)
+        // Release any GPIO holds left over from a previous deep-sleep cycle
+        // before we reconfigure the pins (no-op on a cold boot / non-battery use).
+        gpio_hold_dis(PER_ENABLE);
+        gpio_hold_dis(ETH_ENABLE);
+        gpio_deep_sleep_hold_dis();
+
 //        gpio_pad_select_gpio(ETH_EN);
 //        gpio_set_direction(ETH_EN, GPIO_MODE_OUTPUT);
 //        gpio_set_level(ETH_EN, 0);
-        // PER_ENABLE activates power for camera,leds,and SDcard, Battery measurement voltage divider
+        // PER_ENABLE activates power for camera,leds,and SDcard
         gpio_pad_select_gpio(PER_ENABLE);
         gpio_set_direction(PER_ENABLE, GPIO_MODE_OUTPUT);
         gpio_set_level(PER_ENABLE, 1);
