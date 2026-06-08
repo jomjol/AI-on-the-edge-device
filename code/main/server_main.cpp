@@ -194,7 +194,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
         if (Battery_IsReady()) {
             float v = Battery_ReadVoltage();
             if (v >= 0.0f) {
-                char buf[8];
+                char buf[16];
                 snprintf(buf, sizeof(buf), "%d", Battery_PercentFromVoltage(v));
                 httpd_resp_sendstr(req, buf);
                 return ESP_OK;
@@ -212,7 +212,7 @@ esp_err_t info_get_handler(httpd_req_t *req)
             (void)Battery_ReadVoltage();
             int raw = Battery_LastRawAdc();
             if (raw >= 0) {
-                char buf[8];
+                char buf[16];
                 snprintf(buf, sizeof(buf), "%d", raw);
                 httpd_resp_sendstr(req, buf);
                 return ESP_OK;
