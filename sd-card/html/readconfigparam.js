@@ -342,16 +342,15 @@ function ParseConfig() {
     // disabled even though the firmware accepts the setting.
     if (category["Battery"]["found"] == false) {
         category["Battery"]["found"] = true;
-        category["Battery"]["enabled"] = true;
-
         param["Battery"]["Enabled"]["found"] = true;
-        param["Battery"]["Enabled"]["enabled"] = true;
         param["Battery"]["Enabled"]["value1"] = "false";
     }
 
-    if (category["Battery"]["enabled"] == false) {
-        category["Battery"]["enabled"] = true;
-    }
+    // Battery > Enabled is a top-level switch (no separate enable checkbox),
+    // so the dropdown must always be interactive even when the section or
+    // line was commented out in config.ini. Force both flags on.
+    category["Battery"]["enabled"] = true;
+    param["Battery"]["Enabled"]["enabled"] = true;
 
     // Make the downward compatiblity with DataLogging
     if (category["DataLogging"]["found"] == false) {
