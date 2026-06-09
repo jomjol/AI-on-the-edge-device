@@ -32,6 +32,7 @@ typedef struct
     bool CameraDeepSleepEnable;
     bool DemoMode;
     bool SaveAllFiles;
+    bool PowerDownCameraBetweenRounds;
 } camera_controll_config_temp_t;
 
 extern camera_controll_config_temp_t CCstatus;

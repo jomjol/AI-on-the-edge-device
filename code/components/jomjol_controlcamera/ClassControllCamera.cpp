@@ -120,6 +120,7 @@ CCamera::CCamera(void)
     ESP_LOGD(TAG, "CreateClassCamera");
 #endif
     CCstatus.WaitBeforePicture = 2;
+    CCstatus.PowerDownCameraBetweenRounds = false;
 
     ledc_init();
 }

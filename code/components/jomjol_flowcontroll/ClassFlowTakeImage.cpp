@@ -107,6 +107,11 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
             CCstatus.SaveAllFiles = alphanumericToBoolean(splitted[1]);
         }
 
+        else if ((toUpper(splitted[0]) == "POWERDOWNCAMERABETWEENROUNDS") && (splitted.size() > 1))
+        {
+            CCstatus.PowerDownCameraBetweenRounds = alphanumericToBoolean(splitted[1]);
+        }
+
         else if ((toUpper(splitted[0]) == "WAITBEFORETAKINGPICTURE") && (splitted.size() > 1))
         {
             if (isStringNumeric(splitted[1]))

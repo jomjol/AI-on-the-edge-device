@@ -305,6 +305,19 @@
             <td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
         </tr>
 
+        <tr>
+            <td class="indent1">
+                <class id="TakeImage_PowerDownCameraBetweenRounds_text" style="color:black;">Power Down Camera Between Rounds</class>
+            </td>
+            <td>
+                <select id="TakeImage_PowerDownCameraBetweenRounds_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_PowerDownCameraBetweenRounds</td>
+        </tr>
+
         <tr class="expert" unused_id="TakeImage_CamGainceiling_ex3">
             <td class="indent1">
                 <class id="TakeImage_CamGainceiling_text" style="color:black;">CamGainceiling</class>
@@ -2403,7 +2416,8 @@ function UpdateInput() {
     WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
 
     WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
-    WriteParameter(param, category, "TakeImage", "CamGainceiling", false);	
+    WriteParameter(param, category, "TakeImage", "PowerDownCameraBetweenRounds", false);
+    WriteParameter(param, category, "TakeImage", "CamGainceiling", false);
     WriteParameter(param, category, "TakeImage", "CamQuality", false);
     WriteParameter(param, category, "TakeImage", "CamBrightness", false);
     WriteParameter(param, category, "TakeImage", "CamContrast", false);
@@ -2576,6 +2590,7 @@ function ReadParameterAll() {
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
     ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
+    ReadParameter(param, "TakeImage", "PowerDownCameraBetweenRounds", false);
     ReadParameter(param, "TakeImage", "CamGainceiling", false);	
     ReadParameter(param, "TakeImage", "CamQuality", false);	
     ReadParameter(param, "TakeImage", "CamBrightness", false);

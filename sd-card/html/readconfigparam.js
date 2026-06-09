@@ -102,6 +102,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "RawImagesLocation");
     ParamAddValue(param, catname, "RawImagesRetention");
     ParamAddValue(param, catname, "WaitBeforeTakingPicture");
+    ParamAddValue(param, catname, "PowerDownCameraBetweenRounds");
     ParamAddValue(param, catname, "CamGainceiling");		// Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
     ParamAddValue(param, catname, "CamQuality");    		// 0 - 63
     ParamAddValue(param, catname, "CamBrightness"); 		// (-2 to 2) - set brightness
@@ -351,6 +352,16 @@ function ParseConfig() {
     // line was commented out in config.ini. Force both flags on.
     category["Battery"]["enabled"] = true;
     param["Battery"]["Enabled"]["enabled"] = true;
+
+    // Downward compatibility for TakeImage.PowerDownCameraBetweenRounds when
+    // the user's existing config.ini predates it. Same reasoning as above:
+    // it's a top-level switch with no per-param enable checkbox, so always
+    // keep it interactive.
+    if (param["TakeImage"]["PowerDownCameraBetweenRounds"]["found"] == false) {
+        param["TakeImage"]["PowerDownCameraBetweenRounds"]["found"] = true;
+        param["TakeImage"]["PowerDownCameraBetweenRounds"]["value1"] = "false";
+    }
+    param["TakeImage"]["PowerDownCameraBetweenRounds"]["enabled"] = true;
 
     // Make the downward compatiblity with DataLogging
     if (category["DataLogging"]["found"] == false) {

@@ -1648,6 +1648,19 @@ void task_autodoFlow(void *pvParameter)
         wifiRoamByScanning();
 #endif
 
+        // If we're going to be idle for a while AND the user wants the camera to
+        // sleep between rounds (e.g. for OV5640 thermal mitigation), put the sensor
+        // into low-power standby via its I2C sleep register. SleepWhileIdle also
+        // triggers this so a board that just had sleep enabled gets the benefit
+        // without the user having to toggle two settings.
+        // Note: when SleepWhileIdle actually deep-sleeps, the cold-boot wake
+        // re-inits the camera anyway, so this call is redundant in that path -
+        // but it's harmless and keeps the OR-semantics the user requested.
+        bool camera_off_between_rounds = CCstatus.PowerDownCameraBetweenRounds || sleep_while_idle;
+        if (camera_off_between_rounds && auto_interval > ((esp_timer_get_time() - fr_start) / 1000)) {
+            Camera.CameraDeepSleep(true);
+        }
+
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
 
         if (auto_interval > fr_delta_ms)
@@ -1701,6 +1714,13 @@ void task_autodoFlow(void *pvParameter)
                 const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
                 ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long)xDelay);
                 vTaskDelay(xDelay);
+            }
+
+            // Wake the camera back up before the next round. Only needed in the
+            // non-deep-sleep path: when deep sleep actually fires it cold-boots
+            // the chip and esp_camera_init() runs from scratch.
+            if (camera_off_between_rounds) {
+                Camera.CameraDeepSleep(false);
             }
         }
     }
