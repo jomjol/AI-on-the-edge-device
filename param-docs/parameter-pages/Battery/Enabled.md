@@ -9,6 +9,10 @@ When enabled:
 - New MQTT topics `<maintopic>/battery_voltage` and `<maintopic>/battery_percent` are published each round, with Home Assistant autodiscovery.
 - A battery indicator appears on the dashboard (Overview) and a "Battery" section appears on the System Info page.
 - Deep sleep (`AutoTimer > SleepWhileIdle`) additionally drops `ETH_ENABLE` and `PER_ENABLE` low, cutting standby current from ~100-150 mA to ~10-30 µA.
+- **Deep sleep is skipped automatically when USB power is detected** (Vbatt > 4.25 V indicates USB back-feed through Schottky D7). This makes OTA updates and config changes practical while plugged in.
 
 !!! Note
-    Leave this **disabled** when running on PoE or USB power. There's no functional downside to enabling on a battery-powered unit; on a non-battery unit, the battery percent will read 100% (USB back-feeds the Vbatt rail through Schottky D7) and the deep-sleep current optimisation will kill Ethernet during sleep.
+    Leave this **disabled** when running on PoE or USB power **only**. There's no functional downside to enabling on a battery-powered unit; on a non-battery unit, the battery percent will read 100% (USB back-feeds the Vbatt rail through Schottky D7) and the deep-sleep current optimisation will kill Ethernet during sleep windows.
+
+!!! Note
+    USB detection only works when this setting is on -- the hardware has no separate VBUS-sense GPIO.
