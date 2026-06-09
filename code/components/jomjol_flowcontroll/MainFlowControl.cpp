@@ -1684,33 +1684,40 @@ void task_autodoFlow(void *pvParameter)
                 // OTA updates without unplugging the battery. Honest detection of
                 // "USB plugged in" is not possible on this hardware (TP4057 CHRG
                 // is LED-only, no VBUS sense GPIO), so this is the reliable path.
-                if (StayAwake_Get()) {
-                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Stay-Awake override is on -- skipping deep sleep");
-                    fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-                    if (auto_interval > fr_delta_ms) {
-                        vTaskDelay((auto_interval - fr_delta_ms) / portTICK_PERIOD_MS);
+                // While the Stay-Awake override is on, idle in short chunks and
+                // re-check the flag each time. If the user clicks "Resume sleep"
+                // mid-interval, the next chunk notices and falls through to deep
+                // sleep immediately instead of staying awake until the next round.
+                bool announced_stay_awake = false;
+                fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+                while ((auto_interval > fr_delta_ms) && StayAwake_Get()) {
+                    if (!announced_stay_awake) {
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Stay-Awake override is on -- skipping deep sleep");
+                        announced_stay_awake = true;
                     }
-                } else {
+                    long remaining_ms = auto_interval - fr_delta_ms;
+                    vTaskDelay(((remaining_ms < 10000) ? remaining_ms : 10000) / portTICK_PERIOD_MS);
                     fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-                    if (auto_interval > fr_delta_ms) {
-                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
+                }
+
+                if (auto_interval > fr_delta_ms) {
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
 
 #if defined(BOARD_ESP32_S3_ALEKSEI)
-                        // Battery-powered AI-on-the-edge-cam: kill the W5500 ethernet PHY
-                        // (~100 mA) and camera/SD/LED rail before sleeping; hold both pins
-                        // low through deep sleep so the regulators stay off.
-                        if (flowctrl.getBatteryEnabled()) {
-                            gpio_set_level(ETH_ENABLE, 0);
-                            gpio_set_level(PER_ENABLE, 0);
-                            gpio_hold_en(ETH_ENABLE);
-                            gpio_hold_en(PER_ENABLE);
-                            gpio_deep_sleep_hold_en();
-                        }
+                    // Battery-powered AI-on-the-edge-cam: kill the W5500 ethernet PHY
+                    // (~100 mA) and camera/SD/LED rail before sleeping; hold both pins
+                    // low through deep sleep so the regulators stay off.
+                    if (flowctrl.getBatteryEnabled()) {
+                        gpio_set_level(ETH_ENABLE, 0);
+                        gpio_set_level(PER_ENABLE, 0);
+                        gpio_hold_en(ETH_ENABLE);
+                        gpio_hold_en(PER_ENABLE);
+                        gpio_deep_sleep_hold_en();
+                    }
 #endif
 
-                        esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
-                        esp_deep_sleep_start();
-                    }
+                    esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
+                    esp_deep_sleep_start();
                 }
             } else {
                 const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
