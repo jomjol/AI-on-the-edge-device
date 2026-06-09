@@ -1654,25 +1654,48 @@ void task_autodoFlow(void *pvParameter)
         {
             if (sleep_while_idle) {
                 vTaskDelay(10000 / portTICK_PERIOD_MS); // Grace window so the user can connect to reconfigure before deep sleep
-                fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
-                if (auto_interval > fr_delta_ms) {
-                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
 
 #if defined(BOARD_ESP32_S3_ALEKSEI)
-                    // Battery-powered AI-on-the-edge-cam: kill the W5500 ethernet PHY
-                    // (~100 mA) and camera/SD/LED rail before sleeping; hold both pins
-                    // low through deep sleep so the regulators stay off.
-                    if (flowctrl.getBatteryEnabled()) {
-                        gpio_set_level(ETH_ENABLE, 0);
-                        gpio_set_level(PER_ENABLE, 0);
-                        gpio_hold_en(ETH_ENABLE);
-                        gpio_hold_en(PER_ENABLE);
-                        gpio_deep_sleep_hold_en();
+                // Skip deep sleep entirely when USB is powering the board (Vbatt
+                // back-fed through D7 Schottky reads > 4.25 V). Makes OTA updates
+                // and configuration tweaks possible without unplugging the battery
+                // or waiting for the next short wake window.
+                bool usb_present = false;
+                if (Battery_IsReady()) {
+                    float v = Battery_ReadVoltage();
+                    if (v >= LIION_USB_BACKFEED_THRESHOLD_V) {
+                        usb_present = true;
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "External power detected (Vbatt " + std::to_string(v) + " V) -- skipping deep sleep");
                     }
+                }
+                if (usb_present) {
+                    fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+                    if (auto_interval > fr_delta_ms) {
+                        vTaskDelay((auto_interval - fr_delta_ms) / portTICK_PERIOD_MS);
+                    }
+                } else
+#endif
+                {
+                    fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+                    if (auto_interval > fr_delta_ms) {
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+                        // Battery-powered AI-on-the-edge-cam: kill the W5500 ethernet PHY
+                        // (~100 mA) and camera/SD/LED rail before sleeping; hold both pins
+                        // low through deep sleep so the regulators stay off.
+                        if (flowctrl.getBatteryEnabled()) {
+                            gpio_set_level(ETH_ENABLE, 0);
+                            gpio_set_level(PER_ENABLE, 0);
+                            gpio_hold_en(ETH_ENABLE);
+                            gpio_hold_en(PER_ENABLE);
+                            gpio_deep_sleep_hold_en();
+                        }
 #endif
 
-                    esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
-                    esp_deep_sleep_start();
+                        esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
+                        esp_deep_sleep_start();
+                    }
                 }
             } else {
                 const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
