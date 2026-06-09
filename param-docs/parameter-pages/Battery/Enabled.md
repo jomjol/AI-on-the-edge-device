@@ -8,11 +8,10 @@ When enabled:
 - Vbatt is read from GPIO2 (ADC1\_CH1) through the on-board 10k/10k divider.
 - New MQTT topics `<maintopic>/battery_voltage` and `<maintopic>/battery_percent` are published each round, with Home Assistant autodiscovery.
 - A battery indicator appears on the dashboard (Overview) and a "Battery" section appears on the System Info page.
-- Deep sleep (`AutoTimer > SleepWhileIdle`) additionally drops `ETH_ENABLE` and `PER_ENABLE` low, cutting standby current from ~100-150 mA to ~10-30 µA.
-- **Deep sleep is skipped automatically when USB power is detected** (Vbatt > 4.25 V indicates USB back-feed through Schottky D7). This makes OTA updates and config changes practical while plugged in.
+- Deep sleep ([`AutoTimer > SleepWhileIdle`](../AutoTimer/SleepWhileIdle)) additionally drops `ETH_ENABLE` and `PER_ENABLE` low, cutting standby current from ~100-150 mA to ~10-30 µA.
 
 !!! Note
-    Leave this **disabled** when running on PoE or USB power **only**. There's no functional downside to enabling on a battery-powered unit; on a non-battery unit, the battery percent will read 100% (USB back-feeds the Vbatt rail through Schottky D7) and the deep-sleep current optimisation will kill Ethernet during sleep windows.
+    Leave this **disabled** on PoE- or USB-only devices. The battery percent will read 100% when on USB (Vbatt back-fed through Schottky D7 reads above any real cell voltage) and the deep-sleep current optimisation will kill Ethernet during sleep.
 
 !!! Note
-    USB detection only works when this setting is on -- the hardware has no separate VBUS-sense GPIO.
+    **USB plugged in does not auto-disable sleep.** This PCB has no VBUS-sense GPIO and TP4057 CHRG/STDBY pins drive only LEDs, so the firmware can't tell whether you're on USB or battery during charging. Use the **"Stay awake" button on the dashboard** to keep the device responsive for OTA updates, or wire CHRG to a spare GPIO (see hardware-mod notes in the SleepWhileIdle docs).

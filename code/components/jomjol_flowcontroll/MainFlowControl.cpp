@@ -14,6 +14,7 @@
 #include "../../include/defines.h"
 #include "Helper.h"
 #include "statusled.h"
+#include "StayAwake.h"
 #if defined(BOARD_ESP32_S3_ALEKSEI)
 #include "battery_adc.h"
 #endif
@@ -49,6 +50,7 @@ bool flowisrunning = false;
 
 long auto_interval = 0;
 bool sleep_while_idle = false;
+int sleep_grace_seconds = 10;
 bool autostartIsEnabled = false;
 
 int countRounds = 0;
@@ -1566,6 +1568,7 @@ void task_autodoFlow(void *pvParameter)
 
     flowctrl.setAutoStartInterval(auto_interval);
     flowctrl.setSleepWhileIdle(sleep_while_idle);
+    flowctrl.setSleepGraceSeconds(sleep_grace_seconds);
     autostartIsEnabled = flowctrl.getIsAutoStart();
 
 #if defined(BOARD_ESP32_S3_ALEKSEI)
@@ -1666,29 +1669,28 @@ void task_autodoFlow(void *pvParameter)
         if (auto_interval > fr_delta_ms)
         {
             if (sleep_while_idle) {
-                vTaskDelay(10000 / portTICK_PERIOD_MS); // Grace window so the user can connect to reconfigure before deep sleep
-
-#if defined(BOARD_ESP32_S3_ALEKSEI)
-                // Skip deep sleep entirely when USB is powering the board (Vbatt
-                // back-fed through D7 Schottky reads > 4.25 V). Makes OTA updates
-                // and configuration tweaks possible without unplugging the battery
-                // or waiting for the next short wake window.
-                bool usb_present = false;
-                if (Battery_IsReady()) {
-                    float v = Battery_ReadVoltage();
-                    if (v >= LIION_USB_BACKFEED_THRESHOLD_V) {
-                        usb_present = true;
-                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "External power detected (Vbatt " + std::to_string(v) + " V) -- skipping deep sleep");
-                    }
+                // Grace window so the user can reach the device to reconfigure or
+                // toggle the Stay-Awake override before deep sleep. Configurable
+                // via [AutoTimer] SleepGraceSeconds (default 10s, range 0-600).
+                int grace_s = sleep_grace_seconds;
+                if (grace_s < 0) grace_s = 0;
+                if (grace_s > 600) grace_s = 600;
+                if (grace_s > 0) {
+                    vTaskDelay((grace_s * 1000) / portTICK_PERIOD_MS);
                 }
-                if (usb_present) {
+
+                // Stay-Awake override: a one-shot user-controlled flag persisted
+                // in NVS. Lets the user keep the device responsive while pushing
+                // OTA updates without unplugging the battery. Honest detection of
+                // "USB plugged in" is not possible on this hardware (TP4057 CHRG
+                // is LED-only, no VBUS sense GPIO), so this is the reliable path.
+                if (StayAwake_Get()) {
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Stay-Awake override is on -- skipping deep sleep");
                     fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
                     if (auto_interval > fr_delta_ms) {
                         vTaskDelay((auto_interval - fr_delta_ms) / portTICK_PERIOD_MS);
                     }
-                } else
-#endif
-                {
+                } else {
                     fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
                     if (auto_interval > fr_delta_ms) {
                         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");

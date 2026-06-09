@@ -19,6 +19,7 @@
 #include "esp_log.h"
 #include "basic_auth.h"
 #include "esp_chip_info.h"
+#include "StayAwake.h"
 #if defined(BOARD_ESP32_S3_ALEKSEI)
 #include "battery_adc.h"
 #endif
@@ -161,6 +162,11 @@ esp_err_t info_get_handler(httpd_req_t *req)
         else {
             httpd_resp_sendstr(req, "unavailable");
         }
+        return ESP_OK;
+    }
+    else if (_task.compare("StayAwake") == 0)
+    {
+        httpd_resp_sendstr(req, StayAwake_Get() ? "true" : "false");
         return ESP_OK;
     }
     else if (_task.compare("BatteryEnabled") == 0)
@@ -520,6 +526,36 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 }
 
 
+static esp_err_t sleep_override_handler(httpd_req_t *req)
+{
+    char query[64];
+    char value[8];
+    bool target = false;
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    if (httpd_req_get_url_query_str(req, query, sizeof(query)) == ESP_OK &&
+        httpd_query_key_value(query, "value", value, sizeof(value)) == ESP_OK) {
+        std::string v(value);
+        target = (v == "true" || v == "1" || v == "on");
+        if (StayAwake_Set(target)) {
+            httpd_resp_sendstr(req, target ? "true" : "false");
+        } else {
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to persist override");
+        }
+    } else {
+        // No value query -> toggle current state.
+        target = !StayAwake_Get();
+        if (StayAwake_Set(target)) {
+            httpd_resp_sendstr(req, target ? "true" : "false");
+        } else {
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to persist override");
+        }
+    }
+    return ESP_OK;
+}
+
+
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
     httpd_uri_t info_get_handle = {
@@ -529,6 +565,14 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &info_get_handle);
+
+    httpd_uri_t sleep_override_handle = {
+        .uri       = "/sleep_override",
+        .method    = HTTP_GET,
+        .handler   = APPLY_BASIC_AUTH_FILTER(sleep_override_handler),
+        .user_ctx  = NULL
+    };
+    httpd_register_uri_handler(server, &sleep_override_handle);
 
     httpd_uri_t sysinfo_handle = {
         .uri       = "/sysinfo",  // Match all URIs of type /path/to/file

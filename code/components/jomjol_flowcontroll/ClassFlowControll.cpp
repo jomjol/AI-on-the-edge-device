@@ -210,6 +210,7 @@ void ClassFlowControll::SetInitialParameter(void)
     SetupModeActive = false;
     AutoInterval = 10; // Minutes
     SleepWhileIdle = false;
+    SleepGraceSeconds = 10;
     BatteryEnabled = false;
     flowdigit = NULL;
     flowanalog = NULL;
@@ -235,6 +236,11 @@ void ClassFlowControll::setAutoStartInterval(long &_interval)
 void ClassFlowControll::setSleepWhileIdle(bool& _sleepwhileidle)
 {
     _sleepwhileidle = SleepWhileIdle;
+}
+
+void ClassFlowControll::setSleepGraceSeconds(int& _grace_seconds)
+{
+    _grace_seconds = SleepGraceSeconds;
 }
 
 bool ClassFlowControll::getBatteryEnabled()
@@ -594,6 +600,15 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
 
         if ((toUpper(splitted[0]) == "SLEEPWHILEIDLE") && (splitted.size() > 1)) {
             SleepWhileIdle = alphanumericToBoolean(splitted[1]);
+        }
+
+        if ((toUpper(splitted[0]) == "SLEEPGRACESECONDS") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1])) {
+                int v = std::stoi(splitted[1]);
+                if (v < 0) v = 0;
+                if (v > 600) v = 600;
+                SleepGraceSeconds = v;
+            }
         }
 
         if ((toUpper(splitted[0]) == "ENABLED") && (splitted.size() > 1)) {

@@ -280,6 +280,7 @@ function ParseConfig() {
     //ParamAddValue(param, catname, "AutoStart");
     ParamAddValue(param, catname, "Interval");
     ParamAddValue(param, catname, "SleepWhileIdle");
+    ParamAddValue(param, catname, "SleepGraceSeconds");
 
     var catname = "Battery";
     category[catname] = new Object();

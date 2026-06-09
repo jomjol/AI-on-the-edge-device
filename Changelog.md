@@ -2,20 +2,27 @@
 
 These additions target the `esp32s3-test` branch (AI-on-the-edge-cam hardware, `BOARD_ESP32_S3_ALEKSEI`). Other board variants are unaffected.
 
-### Battery monitoring (AI-on-the-edge-cam)
-
-- New `[Battery]` config section with single `Enabled` flag (default `false`). Acts as the master switch for everything below; PoE/USB users pay zero cost when left disabled.
-- Battery voltage read from GPIO2 (ADC1_CH1) via the on-board 10k/10k divider on the Li-ion `Vbatt` rail. Robust 7-block / 41-sample median-of-medians filter (inherited from allexoK's original `allexok_battery_adc` draft, now properly split into `.h` + `.cpp` with graceful calibration fallback).
-- Piecewise Li-ion percent curve with USB-backfeed clamp (Schottky D7 pushes Vbatt above 4.2V when USB is plugged in -> clamps to 100%).
-- New MQTT system topics `<maintopic>/battery_voltage` and `<maintopic>/battery_percent`, with Home Assistant autodiscovery so the sensors appear automatically.
-- New `/info?type=BatteryEnabled|BatteryVoltage|BatteryPercent|BatteryRawAdc|BatteryAdcVoltage` dispatcher cases used by:
-  - **Dashboard (overview.html):** battery icon + "Battery: NN% (V.VVV V)" row, hidden entirely when not enabled. Icon turns orange below 30%, red below 15%.
-  - **System info (info.html):** new "Battery" section with raw ADC, pre-divider voltage, scaled voltage, percent — useful for verifying calibration against a multimeter.
-
 ### Deep sleep improvements
 
 - **Restored `SleepWhileIdle` option** (regressed in PR #20 / commit `9a36fec` which inadvertently dropped it while rewriting `MainFlowControl.cpp`). The dropdown is back in the AutoTimer section of the config UI.
 - When deep-sleeping with `Battery.Enabled = true`, the device now drops `ETH_ENABLE` (W5500 PHY, ~100 mA) and `PER_ENABLE` (camera/SD/LED rail) low and holds them through the sleep window. True deep-sleep current drops from ~100-150 mA to ~10-30 µA (ESP-S3 + always-on battery divider only). PoE/USB users (`Battery.Enabled = false`) keep the existing behaviour.
+- New `[AutoTimer] SleepGraceSeconds` config (default 10, range 0-600). Controls how long the device stays reachable at end-of-round before sleeping. Useful for OTA updates -- raise to 60-120 s on a deployed battery device.
+- New **"Stay Awake" button** on the dashboard. Click once to disable deep sleep across all subsequent rounds (override persisted in NVS, survives the cold-boot wake). Click again to resume normal sleep. Lets you keep the device responsive while pushing OTA updates without unplugging the battery.
+- Backed out the prior `Vbatt > 4.25 V` auto-USB-detect heuristic. It only fired when no battery was connected or the cell was at full float voltage -- during constant-current charging, Vbatt tracks the cell (3.x V) and the heuristic would have silently let the device sleep. Replaced by the manual override above. Real USB detection requires a hardware mod (tap TP4057 `CHRG` to a spare GPIO through a 10 kΩ series resistor); see the `SleepWhileIdle` parameter docs.
+
+### Power management
+
+- New `[TakeImage] PowerDownCameraBetweenRounds` option (default `false`). When enabled, the camera sensor enters I2C standby between rounds via the OV2640/OV3660/OV5640 sleep register. Mitigates OV5640 self-heating reports. Independent of deep sleep -- useful on PoE/USB devices that can't tolerate the cold-boot overhead of full sleep but still want camera-cooled idle.
+
+### Battery monitoring (AI-on-the-edge-cam)
+
+- New `[Battery]` config section with single `Enabled` flag (default `false`). Acts as the master switch for everything below; PoE/USB users pay zero cost when left disabled.
+- Battery voltage read from GPIO2 (ADC1\_CH1) via the on-board 10k/10k divider on the Li-ion `Vbatt` rail. Robust 7-block / 41-sample median-of-medians filter (inherited from allexoK's original `allexok_battery_adc` draft, now properly split into `.h` + `.cpp` with graceful calibration fallback).
+- Piecewise Li-ion percent curve with USB-backfeed clamp.
+- New MQTT system topics `<maintopic>/battery_voltage` and `<maintopic>/battery_percent`, with Home Assistant autodiscovery so the sensors appear automatically.
+- New `/info?type=BatteryEnabled|BatteryVoltage|BatteryPercent|BatteryRawAdc|BatteryAdcVoltage|StayAwake` dispatcher cases used by:
+  - **Dashboard (overview.html):** battery icon + "Battery: NN% (V.VVV V)" row, hidden entirely when not enabled. Icon turns orange below 30%, red below 15%. Also the "Stay Awake" toggle row.
+  - **System info (info.html):** new "Battery" section with raw ADC, pre-divider voltage, scaled voltage, percent.
 
 ---
 

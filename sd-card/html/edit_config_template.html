@@ -2037,6 +2037,17 @@
             <td>$TOOLTIP_AutoTimer_SleepWhileIdle</td>
         </tr>
 
+        <tr>
+            <td class="indent1">
+                <class id="AutoTimer_SleepGraceSeconds_text" style="color:black;">Sleep Grace Window</class>
+            </td>
+            <td>
+                <input required type="number" id="AutoTimer_SleepGraceSeconds_value1" size="13" min="0" max="600" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0));(!validity.rangeOverflow||(value=600));">Seconds
+            </td>
+            <td>$TOOLTIP_AutoTimer_SleepGraceSeconds</td>
+        </tr>
+
         <!------------- Battery ------------------>
         <tr style="border-bottom: 2px solid lightgray;">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Battery</h4></td>
@@ -2514,6 +2525,7 @@ function UpdateInput() {
     //WriteParameter(param, category, "AutoTimer", "AutoStart", false);
     WriteParameter(param, category, "AutoTimer", "Interval", false);
     WriteParameter(param, category, "AutoTimer", "SleepWhileIdle", false);
+    WriteParameter(param, category, "AutoTimer", "SleepGraceSeconds", false);
 
     WriteParameter(param, category, "Battery", "Enabled", false);
 
@@ -2697,6 +2709,7 @@ function ReadParameterAll() {
     //ReadParameter(param, "AutoTimer", "AutoStart", false);
     ReadParameter(param, "AutoTimer", "Interval", false);
     ReadParameter(param, "AutoTimer", "SleepWhileIdle", false);
+    ReadParameter(param, "AutoTimer", "SleepGraceSeconds", false);
 
     ReadParameter(param, "Battery", "Enabled", false);
     
