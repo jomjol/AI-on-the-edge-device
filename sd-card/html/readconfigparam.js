@@ -364,6 +364,16 @@ function ParseConfig() {
     }
     param["TakeImage"]["PowerDownCameraBetweenRounds"]["enabled"] = true;
 
+    // Downward compatibility for AutoTimer.SleepGraceSeconds when the user's
+    // existing config.ini predates it. It's an always-editable scalar (like
+    // Interval), not an optional checkbox parameter, so keep it interactive
+    // and default it to 10 s when absent.
+    if (param["AutoTimer"]["SleepGraceSeconds"]["found"] == false) {
+        param["AutoTimer"]["SleepGraceSeconds"]["found"] = true;
+        param["AutoTimer"]["SleepGraceSeconds"]["value1"] = "10";
+    }
+    param["AutoTimer"]["SleepGraceSeconds"]["enabled"] = true;
+
     // Make the downward compatiblity with DataLogging
     if (category["DataLogging"]["found"] == false) {
         category["DataLogging"]["found"] = true;
