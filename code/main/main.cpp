@@ -44,6 +44,8 @@
 #include "Helper.h"
 #include "statusled.h"
 #include "sdcard_check.h"
+#include "StayAwake.h"
+#include "esp_sleep.h"
 
 #include "../../include/defines.h"
 
@@ -277,6 +279,18 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    // BOOT button (GPIO0) pressed while the device was in deep sleep: the press
+    // is armed as an EXT0 wake source before each deep sleep. Treat it as the
+    // user asking the device to stay awake (e.g. for an OTA update) and latch
+    // the Stay-Awake override. It is cleared via the "Resume sleep" button on
+    // the overview page or the <maintopic>/ctrl/stay_awake MQTT topic.
+    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Woken by BOOT button -- enabling Stay-Awake override");
+        StayAwake_Set(true);
+    }
+#endif
 
     // SD card: basic R/W check
     // ********************************************

@@ -20,6 +20,10 @@
 #include "basic_auth.h"
 #include "esp_chip_info.h"
 #include "StayAwake.h"
+#ifdef ENABLE_MQTT
+#include "interface_mqtt.h"
+#include "server_mqtt.h"
+#endif //ENABLE_MQTT
 #if defined(BOARD_ESP32_S3_ALEKSEI)
 #include "battery_adc.h"
 #endif
@@ -538,19 +542,21 @@ static esp_err_t sleep_override_handler(httpd_req_t *req)
         httpd_query_key_value(query, "value", value, sizeof(value)) == ESP_OK) {
         std::string v(value);
         target = (v == "true" || v == "1" || v == "on");
-        if (StayAwake_Set(target)) {
-            httpd_resp_sendstr(req, target ? "true" : "false");
-        } else {
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to persist override");
-        }
     } else {
         // No value query -> toggle current state.
         target = !StayAwake_Get();
-        if (StayAwake_Set(target)) {
-            httpd_resp_sendstr(req, target ? "true" : "false");
-        } else {
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to persist override");
+    }
+
+    if (StayAwake_Set(target)) {
+#ifdef ENABLE_MQTT
+        // Keep the Homeassistant "Stay Awake" switch in sync when toggled here.
+        if (getMQTTisConnected()) {
+            MQTTPublish(mqttServer_getMainTopic() + "/stay_awake", target ? "ON" : "OFF", 1, true);
         }
+#endif //ENABLE_MQTT
+        httpd_resp_sendstr(req, target ? "true" : "false");
+    } else {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to persist override");
     }
     return ESP_OK;
 }

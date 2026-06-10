@@ -7,6 +7,9 @@
 #include <esp_timer.h>
 #include <esp_sleep.h>
 #include "driver/gpio.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "driver/rtc_io.h"
+#endif
 
 #include <iomanip>
 #include <sstream>
@@ -1714,6 +1717,20 @@ void task_autodoFlow(void *pvParameter)
                         gpio_hold_en(PER_ENABLE);
                         gpio_deep_sleep_hold_en();
                     }
+
+                    // Arm the BOOT button (GPIO0, RTC-capable on the S3) as an
+                    // additional wake source. A short press during deep sleep
+                    // wakes the device and latches the Stay-Awake override
+                    // (handled via the wakeup-cause check in app_main), so a
+                    // user standing at the device can keep it reachable for an
+                    // OTA update without racing the sleep grace window.
+                    // Note: press BRIEFLY and release. GPIO0 is also the
+                    // download-mode strapping pin -- holding it through the
+                    // wake reset can drop the chip into serial bootloader mode
+                    // until the next reset.
+                    rtc_gpio_pullup_en(GPIO_NUM_0);
+                    rtc_gpio_pulldown_dis(GPIO_NUM_0);
+                    esp_sleep_enable_ext0_wakeup(GPIO_NUM_0, 0); // 0 = wake on LOW (button pressed)
 #endif
 
                     esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds

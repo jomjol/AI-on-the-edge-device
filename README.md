@@ -13,6 +13,7 @@
 - [Download 🔽](#download-)
 - [Flashing the ESP32 💾](#flashing-the-esp32-)
 - [Flashing the SD Card 💾](#flashing-the-sd-card-)
+- [Battery Operation and Deep Sleep 🔋](#battery-operation-and-deep-sleep-)
 - [Casing 🛠️](#casing-%EF%B8%8F)
 - [Donate ☕](#donate-)
 - [Support 💬](#support-)
@@ -155,6 +156,27 @@ See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Inst
 The SD card can be set up automatically after the firmware is installed. See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#remote-setup-using-the-built-in-access-point) for details. For this to work, the SD card must be FAT formatted (which is the default on a new SD card).
 
 Alternatively, the SD card can still be set up manually. See the [documentation](https://jomjol.github.io/AI-on-the-edge-device-docs/Installation/#3-sd-card) for details.
+
+---
+
+<br>
+
+## Battery Operation and Deep Sleep 🔋
+*These features target the [AI-on-the-edge-cam](https://hackaday.io/project/203879-ai-on-the-edge-cam) hardware (`BOARD_ESP32_S3_ALEKSEI`) on the `esp32s3-test` branch. Other boards are unaffected unless noted.*
+
+For battery-powered use, the device can deep-sleep between digitization rounds and monitor its Li-ion cell:
+
+- **`[AutoTimer] SleepWhileIdle`** – deep-sleep between rounds instead of idling. The device cold-boots on each wake.
+- **`[AutoTimer] SleepGraceSeconds`** (default 10 s) – how long the device stays reachable after each round before sleeping.
+- **`[Battery] Enabled`** – battery voltage/percent monitoring (dashboard, System > Info, MQTT `battery_voltage` / `battery_percent`). Also powers down the Ethernet and peripheral rails during deep sleep. Leave **off** when powered via PoE.
+- **`[TakeImage] PowerDownCameraBetweenRounds`** – puts the camera sensor into standby between rounds (reduces OV5640 heat) without the boot overhead of full deep sleep.
+
+### Keeping a sleeping device awake (e.g. for OTA updates) ⏰
+A sleeping device is only briefly reachable each round, so a **Stay-Awake override** (persisted across reboots) suppresses deep sleep until you turn it back off. Three ways to control it:
+
+1. **Web UI** – the "Stay awake" / "Resume sleep" button on the Overview page (reach it during the grace window after a round).
+2. **BOOT button** – **short-press** the BOOT button while the device is sleeping. It wakes immediately with the override enabled. *Press briefly and release — holding BOOT through the wake-up can put the ESP32 into its serial bootloader (it then looks dead until the next reset).*
+3. **MQTT / Home Assistant** – a "Stay Awake" switch is auto-discovered in Home Assistant, or publish `ON` / `OFF` to `<maintopic>/ctrl/stay_awake` (send it **retained** so it survives until the device next wakes; the device clears the retained command after applying it). Current state is published on `<maintopic>/stay_awake`.
 
 ---
 
