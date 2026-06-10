@@ -62,13 +62,20 @@
 
 
 	function LoadConfigNeu() {
-		domainname = getDomainname();  
-		loadConfig(domainname); 	
+		domainname = getDomainname();
+		if (!loadConfig(domainname)) {
+			firework.launch('Configuration could not be loaded! Please reload the page!', 'danger', 30000);
+			return;
+		}
 		document.getElementById("inputTextToSave").value = getConfig();
 		}
 
 	function saveTextAsFile()
 	{
+		if (!config_loaded_ok) {
+			firework.launch('Not saving: the configuration was never loaded from the device. Saving now would overwrite config.ini with defaults. Please reload the page!', 'danger', 30000);
+			return;
+		}
 		FileDeleteOnServer("/config/config.ini", domainname);
 		var textToSave = document.getElementById("inputTextToSave").value;
 		FileSendContent(textToSave, "/config/config.ini", domainname);
