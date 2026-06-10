@@ -26,6 +26,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "server_camera.h"
 #include "esp_camera.h"
 
 #include "driver/ledc.h"
@@ -115,6 +116,10 @@ CCamera::CCamera(void)
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "CreateClassCamera");
 #endif
+
+	CCstatus.ImageQuality = camera_config.jpeg_quality;
+    CCstatus.ImageFrameSize = camera_config.frame_size;
+	SetLEDIntensity(LedIntensity);
     CCstatus.WaitBeforePicture = 2;
 
     ledc_init();
@@ -124,19 +129,12 @@ esp_err_t CCamera::InitCam(void)
 {
     ESP_LOGD(TAG, "Init Camera");
 
-    TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
-
-    CCstatus.ImageQuality = camera_config.jpeg_quality;
-    CCstatus.ImageFrameSize = camera_config.frame_size;
-
     // De-init in case it was already initialized
-    esp_camera_deinit();
-    vTaskDelay(cam_xDelay);
-
+    PowerResetCamera();
+    vTaskDelay(pdMS_TO_TICKS(200));
+	
     // initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
-    vTaskDelay(cam_xDelay);
-
     if (err != ESP_OK)
     {
         ESP_LOGE(TAG, "Camera Init Failed");
@@ -147,7 +145,6 @@ esp_err_t CCamera::InitCam(void)
 
     // Get a reference to the sensor
     sensor_t *s = esp_camera_sensor_get();
-
     if (s != NULL)
     {
         CCstatus.CamSensor_id = s->id.PID;
