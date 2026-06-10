@@ -31,7 +31,12 @@ extern "C"
 #include "ClassLogFile.h"
 
 #include "esp_vfs_fat.h"
-#include "../sdmmc_common.h"
+
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 4, 0))
+#include <esp_private/sdmmc_common.h>
+#else
+#include <../sdmmc_common.h>
+#endif
 
 static const char *TAG = "HELPER";
 
